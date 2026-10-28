@@ -27,6 +27,7 @@ prime-tag = { workspace = true }
 prime-chip = { workspace = true }
 prime-avatar = { workspace = true }
 prime-divider = { workspace = true }
+prime-inputtext = { workspace = true }
 prime-card = { workspace = true }
 prime-icons = { workspace = true, features = ["all-icons"] }
 prime-theme = { workspace = true, features = ["all-components"] }

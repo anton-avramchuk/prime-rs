@@ -1,6 +1,6 @@
 //! Оболочка страницы, меню и маршруты.
 
-use crate::pages::{AvatarPage, BadgePage, ButtonPage, CardPage, ChipPage, DividerPage, HomePage, TagPage};
+use crate::pages::{AvatarPage, BadgePage, ButtonPage, CardPage, ChipPage, DividerPage, HomePage, InputTextPage, TagPage};
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
 use leptos_router::StaticSegment;
@@ -10,7 +10,7 @@ const DARK_CLASS: &str = "p-dark";
 
 /// HTML-оболочка: тема подключается встроенным `<style>` (базовый CSS и CSS компонентов).
 pub fn shell(options: LeptosOptions) -> impl IntoView {
-    let css = prime_theme::stylesheet(&["button", "badge", "tag", "chip", "avatar", "divider", "card"]);
+    let css = prime_theme::stylesheet(&["button", "badge", "tag", "chip", "avatar", "divider", "card", "inputtext"]);
     view! {
         <!DOCTYPE html>
         <html lang="en">
@@ -53,6 +53,7 @@ pub fn App() -> impl IntoView {
                         <A href="/avatar">"Avatar"</A>
                         <A href="/divider">"Divider"</A>
                         <A href="/card">"Card"</A>
+                        <A href="/inputtext">"InputText"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -68,6 +69,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("avatar") view=AvatarPage />
                         <Route path=StaticSegment("divider") view=DividerPage />
                         <Route path=StaticSegment("card") view=CardPage />
+                        <Route path=StaticSegment("inputtext") view=InputTextPage />
                     </Routes>
                 </main>
             </div>

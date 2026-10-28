@@ -32,6 +32,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-card")]
     return view! { <prime_card::Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></prime_card::Card> };
 
+    #[cfg(feature = "case-inputtext")]
+    return view! { <prime_inputtext::InputText placeholder="Name" /> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

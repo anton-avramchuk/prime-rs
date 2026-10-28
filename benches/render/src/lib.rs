@@ -11,6 +11,7 @@ use prime_card::Card;
 use prime_chip::Chip;
 use prime_divider::{Divider, DividerAlign};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
+use prime_inputtext::InputText;
 use prime_tag::{Tag, TagSeverity};
 
 /// Сценарий: имя и функция, возвращающая HTML.
@@ -66,6 +67,10 @@ fn divider_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Divider align=DividerAlign::Center>"OR"</Divider> }).collect_view())
 }
 
+fn inputtext_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <InputText placeholder="Name" /> }).collect_view())
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -91,6 +96,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "divider-1000", run: || divider_n(1000) },
     Scenario { name: "card-1", run: || card_n(1) },
     Scenario { name: "card-1000", run: || card_n(1000) },
+    Scenario { name: "inputtext-1", run: || inputtext_n(1) },
+    Scenario { name: "inputtext-1000", run: || inputtext_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

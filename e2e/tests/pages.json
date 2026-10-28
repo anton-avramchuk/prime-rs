@@ -264,5 +264,47 @@
     "upstream": "/card",
     "oursSelector": "[data-demo=\"advanced\"]",
     "upstreamSelector": "advanced-doc .card"
+  },
+  {
+    "name": "inputtext-basic",
+    "ours": "/inputtext",
+    "upstream": "/inputtext",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "inputtext-filled",
+    "ours": "/inputtext",
+    "upstream": "/inputtext",
+    "oursSelector": "[data-demo=\"filled\"]",
+    "upstreamSelector": "filled-doc .card"
+  },
+  {
+    "name": "inputtext-sizes",
+    "ours": "/inputtext",
+    "upstream": "/inputtext",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "inputtext-invalid",
+    "ours": "/inputtext",
+    "upstream": "/inputtext",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "inputtext-disabled",
+    "ours": "/inputtext",
+    "upstream": "/inputtext",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "inputtext-fluid",
+    "ours": "/inputtext",
+    "upstream": "/inputtext",
+    "oursSelector": "[data-demo=\"fluid\"]",
+    "upstreamSelector": "fluid-doc .card"
   }
 ]

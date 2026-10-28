@@ -13,6 +13,7 @@ prime-badge = { workspace = true, features = ["ssr"] }
 prime-button = { workspace = true, features = ["ssr"] }
 prime-tag = { workspace = true, features = ["ssr"] }
 prime-chip = { workspace = true, features = ["ssr"] }
+prime-inputtext = { workspace = true, features = ["ssr"] }
 prime-avatar = { workspace = true, features = ["ssr"] }
 prime-divider = { workspace = true, features = ["ssr"] }
 prime-card = { workspace = true, features = ["ssr"] }

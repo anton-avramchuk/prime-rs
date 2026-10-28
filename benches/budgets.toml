@@ -49,3 +49,8 @@ feature = "case-card"
 max_delta_bytes = 130000
 
 # После `static-render-path` (две ветви разметки): вклад badge 96 303 Б, button 373 874 Б (было 84 320 и 326 754); бюджеты не менялись.
+
+[[case]]
+name = "inputtext"
+feature = "case-inputtext"
+max_delta_bytes = 225000

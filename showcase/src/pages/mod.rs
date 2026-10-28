@@ -7,6 +7,7 @@ mod card;
 mod chip;
 mod divider;
 mod home;
+mod inputtext;
 mod tag;
 
 pub use avatar::AvatarPage;
@@ -16,6 +17,7 @@ pub use card::CardPage;
 pub use chip::ChipPage;
 pub use divider::DividerPage;
 pub use home::HomePage;
+pub use inputtext::InputTextPage;
 pub use tag::TagPage;
 
 use leptos::prelude::*;

@@ -1702,6 +1702,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-inputtext"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-tag"
 version = "0.1.0"
 dependencies = [
@@ -1928,6 +1939,7 @@ dependencies = [
  "prime-chip",
  "prime-divider",
  "prime-icons",
+ "prime-inputtext",
  "prime-tag",
  "serde_json",
 ]
@@ -2225,6 +2237,7 @@ dependencies = [
  "prime-core",
  "prime-divider",
  "prime-icons",
+ "prime-inputtext",
  "prime-tag",
  "prime-theme",
  "tokio",
@@ -2866,6 +2879,7 @@ dependencies = [
  "prime-chip",
  "prime-divider",
  "prime-icons",
+ "prime-inputtext",
  "prime-tag",
  "wasm-bindgen",
 ]

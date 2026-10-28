@@ -1,6 +1,6 @@
 //! Страница Divider: демонстрации `basic`, `content`, `type`, `vertical` из showcase PrimeNG (`apps/showcase/doc/divider`).
 //!
-//! Демонстрация `login` не перенесена: ей нужен InputText, который ещё не портирован. Тексты-заполнители сокращены.
+//! Тексты-заполнители сокращены.
 
 use super::Demo;
 use leptos::prelude::*;
