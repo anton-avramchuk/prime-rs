@@ -1,0 +1,14 @@
+# Бюджеты вклада компонентов в размер wasm.
+# Мера: размер сырого .wasm (release, wasm32-unknown-unknown, без wasm-opt) минус размер `case-baseline`
+# приложения `benches/wasm-size`. Проверяется `cargo xtask wasm-size`.
+# Первые значения — измеренный вклад с запасом ≈ 50 %; пересмотреть после появления первых компонентов.
+
+[[case]]
+name = "one-icon"
+feature = "case-one-icon"
+max_delta_bytes = 12000
+
+[[case]]
+name = "all-icons"
+feature = "case-all-icons"
+max_delta_bytes = 190000

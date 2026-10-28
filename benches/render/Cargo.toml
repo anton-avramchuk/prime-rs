@@ -1,0 +1,31 @@
+[package]
+name = "render-bench"
+description = "Бенчмарки SSR-рендера и аллокаций компонентов prime-rs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+prime-icons = { workspace = true, features = ["check", "spinner", "all-icons"] }
+serde_json = "1"
+
+[dev-dependencies]
+divan = "0.1"
+dhat = { workspace = true }
+
+[[bench]]
+name = "render"
+harness = false
+
+[[bench]]
+name = "alloc"
+harness = false
+
+[[bench]]
+name = "time"
+harness = false
+
+[lints]
+workspace = true

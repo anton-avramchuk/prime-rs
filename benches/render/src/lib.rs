@@ -1,0 +1,46 @@
+//! Сценарии бенчмарков: каждый рендерит компонент(ы) в HTML-строку через SSR.
+//!
+//! Новый компонент добавляет сюда свои сценарии (один экземпляр и 1000 экземпляров) — они автоматически попадают
+//! в `render` (divan, время), `alloc` (dhat, аллокации) и `time` (медиана в JSON для сравнения с базовой линией).
+
+use leptos::prelude::*;
+use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
+
+/// Сценарий: имя и функция, возвращающая HTML.
+pub struct Scenario {
+    /// Имя вида `<компонент>-<число экземпляров>`.
+    pub name: &'static str,
+    /// Рендер в строку.
+    pub run: fn() -> String,
+}
+
+fn render(view: impl IntoView + 'static) -> String {
+    Owner::new().with(|| view.into_view().to_html())
+}
+
+fn check_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <CheckIcon /> }).collect_view())
+}
+
+fn spinner_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <SpinnerIcon spin=true /> }).collect_view())
+}
+
+/// Все сценарии.
+pub const SCENARIOS: &[Scenario] = &[
+    Scenario { name: "check-icon-1", run: || check_n(1) },
+    Scenario { name: "check-icon-1000", run: || check_n(1000) },
+    Scenario { name: "spinner-icon-1000", run: || spinner_n(1000) },
+    Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
+    Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
+];
+
+/// Каталог для JSON-отчётов (`target/bench`).
+pub fn out_dir() -> std::path::PathBuf {
+    let target = std::env::var_os("CARGO_TARGET_DIR")
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|| std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target"));
+    let dir = target.join("bench");
+    std::fs::create_dir_all(&dir).expect("не удалось создать target/bench");
+    dir
+}

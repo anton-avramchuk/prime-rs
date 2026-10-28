@@ -1,5 +1,6 @@
 //! Служебные команды репозитория (`cargo xtask <команда>`).
 
+mod bench;
 mod clean;
 mod diff;
 mod gen_icons;
@@ -16,6 +17,11 @@ cargo xtask <команда>
 Команды:
   upstream-diff [--to <rev>]   портированные компоненты, изменившиеся в PrimeNG с закреплённого коммита
   gen-spec <имя> [--out <файл>] заготовка спеки компонента из исходников PrimeNG
+  gen-icons                    сгенерировать crates/prime-icons из иконок PrimeNG
+  gen-theme                    сгенерировать CSS темы Aura в crates/prime-theme (нужен Node)
+  wasm-size [--budgets <файл>] вклад компонентов в размер wasm и проверка бюджетов (benches/budgets.toml)
+  bench-compare <база> <сейчас> [--threshold 10] [--fail-over]
+                               сравнить каталоги отчётов бенчмарков (*.json), вывод — Markdown
   clean [--days <N>]           удалить артефакты target/ старше N дней (по умолчанию 7)
 ";
 
@@ -64,6 +70,17 @@ fn run(args: &[String]) -> Result<(), String> {
         Some("gen-theme") => {
             let up = upstream::Upstream::load(&root)?;
             gen_theme::run(&root, &up)
+        }
+        Some("wasm-size") => {
+            let budgets = flag(args, "--budgets").map_or_else(|| root.join("benches/budgets.toml"), PathBuf::from);
+            bench::wasm_size(&root, &budgets)
+        }
+        Some("bench-compare") => {
+            let (Some(base), Some(cur)) = (args.get(1), args.get(2)) else {
+                return Err("использование: bench-compare <каталог базы> <каталог текущих отчётов>".into());
+            };
+            let threshold = flag(args, "--threshold").map_or(Ok(10.0), |v| v.parse::<f64>().map_err(|e| format!("--threshold: {e}")))?;
+            bench::bench_compare(&PathBuf::from(base), &PathBuf::from(cur), threshold, args.iter().any(|a| a == "--fail-over"))
         }
         Some("clean") => {
             let days = flag(args, "--days").map_or(Ok(7), |d| d.parse::<u32>().map_err(|e| format!("--days: {e}")))?;
