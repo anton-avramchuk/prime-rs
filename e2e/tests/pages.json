@@ -691,5 +691,19 @@
     "upstream": "/scrollpanel",
     "oursSelector": "[data-demo=\"custom\"]",
     "upstreamSelector": "custom-doc .card"
+  },
+  {
+    "name": "progressspinner-basic",
+    "ours": "/progressspinner",
+    "upstream": "/progressspinner",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "progressspinner-custom",
+    "ours": "/progressspinner",
+    "upstream": "/progressspinner",
+    "oursSelector": "[data-demo=\"custom\"]",
+    "upstreamSelector": "custom-doc .card"
   }
 ]

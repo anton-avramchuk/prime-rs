@@ -41,6 +41,7 @@ prime-fieldset = { path = "crates/prime-fieldset" }
 prime-accordion = { path = "crates/prime-accordion" }
 prime-toolbar = { path = "crates/prime-toolbar" }
 prime-scrollpanel = { path = "crates/prime-scrollpanel" }
+prime-progressspinner = { path = "crates/prime-progressspinner" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

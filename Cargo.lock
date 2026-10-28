@@ -1798,6 +1798,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-progressspinner"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-radiobutton"
 version = "0.1.0"
 dependencies = [
@@ -2094,6 +2102,7 @@ dependencies = [
  "prime-message",
  "prime-panel",
  "prime-progressbar",
+ "prime-progressspinner",
  "prime-radiobutton",
  "prime-scrollpanel",
  "prime-skeleton",
@@ -2405,6 +2414,7 @@ dependencies = [
  "prime-message",
  "prime-panel",
  "prime-progressbar",
+ "prime-progressspinner",
  "prime-radiobutton",
  "prime-scrollpanel",
  "prime-skeleton",
@@ -3060,6 +3070,7 @@ dependencies = [
  "prime-message",
  "prime-panel",
  "prime-progressbar",
+ "prime-progressspinner",
  "prime-radiobutton",
  "prime-scrollpanel",
  "prime-skeleton",

@@ -19,6 +19,7 @@ use prime_inputtext::InputText;
 use prime_message::{Message, MessageSeverity};
 use prime_panel::Panel;
 use prime_progressbar::ProgressBar;
+use prime_progressspinner::ProgressSpinner;
 use prime_radiobutton::RadioButton;
 use prime_scrollpanel::ScrollPanel;
 use prime_skeleton::{Skeleton, SkeletonShape};
@@ -176,6 +177,10 @@ fn scrollpanel_n(n: usize) -> String {
     render((0..n).map(|_| view! { <ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></ScrollPanel> }).collect_view())
 }
 
+fn progressspinner_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <ProgressSpinner aria_label="loading" /> }).collect_view())
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -230,6 +235,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "toolbar-1000", run: || toolbar_n(1000) },
     Scenario { name: "scrollpanel-1", run: || scrollpanel_n(1) },
     Scenario { name: "scrollpanel-1000", run: || scrollpanel_n(1000) },
+    Scenario { name: "progressspinner-1", run: || progressspinner_n(1) },
+    Scenario { name: "progressspinner-1000", run: || progressspinner_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

@@ -68,6 +68,9 @@ fn App() -> impl IntoView {
         />
     };
 
+    #[cfg(feature = "case-progressspinner")]
+    return view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> };
+
     #[cfg(feature = "case-scrollpanel")]
     return view! { <prime_scrollpanel::ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></prime_scrollpanel::ScrollPanel> };
 

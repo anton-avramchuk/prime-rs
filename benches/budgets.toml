@@ -120,3 +120,8 @@ max_delta_bytes = 110000
 name = "scrollpanel"
 feature = "case-scrollpanel"
 max_delta_bytes = 200000
+
+[[case]]
+name = "progressspinner"
+feature = "case-progressspinner"
+max_delta_bytes = 105000

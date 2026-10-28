@@ -2,8 +2,8 @@
 
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage, HomePage, InputTextPage,
-    MessagePage, PanelPage, ProgressBarPage, RadioButtonPage, ScrollPanelPage, SkeletonPage, TagPage, TextareaPage, ToggleSwitchPage,
-    ToolbarPage,
+    MessagePage, PanelPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, ScrollPanelPage, SkeletonPage, TagPage, TextareaPage,
+    ToggleSwitchPage, ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -35,6 +35,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "accordion",
         "toolbar",
         "scrollpanel",
+        "progressspinner",
     ]);
     view! {
         <!DOCTYPE html>
@@ -91,6 +92,7 @@ pub fn App() -> impl IntoView {
                         <A href="/accordion">"Accordion"</A>
                         <A href="/toolbar">"Toolbar"</A>
                         <A href="/scrollpanel">"ScrollPanel"</A>
+                        <A href="/progressspinner">"ProgressSpinner"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -119,6 +121,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("accordion") view=AccordionPage />
                         <Route path=StaticSegment("toolbar") view=ToolbarPage />
                         <Route path=StaticSegment("scrollpanel") view=ScrollPanelPage />
+                        <Route path=StaticSegment("progressspinner") view=ProgressSpinnerPage />
                     </Routes>
                 </main>
             </div>
