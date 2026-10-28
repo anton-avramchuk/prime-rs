@@ -10,6 +10,8 @@ use prime_icons::AllIcons;
 fn Bench() -> impl IntoView {
     let count = RwSignal::new(0usize);
     let buttons = RwSignal::new(0usize);
+    let buttons_live = RwSignal::new(0usize);
+    let live_loading = RwSignal::new(false);
     let badges = RwSignal::new(0usize);
     let badges_live = RwSignal::new(0usize);
     // значение бейджа передаётся сигналом: реактивный путь
@@ -35,6 +37,19 @@ fn Bench() -> impl IntoView {
             <div data-testid="bench-buttons-area" data-count=move || buttons.get().to_string()>
                 {move || {
                     (0..buttons.get()).map(|_| view! { <Button label="Сохранить" severity=ButtonSeverity::Success /> }).collect_view()
+                }}
+            </div>
+            <button type="button" data-testid="bench-buttons-live-mount" on:click=move |_| buttons_live.set(1000)>
+                "Показать 1000 кнопок (сигнал)"
+            </button>
+            <button type="button" data-testid="bench-buttons-live-clear" on:click=move |_| buttons_live.set(0)>
+                "Убрать кнопки (сигнал)"
+            </button>
+            <div data-testid="bench-buttons-live-area" data-count=move || buttons_live.get().to_string()>
+                {move || {
+                    (0..buttons_live.get())
+                        .map(|_| view! { <Button label="Сохранить" severity=ButtonSeverity::Success loading=live_loading /> })
+                        .collect_view()
                 }}
             </div>
             <button type="button" data-testid="bench-badges-mount" on:click=move |_| badges.set(1000)>

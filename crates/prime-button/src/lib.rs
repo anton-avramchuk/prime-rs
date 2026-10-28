@@ -15,11 +15,12 @@
 
 mod state;
 
+use leptos::either::Either;
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgePt, BadgeSeverity};
 #[cfg(target_arch = "wasm32")]
 use prime_core::use_prime_config;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size};
+use prime_core::{ClassNames, OptProp, Prop, Pt, Size, all_static};
 #[cfg(target_arch = "wasm32")]
 use prime_dom::Ripple;
 use prime_icons::SpinnerIcon;
@@ -195,11 +196,8 @@ pub fn Button(
     let pt = Arc::new(pt.unwrap_or_default());
     let has_children = children.is_some();
     let content = children.map(|c| c());
-    let has_icon = icon.is_some() || loading_icon.is_some();
     let badge_severity = badge_severity_or_default(&badge_severity);
-
-    // Все свойства в одном `Arc`: замыкания атрибутов клонируют счётчик ссылок, а не строки значений.
-    let props = Arc::new(Props {
+    let is_static = all_static!(
         label,
         badge,
         loading,
@@ -220,157 +218,266 @@ pub fn Button(
         tabindex,
         style,
         style_class,
-        has_icon,
-    });
+        badge_severity
+    );
+    let has_icon = icon.is_some() || loading_icon.is_some();
 
-    let class = {
-        let (props, pt) = (props.clone(), pt.clone());
-        move || {
-            let mut cn = ClassNames::new();
-            props.with_state(|s| write_root_classes(&mut cn, s));
-            cn.add("p-ripple");
-            props.style_class.with(|c| cn.add_opt(c.as_deref()));
-            cn.add_opt(pt.root.extra_class());
-            cn.finish()
-        }
-    };
-    let data_attr = {
-        let props = props.clone();
-        move || props.with_state(root_data_p)
-    };
-    let root_style = {
-        let (props, pt) = (props.clone(), pt.clone());
-        move || props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
-    };
-    let type_attr = {
-        let props = props.clone();
-        move || -> Cow<'static, str> {
-            props.button_type.with(|t| t.as_deref().map_or(Cow::Borrowed("button"), |s| Cow::Owned(s.to_owned())))
-        }
-    };
-    let aria_attr = {
-        let props = props.clone();
-        move || props.aria_label.get()
-    };
-    let tabindex_attr = {
-        let props = props.clone();
-        move || props.tabindex.get()
-    };
-    let disabled_attr = {
-        let props = props.clone();
-        move || props.is_disabled()
-    };
-    let data_disabled = {
-        let props = props.clone();
-        move || props.is_disabled().then_some("true")
-    };
-    let severity_attr = {
-        let props = props.clone();
-        move || props.severity.get().map(ButtonSeverity::as_str)
-    };
+    // Все свойства в одном `Arc`: замыкания атрибутов клонируют счётчик ссылок, а не строки значений.
+    let props = Arc::new(Props {
+        label,
+        badge,
+        badge_severity,
+        loading,
+        severity,
+        variant,
+        size,
+        icon_pos,
+        text,
+        outlined,
+        plain,
+        link,
+        raised,
+        rounded,
+        fluid,
+        disabled,
+        button_type,
+        aria_label,
+        tabindex,
+        style,
+        style_class,
+        icon,
+        loading_icon,
+        has_icon,
+        has_children,
+    });
 
     let node = NodeRef::<leptos::html::Button>::new();
     setup_client(node, autofocus);
 
-    let indicator = {
-        let (props, pt) = (props.clone(), pt.clone());
-        move || -> AnyView {
-            if props.loading.get() {
-                match loading_icon.clone() {
-                    Some(custom) => view! {
-                        <span class=pt.loading_icon.merge_class("p-button-loading-icon") aria-hidden="true" {..pt.loading_icon.attrs()}>
-                            {custom.run()}
-                        </span>
-                    }
-                    .into_any(),
-                    None => view! {
-                        <SpinnerIcon spin=true class=pt.loading_icon.merge_class("p-button-loading-icon") {..pt.loading_icon.attrs()} />
-                    }
-                    .into_any(),
-                }
-            } else if let Some(icon) = icon.clone() {
-                let (class, data) = props.with_state(|s| (icon_classes(s), icon_data_p(s)));
-                view! {
-                    <span class=pt.icon.merge_class(&class) data-p={data} {..pt.icon.attrs()}>
-                        {icon.run()}
-                    </span>
-                }
-                .into_any()
-            } else {
-                ().into_any()
-            }
-        }
-    };
-
-    let label_view = {
-        let (props, pt) = (props.clone(), pt.clone());
-        move || {
-            if has_children {
-                return None;
-            }
-            let data = props.with_state(|s| s.has_label().then(|| label_data_p(s)))?;
-            Some(view! {
-                <span class=pt.label.merge_class("p-button-label") data-p={data} {..pt.label.attrs()}>
-                    {props.label.get()}
-                </span>
-            })
-        }
-    };
-
-    let badge_view = {
-        let (props, pt) = (props.clone(), pt.clone());
-        move || {
-            let present = !has_children && props.with_state(|s| s.has_badge());
-            present.then(|| {
-                view! { <Badge value=props.badge.clone() severity=badge_severity.clone() pt=BadgePt { root: pt.badge.clone() } /> }
-            })
-        }
-    };
-
     let click_props = props.clone();
-    let root_attrs = pt.root.attrs();
+    let click = move |e: web_sys::MouseEvent| {
+        if let (Some(cb), false) = (on_click, click_props.is_disabled()) {
+            cb.run(e);
+        }
+    };
+    let focus = move |e: web_sys::FocusEvent| {
+        if let Some(cb) = on_focus {
+            cb.run(e);
+        }
+    };
+    let blur = move |e: web_sys::FocusEvent| {
+        if let Some(cb) = on_blur {
+            cb.run(e);
+        }
+    };
+    let attrs = pt.root.attrs();
 
-    view! {
-        <button
-            type=type_attr
-            class=class
-            style=root_style
-            aria-label=aria_attr
-            tabindex=tabindex_attr
-            disabled=disabled_attr
-            node_ref=node
-            on:click=move |e| {
-                if let (Some(cb), false) = (on_click, click_props.is_disabled()) {
-                    cb.run(e);
-                }
-            }
-            on:focus=move |e| {
-                if let Some(cb) = on_focus {
-                    cb.run(e);
-                }
-            }
-            on:blur=move |e| {
-                if let Some(cb) = on_blur {
-                    cb.run(e);
-                }
-            }
-            data-p={data_attr}
-            data-p-disabled=data_disabled
-            data-p-severity={severity_attr}
-            {..root_attrs}
-        >
-            {content}
-            {indicator}
-            {label_view}
-            {badge_view}
-        </button>
+    if is_static {
+        // Статический путь: значения и блоки считаются один раз, замыканий и `RenderEffect` нет.
+        let (class, style, data) = (class_of(&props, &pt), style_of(&props, &pt), data_of(&props));
+        let (ty, aria, tab, disabled) = (type_of(&props), props.aria_label.get(), props.tabindex.get(), props.is_disabled());
+        let (data_disabled, data_severity) = (disabled.then_some("true"), props.severity.get().map(ButtonSeverity::as_str));
+        let (indicator, label, badge) = (indicator_of(&props, &pt), label_of(&props, &pt), badge_of(&props, &pt));
+        Either::Left(button_markup!(
+            ty,
+            class,
+            style,
+            aria,
+            tab,
+            disabled,
+            node,
+            click,
+            focus,
+            blur,
+            data,
+            data_disabled,
+            data_severity,
+            attrs,
+            content,
+            indicator,
+            label,
+            badge
+        ))
+    } else {
+        let class = {
+            let (props, pt) = (props.clone(), pt.clone());
+            move || class_of(&props, &pt)
+        };
+        let style = {
+            let (props, pt) = (props.clone(), pt.clone());
+            move || style_of(&props, &pt)
+        };
+        let data = {
+            let props = props.clone();
+            move || data_of(&props)
+        };
+        let ty = {
+            let props = props.clone();
+            move || type_of(&props)
+        };
+        let aria = {
+            let props = props.clone();
+            move || props.aria_label.get()
+        };
+        let tab = {
+            let props = props.clone();
+            move || props.tabindex.get()
+        };
+        let disabled = {
+            let props = props.clone();
+            move || props.is_disabled()
+        };
+        let data_disabled = {
+            let props = props.clone();
+            move || props.is_disabled().then_some("true")
+        };
+        let data_severity = {
+            let props = props.clone();
+            move || props.severity.get().map(ButtonSeverity::as_str)
+        };
+        let indicator = {
+            let (props, pt) = (props.clone(), pt.clone());
+            move || indicator_of(&props, &pt)
+        };
+        let label = {
+            let (props, pt) = (props.clone(), pt.clone());
+            move || label_of(&props, &pt)
+        };
+        let badge = move || badge_of(&props, &pt);
+        Either::Right(button_markup!(
+            ty,
+            class,
+            style,
+            aria,
+            tab,
+            disabled,
+            node,
+            click,
+            focus,
+            blur,
+            data,
+            data_disabled,
+            data_severity,
+            attrs,
+            content,
+            indicator,
+            label,
+            badge
+        ))
     }
+}
+
+/// Разметка Button: одна для статической и реактивной ветвей (меняются только выражения атрибутов и блоков).
+macro_rules! button_markup {
+    (
+        $ty:expr, $class:expr, $style:expr, $aria:expr, $tab:expr, $disabled:expr, $node:expr, $click:expr, $focus:expr, $blur:expr,
+        $data:expr, $data_disabled:expr, $data_severity:expr, $attrs:expr, $content:expr, $indicator:expr, $label:expr, $badge:expr
+    ) => {
+        view! {
+            <button
+                type={$ty}
+                class={$class}
+                style={$style}
+                aria-label={$aria}
+                tabindex={$tab}
+                disabled={$disabled}
+                node_ref={$node}
+                on:click={$click}
+                on:focus={$focus}
+                on:blur={$blur}
+                data-p={$data}
+                data-p-disabled={$data_disabled}
+                data-p-severity={$data_severity}
+                {..$attrs}
+            >
+                {$content}
+                {$indicator}
+                {$label}
+                {$badge}
+            </button>
+        }
+    };
+}
+use button_markup;
+
+fn class_of(props: &Props, pt: &ButtonPt) -> String {
+    let mut cn = ClassNames::new();
+    props.with_state(|s| write_root_classes(&mut cn, s));
+    cn.add("p-ripple");
+    props.style_class.with(|c| cn.add_opt(c.as_deref()));
+    cn.add_opt(pt.root.extra_class());
+    cn.finish()
+}
+
+fn style_of(props: &Props, pt: &ButtonPt) -> Option<String> {
+    props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
+}
+
+fn data_of(props: &Props) -> String {
+    props.with_state(root_data_p)
+}
+
+fn type_of(props: &Props) -> Cow<'static, str> {
+    props.button_type.with(|t| t.as_deref().map_or(Cow::Borrowed("button"), |s| Cow::Owned(s.to_owned())))
+}
+
+/// Иконка или индикатор загрузки.
+fn indicator_of(props: &Props, pt: &ButtonPt) -> AnyView {
+    if props.loading.get() {
+        match props.loading_icon.clone() {
+            Some(custom) => view! {
+                <span class=pt.loading_icon.merge_class("p-button-loading-icon") aria-hidden="true" {..pt.loading_icon.attrs()}>
+                    {custom.run()}
+                </span>
+            }
+            .into_any(),
+            None => {
+                view! { <SpinnerIcon spin=true class=pt.loading_icon.merge_class("p-button-loading-icon") {..pt.loading_icon.attrs()} /> }
+                    .into_any()
+            }
+        }
+    } else if let Some(icon) = props.icon.clone() {
+        let (class, data) = props.with_state(|s| (icon_classes(s), icon_data_p(s)));
+        view! {
+            <span class=pt.icon.merge_class(&class) data-p={data} {..pt.icon.attrs()}>
+                {icon.run()}
+            </span>
+        }
+        .into_any()
+    } else {
+        ().into_any()
+    }
+}
+
+/// Метка (`None`, если есть `children` или метка пуста).
+fn label_of(props: &Props, pt: &ButtonPt) -> Option<AnyView> {
+    if props.has_children {
+        return None;
+    }
+    let data = props.with_state(|s| s.has_label().then(|| label_data_p(s)))?;
+    Some(
+        view! {
+            <span class=pt.label.merge_class("p-button-label") data-p={data} {..pt.label.attrs()}>
+                {props.label.get()}
+            </span>
+        }
+        .into_any(),
+    )
+}
+
+/// Бейдж (`None`, если есть `children` или бейдж пуст).
+fn badge_of(props: &Props, pt: &ButtonPt) -> Option<AnyView> {
+    let present = !props.has_children && props.with_state(|s| s.has_badge());
+    present.then(|| {
+        view! { <Badge value=props.badge.clone() severity=props.badge_severity.clone() pt=BadgePt { root: pt.badge.clone() } /> }.into_any()
+    })
 }
 
 /// Свойства экземпляра.
 struct Props {
     label: OptProp<String>,
     badge: OptProp<String>,
+    badge_severity: OptProp<BadgeSeverity>,
     loading: Prop<bool>,
     severity: OptProp<ButtonSeverity>,
     variant: OptProp<ButtonVariant>,
@@ -389,7 +496,10 @@ struct Props {
     tabindex: OptProp<i32>,
     style: OptProp<String>,
     style_class: OptProp<String>,
+    icon: Option<ViewFn>,
+    loading_icon: Option<ViewFn>,
     has_icon: bool,
+    has_children: bool,
 }
 
 impl Props {
