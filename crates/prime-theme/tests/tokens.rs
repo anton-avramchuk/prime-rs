@@ -1,6 +1,6 @@
 //! Сверка сгенерированного CSS с токенами Aura и проверка выборочной загрузки стилей компонентов.
 
-use prime_theme::{BASE, DARK_MODE_SELECTOR, component, stylesheet};
+use prime_theme::{BASE, DARK_MODE_SELECTOR};
 
 fn var<'a>(css: &'a str, name: &str) -> Option<&'a str> {
     let key = format!("{name}:");
@@ -31,6 +31,7 @@ fn base_contains_primeng_helper_classes() {
 #[cfg(all(feature = "button", feature = "badge", not(feature = "card")))]
 #[test]
 fn only_requested_component_css_is_included() {
+    use prime_theme::{component, stylesheet};
     let css = stylesheet(&["button"]);
     assert!(css.starts_with(BASE));
     assert!(css.contains(".p-button"));
