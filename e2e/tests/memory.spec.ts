@@ -19,6 +19,8 @@ const save = (metrics: Record<string, number>) => {
 
 for (const scenario of [
     { name: 'icons', mount: 'bench-mount', clear: 'bench-clear', area: 'bench-area', selector: '[data-testid=bench-area] svg', label: '1000 иконок' },
+    { name: 'badges', mount: 'bench-badges-mount', clear: 'bench-badges-clear', area: 'bench-badges-area', selector: '[data-testid=bench-badges-area] .p-badge', label: '1000 бейджей' },
+    { name: 'badges-live', mount: 'bench-badges-live-mount', clear: 'bench-badges-live-clear', area: 'bench-badges-live-area', selector: '[data-testid=bench-badges-live-area] .p-badge', label: '1000 бейджей (сигнал)' },
     { name: 'buttons', mount: 'bench-buttons-mount', clear: 'bench-buttons-clear', area: 'bench-buttons-area', selector: '[data-testid=bench-buttons-area] button', label: '1000 кнопок' }
 ]) {
     test(`память и время: ${scenario.label}, создание и удаление в цикле`, async ({ page }) => {

@@ -1,6 +1,7 @@
 //! Главная: иконки и сценарий для замеров памяти.
 
 use leptos::prelude::*;
+use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
 use prime_icons::AllIcons;
 
@@ -9,6 +10,10 @@ use prime_icons::AllIcons;
 fn Bench() -> impl IntoView {
     let count = RwSignal::new(0usize);
     let buttons = RwSignal::new(0usize);
+    let badges = RwSignal::new(0usize);
+    let badges_live = RwSignal::new(0usize);
+    // значение бейджа передаётся сигналом: реактивный путь
+    let live_value = RwSignal::new(Some("5".to_owned()));
     view! {
         <section>
             <h2>"Замеры"</h2>
@@ -30,6 +35,28 @@ fn Bench() -> impl IntoView {
             <div data-testid="bench-buttons-area" data-count=move || buttons.get().to_string()>
                 {move || {
                     (0..buttons.get()).map(|_| view! { <Button label="Сохранить" severity=ButtonSeverity::Success /> }).collect_view()
+                }}
+            </div>
+            <button type="button" data-testid="bench-badges-mount" on:click=move |_| badges.set(1000)>
+                "Показать 1000 бейджей"
+            </button>
+            <button type="button" data-testid="bench-badges-clear" on:click=move |_| badges.set(0)>
+                "Убрать бейджи"
+            </button>
+            <div data-testid="bench-badges-area" data-count=move || badges.get().to_string()>
+                {move || (0..badges.get()).map(|_| view! { <Badge value="5" severity=BadgeSeverity::Danger /> }).collect_view()}
+            </div>
+            <button type="button" data-testid="bench-badges-live-mount" on:click=move |_| badges_live.set(1000)>
+                "Показать 1000 бейджей (сигнал)"
+            </button>
+            <button type="button" data-testid="bench-badges-live-clear" on:click=move |_| badges_live.set(0)>
+                "Убрать бейджи (сигнал)"
+            </button>
+            <div data-testid="bench-badges-live-area" data-count=move || badges_live.get().to_string()>
+                {move || {
+                    (0..badges_live.get())
+                        .map(|_| view! { <Badge value=live_value severity=BadgeSeverity::Danger /> })
+                        .collect_view()
                 }}
             </div>
         </section>

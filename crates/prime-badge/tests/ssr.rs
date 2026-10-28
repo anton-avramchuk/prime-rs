@@ -77,3 +77,29 @@ fn static_and_reactive_props_render_identically() {
         assert_eq!(fixed, live);
     });
 }
+
+#[test]
+fn parity_table_static_vs_reactive() {
+    type Case = (Option<&'static str>, Option<BadgeSeverity>, Option<BadgeSize>, bool, Option<&'static str>);
+    let cases: Vec<Case> = vec![
+        (None, None, None, false, None),
+        (Some("5"), None, None, false, None),
+        (Some("New"), Some(BadgeSeverity::Success), None, false, None),
+        (Some(""), None, Some(BadgeSize::Small), false, None),
+        (Some("12"), Some(BadgeSeverity::Danger), Some(BadgeSize::XLarge), true, Some("custom")),
+        (Some("я"), Some(BadgeSeverity::Contrast), Some(BadgeSize::Large), false, Some("a b")),
+    ];
+    let owner = Owner::new();
+    owner.with(|| {
+        for (value, severity, size, disabled, class) in cases {
+            let fixed = view! {
+                <Badge value=value.map(str::to_owned) severity=severity size=size badge_disabled=disabled style_class=class.map(str::to_owned) />
+            }
+            .to_html();
+            let (v, sv, sz) = (RwSignal::new(value.map(str::to_owned)), RwSignal::new(severity), RwSignal::new(size));
+            let (d, c) = (RwSignal::new(disabled), RwSignal::new(class.map(str::to_owned)));
+            let live = view! { <Badge value=v severity=sv size=sz badge_disabled=d style_class=c /> }.to_html();
+            assert_eq!(fixed, live, "{value:?} {severity:?} {size:?} {disabled} {class:?}");
+        }
+    });
+}

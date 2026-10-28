@@ -15,8 +15,9 @@
 
 mod state;
 
+use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt};
+use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
 use std::sync::Arc;
 
 pub use state::{BadgeSeverity, BadgeSize, BadgeState, classes, data_p, write_classes};
@@ -53,41 +54,60 @@ pub fn Badge(
     pt: Option<BadgePt>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default().root);
+    let is_static = all_static!(value, severity, size, badge_disabled, style_class);
     // Все свойства в одном `Arc`: замыкания атрибутов клонируют счётчик ссылок, а не строки значений.
     let props = Arc::new(Props { value, severity, size, disabled: badge_disabled, style_class });
-
-    let class = {
-        let (props, pt) = (props.clone(), pt.clone());
-        move || {
-            let mut cn = ClassNames::new();
-            props.with_state(|s| write_classes(&mut cn, s));
-            props.style_class.with(|c| cn.add_opt(c.as_deref()));
-            cn.add_opt(pt.extra_class());
-            cn.finish()
-        }
-    };
-    let data_attr = {
-        let props = props.clone();
-        move || props.with_state(data_p)
-    };
-    let style = {
-        let (props, pt) = (props.clone(), pt.clone());
-        move || {
-            let hidden = props.disabled.get();
-            (hidden || pt.has_style()).then(|| pt.merge_style(if hidden { "display: none" } else { "" }))
-        }
-    };
-    let text = {
-        let props = props.clone();
-        move || props.value.get()
-    };
     let attrs = pt.attrs();
 
-    view! {
-        <span class=class style=style data-p={data_attr} {..attrs}>
-            {text}
-        </span>
+    if is_static {
+        // Статический путь: значения считаются один раз, замыканий и `RenderEffect` нет.
+        let (class, style, data, text) = (class_of(&props, &pt), style_of(&props, &pt), data_of(&props), props.value.get());
+        Either::Left(badge_markup!(class, style, data, text, attrs))
+    } else {
+        let class = {
+            let (props, pt) = (props.clone(), pt.clone());
+            move || class_of(&props, &pt)
+        };
+        let style = {
+            let (props, pt) = (props.clone(), pt.clone());
+            move || style_of(&props, &pt)
+        };
+        let data = {
+            let props = props.clone();
+            move || data_of(&props)
+        };
+        let text = move || props.value.get();
+        Either::Right(badge_markup!(class, style, data, text, attrs))
     }
+}
+
+/// Разметка Badge: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+macro_rules! badge_markup {
+    ($class:expr, $style:expr, $data:expr, $text:expr, $attrs:expr) => {
+        view! {
+            <span class={$class} style={$style} data-p={$data} {..$attrs}>
+                {$text}
+            </span>
+        }
+    };
+}
+use badge_markup;
+
+fn class_of(props: &Props, pt: &Pt) -> String {
+    let mut cn = ClassNames::new();
+    props.with_state(|s| write_classes(&mut cn, s));
+    props.style_class.with(|c| cn.add_opt(c.as_deref()));
+    cn.add_opt(pt.extra_class());
+    cn.finish()
+}
+
+fn style_of(props: &Props, pt: &Pt) -> Option<String> {
+    let hidden = props.disabled.get();
+    (hidden || pt.has_style()).then(|| pt.merge_style(if hidden { "display: none" } else { "" }))
+}
+
+fn data_of(props: &Props) -> String {
+    props.with_state(data_p)
 }
 
 /// Свойства экземпляра.
