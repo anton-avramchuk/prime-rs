@@ -27,7 +27,7 @@
 
 ## 6. Интеграция
 
-- [ ] 6.1 Обновить `docs/benchmarks.md` и `docs/button.md` (новые значения аллокаций и шаблон `Prop` и вывод про атрибуты-замыкания для следующих компонентов); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate optimize-reactive-props`; убедиться, что CI на `dev` зелёный
+- [x] 6.1 Обновить `docs/benchmarks.md` и `docs/button.md` (новые значения аллокаций и шаблон `Prop` и вывод про атрибуты-замыкания для следующих компонентов); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate optimize-reactive-props`; убедиться, что CI на `dev` зелёный
 
 ## Workflow follow-up
 
