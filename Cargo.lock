@@ -1693,6 +1693,7 @@ version = "0.1.0"
 dependencies = [
  "dhat",
  "leptos",
+ "web-sys",
 ]
 
 [[package]]
@@ -1734,6 +1735,20 @@ dependencies = [
 
 [[package]]
 name = "prime-message"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
+name = "prime-panel"
 version = "0.1.0"
 dependencies = [
  "js-sys",
@@ -2026,6 +2041,7 @@ dependencies = [
  "prime-icons",
  "prime-inputtext",
  "prime-message",
+ "prime-panel",
  "prime-progressbar",
  "prime-radiobutton",
  "prime-skeleton",
@@ -2332,6 +2348,7 @@ dependencies = [
  "prime-icons",
  "prime-inputtext",
  "prime-message",
+ "prime-panel",
  "prime-progressbar",
  "prime-radiobutton",
  "prime-skeleton",
@@ -2982,6 +2999,7 @@ dependencies = [
  "prime-icons",
  "prime-inputtext",
  "prime-message",
+ "prime-panel",
  "prime-progressbar",
  "prime-radiobutton",
  "prime-skeleton",

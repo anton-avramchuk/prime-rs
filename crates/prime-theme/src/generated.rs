@@ -36,6 +36,10 @@ pub const INPUTTEXT: &str = include_str!("../css/components/inputtext.css");
 #[cfg(feature = "message")]
 pub const MESSAGE: &str = include_str!("../css/components/message.css");
 
+/// CSS компонента `panel`.
+#[cfg(feature = "panel")]
+pub const PANEL: &str = include_str!("../css/components/panel.css");
+
 /// CSS компонента `progressbar`.
 #[cfg(feature = "progressbar")]
 pub const PROGRESSBAR: &str = include_str!("../css/components/progressbar.css");
@@ -80,6 +84,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("inputtext", INPUTTEXT),
     #[cfg(feature = "message")]
     ("message", MESSAGE),
+    #[cfg(feature = "panel")]
+    ("panel", PANEL),
     #[cfg(feature = "progressbar")]
     ("progressbar", PROGRESSBAR),
     #[cfg(feature = "radiobutton")]

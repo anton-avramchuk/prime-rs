@@ -36,6 +36,7 @@ prime-avatargroup = { path = "crates/prime-avatargroup" }
 prime-skeleton = { path = "crates/prime-skeleton" }
 prime-progressbar = { path = "crates/prime-progressbar" }
 prime-message = { path = "crates/prime-message" }
+prime-panel = { path = "crates/prime-panel" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

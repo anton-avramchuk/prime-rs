@@ -92,3 +92,13 @@ max_per_instance = 8
 name = "textarea-1000"
 instances = 1000
 max_per_instance = 12
+
+[[scenario]]
+name = "panel-1000"
+instances = 1000
+max_per_instance = 70
+
+[[scenario]]
+name = "panel-plain-1000"
+instances = 1000
+max_per_instance = 48

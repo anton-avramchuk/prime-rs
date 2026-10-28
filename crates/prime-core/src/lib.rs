@@ -3,6 +3,7 @@
 //! Компоненты зависят от этого крейта и не дублируют его код.
 
 pub mod class_names;
+pub mod collapsible;
 pub mod config;
 pub mod data_p;
 pub mod prop;

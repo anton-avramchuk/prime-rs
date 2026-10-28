@@ -579,5 +579,26 @@
     "upstream": "/textarea",
     "oursSelector": "[data-demo=\"fluid\"]",
     "upstreamSelector": "fluid-doc .card"
+  },
+  {
+    "name": "panel-basic",
+    "ours": "/panel",
+    "upstream": "/panel",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "panel-toggleable",
+    "ours": "/panel",
+    "upstream": "/panel",
+    "oursSelector": "[data-demo=\"toggleable\"]",
+    "upstreamSelector": "toggleable-doc .card"
+  },
+  {
+    "name": "panel-template",
+    "ours": "/panel",
+    "upstream": "/panel",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

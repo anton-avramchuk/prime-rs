@@ -15,6 +15,7 @@ use prime_divider::{Divider, DividerAlign};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_inputtext::InputText;
 use prime_message::{Message, MessageSeverity};
+use prime_panel::Panel;
 use prime_progressbar::ProgressBar;
 use prime_radiobutton::RadioButton;
 use prime_skeleton::{Skeleton, SkeletonShape};
@@ -111,6 +112,14 @@ fn textarea_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Textarea rows=3u32 placeholder="Text" /> }).collect_view())
 }
 
+fn panel_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Panel header="Header" toggleable=true><p>"Content"</p></Panel> }).collect_view())
+}
+
+fn panel_plain_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Panel header="Header"><p>"Content"</p></Panel> }).collect_view())
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -154,6 +163,9 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "skeleton-1000", run: || skeleton_n(1000) },
     Scenario { name: "textarea-1", run: || textarea_n(1) },
     Scenario { name: "textarea-1000", run: || textarea_n(1000) },
+    Scenario { name: "panel-1", run: || panel_n(1) },
+    Scenario { name: "panel-1000", run: || panel_n(1000) },
+    Scenario { name: "panel-plain-1000", run: || panel_plain_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

@@ -95,3 +95,8 @@ max_delta_bytes = 105000
 name = "textarea"
 feature = "case-textarea"
 max_delta_bytes = 300000
+
+[[case]]
+name = "panel"
+feature = "case-panel"
+max_delta_bytes = 270000

@@ -100,8 +100,8 @@ jobs:
   wasm:
     name: Браузерные тесты (wasm-bindgen-test)
     needs: changes
-    # Браузерные тесты нужны при полном прогоне или если затронут крейт с тестами `web` (prime-dom, prime-button, prime-chip, prime-avatar, prime-inputtext, prime-checkbox, prime-radiobutton, prime-toggleswitch, prime-message, prime-textarea).
-    if: needs.changes.outputs.all == 'true' || contains(needs.changes.outputs.args, 'prime-dom') || contains(needs.changes.outputs.args, 'prime-button') || contains(needs.changes.outputs.args, 'prime-chip') || contains(needs.changes.outputs.args, 'prime-avatar') || contains(needs.changes.outputs.args, 'prime-inputtext') || contains(needs.changes.outputs.args, 'prime-checkbox') || contains(needs.changes.outputs.args, 'prime-radiobutton') || contains(needs.changes.outputs.args, 'prime-toggleswitch') || contains(needs.changes.outputs.args, 'prime-message') || contains(needs.changes.outputs.args, 'prime-textarea')
+    # Браузерные тесты нужны при полном прогоне или если затронут крейт с тестами `web` (prime-dom, prime-button, prime-chip, prime-avatar, prime-inputtext, prime-checkbox, prime-radiobutton, prime-toggleswitch, prime-message, prime-textarea, prime-panel).
+    if: needs.changes.outputs.all == 'true' || contains(needs.changes.outputs.args, 'prime-dom') || contains(needs.changes.outputs.args, 'prime-button') || contains(needs.changes.outputs.args, 'prime-chip') || contains(needs.changes.outputs.args, 'prime-avatar') || contains(needs.changes.outputs.args, 'prime-inputtext') || contains(needs.changes.outputs.args, 'prime-checkbox') || contains(needs.changes.outputs.args, 'prime-radiobutton') || contains(needs.changes.outputs.args, 'prime-toggleswitch') || contains(needs.changes.outputs.args, 'prime-message') || contains(needs.changes.outputs.args, 'prime-textarea') || contains(needs.changes.outputs.args, 'prime-panel')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -122,7 +122,7 @@ jobs:
         run: |
           export CHROMEDRIVER="$CHROMEWEBDRIVER/chromedriver"
           pkgs=""
-          for c in prime-dom prime-button prime-chip prime-avatar prime-inputtext prime-checkbox prime-radiobutton prime-toggleswitch prime-message prime-textarea; do
+          for c in prime-dom prime-button prime-chip prime-avatar prime-inputtext prime-checkbox prime-radiobutton prime-toggleswitch prime-message prime-textarea prime-panel; do
             if [ "${{ needs.changes.outputs.all }}" = "true" ] || echo "${{ needs.changes.outputs.args }}" | grep -qw -- "$c"; then pkgs="$pkgs -p $c"; fi
           done
           cargo test $pkgs --target wasm32-unknown-unknown --test web

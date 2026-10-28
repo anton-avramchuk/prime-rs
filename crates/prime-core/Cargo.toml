@@ -15,6 +15,9 @@ hydrate = ["leptos/hydrate"]
 [dependencies]
 leptos = { workspace = true }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+web-sys = { workspace = true, features = ["Element", "HtmlElement", "CssStyleDeclaration", "DomTokenList", "NodeList", "EventTarget"] }
+
 [dev-dependencies]
 dhat = { workspace = true }
 
