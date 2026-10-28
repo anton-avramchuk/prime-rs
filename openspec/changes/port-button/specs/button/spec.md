@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Свойства Button
-Компонент `Button` крейта `prime-button` SHALL принимать те же свойства, что и `p-button` в PrimeNG 21.1.10: `label`, `icon`, `icon_pos` (`left`, `right`, `top`, `bottom`, по умолчанию `left`), `loading`, `loading_icon`, `severity` (`secondary`, `success`, `info`, `warn`, `help`, `danger`, `contrast`), `variant` (`outlined`, `text`), `outlined`, `text`, `plain`, `link`, `raised`, `rounded`, `size` (`small`, `large`), `fluid`, `badge`, `badge_severity` (по умолчанию `secondary`), `disabled`, `type` (по умолчанию `button`), `aria_label`, `tabindex`, `autofocus`, `style`, `style_class`. Содержимое передаётся через `children`. Все свойства необязательны, изменяемые во время работы SHALL быть реактивными.
+Компонент `Button` крейта `prime-button` SHALL принимать те же свойства, что и `p-button` в PrimeNG 21.1.10: `label`, `icon`, `icon_pos` (`left`, `right`, `top`, `bottom`, по умолчанию `left`), `loading`, `loading_icon`, `severity` (`secondary`, `success`, `info`, `warn`, `help`, `danger`, `contrast`), `variant` (`outlined`, `text`), `outlined`, `text`, `plain`, `link`, `raised`, `rounded`, `size` (`small`, `large`), `fluid`, `badge`, `badge_severity` (по умолчанию `secondary`), `disabled`, `button_type` (атрибут `type`, по умолчанию `button`), `aria_label`, `tabindex`, `autofocus`, `style`, `style_class`. Содержимое передаётся через `children`. Все свойства необязательны, изменяемые во время работы SHALL быть реактивными.
 
 #### Scenario: Кнопка по умолчанию
 - **WHEN** `Button` отрисован без свойств
@@ -46,7 +46,7 @@
 - **THEN** у кнопки атрибут `disabled`, `data-p-disabled="true"` и она не вызывает `on_click`
 
 ### Requirement: Иконка, метка, бейдж и содержимое
-Иконка (`icon`: содержимое Leptos) SHALL отображаться в `<span>` с классом `p-button-icon` и модификатором позиции (`p-button-icon-left`, `-right`, `-top`, `-bottom`; для кнопки без метки модификатора позиции нет). Метка SHALL иметь `aria-hidden="true"`, если есть иконка и нет метки. Если заданы `badge` и нет `children`, SHALL отрисовываться `Badge` с `value = badge` и `severity = badge_severity`. `children`, если заданы, SHALL выводиться первыми, как проецируемое содержимое в PrimeNG; в этом случае метка и бейдж не отображаются.
+Иконка (`icon`: содержимое Leptos) SHALL отображаться в `<span>` с классом `p-button-icon` и модификатором позиции (`p-button-icon-left`, `-right`, `-top`, `-bottom`; для кнопки без метки модификатора позиции нет). Если заданы `badge` и нет `children`, SHALL отрисовываться `Badge` с `value = badge` и `severity = badge_severity`. `children`, если заданы, SHALL выводиться первыми, как проецируемое содержимое в PrimeNG; в этом случае метка и бейдж не отображаются.
 
 #### Scenario: Позиция иконки
 - **WHEN** `icon_pos = right`, заданы иконка и метка

@@ -1,0 +1,34 @@
+[package]
+name = "prime-button"
+description = "prime-rs: компонент Button (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-dom/ssr", "prime-icons/ssr", "prime-badge/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-dom/hydrate", "prime-icons/hydrate", "prime-badge/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-dom = { workspace = true }
+prime-icons = { workspace = true, features = ["spinner"] }
+prime-badge = { workspace = true }
+web-sys = { workspace = true, features = ["HtmlElement", "MouseEvent", "FocusEvent"] }
+
+[dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+prime-icons = { workspace = true, features = ["spinner", "check"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "MouseEvent", "MouseEventInit", "FocusEvent", "HtmlCollection", "DomTokenList"] }
+
+[lints]
+workspace = true

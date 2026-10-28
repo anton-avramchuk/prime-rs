@@ -73,4 +73,4 @@
 
 ## Open Questions
 
-- Как называть поле `type` в Rust (`r#type` или `button_type`)? Решается при реализации, на спеку не влияет (в DOM остаётся атрибут `type`).
+Нет. Поле `type` названо `button_type` (атрибут в DOM остаётся `type`). Метка с `aria-hidden` из PrimeNG (`icon && !label`) в Leptos не нужна: `span.p-button-label` выводится только при непустой метке.

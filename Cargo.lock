@@ -1619,6 +1619,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-button"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-badge",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-core"
 version = "0.1.0"
 dependencies = [

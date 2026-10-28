@@ -15,11 +15,11 @@
 
 ## 3. Button: логика и разметка
 
-- [ ] 3.1 Создать крейт `crates/prime-button` (`publish = false`, features `ssr`/`hydrate`, зависимости по D7); проверить `cargo check -p prime-button --all-features`
-- [ ] 3.2 Реализовать `ButtonState` и чистые функции классов и `data-p*` по `buttonstyle.ts` и `button.ts`; проверить таблицей юнит-тестов по всем модификаторам спеки (`icon-only`, `vertical`, `loading`, `text`/`outlined` из `variant`, размеры, `fluid`, серьёзности)
-- [ ] 3.3 Реализовать компонент `Button`: `<button>`, `children`, иконка, загрузочный индикатор, метка, `Badge`, `disabled` при `loading`, `aria-hidden` метки; проверить SSR-тестами порядка узлов и всех сценариев раздела «Иконка, метка, бейдж и содержимое»
-- [ ] 3.4 Реализовать `ButtonPt` и применение `pt` ко всем частям, `style_class`, `style`, `aria_label`, `tabindex`, `type`; проверить SSR-тестами сценариев `pt`, пользовательского класса и стиля, a11y-атрибутов
-- [ ] 3.5 Задокументировать API `Button` (rustdoc с примерами) и проверить `cargo test --doc -p prime-button`
+- [x] 3.1 Создать крейт `crates/prime-button` (`publish = false`, features `ssr`/`hydrate`, зависимости по D7); проверить `cargo check -p prime-button --all-features`
+- [x] 3.2 Реализовать `ButtonState` и чистые функции классов и `data-p*` по `buttonstyle.ts` и `button.ts`; проверить таблицей юнит-тестов по всем модификаторам спеки (`icon-only`, `vertical`, `loading`, `text`/`outlined` из `variant`, размеры, `fluid`, серьёзности)
+- [x] 3.3 Реализовать компонент `Button`: `<button>`, `children`, иконка, загрузочный индикатор, метка, `Badge`, `disabled` при `loading`, `aria-hidden` метки; проверить SSR-тестами порядка узлов и всех сценариев раздела «Иконка, метка, бейдж и содержимое»
+- [x] 3.4 Реализовать `ButtonPt` и применение `pt` ко всем частям, `style_class`, `style`, `aria_label`, `tabindex`, `type`; проверить SSR-тестами сценариев `pt`, пользовательского класса и стиля, a11y-атрибутов
+- [x] 3.5 Задокументировать API `Button` (rustdoc с примерами) и проверить `cargo test --doc -p prime-button`
 
 ## 4. Button: поведение в браузере
 
