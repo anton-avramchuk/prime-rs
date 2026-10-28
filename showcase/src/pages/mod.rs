@@ -1,11 +1,13 @@
 //! Страницы showcase: по странице на компонент и общая оболочка демонстрации.
 
+mod avatar;
 mod badge;
 mod button;
 mod chip;
 mod home;
 mod tag;
 
+pub use avatar::AvatarPage;
 pub use badge::BadgePage;
 pub use button::ButtonPage;
 pub use chip::ChipPage;

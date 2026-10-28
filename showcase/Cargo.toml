@@ -25,6 +25,7 @@ prime-badge = { workspace = true }
 prime-button = { workspace = true }
 prime-tag = { workspace = true }
 prime-chip = { workspace = true }
+prime-avatar = { workspace = true }
 prime-icons = { workspace = true, features = ["all-icons"] }
 prime-theme = { workspace = true, features = ["all-components"] }
 web-sys = { workspace = true, features = ["Window", "Document", "Element", "DomTokenList"] }

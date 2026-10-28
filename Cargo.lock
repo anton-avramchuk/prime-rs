@@ -1611,6 +1611,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-avatar"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-badge"
 version = "0.1.0"
 dependencies = [

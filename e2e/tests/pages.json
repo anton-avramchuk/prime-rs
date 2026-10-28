@@ -180,5 +180,47 @@
     "upstream": "/chip",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "avatar-label",
+    "ours": "/avatar",
+    "upstream": "/avatar",
+    "oursSelector": "[data-demo=\"label\"]",
+    "upstreamSelector": "label-doc .card"
+  },
+  {
+    "name": "avatar-icon",
+    "ours": "/avatar",
+    "upstream": "/avatar",
+    "oursSelector": "[data-demo=\"icon\"]",
+    "upstreamSelector": "icon-doc .card"
+  },
+  {
+    "name": "avatar-image",
+    "ours": "/avatar",
+    "upstream": "/avatar",
+    "oursSelector": "[data-demo=\"image\"]",
+    "upstreamSelector": "image-doc .card"
+  },
+  {
+    "name": "avatar-shape",
+    "ours": "/avatar",
+    "upstream": "/avatar",
+    "oursSelector": "[data-demo=\"shape\"]",
+    "upstreamSelector": "shape-doc .card"
+  },
+  {
+    "name": "avatar-size",
+    "ours": "/avatar",
+    "upstream": "/avatar",
+    "oursSelector": "[data-demo=\"size\"]",
+    "upstreamSelector": "size-doc .card"
+  },
+  {
+    "name": "avatar-template",
+    "ours": "/avatar",
+    "upstream": "/avatar",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

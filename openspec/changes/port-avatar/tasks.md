@@ -2,14 +2,14 @@
 
 ## 1. Крейт и логика
 
-- [ ] 1.1 Создать крейт `crates/prime-avatar` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `web-sys`) и добавить в workspace; проверить `cargo check -p prime-avatar --all-features`
-- [ ] 1.2 Реализовать `AvatarSize`, `AvatarShape` (с `Default`), `AvatarState`, `write_classes`, `data_p` по `avatarstyle.ts` и `Avatar.dataP`; проверить таблицей юнит-тестов по сценариям спеки (размеры, формы, `p-avatar-image`, `data-p` по умолчанию)
+- [x] 1.1 Создать крейт `crates/prime-avatar` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `web-sys`) и добавить в workspace; проверить `cargo check -p prime-avatar --all-features`
+- [x] 1.2 Реализовать `AvatarSize`, `AvatarShape` (с `Default`), `AvatarState`, `write_classes`, `data_p` по `avatarstyle.ts` и `Avatar.dataP`; проверить таблицей юнит-тестов по сценариям спеки (размеры, формы, `p-avatar-image`, `data-p` по умолчанию)
 
 ## 2. Компонент
 
-- [ ] 2.1 Реализовать `Avatar` с двумя ветвями отрисовки, блоками метка/иконка/изображение с приоритетом, `aria-*` на корне, `pt` (`AvatarPt`) и `on_image_error`; проверить SSR-тестами всех сценариев спеки
-- [ ] 2.2 Проверить `on_image_error` и поведение в браузере (`wasm-bindgen-test`: ошибка загрузки вызывает колбэк один раз)
-- [ ] 2.3 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-avatar --all-features` и doc-тесты
+- [x] 2.1 Реализовать `Avatar` с двумя ветвями отрисовки, блоками метка/иконка/изображение с приоритетом, `aria-*` на корне, `pt` (`AvatarPt`) и `on_image_error`; проверить SSR-тестами всех сценариев спеки
+- [x] 2.2 Проверить `on_image_error` и поведение в браузере (`wasm-bindgen-test`: ошибка загрузки вызывает колбэк один раз)
+- [x] 2.3 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-avatar --all-features` и doc-тесты
 
 ## 3. Showcase и e2e
 

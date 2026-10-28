@@ -4,6 +4,7 @@
 //! в `render` (divan, время), `alloc` (dhat, аллокации) и `time` (медиана в JSON для сравнения с базовой линией).
 
 use leptos::prelude::*;
+use prime_avatar::{Avatar, AvatarShape, AvatarSize};
 use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
 use prime_chip::Chip;
@@ -55,6 +56,10 @@ fn chip_removable_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Chip label="Thriller" removable=true /> }).collect_view())
 }
 
+fn avatar_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Avatar label="P" shape=AvatarShape::Circle size=AvatarSize::Large /> }).collect_view())
+}
+
 /// Все сценарии.
 pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "check-icon-1", run: || check_n(1) },
@@ -70,6 +75,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "chip-1", run: || chip_n(1) },
     Scenario { name: "chip-1000", run: || chip_n(1000) },
     Scenario { name: "chip-removable-1000", run: || chip_removable_n(1000) },
+    Scenario { name: "avatar-1", run: || avatar_n(1) },
+    Scenario { name: "avatar-1000", run: || avatar_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

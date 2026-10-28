@@ -23,6 +23,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-chip")]
     return view! { <prime_chip::Chip label="Thriller" removable=true /> };
 
+    #[cfg(feature = "case-avatar")]
+    return view! { <prime_avatar::Avatar label="P" shape=prime_avatar::AvatarShape::Circle size=prime_avatar::AvatarSize::Large /> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }
