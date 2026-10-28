@@ -17,6 +17,7 @@ use leptos::attr::custom::custom_attribute;
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Pt {
     class: Option<String>,
+    style: Option<String>,
     attrs: Vec<(String, String)>,
 }
 
@@ -32,6 +33,12 @@ impl Pt {
         self
     }
 
+    /// Добавляет встроенный стиль (`margin: 4px`).
+    pub fn style(mut self, style: impl Into<String>) -> Self {
+        self.style = Some(style.into());
+        self
+    }
+
     /// Добавляет атрибут (например, `data-testid`, `style`, `aria-describedby`).
     pub fn attr(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
         self.attrs.push((name.into(), value.into()));
@@ -43,6 +50,24 @@ impl Pt {
         let mut cn = ClassNames::new();
         cn.add(base).add_opt(self.class.as_deref());
         cn.finish()
+    }
+
+    /// Собственный стиль компонента плюс стиль из `Pt`; пустые части пропускаются, `;` на концах нормализуются.
+    ///
+    /// ```
+    /// use prime_core::Pt;
+    ///
+    /// let pt = Pt::new().style("color: red;");
+    /// assert_eq!(pt.merge_style("margin: 4px"), "margin: 4px; color: red");
+    /// assert_eq!(Pt::new().merge_style(""), "");
+    /// ```
+    pub fn merge_style(&self, base: &str) -> String {
+        let part = |s: &str| s.trim().trim_end_matches(';').trim().to_owned();
+        [part(base), self.style.as_deref().map(part).unwrap_or_default()]
+            .into_iter()
+            .filter(|s| !s.is_empty())
+            .collect::<Vec<_>>()
+            .join("; ")
     }
 
     /// Атрибуты для `view! { <div {..pt.attrs()} /> }`.
@@ -60,6 +85,15 @@ mod tests {
         let pt = Pt::new().class("custom");
         assert_eq!(pt.merge_class("p-button p-component"), "p-button p-component custom");
         assert_eq!(Pt::new().merge_class("p-button"), "p-button");
+    }
+
+    #[test]
+    fn merges_style_normalizing_semicolons() {
+        let pt = Pt::new().style("color: red;");
+        assert_eq!(pt.merge_style("margin: 4px;"), "margin: 4px; color: red");
+        assert_eq!(pt.merge_style(""), "color: red");
+        assert_eq!(Pt::new().merge_style("margin: 4px"), "margin: 4px");
+        assert_eq!(Pt::new().merge_style(""), "");
     }
 
     #[test]

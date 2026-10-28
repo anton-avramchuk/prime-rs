@@ -11,6 +11,8 @@
 - `p-badge` — хост-элемент `<p-badge>` с классами на нём самом, внутри только текст.
 - В `bootstrap-workspace` готовы: `Pt`, `ClassNames`/`class_memo`, `PrimeConfig` (в т. ч. `ripple`), `Ripple`, `FocusTrap`, `SpinnerIcon` (feature `spinner`), CSS `button.css` и `badge.css` в `prime-theme`, бенчмарк-сценарии, бюджеты, showcase, `gen-spec`.
 
+Сверка с `cargo xtask gen-spec` (задача 1.1): все входы `p-button` и `p-badge` покрыты спеками, кроме сознательно не портируемых: `hostName` (внутренний), `badgeClass` (устарел, заменён `badgeSeverity`), `buttonProps` (в Rust это обычные пропсы), `pButtonPT`, `ptButtonDirective`, `ptButtonLabel`, `ptButtonIcon`, `*Unstyled` (директивы и `unstyled`-режим вне объёма), `badgeStyle`, `badgeStyleClass`, `badgeDisabled` у директивы `pBadge` (директива не портируется; для `p-badge` `badgeDisabled` покрыт). Устаревший `size` у Badge заменён `badgeSize`: в Rust один вход `size`. Все три выхода `p-button` (`onClick`, `onFocus`, `onBlur`) покрыты.
+
 ## Goals / Non-Goals
 
 **Goals:**
