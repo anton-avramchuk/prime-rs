@@ -14,5 +14,8 @@ hydrate = ["leptos/hydrate"]
 [dependencies]
 leptos = { workspace = true }
 
+[dev-dependencies]
+dhat = { workspace = true }
+
 [lints]
 workspace = true

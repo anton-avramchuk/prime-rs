@@ -14,6 +14,7 @@ wasm-bindgen = "0.2"
 wasm-bindgen-test = "0.3"
 web-sys = { version = "0.3", default-features = false }
 js-sys = "0.3"
+dhat = "0.3"
 
 prime-core = { path = "crates/prime-core" }
 prime-dom = { path = "crates/prime-dom" }
