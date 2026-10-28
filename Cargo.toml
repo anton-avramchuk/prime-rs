@@ -28,6 +28,7 @@ prime-avatar = { path = "crates/prime-avatar" }
 prime-divider = { path = "crates/prime-divider" }
 prime-card = { path = "crates/prime-card" }
 prime-inputtext = { path = "crates/prime-inputtext" }
+prime-checkbox = { path = "crates/prime-checkbox" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

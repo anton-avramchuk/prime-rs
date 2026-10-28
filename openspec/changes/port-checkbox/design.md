@@ -21,7 +21,7 @@
 *Альтернатива*: обобщённый тип значения (`T: PartialEq`) — отвергнута ради простоты и размера wasm.
 
 ### D3. Вычисление состояния
-`checked = !indeterminate && (binary ? checked_signal : model.contains(value))`. При изменении снимается `indeterminate`, `on_change` получает `CheckboxChange { checked, original_event }`; при `readonly` изменение игнорируется (нативное состояние `<input>` возвращается к сигналу).
+`checked = !indeterminate && (binary ? checked_signal : model.contains(value))`. `indeterminate` — двусторонний `RwSignal<bool>` (с ним статическая ветвь не выбирается); при изменении пользователем он сбрасывается в `false`, `on_change` получает `CheckboxChange { checked, original_event }`; при `readonly` изменение игнорируется (нативное состояние `<input>` возвращается к сигналу).
 
 ### D4. Иконка
 `check` при `checked`, `minus` при `indeterminate`; слот `icon_template` (`ViewFn`) заменяет иконку; иконки из `prime-icons`.

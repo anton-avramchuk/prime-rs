@@ -52,3 +52,8 @@ max_per_instance = 35
 name = "inputtext-1000"
 instances = 1000
 max_per_instance = 16
+
+[[scenario]]
+name = "checkbox-1000"
+instances = 1000
+max_per_instance = 42

@@ -306,5 +306,54 @@
     "upstream": "/inputtext",
     "oursSelector": "[data-demo=\"fluid\"]",
     "upstreamSelector": "fluid-doc .card"
+  },
+  {
+    "name": "checkbox-basic",
+    "ours": "/checkbox",
+    "upstream": "/checkbox",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "checkbox-multiple",
+    "ours": "/checkbox",
+    "upstream": "/checkbox",
+    "oursSelector": "[data-demo=\"multiple\"]",
+    "upstreamSelector": "multiple-doc .card"
+  },
+  {
+    "name": "checkbox-filled",
+    "ours": "/checkbox",
+    "upstream": "/checkbox",
+    "oursSelector": "[data-demo=\"filled\"]",
+    "upstreamSelector": "filled-doc .card"
+  },
+  {
+    "name": "checkbox-sizes",
+    "ours": "/checkbox",
+    "upstream": "/checkbox",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "checkbox-indeterminate",
+    "ours": "/checkbox",
+    "upstream": "/checkbox",
+    "oursSelector": "[data-demo=\"indeterminate\"]",
+    "upstreamSelector": "indeterminate-doc .card"
+  },
+  {
+    "name": "checkbox-invalid",
+    "ours": "/checkbox",
+    "upstream": "/checkbox",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "checkbox-disabled",
+    "ours": "/checkbox",
+    "upstream": "/checkbox",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
   }
 ]

@@ -35,6 +35,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-inputtext")]
     return view! { <prime_inputtext::InputText placeholder="Name" /> };
 
+    #[cfg(feature = "case-checkbox")]
+    return view! { <prime_checkbox::Checkbox binary=true default_checked=true name="agree" /> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

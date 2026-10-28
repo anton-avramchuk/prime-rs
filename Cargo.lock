@@ -1654,6 +1654,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-checkbox"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-chip"
 version = "0.1.0"
 dependencies = [
@@ -1936,6 +1948,7 @@ dependencies = [
  "prime-badge",
  "prime-button",
  "prime-card",
+ "prime-checkbox",
  "prime-chip",
  "prime-divider",
  "prime-icons",
@@ -2233,6 +2246,7 @@ dependencies = [
  "prime-badge",
  "prime-button",
  "prime-card",
+ "prime-checkbox",
  "prime-chip",
  "prime-core",
  "prime-divider",
@@ -2876,6 +2890,7 @@ dependencies = [
  "prime-badge",
  "prime-button",
  "prime-card",
+ "prime-checkbox",
  "prime-chip",
  "prime-divider",
  "prime-icons",

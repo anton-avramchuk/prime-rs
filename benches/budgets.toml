@@ -54,3 +54,8 @@ max_delta_bytes = 130000
 name = "inputtext"
 feature = "case-inputtext"
 max_delta_bytes = 225000
+
+[[case]]
+name = "checkbox"
+feature = "case-checkbox"
+max_delta_bytes = 250000
