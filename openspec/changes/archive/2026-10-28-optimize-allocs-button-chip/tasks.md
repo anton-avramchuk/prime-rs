@@ -8,7 +8,7 @@
 ## 2. Бюджеты и интеграция
 
 - [x] 2.1 Пересчитать бюджеты `button-*`, `chip-*`, дополнить `docs/benchmarks.md`
-- [ ] 2.2 clippy, тесты, wasm-size, deny, machete, `openspec validate optimize-allocs-button-chip`; CI `dev` зелёный
+- [x] 2.2 clippy, тесты, wasm-size, deny, machete, `openspec validate optimize-allocs-button-chip`; CI `dev` зелёный
 
 ## Workflow follow-up
 
