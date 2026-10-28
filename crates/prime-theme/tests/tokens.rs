@@ -39,3 +39,11 @@ fn only_requested_component_css_is_included() {
     assert!(component("card").is_none(), "feature card не включён");
     assert_eq!(stylesheet(&["nope"]), BASE);
 }
+
+#[cfg(feature = "badge")]
+#[test]
+fn badge_css_is_available_when_its_feature_is_on() {
+    let css = prime_theme::stylesheet(&["badge"]);
+    assert!(css.contains(".p-badge-dot"));
+    assert!(css.starts_with(BASE));
+}

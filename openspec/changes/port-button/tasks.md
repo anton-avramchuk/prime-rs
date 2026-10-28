@@ -8,10 +8,10 @@
 
 ## 2. Badge
 
-- [ ] 2.1 Создать крейт `crates/prime-badge` (`publish = false`, features `ssr`/`hydrate`) и добавить в workspace; проверить `cargo check -p prime-badge --all-features`
-- [ ] 2.2 Реализовать чистую функцию «свойства → классы и `data-p`» по `badgestyle.ts` и таблицу тестов по сценариям спеки `badge` (круг, точка, размеры, серьёзности); проверить `cargo test -p prime-badge`
-- [ ] 2.3 Реализовать компонент `Badge` (`value`, `severity`, `size`, `badge_disabled`, `style_class`, `pt`); проверить SSR-тестами структуры, `display: none` и `pt`
-- [ ] 2.4 Добавить `badge` в `crates/prime-theme` features приложения showcase и проверить, что `stylesheet(&["badge"])` содержит `.p-badge-dot`; задокументировать API (rustdoc, пример) и проверить `cargo test --doc -p prime-badge`
+- [x] 2.1 Создать крейт `crates/prime-badge` (`publish = false`, features `ssr`/`hydrate`) и добавить в workspace; проверить `cargo check -p prime-badge --all-features`
+- [x] 2.2 Реализовать чистую функцию «свойства → классы и `data-p`» по `badgestyle.ts` и таблицу тестов по сценариям спеки `badge` (круг, точка, размеры, серьёзности); проверить `cargo test -p prime-badge`
+- [x] 2.3 Реализовать компонент `Badge` (`value`, `severity`, `size`, `badge_disabled`, `style_class`, `pt`); проверить SSR-тестами структуры, `display: none` и `pt`
+- [x] 2.4 Добавить `badge` в `crates/prime-theme` features приложения showcase и проверить, что `stylesheet(&["badge"])` содержит `.p-badge-dot`; задокументировать API (rustdoc, пример) и проверить `cargo test --doc -p prime-badge`
 
 ## 3. Button: логика и разметка
 

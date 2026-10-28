@@ -1611,6 +1611,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-badge"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-core"
 version = "0.1.0"
 dependencies = [
