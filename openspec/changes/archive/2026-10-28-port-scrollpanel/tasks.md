@@ -21,7 +21,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 `docs/scrollpanel.md` (совпадения, отличия, производительность); clippy, тесты, deny, machete, `openspec validate port-scrollpanel`; CI `dev` зелёный
+- [x] 4.1 `docs/scrollpanel.md` (совпадения, отличия, производительность); clippy, тесты, deny, machete, `openspec validate port-scrollpanel`; CI `dev` зелёный
 
 ## Workflow follow-up
 
