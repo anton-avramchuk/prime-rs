@@ -1,7 +1,7 @@
 # icon-set Specification
 
 ## Purpose
-TBD - created by archiving change bootstrap-workspace. Update Purpose after archive.
+Набор SVG-иконок PrimeNG в крейте prime-icons: подключение по feature-флагам, доступность, воспроизводимая генерация.
 
 ## Requirements
 

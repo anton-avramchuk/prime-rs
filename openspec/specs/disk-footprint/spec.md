@@ -1,7 +1,7 @@
 # disk-footprint Specification
 
 ## Purpose
-TBD - created by archiving change bootstrap-workspace. Update Purpose after archive.
+Меры против разрастания target/ и кэша CI: профили сборки, очистка, ограничение зависимостей.
 
 ## Requirements
 

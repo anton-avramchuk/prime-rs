@@ -1,7 +1,7 @@
 # core-runtime Specification
 
 ## Purpose
-TBD - created by archiving change bootstrap-workspace. Update Purpose after archive.
+Общее ядро компонентов: конфигурация через context, построение классов, общие пропсы, pass-through, z-index и DOM-хелперы для оверлеев.
 
 ## Requirements
 

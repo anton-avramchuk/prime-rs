@@ -1,7 +1,7 @@
 # ci-pipeline Specification
 
 ## Purpose
-TBD - created by archiving change bootstrap-workspace. Update Purpose after archive.
+Проверки на каждый PR и тяжёлые еженедельные проверки (e2e, скриншоты, браузерные бенчмарки), не блокирующие PR.
 
 ## Requirements
 

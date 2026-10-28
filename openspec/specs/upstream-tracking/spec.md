@@ -1,7 +1,7 @@
 # upstream-tracking Specification
 
 ## Purpose
-TBD - created by archiving change bootstrap-workspace. Update Purpose after archive.
+Привязка порта к версии PrimeNG, поиск изменений в исходниках и генерация заготовок спек компонентов.
 
 ## Requirements
 

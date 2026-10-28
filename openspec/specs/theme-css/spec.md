@@ -1,7 +1,7 @@
 # theme-css Specification
 
 ## Purpose
-TBD - created by archiving change bootstrap-workspace. Update Purpose after archive.
+Статический CSS темы Aura, полученный из токенов и стилей PrimeNG и подключаемый без рантайм-генерации.
 
 ## Requirements
 

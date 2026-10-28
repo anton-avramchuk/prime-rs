@@ -1,7 +1,7 @@
 # workspace-layout Specification
 
 ## Purpose
-TBD - created by archiving change bootstrap-workspace. Update Purpose after archive.
+Структура Cargo workspace prime-rs: один крейт на компонент PrimeNG, режимы CSR/SSR/hydrate, тулчейн, лицензия и атрибуция.
 
 ## Requirements
 

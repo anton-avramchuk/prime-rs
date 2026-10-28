@@ -1,7 +1,7 @@
 # benchmarking Specification
 
 ## Purpose
-TBD - created by archiving change bootstrap-workspace. Update Purpose after archive.
+Бенчмарки SSR-рендера и аллокаций, бюджеты размера wasm, контроль регрессий и браузерные замеры памяти.
 
 ## Requirements
 
