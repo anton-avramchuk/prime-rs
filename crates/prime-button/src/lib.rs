@@ -2,6 +2,7 @@
 //!
 //! Классы, `data-p*` и порядок содержимого (`children`, иконка или индикатор загрузки, метка, бейдж) совпадают с PrimeNG.
 //! Вместо хост-элемента `<p-button>` отрисовывается только `<button>`: CSS темы привязан к классам, а не к тегу.
+//! Свойства — [`Prop`]/[`OptProp`]: значение не создаёт реактивных примитивов, сигнал подписывает атрибуты.
 //! Иконка передаётся как `ViewFn` (например, `<CheckIcon />` из `prime-icons`), а не именем класса шрифта.
 //!
 //! ```
@@ -18,12 +19,17 @@ use leptos::prelude::*;
 use prime_badge::{Badge, BadgePt, BadgeSeverity};
 #[cfg(target_arch = "wasm32")]
 use prime_core::use_prime_config;
-use prime_core::{Pt, Size, class_memo};
+use prime_core::{ClassNames, OptProp, Prop, Pt, Size};
 #[cfg(target_arch = "wasm32")]
 use prime_dom::Ripple;
 use prime_icons::SpinnerIcon;
+use std::borrow::Cow;
+use std::sync::Arc;
 
-pub use state::{ButtonSeverity, ButtonState, ButtonVariant, IconPos, icon_classes, icon_data_p, label_data_p, root_classes, root_data_p};
+pub use state::{
+    ButtonSeverity, ButtonState, ButtonVariant, IconPos, icon_classes, icon_data_p, label_data_p, root_classes, root_data_p,
+    write_root_classes,
+};
 
 /// Pass-through частей Button: классы и атрибуты добавляются к собственным, не заменяя их.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -61,9 +67,20 @@ fn setup_client(node: NodeRef<leptos::html::Button>, autofocus: bool) {
 #[cfg(not(target_arch = "wasm32"))]
 fn setup_client(_node: NodeRef<leptos::html::Button>, _autofocus: bool) {}
 
+/// Серьёзность бейджа по умолчанию — `secondary` (как в PrimeNG).
+fn badge_severity_or_default(p: &OptProp<BadgeSeverity>) -> OptProp<BadgeSeverity> {
+    match p {
+        Prop::Static(v) => Prop::Static(Some(v.unwrap_or(BadgeSeverity::Secondary))),
+        Prop::Reactive(_) => {
+            let p = p.clone();
+            Prop::Reactive(Signal::derive(move || Some(p.get().unwrap_or(BadgeSeverity::Secondary))))
+        }
+    }
+}
+
 /// Кнопка.
 ///
-/// Свойства, влияющие на вид и состояние, реактивны (принимают значение или сигнал). Если заданы `children`,
+/// Каждое свойство принимает значение или сигнал; значение не создаёт реактивных примитивов. Если заданы `children`,
 /// метка и бейдж не выводятся, а `children` идут первыми, как проецируемое содержимое в PrimeNG.
 ///
 /// ```
@@ -89,73 +106,73 @@ fn setup_client(_node: NodeRef<leptos::html::Button>, _autofocus: bool) {}
 pub fn Button(
     /// Текст метки.
     #[prop(optional, into)]
-    label: MaybeProp<String>,
+    label: OptProp<String>,
     /// Иконка; выводится в `span.p-button-icon`.
     #[prop(optional, into)]
     icon: Option<ViewFn>,
     /// Положение иконки.
     #[prop(optional, into)]
-    icon_pos: Signal<IconPos>,
+    icon_pos: Prop<IconPos>,
     /// Идёт загрузка: кнопка недоступна, вместо иконки индикатор.
     #[prop(optional, into)]
-    loading: Signal<bool>,
+    loading: Prop<bool>,
     /// Свой индикатор загрузки (по умолчанию `SpinnerIcon`).
     #[prop(optional, into)]
     loading_icon: Option<ViewFn>,
     /// Серьёзность.
     #[prop(optional, into)]
-    severity: MaybeProp<ButtonSeverity>,
+    severity: OptProp<ButtonSeverity>,
     /// Вид: с рамкой или текстовая.
     #[prop(optional, into)]
-    variant: MaybeProp<ButtonVariant>,
+    variant: OptProp<ButtonVariant>,
     /// Текстовая кнопка.
     #[prop(optional, into)]
-    text: Signal<bool>,
+    text: Prop<bool>,
     /// Кнопка с рамкой.
     #[prop(optional, into)]
-    outlined: Signal<bool>,
+    outlined: Prop<bool>,
     /// Простой текст.
     #[prop(optional, into)]
-    plain: Signal<bool>,
+    plain: Prop<bool>,
     /// Ссылка.
     #[prop(optional, into)]
-    link: Signal<bool>,
+    link: Prop<bool>,
     /// С тенью.
     #[prop(optional, into)]
-    raised: Signal<bool>,
+    raised: Prop<bool>,
     /// Скруглённая.
     #[prop(optional, into)]
-    rounded: Signal<bool>,
+    rounded: Prop<bool>,
     /// Размер.
     #[prop(optional, into)]
-    size: MaybeProp<Size>,
+    size: OptProp<Size>,
     /// На всю ширину контейнера.
     #[prop(optional, into)]
-    fluid: Signal<bool>,
+    fluid: Prop<bool>,
     /// Значение бейджа.
     #[prop(optional, into)]
-    badge: MaybeProp<String>,
+    badge: OptProp<String>,
     /// Серьёзность бейджа (по умолчанию `secondary`).
     #[prop(optional, into)]
-    badge_severity: MaybeProp<BadgeSeverity>,
+    badge_severity: OptProp<BadgeSeverity>,
     /// Недоступна.
     #[prop(optional, into)]
-    disabled: Signal<bool>,
+    disabled: Prop<bool>,
     /// Атрибут `type` (по умолчанию `button`).
     #[prop(optional, into)]
-    button_type: MaybeProp<String>,
+    button_type: OptProp<String>,
     /// Атрибут `aria-label`.
     #[prop(optional, into)]
-    aria_label: MaybeProp<String>,
+    aria_label: OptProp<String>,
     /// Атрибут `tabindex`.
     #[prop(optional, into)]
-    tabindex: MaybeProp<i32>,
+    tabindex: OptProp<i32>,
     /// Встроенный стиль.
     #[prop(optional, into)]
-    style: MaybeProp<String>,
+    style: OptProp<String>,
     /// Дополнительный класс.
     #[prop(optional, into)]
-    style_class: MaybeProp<String>,
+    style_class: OptProp<String>,
     /// Получить фокус после монтирования в браузере (на сервере не выставляется).
     #[prop(optional)]
     autofocus: bool,
@@ -175,67 +192,106 @@ pub fn Button(
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let pt = pt.unwrap_or_default();
+    let pt = Arc::new(pt.unwrap_or_default());
     let has_children = children.is_some();
     let content = children.map(|c| c());
     let has_icon = icon.is_some() || loading_icon.is_some();
+    let badge_severity = badge_severity_or_default(&badge_severity);
 
-    let state = Memo::new(move |_| ButtonState {
-        label: label.get(),
+    // Все свойства в одном `Arc`: замыкания атрибутов клонируют счётчик ссылок, а не строки значений.
+    let props = Arc::new(Props {
+        label,
+        badge,
+        loading,
+        severity,
+        variant,
+        size,
+        icon_pos,
+        text,
+        outlined,
+        plain,
+        link,
+        raised,
+        rounded,
+        fluid,
+        disabled,
+        button_type,
+        aria_label,
+        tabindex,
+        style,
+        style_class,
         has_icon,
-        badge: badge.get(),
-        loading: loading.get(),
-        severity: severity.get(),
-        variant: variant.get(),
-        text: text.get(),
-        outlined: outlined.get(),
-        plain: plain.get(),
-        link: link.get(),
-        raised: raised.get(),
-        rounded: rounded.get(),
-        size: size.get(),
-        fluid: fluid.get(),
-        icon_pos: icon_pos.get(),
     });
 
-    let class = class_memo({
-        let pt = pt.root.clone();
-        move |cn| {
-            cn.add(&root_classes(&state.read())).add("p-ripple").add_opt(style_class.get().as_deref());
-            cn.add(&pt.merge_class(""));
-        }
-    });
-    let root_style = {
-        let pt = pt.root.clone();
+    let class = {
+        let (props, pt) = (props.clone(), pt.clone());
         move || {
-            let s = pt.merge_style(style.get().as_deref().unwrap_or(""));
-            (!s.is_empty()).then_some(s)
+            let mut cn = ClassNames::new();
+            props.with_state(|s| write_root_classes(&mut cn, s));
+            cn.add("p-ripple");
+            props.style_class.with(|c| cn.add_opt(c.as_deref()));
+            cn.add_opt(pt.root.extra_class());
+            cn.finish()
         }
     };
-    let is_disabled = move || disabled.get() || loading.get();
+    let data_attr = {
+        let props = props.clone();
+        move || props.with_state(root_data_p)
+    };
+    let root_style = {
+        let (props, pt) = (props.clone(), pt.clone());
+        move || props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
+    };
+    let type_attr = {
+        let props = props.clone();
+        move || -> Cow<'static, str> {
+            props.button_type.with(|t| t.as_deref().map_or(Cow::Borrowed("button"), |s| Cow::Owned(s.to_owned())))
+        }
+    };
+    let aria_attr = {
+        let props = props.clone();
+        move || props.aria_label.get()
+    };
+    let tabindex_attr = {
+        let props = props.clone();
+        move || props.tabindex.get()
+    };
+    let disabled_attr = {
+        let props = props.clone();
+        move || props.is_disabled()
+    };
+    let data_disabled = {
+        let props = props.clone();
+        move || props.is_disabled().then_some("true")
+    };
+    let severity_attr = {
+        let props = props.clone();
+        move || props.severity.get().map(ButtonSeverity::as_str)
+    };
 
     let node = NodeRef::<leptos::html::Button>::new();
     setup_client(node, autofocus);
 
     let indicator = {
-        let pt = pt.clone();
+        let (props, pt) = (props.clone(), pt.clone());
         move || -> AnyView {
-            if loading.get() {
-                let pt = pt.loading_icon.clone();
+            if props.loading.get() {
                 match loading_icon.clone() {
                     Some(custom) => view! {
-                        <span class=pt.merge_class("p-button-loading-icon") aria-hidden="true" {..pt.attrs()}>
+                        <span class=pt.loading_icon.merge_class("p-button-loading-icon") aria-hidden="true" {..pt.loading_icon.attrs()}>
                             {custom.run()}
                         </span>
                     }
                     .into_any(),
-                    None => view! { <SpinnerIcon spin=true class=pt.merge_class("p-button-loading-icon") {..pt.attrs()} /> }.into_any(),
+                    None => view! {
+                        <SpinnerIcon spin=true class=pt.loading_icon.merge_class("p-button-loading-icon") {..pt.loading_icon.attrs()} />
+                    }
+                    .into_any(),
                 }
             } else if let Some(icon) = icon.clone() {
-                let pt = pt.icon.clone();
-                let class = icon_classes(&state.read());
+                let (class, data) = props.with_state(|s| (icon_classes(s), icon_data_p(s)));
                 view! {
-                    <span class=pt.merge_class(&class) data-p=move || icon_data_p(&state.read()) {..pt.attrs()}>
+                    <span class=pt.icon.merge_class(&class) data-p={data} {..pt.icon.attrs()}>
                         {icon.run()}
                     </span>
                 }
@@ -247,40 +303,44 @@ pub fn Button(
     };
 
     let label_view = {
-        let pt = pt.label.clone();
+        let (props, pt) = (props.clone(), pt.clone());
         move || {
-            let s = state.read();
-            (!has_children && s.has_label()).then(|| {
-                view! {
-                    <span class=pt.merge_class("p-button-label") data-p=label_data_p(&s) {..pt.attrs()}>
-                        {s.label.clone()}
-                    </span>
-                }
+            if has_children {
+                return None;
+            }
+            let data = props.with_state(|s| s.has_label().then(|| label_data_p(s)))?;
+            Some(view! {
+                <span class=pt.label.merge_class("p-button-label") data-p={data} {..pt.label.attrs()}>
+                    {props.label.get()}
+                </span>
             })
         }
     };
 
     let badge_view = {
-        let pt = pt.badge.clone();
+        let (props, pt) = (props.clone(), pt.clone());
         move || {
-            (!has_children && state.read().has_badge()).then(|| {
-                let severity = Signal::derive(move || Some(badge_severity.get().unwrap_or(BadgeSeverity::Secondary)));
-                view! { <Badge value=badge severity=severity pt=BadgePt { root: pt.clone() } /> }
+            let present = !has_children && props.with_state(|s| s.has_badge());
+            present.then(|| {
+                view! { <Badge value=props.badge.clone() severity=badge_severity.clone() pt=BadgePt { root: pt.badge.clone() } /> }
             })
         }
     };
 
+    let click_props = props.clone();
+    let root_attrs = pt.root.attrs();
+
     view! {
         <button
-            type=move || button_type.get().unwrap_or_else(|| "button".to_owned())
+            type=type_attr
             class=class
             style=root_style
-            aria-label=move || aria_label.get()
-            tabindex=move || tabindex.get()
-            disabled=is_disabled
+            aria-label=aria_attr
+            tabindex=tabindex_attr
+            disabled=disabled_attr
             node_ref=node
             on:click=move |e| {
-                if let (Some(cb), false) = (on_click, is_disabled()) {
+                if let (Some(cb), false) = (on_click, click_props.is_disabled()) {
                     cb.run(e);
                 }
             }
@@ -294,15 +354,72 @@ pub fn Button(
                     cb.run(e);
                 }
             }
-            data-p=move || root_data_p(&state.read())
-            data-p-disabled=move || is_disabled().then_some("true")
-            data-p-severity=move || severity.get().map(ButtonSeverity::as_str)
-            {..pt.root.attrs()}
+            data-p={data_attr}
+            data-p-disabled=data_disabled
+            data-p-severity={severity_attr}
+            {..root_attrs}
         >
             {content}
             {indicator}
             {label_view}
             {badge_view}
         </button>
+    }
+}
+
+/// Свойства экземпляра.
+struct Props {
+    label: OptProp<String>,
+    badge: OptProp<String>,
+    loading: Prop<bool>,
+    severity: OptProp<ButtonSeverity>,
+    variant: OptProp<ButtonVariant>,
+    size: OptProp<Size>,
+    icon_pos: Prop<IconPos>,
+    text: Prop<bool>,
+    outlined: Prop<bool>,
+    plain: Prop<bool>,
+    link: Prop<bool>,
+    raised: Prop<bool>,
+    rounded: Prop<bool>,
+    fluid: Prop<bool>,
+    disabled: Prop<bool>,
+    button_type: OptProp<String>,
+    aria_label: OptProp<String>,
+    tabindex: OptProp<i32>,
+    style: OptProp<String>,
+    style_class: OptProp<String>,
+    has_icon: bool,
+}
+
+impl Props {
+    /// Недоступна: `disabled` или идёт загрузка.
+    fn is_disabled(&self) -> bool {
+        self.disabled.get() || self.loading.get()
+    }
+
+    /// Вызывает `f` с заимствованным снимком состояния (без копирования строк).
+    fn with_state<R>(&self, f: impl FnOnce(&ButtonState) -> R) -> R {
+        self.label.with(|l| {
+            self.badge.with(|b| {
+                f(&ButtonState {
+                    label: l.as_deref(),
+                    has_icon: self.has_icon,
+                    badge: b.as_deref(),
+                    loading: self.loading.get(),
+                    severity: self.severity.get(),
+                    variant: self.variant.get(),
+                    text: self.text.get(),
+                    outlined: self.outlined.get(),
+                    plain: self.plain.get(),
+                    link: self.link.get(),
+                    raised: self.raised.get(),
+                    rounded: self.rounded.get(),
+                    size: self.size.get(),
+                    fluid: self.fluid.get(),
+                    icon_pos: self.icon_pos.get(),
+                })
+            })
+        })
     }
 }

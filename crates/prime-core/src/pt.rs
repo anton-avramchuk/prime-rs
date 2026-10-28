@@ -45,6 +45,16 @@ impl Pt {
         self
     }
 
+    /// Дополнительный класс из `Pt` (без копирования).
+    pub fn extra_class(&self) -> Option<&str> {
+        self.class.as_deref()
+    }
+
+    /// Задан ли встроенный стиль.
+    pub fn has_style(&self) -> bool {
+        self.style.is_some()
+    }
+
     /// Собственные классы компонента плюс класс из `Pt`.
     pub fn merge_class(&self, base: &str) -> String {
         let mut cn = ClassNames::new();

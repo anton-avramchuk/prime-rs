@@ -55,11 +55,11 @@ impl BadgeSize {
     }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p`.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct BadgeState {
+/// Снимок свойств, влияющих на классы и `data-p` (значение заимствовано, без копирования строки).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct BadgeState<'a> {
     /// Значение.
-    pub value: Option<String>,
+    pub value: Option<&'a str>,
     /// Серьёзность.
     pub severity: Option<BadgeSeverity>,
     /// Размер.
@@ -68,36 +68,41 @@ pub struct BadgeState {
     pub disabled: bool,
 }
 
-fn is_circle(value: &Option<String>) -> bool {
-    value.as_deref().is_some_and(|v| v.chars().count() == 1)
+fn is_circle(value: Option<&str>) -> bool {
+    value.is_some_and(|v| v.chars().count() == 1)
 }
 
-/// Классы корня в порядке `badgestyle.ts`.
-pub fn classes(s: &BadgeState) -> String {
-    let mut cn = ClassNames::new();
+/// Добавляет классы корня в порядке `badgestyle.ts`.
+pub fn write_classes(cn: &mut ClassNames, s: &BadgeState) {
     cn.add("p-badge p-component")
-        .add_if(is_circle(&s.value), "p-badge-circle")
-        .add_if(s.value.as_deref().is_none_or(str::is_empty), "p-badge-dot")
+        .add_if(is_circle(s.value), "p-badge-circle")
+        .add_if(s.value.is_none_or(str::is_empty), "p-badge-dot")
         .add_if(s.size == Some(BadgeSize::Small), "p-badge-sm")
         .add_if(s.size == Some(BadgeSize::Large), "p-badge-lg")
         .add_if(s.size == Some(BadgeSize::XLarge), "p-badge-xl");
-    for sev in [
-        BadgeSeverity::Info,
-        BadgeSeverity::Success,
-        BadgeSeverity::Warn,
-        BadgeSeverity::Danger,
-        BadgeSeverity::Secondary,
-        BadgeSeverity::Contrast,
-    ] {
-        cn.add_if(s.severity == Some(sev), &format!("p-badge-{}", sev.as_str()));
+    if let Some(sev) = s.severity {
+        cn.add(match sev {
+            BadgeSeverity::Info => "p-badge-info",
+            BadgeSeverity::Success => "p-badge-success",
+            BadgeSeverity::Warn => "p-badge-warn",
+            BadgeSeverity::Danger => "p-badge-danger",
+            BadgeSeverity::Secondary => "p-badge-secondary",
+            BadgeSeverity::Contrast => "p-badge-contrast",
+        });
     }
+}
+
+/// Классы корня строкой.
+pub fn classes(s: &BadgeState) -> String {
+    let mut cn = ClassNames::new();
+    write_classes(&mut cn, s);
     cn.finish()
 }
 
 /// Значение `data-p`: `circle`, `empty`, `disabled`, серьёзность, размер.
 pub fn data_p(s: &BadgeState) -> String {
     let mut d = DataP::new();
-    d.add_if(is_circle(&s.value), "circle")
+    d.add_if(is_circle(s.value), "circle")
         .add_if(s.value.is_none(), "empty")
         .add_if(s.disabled, "disabled")
         .add_opt(s.severity.map(BadgeSeverity::as_str))
@@ -109,15 +114,15 @@ pub fn data_p(s: &BadgeState) -> String {
 mod tests {
     use super::*;
 
-    fn state(value: Option<&str>, severity: Option<BadgeSeverity>, size: Option<BadgeSize>, disabled: bool) -> BadgeState {
-        BadgeState { value: value.map(str::to_owned), severity, size, disabled }
+    fn state(value: Option<&str>, severity: Option<BadgeSeverity>, size: Option<BadgeSize>, disabled: bool) -> BadgeState<'_> {
+        BadgeState { value, severity, size, disabled }
     }
 
     #[test]
     fn classes_and_data_p_table() {
         use BadgeSeverity::*;
         use BadgeSize::*;
-        let cases: Vec<(BadgeState, &str, &str)> = vec![
+        let cases: Vec<(BadgeState<'_>, &str, &str)> = vec![
             (state(Some("New"), None, None, false), "p-badge p-component", ""),
             (state(Some("5"), None, None, false), "p-badge p-component p-badge-circle", "circle"),
             (state(None, None, None, false), "p-badge p-component p-badge-dot", "empty"),
@@ -145,7 +150,7 @@ mod tests {
 
     #[test]
     fn circle_counts_characters_not_bytes() {
-        assert!(is_circle(&Some("я".into())));
-        assert!(!is_circle(&Some("яя".into())));
+        assert!(is_circle(Some("я")));
+        assert!(!is_circle(Some("яя")));
     }
 }

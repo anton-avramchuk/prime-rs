@@ -63,3 +63,17 @@ fn reactive_value_and_severity() {
         assert!(html.contains("p-badge-success") && !html.contains("p-badge-circle"), "{html}");
     });
 }
+
+#[test]
+fn static_and_reactive_props_render_identically() {
+    let owner = Owner::new();
+    owner.with(|| {
+        let fixed = view! { <Badge value="7" severity=BadgeSeverity::Info size=BadgeSize::Large style_class="x" /> }.to_html();
+        let value = RwSignal::new(Some("7".to_owned()));
+        let severity = RwSignal::new(Some(BadgeSeverity::Info));
+        let size = RwSignal::new(Some(BadgeSize::Large));
+        let class = RwSignal::new(Some("x".to_owned()));
+        let live = view! { <Badge value=value severity=severity size=size style_class=class /> }.to_html();
+        assert_eq!(fixed, live);
+    });
+}

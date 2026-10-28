@@ -71,15 +71,15 @@ pub enum ButtonVariant {
     Text,
 }
 
-/// Снимок свойств, влияющих на классы и `data-p*`.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct ButtonState {
+/// Снимок свойств, влияющих на классы и `data-p*` (строки заимствованы, без копирования).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct ButtonState<'a> {
     /// Метка (пустая строка равна отсутствию).
-    pub label: Option<String>,
+    pub label: Option<&'a str>,
     /// Есть ли иконка, иконка загрузки или их шаблон (`hasIcon` в PrimeNG).
     pub has_icon: bool,
     /// Значение бейджа.
-    pub badge: Option<String>,
+    pub badge: Option<&'a str>,
     /// Идёт загрузка.
     pub loading: bool,
     /// Серьёзность.
@@ -106,19 +106,19 @@ pub struct ButtonState {
     pub icon_pos: IconPos,
 }
 
-fn filled(s: &Option<String>) -> bool {
-    s.as_deref().is_some_and(|v| !v.is_empty())
+fn filled(s: Option<&str>) -> bool {
+    s.is_some_and(|v| !v.is_empty())
 }
 
-impl ButtonState {
+impl ButtonState<'_> {
     /// Есть ли метка.
     pub fn has_label(&self) -> bool {
-        filled(&self.label)
+        filled(self.label)
     }
 
     /// Есть ли бейдж.
     pub fn has_badge(&self) -> bool {
-        filled(&self.badge)
+        filled(self.badge)
     }
 
     fn icon_only(&self) -> bool {
@@ -138,16 +138,25 @@ impl ButtonState {
     }
 }
 
-/// Классы корневого `<button>` в порядке `buttonstyle.ts` (без `p-ripple`, `style_class` и `pt`).
-pub fn root_classes(s: &ButtonState) -> String {
-    let mut cn = ClassNames::new();
+/// Добавляет классы корневого `<button>` в порядке `buttonstyle.ts` (без `p-ripple`, `style_class` и `pt`).
+pub fn write_root_classes(cn: &mut ClassNames, s: &ButtonState) {
     cn.add("p-button p-component")
         .add_if(s.icon_only(), "p-button-icon-only")
         .add_if(s.vertical(), "p-button-vertical")
         .add_if(s.loading, "p-button-loading")
-        .add_if(s.link, "p-button-link")
-        .add_if(s.severity.is_some(), &s.severity.map(|v| format!("p-button-{}", v.as_str())).unwrap_or_default())
-        .add_if(s.raised, "p-button-raised")
+        .add_if(s.link, "p-button-link");
+    if let Some(sev) = s.severity {
+        cn.add(match sev {
+            ButtonSeverity::Secondary => "p-button-secondary",
+            ButtonSeverity::Success => "p-button-success",
+            ButtonSeverity::Info => "p-button-info",
+            ButtonSeverity::Warn => "p-button-warn",
+            ButtonSeverity::Help => "p-button-help",
+            ButtonSeverity::Danger => "p-button-danger",
+            ButtonSeverity::Contrast => "p-button-contrast",
+        });
+    }
+    cn.add_if(s.raised, "p-button-raised")
         .add_if(s.rounded, "p-button-rounded")
         .add_if(s.is_text(), "p-button-text")
         .add_if(s.is_outlined(), "p-button-outlined")
@@ -155,6 +164,12 @@ pub fn root_classes(s: &ButtonState) -> String {
         .add_if(s.size == Some(Size::Large), "p-button-lg")
         .add_if(s.plain, "p-button-plain")
         .add_if(s.fluid, "p-button-fluid");
+}
+
+/// Классы корневого `<button>` строкой.
+pub fn root_classes(s: &ButtonState) -> String {
+    let mut cn = ClassNames::new();
+    write_root_classes(&mut cn, s);
     cn.finish()
 }
 
@@ -176,8 +191,16 @@ pub fn root_data_p(s: &ButtonState) -> String {
 
 /// Классы оболочки иконки: `p-button-icon` и модификатор положения (только при наличии метки).
 pub fn icon_classes(s: &ButtonState) -> String {
-    let mut cn = ClassNames::new();
-    cn.add("p-button-icon").add_if(s.has_label(), &format!("p-button-icon-{}", s.icon_pos.as_str()));
+    let mut cn = ClassNames::with_capacity(32);
+    cn.add("p-button-icon");
+    if s.has_label() {
+        cn.add(match s.icon_pos {
+            IconPos::Left => "p-button-icon-left",
+            IconPos::Right => "p-button-icon-right",
+            IconPos::Top => "p-button-icon-top",
+            IconPos::Bottom => "p-button-icon-bottom",
+        });
+    }
     cn.finish()
 }
 
@@ -199,18 +222,18 @@ pub fn label_data_p(s: &ButtonState) -> String {
 mod tests {
     use super::*;
 
-    fn base() -> ButtonState {
+    fn base() -> ButtonState<'static> {
         ButtonState::default()
     }
 
     #[test]
     fn root_classes_table() {
         use ButtonSeverity::*;
-        let with_label = || ButtonState { label: Some("Save".into()), ..base() };
-        let cases: Vec<(ButtonState, &str, &str)> = vec![
+        let with_label = || ButtonState { label: Some("Save"), ..base() };
+        let cases: Vec<(ButtonState<'_>, &str, &str)> = vec![
             (base(), "p-button p-component", ""),
             (ButtonState { has_icon: true, ..base() }, "p-button p-component p-button-icon-only", "icon-only"),
-            (ButtonState { has_icon: true, badge: Some("3".into()), ..base() }, "p-button p-component", ""),
+            (ButtonState { has_icon: true, badge: Some("3"), ..base() }, "p-button p-component", ""),
             (ButtonState { has_icon: true, ..with_label() }, "p-button p-component", ""),
             (ButtonState { has_icon: true, icon_pos: IconPos::Top, ..with_label() }, "p-button p-component p-button-vertical", "vertical"),
             (ButtonState { icon_pos: IconPos::Bottom, ..with_label() }, "p-button p-component p-button-vertical", "vertical"),
@@ -252,7 +275,7 @@ mod tests {
 
     #[test]
     fn empty_label_and_badge_count_as_absent() {
-        let s = ButtonState { label: Some(String::new()), badge: Some(String::new()), has_icon: true, ..base() };
+        let s = ButtonState { label: Some(""), badge: Some(""), has_icon: true, ..base() };
         assert!(root_classes(&s).contains("p-button-icon-only"));
     }
 
@@ -261,7 +284,7 @@ mod tests {
         let no_label = base();
         assert_eq!(icon_classes(&no_label), "p-button-icon");
         for (pos, class) in [(IconPos::Left, "left"), (IconPos::Right, "right"), (IconPos::Top, "top"), (IconPos::Bottom, "bottom")] {
-            let s = ButtonState { label: Some("x".into()), icon_pos: pos, ..base() };
+            let s = ButtonState { label: Some("x"), icon_pos: pos, ..base() };
             assert_eq!(icon_classes(&s), format!("p-button-icon p-button-icon-{class}"));
         }
     }
