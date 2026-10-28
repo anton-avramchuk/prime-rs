@@ -22,7 +22,7 @@
 
 ## 5. Интеграция
 
-- [ ] 5.1 Обновить `docs/button.md` (правило «одна разметка в макросе, две ветви» для следующих компонентов) и `docs/benchmarks.md`; выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate static-render-path`; убедиться, что CI на `dev` зелёный и еженедельный job публикует новые метрики памяти
+- [x] 5.1 Обновить `docs/button.md` (правило «одна разметка в макросе, две ветви» для следующих компонентов) и `docs/benchmarks.md`; выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate static-render-path`; убедиться, что CI на `dev` зелёный и еженедельный job публикует новые метрики памяти
 
 ## Workflow follow-up
 
