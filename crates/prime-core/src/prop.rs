@@ -130,6 +130,29 @@ impl From<&str> for Prop<Option<String>> {
     }
 }
 
+/// Истинно, если все перечисленные свойства (`Prop`/`OptProp`) статические.
+///
+/// Проверка без аллокаций и подписок; компонент вызывает её один раз при создании экземпляра, чтобы выбрать
+/// путь отрисовки без реактивных замыканий.
+///
+/// ```
+/// use leptos::prelude::*;
+/// use prime_core::{OptProp, Prop, all_static};
+///
+/// Owner::new().with(|| {
+///     let label: OptProp<String> = "Сохранить".into();
+///     let loading: Prop<bool> = Prop::default();
+///     assert!(all_static!(label, loading));
+///
+///     let live: Prop<bool> = RwSignal::new(false).into();
+///     assert!(!all_static!(label, loading, live));
+/// });
+/// ```
+#[macro_export]
+macro_rules! all_static {
+    ($($prop:expr),* $(,)?) => { true $(&& $prop.is_static())* };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -166,6 +189,19 @@ mod tests {
             assert_eq!(Prop::<i32>::from(r).get(), 2);
             assert_eq!(Prop::<i32>::from(m).get(), 2);
             assert_eq!(Prop::<i32>::from(s).get(), 10);
+        });
+    }
+
+    #[test]
+    fn all_static_checks_every_property() {
+        Owner::new().with(|| {
+            let a: Prop<bool> = true.into();
+            let b: OptProp<String> = "x".into();
+            let c: Prop<i32> = RwSignal::new(1).into();
+            assert!(all_static!(a, b));
+            assert!(!all_static!(a, b, c));
+            assert!(!all_static!(c));
+            assert!(all_static!());
         });
     }
 
