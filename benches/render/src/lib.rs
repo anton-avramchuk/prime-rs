@@ -8,6 +8,7 @@ use prime_avatar::{Avatar, AvatarShape, AvatarSize};
 use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
 use prime_chip::Chip;
+use prime_divider::{Divider, DividerAlign};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_tag::{Tag, TagSeverity};
 
@@ -60,6 +61,10 @@ fn avatar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Avatar label="P" shape=AvatarShape::Circle size=AvatarSize::Large /> }).collect_view())
 }
 
+fn divider_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Divider align=DividerAlign::Center>"OR"</Divider> }).collect_view())
+}
+
 /// Все сценарии.
 pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "check-icon-1", run: || check_n(1) },
@@ -77,6 +82,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "chip-removable-1000", run: || chip_removable_n(1000) },
     Scenario { name: "avatar-1", run: || avatar_n(1) },
     Scenario { name: "avatar-1000", run: || avatar_n(1000) },
+    Scenario { name: "divider-1", run: || divider_n(1) },
+    Scenario { name: "divider-1000", run: || divider_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

@@ -26,6 +26,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-avatar")]
     return view! { <prime_avatar::Avatar label="P" shape=prime_avatar::AvatarShape::Circle size=prime_avatar::AvatarSize::Large /> };
 
+    #[cfg(feature = "case-divider")]
+    return view! { <prime_divider::Divider align=prime_divider::DividerAlign::Center>"OR"</prime_divider::Divider> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

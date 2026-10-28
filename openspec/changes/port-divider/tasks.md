@@ -2,13 +2,13 @@
 
 ## 1. Крейт и логика
 
-- [ ] 1.1 Создать крейт `crates/prime-divider` (`publish = false`, features `ssr`/`hydrate`, зависимость `prime-core`) и добавить в workspace; проверить `cargo check -p prime-divider --all-features`
-- [ ] 1.2 Реализовать `DividerLayout`, `DividerType`, `DividerAlign`, `DividerState`, `write_classes`, `align_style`, `data_p` по `dividerstyle.ts` и `Divider.dataP`; проверить таблицами юнит-тестов все сочетания `layout` × `align` (классы, стиль) и `data-p`
+- [x] 1.1 Создать крейт `crates/prime-divider` (`publish = false`, features `ssr`/`hydrate`, зависимость `prime-core`) и добавить в workspace; проверить `cargo check -p prime-divider --all-features`
+- [x] 1.2 Реализовать `DividerLayout`, `DividerType`, `DividerAlign`, `DividerState`, `write_classes`, `align_style`, `data_p` по `dividerstyle.ts` и `Divider.dataP`; проверить таблицами юнит-тестов все сочетания `layout` × `align` (классы, стиль) и `data-p`
 
 ## 2. Компонент
 
-- [ ] 2.1 Реализовать `Divider` с двумя ветвями отрисовки, блоком `p-divider-content`, `role`, `aria-orientation`, inline-стилем и `pt` (`DividerPt`); проверить SSR-тестами всех сценариев спеки
-- [ ] 2.2 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-divider --all-features` и doc-тесты
+- [x] 2.1 Реализовать `Divider` с двумя ветвями отрисовки, блоком `p-divider-content`, `role`, `aria-orientation`, inline-стилем и `pt` (`DividerPt`); проверить SSR-тестами всех сценариев спеки
+- [x] 2.2 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-divider --all-features` и doc-тесты
 
 ## 3. Showcase и e2e
 

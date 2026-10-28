@@ -4,6 +4,7 @@ mod avatar;
 mod badge;
 mod button;
 mod chip;
+mod divider;
 mod home;
 mod tag;
 
@@ -11,6 +12,7 @@ pub use avatar::AvatarPage;
 pub use badge::BadgePage;
 pub use button::ButtonPage;
 pub use chip::ChipPage;
+pub use divider::DividerPage;
 pub use home::HomePage;
 pub use tag::TagPage;
 

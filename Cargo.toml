@@ -25,6 +25,7 @@ prime-button = { path = "crates/prime-button" }
 prime-tag = { path = "crates/prime-tag" }
 prime-chip = { path = "crates/prime-chip" }
 prime-avatar = { path = "crates/prime-avatar" }
+prime-divider = { path = "crates/prime-divider" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

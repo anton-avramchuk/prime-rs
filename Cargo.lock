@@ -1668,6 +1668,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-divider"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-dom"
 version = "0.1.0"
 dependencies = [

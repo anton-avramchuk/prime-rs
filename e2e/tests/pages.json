@@ -222,5 +222,33 @@
     "upstream": "/avatar",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "divider-basic",
+    "ours": "/divider",
+    "upstream": "/divider",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "divider-content",
+    "ours": "/divider",
+    "upstream": "/divider",
+    "oursSelector": "[data-demo=\"content\"]",
+    "upstreamSelector": "content-doc .card"
+  },
+  {
+    "name": "divider-type",
+    "ours": "/divider",
+    "upstream": "/divider",
+    "oursSelector": "[data-demo=\"type\"]",
+    "upstreamSelector": "type-doc .card"
+  },
+  {
+    "name": "divider-vertical",
+    "ours": "/divider",
+    "upstream": "/divider",
+    "oursSelector": "[data-demo=\"vertical\"]",
+    "upstreamSelector": "vertical-doc .card"
   }
 ]
