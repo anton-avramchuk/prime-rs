@@ -37,3 +37,8 @@ max_per_instance = 50
 name = "avatar-1000"
 instances = 1000
 max_per_instance = 18
+
+[[scenario]]
+name = "divider-1000"
+instances = 1000
+max_per_instance = 27

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Divider', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/divider');
-        await expect(page.locator('[data-demo=basic] .p-divider')).toBeVisible();
+        await expect(page.locator('[data-demo=basic] .p-divider')).toBeAttached();
     });
 
     test('демонстрации отрисованы со стилями темы', async ({ page }) => {

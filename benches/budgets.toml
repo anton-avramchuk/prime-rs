@@ -41,6 +41,6 @@ max_delta_bytes = 180000
 [[case]]
 name = "divider"
 feature = "case-divider"
-max_delta_bytes = 200000
+max_delta_bytes = 130000
 
 # После `static-render-path` (две ветви разметки): вклад badge 96 303 Б, button 373 874 Б (было 84 320 и 326 754); бюджеты не менялись.
