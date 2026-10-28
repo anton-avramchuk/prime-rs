@@ -39,8 +39,11 @@ pub fn parse_output(json: &str, wanted: &[String]) -> Result<Css, String> {
 pub fn render_rust(names: &[String]) -> String {
     let mut s = String::from("// Файл сгенерирован `cargo xtask gen-theme`; не редактировать вручную.\n\n");
     for n in names {
-        let _ =
-            writeln!(s, "#[cfg(feature = {n:?})]\npub const {}: &str = include_str!(\"../css/components/{n}.css\");\n", n.to_uppercase());
+        let _ = writeln!(
+            s,
+            "/// CSS компонента `{n}`.\n#[cfg(feature = {n:?})]\npub const {}: &str = include_str!(\"../css/components/{n}.css\");\n",
+            n.to_uppercase()
+        );
     }
     s.push_str("/// Пары «имя — CSS» для включённых компонентов.\npub(crate) static COMPONENTS: &[(&str, &str)] = &[\n");
     for n in names {

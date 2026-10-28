@@ -1,41 +1,54 @@
 // Файл сгенерирован `cargo xtask gen-theme`; не редактировать вручную.
 
+/// CSS компонента `avatar`.
 #[cfg(feature = "avatar")]
 pub const AVATAR: &str = include_str!("../css/components/avatar.css");
 
+/// CSS компонента `badge`.
 #[cfg(feature = "badge")]
 pub const BADGE: &str = include_str!("../css/components/badge.css");
 
+/// CSS компонента `button`.
 #[cfg(feature = "button")]
 pub const BUTTON: &str = include_str!("../css/components/button.css");
 
+/// CSS компонента `card`.
 #[cfg(feature = "card")]
 pub const CARD: &str = include_str!("../css/components/card.css");
 
+/// CSS компонента `checkbox`.
 #[cfg(feature = "checkbox")]
 pub const CHECKBOX: &str = include_str!("../css/components/checkbox.css");
 
+/// CSS компонента `chip`.
 #[cfg(feature = "chip")]
 pub const CHIP: &str = include_str!("../css/components/chip.css");
 
+/// CSS компонента `divider`.
 #[cfg(feature = "divider")]
 pub const DIVIDER: &str = include_str!("../css/components/divider.css");
 
+/// CSS компонента `inputtext`.
 #[cfg(feature = "inputtext")]
 pub const INPUTTEXT: &str = include_str!("../css/components/inputtext.css");
 
+/// CSS компонента `message`.
 #[cfg(feature = "message")]
 pub const MESSAGE: &str = include_str!("../css/components/message.css");
 
+/// CSS компонента `progressbar`.
 #[cfg(feature = "progressbar")]
 pub const PROGRESSBAR: &str = include_str!("../css/components/progressbar.css");
 
+/// CSS компонента `radiobutton`.
 #[cfg(feature = "radiobutton")]
 pub const RADIOBUTTON: &str = include_str!("../css/components/radiobutton.css");
 
+/// CSS компонента `tag`.
 #[cfg(feature = "tag")]
 pub const TAG: &str = include_str!("../css/components/tag.css");
 
+/// CSS компонента `toggleswitch`.
 #[cfg(feature = "toggleswitch")]
 pub const TOGGLESWITCH: &str = include_str!("../css/components/toggleswitch.css");
 

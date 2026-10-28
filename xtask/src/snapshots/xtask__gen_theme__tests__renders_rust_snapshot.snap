@@ -4,9 +4,11 @@ expression: "render_rust(&names(&[\"badge\", \"button\"]))"
 ---
 // Файл сгенерирован `cargo xtask gen-theme`; не редактировать вручную.
 
+/// CSS компонента `badge`.
 #[cfg(feature = "badge")]
 pub const BADGE: &str = include_str!("../css/components/badge.css");
 
+/// CSS компонента `button`.
 #[cfg(feature = "button")]
 pub const BUTTON: &str = include_str!("../css/components/button.css");
 
