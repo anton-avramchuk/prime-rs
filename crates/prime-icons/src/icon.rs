@@ -67,6 +67,7 @@ pub fn BlankIcon(
 }
 
 /// Объявляет компонент иконки по набору контуров.
+#[allow(unused_macros)]
 macro_rules! icon {
     ($name:ident, [$($d:expr),+ $(,)?]) => {
         /// Иконка PrimeNG (см. документацию крейта).

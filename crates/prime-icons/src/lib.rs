@@ -19,4 +19,5 @@ pub use icon::BlankIcon;
 #[allow(missing_docs)]
 #[rustfmt::skip]
 mod generated;
+#[allow(unused_imports)]
 pub use generated::*;

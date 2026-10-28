@@ -32,4 +32,5 @@ pub fn stylesheet(components: &[&str]) -> String {
     out
 }
 
+#[allow(unused_imports)]
 pub use generated::*;
