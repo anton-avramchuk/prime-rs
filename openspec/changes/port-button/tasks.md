@@ -38,12 +38,12 @@
 - [x] 6.1 Добавить `leptos_router` в `showcase` (маршруты `/`, `/button`, `/badge`), включить features `button` и `badge` темы; проверить `cargo leptos build` и открытие страниц
 - [x] 6.2 Перенести демонстрации Button из `apps/showcase/doc/button` (все свойства спеки) и Badge в страницы showcase; проверить в Chrome, что каждая демонстрация отображается без ошибок консоли
 - [x] 6.3 Добавить страницы в `e2e/tests/pages.json` и e2e-проверки (`button.spec.ts`: клик, loading, disabled, ripple); проверить `npx playwright test` локально с запущенным showcase
-- [ ] 6.4 Запустить `weekly.yml` вручную и проверить, что отчёт `visual.json` содержит `visual.button.mismatch_pct`; записать расхождения и их причины в `docs/button.md`
+- [x] 6.4 Запустить `weekly.yml` вручную и проверить, что отчёт `visual.json` содержит `visual.button.mismatch_pct`; записать расхождения и их причины в `docs/button.md`
 
 ## 7. Интеграционная проверка
 
-- [ ] 7.1 Добавить `openspec/` ссылки на исходники: в `docs/button.md` указать файлы PrimeNG и коммит, с которых портированы Button и Badge; проверить `cargo xtask upstream-diff` (изменений нет)
-- [ ] 7.2 Выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo fmt --all --check`, `cargo deny check` и `openspec validate port-button`; убедиться, что CI на PR зелёный
+- [x] 7.1 Добавить `openspec/` ссылки на исходники: в `docs/button.md` указать файлы PrimeNG и коммит, с которых портированы Button и Badge; проверить `cargo xtask upstream-diff` (изменений нет)
+- [x] 7.2 Выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo fmt --all --check`, `cargo deny check` и `openspec validate port-button`; убедиться, что CI на PR зелёный
 
 ## Workflow follow-up
 
