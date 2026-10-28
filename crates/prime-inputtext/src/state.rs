@@ -1,6 +1,7 @@
 //! Чистая логика InputText: классы и `data-p` (по `inputtextstyle.ts` и `InputText.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP, Size, Variant};
+use std::borrow::Cow;
 
 /// Снимок свойств, влияющих на классы и `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -29,13 +30,13 @@ pub fn write_classes(cn: &mut ClassNames, s: &InputTextState) {
 }
 
 /// Значение `data-p`: `invalid`, `fluid`, `filled` (при варианте `filled`), размер.
-pub fn data_p(s: &InputTextState) -> String {
+pub fn data_p(s: &InputTextState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.invalid, "invalid")
         .add_if(s.fluid, "fluid")
         .add_if(s.variant == Some(Variant::Filled), "filled")
         .add_opt(s.size.map(Size::as_str));
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

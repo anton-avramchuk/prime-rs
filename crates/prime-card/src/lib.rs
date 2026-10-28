@@ -17,6 +17,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Pt, all_static};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 /// Pass-through частей Card.
@@ -74,10 +75,9 @@ pub fn Card(
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(header, subheader, style, style_class);
-    let props =
-        Arc::new(Props { header, subheader, style, style_class, header_template, title_template, subtitle_template, footer_template });
+    let props = Props { header, subheader, style, style_class, header_template, title_template, subtitle_template, footer_template };
     let content = children.map(|c| c());
     let (attrs, body_class, body_attrs, content_class, content_attrs) = (
         pt.root.attrs(),
@@ -106,6 +106,7 @@ pub fn Card(
             footer
         ))
     } else {
+        let (props, pt) = (Arc::new(props), Arc::new(pt));
         let class = {
             let (props, pt) = (props.clone(), pt.clone());
             move || class_of(&props, &pt)
@@ -164,12 +165,12 @@ macro_rules! card_markup {
 }
 use card_markup;
 
-fn class_of(props: &Props, pt: &CardPt) -> String {
+fn class_of(props: &Props, pt: &CardPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-card p-component");
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 fn style_of(props: &Props, pt: &CardPt) -> Option<String> {

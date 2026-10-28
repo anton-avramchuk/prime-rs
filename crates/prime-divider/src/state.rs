@@ -1,6 +1,7 @@
 //! Чистая логика Divider: классы, inline-стиль выравнивания и `data-p` (по `dividerstyle.ts` и `Divider.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP};
+use std::borrow::Cow;
 
 /// Направление разделителя.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -130,10 +131,10 @@ pub fn align_style(s: &DividerState) -> Option<(&'static str, &'static str)> {
 }
 
 /// Значение `data-p`: выравнивание (если задано), направление, тип.
-pub fn data_p(s: &DividerState) -> String {
+pub fn data_p(s: &DividerState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_opt(s.align.map(DividerAlign::as_str)).add(s.layout.as_str()).add(s.divider_type.as_str());
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

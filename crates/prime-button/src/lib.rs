@@ -404,20 +404,20 @@ macro_rules! button_markup {
 }
 use button_markup;
 
-fn class_of(props: &Props, pt: &ButtonPt) -> String {
+fn class_of(props: &Props, pt: &ButtonPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     props.with_state(|s| write_root_classes(&mut cn, s));
     cn.add("p-ripple");
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 fn style_of(props: &Props, pt: &ButtonPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     props.with_state(root_data_p)
 }
 

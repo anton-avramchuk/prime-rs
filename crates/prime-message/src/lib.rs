@@ -16,10 +16,11 @@
 
 mod state;
 
-use leptos::either::Either;
+use leptos::either::{Either, EitherOf3};
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, Size, all_static, use_prime_config};
 use prime_icons::TimesIcon;
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{MessageSeverity, MessageState, MessageVariant, data_p, write_classes};
@@ -104,10 +105,10 @@ pub fn Message(
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(severity, variant, size, text, icon, close_icon, style, style_class) && !closable && life.is_none();
     let visible = (!is_static).then(|| RwSignal::new(true));
-    let props = Arc::new(Props {
+    let props = Props {
         severity,
         variant,
         size,
@@ -120,7 +121,7 @@ pub fn Message(
         icon_template,
         close_icon_template,
         visible,
-    });
+    };
 
     if let (Some(ms), Some(visible)) = (life, visible) {
         #[cfg(target_arch = "wasm32")]
@@ -140,24 +141,23 @@ pub fn Message(
             cb.run(MessageClose { original_event: e });
         }
     });
-    let kids = children.map(|c| c().into_any());
+    let kids = children.map(|c| c());
     let aria_close = use_prime_config().locale.text("aria.close").to_owned();
     let (root_attrs, wrapper_attrs, content_attrs) = (pt.root.attrs(), pt.content_wrapper.attrs(), pt.content.attrs());
 
     if is_static {
-        let (p, t) = (&*props, &*pt);
+        let (p, t) = (&props, &pt);
         let data = data_of(p);
         let (root_class, root_style) = (root_class(p, t), root_style(p, t));
         let (wrapper_class, content_class) =
             (t.content_wrapper.merge_class("p-message-content-wrapper"), t.content.merge_class("p-message-content"));
         let icon = icon_of(p, t, &data);
         let body = match container_template {
-            Some(tpl) => tpl.run(close),
-            None => view! {
+            Some(tpl) => Either::Left(tpl.run(close)),
+            None => Either::Right(view! {
                 {text_of(t, &data, p.text.get())}
                 <span class={text_class(t)} data-p={data.clone()} {..t.text.attrs()}>{kids}</span>
-            }
-            .into_any(),
+            }),
         };
         let close_view = ();
         Either::Left(message_markup!(
@@ -174,6 +174,7 @@ pub fn Message(
             content_attrs
         ))
     } else {
+        let (props, pt) = (Arc::new(props), Arc::new(pt));
         let (p, t) = (&props, &pt);
         let root_class = rx(p, t, root_class);
         let root_style = rx(p, t, root_style);
@@ -182,17 +183,16 @@ pub fn Message(
         let content_class = rx(p, t, |_, t| t.content.merge_class("p-message-content"));
         let icon = rx(p, t, |p, t| icon_of(p, t, &data_of(p)));
         let body = match container_template {
-            Some(tpl) => tpl.run(close),
+            Some(tpl) => Either::Left(tpl.run(close)),
             None => {
                 let text = rx(p, t, |p, t| text_of(t, &data_of(p), p.text.get()));
                 let data_kids = data.clone();
                 let kids_class = text_class(t);
                 let kids_attrs = t.text.attrs();
-                view! {
+                Either::Right(view! {
                     {text}
                     <span class={kids_class} data-p={data_kids} {..kids_attrs}>{kids}</span>
-                }
-                .into_any()
+                })
             }
         };
         let close_view = {
@@ -251,7 +251,7 @@ fn state_of(props: &Props) -> MessageState {
     MessageState { severity: props.severity.get(), variant: props.variant.get(), size: props.size.get() }
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 
@@ -259,12 +259,12 @@ fn is_hidden(props: &Props) -> bool {
     props.visible.is_some_and(|v| !v.get())
 }
 
-fn root_class(props: &Props, pt: &MessagePt) -> String {
+fn root_class(props: &Props, pt: &MessagePt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &state_of(props));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class()).add_if(is_hidden(props), "p-message-leave-active");
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class()).add_if(is_hidden(props), "p-message-leave-active");
+    cn.finish_cow()
 }
 
 fn root_style(props: &Props, pt: &MessagePt) -> Option<String> {
@@ -277,55 +277,66 @@ fn root_style(props: &Props, pt: &MessagePt) -> Option<String> {
     })
 }
 
-fn text_class(pt: &MessagePt) -> String {
+fn text_class(pt: &MessagePt) -> Cow<'static, str> {
     pt.text.merge_class("p-message-text")
 }
 
 /// Первый `span.p-message-text` с текстом; без текста — ничего.
-fn text_of(pt: &MessagePt, data: &str, text: Option<String>) -> Option<AnyView> {
+// `&Cow` нужен, чтобы дёшево клонировать интернированное значение `data-p` в части разметки.
+#[allow(clippy::ptr_arg)]
+fn text_of(pt: &MessagePt, data: &Cow<'static, str>, text: Option<String>) -> Option<impl IntoView + use<>> {
     let text = text.filter(|t| !t.is_empty())?;
-    Some(view! { <span class={text_class(pt)} data-p={data.to_owned()} {..pt.text.attrs()}>{text}</span> }.into_any())
+    Some(view! { <span class={text_class(pt)} data-p={data.clone()} {..pt.text.attrs()}>{text}</span> })
 }
 
-fn icon_of(props: &Props, pt: &MessagePt, data: &str) -> AnyView {
+// `&Cow` нужен, чтобы дёшево клонировать интернированное значение `data-p` в части разметки.
+#[allow(clippy::ptr_arg)]
+fn icon_of(props: &Props, pt: &MessagePt, data: &Cow<'static, str>) -> impl IntoView + use<> {
     let template = props.icon_template.as_ref().map(|t| t.run());
     let class = props.icon.with(|icon| {
         icon.as_deref().filter(|i| !i.is_empty()).map(|icon| {
             let mut cn = ClassNames::new();
-            cn.add("p-message-icon").add(icon).add_opt(pt.icon.extra_class());
-            cn.finish()
+            cn.add("p-message-icon").add(icon).add_user(pt.icon.extra_class());
+            cn.finish_cow()
         })
     });
-    let glyph = class.map(|class| view! { <i class={class} data-p={data.to_owned()} {..pt.icon.attrs()}></i> });
-    view! { {template} {glyph} }.into_any()
+    let glyph = class.map(|class| view! { <i class={class} data-p={data.clone()} {..pt.icon.attrs()}></i> });
+    view! { {template} {glyph} }
 }
 
-fn close_of(props: &Props, pt: &MessagePt, data: &str, close: Callback<web_sys::Event>, aria: &str) -> AnyView {
+// `&Cow` нужен, чтобы дёшево клонировать интернированное значение `data-p` в части разметки.
+#[allow(clippy::ptr_arg)]
+fn close_of(
+    props: &Props,
+    pt: &MessagePt,
+    data: &Cow<'static, str>,
+    close: Callback<web_sys::Event>,
+    aria: &str,
+) -> Option<impl IntoView + use<>> {
     if !props.closable {
-        return ().into_any();
+        return None;
     }
     let inner = if let Some(class) = props.close_icon.get().filter(|c| !c.is_empty()) {
         let mut cn = ClassNames::new();
-        cn.add("p-message-close-icon").add(&class).add_opt(pt.close_icon.extra_class());
-        view! { <i class={cn.finish()} data-p={data.to_owned()} {..pt.close_icon.attrs()}></i> }.into_any()
+        cn.add("p-message-close-icon").add_user(Some(&class)).add_user(pt.close_icon.extra_class());
+        EitherOf3::A(view! { <i class={cn.finish_cow()} data-p={data.clone()} {..pt.close_icon.attrs()}></i> })
     } else if let Some(template) = &props.close_icon_template {
-        template.run()
+        EitherOf3::B(template.run())
     } else {
-        view! { <TimesIcon class={pt.close_icon.merge_class("p-message-close-icon")} /> }.into_any()
+        EitherOf3::C(view! { <TimesIcon class={pt.close_icon.merge_class("p-message-close-icon")} /> })
     };
-    view! {
+    Some(view! {
         <button
             type="button"
             class={pt.close_button.merge_class("p-message-close-button")}
             aria-label={aria.to_owned()}
-            data-p={data.to_owned()}
+            data-p={data.clone()}
             on:click={move |e: web_sys::MouseEvent| close.run(e.into())}
             {..pt.close_button.attrs()}
         >
             {inner}
         </button>
-    }
-    .into_any()
+    })
 }
 
 /// Свойства экземпляра.

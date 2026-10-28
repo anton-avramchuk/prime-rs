@@ -18,10 +18,11 @@
 
 mod state;
 
-use leptos::either::Either;
+use leptos::either::{Either, EitherOf4};
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, all_static, use_prime_config};
 use prime_icons::{CheckIcon, MinusIcon};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{CheckboxState, data_p, write_classes};
@@ -132,7 +133,7 @@ pub fn Checkbox(
     #[prop(optional)]
     pt: Option<CheckboxPt>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(
         value,
         input_id,
@@ -207,7 +208,7 @@ pub fn Checkbox(
     };
 
     if is_static {
-        let (p, t) = (&*props, &*pt);
+        let (p, t) = (&*props, &pt);
         let root_class = root_class(p, t);
         let root_style = root_style(p, t);
         let (highlight, data) = (bool_attr(checked_of(p)), data_of(p));
@@ -245,6 +246,7 @@ pub fn Checkbox(
             box_attrs
         ))
     } else {
+        let pt = Arc::new(pt);
         let (p, t) = (&props, &pt);
         let root_class = rx(p, t, root_class);
         let root_style = rx(p, t, root_style);
@@ -399,41 +401,41 @@ fn state_of(props: &Props) -> CheckboxState {
     }
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 
-fn root_class(props: &Props, pt: &CheckboxPt) -> String {
+fn root_class(props: &Props, pt: &CheckboxPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &state_of(props));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 fn root_style(props: &Props, pt: &CheckboxPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-fn input_class_of(props: &Props, pt: &CheckboxPt) -> String {
+fn input_class_of(props: &Props, pt: &CheckboxPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-checkbox-input");
-    props.input_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.input.extra_class());
-    cn.finish()
+    props.input_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.input.extra_class());
+    cn.finish_cow()
 }
 
-fn icon_of(props: &Props, pt: &CheckboxPt) -> AnyView {
+fn icon_of(props: &Props, pt: &CheckboxPt) -> impl IntoView + use<> {
     if let Some(template) = &props.icon_template {
-        return template.run();
+        return EitherOf4::A(template.run());
     }
     let class = pt.icon.merge_class("p-checkbox-icon");
     if props.indeterminate.is_some_and(|s| s.get()) {
-        view! { <MinusIcon class=class /> }.into_any()
+        EitherOf4::B(view! { <MinusIcon class=class /> })
     } else if checked_of(props) {
-        view! { <CheckIcon class=class /> }.into_any()
+        EitherOf4::C(view! { <CheckIcon class=class /> })
     } else {
-        ().into_any()
+        EitherOf4::D(())
     }
 }
 

@@ -21,6 +21,7 @@ mod state;
 use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, all_static, use_prime_config};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{RadioButtonState, data_p, write_classes};
@@ -110,7 +111,7 @@ pub fn RadioButton(
     #[prop(optional)]
     pt: Option<RadioButtonPt>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(
         value,
         input_id,
@@ -175,7 +176,7 @@ pub fn RadioButton(
     };
 
     if is_static {
-        let (p, t) = (&*props, &*pt);
+        let (p, t) = (&*props, &pt);
         let root_class = root_class(p, t);
         let root_style = root_style(p, t);
         let (checked_attr, disabled_attr, data) = (bool_attr(checked_of(p)), bool_attr(p.disabled.get()), data_of(p));
@@ -211,6 +212,7 @@ pub fn RadioButton(
             icon_attrs
         ))
     } else {
+        let pt = Arc::new(pt);
         let (p, t) = (&props, &pt);
         let root_class = rx(p, t, root_class);
         let root_style = rx(p, t, root_style);
@@ -332,16 +334,16 @@ fn state_of(props: &Props) -> RadioButtonState {
     }
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 
-fn root_class(props: &Props, pt: &RadioButtonPt) -> String {
+fn root_class(props: &Props, pt: &RadioButtonPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &state_of(props));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 fn root_style(props: &Props, pt: &RadioButtonPt) -> Option<String> {

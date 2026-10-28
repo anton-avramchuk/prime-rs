@@ -103,7 +103,7 @@ pub fn InputText(
     #[prop(optional)]
     pt: Option<Pt>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(
         input_type,
         id,
@@ -201,6 +201,7 @@ pub fn InputText(
             attrs
         ))
     } else {
+        let pt = Arc::new(pt);
         macro_rules! reactive {
             ($($field:ident),+) => {
                 $(let $field = { let props = props.clone(); move || props.$field.get() };)+
@@ -295,19 +296,19 @@ fn state_of(props: &Props) -> InputTextState {
     }
 }
 
-fn class_of(props: &Props, pt: &Pt) -> String {
+fn class_of(props: &Props, pt: &Pt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &state_of(props));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.extra_class());
+    cn.finish_cow()
 }
 
 fn style_of(props: &Props, pt: &Pt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.has_style()).then(|| pt.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 

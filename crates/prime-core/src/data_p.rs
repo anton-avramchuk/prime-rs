@@ -1,6 +1,7 @@
 //! Атрибут `data-p`: признаки состояния через пробел (аналог `cn({...})` в PrimeNG).
 
 use crate::class_names::ClassNames;
+use std::borrow::Cow;
 
 /// Собирает значение `data-p`: без пустых и повторяющихся признаков.
 ///
@@ -41,6 +42,11 @@ impl DataP {
     /// Готовое значение атрибута.
     pub fn finish(self) -> String {
         self.0.finish()
+    }
+
+    /// Готовое значение без аллокации для повторяющихся комбинаций признаков (интернирование).
+    pub fn finish_cow(self) -> Cow<'static, str> {
+        self.0.finish_cow()
     }
 }
 

@@ -1,6 +1,7 @@
 //! Чистая логика Message: классы и `data-p` (по `messagestyle.ts` и `Message.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP, Size};
+use std::borrow::Cow;
 
 /// Серьёзность сообщения (`p-message-<severity>`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -93,13 +94,13 @@ pub fn write_classes(cn: &mut ClassNames, s: &MessageState) {
 }
 
 /// Значение `data-p`: `outlined`, `simple`, серьёзность, размер.
-pub fn data_p(s: &MessageState) -> String {
+pub fn data_p(s: &MessageState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.variant == Some(MessageVariant::Outlined), "outlined")
         .add_if(s.variant == Some(MessageVariant::Simple), "simple")
         .add(s.severity.as_str())
         .add_opt(s.size.map(Size::as_str));
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

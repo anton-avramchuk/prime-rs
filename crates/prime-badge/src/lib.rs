@@ -18,6 +18,7 @@ mod state;
 use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{BadgeSeverity, BadgeSize, BadgeState, classes, data_p, write_classes};
@@ -56,7 +57,7 @@ pub fn Badge(
     let pt = Arc::new(pt.unwrap_or_default().root);
     let is_static = all_static!(value, severity, size, badge_disabled, style_class);
     // Все свойства в одном `Arc`: замыкания атрибутов клонируют счётчик ссылок, а не строки значений.
-    let props = Arc::new(Props { value, severity, size, disabled: badge_disabled, style_class });
+    let props = Props { value, severity, size, disabled: badge_disabled, style_class };
     let attrs = pt.attrs();
 
     if is_static {
@@ -64,6 +65,7 @@ pub fn Badge(
         let (class, style, data, text) = (class_of(&props, &pt), style_of(&props, &pt), data_of(&props), props.value.get());
         Either::Left(badge_markup!(class, style, data, text, attrs))
     } else {
+        let (props, pt) = (Arc::new(props), Arc::new(pt));
         let class = {
             let (props, pt) = (props.clone(), pt.clone());
             move || class_of(&props, &pt)
@@ -93,12 +95,12 @@ macro_rules! badge_markup {
 }
 use badge_markup;
 
-fn class_of(props: &Props, pt: &Pt) -> String {
+fn class_of(props: &Props, pt: &Pt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     props.with_state(|s| write_classes(&mut cn, s));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.extra_class());
+    cn.finish_cow()
 }
 
 fn style_of(props: &Props, pt: &Pt) -> Option<String> {
@@ -106,7 +108,7 @@ fn style_of(props: &Props, pt: &Pt) -> Option<String> {
     (hidden || pt.has_style()).then(|| pt.merge_style(if hidden { "display: none" } else { "" }))
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     props.with_state(data_p)
 }
 

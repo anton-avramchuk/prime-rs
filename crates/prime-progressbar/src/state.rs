@@ -1,6 +1,7 @@
 //! Чистая логика ProgressBar: режим, классы и `data-p` (по `progressbarstyle.ts` и `ProgressBar.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP};
+use std::borrow::Cow;
 
 /// Режим индикатора.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -38,10 +39,10 @@ pub fn write_classes(cn: &mut ClassNames, s: &ProgressBarState) {
 }
 
 /// Значение `data-p`: `determinate` или `indeterminate`.
-pub fn data_p(s: &ProgressBarState) -> String {
+pub fn data_p(s: &ProgressBarState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(s.mode.as_str());
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

@@ -20,6 +20,7 @@ use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, all_static, use_prime_config};
 use prime_icons::TimesCircleIcon;
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{ChipState, data_p, is_remove_key, write_classes};
@@ -138,15 +139,15 @@ macro_rules! chip_markup {
 }
 use chip_markup;
 
-fn class_of(props: &Props, pt: &ChipPt) -> String {
+fn class_of(props: &Props, pt: &ChipPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &ChipState { disabled: props.disabled.get(), removable: props.removable.get() });
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&ChipState { disabled: props.disabled.get(), removable: props.removable.get() })
 }
 

@@ -23,6 +23,7 @@ use leptos::html;
 use leptos::prelude::*;
 use leptos::wasm_bindgen::JsCast;
 use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{ToggleSwitchState, data_p, write_classes};
@@ -109,7 +110,7 @@ pub fn ToggleSwitch(
     #[prop(optional)]
     pt: Option<ToggleSwitchPt>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static =
         all_static!(input_id, name, tabindex, aria_label, aria_labelledby, disabled, readonly, required, invalid, style, style_class)
             && checked.is_none();
@@ -170,7 +171,7 @@ pub fn ToggleSwitch(
     };
 
     if is_static {
-        let (p, t) = (&*props, &*pt);
+        let (p, t) = (&*props, &pt);
         let root_class = root_class(p, t);
         let root_style = root_style(p, t);
         let (checked_attr, disabled_attr, data) = (bool_attr(checked_of(p)), bool_attr(p.disabled.get()), data_of(p));
@@ -208,6 +209,7 @@ pub fn ToggleSwitch(
             handle_attrs
         ))
     } else {
+        let pt = Arc::new(pt);
         let (p, t) = (&props, &pt);
         let root_class = rx(p, t, root_class);
         let root_style = rx(p, t, root_style);
@@ -335,16 +337,16 @@ fn state_of(props: &Props) -> ToggleSwitchState {
     ToggleSwitchState { checked: checked_of(props), disabled: props.disabled.get(), invalid: props.invalid.get() }
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 
-fn root_class(props: &Props, pt: &ToggleSwitchPt) -> String {
+fn root_class(props: &Props, pt: &ToggleSwitchPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &state_of(props));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 fn root_style(props: &Props, pt: &ToggleSwitchPt) -> String {
@@ -356,11 +358,8 @@ fn root_style(props: &Props, pt: &ToggleSwitchPt) -> String {
     })
 }
 
-fn handle_of(props: &Props, checked: bool) -> AnyView {
-    match props.handle_template {
-        Some(template) => template.run(checked),
-        None => ().into_any(),
-    }
+fn handle_of(props: &Props, checked: bool) -> Option<AnyView> {
+    props.handle_template.map(|template| template.run(checked))
 }
 
 /// Свойства экземпляра.

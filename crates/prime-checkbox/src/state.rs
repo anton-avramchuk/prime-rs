@@ -1,6 +1,7 @@
 //! Чистая логика Checkbox: классы и `data-p` (по `checkboxstyle.ts` и `Checkbox.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP, Size, Variant};
+use std::borrow::Cow;
 
 /// Снимок свойств, влияющих на классы и `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -29,14 +30,14 @@ pub fn write_classes(cn: &mut ClassNames, s: &CheckboxState) {
 }
 
 /// Значение `data-p`: `invalid`, `checked`, `disabled`, `filled` (при варианте `filled`), размер.
-pub fn data_p(s: &CheckboxState) -> String {
+pub fn data_p(s: &CheckboxState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.invalid, "invalid")
         .add_if(s.checked, "checked")
         .add_if(s.disabled, "disabled")
         .add_if(s.variant == Some(Variant::Filled), "filled")
         .add_opt(s.size.map(Size::as_str));
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

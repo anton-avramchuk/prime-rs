@@ -1,6 +1,7 @@
 //! Чистая логика Button: из свойств в классы и `data-p*` (по `buttonstyle.ts` и `Button.dataP*` PrimeNG).
 
 use prime_core::{ClassNames, DataP, Size};
+use std::borrow::Cow;
 
 /// Серьёзность кнопки (`p-button-<severity>`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -167,14 +168,14 @@ pub fn write_root_classes(cn: &mut ClassNames, s: &ButtonState) {
 }
 
 /// Классы корневого `<button>` строкой.
-pub fn root_classes(s: &ButtonState) -> String {
+pub fn root_classes(s: &ButtonState) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_root_classes(&mut cn, s);
-    cn.finish()
+    cn.finish_cow()
 }
 
 /// Значение `data-p` корня: размер, `icon-only`, `loading`, `fluid`, `rounded`, `raised`, `outlined`, `text`, `link`, `vertical`.
-pub fn root_data_p(s: &ButtonState) -> String {
+pub fn root_data_p(s: &ButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_opt(s.size.map(Size::as_str))
         .add_if(s.icon_only(), "icon-only")
@@ -186,7 +187,7 @@ pub fn root_data_p(s: &ButtonState) -> String {
         .add_if(s.is_text(), "text")
         .add_if(s.link, "link")
         .add_if(s.vertical(), "vertical");
-    d.finish()
+    d.finish_cow()
 }
 
 /// Классы оболочки иконки: `p-button-icon` и модификатор положения (только при наличии метки).
@@ -205,17 +206,17 @@ pub fn icon_classes(s: &ButtonState) -> String {
 }
 
 /// `data-p` иконки: положение и размер.
-pub fn icon_data_p(s: &ButtonState) -> String {
+pub fn icon_data_p(s: &ButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(s.icon_pos.as_str()).add_opt(s.size.map(Size::as_str));
-    d.finish()
+    d.finish_cow()
 }
 
 /// `data-p` метки: размер и `icon-only`.
-pub fn label_data_p(s: &ButtonState) -> String {
+pub fn label_data_p(s: &ButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_opt(s.size.map(Size::as_str)).add_if(s.icon_only(), "icon-only");
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

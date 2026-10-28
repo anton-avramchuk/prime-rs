@@ -18,6 +18,7 @@ mod state;
 use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{AvatarShape, AvatarSize, AvatarState, data_p, write_classes};
@@ -77,9 +78,9 @@ pub fn Avatar(
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(label, image, size, shape, style, style_class, aria_label, aria_labelledby);
-    let props = Arc::new(Props { label, image, size, shape, style, style_class, aria_label, aria_labelledby, icon });
+    let props = Props { label, image, size, shape, style, style_class, aria_label, aria_labelledby, icon };
     let content = children.map(|c| c());
     let attrs = pt.root.attrs();
 
@@ -89,6 +90,7 @@ pub fn Avatar(
         let block = block_of(&props, &pt, on_image_error);
         Either::Left(avatar_markup!(class, style, data, aria, labelledby, attrs, content, block))
     } else {
+        let (props, pt) = (Arc::new(props), Arc::new(pt));
         let class = {
             let (props, pt) = (props.clone(), pt.clone());
             move || class_of(&props, &pt)
@@ -131,19 +133,19 @@ fn state_of(props: &Props) -> AvatarState {
     AvatarState { has_image: props.image.with(Option::is_some), shape: props.shape.get(), size: props.size.get() }
 }
 
-fn class_of(props: &Props, pt: &AvatarPt) -> String {
+fn class_of(props: &Props, pt: &AvatarPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &state_of(props));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 fn style_of(props: &Props, pt: &AvatarPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 

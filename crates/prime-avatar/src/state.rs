@@ -1,6 +1,7 @@
 //! Чистая логика Avatar: классы и `data-p` (по `avatarstyle.ts` и `Avatar.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP};
+use std::borrow::Cow;
 
 /// Размер аватара.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -66,10 +67,10 @@ pub fn write_classes(cn: &mut ClassNames, s: &AvatarState) {
 }
 
 /// Значение `data-p`: форма и размер (всегда, включая значения по умолчанию).
-pub fn data_p(s: &AvatarState) -> String {
+pub fn data_p(s: &AvatarState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(s.shape.as_str()).add(s.size.as_str());
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

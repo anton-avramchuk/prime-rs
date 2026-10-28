@@ -17,6 +17,8 @@ mod state;
 use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use std::borrow::Cow;
+use std::fmt::Write;
 use std::sync::Arc;
 
 pub use state::{ProgressBarMode, ProgressBarState, data_p, write_classes};
@@ -68,18 +70,19 @@ pub fn ProgressBar(
     #[prop(optional)]
     pt: Option<ProgressBarPt>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(value, mode, unit, color, style, style_class, value_style_class);
-    let props = Arc::new(Props { value, mode, show_value, unit, color, style, style_class, value_style_class, content_template });
+    let props = Props { value, mode, show_value, unit, color, style, style_class, value_style_class, content_template };
     let root_attrs = pt.root.attrs();
 
     if is_static {
-        let (p, t) = (&*props, &*pt);
+        let (p, t) = (&props, &pt);
         let (root_class, root_style, data) = (root_class(p, t), root_style(p, t), data_of(p));
         let (valuenow, level) = (valuenow_of(p), level_of(p));
         let body = body_of(p, t, &data);
         Either::Left(progress_markup!(root_class, root_style, valuenow, level, data, body, root_attrs))
     } else {
+        let (props, pt) = (Arc::new(props), Arc::new(pt));
         let (p, t) = (&props, &pt);
         let root_class = rx(p, t, root_class);
         let root_style = rx(p, t, root_style);
@@ -126,7 +129,7 @@ where
     move || f(&props, &pt)
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&ProgressBarState { mode: props.mode.get() })
 }
 
@@ -134,20 +137,25 @@ fn valuenow_of(props: &Props) -> Option<String> {
     props.value.get().map(|v| v.to_string())
 }
 
-fn unit_of(props: &Props) -> String {
-    props.unit.with(|u| u.as_deref().unwrap_or("%").to_owned())
+fn unit_of(props: &Props) -> Cow<'static, str> {
+    props.unit.with(|u| u.as_ref().map_or(Cow::Borrowed("%"), |u| Cow::Owned(u.clone())))
 }
 
 fn level_of(props: &Props) -> Option<String> {
-    props.value.get().map(|v| format!("{v}{}", unit_of(props)))
+    props.value.get().map(|v| {
+        let unit = unit_of(props);
+        let mut out = String::with_capacity(24 + unit.len());
+        let _ = write!(out, "{v}{unit}");
+        out
+    })
 }
 
-fn root_class(props: &Props, pt: &ProgressBarPt) -> String {
+fn root_class(props: &Props, pt: &ProgressBarPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &ProgressBarState { mode: props.mode.get() });
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 fn root_style(props: &Props, pt: &ProgressBarPt) -> Option<String> {
@@ -159,44 +167,52 @@ fn value_style(props: &Props, determinate: bool) -> Option<String> {
     let mut style = String::new();
     if determinate {
         if let Some(v) = props.value.get() {
-            style.push_str(&format!("width: {v}%; "));
+            let _ = write!(style, "width: {v}%; ");
         }
         style.push_str("display: flex; ");
     }
     if let Some(color) = props.color.get() {
-        style.push_str(&format!("background: {color}; "));
+        let _ = write!(style, "background: {color}; ");
     }
-    let style = style.trim_end().to_owned();
+    style.truncate(style.trim_end().len());
     (!style.is_empty()).then_some(style)
 }
 
-fn body_of(props: &Props, pt: &ProgressBarPt, data: &str) -> AnyView {
+// `&Cow` нужен, чтобы дёшево клонировать интернированное значение `data-p` в части разметки.
+#[allow(clippy::ptr_arg)]
+fn body_of(props: &Props, pt: &ProgressBarPt, data: &Cow<'static, str>) -> impl IntoView + use<> {
     let determinate = props.mode.get() == ProgressBarMode::Determinate;
     let mut cn = ClassNames::new();
     cn.add("p-progressbar-value");
-    props.value_style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.value.extra_class());
-    let (class, style, value_attrs) = (cn.finish(), value_style(props, determinate), pt.value.attrs());
+    props.value_style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.value.extra_class());
+    let (class, style, value_attrs) = (cn.finish_cow(), value_style(props, determinate), pt.value.attrs());
     if !determinate {
-        return view! { <div class={class} style={style} data-p={data.to_owned()} {..value_attrs}></div> }.into_any();
+        return Either::Left(view! { <div class={class} style={style} data-p={data.clone()} {..value_attrs}></div> });
     }
     let value = props.value.get();
     let inner = match props.content_template {
-        Some(template) => Some(template.run(value)),
+        Some(template) => Some(Either::Left(template.run(value))),
         None if props.show_value => {
             let shown = if value.is_some_and(|v| v != 0.0) { "display: flex" } else { "display: none" };
-            let text = format!("{}{}", value.map(|v| v.to_string()).unwrap_or_default(), unit_of(props));
-            Some(view! { <div style={shown}>{text}</div> }.into_any())
+            let unit = unit_of(props);
+            let mut text = String::with_capacity(24 + unit.len());
+            if let Some(v) = value {
+                let _ = write!(text, "{v}");
+            }
+            text.push_str(&unit);
+            Some(Either::Right(view! { <div style={shown}>{text}</div> }))
         }
         None => None,
     };
-    let label_class = pt.label.merge_class("p-progressbar-label");
-    view! {
-        <div class={class} style={style} data-p={data.to_owned()} {..value_attrs}>
-            <div class={label_class} data-p={data.to_owned()} {..pt.label.attrs()}>{inner}</div>
+    let mut label = ClassNames::new();
+    label.add("p-progressbar-label").add_user(pt.label.extra_class());
+    let label_class = label.finish_cow();
+    Either::Right(view! {
+        <div class={class} style={style} data-p={data.clone()} {..value_attrs}>
+            <div class={label_class} data-p={data.clone()} {..pt.label.attrs()}>{inner}</div>
         </div>
-    }
-    .into_any()
+    })
 }
 
 /// Свойства экземпляра.

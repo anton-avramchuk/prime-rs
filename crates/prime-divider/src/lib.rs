@@ -18,6 +18,7 @@ mod state;
 use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{DividerAlign, DividerLayout, DividerState, DividerType, align_style, data_p, write_classes};
@@ -58,9 +59,9 @@ pub fn Divider(
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(layout, divider_type, align, style, style_class);
-    let props = Arc::new(Props { layout, divider_type, align, style, style_class });
+    let props = Props { layout, divider_type, align, style, style_class };
     let content = children.map(|c| c());
     let (attrs, content_class, content_attrs) = (pt.root.attrs(), pt.content.merge_class("p-divider-content"), pt.content.attrs());
 
@@ -69,6 +70,7 @@ pub fn Divider(
             (class_of(&props, &pt), style_of(&props, &pt), data_of(&props), props.layout.get().as_str());
         Either::Left(divider_markup!(class, style, data, orientation, attrs, content_class, content_attrs, content))
     } else {
+        let (props, pt) = (Arc::new(props), Arc::new(pt));
         let class = {
             let (props, pt) = (props.clone(), pt.clone());
             move || class_of(&props, &pt)
@@ -104,12 +106,12 @@ fn state_of(props: &Props) -> DividerState {
     DividerState { layout: props.layout.get(), divider_type: props.divider_type.get(), align: props.align.get() }
 }
 
-fn class_of(props: &Props, pt: &DividerPt) -> String {
+fn class_of(props: &Props, pt: &DividerPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &state_of(props));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 /// Стиль корня: выравнивание, затем `style` и стиль из `pt`.
@@ -121,7 +123,7 @@ fn style_of(props: &Props, pt: &DividerPt) -> Option<String> {
     })
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 

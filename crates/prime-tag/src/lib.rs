@@ -18,6 +18,7 @@ mod state;
 use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 pub use state::{TagSeverity, TagState, data_p, write_classes};
@@ -63,9 +64,9 @@ pub fn Tag(
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(value, severity, rounded, style, style_class);
-    let props = Arc::new(Props { value, severity, rounded, style, style_class });
+    let props = Props { value, severity, rounded, style, style_class };
     let content = children.map(|c| c());
     let icon_view = icon.map(|icon| view! { <span class=pt.icon.merge_class("p-tag-icon") {..pt.icon.attrs()}>{icon.run()}</span> });
     let (attrs, label_class, label_attrs) = (pt.root.attrs(), pt.label.merge_class("p-tag-label"), pt.label.attrs());
@@ -74,6 +75,7 @@ pub fn Tag(
         let (class, style, data, value) = (class_of(&props, &pt), style_of(&props, &pt), data_of(&props), props.value.get());
         Either::Left(tag_markup!(class, style, data, attrs, content, icon_view, label_class, label_attrs, value))
     } else {
+        let (props, pt) = (Arc::new(props), Arc::new(pt));
         let class = {
             let (props, pt) = (props.clone(), pt.clone());
             move || class_of(&props, &pt)
@@ -111,19 +113,19 @@ fn state_of(props: &Props) -> TagState {
     TagState { severity: props.severity.get(), rounded: props.rounded.get() }
 }
 
-fn class_of(props: &Props, pt: &TagPt) -> String {
+fn class_of(props: &Props, pt: &TagPt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, &state_of(props));
-    props.style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.root.extra_class());
-    cn.finish()
+    props.style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.root.extra_class());
+    cn.finish_cow()
 }
 
 fn style_of(props: &Props, pt: &TagPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-fn data_of(props: &Props) -> String {
+fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 

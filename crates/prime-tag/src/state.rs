@@ -1,6 +1,7 @@
 //! Чистая логика Tag: из свойств в классы и `data-p` (по `tagstyle.ts` и `Tag.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP};
+use std::borrow::Cow;
 
 /// Серьёзность тега (`p-tag-<severity>`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -63,10 +64,10 @@ pub fn write_classes(cn: &mut ClassNames, s: &TagState) {
 }
 
 /// Значение `data-p`: `rounded`, серьёзность.
-pub fn data_p(s: &TagState) -> String {
+pub fn data_p(s: &TagState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.rounded, "rounded").add_opt(s.severity.map(TagSeverity::as_str));
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

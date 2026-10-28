@@ -3,6 +3,7 @@
 use crate::class_names::ClassNames;
 use leptos::attr::any_attribute::{AnyAttribute, IntoAnyAttribute};
 use leptos::attr::custom::custom_attribute;
+use std::borrow::Cow;
 
 /// Дополнения для одного элемента компонента (корня или его части).
 ///
@@ -56,10 +57,12 @@ impl Pt {
     }
 
     /// Собственные классы компонента плюс класс из `Pt`.
-    pub fn merge_class(&self, base: &str) -> String {
+    ///
+    /// Без класса в `Pt` строка интернируется и не аллоцирует (см. [`ClassNames::finish_cow`]).
+    pub fn merge_class(&self, base: &str) -> Cow<'static, str> {
         let mut cn = ClassNames::new();
-        cn.add(base).add_opt(self.class.as_deref());
-        cn.finish()
+        cn.add(base).add_user(self.class.as_deref());
+        cn.finish_cow()
     }
 
     /// Собственный стиль компонента плюс стиль из `Pt`; пустые части пропускаются, `;` на концах нормализуются.
@@ -73,11 +76,17 @@ impl Pt {
     /// ```
     pub fn merge_style(&self, base: &str) -> String {
         let part = |s: &str| s.trim().trim_end_matches(';').trim().to_owned();
-        [part(base), self.style.as_deref().map(part).unwrap_or_default()]
-            .into_iter()
-            .filter(|s| !s.is_empty())
-            .collect::<Vec<_>>()
-            .join("; ")
+        let (base, extra) = (part(base), self.style.as_deref().map(part).unwrap_or_default());
+        match (base.is_empty(), extra.is_empty()) {
+            (_, true) => base,
+            (true, false) => extra,
+            (false, false) => {
+                let mut out = base;
+                out.push_str("; ");
+                out.push_str(&extra);
+                out
+            }
+        }
     }
 
     /// Атрибуты для `view! { <div {..pt.attrs()} /> }`.

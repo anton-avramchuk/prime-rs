@@ -14,6 +14,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 use prime_core::{ClassNames, OptProp, Pt, all_static};
+use std::borrow::Cow;
 use std::sync::Arc;
 
 /// Группа аватаров.
@@ -34,7 +35,7 @@ pub fn AvatarGroup(
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let attrs = pt.attrs();
     let kids = children.map(|c| c());
 
@@ -43,6 +44,7 @@ pub fn AvatarGroup(
         let style = style_of(&style, &pt);
         Either::Left(group_markup!(class, style, attrs, kids))
     } else {
+        let pt = Arc::new(pt);
         let class = {
             let (style_class, pt) = (style_class, pt.clone());
             move || class_of(&style_class, &pt)
@@ -63,12 +65,12 @@ macro_rules! group_markup {
 }
 use group_markup;
 
-fn class_of(style_class: &OptProp<String>, pt: &Pt) -> String {
+fn class_of(style_class: &OptProp<String>, pt: &Pt) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-avatar-group p-component");
-    style_class.with(|c| cn.add_opt(c.as_deref()));
-    cn.add_opt(pt.extra_class());
-    cn.finish()
+    style_class.with(|c| cn.add_user(c.as_deref()));
+    cn.add_user(pt.extra_class());
+    cn.finish_cow()
 }
 
 fn style_of(style: &OptProp<String>, pt: &Pt) -> Option<String> {

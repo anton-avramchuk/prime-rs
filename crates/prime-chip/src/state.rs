@@ -1,6 +1,7 @@
 //! Чистая логика Chip: классы, `data-p` и клавиша удаления (по `chipstyle.ts` и `Chip` PrimeNG).
 
 use prime_core::{ClassNames, DataP};
+use std::borrow::Cow;
 
 /// Снимок свойств, влияющих на классы и `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -17,10 +18,10 @@ pub fn write_classes(cn: &mut ClassNames, s: &ChipState) {
 }
 
 /// Значение `data-p`: `removable`.
-pub fn data_p(s: &ChipState) -> String {
+pub fn data_p(s: &ChipState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.removable, "removable");
-    d.finish()
+    d.finish_cow()
 }
 
 /// Клавиши, закрывающие Chip на элементе удаления: Enter и Backspace.

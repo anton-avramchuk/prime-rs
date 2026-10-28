@@ -1,6 +1,7 @@
 //! Чистая логика Badge: из свойств в классы и `data-p` (по `badgestyle.ts` и `Badge.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP};
+use std::borrow::Cow;
 
 /// Серьёзность бейджа.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -93,21 +94,21 @@ pub fn write_classes(cn: &mut ClassNames, s: &BadgeState) {
 }
 
 /// Классы корня строкой.
-pub fn classes(s: &BadgeState) -> String {
+pub fn classes(s: &BadgeState) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, s);
-    cn.finish()
+    cn.finish_cow()
 }
 
 /// Значение `data-p`: `circle`, `empty`, `disabled`, серьёзность, размер.
-pub fn data_p(s: &BadgeState) -> String {
+pub fn data_p(s: &BadgeState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(is_circle(s.value), "circle")
         .add_if(s.value.is_none(), "empty")
         .add_if(s.disabled, "disabled")
         .add_opt(s.severity.map(BadgeSeverity::as_str))
         .add_opt(s.size.map(BadgeSize::as_str));
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

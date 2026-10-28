@@ -3,10 +3,11 @@
 # приложения `benches/wasm-size`. Проверяется `cargo xtask wasm-size`.
 # Первые значения — измеренный вклад с запасом ≈ 50 %; пересмотреть после появления первых компонентов.
 
+# one-icon: после optimize-allocs иконка использует ClassNames::finish_cow (интернирование), +≈3 КБ.
 [[case]]
 name = "one-icon"
 feature = "case-one-icon"
-max_delta_bytes = 12000
+max_delta_bytes = 15500
 
 [[case]]
 name = "all-icons"

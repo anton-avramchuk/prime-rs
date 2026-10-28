@@ -1,6 +1,7 @@
 //! Чистая логика ToggleSwitch: классы и `data-p` (по `toggleswitchstyle.ts` и `ToggleSwitch.dataP` PrimeNG).
 
 use prime_core::{ClassNames, DataP};
+use std::borrow::Cow;
 
 /// Снимок свойств, влияющих на классы и `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -22,10 +23,10 @@ pub fn write_classes(cn: &mut ClassNames, s: &ToggleSwitchState) {
 }
 
 /// Значение `data-p`: `checked`, `disabled`, `invalid`.
-pub fn data_p(s: &ToggleSwitchState) -> String {
+pub fn data_p(s: &ToggleSwitchState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.checked, "checked").add_if(s.disabled, "disabled").add_if(s.invalid, "invalid");
-    d.finish()
+    d.finish_cow()
 }
 
 #[cfg(test)]

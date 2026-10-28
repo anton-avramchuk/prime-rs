@@ -2,25 +2,25 @@
 
 use leptos::prelude::*;
 use prime_core::ClassNames;
+use std::borrow::Cow;
 
 /// `viewBox` всех иконок PrimeNG.
 pub const VIEW_BOX: &str = "0 0 14 14";
 
-fn attrs(class: Option<String>, spin: bool, aria_label: &Option<String>) -> (String, Option<&'static str>, Option<&'static str>) {
-    let mut cn = ClassNames::new();
-    cn.add("p-icon").add_if(spin, "p-icon-spin").add_opt(class.as_deref());
-    let decorative = aria_label.is_none();
-    (cn.finish(), decorative.then_some("true"), (!decorative).then_some("img"))
-}
-
-/// Рисует иконку из набора контуров. Используется сгенерированными компонентами.
-pub fn icon_view(
-    paths: &'static [&'static str],
+fn attrs(
     class: Option<String>,
     spin: bool,
-    size: u32,
-    aria_label: Option<String>,
-) -> impl IntoView {
+    aria_label: &Option<String>,
+) -> (Cow<'static, str>, Option<&'static str>, Option<&'static str>) {
+    let mut cn = ClassNames::new();
+    cn.add("p-icon").add_if(spin, "p-icon-spin").add_user(class.as_deref());
+    let decorative = aria_label.is_none();
+    (cn.finish_cow(), decorative.then_some("true"), (!decorative).then_some("img"))
+}
+
+/// Рисует иконку; `inner` — готовая разметка контуров (`<path …></path>`), вставляется как есть без аллокаций.
+/// Используется сгенерированными компонентами.
+pub fn icon_view(inner: &'static str, class: Option<String>, spin: bool, size: u32, aria_label: Option<String>) -> impl IntoView {
     let (class, aria_hidden, role) = attrs(class, spin, &aria_label);
     view! {
         <svg
@@ -33,9 +33,8 @@ pub fn icon_view(
             aria-hidden=aria_hidden
             role=role
             aria-label=aria_label
-        >
-            {paths.iter().map(|d| view! { <path d=*d fill="currentColor" /> }).collect_view()}
-        </svg>
+            inner_html=inner
+        ></svg>
     }
 }
 
@@ -78,8 +77,8 @@ macro_rules! icon {
             #[prop(default = 14)] size: u32,
             #[prop(optional, into)] aria_label: Option<String>,
         ) -> impl ::leptos::prelude::IntoView {
-            const PATHS: &[&str] = &[$($d),+];
-            $crate::icon::icon_view(PATHS, class, spin, size, aria_label)
+            const INNER: &str = concat!($("<path d=\"", $d, "\" fill=\"currentColor\"></path>"),+);
+            $crate::icon::icon_view(INNER, class, spin, size, aria_label)
         }
     };
 }
