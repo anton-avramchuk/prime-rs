@@ -21,6 +21,12 @@ test.skip(!UPSTREAM, 'UPSTREAM_URL не задан: нечего сравнив�
 for (const p of pages) {
     test(`визуальное сравнение: ${p.name}`, async ({ page, baseURL }) => {
         test.setTimeout(60_000);
+        // Диагностика страницы: ошибки консоли и неуспешные ответы (попадают в отчёт при сбое).
+        const diag: string[] = [];
+        page.on('console', (m) => m.type() === 'error' && diag.length < 8 && diag.push(`console: ${m.text().slice(0, 120)}`));
+        page.on('pageerror', (e) => diag.length < 8 && diag.push(`pageerror: ${e.message.slice(0, 120)}`));
+        page.on('response', (r) => r.status() >= 400 && diag.length < 8 && diag.push(`HTTP ${r.status()} ${r.url().slice(0, 100)}`));
+        let side = 'ours';
         const shot = async (url: string, selector?: string) => {
             // networkidle не используем: у showcase PrimeNG есть фоновые запросы, страница не «затихает»
             const response = await page.goto(url, { waitUntil: 'load', timeout: 20_000 });
@@ -40,6 +46,8 @@ for (const p of pages) {
         };
         try {
             const ours = await shot(new URL(p.ours, baseURL).toString(), p.oursSelector);
+            side = 'upstream';
+            diag.length = 0;
             const upstream = await shot(new URL(p.upstream, UPSTREAM).toString(), p.upstreamSelector);
             const width = Math.min(ours.width, upstream.width);
             const height = Math.min(ours.height, upstream.height);
@@ -57,7 +65,9 @@ for (const p of pages) {
             writeFileSync(`results/${p.name}-diff.png`, PNG.sync.write(diff));
         } catch (e) {
             // отчёт, а не блокировщик: причину сохраняем в visual.json, тест не падает
-            errors[p.name] = String((e as Error).message).split('\n')[0];
+            errors[p.name] = `${side}: ${String((e as Error).message).split('\n')[0]} | ${diag.join(' ; ')}`.slice(0, 700);
+            mkdirSync('results', { recursive: true });
+            await page.screenshot({ path: `results/${p.name}-${side}-fail.png` }).catch(() => undefined);
         } finally {
             save();
         }
