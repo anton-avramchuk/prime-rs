@@ -32,7 +32,17 @@ Linux и macOS (`~/.profile`):
 export CARGO_TARGET_DIR="$HOME/.cache/cargo-target"
 ```
 
-Размер `target/` после `cargo check --workspace` (только Leptos, без компонентов) на момент создания каркаса: 542 МБ.
+Размер `target/` из чистого клона (Windows, dev-профиль, измерено при завершении `bootstrap-workspace`):
+
+| Шаг | `target/` |
+|---|---:|
+| `cargo build --workspace` (2 мин) | 664 МБ |
+| + `cargo test --workspace --all-features` | 1 002 МБ |
+| + `cargo leptos build` (showcase) | 2 489 МБ |
+
+Заметно растят `target/` разные наборы features одних и тех же крейтов (`ssr`, `hydrate`, CSR, wasm: у `tachys` до пяти копий) и release-сборки
+бенчмарков. Рабочая копия, в которой выполнялись все команды подряд, дошла до 4,5 ГБ: периодически запускайте `cargo xtask clean`
+и используйте общий `CARGO_TARGET_DIR`.
 
 ## Команды xtask
 

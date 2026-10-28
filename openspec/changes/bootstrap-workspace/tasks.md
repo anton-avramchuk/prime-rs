@@ -69,8 +69,8 @@
 
 ## 10. Интеграционная проверка
 
-- [ ] 10.1 Выполнить с чистого клона `cargo build --workspace`, `cargo nextest run --workspace`, `cargo leptos build` и зафиксировать размер `target/` в `docs/build.md`
-- [ ] 10.2 Выполнить `openspec validate bootstrap-workspace` и убедиться, что все сценарии спек покрыты задачами выше
+- [x] 10.1 Выполнить с чистого клона `cargo build --workspace`, `cargo nextest run --workspace`, `cargo leptos build` и зафиксировать размер `target/` в `docs/build.md`
+- [x] 10.2 Выполнить `openspec validate bootstrap-workspace` и убедиться, что все сценарии спек покрыты задачами выше
 
 ## Workflow follow-up
 
