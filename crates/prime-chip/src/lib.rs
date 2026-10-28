@@ -85,9 +85,9 @@ pub fn Chip(
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let pt = Arc::new(pt.unwrap_or_default());
+    let pt = pt.unwrap_or_default();
     let is_static = all_static!(label, image, alt, disabled, removable, style, style_class) && !removable.get_untracked();
-    let props = Arc::new(Props { label, image, alt, disabled, removable, style, style_class, icon, remove_icon });
+    let props = Props { label, image, alt, disabled, removable, style, style_class, icon, remove_icon };
     let content = children.map(|c| c());
     let attrs = pt.root.attrs();
 
@@ -95,9 +95,10 @@ pub fn Chip(
         // Статический путь: значения и блоки считаются один раз, замыканий и `RenderEffect` нет.
         let (class, style, data) = (class_of(&props, &pt), style_of(&props, &pt, true), data_of(&props));
         let (media, label) = (media_of(&props, &pt, on_image_error), label_of(&props, &pt));
-        let remove: Option<AnyView> = None;
+        let remove: Option<()> = None;
         Either::Left(chip_markup!(class, style, data, attrs, content, media, label, remove))
     } else {
+        let (props, pt) = (Arc::new(props), Arc::new(pt));
         let visible = RwSignal::new(true);
         let class = {
             let (props, pt) = (props.clone(), pt.clone());
@@ -154,52 +155,50 @@ fn data_of(props: &Props) -> Cow<'static, str> {
 /// Встроенный стиль корня: `display: none` после удаления, затем `style` и стиль из `pt`.
 fn style_of(props: &Props, pt: &ChipPt, visible: bool) -> Option<String> {
     props.style.with(|st| {
-        let user = st.as_deref().unwrap_or("");
-        let base = Pt::new().style(user).merge_style(if visible { "" } else { "display: none" });
-        let merged = pt.root.merge_style(&base);
+        if st.is_none() && visible && !pt.root.has_style() {
+            return None;
+        }
+        let merged = pt.root.merge_style_parts(&[if visible { "" } else { "display: none" }, st.as_deref().unwrap_or("")]);
         (!merged.is_empty()).then_some(merged)
     })
 }
 
 /// Изображение, а при его отсутствии иконка.
-fn media_of(props: &Props, pt: &ChipPt, on_image_error: Option<Callback<web_sys::Event>>) -> Option<AnyView> {
+fn media_of(props: &Props, pt: &ChipPt, on_image_error: Option<Callback<web_sys::Event>>) -> Option<impl IntoView + use<>> {
     if let Some(src) = props.image.get().filter(|s| !s.is_empty()) {
         let alt = props.alt.get();
-        Some(
-            view! {
-                <img
-                    class=pt.image.merge_class("p-chip-image")
-                    src=src
-                    alt=alt
-                    on:error=move |e| {
-                        if let Some(cb) = on_image_error {
-                            cb.run(e.into());
-                        }
+        Some(Either::Left(view! {
+            <img
+                class=pt.image.merge_class("p-chip-image")
+                src=src
+                alt=alt
+                on:error=move |e| {
+                    if let Some(cb) = on_image_error {
+                        cb.run(e.into());
                     }
-                    {..pt.image.attrs()}
-                />
-            }
-            .into_any(),
-        )
+                }
+                {..pt.image.attrs()}
+            />
+        }))
     } else {
         props
             .icon
             .clone()
-            .map(|icon| view! { <span class=pt.icon.merge_class("p-chip-icon") {..pt.icon.attrs()}>{icon.run()}</span> }.into_any())
+            .map(|icon| Either::Right(view! { <span class=pt.icon.merge_class("p-chip-icon") {..pt.icon.attrs()}>{icon.run()}</span> }))
     }
 }
 
 /// Метка (`None`, если пуста).
-fn label_of(props: &Props, pt: &ChipPt) -> Option<AnyView> {
+fn label_of(props: &Props, pt: &ChipPt) -> Option<impl IntoView + use<>> {
     props
         .label
         .get()
         .filter(|s| !s.is_empty())
-        .map(|label| view! { <div class=pt.label.merge_class("p-chip-label") {..pt.label.attrs()}>{label}</div> }.into_any())
+        .map(|label| view! { <div class=pt.label.merge_class("p-chip-label") {..pt.label.attrs()}>{label}</div> })
 }
 
 /// Элемент удаления: `role="button"`, подпись из локали, клик и клавиши Enter и Backspace.
-fn remove_of(props: &Props, pt: &ChipPt, visible: RwSignal<bool>, on_remove: Option<Callback<web_sys::Event>>) -> AnyView {
+fn remove_of(props: &Props, pt: &ChipPt, visible: RwSignal<bool>, on_remove: Option<Callback<web_sys::Event>>) -> impl IntoView + use<> {
     let aria = use_prime_config().locale.text("aria.removeLabel").to_owned();
     let tabindex = if props.disabled.get() { -1 } else { 0 };
     let close = move |e: web_sys::Event| {
@@ -215,8 +214,8 @@ fn remove_of(props: &Props, pt: &ChipPt, visible: RwSignal<bool>, on_remove: Opt
         }
     };
     let inner = match props.remove_icon.clone() {
-        Some(icon) => icon.run(),
-        None => view! { <TimesCircleIcon /> }.into_any(),
+        Some(icon) => Either::Left(icon.run()),
+        None => Either::Right(view! { <TimesCircleIcon /> }),
     };
     view! {
         <span
@@ -231,7 +230,6 @@ fn remove_of(props: &Props, pt: &ChipPt, visible: RwSignal<bool>, on_remove: Opt
             {inner}
         </span>
     }
-    .into_any()
 }
 
 /// Свойства экземпляра.

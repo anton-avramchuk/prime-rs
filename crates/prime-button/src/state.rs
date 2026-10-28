@@ -191,8 +191,8 @@ pub fn root_data_p(s: &ButtonState) -> Cow<'static, str> {
 }
 
 /// Классы оболочки иконки: `p-button-icon` и модификатор положения (только при наличии метки).
-pub fn icon_classes(s: &ButtonState) -> String {
-    let mut cn = ClassNames::with_capacity(32);
+pub fn icon_classes(s: &ButtonState) -> Cow<'static, str> {
+    let mut cn = ClassNames::new();
     cn.add("p-button-icon");
     if s.has_label() {
         cn.add(match s.icon_pos {
@@ -202,7 +202,7 @@ pub fn icon_classes(s: &ButtonState) -> String {
             IconPos::Bottom => "p-button-icon-bottom",
         });
     }
-    cn.finish()
+    cn.finish_cow()
 }
 
 /// `data-p` иконки: положение и размер.

@@ -11,12 +11,12 @@ max_per_instance = 6
 [[scenario]]
 name = "button-1000"
 instances = 1000
-max_per_instance = 21
+max_per_instance = 10
 
 [[scenario]]
 name = "button-full-1000"
 instances = 1000
-max_per_instance = 50
+max_per_instance = 31
 
 [[scenario]]
 name = "tag-1000"
@@ -26,12 +26,12 @@ max_per_instance = 7
 [[scenario]]
 name = "chip-1000"
 instances = 1000
-max_per_instance = 11
+max_per_instance = 7
 
 [[scenario]]
 name = "chip-removable-1000"
 instances = 1000
-max_per_instance = 39
+max_per_instance = 25
 
 [[scenario]]
 name = "avatar-1000"

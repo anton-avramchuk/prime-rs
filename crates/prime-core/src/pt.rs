@@ -89,6 +89,22 @@ impl Pt {
         }
     }
 
+    /// Склеивает части стиля (непустые, нормализованные как в [`merge_style`](Self::merge_style)) и стиль из `Pt` одной строкой.
+    /// Пустой результат — пустая строка.
+    pub fn merge_style_parts(&self, parts: &[&str]) -> String {
+        let mut out = String::new();
+        for part in parts.iter().copied().chain(self.style.as_deref()) {
+            let part = part.trim().trim_end_matches(';').trim();
+            if !part.is_empty() {
+                if !out.is_empty() {
+                    out.push_str("; ");
+                }
+                out.push_str(part);
+            }
+        }
+        out
+    }
+
     /// Атрибуты для `view! { <div {..pt.attrs()} /> }`.
     pub fn attrs(&self) -> Vec<AnyAttribute> {
         self.attrs.iter().map(|(k, v)| custom_attribute(k.clone(), v.clone()).into_any_attr()).collect()
