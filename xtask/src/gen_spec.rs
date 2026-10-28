@@ -73,7 +73,11 @@ pub fn parse_component(source: &str) -> Extracted {
             let name = name.trim();
             let rhs = rhs.trim_start();
             let is_ident = ident_at_start(name) == Some(name);
-            if is_ident && ["input", "model"].iter().any(|f| rhs.starts_with(&format!("{f}(")) || rhs.starts_with(&format!("{f}<")) || rhs.starts_with(&format!("{f}.required"))) {
+            if is_ident
+                && ["input", "model"].iter().any(|f| {
+                    rhs.starts_with(&format!("{f}(")) || rhs.starts_with(&format!("{f}<")) || rhs.starts_with(&format!("{f}.required"))
+                })
+            {
                 inputs.insert(name.to_owned());
             }
             if is_ident && (rhs.starts_with("output(") || rhs.starts_with("output<")) {
@@ -127,7 +131,10 @@ pub fn render(name: &str, commit: &str, version: &str, e: &Extracted) -> String 
     let _ = writeln!(s, "<!-- Заготовка создана `cargo xtask gen-spec {name}`; довести вручную. -->");
     let _ = writeln!(s, "<!-- Источник: packages/primeng/src/{name}/{name}.ts, PrimeNG {version}, коммит {commit}. -->\n");
     let _ = writeln!(s, "## ADDED Requirements\n");
-    let _ = writeln!(s, "### Requirement: Props\nКомпонент `prime-{name}` SHALL принимать те же свойства, что и PrimeNG (имена приведены к snake_case Rust).\n");
+    let _ = writeln!(
+        s,
+        "### Requirement: Props\nКомпонент `prime-{name}` SHALL принимать те же свойства, что и PrimeNG (имена приведены к snake_case Rust).\n"
+    );
     let _ = writeln!(s, "Селекторы PrimeNG:\n{}", list(&e.selectors, "не найдены"));
     let _ = writeln!(s, "Входы PrimeNG:\n{}", list(&e.inputs, "не найдены"));
     let _ = writeln!(s, "#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n");
@@ -137,9 +144,18 @@ pub fn render(name: &str, commit: &str, version: &str, e: &Extracted) -> String 
     let _ = writeln!(s, "### Requirement: DOM и классы\nРазметка SHALL совпадать с PrimeNG и использовать те же классы.\n");
     let _ = writeln!(s, "Классы PrimeNG:\n{}", list(&e.classes, "не найдены"));
     let _ = writeln!(s, "#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n");
-    let _ = writeln!(s, "### Requirement: Доступность\nКомпонент SHALL выставлять те же ARIA-атрибуты и роли, что и PrimeNG.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n");
-    let _ = writeln!(s, "### Requirement: Клавиатура\nКомпонент SHALL поддерживать те же клавиши, что и PrimeNG.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n");
-    let _ = writeln!(s, "### Requirement: Производительность\nРендер компонента SHALL укладываться в бюджеты `benches/budgets.toml`.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO");
+    let _ = writeln!(
+        s,
+        "### Requirement: Доступность\nКомпонент SHALL выставлять те же ARIA-атрибуты и роли, что и PrimeNG.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n"
+    );
+    let _ = writeln!(
+        s,
+        "### Requirement: Клавиатура\nКомпонент SHALL поддерживать те же клавиши, что и PrimeNG.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n"
+    );
+    let _ = writeln!(
+        s,
+        "### Requirement: Производительность\nРендер компонента SHALL укладываться в бюджеты `benches/budgets.toml`.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO"
+    );
     s
 }
 

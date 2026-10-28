@@ -44,3 +44,15 @@ cargo xtask clean [--days N]             # cargo-sweep: удалить арте�
 
 `upstream-diff` и `gen-spec` читают `upstream.toml`; путь к клону PrimeNG можно переопределить `PRIMENG_PATH`.
 Для `clean` нужен `cargo install cargo-sweep`. Список «портированных» компонентов — это `crates/prime-<имя>` без `core`, `dom`, `theme`, `icons`.
+
+## Браузерные тесты (wasm-bindgen-test)
+
+```sh
+cargo install wasm-bindgen-cli --version 0.2.129 --locked   # версия должна совпадать с wasm-bindgen в Cargo.lock
+# chromedriver под установленный Chrome (https://googlechromelabs.github.io/chrome-for-testing/)
+export CHROMEDRIVER=/путь/к/chromedriver
+cargo test -p prime-dom --target wasm32-unknown-unknown --test web
+```
+
+Раннер `wasm-bindgen-test-runner` прописан в `.cargo/config.toml`. Без `CHROMEDRIVER` раннер ищет `chromedriver` в `PATH`.
+Тесты помечены `#![cfg(target_arch = "wasm32")]`, поэтому обычный `cargo test` на хосте их пропускает.

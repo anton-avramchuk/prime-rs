@@ -13,6 +13,15 @@ hydrate = ["leptos/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true, features = [
+    "Window", "Document", "Element", "HtmlElement", "Node", "NodeList", "DomRect",
+    "CssStyleDeclaration", "DomTokenList", "Event", "EventTarget", "MouseEvent", "MouseEventInit", "FocusEvent", "HtmlCollection",
+] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
 
 [lints]
 workspace = true

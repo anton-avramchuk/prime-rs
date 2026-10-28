@@ -33,11 +33,8 @@ pub fn changed_components(repo: &Path, from: &str, to: &str, ported: &[String]) 
         return Err(String::from_utf8_lossy(&out.stderr).trim().to_owned());
     }
     let text = String::from_utf8_lossy(&out.stdout);
-    let touched: BTreeSet<&str> = text
-        .lines()
-        .filter_map(|l| l.strip_prefix("packages/primeng/src/"))
-        .filter_map(|l| l.split('/').next())
-        .collect();
+    let touched: BTreeSet<&str> =
+        text.lines().filter_map(|l| l.strip_prefix("packages/primeng/src/")).filter_map(|l| l.split('/').next()).collect();
     Ok(ported.iter().filter(|p| touched.contains(p.as_str())).cloned().collect())
 }
 

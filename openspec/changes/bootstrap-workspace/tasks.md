@@ -26,11 +26,11 @@
 
 ## 4. prime-dom
 
-- [ ] 4.1 Реализовать порт позиционирования (`absolutePosition`, `relativePosition`) с правилами переворота как в PrimeNG; проверить `wasm-bindgen-test` на сценариях «достаточно места» и «не помещается снизу»
-- [ ] 4.2 Реализовать focus trap (Tab и Shift+Tab по кругу); проверить `wasm-bindgen-test` на первом и последнем элементах
-- [ ] 4.3 Реализовать портал в `body` и ripple как директиву; проверить `wasm-bindgen-test`, что содержимое попадает в `body` и удаляется при размонтировании
-- [ ] 4.4 Убедиться, что весь публичный API безопасен для SSR; проверить тестами `cargo test -p prime-dom --features ssr` на нативной цели без паник
-- [ ] 4.5 Задокументировать API `prime-dom` в rustdoc; проверить `cargo test --doc -p prime-dom`
+- [x] 4.1 Реализовать порт позиционирования (`absolutePosition`, `relativePosition`) с правилами переворота как в PrimeNG; проверить `wasm-bindgen-test` на сценариях «достаточно места» и «не помещается снизу»
+- [x] 4.2 Реализовать focus trap (Tab и Shift+Tab по кругу); проверить `wasm-bindgen-test` на первом и последнем элементах
+- [x] 4.3 Реализовать портал в `body` и ripple как директиву; проверить `wasm-bindgen-test`, что содержимое попадает в `body` и удаляется при размонтировании
+- [x] 4.4 Убедиться, что весь публичный API безопасен для SSR; проверить тестами `cargo test -p prime-dom --features ssr` на нативной цели без паник
+- [x] 4.5 Задокументировать API `prime-dom` в rustdoc; проверить `cargo test --doc -p prime-dom`
 
 ## 5. prime-icons
 
