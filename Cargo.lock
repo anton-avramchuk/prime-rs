@@ -1633,6 +1633,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-chip"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-core"
 version = "0.1.0"
 dependencies = [

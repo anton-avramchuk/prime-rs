@@ -2,14 +2,14 @@
 
 ## 1. Крейт и логика
 
-- [ ] 1.1 Создать крейт `crates/prime-chip` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `prime-icons/timescircle`, `web-sys`) и добавить в workspace; проверить `cargo check -p prime-chip --all-features`
-- [ ] 1.2 Реализовать `ChipState`, `write_classes`, `data_p` и разбор клавиши удаления (`is_remove_key`: Enter, Backspace); проверить юнит-тестами сценарии спеки (классы, `data-p`, клавиши)
+- [x] 1.1 Создать крейт `crates/prime-chip` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `prime-icons/timescircle`, `web-sys`) и добавить в workspace; проверить `cargo check -p prime-chip --all-features`
+- [x] 1.2 Реализовать `ChipState`, `write_classes`, `data_p` и разбор клавиши удаления (`is_remove_key`: Enter, Backspace); проверить юнит-тестами сценарии спеки (классы, `data-p`, клавиши)
 
 ## 2. Компонент
 
-- [ ] 2.1 Реализовать `Chip`: корень, порядок `children`/изображение или иконка/метка/удаление, `pt` (`ChipPt`), статическая ветвь при `all_static && !removable`, реактивная с внутренним `visible`; проверить SSR-тестами структуры, классов, порядка, подписи из локали и `pt`
-- [ ] 2.2 Реализовать удаление (клик, Enter, Backspace, скрытие `display: none`, `on_remove` один раз) и `on_image_error`; проверить `wasm-bindgen-test` сценариев спеки, включая `disabled` (`tabindex=-1`)
-- [ ] 2.3 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-chip --all-features` и doc-тесты
+- [x] 2.1 Реализовать `Chip`: корень, порядок `children`/изображение или иконка/метка/удаление, `pt` (`ChipPt`), статическая ветвь при `all_static && !removable`, реактивная с внутренним `visible`; проверить SSR-тестами структуры, классов, порядка, подписи из локали и `pt`
+- [x] 2.2 Реализовать удаление (клик, Enter, Backspace, скрытие `display: none`, `on_remove` один раз) и `on_image_error`; проверить `wasm-bindgen-test` сценариев спеки, включая `disabled` (`tabindex=-1`)
+- [x] 2.3 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-chip --all-features` и doc-тесты
 
 ## 3. Showcase и e2e
 
