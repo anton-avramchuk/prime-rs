@@ -79,3 +79,8 @@ max_delta_bytes = 270000
 name = "progressbar"
 feature = "case-progressbar"
 max_delta_bytes = 170000
+
+[[case]]
+name = "avatargroup"
+feature = "case-avatargroup"
+max_delta_bytes = 80000

@@ -224,6 +224,13 @@
     "upstreamSelector": "template-doc .card"
   },
   {
+    "name": "avatar-avatargroup",
+    "ours": "/avatar",
+    "upstream": "/avatar",
+    "oursSelector": "[data-demo=\"avatargroup\"]",
+    "upstreamSelector": "avatargroup-doc .card"
+  },
+  {
     "name": "divider-basic",
     "ours": "/divider",
     "upstream": "/divider",

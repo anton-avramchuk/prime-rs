@@ -1,10 +1,11 @@
-//! Страница Avatar: демонстрации `label`, `icon`, `image`, `shape`, `size`, `template` из showcase PrimeNG (`apps/showcase/doc/avatar`).
+//! Страница Avatar: демонстрации `label`, `icon`, `image`, `shape`, `size`, `template`, `avatargroup` из showcase PrimeNG (`apps/showcase/doc/avatar`).
 //!
 //! Иконка `pi-user` заменена `HomeIcon` из `prime-icons`; изображения берутся с CDN PrimeNG, как в оригинале.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_avatar::{Avatar, AvatarShape, AvatarSize};
+use prime_avatargroup::AvatarGroup;
 use prime_icons::HomeIcon;
 
 fn user() -> ViewFn {
@@ -53,6 +54,16 @@ pub fn AvatarPage() -> impl IntoView {
             <Avatar size=AvatarSize::XLarge style="background-color: #2a1261; color: #ece9fc">
                 <span style="font-weight: 700">"AB"</span>
             </Avatar>
+        </Demo>
+        <Demo name="avatargroup" title="Avatar Group">
+            <AvatarGroup>
+                <Avatar image=format!("{AVATARS}/amyelsner.png") size=AvatarSize::Large shape=AvatarShape::Circle />
+                <Avatar image=format!("{AVATARS}/asiyajavayant.png") size=AvatarSize::Large shape=AvatarShape::Circle />
+                <Avatar image=format!("{AVATARS}/onyamalimba.png") size=AvatarSize::Large shape=AvatarShape::Circle />
+                <Avatar image=format!("{AVATARS}/ionibowcher.png") size=AvatarSize::Large shape=AvatarShape::Circle />
+                <Avatar image=format!("{AVATARS}/xuxuefeng.png") size=AvatarSize::Large shape=AvatarShape::Circle />
+                <Avatar label="+2" shape=AvatarShape::Circle size=AvatarSize::Large />
+            </AvatarGroup>
         </Demo>
     }
 }

@@ -50,6 +50,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-progressbar")]
     return view! { <prime_progressbar::ProgressBar value=50.0 /> };
 
+    #[cfg(feature = "case-avatargroup")]
+    return view! { <prime_avatargroup::AvatarGroup><span>"a"</span></prime_avatargroup::AvatarGroup> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

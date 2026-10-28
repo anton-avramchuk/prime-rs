@@ -1624,6 +1624,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-avatargroup"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-badge"
 version = "0.1.0"
 dependencies = [
@@ -1989,6 +1997,7 @@ dependencies = [
  "divan",
  "leptos",
  "prime-avatar",
+ "prime-avatargroup",
  "prime-badge",
  "prime-button",
  "prime-card",
@@ -2291,6 +2300,7 @@ dependencies = [
  "leptos_axum",
  "leptos_router",
  "prime-avatar",
+ "prime-avatargroup",
  "prime-badge",
  "prime-button",
  "prime-card",
@@ -2939,6 +2949,7 @@ version = "0.1.0"
 dependencies = [
  "leptos",
  "prime-avatar",
+ "prime-avatargroup",
  "prime-badge",
  "prime-button",
  "prime-card",

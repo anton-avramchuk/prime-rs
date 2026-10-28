@@ -7,7 +7,7 @@ test.describe('Avatar', () => {
     });
 
     test('демонстрации отрисованы со стилями темы', async ({ page }) => {
-        await expect(page.locator('[data-demo]')).toHaveCount(6);
+        await expect(page.locator('[data-demo]')).toHaveCount(7);
         const radius = await page.locator('[data-demo=shape] .p-avatar-circle').evaluate((el) => getComputedStyle(el).borderRadius);
         expect(radius).not.toBe('0px');
     });
@@ -31,5 +31,15 @@ test.describe('Avatar', () => {
 
     test('template: пользовательское содержимое', async ({ page }) => {
         await expect(page.locator('[data-demo=template] .p-avatar')).toContainText('AB');
+    });
+
+    test('avatargroup: аватары перекрываются', async ({ page }) => {
+        const group = page.locator('[data-demo=avatargroup] .p-avatar-group');
+        await expect(group).toHaveClass(/p-component/);
+        await expect(group.locator('.p-avatar')).toHaveCount(6);
+        const margin = await group.locator('.p-avatar').nth(1).evaluate((el) => getComputedStyle(el).marginInlineStart);
+        expect(parseFloat(margin)).toBeLessThan(0);
+        const display = await group.evaluate((el) => getComputedStyle(el).display);
+        expect(display).toBe('flex');
     });
 });

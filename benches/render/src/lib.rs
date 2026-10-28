@@ -5,6 +5,7 @@
 
 use leptos::prelude::*;
 use prime_avatar::{Avatar, AvatarShape, AvatarSize};
+use prime_avatargroup::AvatarGroup;
 use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
 use prime_card::Card;
@@ -96,6 +97,10 @@ fn progressbar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <ProgressBar value=50.0 /> }).collect_view())
 }
 
+fn avatargroup_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <AvatarGroup><span>"a"</span></AvatarGroup> }).collect_view())
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -133,6 +138,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "message-1000", run: || message_n(1000) },
     Scenario { name: "progressbar-1", run: || progressbar_n(1) },
     Scenario { name: "progressbar-1000", run: || progressbar_n(1000) },
+    Scenario { name: "avatargroup-1", run: || avatargroup_n(1) },
+    Scenario { name: "avatargroup-1000", run: || avatargroup_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

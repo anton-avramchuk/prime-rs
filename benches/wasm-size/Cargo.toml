@@ -21,6 +21,7 @@ case-chip = ["dep:prime-chip"]
 case-avatar = ["dep:prime-avatar"]
 case-divider = ["dep:prime-divider"]
 case-card = ["dep:prime-card"]
+case-avatargroup = ["dep:prime-avatargroup"]
 case-progressbar = ["dep:prime-progressbar"]
 case-message = ["dep:prime-message"]
 case-toggleswitch = ["dep:prime-toggleswitch"]
@@ -39,6 +40,7 @@ prime-chip = { workspace = true, optional = true }
 prime-avatar = { workspace = true, optional = true }
 prime-divider = { workspace = true, optional = true }
 prime-card = { workspace = true, optional = true }
+prime-avatargroup = { workspace = true, optional = true }
 prime-progressbar = { workspace = true, optional = true }
 prime-message = { workspace = true, optional = true }
 prime-toggleswitch = { workspace = true, optional = true }
