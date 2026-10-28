@@ -2,12 +2,12 @@
 
 ## 1. Крейт
 
-- [ ] 1.1 Создать крейт `crates/prime-card` (`publish = false`, features `ssr`/`hydrate`, зависимость `prime-core`) и добавить в workspace; проверить `cargo check -p prime-card --all-features`
+- [x] 1.1 Создать крейт `crates/prime-card` (`publish = false`, features `ssr`/`hydrate`, зависимость `prime-core`) и добавить в workspace; проверить `cargo check -p prime-card --all-features`
 
 ## 2. Компонент
 
-- [ ] 2.1 Реализовать `Card` с двумя ветвями отрисовки, блоками header/body/title/subtitle/content/footer, приоритетом слотов над текстом и `pt` (`CardPt`); проверить SSR-тестами всех сценариев спеки
-- [ ] 2.2 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-card --all-features` и doc-тесты
+- [x] 2.1 Реализовать `Card` с двумя ветвями отрисовки, блоками header/body/title/subtitle/content/footer, приоритетом слотов над текстом и `pt` (`CardPt`); проверить SSR-тестами всех сценариев спеки
+- [x] 2.2 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-card --all-features` и doc-тесты
 
 ## 3. Showcase и e2e
 

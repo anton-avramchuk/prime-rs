@@ -7,6 +7,7 @@ use leptos::prelude::*;
 use prime_avatar::{Avatar, AvatarShape, AvatarSize};
 use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
+use prime_card::Card;
 use prime_chip::Chip;
 use prime_divider::{Divider, DividerAlign};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
@@ -65,6 +66,10 @@ fn divider_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Divider align=DividerAlign::Center>"OR"</Divider> }).collect_view())
 }
 
+fn card_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
+}
+
 /// Все сценарии.
 pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "check-icon-1", run: || check_n(1) },
@@ -84,6 +89,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "avatar-1000", run: || avatar_n(1000) },
     Scenario { name: "divider-1", run: || divider_n(1) },
     Scenario { name: "divider-1000", run: || divider_n(1000) },
+    Scenario { name: "card-1", run: || card_n(1) },
+    Scenario { name: "card-1000", run: || card_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

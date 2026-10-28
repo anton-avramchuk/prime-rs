@@ -29,6 +29,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-divider")]
     return view! { <prime_divider::Divider align=prime_divider::DividerAlign::Center>"OR"</prime_divider::Divider> };
 
+    #[cfg(feature = "case-card")]
+    return view! { <prime_card::Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></prime_card::Card> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

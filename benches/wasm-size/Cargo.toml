@@ -20,6 +20,7 @@ case-tag = ["dep:prime-tag"]
 case-chip = ["dep:prime-chip"]
 case-avatar = ["dep:prime-avatar"]
 case-divider = ["dep:prime-divider"]
+case-card = ["dep:prime-card"]
 
 [dependencies]
 leptos = { workspace = true, features = ["csr"] }
@@ -31,6 +32,7 @@ prime-tag = { workspace = true, optional = true }
 prime-chip = { workspace = true, optional = true }
 prime-avatar = { workspace = true, optional = true }
 prime-divider = { workspace = true, optional = true }
+prime-card = { workspace = true, optional = true }
 
 [lints]
 workspace = true

@@ -15,6 +15,7 @@ prime-tag = { workspace = true, features = ["ssr"] }
 prime-chip = { workspace = true, features = ["ssr"] }
 prime-avatar = { workspace = true, features = ["ssr"] }
 prime-divider = { workspace = true, features = ["ssr"] }
+prime-card = { workspace = true, features = ["ssr"] }
 serde_json = "1"
 
 [dev-dependencies]

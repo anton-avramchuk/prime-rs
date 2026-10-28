@@ -1,6 +1,6 @@
 //! Оболочка страницы, меню и маршруты.
 
-use crate::pages::{AvatarPage, BadgePage, ButtonPage, ChipPage, DividerPage, HomePage, TagPage};
+use crate::pages::{AvatarPage, BadgePage, ButtonPage, CardPage, ChipPage, DividerPage, HomePage, TagPage};
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
 use leptos_router::StaticSegment;
@@ -52,6 +52,7 @@ pub fn App() -> impl IntoView {
                         <A href="/chip">"Chip"</A>
                         <A href="/avatar">"Avatar"</A>
                         <A href="/divider">"Divider"</A>
+                        <A href="/card">"Card"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -66,6 +67,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("chip") view=ChipPage />
                         <Route path=StaticSegment("avatar") view=AvatarPage />
                         <Route path=StaticSegment("divider") view=DividerPage />
+                        <Route path=StaticSegment("card") view=CardPage />
                     </Routes>
                 </main>
             </div>

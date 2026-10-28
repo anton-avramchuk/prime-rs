@@ -250,5 +250,19 @@
     "upstream": "/divider",
     "oursSelector": "[data-demo=\"vertical\"]",
     "upstreamSelector": "vertical-doc .card"
+  },
+  {
+    "name": "card-basic",
+    "ours": "/card",
+    "upstream": "/card",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "card-advanced",
+    "ours": "/card",
+    "upstream": "/card",
+    "oursSelector": "[data-demo=\"advanced\"]",
+    "upstreamSelector": "advanced-doc .card"
   }
 ]
