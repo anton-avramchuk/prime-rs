@@ -1,0 +1,70 @@
+// Файл сгенерирован `cargo xtask gen-theme`; не редактировать вручную.
+
+#[cfg(feature = "avatar")]
+pub const AVATAR: &str = include_str!("../css/components/avatar.css");
+
+#[cfg(feature = "badge")]
+pub const BADGE: &str = include_str!("../css/components/badge.css");
+
+#[cfg(feature = "button")]
+pub const BUTTON: &str = include_str!("../css/components/button.css");
+
+#[cfg(feature = "card")]
+pub const CARD: &str = include_str!("../css/components/card.css");
+
+#[cfg(feature = "checkbox")]
+pub const CHECKBOX: &str = include_str!("../css/components/checkbox.css");
+
+#[cfg(feature = "chip")]
+pub const CHIP: &str = include_str!("../css/components/chip.css");
+
+#[cfg(feature = "divider")]
+pub const DIVIDER: &str = include_str!("../css/components/divider.css");
+
+#[cfg(feature = "inputtext")]
+pub const INPUTTEXT: &str = include_str!("../css/components/inputtext.css");
+
+#[cfg(feature = "message")]
+pub const MESSAGE: &str = include_str!("../css/components/message.css");
+
+#[cfg(feature = "progressbar")]
+pub const PROGRESSBAR: &str = include_str!("../css/components/progressbar.css");
+
+#[cfg(feature = "radiobutton")]
+pub const RADIOBUTTON: &str = include_str!("../css/components/radiobutton.css");
+
+#[cfg(feature = "tag")]
+pub const TAG: &str = include_str!("../css/components/tag.css");
+
+#[cfg(feature = "toggleswitch")]
+pub const TOGGLESWITCH: &str = include_str!("../css/components/toggleswitch.css");
+
+/// Пары «имя — CSS» для включённых компонентов.
+pub(crate) static COMPONENTS: &[(&str, &str)] = &[
+    #[cfg(feature = "avatar")]
+    ("avatar", AVATAR),
+    #[cfg(feature = "badge")]
+    ("badge", BADGE),
+    #[cfg(feature = "button")]
+    ("button", BUTTON),
+    #[cfg(feature = "card")]
+    ("card", CARD),
+    #[cfg(feature = "checkbox")]
+    ("checkbox", CHECKBOX),
+    #[cfg(feature = "chip")]
+    ("chip", CHIP),
+    #[cfg(feature = "divider")]
+    ("divider", DIVIDER),
+    #[cfg(feature = "inputtext")]
+    ("inputtext", INPUTTEXT),
+    #[cfg(feature = "message")]
+    ("message", MESSAGE),
+    #[cfg(feature = "progressbar")]
+    ("progressbar", PROGRESSBAR),
+    #[cfg(feature = "radiobutton")]
+    ("radiobutton", RADIOBUTTON),
+    #[cfg(feature = "tag")]
+    ("tag", TAG),
+    #[cfg(feature = "toggleswitch")]
+    ("toggleswitch", TOGGLESWITCH),
+];

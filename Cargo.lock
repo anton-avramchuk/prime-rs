@@ -1228,9 +1228,6 @@ dependencies = [
 [[package]]
 name = "prime-theme"
 version = "0.1.0"
-dependencies = [
- "leptos",
-]
 
 [[package]]
 name = "proc-macro-utils"
@@ -2158,6 +2155,7 @@ version = "0.1.0"
 dependencies = [
  "insta",
  "serde",
+ "serde_json",
  "tempfile",
  "toml 0.9.12+spec-1.1.0",
 ]

@@ -4,6 +4,7 @@ mod clean;
 mod diff;
 mod gen_icons;
 mod gen_spec;
+mod gen_theme;
 mod upstream;
 
 use std::path::PathBuf;
@@ -59,6 +60,10 @@ fn run(args: &[String]) -> Result<(), String> {
             let n = gen_icons::run(&up.src_dir().join("icons"), &root.join("crates/prime-icons"))?;
             println!("иконок сгенерировано: {n} (+ blank вручную)");
             Ok(())
+        }
+        Some("gen-theme") => {
+            let up = upstream::Upstream::load(&root)?;
+            gen_theme::run(&root, &up)
         }
         Some("clean") => {
             let days = flag(args, "--days").map_or(Ok(7), |d| d.parse::<u32>().map_err(|e| format!("--days: {e}")))?;

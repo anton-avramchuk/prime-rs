@@ -1,0 +1,19 @@
+---
+source: xtask/src/gen_theme.rs
+expression: "render_rust(&names(&[\"badge\", \"button\"]))"
+---
+// Файл сгенерирован `cargo xtask gen-theme`; не редактировать вручную.
+
+#[cfg(feature = "badge")]
+pub const BADGE: &str = include_str!("../css/components/badge.css");
+
+#[cfg(feature = "button")]
+pub const BUTTON: &str = include_str!("../css/components/button.css");
+
+/// Пары «имя — CSS» для включённых компонентов.
+pub(crate) static COMPONENTS: &[(&str, &str)] = &[
+    #[cfg(feature = "badge")]
+    ("badge", BADGE),
+    #[cfg(feature = "button")]
+    ("button", BUTTON),
+];

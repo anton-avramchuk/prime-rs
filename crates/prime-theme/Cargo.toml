@@ -1,6 +1,6 @@
 [package]
 name = "prime-theme"
-description = "prime-rs: theme"
+description = "prime-rs: статический CSS темы Aura"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,11 +8,23 @@ rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr"]
-hydrate = ["leptos/hydrate"]
-
-[dependencies]
-leptos = { workspace = true }
+# CSS компонентов: по feature на компонент, `all-components` включает все.
+# BEGIN GENERATED FEATURES
+avatar = []
+badge = []
+button = []
+card = []
+checkbox = []
+chip = []
+divider = []
+inputtext = []
+message = []
+progressbar = []
+radiobutton = []
+tag = []
+toggleswitch = []
+all-components = ["avatar", "badge", "button", "card", "checkbox", "chip", "divider", "inputtext", "message", "progressbar", "radiobutton", "tag", "toggleswitch"]
+# END GENERATED FEATURES
 
 [lints]
 workspace = true

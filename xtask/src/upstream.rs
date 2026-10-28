@@ -10,6 +10,14 @@ pub struct Upstream {
     pub commit: String,
     pub path: PathBuf,
     pub primeuix: Primeuix,
+    pub theme: ThemeConfig,
+}
+
+/// Настройки генерации темы.
+#[derive(Debug, Deserialize, PartialEq, Eq)]
+pub struct ThemeConfig {
+    pub dark_mode_selector: String,
+    pub components: Vec<String>,
 }
 
 /// Версии npm-пакетов `@primeuix/*`.
@@ -17,6 +25,8 @@ pub struct Upstream {
 pub struct Primeuix {
     pub themes: String,
     pub styles: String,
+    pub styled: String,
+    pub utils: String,
 }
 
 impl Upstream {
@@ -52,6 +62,11 @@ path = "C:/Projects/primeng"
 [primeuix]
 themes = "2.0.3"
 styles = "2.0.3"
+styled = "0.7.4"
+utils = "0.7.2"
+[theme]
+dark_mode_selector = ".p-dark"
+components = ["button"]
 "#;
 
     fn root() -> tempfile::TempDir {
@@ -68,6 +83,8 @@ styles = "2.0.3"
         assert_eq!(u.commit, "fe82b291d6");
         assert_eq!(u.path, PathBuf::from("C:/Projects/primeng"));
         assert_eq!(u.primeuix.themes, "2.0.3");
+        assert_eq!(u.theme.dark_mode_selector, ".p-dark");
+        assert_eq!(u.theme.components, vec!["button"]);
     }
 
     #[test]

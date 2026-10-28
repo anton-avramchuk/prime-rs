@@ -9,3 +9,11 @@ path = "C:/Projects/primeng"
 [primeuix]
 themes = "2.0.3"
 styles = "2.0.3"
+styled = "0.7.4"
+utils = "0.7.2"
+
+# Настройки генерации CSS (`cargo xtask gen-theme`).
+[theme]
+dark_mode_selector = ".p-dark"
+# Компоненты, для которых генерируется CSS; новый компонент добавляется в список вместе с его портом.
+components = ["badge", "avatar", "button", "card", "checkbox", "chip", "divider", "inputtext", "message", "progressbar", "radiobutton", "tag", "toggleswitch"]
