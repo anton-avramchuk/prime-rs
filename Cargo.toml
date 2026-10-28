@@ -32,6 +32,7 @@ prime-checkbox = { path = "crates/prime-checkbox" }
 prime-radiobutton = { path = "crates/prime-radiobutton" }
 prime-toggleswitch = { path = "crates/prime-toggleswitch" }
 prime-avatargroup = { path = "crates/prime-avatargroup" }
+prime-skeleton = { path = "crates/prime-skeleton" }
 prime-progressbar = { path = "crates/prime-progressbar" }
 prime-message = { path = "crates/prime-message" }
 

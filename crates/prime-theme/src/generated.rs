@@ -44,9 +44,17 @@ pub const PROGRESSBAR: &str = include_str!("../css/components/progressbar.css");
 #[cfg(feature = "radiobutton")]
 pub const RADIOBUTTON: &str = include_str!("../css/components/radiobutton.css");
 
+/// CSS компонента `skeleton`.
+#[cfg(feature = "skeleton")]
+pub const SKELETON: &str = include_str!("../css/components/skeleton.css");
+
 /// CSS компонента `tag`.
 #[cfg(feature = "tag")]
 pub const TAG: &str = include_str!("../css/components/tag.css");
+
+/// CSS компонента `textarea`.
+#[cfg(feature = "textarea")]
+pub const TEXTAREA: &str = include_str!("../css/components/textarea.css");
 
 /// CSS компонента `toggleswitch`.
 #[cfg(feature = "toggleswitch")]
@@ -76,8 +84,12 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("progressbar", PROGRESSBAR),
     #[cfg(feature = "radiobutton")]
     ("radiobutton", RADIOBUTTON),
+    #[cfg(feature = "skeleton")]
+    ("skeleton", SKELETON),
     #[cfg(feature = "tag")]
     ("tag", TAG),
+    #[cfg(feature = "textarea")]
+    ("textarea", TEXTAREA),
     #[cfg(feature = "toggleswitch")]
     ("toggleswitch", TOGGLESWITCH),
 ];

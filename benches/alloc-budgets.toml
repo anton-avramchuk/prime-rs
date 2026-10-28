@@ -82,3 +82,8 @@ max_per_instance = 18
 name = "avatargroup-1000"
 instances = 1000
 max_per_instance = 5
+
+[[scenario]]
+name = "skeleton-1000"
+instances = 1000
+max_per_instance = 8

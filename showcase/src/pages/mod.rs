@@ -12,6 +12,7 @@ mod inputtext;
 mod message;
 mod progressbar;
 mod radiobutton;
+mod skeleton;
 mod tag;
 mod toggleswitch;
 
@@ -27,6 +28,7 @@ pub use inputtext::InputTextPage;
 pub use message::MessagePage;
 pub use progressbar::ProgressBarPage;
 pub use radiobutton::RadioButtonPage;
+pub use skeleton::SkeletonPage;
 pub use tag::TagPage;
 pub use toggleswitch::ToggleSwitchPage;
 

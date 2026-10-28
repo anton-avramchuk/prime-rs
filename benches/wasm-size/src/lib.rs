@@ -53,6 +53,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-avatargroup")]
     return view! { <prime_avatargroup::AvatarGroup><span>"a"</span></prime_avatargroup::AvatarGroup> };
 
+    #[cfg(feature = "case-skeleton")]
+    return view! { <prime_skeleton::Skeleton shape=prime_skeleton::SkeletonShape::Circle size="4rem" /> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

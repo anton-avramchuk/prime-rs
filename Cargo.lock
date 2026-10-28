@@ -1766,6 +1766,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-skeleton"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-tag"
 version = "0.1.0"
 dependencies = [
@@ -2009,6 +2017,7 @@ dependencies = [
  "prime-message",
  "prime-progressbar",
  "prime-radiobutton",
+ "prime-skeleton",
  "prime-tag",
  "prime-toggleswitch",
  "serde_json",
@@ -2313,6 +2322,7 @@ dependencies = [
  "prime-message",
  "prime-progressbar",
  "prime-radiobutton",
+ "prime-skeleton",
  "prime-tag",
  "prime-theme",
  "prime-toggleswitch",
@@ -2961,6 +2971,7 @@ dependencies = [
  "prime-message",
  "prime-progressbar",
  "prime-radiobutton",
+ "prime-skeleton",
  "prime-tag",
  "prime-toggleswitch",
  "wasm-bindgen",

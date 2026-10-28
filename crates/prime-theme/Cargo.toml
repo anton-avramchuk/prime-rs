@@ -22,9 +22,11 @@ inputtext = []
 message = []
 progressbar = []
 radiobutton = []
+skeleton = []
 tag = []
+textarea = []
 toggleswitch = []
-all-components = ["avatar", "badge", "button", "card", "checkbox", "chip", "divider", "inputtext", "message", "progressbar", "radiobutton", "tag", "toggleswitch"]
+all-components = ["avatar", "badge", "button", "card", "checkbox", "chip", "divider", "inputtext", "message", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "toggleswitch"]
 # END GENERATED FEATURES
 
 [lints]

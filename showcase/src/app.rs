@@ -2,7 +2,7 @@
 
 use crate::pages::{
     AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, HomePage, InputTextPage, MessagePage,
-    ProgressBarPage, RadioButtonPage, TagPage, ToggleSwitchPage,
+    ProgressBarPage, RadioButtonPage, SkeletonPage, TagPage, ToggleSwitchPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -27,6 +27,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "toggleswitch",
         "message",
         "progressbar",
+        "skeleton",
     ]);
     view! {
         <!DOCTYPE html>
@@ -76,6 +77,7 @@ pub fn App() -> impl IntoView {
                         <A href="/toggleswitch">"ToggleSwitch"</A>
                         <A href="/message">"Message"</A>
                         <A href="/progressbar">"ProgressBar"</A>
+                        <A href="/skeleton">"Skeleton"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -97,6 +99,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("toggleswitch") view=ToggleSwitchPage />
                         <Route path=StaticSegment("message") view=MessagePage />
                         <Route path=StaticSegment("progressbar") view=ProgressBarPage />
+                        <Route path=StaticSegment("skeleton") view=SkeletonPage />
                     </Routes>
                 </main>
             </div>

@@ -509,5 +509,26 @@
     "upstream": "/progressbar",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "skeleton-shapes",
+    "ours": "/skeleton",
+    "upstream": "/skeleton",
+    "oursSelector": "[data-demo=\"shapes\"]",
+    "upstreamSelector": "shapes-doc .card"
+  },
+  {
+    "name": "skeleton-card",
+    "ours": "/skeleton",
+    "upstream": "/skeleton",
+    "oursSelector": "[data-demo=\"card\"]",
+    "upstreamSelector": "card-doc .card"
+  },
+  {
+    "name": "skeleton-list",
+    "ours": "/skeleton",
+    "upstream": "/skeleton",
+    "oursSelector": "[data-demo=\"list\"]",
+    "upstreamSelector": "list-doc .card"
   }
 ]

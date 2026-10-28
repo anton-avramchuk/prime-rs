@@ -85,3 +85,8 @@ max_delta_bytes = 170000
 name = "avatargroup"
 feature = "case-avatargroup"
 max_delta_bytes = 80000
+
+[[case]]
+name = "skeleton"
+feature = "case-skeleton"
+max_delta_bytes = 105000
