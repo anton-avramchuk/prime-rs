@@ -78,7 +78,9 @@ jobs:
           (cd showcase && nohup cargo leptos serve --release > "$RUNNER_TEMP/ours.log" 2>&1 &)
           if [ "${{ steps.upstream_build.outcome }}" = "success" ]; then
             out=$(find "$RUNNER_TEMP/primeng/apps/showcase/dist" -name index.html -path '*browser*' -print -quit | xargs dirname)
-            (nohup npx --yes http-server "$out" -p 4200 -s > "$RUNNER_TEMP/upstream.log" 2>&1 &)
+            # SPA: неизвестные пути (/button) отдаём через корень, иначе глубокие ссылки Angular дают 404.
+            (nohup npx --yes http-server "$out" -p 4200 -s --proxy "http://127.0.0.1:4200?" > "$RUNNER_TEMP/upstream.log" 2>&1 &)
+            npx --yes wait-on http://127.0.0.1:4200 --timeout 60000
           fi
           npx --yes wait-on http://127.0.0.1:3000 --timeout 120000
 
