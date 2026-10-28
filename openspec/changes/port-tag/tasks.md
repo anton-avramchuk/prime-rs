@@ -17,11 +17,11 @@
 
 ## 4. Бенчмарки и бюджеты
 
-- [ ] 4.1 Добавить сценарии `tag-1`, `tag-1000` в `benches/render`, `case-tag` в `benches/wasm-size`, бюджеты в `benches/alloc-budgets.toml` и `benches/budgets.toml` по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
+- [x] 4.1 Добавить сценарии `tag-1`, `tag-1000` в `benches/render`, `case-tag` в `benches/wasm-size`, бюджеты в `benches/alloc-budgets.toml` и `benches/budgets.toml` по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
 
 ## 5. Интеграция
 
-- [ ] 5.1 Написать `docs/tag.md` (соответствие PrimeNG, отличия); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-tag`; убедиться, что CI на `dev` зелёный
+- [x] 5.1 Написать `docs/tag.md` (соответствие PrimeNG, отличия); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-tag`; убедиться, что CI на `dev` зелёный
 
 ## Workflow follow-up
 

@@ -1881,6 +1881,7 @@ dependencies = [
  "prime-badge",
  "prime-button",
  "prime-icons",
+ "prime-tag",
  "serde_json",
 ]
 
@@ -2810,6 +2811,7 @@ dependencies = [
  "prime-badge",
  "prime-button",
  "prime-icons",
+ "prime-tag",
  "wasm-bindgen",
 ]
 
