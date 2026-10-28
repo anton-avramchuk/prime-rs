@@ -29,7 +29,7 @@ crates/prime-core  prime-dom  prime-theme  prime-icons  prime-<component>…
 showcase/   xtask/   benches/   .github/workflows/
 upstream.toml  rust-toolchain.toml  .cargo/config.toml  deny.toml  NOTICE
 ```
-`resolver = "3"`, `members = ["crates/*", "showcase", "xtask", "benches"]`. Базовые классы PrimeNG (`basecomponent`, `baseinput`, `baseeditableholder`) становятся модулями `prime-core`, а не крейтами: в Rust это трейты и хелперы без собственного рантайма. Утилитарные каталоги (`dom`, `utils`, `classnames`, `focustrap`, `ripple`) делятся между `prime-core` и `prime-dom`.
+`resolver = "3"`, `members = ["crates/*", "benches/*", "showcase", "xtask"]` (в `benches/` два крейта: `render` и `wasm-size`). Базовые классы PrimeNG (`basecomponent`, `baseinput`, `baseeditableholder`) становятся модулями `prime-core`, а не крейтами: в Rust это трейты и хелперы без собственного рантайма. Утилитарные каталоги (`dom`, `utils`, `classnames`, `focustrap`, `ripple`) делятся между `prime-core` и `prime-dom`.
 *Альтернатива*: крейт на каждый каталог PrimeNG — даёт ~117 крейтов, из которых треть пустые обёртки и лишние минуты на каждую проверку.
 
 ### D2. Один набор features
@@ -44,8 +44,8 @@ upstream.toml  rust-toolchain.toml  .cargo/config.toml  deny.toml  NOTICE
 
 ### D5. Генерация темы
 `xtask gen-theme`:
-1. Скачивает `@primeuix/themes` и `@primeuix/styles` закреплённых версий через `npm pack` в кэш **вне репозитория** (путь в `upstream.toml` / переменная окружения), распаковывает и разбирает их JS-экспорты через небольшой Node-скрипт, который печатает JSON токенов и CSS-строк.
-2. Rust-часть `xtask` превращает JSON в `theme/base.css` и `theme/components/<name>.css` (CSS-переменные `--p-*`, селектор тёмного режима из конфигурации).
+1. Устанавливает `@primeuix/themes`, `@primeuix/styles`, `@primeuix/styled`, `@primeuix/utils` закреплённых версий (`npm install --ignore-scripts`) в кэш **вне репозитория** (`~/.cache/prime-rs`, переопределяется `PRIME_RS_CACHE`) и запускает `xtask/theme/extract.mjs`.
+2. Скрипт строит CSS тем же кодом, что и PrimeNG (`Theme.getCommon`/`getComponent` из `@primeuix/styled`, разрешение `dt()`), и печатает JSON `{base, components}`. Rust-часть записывает `css/base.css` и `css/components/<name>.css`, список компонентов и селектор тёмного режима берутся из `upstream.toml` (`[theme]`).
 3. Результат **коммитится** в `crates/prime-theme/css/`. Обычная сборка и CI не требуют Node; регенерация нужна только при обновлении upstream.
 Размер: токены Aura и CSS компонентов — десятки–сотни КБ текста; в репозитории это приемлемо, а скриншоты и бинарники не коммитятся.
 *Альтернативы*: (a) генерация в `build.rs` — тянет Node в каждую сборку и ломается в офлайн-CI; (b) порт `@primeuix/styled` на Rust с рантайм-генерацией — соответствует PrimeNG, но противоречит цели нулевого рантайм-оверхеда (см. требования к памяти и производительности).
@@ -59,15 +59,15 @@ upstream.toml  rust-toolchain.toml  .cargo/config.toml  deny.toml  NOTICE
 *Альтернатива*: `leptos-use` — быстрее писать, но тащит большой граф зависимостей в wasm и в `target/`.
 
 ### D8. Бенчмарки
-- `benches/` — отдельный крейт на `divan`; компонент рендерится в строку через `leptos::ssr` (одна и та же функция для 1 и 1000 экземпляров).
+- `benches/render` — крейт с `divan` (`render`), `dhat` (`alloc`) и медианой времени в JSON (`time`); компонент рендерится в строку через `leptos::ssr` (одна и та же функция для 1 и 1000 экземпляров).
 - Аллокации: `dhat` в тестовом режиме (`dhat::Profiler::builder().testing()`), результат пишется в JSON.
-- Размер wasm: `xtask wasm-size` собирает минимальное приложение с одним компонентом, считает вклад по `twiggy`/`cargo-bloat` относительно пустого приложения и сравнивает с `benches/budgets.toml`.
-- Базовая линия — JSON-артефакт ветки `dev`, сравнение скриптом `xtask bench-compare` (порог 10 %, только комментарий в PR).
-- Браузерные замеры памяти — Playwright в еженедельном job (`performance.measureUserAgentSpecificMemory`).
+- Размер wasm: `xtask wasm-size` собирает минимальное приложение с одним компонентом, считает вклад как разницу размера сырого `.wasm` (release, без `wasm-opt`) с пустым приложением `benches/wasm-size` и сравнивает с `benches/budgets.toml`.
+- Все отчёты — `target/bench/*.json` вида `{"metrics": {имя: число}}`. Базовая линия — артефакт `bench-baseline` последнего успешного прогона `dev`; `xtask bench-compare` сравнивает каталоги (порог 10 %, только комментарий в PR, `--fail-over` включает блокировку).
+- Браузерные замеры памяти — Playwright в еженедельном job (CDP `Performance.getMetrics`: `JSHeapUsedSize`, `Nodes`): время создания 1000 компонентов и рост кучи и DOM после 20 циклов создания и удаления.
 
 ### D9. CI
 Файлы `.github/workflows/`:
-- `ci.yml` (PR и push): `fmt` → `clippy -D warnings` → `nextest` → `wasm-bindgen-test` (headless Chrome) → `cargo-deny` → `bench`. Определение затронутых крейтов — `dorny/paths-filter` + `cargo metadata` в `xtask affected`; изменения в `prime-core`, `Cargo.lock`, `xtask`, `.github/**` включают полный прогон.
+- `ci.yml` (PR и push): `fmt` → `clippy -D warnings` → `nextest` → `wasm-bindgen-test` (headless Chrome) → `cargo-deny` → `bench`. Определение затронутых крейтов — `xtask affected` (`cargo metadata` + `git diff`); изменения в `prime-core`, `prime-dom`, `Cargo.toml`, `Cargo.lock`, `xtask`, `.github/**` и др. включают полный прогон. Приложения (`showcase`, `wasm-size`, `render-bench`) проверяет отдельный job `apps`.
 - `weekly.yml` (`schedule`, `workflow_dispatch`, PR с меткой `run-e2e`): клон PrimeNG на коммите из `upstream.toml`, сборка его showcase, сборка нашего showcase, Playwright (e2e + сравнение скриншотов + браузерные бенчмарки), артефакты `retention-days: 7`.
 - Кэш — `Swatinem/rust-cache` с `cache-on-failure: false`, перед сохранением `cargo-sweep`; `cargo-machete` по расписанию.
 Стратегия кэша выбрана так, чтобы размер кэша был ограничен; `sccache` не используется.
