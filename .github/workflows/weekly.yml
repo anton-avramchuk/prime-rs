@@ -77,7 +77,9 @@ jobs:
         run: |
           (cd showcase && nohup cargo leptos serve --release > "$RUNNER_TEMP/ours.log" 2>&1 &)
           if [ "${{ steps.upstream_build.outcome }}" = "success" ]; then
-            out=$(find "$RUNNER_TEMP/primeng/apps/showcase/dist" -name index.html -path '*browser*' -print -quit | xargs dirname)
+            # Корень сборки: prerender кладёт index.html и в подкаталоги маршрутов, поэтому берём самый короткий путь.
+            out=$(find "$RUNNER_TEMP/primeng/apps/showcase/dist" -name index.html -path '*browser*' | awk '{ print length($0) " " $0 }' | sort -n | head -1 | cut -d' ' -f2- | xargs dirname)
+            echo "PrimeNG showcase: $out"
             # SPA: неизвестные пути (/button) отдаём через корень, иначе глубокие ссылки Angular дают 404.
             (nohup npx --yes http-server "$out" -p 4200 -s --proxy "http://127.0.0.1:4200?" > "$RUNNER_TEMP/upstream.log" 2>&1 &)
             npx --yes wait-on http://127.0.0.1:4200 --timeout 60000
