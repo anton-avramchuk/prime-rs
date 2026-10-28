@@ -474,5 +474,26 @@
     "upstream": "/message",
     "oursSelector": "[data-demo=\"life\"]",
     "upstreamSelector": "life-doc .card"
+  },
+  {
+    "name": "progressbar-basic",
+    "ours": "/progressbar",
+    "upstream": "/progressbar",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "progressbar-indeterminate",
+    "ours": "/progressbar",
+    "upstream": "/progressbar",
+    "oursSelector": "[data-demo=\"indeterminate\"]",
+    "upstreamSelector": "indeterminate-doc .card"
+  },
+  {
+    "name": "progressbar-template",
+    "ours": "/progressbar",
+    "upstream": "/progressbar",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

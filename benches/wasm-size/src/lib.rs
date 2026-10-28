@@ -47,6 +47,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-message")]
     return view! { <prime_message::Message severity=prime_message::MessageSeverity::Success text="Saved" /> };
 
+    #[cfg(feature = "case-progressbar")]
+    return view! { <prime_progressbar::ProgressBar value=50.0 /> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

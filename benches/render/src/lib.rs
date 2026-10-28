@@ -14,6 +14,7 @@ use prime_divider::{Divider, DividerAlign};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_inputtext::InputText;
 use prime_message::{Message, MessageSeverity};
+use prime_progressbar::ProgressBar;
 use prime_radiobutton::RadioButton;
 use prime_tag::{Tag, TagSeverity};
 use prime_toggleswitch::ToggleSwitch;
@@ -91,6 +92,10 @@ fn message_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Message severity=MessageSeverity::Success text="Saved" /> }).collect_view())
 }
 
+fn progressbar_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <ProgressBar value=50.0 /> }).collect_view())
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -126,6 +131,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "toggleswitch-1000", run: || toggleswitch_n(1000) },
     Scenario { name: "message-1", run: || message_n(1) },
     Scenario { name: "message-1000", run: || message_n(1000) },
+    Scenario { name: "progressbar-1", run: || progressbar_n(1) },
+    Scenario { name: "progressbar-1000", run: || progressbar_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

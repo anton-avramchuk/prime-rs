@@ -74,3 +74,8 @@ max_delta_bytes = 210000
 name = "message"
 feature = "case-message"
 max_delta_bytes = 270000
+
+[[case]]
+name = "progressbar"
+feature = "case-progressbar"
+max_delta_bytes = 170000
