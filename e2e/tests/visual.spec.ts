@@ -25,8 +25,16 @@ for (const p of pages) {
             // networkidle не используем: у showcase PrimeNG есть фоновые запросы, страница не «затихает»
             const response = await page.goto(url, { waitUntil: 'load', timeout: 20_000 });
             if (!response?.ok()) throw new Error(`${url}: HTTP ${response?.status()}`);
-            const target = selector ? page.locator(selector).first() : page;
-            if (selector) await page.locator(selector).first().waitFor({ state: 'visible', timeout: 15_000 });
+            // Ждём, пока в карточке появится сам компонент: у showcase PrimeNG блоки ниже экрана рендерятся лениво.
+            const target = selector ? page.locator(`${selector}:has(.p-button, .p-badge)`).first() : page;
+            if (selector) {
+                for (let i = 0; i < 40 && (await target.count()) === 0; i++) {
+                    await page.mouse.wheel(0, 600);
+                    await page.waitForTimeout(250);
+                }
+                await target.scrollIntoViewIfNeeded({ timeout: 15_000 });
+                await target.waitFor({ state: 'visible', timeout: 15_000 });
+            }
             await page.waitForTimeout(500);
             return PNG.sync.read(await target.screenshot({ animations: 'disabled', timeout: 10_000 }));
         };

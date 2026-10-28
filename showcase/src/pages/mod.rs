@@ -26,7 +26,7 @@ pub fn Demo(
             <div
                 class="card"
                 data-demo=name
-                style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem"
+                style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; margin-bottom: 1rem; border: 1px solid var(--p-content-border-color); border-radius: 10px; background: var(--p-content-background)"
             >
                 {children()}
             </div>
