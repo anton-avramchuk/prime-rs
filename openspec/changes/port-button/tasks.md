@@ -29,9 +29,9 @@
 
 ## 5. Бенчмарки и бюджеты
 
-- [ ] 5.1 Добавить сценарии `badge-1`, `badge-1000`, `button-1`, `button-1000` в `benches/render`; проверить `cargo bench -p render-bench --bench alloc` и `--bench time`
-- [ ] 5.2 Добавить случаи `case-badge` и `case-button` в `benches/wasm-size` и бюджеты в `benches/budgets.toml` (измеренный вклад с запасом); проверить `cargo xtask wasm-size`
-- [ ] 5.3 Проверить, что `class` не перезаписывается при изменении свойства, не влияющего на классы (счётчик обновлений в `wasm-bindgen-test`); записать результат в `docs/benchmarks.md` вместе с первыми значениями Button и Badge
+- [x] 5.1 Добавить сценарии `badge-1`, `badge-1000`, `button-1`, `button-1000` в `benches/render`; проверить `cargo bench -p render-bench --bench alloc` и `--bench time`
+- [x] 5.2 Добавить случаи `case-badge` и `case-button` в `benches/wasm-size` и бюджеты в `benches/budgets.toml` (измеренный вклад с запасом); проверить `cargo xtask wasm-size`
+- [x] 5.3 Проверить, что `class` не перезаписывается при изменении свойства, не влияющего на классы (счётчик обновлений в `wasm-bindgen-test`); записать результат в `docs/benchmarks.md` вместе с первыми значениями Button и Badge
 
 ## 6. Showcase и сравнение с PrimeNG
 

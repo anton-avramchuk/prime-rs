@@ -1870,6 +1870,8 @@ dependencies = [
  "dhat",
  "divan",
  "leptos",
+ "prime-badge",
+ "prime-button",
  "prime-icons",
  "serde_json",
 ]
@@ -2791,6 +2793,8 @@ name = "wasm-size"
 version = "0.1.0"
 dependencies = [
  "leptos",
+ "prime-badge",
+ "prime-button",
  "prime-icons",
  "wasm-bindgen",
 ]

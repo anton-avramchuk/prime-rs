@@ -153,3 +153,27 @@ async fn unmount_removes_button_and_ink() {
     assert!(doc().query_selector(".p-ink").unwrap().is_none());
     host.remove();
 }
+
+#[wasm_bindgen_test]
+async fn class_is_rewritten_only_when_class_inputs_change() {
+    let aria = RwSignal::new(Some("a".to_owned()));
+    let loading = RwSignal::new(false);
+    let host = host();
+    let _h = leptos::mount::mount_to(host.clone(), move || view! { <Button label="x" aria_label=aria loading=loading /> });
+    leptos::task::tick().await;
+    let btn = button_in(&host);
+
+    // «Метка»: если атрибут class перезапишут, она исчезнет.
+    btn.set_attribute("class", &format!("{} sentinel", btn.class_name())).unwrap();
+
+    aria.set(Some("b".into())); // не влияет на классы
+    leptos::task::tick().await;
+    assert_eq!(btn.get_attribute("aria-label").as_deref(), Some("b"));
+    assert!(btn.class_name().contains("sentinel"), "class перезаписан без причины: {}", btn.class_name());
+
+    loading.set(true); // влияет на классы
+    leptos::task::tick().await;
+    assert!(btn.class_name().contains("p-button-loading"));
+    assert!(!btn.class_name().contains("sentinel"), "class должен быть пересчитан: {}", btn.class_name());
+    host.remove();
+}

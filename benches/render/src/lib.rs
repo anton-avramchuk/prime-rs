@@ -4,6 +4,8 @@
 //! в `render` (divan, время), `alloc` (dhat, аллокации) и `time` (медиана в JSON для сравнения с базовой линией).
 
 use leptos::prelude::*;
+use prime_badge::{Badge, BadgeSeverity};
+use prime_button::{Button, ButtonSeverity};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 
 /// Сценарий: имя и функция, возвращающая HTML.
@@ -26,11 +28,29 @@ fn spinner_n(n: usize) -> String {
     render((0..n).map(|_| view! { <SpinnerIcon spin=true /> }).collect_view())
 }
 
+fn badge_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Badge value="5" severity=BadgeSeverity::Danger /> }).collect_view())
+}
+
+fn button_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Button label="Сохранить" severity=ButtonSeverity::Success /> }).collect_view())
+}
+
+fn button_full_n(n: usize) -> String {
+    let icon = ViewFn::from(|| view! { <CheckIcon /> });
+    render((0..n).map(|_| view! { <Button label="Сохранить" icon=icon.clone() badge="2" /> }).collect_view())
+}
+
 /// Все сценарии.
 pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "check-icon-1", run: || check_n(1) },
     Scenario { name: "check-icon-1000", run: || check_n(1000) },
     Scenario { name: "spinner-icon-1000", run: || spinner_n(1000) },
+    Scenario { name: "badge-1", run: || badge_n(1) },
+    Scenario { name: "badge-1000", run: || badge_n(1000) },
+    Scenario { name: "button-1", run: || button_n(1) },
+    Scenario { name: "button-1000", run: || button_n(1000) },
+    Scenario { name: "button-full-1000", run: || button_full_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

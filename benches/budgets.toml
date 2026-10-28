@@ -12,3 +12,13 @@ max_delta_bytes = 12000
 name = "all-icons"
 feature = "case-all-icons"
 max_delta_bytes = 190000
+
+[[case]]
+name = "badge"
+feature = "case-badge"
+max_delta_bytes = 170000
+
+[[case]]
+name = "button"
+feature = "case-button"
+max_delta_bytes = 570000

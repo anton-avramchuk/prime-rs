@@ -13,6 +13,12 @@ fn App() -> impl IntoView {
 
     #[cfg(feature = "case-all-icons")]
     return view! { <div><prime_icons::AllIcons /></div> };
+
+    #[cfg(feature = "case-badge")]
+    return view! { <prime_badge::Badge value="5" severity=prime_badge::BadgeSeverity::Danger /> };
+
+    #[cfg(feature = "case-button")]
+    return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }
 
 /// Точка входа wasm.

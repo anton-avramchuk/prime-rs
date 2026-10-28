@@ -9,6 +9,8 @@ publish = false
 [dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 prime-icons = { workspace = true, features = ["check", "spinner", "all-icons"] }
+prime-badge = { workspace = true, features = ["ssr"] }
+prime-button = { workspace = true, features = ["ssr"] }
 serde_json = "1"
 
 [dev-dependencies]
