@@ -3,10 +3,12 @@
 mod badge;
 mod button;
 mod home;
+mod tag;
 
 pub use badge::BadgePage;
 pub use button::ButtonPage;
 pub use home::HomePage;
+pub use tag::TagPage;
 
 use leptos::prelude::*;
 

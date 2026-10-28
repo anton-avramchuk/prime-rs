@@ -7,6 +7,7 @@ use leptos::prelude::*;
 use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
+use prime_tag::{Tag, TagSeverity};
 
 /// Сценарий: имя и функция, возвращающая HTML.
 pub struct Scenario {
@@ -41,6 +42,10 @@ fn button_full_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Button label="Сохранить" icon=icon.clone() badge="2" /> }).collect_view())
 }
 
+fn tag_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Tag value="New" severity=TagSeverity::Success rounded=true /> }).collect_view())
+}
+
 /// Все сценарии.
 pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "check-icon-1", run: || check_n(1) },
@@ -51,6 +56,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "button-1", run: || button_n(1) },
     Scenario { name: "button-1000", run: || button_n(1000) },
     Scenario { name: "button-full-1000", run: || button_full_n(1000) },
+    Scenario { name: "tag-1", run: || tag_n(1) },
+    Scenario { name: "tag-1000", run: || tag_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

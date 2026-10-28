@@ -16,6 +16,7 @@ case-one-icon = ["prime-icons/check"]
 case-all-icons = ["prime-icons/all-icons"]
 case-badge = ["dep:prime-badge"]
 case-button = ["dep:prime-button"]
+case-tag = ["dep:prime-tag"]
 
 [dependencies]
 leptos = { workspace = true, features = ["csr"] }
@@ -23,6 +24,7 @@ wasm-bindgen = { workspace = true }
 prime-icons = { workspace = true }
 prime-badge = { workspace = true, optional = true }
 prime-button = { workspace = true, optional = true }
+prime-tag = { workspace = true, optional = true }
 
 [lints]
 workspace = true

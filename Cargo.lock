@@ -2173,6 +2173,7 @@ dependencies = [
  "prime-button",
  "prime-core",
  "prime-icons",
+ "prime-tag",
  "prime-theme",
  "tokio",
  "wasm-bindgen",

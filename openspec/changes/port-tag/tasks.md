@@ -12,8 +12,8 @@
 
 ## 3. Showcase и e2e
 
-- [ ] 3.1 Добавить страницу `/tag` (`basic`, `icon`, `pill`, `severity`, `template`) и пункт меню, включить CSS `tag` в оболочку; проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
-- [ ] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/tag.spec.ts` (демонстрации, классы серьёзности, порядок содержимого); проверить `npx playwright test tag` локально
+- [x] 3.1 Добавить страницу `/tag` (`basic`, `icon`, `pill`, `severity`, `template`) и пункт меню, включить CSS `tag` в оболочку; проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
+- [x] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/tag.spec.ts` (демонстрации, классы серьёзности, порядок содержимого); проверить `npx playwright test tag` локально
 
 ## 4. Бенчмарки и бюджеты
 

@@ -39,7 +39,7 @@ for (const p of pages) {
             const response = await page.goto(url, { waitUntil: 'load', timeout: 20_000 });
             if (!response?.ok()) throw new Error(`${url}: HTTP ${response?.status()}`);
             // Ждём, пока в карточке появится сам компонент: у showcase PrimeNG блоки ниже экрана рендерятся лениво.
-            const target = selector ? page.locator(`${selector}:has(.p-button, .p-badge)`).first() : page;
+            const target = selector ? page.locator(`${selector}:has(.p-component)`).first() : page;
             if (selector) {
                 for (let i = 0; i < 40 && (await target.count()) === 0; i++) {
                     await page.mouse.wheel(0, 600);

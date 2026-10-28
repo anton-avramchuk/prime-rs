@@ -1,6 +1,6 @@
 //! Оболочка страницы, меню и маршруты.
 
-use crate::pages::{BadgePage, ButtonPage, HomePage};
+use crate::pages::{BadgePage, ButtonPage, HomePage, TagPage};
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
 use leptos_router::StaticSegment;
@@ -10,7 +10,7 @@ const DARK_CLASS: &str = "p-dark";
 
 /// HTML-оболочка: тема подключается встроенным `<style>` (базовый CSS и CSS компонентов).
 pub fn shell(options: LeptosOptions) -> impl IntoView {
-    let css = prime_theme::stylesheet(&["button", "badge", "card"]);
+    let css = prime_theme::stylesheet(&["button", "badge", "tag", "card"]);
     view! {
         <!DOCTYPE html>
         <html lang="en">
@@ -48,6 +48,7 @@ pub fn App() -> impl IntoView {
                         <A href="/">"Home"</A>
                         <A href="/button">"Button"</A>
                         <A href="/badge">"Badge"</A>
+                        <A href="/tag">"Tag"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -58,6 +59,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("") view=HomePage />
                         <Route path=StaticSegment("button") view=ButtonPage />
                         <Route path=StaticSegment("badge") view=BadgePage />
+                        <Route path=StaticSegment("tag") view=TagPage />
                     </Routes>
                 </main>
             </div>

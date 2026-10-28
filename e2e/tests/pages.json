@@ -117,5 +117,40 @@
     "upstream": "/badge",
     "oursSelector": "[data-demo=\"severity\"]",
     "upstreamSelector": "severity-doc .card"
+  },
+  {
+    "name": "tag-basic",
+    "ours": "/tag",
+    "upstream": "/tag",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "tag-icon",
+    "ours": "/tag",
+    "upstream": "/tag",
+    "oursSelector": "[data-demo=\"icon\"]",
+    "upstreamSelector": "icon-doc .card"
+  },
+  {
+    "name": "tag-pill",
+    "ours": "/tag",
+    "upstream": "/tag",
+    "oursSelector": "[data-demo=\"pill\"]",
+    "upstreamSelector": "pill-doc .card"
+  },
+  {
+    "name": "tag-severity",
+    "ours": "/tag",
+    "upstream": "/tag",
+    "oursSelector": "[data-demo=\"severity\"]",
+    "upstreamSelector": "severity-doc .card"
+  },
+  {
+    "name": "tag-template",
+    "ours": "/tag",
+    "upstream": "/tag",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]
