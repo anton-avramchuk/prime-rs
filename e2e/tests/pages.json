@@ -1,1 +1,121 @@
-[]
+[
+  {
+    "name": "button-basic",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "button-icons",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"icons\"]",
+    "upstreamSelector": "icons-doc .card"
+  },
+  {
+    "name": "button-iconsonly",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"iconsonly\"]",
+    "upstreamSelector": "iconsonly-doc .card"
+  },
+  {
+    "name": "button-loading",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"loading\"]",
+    "upstreamSelector": "loading-doc .card"
+  },
+  {
+    "name": "button-severity",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"severity\"]",
+    "upstreamSelector": "severity-doc .card"
+  },
+  {
+    "name": "button-sizes",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "button-badge",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"badge\"]",
+    "upstreamSelector": "badge-doc .card"
+  },
+  {
+    "name": "button-raised",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"raised\"]",
+    "upstreamSelector": "raised-doc .card"
+  },
+  {
+    "name": "button-rounded",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"rounded\"]",
+    "upstreamSelector": "rounded-doc .card"
+  },
+  {
+    "name": "button-text",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"text\"]",
+    "upstreamSelector": "text-doc .card"
+  },
+  {
+    "name": "button-outlined",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"outlined\"]",
+    "upstreamSelector": "outlined-doc .card"
+  },
+  {
+    "name": "button-link",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"link\"]",
+    "upstreamSelector": "link-doc .card"
+  },
+  {
+    "name": "button-disabled",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "button-template",
+    "ours": "/button",
+    "upstream": "/button",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "badge-basic",
+    "ours": "/badge",
+    "upstream": "/badge",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "badge-size",
+    "ours": "/badge",
+    "upstream": "/badge",
+    "oursSelector": "[data-demo=\"size\"]",
+    "upstreamSelector": "size-doc .card"
+  },
+  {
+    "name": "badge-severity",
+    "ours": "/badge",
+    "upstream": "/badge",
+    "oursSelector": "[data-demo=\"severity\"]",
+    "upstreamSelector": "severity-doc .card"
+  }
+]

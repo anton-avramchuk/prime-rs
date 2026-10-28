@@ -47,3 +47,18 @@ fn badge_css_is_available_when_its_feature_is_on() {
     assert!(css.contains(".p-badge-dot"));
     assert!(css.starts_with(BASE));
 }
+
+#[test]
+fn no_unresolved_dt_calls_in_generated_css() {
+    assert!(!BASE.contains("dt("), "в base.css остался dt(");
+    assert!(BASE.contains("--p-scrollbar-width") || !BASE.contains("scrollbar"), "base: токен scrollbar не подставлен");
+}
+
+#[cfg(feature = "button")]
+#[test]
+fn button_css_uses_resolved_token_variables() {
+    let css = prime_theme::component("button").expect("feature button включён");
+    assert!(!css.contains("dt("), "в CSS Button остался dt()");
+    assert!(css.contains("var(--p-button-primary-background)"), "токены не подставлены");
+    assert!(css.contains(".p-button-danger"), "нет стиля серьёзности");
+}

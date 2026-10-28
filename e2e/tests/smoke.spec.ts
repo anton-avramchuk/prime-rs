@@ -6,7 +6,7 @@ test('страница гидрируется, иконки и переключ�
     await page.goto('/');
     await expect(page.locator('[data-testid=icons] svg')).toHaveCount(54);
 
-    const bg = () => page.locator('main').evaluate((el) => getComputedStyle(el).backgroundColor);
+    const bg = () => page.getByTestId('app').evaluate((el) => getComputedStyle(el).backgroundColor);
     const light = await bg();
     // клик срабатывает только после гидрации: ждём, пока класс появится
     await expect(async () => {

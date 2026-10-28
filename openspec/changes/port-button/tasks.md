@@ -35,9 +35,9 @@
 
 ## 6. Showcase и сравнение с PrimeNG
 
-- [ ] 6.1 Добавить `leptos_router` в `showcase` (маршруты `/`, `/button`, `/badge`), включить features `button` и `badge` темы; проверить `cargo leptos build` и открытие страниц
-- [ ] 6.2 Перенести демонстрации Button из `apps/showcase/doc/button` (все свойства спеки) и Badge в страницы showcase; проверить в Chrome, что каждая демонстрация отображается без ошибок консоли
-- [ ] 6.3 Добавить страницы в `e2e/tests/pages.json` и e2e-проверки (`button.spec.ts`: клик, loading, disabled, ripple); проверить `npx playwright test` локально с запущенным showcase
+- [x] 6.1 Добавить `leptos_router` в `showcase` (маршруты `/`, `/button`, `/badge`), включить features `button` и `badge` темы; проверить `cargo leptos build` и открытие страниц
+- [x] 6.2 Перенести демонстрации Button из `apps/showcase/doc/button` (все свойства спеки) и Badge в страницы showcase; проверить в Chrome, что каждая демонстрация отображается без ошибок консоли
+- [x] 6.3 Добавить страницы в `e2e/tests/pages.json` и e2e-проверки (`button.spec.ts`: клик, loading, disabled, ripple); проверить `npx playwright test` локально с запущенным showcase
 - [ ] 6.4 Запустить `weekly.yml` вручную и проверить, что отчёт `visual.json` содержит `visual.button.mismatch_pct`; записать расхождения и их причины в `docs/button.md`
 
 ## 7. Интеграционная проверка

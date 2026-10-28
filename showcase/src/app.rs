@@ -1,8 +1,10 @@
-//! Оболочка страницы и приложение.
+//! Оболочка страницы, меню и маршруты.
 
+use crate::pages::{BadgePage, ButtonPage, HomePage};
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
-use prime_icons::AllIcons;
+use leptos_router::StaticSegment;
+use leptos_router::components::{A, Route, Router, Routes};
 
 const DARK_CLASS: &str = "p-dark";
 
@@ -34,43 +36,31 @@ fn toggle_dark() {
     }
 }
 
-/// Сценарий для браузерных замеров памяти: монтирует и убирает заданное число компонентов.
-#[component]
-fn Bench() -> impl IntoView {
-    let count = RwSignal::new(0usize);
-    view! {
-        <section>
-            <h2>"Замеры"</h2>
-            <button type="button" data-testid="bench-mount" on:click=move |_| count.set(1000)>
-                "Показать 1000 иконок"
-            </button>
-            <button type="button" data-testid="bench-clear" on:click=move |_| count.set(0)>
-                "Убрать"
-            </button>
-            <div data-testid="bench-area" data-count=move || count.get().to_string()>
-                {move || (0..count.get()).map(|_| view! { <prime_icons::CheckIcon /> }).collect_view()}
-            </div>
-        </section>
-    }
-}
-
 /// Корневой компонент showcase.
 #[component]
 pub fn App() -> impl IntoView {
     view! {
-        <main style="font-family: sans-serif; padding: 1.5rem; background: var(--p-content-background); color: var(--p-text-color); min-height: 100vh">
-            <header style="display: flex; align-items: center; justify-content: space-between">
-                <h1>"prime-rs"</h1>
-                <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
-                    "Светлая / тёмная схема"
-                </button>
-            </header>
-            <p>"Порт компонентов PrimeNG на Leptos. Компоненты появятся здесь по мере портирования."</p>
-            <Bench />
-            <h2>"Иконки"</h2>
-            <div data-testid="icons" style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 1.5rem">
-                <AllIcons />
+        <Router>
+            <div data-testid="app" style="font-family: sans-serif; padding: 1.5rem; background: var(--p-content-background); color: var(--p-text-color); min-height: 100vh">
+                <header style="display: flex; align-items: center; justify-content: space-between">
+                    <h1>"prime-rs"</h1>
+                    <nav style="display: flex; gap: 1rem" data-testid="nav">
+                        <A href="/">"Home"</A>
+                        <A href="/button">"Button"</A>
+                        <A href="/badge">"Badge"</A>
+                    </nav>
+                    <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
+                        "Светлая / тёмная схема"
+                    </button>
+                </header>
+                <main>
+                    <Routes fallback=|| "Страница не найдена">
+                        <Route path=StaticSegment("") view=HomePage />
+                        <Route path=StaticSegment("button") view=ButtonPage />
+                        <Route path=StaticSegment("badge") view=BadgePage />
+                    </Routes>
+                </main>
             </div>
-        </main>
+        </Router>
     }
 }

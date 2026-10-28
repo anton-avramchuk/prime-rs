@@ -6,23 +6,23 @@ import { PNG } from 'pngjs';
 // Сравнение страниц компонентов с оригиналом PrimeNG. Это отчёт о соответствии, а не блокировщик PR:
 // расхождение не валит тест, а попадает в results/visual.json. Эталон снимается заново с запущенного PrimeNG showcase.
 //
-// pages.json: [{ "name": "button", "ours": "/button", "upstream": "/button", "selector": "#demo" }]
+// pages.json: [{ "name": "button-basic", "ours": "/button", "upstream": "/button", "oursSelector": "[data-demo=\"basic\"]", "upstreamSelector": "basic-doc .card" }]
 const UPSTREAM = process.env.UPSTREAM_URL;
-const pages: { name: string; ours: string; upstream: string; selector?: string }[] = JSON.parse(readFileSync(new URL('./pages.json', import.meta.url), 'utf8'));
+const pages: { name: string; ours: string; upstream: string; oursSelector?: string; upstreamSelector?: string }[] = JSON.parse(readFileSync(new URL('./pages.json', import.meta.url), 'utf8'));
 const report: Record<string, number> = {};
 
 test.skip(!UPSTREAM, 'UPSTREAM_URL не задан: нечего сравнивать');
 
 for (const p of pages) {
     test(`визуальное сравнение: ${p.name}`, async ({ page, baseURL }) => {
-        const shot = async (url: string) => {
+        const shot = async (url: string, selector?: string) => {
             await page.goto(url);
             await page.waitForLoadState('networkidle');
-            const target = p.selector ? page.locator(p.selector).first() : page;
+            const target = selector ? page.locator(selector).first() : page;
             return PNG.sync.read(await target.screenshot({ animations: 'disabled' }));
         };
-        const ours = await shot(new URL(p.ours, baseURL).toString());
-        const upstream = await shot(new URL(p.upstream, UPSTREAM).toString());
+        const ours = await shot(new URL(p.ours, baseURL).toString(), p.oursSelector);
+        const upstream = await shot(new URL(p.upstream, UPSTREAM).toString(), p.upstreamSelector);
         const width = Math.min(ours.width, upstream.width);
         const height = Math.min(ours.height, upstream.height);
         const crop = (img: PNG) => {

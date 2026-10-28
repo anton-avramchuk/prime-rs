@@ -32,6 +32,12 @@ pub fn parse_output(json: &str, wanted: &[String]) -> Result<Css, String> {
         let css = obj.get(name).and_then(Value::as_str).filter(|s| !s.is_empty()).ok_or_else(|| format!("нет CSS компонента `{name}`"))?;
         components.insert(name.clone(), css.to_owned());
     }
+    // Нерешённый `dt('…')` в CSS означает, что значения токенов не подставлены и стиль работать не будет.
+    for (name, css) in std::iter::once((&"base".to_owned(), &base)).chain(components.iter()) {
+        if let Some(i) = css.find("dt(") {
+            return Err(format!("в CSS `{name}` остался нерешённый dt(): {}", &css[i..(i + 40).min(css.len())]));
+        }
+    }
     Ok(Css { base, components })
 }
 
@@ -171,6 +177,13 @@ mod tests {
         let css = parse_output(JSON, &names(&["button"])).unwrap();
         assert_eq!(css.base, ":root{--p-x:1}");
         assert_eq!(css.components.keys().collect::<Vec<_>>(), vec!["button"]);
+    }
+
+    #[test]
+    fn unresolved_dt_is_rejected() {
+        let json = r#"{"base":":root{}","components":{"button":".p-button{color:dt('button.primary.color')}"}}"#;
+        let err = parse_output(json, &names(&["button"])).unwrap_err();
+        assert!(err.contains("button") && err.contains("dt("), "{err}");
     }
 
     #[test]
