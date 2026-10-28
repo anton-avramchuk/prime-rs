@@ -17,8 +17,8 @@
 
 ## 4. Измерения и бюджеты
 
-- [ ] 4.1 Добавить в showcase и `memory.spec.ts` сценарии «статические кнопки» и «реактивные кнопки» (с сигналом `loading`); проверить `npx playwright test memory` локально и записать значения до и после в `docs/benchmarks.md`
-- [ ] 4.2 Измерить `cargo xtask wasm-size` и `cargo bench -p render-bench --bench alloc`; пересмотреть `benches/budgets.toml` и `benches/alloc-budgets.toml`; проверить `cargo xtask wasm-size` и `alloc-budget`
+- [x] 4.1 Добавить в showcase и `memory.spec.ts` сценарии «статические кнопки» и «реактивные кнопки» (с сигналом `loading`); проверить `npx playwright test memory` локально и записать значения до и после в `docs/benchmarks.md`
+- [x] 4.2 Измерить `cargo xtask wasm-size` и `cargo bench -p render-bench --bench alloc`; пересмотреть `benches/budgets.toml` и `benches/alloc-budgets.toml`; проверить `cargo xtask wasm-size` и `alloc-budget`
 
 ## 5. Интеграция
 

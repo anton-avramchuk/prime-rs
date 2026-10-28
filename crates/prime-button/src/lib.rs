@@ -51,8 +51,12 @@ pub struct ButtonPt {
 /// (это также убирает лишние затраты при SSR и не зависит от набора features Leptos).
 #[cfg(target_arch = "wasm32")]
 fn setup_client(node: NodeRef<leptos::html::Button>, autofocus: bool) {
-    let ripple = StoredValue::new_local(None::<Ripple>);
     let ripple_enabled = use_prime_config().ripple;
+    // Без автофокуса и ripple эффект не нужен: не создаём его вовсе (экономия памяти на каждой кнопке).
+    if !autofocus && !ripple_enabled {
+        return;
+    }
+    let ripple = StoredValue::new_local(None::<Ripple>);
     Effect::new(move |_| {
         let Some(el) = node.get() else { return };
         if autofocus {
