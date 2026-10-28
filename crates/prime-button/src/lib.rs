@@ -16,7 +16,8 @@ mod state;
 
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgePt, BadgeSeverity};
-use prime_core::{Pt, Size, class_memo};
+use prime_core::{Pt, Size, class_memo, use_prime_config};
+use prime_dom::Ripple;
 use prime_icons::SpinnerIcon;
 
 pub use state::{ButtonSeverity, ButtonState, ButtonVariant, IconPos, icon_classes, icon_data_p, label_data_p, root_classes, root_data_p};
@@ -131,6 +132,18 @@ pub fn Button(
     /// Дополнительный класс.
     #[prop(optional, into)]
     style_class: MaybeProp<String>,
+    /// Получить фокус после монтирования в браузере (на сервере не выставляется).
+    #[prop(optional)]
+    autofocus: bool,
+    /// Вызывается при клике на доступную кнопку.
+    #[prop(optional, into)]
+    on_click: Option<Callback<web_sys::MouseEvent>>,
+    /// Вызывается при получении фокуса.
+    #[prop(optional, into)]
+    on_focus: Option<Callback<web_sys::FocusEvent>>,
+    /// Вызывается при потере фокуса.
+    #[prop(optional, into)]
+    on_blur: Option<Callback<web_sys::FocusEvent>>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<ButtonPt>,
@@ -176,6 +189,21 @@ pub fn Button(
         }
     };
     let is_disabled = move || disabled.get() || loading.get();
+
+    // Только в браузере: Effect не выполняется при SSR.
+    let node = NodeRef::<leptos::html::Button>::new();
+    let ripple = StoredValue::new_local(None::<Ripple>);
+    let ripple_enabled = use_prime_config().ripple;
+    Effect::new(move |_| {
+        let Some(el) = node.get() else { return };
+        if autofocus {
+            let _ = el.focus();
+        }
+        if ripple_enabled && ripple.with_value(Option::is_none) {
+            ripple.set_value(Ripple::attach(&el));
+        }
+    });
+    on_cleanup(move || ripple.set_value(None));
 
     let indicator = {
         let pt = pt.clone();
@@ -238,6 +266,22 @@ pub fn Button(
             aria-label=move || aria_label.get()
             tabindex=move || tabindex.get()
             disabled=is_disabled
+            node_ref=node
+            on:click=move |e| {
+                if let (Some(cb), false) = (on_click, is_disabled()) {
+                    cb.run(e);
+                }
+            }
+            on:focus=move |e| {
+                if let Some(cb) = on_focus {
+                    cb.run(e);
+                }
+            }
+            on:blur=move |e| {
+                if let Some(cb) = on_blur {
+                    cb.run(e);
+                }
+            }
             data-p=move || root_data_p(&state.read())
             data-p-disabled=move || is_disabled().then_some("true")
             data-p-severity=move || severity.get().map(ButtonSeverity::as_str)

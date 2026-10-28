@@ -162,3 +162,14 @@ fn reactive_loading_and_label() {
         assert!(html.contains("p-button-loading") && html.contains(">b<"), "{html}");
     });
 }
+
+#[test]
+fn ssr_with_ripple_and_autofocus_never_touches_the_browser() {
+    // Effect-ы не выполняются при SSR: никакого window, фокуса и p-ink; тест падал бы паникой web-sys на нативной цели.
+    let owner = Owner::new();
+    owner.with(|| {
+        prime_core::provide_prime_config(prime_core::PrimeConfig { ripple: true, ..Default::default() });
+        let html = view! { <Button label="x" autofocus=true /> }.to_html();
+        assert!(html.contains("p-ripple") && !html.contains("p-ink"), "{html}");
+    });
+}

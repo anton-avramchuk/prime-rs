@@ -100,8 +100,8 @@ jobs:
   wasm:
     name: Браузерные тесты (wasm-bindgen-test)
     needs: changes
-    # Тесты prime-dom нужны при полном прогоне или если затронут prime-dom.
-    if: needs.changes.outputs.all == 'true' || contains(needs.changes.outputs.args, 'prime-dom')
+    # Браузерные тесты нужны при полном прогоне или если затронут крейт с тестами `web` (prime-dom, prime-button).
+    if: needs.changes.outputs.all == 'true' || contains(needs.changes.outputs.args, 'prime-dom') || contains(needs.changes.outputs.args, 'prime-button')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -121,7 +121,11 @@ jobs:
       - name: wasm-bindgen-test в headless Chrome
         run: |
           export CHROMEDRIVER="$CHROMEWEBDRIVER/chromedriver"
-          cargo test -p prime-dom --target wasm32-unknown-unknown --test web
+          pkgs=""
+          for c in prime-dom prime-button; do
+            if [ "${{ needs.changes.outputs.all }}" = "true" ] || echo "${{ needs.changes.outputs.args }}" | grep -qw -- "$c"; then pkgs="$pkgs -p $c"; fi
+          done
+          cargo test $pkgs --target wasm32-unknown-unknown --test web
 
   apps:
     name: Приложения (showcase, размер wasm, бенчмарки)

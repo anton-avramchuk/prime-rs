@@ -21,8 +21,11 @@ prime-badge = { workspace = true }
 web-sys = { workspace = true, features = ["HtmlElement", "MouseEvent", "FocusEvent"] }
 
 [dev-dependencies]
-leptos = { workspace = true, features = ["ssr"] }
 prime-icons = { workspace = true, features = ["spinner", "check"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
 wasm-bindgen-test = { workspace = true }

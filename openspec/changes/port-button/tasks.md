@@ -23,9 +23,9 @@
 
 ## 4. Button: поведение в браузере
 
-- [ ] 4.1 Реализовать `on_click`, `on_focus`, `on_blur` и недоступность при `disabled`/`loading`; проверить `wasm-bindgen-test` (клик вызывает один раз, недоступная кнопка не вызывает)
-- [ ] 4.2 Реализовать `autofocus` и подключение `Ripple` по `PrimeConfig.ripple` с освобождением в `on_cleanup`; проверить `wasm-bindgen-test` сценариев автофокуса, ripple включён и выключен, отсутствия `p-ink` после размонтирования
-- [ ] 4.3 Проверить SSR-безопасность: `cargo test -p prime-button --features ssr` не обращается к `window`, а `Effect`-ы не выполняются; зафиксировать результат тестом
+- [x] 4.1 Реализовать `on_click`, `on_focus`, `on_blur` и недоступность при `disabled`/`loading`; проверить `wasm-bindgen-test` (клик вызывает один раз, недоступная кнопка не вызывает)
+- [x] 4.2 Реализовать `autofocus` и подключение `Ripple` по `PrimeConfig.ripple` с освобождением в `on_cleanup`; проверить `wasm-bindgen-test` сценариев автофокуса, ripple включён и выключен, отсутствия `p-ink` после размонтирования
+- [x] 4.3 Проверить SSR-безопасность: `cargo test -p prime-button --features ssr` не обращается к `window`, а `Effect`-ы не выполняются; зафиксировать результат тестом
 
 ## 5. Бенчмарки и бюджеты
 
