@@ -162,6 +162,8 @@ jobs:
         run: |
           cargo bench -p render-bench --bench time
           cargo bench -p render-bench --bench alloc
+      - name: Бюджет аллокаций (на экземпляр, SSR)
+        run: cargo xtask alloc-budget
       - name: Базовая линия (отчёты последнего успешного прогона dev)
         id: baseline
         continue-on-error: true

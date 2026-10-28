@@ -21,6 +21,7 @@ cargo xtask <команда>
   gen-icons                    сгенерировать crates/prime-icons из иконок PrimeNG
   gen-theme                    сгенерировать CSS темы Aura в crates/prime-theme (нужен Node)
   wasm-size [--budgets <файл>] вклад компонентов в размер wasm и проверка бюджетов (benches/budgets.toml)
+  alloc-budget [--budgets <файл>] проверить target/bench/alloc.json по benches/alloc-budgets.toml
   bench-compare <база> <сейчас> [--threshold 10] [--fail-over]
                                сравнить каталоги отчётов бенчмарков (*.json), вывод — Markdown
   affected [--base <ref> | файлы...]  затронутые крейты для выборочных проверок CI (формат $GITHUB_OUTPUT)
@@ -76,6 +77,10 @@ fn run(args: &[String]) -> Result<(), String> {
         Some("wasm-size") => {
             let budgets = flag(args, "--budgets").map_or_else(|| root.join("benches/budgets.toml"), PathBuf::from);
             bench::wasm_size(&root, &budgets)
+        }
+        Some("alloc-budget") => {
+            let budgets = flag(args, "--budgets").map_or_else(|| root.join("benches/alloc-budgets.toml"), PathBuf::from);
+            bench::alloc_budget(&root, &budgets)
         }
         Some("bench-compare") => {
             let (Some(base), Some(cur)) = (args.get(1), args.get(2)) else {

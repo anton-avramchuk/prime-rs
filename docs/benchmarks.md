@@ -28,6 +28,16 @@ cargo xtask wasm-size --budgets файл.toml
 Вклад компонента — размер сырого `.wasm` (release, без `wasm-opt`) минус `case-baseline` приложения `benches/wasm-size`.
 Бюджеты — в `benches/budgets.toml`. Новый компонент добавляет `case-<имя>` в `benches/wasm-size` и строку в бюджеты.
 
+## Бюджет аллокаций
+
+```sh
+cargo bench -p render-bench --bench alloc   # target/bench/alloc.json
+cargo xtask alloc-budget                    # ненулевой код выхода при превышении benches/alloc-budgets.toml
+```
+
+Для каждого сценария `<компонент>-1000` задан максимум аллокаций на экземпляр (число аллокаций сценария делится на число экземпляров).
+Новый компонент добавляет сценарий в `benches/render/src/lib.rs` и строку в `benches/alloc-budgets.toml`; проверка входит в job `apps` в `ci.yml`.
+
 ## Сравнение с базовой линией
 
 ```sh

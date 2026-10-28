@@ -150,6 +150,62 @@ pub fn bench_compare(base_dir: &Path, cur_dir: &Path, threshold: f64, fail_over:
     if fail_over && count > 0 { Err(format!("регрессий больше {threshold}%: {count}")) } else { Ok(()) }
 }
 
+/// Бюджет аллокаций сценария `render-bench` на один экземпляр.
+#[derive(Debug, Deserialize, PartialEq)]
+pub struct AllocCase {
+    /// Имя сценария (`badge-1000`).
+    pub name: String,
+    /// Сколько экземпляров рендерит сценарий.
+    pub instances: u64,
+    /// Максимум аллокаций на экземпляр.
+    pub max_per_instance: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct AllocBudgets {
+    scenario: Vec<AllocCase>,
+}
+
+/// Читает бюджеты аллокаций.
+pub fn read_alloc_budgets(path: &Path) -> Result<Vec<AllocCase>, String> {
+    let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
+    toml::from_str::<AllocBudgets>(&text).map(|b| b.scenario).map_err(|e| format!("{}: {e}", path.display()))
+}
+
+/// Сообщения о превышении: «сценарий, аллокаций на экземпляр, бюджет». Ошибка, если метрики сценария нет в отчёте.
+pub fn check_alloc_budgets(metrics: &BTreeMap<String, f64>, cases: &[AllocCase]) -> Result<Vec<String>, String> {
+    let mut violations = Vec::new();
+    for c in cases {
+        let key = format!("alloc.{}.blocks", c.name);
+        let blocks = metrics
+            .get(&key)
+            .ok_or_else(|| format!("в отчёте нет метрики `{key}`: выполните `cargo bench -p render-bench --bench alloc`"))?;
+        let per_instance = blocks / c.instances as f64;
+        if per_instance > c.max_per_instance {
+            violations.push(format!("{}: {per_instance:.1} аллокаций на экземпляр превышает бюджет {}", c.name, c.max_per_instance));
+        }
+    }
+    Ok(violations)
+}
+
+/// Проверяет `target/bench/alloc.json` по бюджетам; ошибка при превышении.
+pub fn alloc_budget(root: &Path, budgets: &Path) -> Result<(), String> {
+    let cases = read_alloc_budgets(budgets)?;
+    let dir = target_dir(root).join("bench");
+    let all = read_metrics(&dir)?;
+    for c in &cases {
+        if let Some(blocks) = all.get(&format!("alloc.{}.blocks", c.name)) {
+            println!("{:<18} {:>6.1} аллокаций на экземпляр (бюджет {})", c.name, blocks / c.instances as f64, c.max_per_instance);
+        }
+    }
+    let violations = check_alloc_budgets(&all, &cases)?;
+    if violations.is_empty() {
+        Ok(())
+    } else {
+        Err(format!("превышен бюджет аллокаций:\n  {}", violations.join("\n  ")))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -205,5 +261,37 @@ mod tests {
         let p = dir.path().join("b.toml");
         std::fs::write(&p, "[[case]]\nname = \"x\"\nfeature = \"case-x\"\nmax_delta_bytes = 5\n").unwrap();
         assert_eq!(read_budgets(&p).unwrap(), vec![Case { name: "x".into(), feature: "case-x".into(), max_delta_bytes: 5 }]);
+    }
+
+    #[test]
+    fn alloc_budget_violation_and_missing_metric() {
+        let cases = vec![AllocCase { name: "badge-1000".into(), instances: 1000, max_per_instance: 10.0 }];
+        assert!(check_alloc_budgets(&map(&[("alloc.badge-1000.blocks", 8017.0)]), &cases).unwrap().is_empty());
+        let bad = check_alloc_budgets(&map(&[("alloc.badge-1000.blocks", 12000.0)]), &cases).unwrap();
+        assert_eq!(bad, vec!["badge-1000: 12.0 аллокаций на экземпляр превышает бюджет 10".to_owned()]);
+        let err = check_alloc_budgets(&map(&[]), &cases).unwrap_err();
+        assert!(err.contains("alloc.badge-1000.blocks"), "{err}");
+    }
+
+    #[test]
+    fn reads_alloc_budgets_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("a.toml");
+        std::fs::write(&p, "[[scenario]]\nname = \"x-1000\"\ninstances = 1000\nmax_per_instance = 7.5\n").unwrap();
+        assert_eq!(read_alloc_budgets(&p).unwrap(), vec![AllocCase { name: "x-1000".into(), instances: 1000, max_per_instance: 7.5 }]);
+    }
+
+    #[test]
+    fn alloc_budget_reads_report_directory() {
+        let dir = tempfile::tempdir().unwrap();
+        let bench = dir.path().join("target/bench");
+        std::fs::create_dir_all(&bench).unwrap();
+        std::fs::write(bench.join("alloc.json"), r#"{"metrics":{"alloc.b-10.blocks":150}}"#).unwrap();
+        let budgets = dir.path().join("b.toml");
+        std::fs::write(&budgets, "[[scenario]]\nname = \"b-10\"\ninstances = 10\nmax_per_instance = 20\n").unwrap();
+        // 15 на экземпляр <= 20
+        // SAFETY-free: target_dir берёт CARGO_TARGET_DIR из окружения, поэтому проверяем через check_alloc_budgets напрямую.
+        let metrics = read_metrics(&bench).unwrap();
+        assert!(check_alloc_budgets(&metrics, &read_alloc_budgets(&budgets).unwrap()).unwrap().is_empty());
     }
 }
