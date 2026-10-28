@@ -59,6 +59,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-textarea")]
     return view! { <prime_textarea::Textarea rows=3u32 placeholder="Text" /> };
 
+    #[cfg(feature = "case-fieldset")]
+    return view! { <prime_fieldset::Fieldset legend="Header" toggleable=true><p>"Content"</p></prime_fieldset::Fieldset> };
+
     #[cfg(feature = "case-panel")]
     return view! { <prime_panel::Panel header="Header" toggleable=true><p>"Content"</p></prime_panel::Panel> };
 

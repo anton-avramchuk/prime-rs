@@ -16,4 +16,4 @@ utils = "0.7.2"
 [theme]
 dark_mode_selector = ".p-dark"
 # Компоненты, для которых генерируется CSS; новый компонент добавляется в список вместе с его портом.
-components = ["badge", "avatar", "button", "card", "checkbox", "chip", "divider", "inputtext", "message", "panel", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "toggleswitch"]
+components = ["badge", "avatar", "button", "card", "checkbox", "chip", "divider", "fieldset", "inputtext", "message", "panel", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "toggleswitch"]

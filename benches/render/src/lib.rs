@@ -12,6 +12,7 @@ use prime_card::Card;
 use prime_checkbox::Checkbox;
 use prime_chip::Chip;
 use prime_divider::{Divider, DividerAlign};
+use prime_fieldset::Fieldset;
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_inputtext::InputText;
 use prime_message::{Message, MessageSeverity};
@@ -120,6 +121,10 @@ fn panel_plain_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Panel header="Header"><p>"Content"</p></Panel> }).collect_view())
 }
 
+fn fieldset_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Fieldset legend="Header" toggleable=true><p>"Content"</p></Fieldset> }).collect_view())
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -166,6 +171,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "panel-1", run: || panel_n(1) },
     Scenario { name: "panel-1000", run: || panel_n(1000) },
     Scenario { name: "panel-plain-1000", run: || panel_plain_n(1000) },
+    Scenario { name: "fieldset-1", run: || fieldset_n(1) },
+    Scenario { name: "fieldset-1000", run: || fieldset_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

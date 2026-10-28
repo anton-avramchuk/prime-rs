@@ -600,5 +600,26 @@
     "upstream": "/panel",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "fieldset-basic",
+    "ours": "/fieldset",
+    "upstream": "/fieldset",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "fieldset-toggleable",
+    "ours": "/fieldset",
+    "upstream": "/fieldset",
+    "oursSelector": "[data-demo=\"toggleable\"]",
+    "upstreamSelector": "toggleable-doc .card"
+  },
+  {
+    "name": "fieldset-template",
+    "ours": "/fieldset",
+    "upstream": "/fieldset",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

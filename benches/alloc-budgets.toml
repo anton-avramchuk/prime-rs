@@ -102,3 +102,8 @@ max_per_instance = 70
 name = "panel-plain-1000"
 instances = 1000
 max_per_instance = 48
+
+[[scenario]]
+name = "fieldset-1000"
+instances = 1000
+max_per_instance = 63

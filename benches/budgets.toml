@@ -100,3 +100,8 @@ max_delta_bytes = 300000
 name = "panel"
 feature = "case-panel"
 max_delta_bytes = 270000
+
+[[case]]
+name = "fieldset"
+feature = "case-fieldset"
+max_delta_bytes = 255000
