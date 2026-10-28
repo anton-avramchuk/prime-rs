@@ -81,7 +81,7 @@ upstream.toml  rust-toolchain.toml  .cargo/config.toml  deny.toml  NOTICE
 В `.cargo/config.toml`: `rust-lld` для `x86_64-pc-windows-msvc` и `x86_64-unknown-linux-gnu`; `CARGO_INCREMENTAL=0` в CI. Это снижает размер `target/` без потери отладки строк.
 
 ### D11. upstream.toml и заготовки спек
-`upstream.toml` хранит `version`, `commit`, `path` (локальный клон; перекрывается `PRIMENG_PATH`) и версии `@primeuix/*`. `xtask upstream-diff` вызывает `git diff --name-only <pinned>..<target> -- packages/primeng/src/<component>` для портированных компонентов (список — из `openspec/specs`). `xtask gen-spec <name>` разбирает `<name>.ts` и `style/<name>style.ts` и заполняет шаблон спеки.
+`upstream.toml` хранит `version`, `commit`, `path` (локальный клон; перекрывается `PRIMENG_PATH`) и версии `@primeuix/*`. `xtask upstream-diff` вызывает `git diff --name-only <pinned>..<target> -- packages/primeng/src/<component>` для портированных компонентов (список — крейты `crates/prime-<имя>` без инфраструктурных). `xtask gen-spec <name>` разбирает `<name>.ts` и `style/<name>style.ts` и заполняет шаблон спеки.
 
 ## Risks / Trade-offs
 

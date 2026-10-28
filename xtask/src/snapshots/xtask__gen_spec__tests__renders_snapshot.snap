@@ -1,0 +1,70 @@
+---
+source: xtask/src/gen_spec.rs
+expression: "render(\"badge\", \"fe82b291d6\", \"21.1.10\", &e)"
+---
+<!-- Заготовка создана `cargo xtask gen-spec badge`; довести вручную. -->
+<!-- Источник: packages/primeng/src/badge/badge.ts, PrimeNG 21.1.10, коммит fe82b291d6. -->
+
+## ADDED Requirements
+
+### Requirement: Props
+Компонент `prime-badge` SHALL принимать те же свойства, что и PrimeNG (имена приведены к snake_case Rust).
+
+Селекторы PrimeNG:
+- `p-badge`
+
+Входы PrimeNG:
+- `fluid`
+- `label`
+- `size`
+- `text`
+- `value`
+
+#### Scenario: TODO
+- **WHEN** TODO
+- **THEN** TODO
+
+### Requirement: События
+Компонент SHALL вызывать те же события, что и PrimeNG.
+
+Выходы PrimeNG:
+- `closed`
+- `onClick`
+
+#### Scenario: TODO
+- **WHEN** TODO
+- **THEN** TODO
+
+### Requirement: DOM и классы
+Разметка SHALL совпадать с PrimeNG и использовать те же классы.
+
+Классы PrimeNG:
+- `p-badge`
+- `p-badge-label`
+- `p-badge-sm`
+- `p-component`
+
+#### Scenario: TODO
+- **WHEN** TODO
+- **THEN** TODO
+
+### Requirement: Доступность
+Компонент SHALL выставлять те же ARIA-атрибуты и роли, что и PrimeNG.
+
+#### Scenario: TODO
+- **WHEN** TODO
+- **THEN** TODO
+
+### Requirement: Клавиатура
+Компонент SHALL поддерживать те же клавиши, что и PrimeNG.
+
+#### Scenario: TODO
+- **WHEN** TODO
+- **THEN** TODO
+
+### Requirement: Производительность
+Рендер компонента SHALL укладываться в бюджеты `benches/budgets.toml`.
+
+#### Scenario: TODO
+- **WHEN** TODO
+- **THEN** TODO

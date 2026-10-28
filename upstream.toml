@@ -1,0 +1,11 @@
+# Версия PrimeNG, с которой синхронизирован порт.
+version = "21.1.10"
+commit = "fe82b291d6fedde177dc12c0af7ef1008dc1b1ff"
+
+# Локальный клон PrimeNG; переопределяется переменной окружения PRIMENG_PATH.
+path = "C:/Projects/primeng"
+
+# npm-пакеты, из которых берутся токены темы и CSS компонентов (версии из pnpm-workspace.yaml PrimeNG).
+[primeuix]
+themes = "2.0.3"
+styles = "2.0.3"

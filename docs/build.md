@@ -33,3 +33,14 @@ export CARGO_TARGET_DIR="$HOME/.cache/cargo-target"
 ```
 
 Размер `target/` после `cargo check --workspace` (только Leptos, без компонентов) на момент создания каркаса: 542 МБ.
+
+## Команды xtask
+
+```sh
+cargo xtask upstream-diff [--to <rev>]   # какие портированные компоненты изменились в PrimeNG
+cargo xtask gen-spec <имя> [--out файл]  # заготовка спеки из исходников PrimeNG
+cargo xtask clean [--days N]             # cargo-sweep: удалить артефакты target/ старше N дней (по умолчанию 7)
+```
+
+`upstream-diff` и `gen-spec` читают `upstream.toml`; путь к клону PrimeNG можно переопределить `PRIMENG_PATH`.
+Для `clean` нужен `cargo install cargo-sweep`. Список «портированных» компонентов — это `crates/prime-<имя>` без `core`, `dom`, `theme`, `icons`.
