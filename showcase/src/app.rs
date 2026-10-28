@@ -2,7 +2,8 @@
 
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage, HomePage, InputTextPage,
-    MessagePage, PanelPage, ProgressBarPage, RadioButtonPage, SkeletonPage, TagPage, TextareaPage, ToggleSwitchPage, ToolbarPage,
+    MessagePage, PanelPage, ProgressBarPage, RadioButtonPage, ScrollPanelPage, SkeletonPage, TagPage, TextareaPage, ToggleSwitchPage,
+    ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -33,6 +34,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "fieldset",
         "accordion",
         "toolbar",
+        "scrollpanel",
     ]);
     view! {
         <!DOCTYPE html>
@@ -88,6 +90,7 @@ pub fn App() -> impl IntoView {
                         <A href="/fieldset">"Fieldset"</A>
                         <A href="/accordion">"Accordion"</A>
                         <A href="/toolbar">"Toolbar"</A>
+                        <A href="/scrollpanel">"ScrollPanel"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -115,6 +118,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("fieldset") view=FieldsetPage />
                         <Route path=StaticSegment("accordion") view=AccordionPage />
                         <Route path=StaticSegment("toolbar") view=ToolbarPage />
+                        <Route path=StaticSegment("scrollpanel") view=ScrollPanelPage />
                     </Routes>
                 </main>
             </div>

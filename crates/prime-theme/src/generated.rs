@@ -56,6 +56,10 @@ pub const PROGRESSBAR: &str = include_str!("../css/components/progressbar.css");
 #[cfg(feature = "radiobutton")]
 pub const RADIOBUTTON: &str = include_str!("../css/components/radiobutton.css");
 
+/// CSS компонента `scrollpanel`.
+#[cfg(feature = "scrollpanel")]
+pub const SCROLLPANEL: &str = include_str!("../css/components/scrollpanel.css");
+
 /// CSS компонента `skeleton`.
 #[cfg(feature = "skeleton")]
 pub const SKELETON: &str = include_str!("../css/components/skeleton.css");
@@ -106,6 +110,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("progressbar", PROGRESSBAR),
     #[cfg(feature = "radiobutton")]
     ("radiobutton", RADIOBUTTON),
+    #[cfg(feature = "scrollpanel")]
+    ("scrollpanel", SCROLLPANEL),
     #[cfg(feature = "skeleton")]
     ("skeleton", SKELETON),
     #[cfg(feature = "tag")]

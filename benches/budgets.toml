@@ -115,3 +115,8 @@ max_delta_bytes = 265000
 name = "toolbar"
 feature = "case-toolbar"
 max_delta_bytes = 110000
+
+[[case]]
+name = "scrollpanel"
+feature = "case-scrollpanel"
+max_delta_bytes = 200000

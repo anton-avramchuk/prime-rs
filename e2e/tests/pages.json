@@ -677,5 +677,19 @@
     "upstream": "/toolbar",
     "oursSelector": "[data-demo=\"custom\"]",
     "upstreamSelector": "custom-doc .card"
+  },
+  {
+    "name": "scrollpanel-basic",
+    "ours": "/scrollpanel",
+    "upstream": "/scrollpanel",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "scrollpanel-custom",
+    "ours": "/scrollpanel",
+    "upstream": "/scrollpanel",
+    "oursSelector": "[data-demo=\"custom\"]",
+    "upstreamSelector": "custom-doc .card"
   }
 ]

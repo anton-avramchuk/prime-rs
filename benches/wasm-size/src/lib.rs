@@ -68,6 +68,9 @@ fn App() -> impl IntoView {
         />
     };
 
+    #[cfg(feature = "case-scrollpanel")]
+    return view! { <prime_scrollpanel::ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></prime_scrollpanel::ScrollPanel> };
+
     #[cfg(feature = "case-accordion")]
     return view! {
         <prime_accordion::Accordion default_value=vec!["0".to_owned()]>

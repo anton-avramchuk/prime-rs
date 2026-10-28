@@ -31,6 +31,7 @@ prime-panel = { workspace = true }
 prime-fieldset = { workspace = true }
 prime-accordion = { workspace = true }
 prime-toolbar = { workspace = true }
+prime-scrollpanel = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputtext = { workspace = true }
 prime-checkbox = { workspace = true }
