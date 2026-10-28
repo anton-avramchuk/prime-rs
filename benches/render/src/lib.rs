@@ -20,7 +20,9 @@ fn render(view: impl IntoView + 'static) -> String {
 
 fn check_n(n: usize) -> String {
     // ВРЕМЕННО: искусственная регрессия для проверки комментария в PR (не сливать).
-    std::hint::black_box((0..2_000_000u64).fold(0u64, |a, i| a.wrapping_add(i * i)));
+    for _ in 0..8 {
+        std::hint::black_box(vec![0u8; 512]);
+    }
     render((0..n).map(|_| view! { <CheckIcon /> }).collect_view())
 }
 
