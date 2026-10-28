@@ -59,3 +59,8 @@ max_delta_bytes = 225000
 name = "checkbox"
 feature = "case-checkbox"
 max_delta_bytes = 250000
+
+[[case]]
+name = "radiobutton"
+feature = "case-radiobutton"
+max_delta_bytes = 210000

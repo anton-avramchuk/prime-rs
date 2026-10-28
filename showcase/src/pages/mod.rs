@@ -9,6 +9,7 @@ mod chip;
 mod divider;
 mod home;
 mod inputtext;
+mod radiobutton;
 mod tag;
 
 pub use avatar::AvatarPage;
@@ -20,6 +21,7 @@ pub use chip::ChipPage;
 pub use divider::DividerPage;
 pub use home::HomePage;
 pub use inputtext::InputTextPage;
+pub use radiobutton::RadioButtonPage;
 pub use tag::TagPage;
 
 use leptos::prelude::*;

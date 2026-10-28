@@ -355,5 +355,40 @@
     "upstream": "/checkbox",
     "oursSelector": "[data-demo=\"disabled\"]",
     "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "radiobutton-group",
+    "ours": "/radiobutton",
+    "upstream": "/radiobutton",
+    "oursSelector": "[data-demo=\"group\"]",
+    "upstreamSelector": "group-doc .card"
+  },
+  {
+    "name": "radiobutton-filled",
+    "ours": "/radiobutton",
+    "upstream": "/radiobutton",
+    "oursSelector": "[data-demo=\"filled\"]",
+    "upstreamSelector": "filled-doc .card"
+  },
+  {
+    "name": "radiobutton-sizes",
+    "ours": "/radiobutton",
+    "upstream": "/radiobutton",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "radiobutton-invalid",
+    "ours": "/radiobutton",
+    "upstream": "/radiobutton",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "radiobutton-disabled",
+    "ours": "/radiobutton",
+    "upstream": "/radiobutton",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
   }
 ]

@@ -57,3 +57,8 @@ max_per_instance = 16
 name = "checkbox-1000"
 instances = 1000
 max_per_instance = 42
+
+[[scenario]]
+name = "radiobutton-1000"
+instances = 1000
+max_per_instance = 28

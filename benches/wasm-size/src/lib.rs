@@ -38,6 +38,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-checkbox")]
     return view! { <prime_checkbox::Checkbox binary=true default_checked=true name="agree" /> };
 
+    #[cfg(feature = "case-radiobutton")]
+    return view! { <prime_radiobutton::RadioButton default_checked=true name="pizza" value="Cheese" /> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

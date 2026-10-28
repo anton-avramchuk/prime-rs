@@ -1725,6 +1725,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-radiobutton"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-tag"
 version = "0.1.0"
 dependencies = [
@@ -1953,6 +1964,7 @@ dependencies = [
  "prime-divider",
  "prime-icons",
  "prime-inputtext",
+ "prime-radiobutton",
  "prime-tag",
  "serde_json",
 ]
@@ -2252,6 +2264,7 @@ dependencies = [
  "prime-divider",
  "prime-icons",
  "prime-inputtext",
+ "prime-radiobutton",
  "prime-tag",
  "prime-theme",
  "tokio",
@@ -2895,6 +2908,7 @@ dependencies = [
  "prime-divider",
  "prime-icons",
  "prime-inputtext",
+ "prime-radiobutton",
  "prime-tag",
  "wasm-bindgen",
 ]
