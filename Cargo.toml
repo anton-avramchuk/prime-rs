@@ -22,6 +22,7 @@ prime-theme = { path = "crates/prime-theme" }
 prime-icons = { path = "crates/prime-icons" }
 prime-badge = { path = "crates/prime-badge" }
 prime-button = { path = "crates/prime-button" }
+prime-tag = { path = "crates/prime-tag" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

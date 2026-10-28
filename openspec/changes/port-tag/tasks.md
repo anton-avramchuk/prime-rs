@@ -2,13 +2,13 @@
 
 ## 1. Крейт и логика
 
-- [ ] 1.1 Создать крейт `crates/prime-tag` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`) и добавить в workspace; проверить `cargo check -p prime-tag --all-features`
-- [ ] 1.2 Реализовать `TagSeverity`, `TagState`, `write_classes`, `data_p` по `tagstyle.ts` и `Tag.dataP`; проверить таблицей юнит-тестов по сценариям спеки (серьёзности, `rounded`, `data-p`)
+- [x] 1.1 Создать крейт `crates/prime-tag` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`) и добавить в workspace; проверить `cargo check -p prime-tag --all-features`
+- [x] 1.2 Реализовать `TagSeverity`, `TagState`, `write_classes`, `data_p` по `tagstyle.ts` и `Tag.dataP`; проверить таблицей юнит-тестов по сценариям спеки (серьёзности, `rounded`, `data-p`)
 
 ## 2. Компонент
 
-- [ ] 2.1 Реализовать `Tag` с двумя ветвями отрисовки (`all_static!`, `Either`, разметка в макросе), блоками `children`, иконки и метки, `pt` (`TagPt`); проверить SSR-тестами всех сценариев спеки
-- [ ] 2.2 Добавить таблицу паритета (значения и сигналы, HTML совпадает) и rustdoc с примером; проверить `cargo test -p prime-tag --all-features` и doc-тесты
+- [x] 2.1 Реализовать `Tag` с двумя ветвями отрисовки (`all_static!`, `Either`, разметка в макросе), блоками `children`, иконки и метки, `pt` (`TagPt`); проверить SSR-тестами всех сценариев спеки
+- [x] 2.2 Добавить таблицу паритета (значения и сигналы, HTML совпадает) и rustdoc с примером; проверить `cargo test -p prime-tag --all-features` и doc-тесты
 
 ## 3. Showcase и e2e
 

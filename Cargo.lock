@@ -1659,6 +1659,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-tag"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-theme"
 version = "0.1.0"
 
