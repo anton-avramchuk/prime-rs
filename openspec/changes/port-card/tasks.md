@@ -11,16 +11,16 @@
 
 ## 3. Showcase и e2e
 
-- [ ] 3.1 Добавить страницу `/card` (`basic`, `advanced` с Button в подвале), пункт меню и CSS `card` (уже в оболочке); проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
-- [ ] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/card.spec.ts` (структура, порядок блоков, подвал с кнопками); проверить `npx playwright test card` локально
+- [x] 3.1 Добавить страницу `/card` (`basic`, `advanced` с Button в подвале), пункт меню и CSS `card` (уже в оболочке); проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
+- [x] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/card.spec.ts` (структура, порядок блоков, подвал с кнопками); проверить `npx playwright test card` локально
 
 ## 4. Бенчмарки и бюджеты
 
-- [ ] 4.1 Добавить сценарии `card-1`, `card-1000` в `benches/render`, `case-card` в `benches/wasm-size`, бюджеты по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
+- [x] 4.1 Добавить сценарии `card-1`, `card-1000` в `benches/render`, `case-card` в `benches/wasm-size`, бюджеты по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
 
 ## 5. Интеграция
 
-- [ ] 5.1 Написать `docs/card.md` (соответствие PrimeNG, отличия); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-card`; убедиться, что CI на `dev` зелёный
+- [x] 5.1 Написать `docs/card.md` (соответствие PrimeNG, отличия); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-card`; убедиться, что CI на `dev` зелёный
 
 ## Workflow follow-up
 
