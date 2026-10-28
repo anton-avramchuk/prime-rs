@@ -1611,6 +1611,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-accordion"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-avatar"
 version = "0.1.0"
 dependencies = [
@@ -2044,6 +2058,7 @@ dependencies = [
  "dhat",
  "divan",
  "leptos",
+ "prime-accordion",
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
@@ -2351,6 +2366,7 @@ dependencies = [
  "leptos",
  "leptos_axum",
  "leptos_router",
+ "prime-accordion",
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
@@ -3004,6 +3020,7 @@ name = "wasm-size"
 version = "0.1.0"
 dependencies = [
  "leptos",
+ "prime-accordion",
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",

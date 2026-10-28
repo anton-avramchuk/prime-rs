@@ -6,7 +6,7 @@ import { minifyCSS, resolve } from '@primeuix/utils';
 import Aura from '@primeuix/themes/aura';
 import { style as baseStyle } from '@primeuix/styles/base';
 
-const { darkModeSelector, components, extraBaseCss } = JSON.parse(process.argv[2]);
+const { darkModeSelector, components, extraBaseCss, extraComponentCss = {} } = JSON.parse(process.argv[2]);
 
 Theme.setTheme({ preset: Aura, options: { prefix: 'p', darkModeSelector, cssLayer: false } });
 
@@ -21,7 +21,8 @@ const out = { base, components: {} };
 for (const name of [...components].sort()) {
     const { style } = await import(`@primeuix/styles/${name}`);
     const comp = Theme.getComponent(name, undefined);
-    const body = Theme.transformCSS(name, `${resolved(style)}${Css`${comp.style ?? ''}`}`);
+    const extraComp = extraComponentCss[name] ? resolved(extraComponentCss[name]) : '';
+    const body = Theme.transformCSS(name, `${resolved(style)}${extraComp}${Css`${comp.style ?? ''}`}`);
     out.components[name] = minifyCSS([comp.css, body].filter(Boolean).join('\n'));
 }
 process.stdout.write(JSON.stringify(out));

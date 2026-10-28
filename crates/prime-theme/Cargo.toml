@@ -11,6 +11,7 @@ rust-version.workspace = true
 default = []
 # CSS компонентов: по feature на компонент, `all-components` включает все.
 # BEGIN GENERATED FEATURES
+accordion = []
 avatar = []
 badge = []
 button = []
@@ -28,7 +29,7 @@ skeleton = []
 tag = []
 textarea = []
 toggleswitch = []
-all-components = ["avatar", "badge", "button", "card", "checkbox", "chip", "divider", "fieldset", "inputtext", "message", "panel", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "toggleswitch"]
+all-components = ["accordion", "avatar", "badge", "button", "card", "checkbox", "chip", "divider", "fieldset", "inputtext", "message", "panel", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "toggleswitch"]
 # END GENERATED FEATURES
 
 [lints]

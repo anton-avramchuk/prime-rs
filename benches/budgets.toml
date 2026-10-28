@@ -105,3 +105,8 @@ max_delta_bytes = 270000
 name = "fieldset"
 feature = "case-fieldset"
 max_delta_bytes = 255000
+
+[[case]]
+name = "accordion"
+feature = "case-accordion"
+max_delta_bytes = 265000

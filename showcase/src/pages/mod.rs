@@ -1,5 +1,6 @@
 //! Страницы showcase: по странице на компонент и общая оболочка демонстрации.
 
+mod accordion;
 mod avatar;
 mod badge;
 mod button;
@@ -19,6 +20,7 @@ mod tag;
 mod textarea;
 mod toggleswitch;
 
+pub use accordion::AccordionPage;
 pub use avatar::AvatarPage;
 pub use badge::BadgePage;
 pub use button::ButtonPage;

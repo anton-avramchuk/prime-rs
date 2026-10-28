@@ -107,3 +107,8 @@ max_per_instance = 48
 name = "fieldset-1000"
 instances = 1000
 max_per_instance = 63
+
+[[scenario]]
+name = "accordion-1000"
+instances = 1000
+max_per_instance = 260

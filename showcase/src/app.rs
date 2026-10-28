@@ -1,8 +1,8 @@
 //! Оболочка страницы, меню и маршруты.
 
 use crate::pages::{
-    AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage, HomePage, InputTextPage, MessagePage,
-    PanelPage, ProgressBarPage, RadioButtonPage, SkeletonPage, TagPage, TextareaPage, ToggleSwitchPage,
+    AccordionPage, AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage, HomePage, InputTextPage,
+    MessagePage, PanelPage, ProgressBarPage, RadioButtonPage, SkeletonPage, TagPage, TextareaPage, ToggleSwitchPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -31,6 +31,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "textarea",
         "panel",
         "fieldset",
+        "accordion",
     ]);
     view! {
         <!DOCTYPE html>
@@ -84,6 +85,7 @@ pub fn App() -> impl IntoView {
                         <A href="/textarea">"Textarea"</A>
                         <A href="/panel">"Panel"</A>
                         <A href="/fieldset">"Fieldset"</A>
+                        <A href="/accordion">"Accordion"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -109,6 +111,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("textarea") view=TextareaPage />
                         <Route path=StaticSegment("panel") view=PanelPage />
                         <Route path=StaticSegment("fieldset") view=FieldsetPage />
+                        <Route path=StaticSegment("accordion") view=AccordionPage />
                     </Routes>
                 </main>
             </div>

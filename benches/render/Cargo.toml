@@ -16,6 +16,7 @@ prime-chip = { workspace = true, features = ["ssr"] }
 prime-textarea = { workspace = true, features = ["ssr"] }
 prime-panel = { workspace = true, features = ["ssr"] }
 prime-fieldset = { workspace = true, features = ["ssr"] }
+prime-accordion = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }
 prime-avatargroup = { workspace = true, features = ["ssr"] }
 prime-progressbar = { workspace = true, features = ["ssr"] }

@@ -131,8 +131,15 @@ pub fn animation_class(expanding: bool) -> &'static str {
 /// Первый запуск ничего не анимирует. `on_done` вызывается с новым `collapsed` после окончания анимации.
 #[cfg(target_arch = "wasm32")]
 pub fn bind_region(region: NodeRef<leptos::html::Div>, state: CollapseState, on_done: Option<Callback<bool>>) {
+    bind_region_with(region, move || state.get(), on_done);
+}
+
+/// То же, что [`bind_region`], но состояние «свёрнуто» вычисляется функцией (например, из списка активных значений группы).
+/// Функция читает сигналы внутри `Effect`, поэтому смена любого из них перезапускает привязку.
+#[cfg(target_arch = "wasm32")]
+pub fn bind_region_with(region: NodeRef<leptos::html::Div>, collapsed: impl Fn() -> bool + 'static, on_done: Option<Callback<bool>>) {
     Effect::new(move |prev: Option<bool>| {
-        let collapsed = state.get();
+        let collapsed = collapsed();
         let Some(el) = region.get() else { return collapsed };
         let el: web_sys::HtmlElement = (*el).clone();
         match prev {

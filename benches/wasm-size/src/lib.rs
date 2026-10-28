@@ -59,6 +59,16 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-textarea")]
     return view! { <prime_textarea::Textarea rows=3u32 placeholder="Text" /> };
 
+    #[cfg(feature = "case-accordion")]
+    return view! {
+        <prime_accordion::Accordion default_value=vec!["0".to_owned()]>
+            <prime_accordion::AccordionPanel value="0">
+                <prime_accordion::AccordionHeader>"Header"</prime_accordion::AccordionHeader>
+                <prime_accordion::AccordionContent><p>"Content"</p></prime_accordion::AccordionContent>
+            </prime_accordion::AccordionPanel>
+        </prime_accordion::Accordion>
+    };
+
     #[cfg(feature = "case-fieldset")]
     return view! { <prime_fieldset::Fieldset legend="Header" toggleable=true><p>"Content"</p></prime_fieldset::Fieldset> };
 

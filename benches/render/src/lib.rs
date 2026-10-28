@@ -4,6 +4,7 @@
 //! в `render` (divan, время), `alloc` (dhat, аллокации) и `time` (медиана в JSON для сравнения с базовой линией).
 
 use leptos::prelude::*;
+use prime_accordion::{Accordion, AccordionContent, AccordionHeader, AccordionPanel};
 use prime_avatar::{Avatar, AvatarShape, AvatarSize};
 use prime_avatargroup::AvatarGroup;
 use prime_badge::{Badge, BadgeSeverity};
@@ -125,6 +126,34 @@ fn fieldset_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Fieldset legend="Header" toggleable=true><p>"Content"</p></Fieldset> }).collect_view())
 }
 
+fn accordion_n(n: usize) -> String {
+    // Accordion передаёт состояние через контекст, поэтому части создаются внутри владельца.
+    Owner::new().with(|| {
+        render(
+            (0..n)
+                .map(|_| {
+                    view! {
+                        <Accordion default_value=vec!["0".to_owned()]>
+                            <AccordionPanel value="0">
+                                <AccordionHeader>"Header I"</AccordionHeader>
+                                <AccordionContent><p>"Content I"</p></AccordionContent>
+                            </AccordionPanel>
+                            <AccordionPanel value="1">
+                                <AccordionHeader>"Header II"</AccordionHeader>
+                                <AccordionContent><p>"Content II"</p></AccordionContent>
+                            </AccordionPanel>
+                            <AccordionPanel value="2">
+                                <AccordionHeader>"Header III"</AccordionHeader>
+                                <AccordionContent><p>"Content III"</p></AccordionContent>
+                            </AccordionPanel>
+                        </Accordion>
+                    }
+                })
+                .collect_view(),
+        )
+    })
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -173,6 +202,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "panel-plain-1000", run: || panel_plain_n(1000) },
     Scenario { name: "fieldset-1", run: || fieldset_n(1) },
     Scenario { name: "fieldset-1000", run: || fieldset_n(1000) },
+    Scenario { name: "accordion-1", run: || accordion_n(1) },
+    Scenario { name: "accordion-1000", run: || accordion_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

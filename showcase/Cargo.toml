@@ -29,6 +29,7 @@ prime-avatar = { workspace = true }
 prime-avatargroup = { workspace = true }
 prime-panel = { workspace = true }
 prime-fieldset = { workspace = true }
+prime-accordion = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputtext = { workspace = true }
 prime-checkbox = { workspace = true }

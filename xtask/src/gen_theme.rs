@@ -108,6 +108,26 @@ fn extra_base_css(up: &Upstream) -> Result<String, String> {
     Ok(src[from..from + len].to_owned())
 }
 
+/// Часть `css`-литерала после маркера `/* For PrimeNG */` (до закрывающего обратного апострофа), если маркер есть.
+fn primeng_extra_block(src: &str) -> Option<String> {
+    const MARK: &str = "/* For PrimeNG */";
+    let from = src.find(MARK)? + MARK.len();
+    let len = src[from..].find('`')?;
+    Some(src[from..from + len].trim().to_owned())
+}
+
+/// Блоки `For PrimeNG` перечисленных в `primeng_extra` компонентов: имя → исходный текст с `dt('…')`.
+fn extra_component_css(up: &Upstream) -> Result<serde_json::Map<String, Value>, String> {
+    let mut map = serde_json::Map::new();
+    for name in &up.theme.primeng_extra {
+        let file = up.src_dir().join(format!("{name}/style/{name}style.ts"));
+        let src = std::fs::read_to_string(&file).map_err(|e| format!("{}: {e}", file.display()))?;
+        let block = primeng_extra_block(&src).ok_or_else(|| format!("в {} нет блока `/* For PrimeNG */`", file.display()))?;
+        map.insert(name.clone(), Value::String(block));
+    }
+    Ok(map)
+}
+
 /// Генерирует CSS и Rust-обвязку.
 pub fn run(root: &Path, up: &Upstream) -> Result<(), String> {
     let cache = cache_dir(up);
@@ -135,6 +155,7 @@ pub fn run(root: &Path, up: &Upstream) -> Result<(), String> {
         "darkModeSelector": up.theme.dark_mode_selector,
         "components": up.theme.components,
         "extraBaseCss": extra_base_css(up)?,
+        "extraComponentCss": extra_component_css(up)?,
     });
     let out = run_checked(Command::new("node").current_dir(&cache).arg("extract.mjs").arg(options.to_string()), "node extract.mjs")?;
     let css = parse_output(&String::from_utf8_lossy(&out.stdout), &up.theme.components)?;
@@ -170,6 +191,26 @@ mod tests {
 
     fn names(v: &[&str]) -> Vec<String> {
         v.iter().map(|s| (*s).to_owned()).collect()
+    }
+
+    #[test]
+    fn extracts_block_after_marker() {
+        let src = "const style = /*css*/ `
+${s}
+
+/* For PrimeNG */
+.a { x: dt('accordion.header.padding'); }
+.b { y: 1; }
+`;
+const classes = {};";
+        assert_eq!(
+            primeng_extra_block(src).as_deref(),
+            Some(
+                ".a { x: dt('accordion.header.padding'); }
+.b { y: 1; }"
+            )
+        );
+        assert_eq!(primeng_extra_block("const style = `${s}`;"), None);
     }
 
     #[test]

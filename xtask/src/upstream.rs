@@ -18,6 +18,9 @@ pub struct Upstream {
 pub struct ThemeConfig {
     pub dark_mode_selector: String,
     pub components: Vec<String>,
+    /// Компоненты, к CSS которых добавляется блок `/* For PrimeNG */` из `<имя>style.ts` (правила, которых нет в `@primeuix/styles`).
+    #[serde(default)]
+    pub primeng_extra: Vec<String>,
 }
 
 /// Версии npm-пакетов `@primeuix/*`.

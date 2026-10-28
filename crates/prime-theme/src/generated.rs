@@ -1,5 +1,9 @@
 // Файл сгенерирован `cargo xtask gen-theme`; не редактировать вручную.
 
+/// CSS компонента `accordion`.
+#[cfg(feature = "accordion")]
+pub const ACCORDION: &str = include_str!("../css/components/accordion.css");
+
 /// CSS компонента `avatar`.
 #[cfg(feature = "avatar")]
 pub const AVATAR: &str = include_str!("../css/components/avatar.css");
@@ -70,6 +74,8 @@ pub const TOGGLESWITCH: &str = include_str!("../css/components/toggleswitch.css"
 
 /// Пары «имя — CSS» для включённых компонентов.
 pub(crate) static COMPONENTS: &[(&str, &str)] = &[
+    #[cfg(feature = "accordion")]
+    ("accordion", ACCORDION),
     #[cfg(feature = "avatar")]
     ("avatar", AVATAR),
     #[cfg(feature = "badge")]
