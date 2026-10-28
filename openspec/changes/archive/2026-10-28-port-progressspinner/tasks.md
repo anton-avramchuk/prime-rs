@@ -18,7 +18,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 `docs/progressspinner.md`; clippy, тесты, deny, machete, `openspec validate port-progressspinner`; CI `dev` зелёный
+- [x] 4.1 `docs/progressspinner.md`; clippy, тесты, deny, machete, `openspec validate port-progressspinner`; CI `dev` зелёный
 
 ## Workflow follow-up
 
