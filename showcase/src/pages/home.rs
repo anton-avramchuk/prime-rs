@@ -1,12 +1,14 @@
 //! Главная: иконки и сценарий для замеров памяти.
 
 use leptos::prelude::*;
+use prime_button::{Button, ButtonSeverity};
 use prime_icons::AllIcons;
 
 /// Сценарий для браузерных замеров памяти: монтирует и убирает заданное число компонентов.
 #[component]
 fn Bench() -> impl IntoView {
     let count = RwSignal::new(0usize);
+    let buttons = RwSignal::new(0usize);
     view! {
         <section>
             <h2>"Замеры"</h2>
@@ -18,6 +20,17 @@ fn Bench() -> impl IntoView {
             </button>
             <div data-testid="bench-area" data-count=move || count.get().to_string()>
                 {move || (0..count.get()).map(|_| view! { <prime_icons::CheckIcon /> }).collect_view()}
+            </div>
+            <button type="button" data-testid="bench-buttons-mount" on:click=move |_| buttons.set(1000)>
+                "Показать 1000 кнопок"
+            </button>
+            <button type="button" data-testid="bench-buttons-clear" on:click=move |_| buttons.set(0)>
+                "Убрать кнопки"
+            </button>
+            <div data-testid="bench-buttons-area" data-count=move || buttons.get().to_string()>
+                {move || {
+                    (0..buttons.get()).map(|_| view! { <Button label="Сохранить" severity=ButtonSeverity::Success /> }).collect_view()
+                }}
             </div>
         </section>
     }

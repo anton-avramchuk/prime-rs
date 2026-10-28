@@ -17,13 +17,13 @@
 
 ## 4. Бюджеты аллокаций
 
-- [ ] 4.1 Реализовать `cargo xtask alloc-budget` и `benches/alloc-budgets.toml` (`badge`, `button`, `button-full`: максимум аллокаций на экземпляр); проверить юнит-тестами парсинга и превышения и запуском на реальном `target/bench/alloc.json`, включая искусственно заниженный бюджет (ненулевой код выхода)
-- [ ] 4.2 Добавить `alloc-budget` в job `apps` workflow `ci.yml` и описание в `docs/benchmarks.md`; проверить синтаксис YAML и прогон CI на GitHub
+- [x] 4.1 Реализовать `cargo xtask alloc-budget` и `benches/alloc-budgets.toml` (`badge`, `button`, `button-full`: максимум аллокаций на экземпляр); проверить юнит-тестами парсинга и превышения и запуском на реальном `target/bench/alloc.json`, включая искусственно заниженный бюджет (ненулевой код выхода)
+- [x] 4.2 Добавить `alloc-budget` в job `apps` workflow `ci.yml` и описание в `docs/benchmarks.md`; проверить синтаксис YAML и прогон CI на GitHub
 
 ## 5. Проверка в приложении
 
-- [ ] 5.1 Собрать showcase (`cargo leptos build`) и прогнать e2e (`npx playwright test`) со страницами `/button` и `/badge`; убедиться, что внешний вид и поведение не изменились (в т. ч. страница Loading)
-- [ ] 5.2 Добавить в `e2e/tests/memory.spec.ts` сценарий «1000 кнопок», записать значения `heap_bytes`/`dom_nodes` до и после в `docs/benchmarks.md` и оценить стоимость `RenderEffect` атрибутов (D2)
+- [x] 5.1 Собрать showcase (`cargo leptos build`) и прогнать e2e (`npx playwright test`) со страницами `/button` и `/badge`; убедиться, что внешний вид и поведение не изменились (в т. ч. страница Loading)
+- [x] 5.2 Добавить в `e2e/tests/memory.spec.ts` сценарий «1000 кнопок», записать значения `heap_bytes`/`dom_nodes` до и после в `docs/benchmarks.md` и оценить стоимость `RenderEffect` атрибутов (D2)
 
 ## 6. Интеграция
 
