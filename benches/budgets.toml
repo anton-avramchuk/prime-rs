@@ -33,4 +33,9 @@ name = "chip"
 feature = "case-chip"
 max_delta_bytes = 230000
 
+[[case]]
+name = "avatar"
+feature = "case-avatar"
+max_delta_bytes = 180000
+
 # После `static-render-path` (две ветви разметки): вклад badge 96 303 Б, button 373 874 Б (было 84 320 и 326 754); бюджеты не менялись.

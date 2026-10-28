@@ -32,3 +32,8 @@ max_per_instance = 16
 name = "chip-removable-1000"
 instances = 1000
 max_per_instance = 50
+
+[[scenario]]
+name = "avatar-1000"
+instances = 1000
+max_per_instance = 18

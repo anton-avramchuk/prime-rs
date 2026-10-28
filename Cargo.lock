@@ -1905,6 +1905,7 @@ dependencies = [
  "dhat",
  "divan",
  "leptos",
+ "prime-avatar",
  "prime-badge",
  "prime-button",
  "prime-chip",
@@ -2198,6 +2199,7 @@ dependencies = [
  "leptos",
  "leptos_axum",
  "leptos_router",
+ "prime-avatar",
  "prime-badge",
  "prime-button",
  "prime-chip",
@@ -2837,6 +2839,7 @@ name = "wasm-size"
 version = "0.1.0"
 dependencies = [
  "leptos",
+ "prime-avatar",
  "prime-badge",
  "prime-button",
  "prime-chip",
