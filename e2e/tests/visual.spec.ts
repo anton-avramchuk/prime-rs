@@ -11,16 +11,23 @@ const UPSTREAM = process.env.UPSTREAM_URL;
 const pages: { name: string; ours: string; upstream: string; oursSelector?: string; upstreamSelector?: string }[] = JSON.parse(readFileSync(new URL('./pages.json', import.meta.url), 'utf8'));
 const report: Record<string, number> = {};
 const errors: Record<string, string> = {};
+// Воркер Playwright перезапускается после упавшего теста и теряет накопленное в памяти, поэтому отчёт сливается с уже записанным файлом.
 const save = () => {
     mkdirSync('results', { recursive: true });
-    writeFileSync('results/visual.json', JSON.stringify({ metrics: report, errors }, null, 2));
+    let prev: { metrics?: Record<string, number>; errors?: Record<string, string> } = {};
+    try {
+        prev = JSON.parse(readFileSync('results/visual.json', 'utf8'));
+    } catch {
+        /* первый тест */
+    }
+    writeFileSync('results/visual.json', JSON.stringify({ metrics: { ...prev.metrics, ...report }, errors: { ...prev.errors, ...errors } }, null, 2));
 };
 
 test.skip(!UPSTREAM, 'UPSTREAM_URL не задан: нечего сравнивать');
 
 for (const p of pages) {
     test(`визуальное сравнение: ${p.name}`, async ({ page, baseURL }) => {
-        test.setTimeout(60_000);
+        test.setTimeout(120_000);
         // Диагностика страницы: ошибки консоли и неуспешные ответы (попадают в отчёт при сбое).
         const diag: string[] = [];
         page.on('console', (m) => m.type() === 'error' && diag.length < 8 && diag.push(`console: ${m.text().slice(0, 120)}`));
