@@ -2,11 +2,13 @@
 
 mod badge;
 mod button;
+mod chip;
 mod home;
 mod tag;
 
 pub use badge::BadgePage;
 pub use button::ButtonPage;
+pub use chip::ChipPage;
 pub use home::HomePage;
 pub use tag::TagPage;
 

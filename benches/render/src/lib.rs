@@ -6,6 +6,7 @@
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
+use prime_chip::Chip;
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_tag::{Tag, TagSeverity};
 
@@ -46,6 +47,14 @@ fn tag_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Tag value="New" severity=TagSeverity::Success rounded=true /> }).collect_view())
 }
 
+fn chip_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Chip label="Action" /> }).collect_view())
+}
+
+fn chip_removable_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Chip label="Thriller" removable=true /> }).collect_view())
+}
+
 /// Все сценарии.
 pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "check-icon-1", run: || check_n(1) },
@@ -58,6 +67,9 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "button-full-1000", run: || button_full_n(1000) },
     Scenario { name: "tag-1", run: || tag_n(1) },
     Scenario { name: "tag-1000", run: || tag_n(1000) },
+    Scenario { name: "chip-1", run: || chip_n(1) },
+    Scenario { name: "chip-1000", run: || chip_n(1000) },
+    Scenario { name: "chip-removable-1000", run: || chip_removable_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

@@ -152,5 +152,33 @@
     "upstream": "/tag",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "chip-basic",
+    "ours": "/chip",
+    "upstream": "/chip",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "chip-icon",
+    "ours": "/chip",
+    "upstream": "/chip",
+    "oursSelector": "[data-demo=\"icon\"]",
+    "upstreamSelector": "icon-doc .card"
+  },
+  {
+    "name": "chip-image",
+    "ours": "/chip",
+    "upstream": "/chip",
+    "oursSelector": "[data-demo=\"image\"]",
+    "upstreamSelector": "image-doc .card"
+  },
+  {
+    "name": "chip-template",
+    "ours": "/chip",
+    "upstream": "/chip",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

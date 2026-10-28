@@ -20,6 +20,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-tag")]
     return view! { <prime_tag::Tag value="New" severity=prime_tag::TagSeverity::Success rounded=true /> };
 
+    #[cfg(feature = "case-chip")]
+    return view! { <prime_chip::Chip label="Thriller" removable=true /> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

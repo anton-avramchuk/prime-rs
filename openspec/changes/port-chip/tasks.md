@@ -13,16 +13,16 @@
 
 ## 3. Showcase и e2e
 
-- [ ] 3.1 Добавить страницу `/chip` (`basic`, `icon`, `image`, `template`), пункт меню и CSS `chip` в оболочку; проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
-- [ ] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/chip.spec.ts` (удаление мышью и клавиатурой, скрытие, подпись); проверить `npx playwright test chip` локально
+- [x] 3.1 Добавить страницу `/chip` (`basic`, `icon`, `image`, `template`), пункт меню и CSS `chip` в оболочку; проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
+- [x] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/chip.spec.ts` (удаление мышью и клавиатурой, скрытие, подпись); проверить `npx playwright test chip` локально
 
 ## 4. Бенчмарки и бюджеты
 
-- [ ] 4.1 Добавить сценарии `chip-1`, `chip-1000` в `benches/render`, `case-chip` в `benches/wasm-size`, бюджеты по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
+- [x] 4.1 Добавить сценарии `chip-1`, `chip-1000` в `benches/render`, `case-chip` в `benches/wasm-size`, бюджеты по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
 
 ## 5. Интеграция
 
-- [ ] 5.1 Написать `docs/chip.md` (соответствие PrimeNG, отличия); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-chip`; убедиться, что CI на `dev` зелёный
+- [x] 5.1 Написать `docs/chip.md` (соответствие PrimeNG, отличия); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-chip`; убедиться, что CI на `dev` зелёный
 
 ## Workflow follow-up
 
