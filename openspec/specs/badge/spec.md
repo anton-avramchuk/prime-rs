@@ -1,0 +1,57 @@
+# badge Specification
+
+## Purpose
+Компонент Badge (порт p-badge из PrimeNG): значение, серьёзность, размер, точка и круг, скрытие, pass-through.
+
+## Requirements
+
+### Requirement: Свойства Badge
+Компонент `Badge` крейта `prime-badge` SHALL принимать значение (`value`: строка или число), серьёзность (`severity`: `secondary`, `info`, `success`, `warn`, `danger`, `contrast`), размер (`size`: `small`, `large`, `xlarge`), признак скрытия (`badge_disabled`) и дополнительный класс (`style_class`). Все свойства необязательны. Свойства, которые меняются во время работы, SHALL быть реактивными.
+
+#### Scenario: Значение выводится как текст
+- **WHEN** `Badge` отрисован со значением `5`
+- **THEN** корневой элемент содержит текст `5`
+
+#### Scenario: Свойства по умолчанию
+- **WHEN** `Badge` отрисован без свойств
+- **THEN** он отрисован без текста, без классов серьёзности и размера
+
+### Requirement: Классы и атрибуты Badge
+Корневой элемент SHALL иметь классы `p-badge p-component` и модификаторы, как в PrimeNG: `p-badge-circle` при значении из одного символа, `p-badge-dot` при пустом значении, `p-badge-sm`, `p-badge-lg`, `p-badge-xl` для размеров и `p-badge-<severity>` для серьёзности. Атрибут `data-p` SHALL содержать через пробел те же признаки, что и в PrimeNG (`circle`, `empty`, `disabled`, серьёзность, размер).
+
+#### Scenario: Одиночный символ — круг
+- **WHEN** значение равно `5`
+- **THEN** у корня есть класс `p-badge-circle`, а `p-badge-dot` нет
+
+#### Scenario: Пустое значение — точка
+- **WHEN** значение не задано
+- **THEN** у корня есть класс `p-badge-dot`, а в `data-p` есть `empty`
+
+#### Scenario: Серьёзность и размер
+- **WHEN** заданы `severity = danger` и `size = xlarge`
+- **THEN** у корня есть классы `p-badge-danger` и `p-badge-xl`
+
+#### Scenario: Дополнительный класс
+- **WHEN** задан `style_class = "custom"`
+- **THEN** у корня есть и `custom`, и собственные классы компонента
+
+### Requirement: Скрытие Badge
+При `badge_disabled = true` компонент SHALL оставаться в DOM, но не отображаться (`display: none`); при `false` стиль `display` SHALL отсутствовать.
+
+#### Scenario: Скрытый бейдж
+- **WHEN** `badge_disabled = true`
+- **THEN** у корня стиль `display: none`, а в `data-p` есть `disabled`
+
+### Requirement: Pass-through Badge
+`Badge` SHALL принимать `pt` для корневого элемента (дополнительные классы и атрибуты).
+
+#### Scenario: Класс через pt
+- **WHEN** передан `pt` с классом `custom`
+- **THEN** корень содержит `custom` и собственные классы
+
+### Requirement: Производительность Badge
+Рендер `Badge` SHALL укладываться в бюджеты, заданные `benches/budgets.toml`, и иметь сценарии на 1 и 1000 экземпляров в `render-bench`.
+
+#### Scenario: Бюджет размера
+- **WHEN** выполняется `cargo xtask wasm-size`
+- **THEN** вклад `case-badge` не превышает бюджет
