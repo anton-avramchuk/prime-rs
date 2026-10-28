@@ -16,7 +16,10 @@ mod state;
 
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgePt, BadgeSeverity};
-use prime_core::{Pt, Size, class_memo, use_prime_config};
+#[cfg(target_arch = "wasm32")]
+use prime_core::use_prime_config;
+use prime_core::{Pt, Size, class_memo};
+#[cfg(target_arch = "wasm32")]
 use prime_dom::Ripple;
 use prime_icons::SpinnerIcon;
 
@@ -36,6 +39,27 @@ pub struct ButtonPt {
     /// Бейдж (корень `Badge`).
     pub badge: Pt,
 }
+
+/// Автофокус и ripple: только в браузере (`wasm32`). На сервере DOM нет, поэтому `Effect` не создаётся вовсе
+/// (это также убирает лишние затраты при SSR и не зависит от набора features Leptos).
+#[cfg(target_arch = "wasm32")]
+fn setup_client(node: NodeRef<leptos::html::Button>, autofocus: bool) {
+    let ripple = StoredValue::new_local(None::<Ripple>);
+    let ripple_enabled = use_prime_config().ripple;
+    Effect::new(move |_| {
+        let Some(el) = node.get() else { return };
+        if autofocus {
+            let _ = el.focus();
+        }
+        if ripple_enabled && ripple.with_value(Option::is_none) {
+            ripple.set_value(Ripple::attach(&el));
+        }
+    });
+    on_cleanup(move || ripple.set_value(None));
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn setup_client(_node: NodeRef<leptos::html::Button>, _autofocus: bool) {}
 
 /// Кнопка.
 ///
@@ -190,20 +214,8 @@ pub fn Button(
     };
     let is_disabled = move || disabled.get() || loading.get();
 
-    // Только в браузере: Effect не выполняется при SSR.
     let node = NodeRef::<leptos::html::Button>::new();
-    let ripple = StoredValue::new_local(None::<Ripple>);
-    let ripple_enabled = use_prime_config().ripple;
-    Effect::new(move |_| {
-        let Some(el) = node.get() else { return };
-        if autofocus {
-            let _ = el.focus();
-        }
-        if ripple_enabled && ripple.with_value(Option::is_none) {
-            ripple.set_value(Ripple::attach(&el));
-        }
-    });
-    on_cleanup(move || ripple.set_value(None));
+    setup_client(node, autofocus);
 
     let indicator = {
         let pt = pt.clone();
