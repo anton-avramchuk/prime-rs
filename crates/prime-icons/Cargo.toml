@@ -1,6 +1,6 @@
 [package]
 name = "prime-icons"
-description = "prime-rs: icons"
+description = "prime-rs: SVG-иконки PrimeNG"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,11 +8,73 @@ rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr"]
-hydrate = ["leptos/hydrate"]
+ssr = ["leptos/ssr", "prime-core/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate"]
+# Иконки: по feature на иконку (имя каталога PrimeNG), `all-icons` включает все.
+# BEGIN GENERATED FEATURES
+angledoubledown = []
+angledoubleleft = []
+angledoubleright = []
+angledoubleup = []
+angledown = []
+angleleft = []
+angleright = []
+angleup = []
+arrowdown = []
+arrowdownleft = []
+arrowdownright = []
+arrowleft = []
+arrowright = []
+arrowup = []
+ban = []
+bars = []
+calendar = []
+caretleft = []
+caretright = []
+check = []
+chevrondown = []
+chevronleft = []
+chevronright = []
+chevronup = []
+exclamationtriangle = []
+eye = []
+eyeslash = []
+filter = []
+filterfill = []
+filterslash = []
+home = []
+infocircle = []
+minus = []
+pencil = []
+plus = []
+refresh = []
+search = []
+searchminus = []
+searchplus = []
+sortalt = []
+sortamountdown = []
+sortamountupalt = []
+spinner = []
+star = []
+starfill = []
+thlarge = []
+times = []
+timescircle = []
+trash = []
+undo = []
+upload = []
+windowmaximize = []
+windowminimize = []
+blank = []
+all-icons = ["blank", "angledoubledown", "angledoubleleft", "angledoubleright", "angledoubleup", "angledown", "angleleft", "angleright", "angleup", "arrowdown", "arrowdownleft", "arrowdownright", "arrowleft", "arrowright", "arrowup", "ban", "bars", "calendar", "caretleft", "caretright", "check", "chevrondown", "chevronleft", "chevronright", "chevronup", "exclamationtriangle", "eye", "eyeslash", "filter", "filterfill", "filterslash", "home", "infocircle", "minus", "pencil", "plus", "refresh", "search", "searchminus", "searchplus", "sortalt", "sortamountdown", "sortamountupalt", "spinner", "star", "starfill", "thlarge", "times", "timescircle", "trash", "undo", "upload", "windowmaximize", "windowminimize"]
+# END GENERATED FEATURES
 
 [dependencies]
 leptos = { workspace = true }
+prime-core = { workspace = true }
+
+[dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
 
 [lints]
 workspace = true

@@ -2,6 +2,7 @@
 
 mod clean;
 mod diff;
+mod gen_icons;
 mod gen_spec;
 mod upstream;
 
@@ -52,6 +53,12 @@ fn run(args: &[String]) -> Result<(), String> {
                     Ok(())
                 }
             }
+        }
+        Some("gen-icons") => {
+            let up = upstream::Upstream::load(&root)?;
+            let n = gen_icons::run(&up.src_dir().join("icons"), &root.join("crates/prime-icons"))?;
+            println!("иконок сгенерировано: {n} (+ blank вручную)");
+            Ok(())
         }
         Some("clean") => {
             let days = flag(args, "--days").map_or(Ok(7), |d| d.parse::<u32>().map_err(|e| format!("--days: {e}")))?;

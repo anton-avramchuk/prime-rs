@@ -1222,6 +1222,7 @@ name = "prime-icons"
 version = "0.1.0"
 dependencies = [
  "leptos",
+ "prime-core",
 ]
 
 [[package]]
@@ -2051,6 +2052,15 @@ name = "wasm-bindgen-test-shared"
 version = "0.2.129"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4f692aa943ccd88363733b77063f32cfed5bc6cbea8e6e8b251b302f881606fe"
+
+[[package]]
+name = "wasm-size"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-icons",
+ "wasm-bindgen",
+]
 
 [[package]]
 name = "wasm-streams"

@@ -1,0 +1,24 @@
+[package]
+name = "wasm-size"
+description = "Минимальное wasm-приложение для измерения вклада компонентов в размер бинарника"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+# Случаи измерения: ровно один должен быть включён.
+case-baseline = []
+case-one-icon = ["prime-icons/check"]
+case-all-icons = ["prime-icons/all-icons"]
+
+[dependencies]
+leptos = { workspace = true, features = ["csr"] }
+wasm-bindgen = { workspace = true }
+prime-icons = { workspace = true }
+
+[lints]
+workspace = true

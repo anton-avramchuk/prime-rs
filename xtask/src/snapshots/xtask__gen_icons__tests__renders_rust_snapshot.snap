@@ -1,0 +1,26 @@
+---
+source: xtask/src/gen_icons.rs
+expression: render_rust(&icons)
+---
+// Файл сгенерирован `cargo xtask gen-icons` из иконок PrimeNG; не редактировать вручную.
+// Иконки добавляются только при включённом одноимённом feature.
+
+#[cfg(feature = "check")]
+icon!(CheckIcon, ["M4.8 11.5 L1 2"]);
+
+#[cfg(feature = "spinner")]
+icon!(SpinnerIcon, ["M1 1", "M2 2"]);
+
+/// Все иконки подряд (для демо и измерений размера).
+#[cfg(feature = "all-icons")]
+#[::leptos::component]
+pub fn AllIcons() -> impl ::leptos::prelude::IntoView {
+    use ::leptos::prelude::*;
+    [
+        view! { <crate::BlankIcon /> }.into_any(),
+        view! { <CheckIcon /> }.into_any(),
+        view! { <SpinnerIcon /> }.into_any(),
+    ]
+    .into_iter()
+    .collect_view()
+}
