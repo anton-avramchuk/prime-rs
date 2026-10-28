@@ -7,7 +7,7 @@ test.describe('Divider', () => {
     });
 
     test('демонстрации отрисованы со стилями темы', async ({ page }) => {
-        await expect(page.locator('[data-demo]')).toHaveCount(4);
+        await expect(page.locator('[data-demo]')).toHaveCount(5);
         const border = await page.locator('[data-demo=basic] .p-divider').evaluate((el) => getComputedStyle(el, '::before').borderTopStyle);
         expect(['solid', 'dashed', 'dotted']).toContain(border);
     });

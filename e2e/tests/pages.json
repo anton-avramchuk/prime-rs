@@ -252,6 +252,13 @@
     "upstreamSelector": "vertical-doc .card"
   },
   {
+    "name": "divider-login",
+    "ours": "/divider",
+    "upstream": "/divider",
+    "oursSelector": "[data-demo=\"login\"]",
+    "upstreamSelector": "login-doc .card"
+  },
+  {
     "name": "card-basic",
     "ours": "/card",
     "upstream": "/card",

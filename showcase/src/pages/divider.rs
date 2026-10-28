@@ -1,10 +1,12 @@
-//! Страница Divider: демонстрации `basic`, `content`, `type`, `vertical` из showcase PrimeNG (`apps/showcase/doc/divider`).
+//! Страница Divider: демонстрации `basic`, `content`, `type`, `vertical`, `login` из showcase PrimeNG (`apps/showcase/doc/divider`).
 //!
 //! Тексты-заполнители сокращены.
 
 use super::Demo;
 use leptos::prelude::*;
+use prime_button::{Button, ButtonSeverity};
 use prime_divider::{Divider, DividerAlign, DividerLayout, DividerType};
+use prime_inputtext::InputText;
 
 const LOREM: &str =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
@@ -57,6 +59,29 @@ pub fn DividerPage() -> impl IntoView {
                     <b>"OR"</b>
                 </Divider>
                 <p style="flex: 1">{LOREM}</p>
+            </div>
+        </Demo>
+        <Demo name="login" title="Login">
+            <div style="display: flex; width: 100%">
+                <div style="flex: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.25rem 0">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem">
+                        <label for="username">"Username"</label>
+                        <InputText id="username" />
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem">
+                        <label for="password">"Password"</label>
+                        <InputText id="password" input_type="password" />
+                    </div>
+                    <Button label="Login" />
+                </div>
+                <div style="flex: 2">
+                    <Divider layout=DividerLayout::Vertical>
+                        <b>"OR"</b>
+                    </Divider>
+                </div>
+                <div style="flex: 5; display: flex; align-items: center; justify-content: center; padding: 1.25rem 0">
+                    <Button label="Sign Up" severity=ButtonSeverity::Success />
+                </div>
             </div>
         </Demo>
     }
