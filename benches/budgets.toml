@@ -69,3 +69,8 @@ max_delta_bytes = 210000
 name = "toggleswitch"
 feature = "case-toggleswitch"
 max_delta_bytes = 210000
+
+[[case]]
+name = "message"
+feature = "case-message"
+max_delta_bytes = 270000

@@ -425,5 +425,54 @@
     "upstream": "/toggleswitch",
     "oursSelector": "[data-demo=\"disabled\"]",
     "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "message-basic",
+    "ours": "/message",
+    "upstream": "/message",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "message-closable",
+    "ours": "/message",
+    "upstream": "/message",
+    "oursSelector": "[data-demo=\"closable\"]",
+    "upstreamSelector": "closable-doc .card"
+  },
+  {
+    "name": "message-severity",
+    "ours": "/message",
+    "upstream": "/message",
+    "oursSelector": "[data-demo=\"severity\"]",
+    "upstreamSelector": "severity-doc .card"
+  },
+  {
+    "name": "message-outlined",
+    "ours": "/message",
+    "upstream": "/message",
+    "oursSelector": "[data-demo=\"outlined\"]",
+    "upstreamSelector": "outlined-doc .card"
+  },
+  {
+    "name": "message-simple",
+    "ours": "/message",
+    "upstream": "/message",
+    "oursSelector": "[data-demo=\"simple\"]",
+    "upstreamSelector": "simple-doc .card"
+  },
+  {
+    "name": "message-sizes",
+    "ours": "/message",
+    "upstream": "/message",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "message-life",
+    "ours": "/message",
+    "upstream": "/message",
+    "oursSelector": "[data-demo=\"life\"]",
+    "upstreamSelector": "life-doc .card"
   }
 ]

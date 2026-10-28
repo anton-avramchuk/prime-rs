@@ -44,6 +44,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-toggleswitch")]
     return view! { <prime_toggleswitch::ToggleSwitch default_checked=true name="notify" /> };
 
+    #[cfg(feature = "case-message")]
+    return view! { <prime_message::Message severity=prime_message::MessageSeverity::Success text="Saved" /> };
+
     #[cfg(feature = "case-button")]
     return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
 }

@@ -1725,6 +1725,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-message"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-radiobutton"
 version = "0.1.0"
 dependencies = [
@@ -1975,6 +1989,7 @@ dependencies = [
  "prime-divider",
  "prime-icons",
  "prime-inputtext",
+ "prime-message",
  "prime-radiobutton",
  "prime-tag",
  "prime-toggleswitch",
@@ -2276,6 +2291,7 @@ dependencies = [
  "prime-divider",
  "prime-icons",
  "prime-inputtext",
+ "prime-message",
  "prime-radiobutton",
  "prime-tag",
  "prime-theme",
@@ -2921,6 +2937,7 @@ dependencies = [
  "prime-divider",
  "prime-icons",
  "prime-inputtext",
+ "prime-message",
  "prime-radiobutton",
  "prime-tag",
  "prime-toggleswitch",
