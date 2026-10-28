@@ -530,5 +530,54 @@
     "upstream": "/skeleton",
     "oursSelector": "[data-demo=\"list\"]",
     "upstreamSelector": "list-doc .card"
+  },
+  {
+    "name": "textarea-basic",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "textarea-autoresize",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"autoresize\"]",
+    "upstreamSelector": "autoresize-doc .card"
+  },
+  {
+    "name": "textarea-filled",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"filled\"]",
+    "upstreamSelector": "filled-doc .card"
+  },
+  {
+    "name": "textarea-sizes",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "textarea-invalid",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "textarea-disabled",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "textarea-fluid",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"fluid\"]",
+    "upstreamSelector": "fluid-doc .card"
   }
 ]

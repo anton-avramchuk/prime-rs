@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/benches/render/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/benches/render/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/benches/wasm-size/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-avatar/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-avatar/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-avatargroup/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-avatargroup/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-badge/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-badge/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-button/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-button/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-card/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-card/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-checkbox/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-checkbox/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-chip/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-chip/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-core/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-divider/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-divider/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-dom/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-dom/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-icons/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-icons/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-inputtext/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-inputtext/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-message/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-message/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-progressbar/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-progressbar/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-radiobutton/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-radiobutton/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-skeleton/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-skeleton/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-tag/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-tag/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-textarea/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-textarea/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-theme/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-theme/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-toggleswitch/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/prime-toggleswitch/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/showcase/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xtask/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

@@ -35,6 +35,7 @@ prime-toggleswitch = { workspace = true }
 prime-message = { workspace = true }
 prime-progressbar = { workspace = true }
 prime-skeleton = { workspace = true }
+prime-textarea = { workspace = true }
 prime-card = { workspace = true }
 prime-icons = { workspace = true, features = ["all-icons"] }
 prime-theme = { workspace = true, features = ["all-components"] }

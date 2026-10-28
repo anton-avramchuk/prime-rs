@@ -14,6 +14,7 @@ mod progressbar;
 mod radiobutton;
 mod skeleton;
 mod tag;
+mod textarea;
 mod toggleswitch;
 
 pub use avatar::AvatarPage;
@@ -30,6 +31,7 @@ pub use progressbar::ProgressBarPage;
 pub use radiobutton::RadioButtonPage;
 pub use skeleton::SkeletonPage;
 pub use tag::TagPage;
+pub use textarea::TextareaPage;
 pub use toggleswitch::ToggleSwitchPage;
 
 use leptos::prelude::*;

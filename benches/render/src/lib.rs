@@ -19,6 +19,7 @@ use prime_progressbar::ProgressBar;
 use prime_radiobutton::RadioButton;
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_tag::{Tag, TagSeverity};
+use prime_textarea::Textarea;
 use prime_toggleswitch::ToggleSwitch;
 
 /// Сценарий: имя и функция, возвращающая HTML.
@@ -106,6 +107,10 @@ fn skeleton_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Skeleton shape=SkeletonShape::Circle size="4rem" /> }).collect_view())
 }
 
+fn textarea_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Textarea rows=3u32 placeholder="Text" /> }).collect_view())
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -147,6 +152,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "avatargroup-1000", run: || avatargroup_n(1000) },
     Scenario { name: "skeleton-1", run: || skeleton_n(1) },
     Scenario { name: "skeleton-1000", run: || skeleton_n(1000) },
+    Scenario { name: "textarea-1", run: || textarea_n(1) },
+    Scenario { name: "textarea-1000", run: || textarea_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

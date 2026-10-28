@@ -87,3 +87,8 @@ max_per_instance = 5
 name = "skeleton-1000"
 instances = 1000
 max_per_instance = 8
+
+[[scenario]]
+name = "textarea-1000"
+instances = 1000
+max_per_instance = 12

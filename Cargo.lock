@@ -1782,6 +1782,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-textarea"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-theme"
 version = "0.1.0"
 
@@ -2019,6 +2030,7 @@ dependencies = [
  "prime-radiobutton",
  "prime-skeleton",
  "prime-tag",
+ "prime-textarea",
  "prime-toggleswitch",
  "serde_json",
 ]
@@ -2324,6 +2336,7 @@ dependencies = [
  "prime-radiobutton",
  "prime-skeleton",
  "prime-tag",
+ "prime-textarea",
  "prime-theme",
  "prime-toggleswitch",
  "tokio",
@@ -2973,6 +2986,7 @@ dependencies = [
  "prime-radiobutton",
  "prime-skeleton",
  "prime-tag",
+ "prime-textarea",
  "prime-toggleswitch",
  "wasm-bindgen",
 ]
