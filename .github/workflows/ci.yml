@@ -162,8 +162,9 @@ jobs:
         id: baseline
         continue-on-error: true
         run: |
-          id=$(gh run list --workflow ci.yml --branch dev --status success --limit 1 --json databaseId --jq '.[0].databaseId')
-          [ -n "$id" ] && gh run download "$id" --name bench-baseline --dir baseline
+          # Берём прогон, в котором артефакт реально есть: «пустые» прогоны (только документация) его не создают.
+          id=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=bench-baseline&per_page=30"             --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "dev")][0].workflow_run.id')
+          [ -n "$id" ] && [ "$id" != "null" ] && gh run download "$id" --name bench-baseline --dir baseline
       - name: Сравнение с базовой линией
         if: steps.baseline.outcome == 'success'
         run: cargo xtask bench-compare baseline target/bench | tee bench-comment.md
