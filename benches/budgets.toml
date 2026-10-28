@@ -64,3 +64,8 @@ max_delta_bytes = 250000
 name = "radiobutton"
 feature = "case-radiobutton"
 max_delta_bytes = 210000
+
+[[case]]
+name = "toggleswitch"
+feature = "case-toggleswitch"
+max_delta_bytes = 210000

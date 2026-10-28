@@ -390,5 +390,40 @@
     "upstream": "/radiobutton",
     "oursSelector": "[data-demo=\"disabled\"]",
     "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "toggleswitch-basic",
+    "ours": "/toggleswitch",
+    "upstream": "/toggleswitch",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "toggleswitch-preselection",
+    "ours": "/toggleswitch",
+    "upstream": "/toggleswitch",
+    "oursSelector": "[data-demo=\"preselection\"]",
+    "upstreamSelector": "preselection-doc .card"
+  },
+  {
+    "name": "toggleswitch-template",
+    "ours": "/toggleswitch",
+    "upstream": "/toggleswitch",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "toggleswitch-invalid",
+    "ours": "/toggleswitch",
+    "upstream": "/toggleswitch",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "toggleswitch-disabled",
+    "ours": "/toggleswitch",
+    "upstream": "/toggleswitch",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
   }
 ]

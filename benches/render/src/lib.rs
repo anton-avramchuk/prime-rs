@@ -15,6 +15,7 @@ use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_inputtext::InputText;
 use prime_radiobutton::RadioButton;
 use prime_tag::{Tag, TagSeverity};
+use prime_toggleswitch::ToggleSwitch;
 
 /// Сценарий: имя и функция, возвращающая HTML.
 pub struct Scenario {
@@ -81,6 +82,10 @@ fn radiobutton_n(n: usize) -> String {
     render((0..n).map(|_| view! { <RadioButton default_checked=true name="pizza" value="Cheese" /> }).collect_view())
 }
 
+fn toggleswitch_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <ToggleSwitch default_checked=true name="notify" /> }).collect_view())
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -112,6 +117,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "checkbox-1000", run: || checkbox_n(1000) },
     Scenario { name: "radiobutton-1", run: || radiobutton_n(1) },
     Scenario { name: "radiobutton-1000", run: || radiobutton_n(1000) },
+    Scenario { name: "toggleswitch-1", run: || toggleswitch_n(1) },
+    Scenario { name: "toggleswitch-1000", run: || toggleswitch_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

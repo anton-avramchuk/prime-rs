@@ -2,6 +2,7 @@
 
 use crate::pages::{
     AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, HomePage, InputTextPage, RadioButtonPage, TagPage,
+    ToggleSwitchPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -12,8 +13,19 @@ const DARK_CLASS: &str = "p-dark";
 
 /// HTML-оболочка: тема подключается встроенным `<style>` (базовый CSS и CSS компонентов).
 pub fn shell(options: LeptosOptions) -> impl IntoView {
-    let css =
-        prime_theme::stylesheet(&["button", "badge", "tag", "chip", "avatar", "divider", "card", "inputtext", "checkbox", "radiobutton"]);
+    let css = prime_theme::stylesheet(&[
+        "button",
+        "badge",
+        "tag",
+        "chip",
+        "avatar",
+        "divider",
+        "card",
+        "inputtext",
+        "checkbox",
+        "radiobutton",
+        "toggleswitch",
+    ]);
     view! {
         <!DOCTYPE html>
         <html lang="en">
@@ -59,6 +71,7 @@ pub fn App() -> impl IntoView {
                         <A href="/inputtext">"InputText"</A>
                         <A href="/checkbox">"Checkbox"</A>
                         <A href="/radiobutton">"RadioButton"</A>
+                        <A href="/toggleswitch">"ToggleSwitch"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -77,6 +90,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("inputtext") view=InputTextPage />
                         <Route path=StaticSegment("checkbox") view=CheckboxPage />
                         <Route path=StaticSegment("radiobutton") view=RadioButtonPage />
+                        <Route path=StaticSegment("toggleswitch") view=ToggleSwitchPage />
                     </Routes>
                 </main>
             </div>

@@ -11,6 +11,7 @@ mod home;
 mod inputtext;
 mod radiobutton;
 mod tag;
+mod toggleswitch;
 
 pub use avatar::AvatarPage;
 pub use badge::BadgePage;
@@ -23,6 +24,7 @@ pub use home::HomePage;
 pub use inputtext::InputTextPage;
 pub use radiobutton::RadioButtonPage;
 pub use tag::TagPage;
+pub use toggleswitch::ToggleSwitchPage;
 
 use leptos::prelude::*;
 

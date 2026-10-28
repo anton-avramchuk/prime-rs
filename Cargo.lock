@@ -1748,6 +1748,17 @@ name = "prime-theme"
 version = "0.1.0"
 
 [[package]]
+name = "prime-toggleswitch"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "proc-macro-utils"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1966,6 +1977,7 @@ dependencies = [
  "prime-inputtext",
  "prime-radiobutton",
  "prime-tag",
+ "prime-toggleswitch",
  "serde_json",
 ]
 
@@ -2267,6 +2279,7 @@ dependencies = [
  "prime-radiobutton",
  "prime-tag",
  "prime-theme",
+ "prime-toggleswitch",
  "tokio",
  "wasm-bindgen",
  "web-sys",
@@ -2910,6 +2923,7 @@ dependencies = [
  "prime-inputtext",
  "prime-radiobutton",
  "prime-tag",
+ "prime-toggleswitch",
  "wasm-bindgen",
 ]
 

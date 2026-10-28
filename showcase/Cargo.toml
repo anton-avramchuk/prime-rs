@@ -30,6 +30,7 @@ prime-divider = { workspace = true }
 prime-inputtext = { workspace = true }
 prime-checkbox = { workspace = true }
 prime-radiobutton = { workspace = true }
+prime-toggleswitch = { workspace = true }
 prime-card = { workspace = true }
 prime-icons = { workspace = true, features = ["all-icons"] }
 prime-theme = { workspace = true, features = ["all-components"] }
