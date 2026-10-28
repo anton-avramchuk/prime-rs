@@ -56,3 +56,13 @@ cargo test -p prime-dom --target wasm32-unknown-unknown --test web
 
 Раннер `wasm-bindgen-test-runner` прописан в `.cargo/config.toml`. Без `CHROMEDRIVER` раннер ищет `chromedriver` в `PATH`.
 Тесты помечены `#![cfg(target_arch = "wasm32")]`, поэтому обычный `cargo test` на хосте их пропускает.
+
+## Showcase
+
+```sh
+cd showcase
+cargo leptos serve    # http://127.0.0.1:3000, SSR + гидрация; cargo leptos build — только сборка
+```
+
+Страница подключает тему встроенным `<style>` (`prime_theme::stylesheet`), показывает все иконки и переключатель светлой и тёмной схемы (класс `p-dark` на `<html>`).
+`cargo-leptos` собирает клиентскую часть в отдельный каталог `target/front`, поэтому `target/` примерно вдвое больше, чем у обычной сборки: чистите его `cargo xtask clean`.

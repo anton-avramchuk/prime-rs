@@ -1,0 +1,45 @@
+[package]
+name = "showcase"
+description = "Демо-приложение prime-rs (SSR + hydrate), эталон для e2e и сравнения скриншотов"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "showcase"
+path = "src/main.rs"
+
+[features]
+hydrate = ["leptos/hydrate", "dep:wasm-bindgen", "dep:console_error_panic_hook"]
+ssr = ["leptos/ssr", "dep:axum", "dep:tokio", "dep:leptos_axum"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-icons = { workspace = true, features = ["all-icons"] }
+prime-theme = { workspace = true, features = ["all-components"] }
+web-sys = { workspace = true, features = ["Window", "Document", "Element", "DomTokenList"] }
+wasm-bindgen = { workspace = true, optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+axum = { version = "0.8", optional = true }
+tokio = { version = "1", default-features = false, features = ["rt-multi-thread", "macros", "net"], optional = true }
+leptos_axum = { version = "0.8", optional = true }
+
+[package.metadata.leptos]
+output-name = "showcase"
+site-root = "target/site"
+site-pkg-dir = "pkg"
+site-addr = "127.0.0.1:3000"
+reload-port = 3001
+bin-features = ["ssr"]
+lib-features = ["hydrate"]
+bin-default-features = false
+lib-default-features = false
+lib-profile-release = "release"
+
+[lints]
+workspace = true
