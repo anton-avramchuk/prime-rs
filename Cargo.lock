@@ -2135,7 +2135,6 @@ dependencies = [
  "console_error_panic_hook",
  "leptos",
  "leptos_axum",
- "prime-core",
  "prime-icons",
  "prime-theme",
  "tokio",

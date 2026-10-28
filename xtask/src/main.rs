@@ -1,5 +1,6 @@
 //! Служебные команды репозитория (`cargo xtask <команда>`).
 
+mod affected;
 mod bench;
 mod clean;
 mod diff;
@@ -22,6 +23,7 @@ cargo xtask <команда>
   wasm-size [--budgets <файл>] вклад компонентов в размер wasm и проверка бюджетов (benches/budgets.toml)
   bench-compare <база> <сейчас> [--threshold 10] [--fail-over]
                                сравнить каталоги отчётов бенчмарков (*.json), вывод — Markdown
+  affected [--base <ref> | файлы...]  затронутые крейты для выборочных проверок CI (формат $GITHUB_OUTPUT)
   clean [--days <N>]           удалить артефакты target/ старше N дней (по умолчанию 7)
 ";
 
@@ -81,6 +83,15 @@ fn run(args: &[String]) -> Result<(), String> {
             };
             let threshold = flag(args, "--threshold").map_or(Ok(10.0), |v| v.parse::<f64>().map_err(|e| format!("--threshold: {e}")))?;
             bench::bench_compare(&PathBuf::from(base), &PathBuf::from(cur), threshold, args.iter().any(|a| a == "--fail-over"))
+        }
+        Some("affected") => {
+            let pkgs = affected::read_packages(&root)?;
+            let changed = match flag(args, "--base") {
+                Some(base) => affected::changed_files(&root, &base)?,
+                None => args.iter().skip(1).filter(|a| !a.starts_with("--")).cloned().collect(),
+            };
+            print!("{}", affected::render_outputs(&affected::affected(&pkgs, &changed)));
+            Ok(())
         }
         Some("clean") => {
             let days = flag(args, "--days").map_or(Ok(7), |d| d.parse::<u32>().map_err(|e| format!("--days: {e}")))?;

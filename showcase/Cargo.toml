@@ -19,7 +19,6 @@ ssr = ["leptos/ssr", "dep:axum", "dep:tokio", "dep:leptos_axum"]
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
 prime-icons = { workspace = true, features = ["all-icons"] }
 prime-theme = { workspace = true, features = ["all-components"] }
 web-sys = { workspace = true, features = ["Window", "Document", "Element", "DomTokenList"] }

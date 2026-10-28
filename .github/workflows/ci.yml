@@ -1,0 +1,189 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  # Лимит размера target/ перед сохранением кэша (МБ).
+  CACHE_LIMIT_MB: 6000
+  WASM_BINDGEN_VERSION: 0.2.129
+
+jobs:
+  changes:
+    name: Затронутые крейты
+    runs-on: ubuntu-latest
+    outputs:
+      all: ${{ steps.affected.outputs.all }}
+      any: ${{ steps.affected.outputs.any }}
+      args: ${{ steps.affected.outputs.args }}
+      apps: ${{ steps.affected.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: xtask
+          save-if: ${{ github.ref == 'refs/heads/dev' }}
+      - id: affected
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          # Первый push ветки (before = 000…) и неизвестная база — полный прогон.
+          if [ -z "$BASE" ] || echo "$BASE" | grep -qE '^0+$'; then
+            printf 'all=true\nany=true\nargs=--workspace --exclude showcase --exclude wasm-size --exclude render-bench --exclude xtask\napps=true\n' | tee -a "$GITHUB_OUTPUT"
+          else
+            cargo xtask affected --base "$BASE" | tee -a "$GITHUB_OUTPUT"
+          fi
+
+  fmt:
+    name: Форматирование
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo fmt --all --check
+
+  deny:
+    name: cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+      - run: cargo deny check
+
+  libs:
+    name: Библиотеки (clippy, тесты)
+    needs: changes
+    if: needs.changes.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: libs
+          save-if: ${{ github.ref == 'refs/heads/dev' }}
+          cache-on-failure: false
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest,cargo-sweep
+      - name: Метка для cargo-sweep
+        run: cargo sweep --stamp
+      - name: clippy
+        run: cargo clippy ${{ needs.changes.outputs.args }} --all-targets --all-features -- -D warnings
+      - name: Тесты (nextest)
+        run: cargo nextest run ${{ needs.changes.outputs.args }} --all-features --no-tests=pass
+      - name: Doc-тесты
+        run: cargo test ${{ needs.changes.outputs.args }} --all-features --doc
+      - name: Очистка устаревших артефактов и проверка размера кэша
+        run: |
+          cargo sweep --file
+          size=$(du -sm target | cut -f1)
+          echo "target/: ${size} МБ (лимит ${CACHE_LIMIT_MB} МБ)"
+          if [ "$size" -gt "$CACHE_LIMIT_MB" ]; then
+            echo "::error::target/ (${size} МБ) больше лимита кэша ${CACHE_LIMIT_MB} МБ"
+            exit 1
+          fi
+
+  wasm:
+    name: Браузерные тесты (wasm-bindgen-test)
+    needs: changes
+    # Тесты prime-dom нужны при полном прогоне или если затронут prime-dom.
+    if: needs.changes.outputs.all == 'true' || contains(needs.changes.outputs.args, 'prime-dom')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: wasm
+          save-if: ${{ github.ref == 'refs/heads/dev' }}
+          cache-on-failure: false
+      - name: wasm-bindgen-cli (версия должна совпадать с Cargo.lock)
+        uses: actions/cache@v4
+        id: wbg
+        with:
+          path: ~/.cargo/bin/wasm-bindgen*
+          key: wasm-bindgen-cli-${{ env.WASM_BINDGEN_VERSION }}
+      - if: steps.wbg.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version "$WASM_BINDGEN_VERSION" --locked
+      - name: wasm-bindgen-test в headless Chrome
+        run: |
+          export CHROMEDRIVER="$CHROMEWEBDRIVER/chromedriver"
+          cargo test -p prime-dom --target wasm32-unknown-unknown --test web
+
+  apps:
+    name: Приложения (showcase, размер wasm, бенчмарки)
+    needs: changes
+    if: needs.changes.outputs.apps == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: apps
+          save-if: ${{ github.ref == 'refs/heads/dev' }}
+          cache-on-failure: false
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-leptos,cargo-sweep
+      - name: Метка для cargo-sweep
+        run: cargo sweep --stamp
+      - name: Showcase (SSR и гидрация)
+        run: |
+          cargo clippy -p showcase --features ssr -- -D warnings
+          cargo clippy -p showcase --target wasm32-unknown-unknown --no-default-features --features hydrate -- -D warnings
+      - name: Бюджет размера wasm
+        run: cargo xtask wasm-size
+      - name: Бенчмарки (время и аллокации)
+        run: |
+          cargo bench -p render-bench --bench time
+          cargo bench -p render-bench --bench alloc
+      - name: Базовая линия (отчёты последнего успешного прогона dev)
+        id: baseline
+        continue-on-error: true
+        run: |
+          id=$(gh run list --workflow ci.yml --branch dev --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          [ -n "$id" ] && gh run download "$id" --name bench-baseline --dir baseline
+      - name: Сравнение с базовой линией
+        if: steps.baseline.outcome == 'success'
+        run: cargo xtask bench-compare baseline target/bench | tee bench-comment.md
+      - name: Комментарий в PR (регрессия > 10 % только сообщается, слияние не блокируется)
+        if: github.event_name == 'pull_request' && steps.baseline.outcome == 'success'
+        continue-on-error: true
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file bench-comment.md --edit-last --create-if-none
+      - name: Отчёты как базовая линия
+        if: github.ref == 'refs/heads/dev'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-baseline
+          path: target/bench/*.json
+          retention-days: 30
+      - name: Очистка устаревших артефактов и проверка размера кэша
+        run: |
+          cargo sweep --file
+          size=$(du -sm target | cut -f1)
+          echo "target/: ${size} МБ (лимит ${CACHE_LIMIT_MB} МБ)"
+          if [ "$size" -gt "$CACHE_LIMIT_MB" ]; then
+            echo "::error::target/ (${size} МБ) больше лимита кэша ${CACHE_LIMIT_MB} МБ"
+            exit 1
+          fi

@@ -1,0 +1,20 @@
+name: Неиспользуемые зависимости
+
+# Лишние зависимости раздувают target/ и wasm; проверка по расписанию и вручную, на PR не запускается.
+on:
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  machete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-machete
+      - run: cargo machete
