@@ -2,11 +2,11 @@
 
 ## 1. Каркас workspace и тулчейн
 
-- [ ] 1.1 Создать корневой `Cargo.toml` (workspace, `resolver = "3"`, `[workspace.dependencies]`, `[workspace.lints]`) и `rust-toolchain.toml` (stable 1.98, wasm32, rustfmt, clippy); проверить `cargo metadata` без ошибок
-- [ ] 1.2 Добавить `.cargo/config.toml` (rust-lld для windows-msvc и linux-gnu) и профили из design D10; проверить `cargo build -p xtask` и размер `target/` после сборки
-- [ ] 1.3 Создать пустые крейты `prime-core`, `prime-dom`, `prime-theme`, `prime-icons` с features `ssr`/`hydrate`; проверить `cargo check --workspace` и `cargo check -p prime-core --target wasm32-unknown-unknown --features hydrate`
-- [ ] 1.4 Добавить `LICENSE` (MIT), `NOTICE` (PrimeNG 21.1.10), строку `nul` в `.gitignore`, `deny.toml`; проверить `cargo deny check`
-- [ ] 1.5 Написать `README.md` и `docs/build.md` (структура, `CARGO_TARGET_DIR` для Windows и Linux, команды xtask); проверить, что описанные команды выполняются как написано
+- [x] 1.1 Создать корневой `Cargo.toml` (workspace, `resolver = "3"`, `[workspace.dependencies]`, `[workspace.lints]`) и `rust-toolchain.toml` (stable 1.98, wasm32, rustfmt, clippy); проверить `cargo metadata` без ошибок
+- [x] 1.2 Добавить `.cargo/config.toml` (rust-lld для windows-msvc и linux-gnu) и профили из design D10; проверить `cargo build -p xtask` и размер `target/` после сборки
+- [x] 1.3 Создать пустые крейты `prime-core`, `prime-dom`, `prime-theme`, `prime-icons` с features `ssr`/`hydrate`; проверить `cargo check --workspace` и `cargo check -p prime-core --target wasm32-unknown-unknown --features hydrate`
+- [x] 1.4 Добавить `LICENSE` (MIT), `NOTICE` (PrimeNG 21.1.10), строку `nul` в `.gitignore`, `deny.toml`; проверить `cargo deny check`
+- [x] 1.5 Написать `README.md` и `docs/build.md` (структура, `CARGO_TARGET_DIR` для Windows и Linux, команды xtask); проверить, что описанные команды выполняются как написано
 
 ## 2. xtask и upstream-tracking
 

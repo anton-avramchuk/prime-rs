@@ -1,0 +1,20 @@
+[graph]
+targets = ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu", "wasm32-unknown-unknown"]
+
+[advisories]
+version = 2
+ignore = [
+    { id = "RUSTSEC-2024-0436", reason = "paste: транзитивная зависимость leptos, замены нет" },
+]
+
+[licenses]
+version = 2
+allow = ["MIT", "Apache-2.0", "Unicode-3.0", "BSL-1.0", "CC0-1.0", "Zlib"]
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

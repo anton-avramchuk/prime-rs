@@ -1,0 +1,10 @@
+prime-rs
+Copyright (c) 2026 Anton Avramchuk (MIT License, see LICENSE)
+
+This project is a Rust/Leptos port of PrimeNG and is derived from it.
+Ported from PrimeNG 21.1.10 (commit fe82b291d6).
+
+PrimeNG
+Copyright (c) 2016-2026 PrimeTek
+Licensed under the MIT License.
+https://github.com/primefaces/primeng
