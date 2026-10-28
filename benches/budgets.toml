@@ -110,3 +110,8 @@ max_delta_bytes = 255000
 name = "accordion"
 feature = "case-accordion"
 max_delta_bytes = 265000
+
+[[case]]
+name = "toolbar"
+feature = "case-toolbar"
+max_delta_bytes = 110000

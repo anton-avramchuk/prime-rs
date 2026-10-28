@@ -19,6 +19,7 @@ mod skeleton;
 mod tag;
 mod textarea;
 mod toggleswitch;
+mod toolbar;
 
 pub use accordion::AccordionPage;
 pub use avatar::AvatarPage;
@@ -39,6 +40,7 @@ pub use skeleton::SkeletonPage;
 pub use tag::TagPage;
 pub use textarea::TextareaPage;
 pub use toggleswitch::ToggleSwitchPage;
+pub use toolbar::ToolbarPage;
 
 use leptos::prelude::*;
 

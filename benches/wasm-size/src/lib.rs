@@ -59,6 +59,15 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-textarea")]
     return view! { <prime_textarea::Textarea rows=3u32 placeholder="Text" /> };
 
+    #[cfg(feature = "case-toolbar")]
+    return view! {
+        <prime_toolbar::Toolbar
+            start_template=ViewFn::from(|| view! { "Start" })
+            center_template=ViewFn::from(|| view! { "Center" })
+            end_template=ViewFn::from(|| view! { "End" })
+        />
+    };
+
     #[cfg(feature = "case-accordion")]
     return view! {
         <prime_accordion::Accordion default_value=vec!["0".to_owned()]>

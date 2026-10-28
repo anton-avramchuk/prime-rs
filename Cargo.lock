@@ -1851,6 +1851,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-toolbar"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "proc-macro-utils"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2078,6 +2086,7 @@ dependencies = [
  "prime-tag",
  "prime-textarea",
  "prime-toggleswitch",
+ "prime-toolbar",
  "serde_json",
 ]
 
@@ -2388,6 +2397,7 @@ dependencies = [
  "prime-textarea",
  "prime-theme",
  "prime-toggleswitch",
+ "prime-toolbar",
  "tokio",
  "wasm-bindgen",
  "web-sys",
@@ -3040,6 +3050,7 @@ dependencies = [
  "prime-tag",
  "prime-textarea",
  "prime-toggleswitch",
+ "prime-toolbar",
  "wasm-bindgen",
 ]
 

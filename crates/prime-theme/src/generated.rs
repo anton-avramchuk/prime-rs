@@ -72,6 +72,10 @@ pub const TEXTAREA: &str = include_str!("../css/components/textarea.css");
 #[cfg(feature = "toggleswitch")]
 pub const TOGGLESWITCH: &str = include_str!("../css/components/toggleswitch.css");
 
+/// CSS компонента `toolbar`.
+#[cfg(feature = "toolbar")]
+pub const TOOLBAR: &str = include_str!("../css/components/toolbar.css");
+
 /// Пары «имя — CSS» для включённых компонентов.
 pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     #[cfg(feature = "accordion")]
@@ -110,4 +114,6 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("textarea", TEXTAREA),
     #[cfg(feature = "toggleswitch")]
     ("toggleswitch", TOGGLESWITCH),
+    #[cfg(feature = "toolbar")]
+    ("toolbar", TOOLBAR),
 ];

@@ -112,3 +112,8 @@ max_per_instance = 63
 name = "accordion-1000"
 instances = 1000
 max_per_instance = 260
+
+[[scenario]]
+name = "toolbar-1000"
+instances = 1000
+max_per_instance = 26

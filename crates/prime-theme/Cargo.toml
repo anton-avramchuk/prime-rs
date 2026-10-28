@@ -29,7 +29,8 @@ skeleton = []
 tag = []
 textarea = []
 toggleswitch = []
-all-components = ["accordion", "avatar", "badge", "button", "card", "checkbox", "chip", "divider", "fieldset", "inputtext", "message", "panel", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "toggleswitch"]
+toolbar = []
+all-components = ["accordion", "avatar", "badge", "button", "card", "checkbox", "chip", "divider", "fieldset", "inputtext", "message", "panel", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "toggleswitch", "toolbar"]
 # END GENERATED FEATURES
 
 [lints]

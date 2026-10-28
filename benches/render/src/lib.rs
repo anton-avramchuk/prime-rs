@@ -24,6 +24,7 @@ use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
 use prime_toggleswitch::ToggleSwitch;
+use prime_toolbar::Toolbar;
 
 /// Сценарий: имя и функция, возвращающая HTML.
 pub struct Scenario {
@@ -154,6 +155,22 @@ fn accordion_n(n: usize) -> String {
     })
 }
 
+fn toolbar_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <Toolbar
+                        start_template=ViewFn::from(|| view! { "Start" })
+                        center_template=ViewFn::from(|| view! { "Center" })
+                        end_template=ViewFn::from(|| view! { "End" })
+                    />
+                }
+            })
+            .collect_view(),
+    )
+}
+
 fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
@@ -204,6 +221,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "fieldset-1000", run: || fieldset_n(1000) },
     Scenario { name: "accordion-1", run: || accordion_n(1) },
     Scenario { name: "accordion-1000", run: || accordion_n(1000) },
+    Scenario { name: "toolbar-1", run: || toolbar_n(1) },
+    Scenario { name: "toolbar-1000", run: || toolbar_n(1000) },
     Scenario { name: "all-icons-1", run: || render(view! { <AllIcons /> }) },
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];

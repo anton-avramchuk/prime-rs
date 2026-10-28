@@ -39,6 +39,7 @@ prime-message = { path = "crates/prime-message" }
 prime-panel = { path = "crates/prime-panel" }
 prime-fieldset = { path = "crates/prime-fieldset" }
 prime-accordion = { path = "crates/prime-accordion" }
+prime-toolbar = { path = "crates/prime-toolbar" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

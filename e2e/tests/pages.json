@@ -663,5 +663,19 @@
     "upstream": "/accordion",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "toolbar-basic",
+    "ours": "/toolbar",
+    "upstream": "/toolbar",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "toolbar-custom",
+    "ours": "/toolbar",
+    "upstream": "/toolbar",
+    "oursSelector": "[data-demo=\"custom\"]",
+    "upstreamSelector": "custom-doc .card"
   }
 ]
