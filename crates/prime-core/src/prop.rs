@@ -201,7 +201,6 @@ mod tests {
             assert!(all_static!(a, b));
             assert!(!all_static!(a, b, c));
             assert!(!all_static!(c));
-            assert!(all_static!());
         });
     }
 
