@@ -44,6 +44,9 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-rating")]
     return view! { <prime_rating::Rating default_value=3 name="grade" /> };
 
+    #[cfg(feature = "case-knob")]
+    return view! { <prime_knob::Knob default_value=60.0 /> };
+
     #[cfg(feature = "case-slider")]
     return view! { <prime_slider::Slider default_value=30.0 /> };
 

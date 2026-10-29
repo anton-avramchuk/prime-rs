@@ -406,6 +406,76 @@
     "upstreamSelector": "disabled-doc .card"
   },
   {
+    "name": "knob-basic",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "knob-minmax",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"minmax\"]",
+    "upstreamSelector": "minmax-doc .card"
+  },
+  {
+    "name": "knob-reactive",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"reactive\"]",
+    "upstreamSelector": "reactive-doc .card"
+  },
+  {
+    "name": "knob-size",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"size\"]",
+    "upstreamSelector": "size-doc .card"
+  },
+  {
+    "name": "knob-step",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"step\"]",
+    "upstreamSelector": "step-doc .card"
+  },
+  {
+    "name": "knob-stroke",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"stroke\"]",
+    "upstreamSelector": "stroke-doc .card"
+  },
+  {
+    "name": "knob-template",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "knob-color",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"color\"]",
+    "upstreamSelector": "color-doc .card"
+  },
+  {
+    "name": "knob-readonly",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"readonly\"]",
+    "upstreamSelector": "readonly-doc .card"
+  },
+  {
+    "name": "knob-disabled",
+    "ours": "/knob",
+    "upstream": "/knob",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
     "name": "slider-basic",
     "ours": "/slider",
     "upstream": "/slider",

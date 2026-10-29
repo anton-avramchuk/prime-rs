@@ -28,6 +28,7 @@ prime-message = { workspace = true, features = ["ssr"] }
 prime-rating = { workspace = true, features = ["ssr"] }
 prime-selectbutton = { workspace = true, features = ["ssr"] }
 prime-slider = { workspace = true, features = ["ssr"] }
+prime-knob = { workspace = true, features = ["ssr"] }
 prime-togglebutton = { workspace = true, features = ["ssr"] }
 prime-toggleswitch = { workspace = true, features = ["ssr"] }
 prime-radiobutton = { workspace = true, features = ["ssr"] }

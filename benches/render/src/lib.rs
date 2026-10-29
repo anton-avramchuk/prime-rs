@@ -17,6 +17,7 @@ use prime_fieldset::Fieldset;
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_inputgroup::{InputGroup, InputGroupAddon};
 use prime_inputtext::InputText;
+use prime_knob::Knob;
 use prime_message::{Message, MessageSeverity};
 use prime_panel::Panel;
 use prime_progressbar::ProgressBar;
@@ -100,6 +101,10 @@ fn radiobutton_n(n: usize) -> String {
 
 fn rating_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Rating default_value=3 name="grade" /> }).collect_view())
+}
+
+fn knob_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Knob default_value=60.0 /> }).collect_view())
 }
 
 fn slider_n(n: usize) -> String {
@@ -258,6 +263,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "radiobutton-1000", run: || radiobutton_n(1000) },
     Scenario { name: "rating-1", run: || rating_n(1) },
     Scenario { name: "rating-1000", run: || rating_n(1000) },
+    Scenario { name: "knob-1", run: || knob_n(1) },
+    Scenario { name: "knob-1000", run: || knob_n(1000) },
     Scenario { name: "slider-1", run: || slider_n(1) },
     Scenario { name: "slider-1000", run: || slider_n(1000) },
     Scenario { name: "selectbutton-1", run: || selectbutton_n(1) },

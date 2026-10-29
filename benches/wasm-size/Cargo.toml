@@ -36,6 +36,7 @@ case-message = ["dep:prime-message"]
 case-rating = ["dep:prime-rating"]
 case-selectbutton = ["dep:prime-selectbutton"]
 case-slider = ["dep:prime-slider"]
+case-knob = ["dep:prime-knob"]
 case-togglebutton = ["dep:prime-togglebutton"]
 case-toggleswitch = ["dep:prime-toggleswitch"]
 case-radiobutton = ["dep:prime-radiobutton"]
@@ -68,6 +69,7 @@ prime-message = { workspace = true, optional = true }
 prime-rating = { workspace = true, optional = true }
 prime-selectbutton = { workspace = true, optional = true }
 prime-slider = { workspace = true, optional = true }
+prime-knob = { workspace = true, optional = true }
 prime-togglebutton = { workspace = true, optional = true }
 prime-toggleswitch = { workspace = true, optional = true }
 prime-radiobutton = { workspace = true, optional = true }
