@@ -679,6 +679,34 @@
     "upstreamSelector": "custom-doc .card"
   },
   {
+    "name": "inputgroup-basic",
+    "ours": "/inputgroup",
+    "upstream": "/inputgroup",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "inputgroup-button",
+    "ours": "/inputgroup",
+    "upstream": "/inputgroup",
+    "oursSelector": "[data-demo=\"button\"]",
+    "upstreamSelector": "button-doc .card"
+  },
+  {
+    "name": "inputgroup-checkbox",
+    "ours": "/inputgroup",
+    "upstream": "/inputgroup",
+    "oursSelector": "[data-demo=\"checkbox\"]",
+    "upstreamSelector": "checkbox-doc .card"
+  },
+  {
+    "name": "inputgroup-multiple",
+    "ours": "/inputgroup",
+    "upstream": "/inputgroup",
+    "oursSelector": "[data-demo=\"multiple\"]",
+    "upstreamSelector": "multiple-doc .card"
+  },
+  {
     "name": "scrollpanel-basic",
     "ours": "/scrollpanel",
     "upstream": "/scrollpanel",

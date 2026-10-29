@@ -119,6 +119,11 @@ instances = 1000
 max_per_instance = 26
 
 [[scenario]]
+name = "inputgroup-1000"
+instances = 1000
+max_per_instance = 21
+
+[[scenario]]
 name = "scrollpanel-1000"
 instances = 1000
 max_per_instance = 29

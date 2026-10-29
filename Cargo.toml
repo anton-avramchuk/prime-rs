@@ -40,6 +40,7 @@ prime-panel = { path = "crates/prime-panel" }
 prime-fieldset = { path = "crates/prime-fieldset" }
 prime-accordion = { path = "crates/prime-accordion" }
 prime-toolbar = { path = "crates/prime-toolbar" }
+prime-inputgroup = { path = "crates/prime-inputgroup" }
 prime-scrollpanel = { path = "crates/prime-scrollpanel" }
 prime-progressspinner = { path = "crates/prime-progressspinner" }
 

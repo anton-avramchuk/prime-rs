@@ -68,6 +68,15 @@ fn App() -> impl IntoView {
         />
     };
 
+    #[cfg(feature = "case-inputgroup")]
+    return view! {
+        <prime_inputgroup::InputGroup>
+            <prime_inputgroup::InputGroupAddon>"$"</prime_inputgroup::InputGroupAddon>
+            <input class="p-inputtext p-component" placeholder="Price" />
+            <prime_inputgroup::InputGroupAddon>".00"</prime_inputgroup::InputGroupAddon>
+        </prime_inputgroup::InputGroup>
+    };
+
     #[cfg(feature = "case-progressspinner")]
     return view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> };
 

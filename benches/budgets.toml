@@ -117,6 +117,11 @@ feature = "case-toolbar"
 max_delta_bytes = 110000
 
 [[case]]
+name = "inputgroup"
+feature = "case-inputgroup"
+max_delta_bytes = 107000
+
+[[case]]
 name = "scrollpanel"
 feature = "case-scrollpanel"
 max_delta_bytes = 200000

@@ -15,6 +15,7 @@ use prime_chip::Chip;
 use prime_divider::{Divider, DividerAlign};
 use prime_fieldset::Fieldset;
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
+use prime_inputgroup::{InputGroup, InputGroupAddon};
 use prime_inputtext::InputText;
 use prime_message::{Message, MessageSeverity};
 use prime_panel::Panel;
@@ -173,6 +174,22 @@ fn toolbar_n(n: usize) -> String {
     )
 }
 
+fn inputgroup_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <InputGroup>
+                        <InputGroupAddon>"$"</InputGroupAddon>
+                        <input class="p-inputtext p-component" placeholder="Price" />
+                        <InputGroupAddon>".00"</InputGroupAddon>
+                    </InputGroup>
+                }
+            })
+            .collect_view(),
+    )
+}
+
 fn scrollpanel_n(n: usize) -> String {
     render((0..n).map(|_| view! { <ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></ScrollPanel> }).collect_view())
 }
@@ -233,6 +250,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "accordion-1000", run: || accordion_n(1000) },
     Scenario { name: "toolbar-1", run: || toolbar_n(1) },
     Scenario { name: "toolbar-1000", run: || toolbar_n(1000) },
+    Scenario { name: "inputgroup-1", run: || inputgroup_n(1) },
+    Scenario { name: "inputgroup-1000", run: || inputgroup_n(1000) },
     Scenario { name: "scrollpanel-1", run: || scrollpanel_n(1) },
     Scenario { name: "scrollpanel-1000", run: || scrollpanel_n(1000) },
     Scenario { name: "progressspinner-1", run: || progressspinner_n(1) },

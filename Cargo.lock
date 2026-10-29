@@ -1751,6 +1751,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-inputgroup"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-inputtext"
 version = "0.1.0"
 dependencies = [
@@ -2098,6 +2106,7 @@ dependencies = [
  "prime-divider",
  "prime-fieldset",
  "prime-icons",
+ "prime-inputgroup",
  "prime-inputtext",
  "prime-message",
  "prime-panel",
@@ -2410,6 +2419,7 @@ dependencies = [
  "prime-divider",
  "prime-fieldset",
  "prime-icons",
+ "prime-inputgroup",
  "prime-inputtext",
  "prime-message",
  "prime-panel",
@@ -3066,6 +3076,7 @@ dependencies = [
  "prime-divider",
  "prime-fieldset",
  "prime-icons",
+ "prime-inputgroup",
  "prime-inputtext",
  "prime-message",
  "prime-panel",
