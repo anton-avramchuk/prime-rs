@@ -164,7 +164,7 @@ pub fn InputNumber(
     size: OptProp<Size>,
     /// На всю ширину.
     #[prop(optional, into)]
-    fluid: Prop<bool>,
+    fluid: OptProp<bool>,
     /// Подсказка в пустом поле.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
@@ -243,6 +243,7 @@ pub fn InputNumber(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let value = value.unwrap_or_else(|| RwSignal::new(default_value));
+    let fluid = prime_core::fluid::fluid_prop(fluid);
     let props = Arc::new(Props {
         value,
         display: RwSignal::new(String::new()),

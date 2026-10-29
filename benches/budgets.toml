@@ -165,3 +165,28 @@ max_delta_bytes = 200000
 name = "progressspinner"
 feature = "case-progressspinner"
 max_delta_bytes = 105000
+
+[[case]]
+name = "buttongroup"
+feature = "case-buttongroup"
+max_delta_bytes = 81000
+
+[[case]]
+name = "fluid"
+feature = "case-fluid"
+max_delta_bytes = 83000
+
+[[case]]
+name = "iconfield"
+feature = "case-iconfield"
+max_delta_bytes = 124000
+
+[[case]]
+name = "floatlabel"
+feature = "case-floatlabel"
+max_delta_bytes = 100000
+
+[[case]]
+name = "iftalabel"
+feature = "case-iftalabel"
+max_delta_bytes = 79000

@@ -6,7 +6,7 @@
 |---|---|
 | `prime-inputnumber::InputNumber` | `packages/primeng/src/inputnumber/inputnumber.ts`, `inputnumber/style/inputnumberstyle.ts` |
 | CSS | `@primeuix/styles/inputnumber` и пресет Aura (`cargo xtask gen-theme`); поле — CSS `inputtext` |
-| Демонстрации | `apps/showcase/doc/inputnumber/*-doc.ts` (`locale`, `currency`, `numerals`, `prefixsuffix`, `buttons`, `vertical`, `clearicon`, `sizes`, `filled`, `invalid`, `disabled`, `fluid`) |
+| Демонстрации | `apps/showcase/doc/inputnumber/*-doc.ts` (`locale`, `currency`, `numerals`, `prefixsuffix`, `buttons`, `vertical`, `clearicon`, `sizes`, `filled`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel`) |
 
 Спека: `openspec/specs/inputnumber`.
 
@@ -42,7 +42,8 @@
 | `on_input` получает текст после правки | В PrimeNG `formattedValue` — текст до правки. |
 | Класс `p-disabled` у кнопок не выводится | В PrimeNG он зависит от `maxlength()` вместо значения и фактически никогда не включается. |
 | Только ASCII-цифры; нет компактных, процентных и единичных режимов, `minlength`, `localeMatcher`, `autofocus`, Angular Forms | Вне объёма change. |
-| Не перенесены демонстрации `floatlabel`, `iftalabel`, `reactiveforms`, `templatedrivenforms` | FloatLabel и IftaLabel не портированы, формы вне объёма. |
+| Не перенесены демонстрации `reactiveforms`, `templatedrivenforms` | Формы вне объёма. |
+| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
 | `readonly` и `disabled` одинаково блокируют ввод, шаги и вставку | У недоступного поля браузер не шлёт событий; блокировка нужна для синтетических событий и кнопок. |
 
 Приставки и суффиксы с цифрами (например, `prefix="3D "`) не поддерживаются: цифры в обрамлении принимаются за часть числа при поиске границ числовой части.

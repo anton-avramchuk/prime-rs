@@ -75,3 +75,22 @@ fn static_and_reactive_branches_match() {
     let strip = |s: &str| s.split("<!--").next().unwrap_or(s).to_owned();
     assert_eq!(strip(&stat), strip(&reactive));
 }
+
+#[test]
+fn fluid_inherited_from_context() {
+    let outside = view! { <InputText/> }.to_html();
+    assert!(!outside.contains("p-inputtext-fluid"), "{outside}");
+    Owner::new().with(|| {
+        prime_core::fluid::provide_fluid();
+        let inherited = view! { <InputText/> }.to_html();
+        assert!(inherited.contains("p-inputtext-fluid"), "{inherited}");
+        let forced_off = view! { <InputText fluid=false/> }.to_html();
+        assert!(!forced_off.contains("p-inputtext-fluid"), "{forced_off}");
+        let live = RwSignal::new(None::<bool>);
+        let reactive = view! { <InputText fluid=live/> }.to_html();
+        assert!(reactive.contains("p-inputtext-fluid"), "{reactive}");
+        live.set(Some(false));
+        let reactive_off = view! { <InputText fluid=live/> }.to_html();
+        assert!(!reactive_off.contains("p-inputtext-fluid"), "{reactive_off}");
+    });
+}

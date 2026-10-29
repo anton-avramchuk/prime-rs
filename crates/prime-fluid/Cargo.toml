@@ -1,0 +1,28 @@
+[package]
+name = "prime-fluid"
+description = "prime-rs: компонент Fluid (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+
+[dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+prime-button = { workspace = true, features = ["ssr"] }
+prime-inputnumber = { workspace = true, features = ["ssr"] }
+prime-inputtext = { workspace = true, features = ["ssr"] }
+prime-select = { workspace = true, features = ["ssr"] }
+prime-textarea = { workspace = true, features = ["ssr"] }
+
+[lints]
+workspace = true

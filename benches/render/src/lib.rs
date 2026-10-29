@@ -9,12 +9,17 @@ use prime_avatar::{Avatar, AvatarShape, AvatarSize};
 use prime_avatargroup::AvatarGroup;
 use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
+use prime_buttongroup::ButtonGroup;
 use prime_card::Card;
 use prime_checkbox::Checkbox;
 use prime_chip::Chip;
 use prime_divider::{Divider, DividerAlign};
 use prime_fieldset::Fieldset;
+use prime_floatlabel::{FloatLabel, FloatLabelVariant};
+use prime_fluid::Fluid;
+use prime_iconfield::{IconField, InputIcon};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
+use prime_iftalabel::IftaLabel;
 use prime_inputgroup::{InputGroup, InputGroupAddon};
 use prime_inputnumber::{InputNumber, InputNumberMode};
 use prime_inputtext::InputText;
@@ -243,6 +248,84 @@ fn inputgroup_n(n: usize) -> String {
     )
 }
 
+fn buttongroup_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <ButtonGroup>
+                        <Button label="Save" />
+                        <Button label="Delete" />
+                        <Button label="Cancel" />
+                    </ButtonGroup>
+                }
+            })
+            .collect_view(),
+    )
+}
+
+fn fluid_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <Fluid>
+                        <InputText placeholder="Input" />
+                        <Button label="Button" />
+                    </Fluid>
+                }
+            })
+            .collect_view(),
+    )
+}
+
+fn iconfield_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <IconField>
+                        <InputIcon>
+                            <CheckIcon />
+                        </InputIcon>
+                        <input class="p-inputtext p-component" placeholder="Search" />
+                    </IconField>
+                }
+            })
+            .collect_view(),
+    )
+}
+
+fn floatlabel_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <FloatLabel variant=FloatLabelVariant::On>
+                        <input id="u" class="p-inputtext p-component" />
+                        <label for="u">"Username"</label>
+                    </FloatLabel>
+                }
+            })
+            .collect_view(),
+    )
+}
+
+fn iftalabel_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <IftaLabel>
+                        <input id="u" class="p-inputtext p-component" />
+                        <label for="u">"Username"</label>
+                    </IftaLabel>
+                }
+            })
+            .collect_view(),
+    )
+}
+
 fn scrollpanel_n(n: usize) -> String {
     render((0..n).map(|_| view! { <ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></ScrollPanel> }).collect_view())
 }
@@ -319,6 +402,16 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "toolbar-1000", run: || toolbar_n(1000) },
     Scenario { name: "inputgroup-1", run: || inputgroup_n(1) },
     Scenario { name: "inputgroup-1000", run: || inputgroup_n(1000) },
+    Scenario { name: "buttongroup-1", run: || buttongroup_n(1) },
+    Scenario { name: "buttongroup-1000", run: || buttongroup_n(1000) },
+    Scenario { name: "fluid-1", run: || fluid_n(1) },
+    Scenario { name: "fluid-1000", run: || fluid_n(1000) },
+    Scenario { name: "iconfield-1", run: || iconfield_n(1) },
+    Scenario { name: "iconfield-1000", run: || iconfield_n(1000) },
+    Scenario { name: "floatlabel-1", run: || floatlabel_n(1) },
+    Scenario { name: "floatlabel-1000", run: || floatlabel_n(1000) },
+    Scenario { name: "iftalabel-1", run: || iftalabel_n(1) },
+    Scenario { name: "iftalabel-1000", run: || iftalabel_n(1000) },
     Scenario { name: "scrollpanel-1", run: || scrollpanel_n(1) },
     Scenario { name: "scrollpanel-1000", run: || scrollpanel_n(1000) },
     Scenario { name: "progressspinner-1", run: || progressspinner_n(1) },

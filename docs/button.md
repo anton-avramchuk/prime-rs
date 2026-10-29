@@ -26,7 +26,8 @@
 | Иконка — `ViewFn` в оболочке `span.p-button-icon`, а не строка класса PrimeIcons | Шрифта PrimeIcons нет; оболочка нужна, чтобы CSS (`order`, отступы) работал для любой иконки. |
 | Индикатор загрузки по умолчанию — `SpinnerIcon` без числовых классов | В PrimeNG `spinnerIcon` формирует классы `0 1 2 …` из `Object.entries` строки; это побочный эффект, а не стиль. |
 | Свой индикатор загрузки без класса `pi-spin` | `pi-spin` — анимация шрифта PrimeIcons; у `SpinnerIcon` свой `p-icon-spin`. |
-| Нет директивы `pButton`, `buttonProps`, контекста `Fluid` (есть свойство `fluid`), `unstyled` | Вне объёма change; см. `proposal.md`. |
+| Нет директивы `pButton`, `buttonProps`, `unstyled` | Вне объёма change; см. `proposal.md`. |
+| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
 | Иконки демонстраций заменены ближайшими из `prime-icons` | В 53 иконках PrimeNG нет пользователя, закладки, колокольчика, сердца и пользователей: `pi-user` → `InfoCircleIcon`, `pi-bookmark` → `StarIcon`, `pi-bell` → `ExclamationTriangleIcon`, `pi-heart` → `StarFillIcon`. |
 
 ## Проверки

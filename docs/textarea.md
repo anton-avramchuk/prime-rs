@@ -6,7 +6,7 @@
 |---|---|
 | `prime-textarea::Textarea` | `packages/primeng/src/textarea/textarea.ts`, `textarea/style/textareastyle.ts` |
 | CSS | `@primeuix/styles/textarea` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/textarea/*-doc.ts` (`basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`) |
+| Демонстрации | `apps/showcase/doc/textarea/*-doc.ts` (`basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel`) |
 
 Спека: `openspec/specs/textarea`.
 
@@ -24,7 +24,8 @@
 | `value: RwSignal<String>` вместо `ngModel`; без `value` поле неконтролируемое, `p-filled` не отслеживается | Как у InputText (`docs/inputtext.md`). |
 | Подгонка высоты — по изменению сигнала и по вводу, а не при каждой проверке изменений | В Leptos нет аналога `ngAfterViewChecked`. |
 | Начальный текст SSR экранируется вручную, ведущий перевод строки дублируется | Leptos выводит детей `<textarea>` без экранирования (как `<script>`): иначе значение `</textarea><script>` ломало бы разметку, а HTML-парсер отбрасывает первый перевод строки. |
-| Нет `KeyFilter`, `FloatLabel`, `IftaLabel`, контекста `Fluid`, интеграции с формами | Вне объёма change; демонстрации `floatlabel`, `iftalabel`, `keyfilter` не перенесены. |
+| Нет `KeyFilter` и интеграции с формами; демонстрация `keyfilter` не перенесена | Вне объёма change. |
+| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
 
 ## Производительность
 

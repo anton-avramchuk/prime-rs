@@ -1,10 +1,10 @@
 //! Оболочка страницы, меню и маршруты.
 
 use crate::pages::{
-    AccordionPage, AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage, HomePage,
-    InputGroupPage, InputNumberPage, InputTextPage, KnobPage, MessagePage, PanelPage, ProgressBarPage, ProgressSpinnerPage,
-    RadioButtonPage, RatingPage, ScrollPanelPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, TagPage, TextareaPage,
-    ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
+    AccordionPage, AvatarPage, BadgePage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage,
+    FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InputGroupPage, InputNumberPage, InputTextPage, KnobPage,
+    MessagePage, PanelPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, SelectButtonPage,
+    SelectPage, SkeletonPage, SliderPage, TagPage, TextareaPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -46,6 +46,9 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "scrollpanel",
         "progressspinner",
         "inputgroup",
+        "buttongroup",
+        "floatlabel",
+        "iftalabel",
     ]);
     view! {
         <!DOCTYPE html>
@@ -111,6 +114,11 @@ pub fn App() -> impl IntoView {
                         <A href="/scrollpanel">"ScrollPanel"</A>
                         <A href="/progressspinner">"ProgressSpinner"</A>
                         <A href="/inputgroup">"InputGroup"</A>
+                        <A href="/buttongroup">"ButtonGroup"</A>
+                        <A href="/fluid">"Fluid"</A>
+                        <A href="/iconfield">"IconField"</A>
+                        <A href="/floatlabel">"FloatLabel"</A>
+                        <A href="/iftalabel">"IftaLabel"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -148,6 +156,11 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("scrollpanel") view=ScrollPanelPage />
                         <Route path=StaticSegment("progressspinner") view=ProgressSpinnerPage />
                         <Route path=StaticSegment("inputgroup") view=InputGroupPage />
+                        <Route path=StaticSegment("buttongroup") view=ButtonGroupPage />
+                        <Route path=StaticSegment("fluid") view=FluidPage />
+                        <Route path=StaticSegment("iconfield") view=IconFieldPage />
+                        <Route path=StaticSegment("floatlabel") view=FloatLabelPage />
+                        <Route path=StaticSegment("iftalabel") view=IftaLabelPage />
                     </Routes>
                 </main>
             </div>

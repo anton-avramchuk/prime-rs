@@ -50,6 +50,11 @@ prime-toolbar = { path = "crates/prime-toolbar" }
 prime-inputgroup = { path = "crates/prime-inputgroup" }
 prime-scrollpanel = { path = "crates/prime-scrollpanel" }
 prime-progressspinner = { path = "crates/prime-progressspinner" }
+prime-buttongroup = { path = "crates/prime-buttongroup" }
+prime-fluid = { path = "crates/prime-fluid" }
+prime-iconfield = { path = "crates/prime-iconfield" }
+prime-floatlabel = { path = "crates/prime-floatlabel" }
+prime-iftalabel = { path = "crates/prime-iftalabel" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

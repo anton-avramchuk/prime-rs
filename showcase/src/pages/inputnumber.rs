@@ -1,11 +1,13 @@
 //! Страница InputNumber: демонстрации `locale`, `currency`, `numerals`, `prefixsuffix`, `buttons`, `vertical`, `clearicon`, `sizes`,
-//! `filled`, `invalid`, `disabled`, `fluid` из showcase PrimeNG (`apps/showcase/doc/inputnumber`). Демонстрации с Angular Forms,
-//! FloatLabel и IftaLabel не переносятся; «jp-JP» из исходника заменён корректным `ja-JP`.
+//! `filled`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` из showcase PrimeNG (`apps/showcase/doc/inputnumber`).
+//! Демонстрации с Angular Forms не переносятся; «jp-JP» из исходника заменён корректным `ja-JP`.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_core::{Size, Variant};
+use prime_floatlabel::FloatLabel;
 use prime_icons::{MinusIcon, PlusIcon};
+use prime_iftalabel::IftaLabel;
 use prime_inputnumber::{ButtonLayout, CurrencyDisplay, InputNumber, InputNumberMode};
 
 const ROW: &str = "display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end";
@@ -204,6 +206,18 @@ pub fn InputNumberPage() -> impl IntoView {
         </Demo>
         <Demo name="fluid" title="Fluid">
             <InputNumber value=fluid fluid=true />
+        </Demo>
+        <Demo name="floatlabel" title="Float Label">
+            <FloatLabel>
+                <InputNumber input_id="float_number" />
+                <label for="float_number">"Number"</label>
+            </FloatLabel>
+        </Demo>
+        <Demo name="iftalabel" title="Ifta Label">
+            <IftaLabel>
+                <InputNumber input_id="ifta_number" />
+                <label for="ifta_number">"Number"</label>
+            </IftaLabel>
         </Demo>
     }
 }

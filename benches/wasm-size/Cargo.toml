@@ -27,6 +27,11 @@ case-fieldset = ["dep:prime-fieldset"]
 case-accordion = ["dep:prime-accordion"]
 case-toolbar = ["dep:prime-toolbar"]
 case-inputgroup = ["dep:prime-inputgroup"]
+case-buttongroup = ["dep:prime-buttongroup"]
+case-fluid = ["dep:prime-fluid"]
+case-iconfield = ["dep:prime-iconfield"]
+case-floatlabel = ["dep:prime-floatlabel"]
+case-iftalabel = ["dep:prime-iftalabel"]
 case-scrollpanel = ["dep:prime-scrollpanel"]
 case-progressspinner = ["dep:prime-progressspinner"]
 case-skeleton = ["dep:prime-skeleton"]
@@ -63,6 +68,11 @@ prime-fieldset = { workspace = true, optional = true }
 prime-accordion = { workspace = true, optional = true }
 prime-toolbar = { workspace = true, optional = true }
 prime-inputgroup = { workspace = true, optional = true }
+prime-buttongroup = { workspace = true, optional = true }
+prime-fluid = { workspace = true, optional = true }
+prime-iconfield = { workspace = true, optional = true }
+prime-floatlabel = { workspace = true, optional = true }
+prime-iftalabel = { workspace = true, optional = true }
 prime-scrollpanel = { workspace = true, optional = true }
 prime-progressspinner = { workspace = true, optional = true }
 prime-skeleton = { workspace = true, optional = true }

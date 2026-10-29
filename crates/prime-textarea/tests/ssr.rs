@@ -113,3 +113,22 @@ fn static_and_reactive_branches_match() {
     .to_html();
     assert_eq!(strip(&stat), strip(&reactive));
 }
+
+#[test]
+fn fluid_inherited_from_context() {
+    let outside = view! { <Textarea/> }.to_html();
+    assert!(!outside.contains("p-textarea-fluid"), "{outside}");
+    Owner::new().with(|| {
+        prime_core::fluid::provide_fluid();
+        let inherited = view! { <Textarea/> }.to_html();
+        assert!(inherited.contains("p-textarea-fluid"), "{inherited}");
+        let forced_off = view! { <Textarea fluid=false/> }.to_html();
+        assert!(!forced_off.contains("p-textarea-fluid"), "{forced_off}");
+        let live = RwSignal::new(None::<bool>);
+        let reactive = view! { <Textarea fluid=live/> }.to_html();
+        assert!(reactive.contains("p-textarea-fluid"), "{reactive}");
+        live.set(Some(false));
+        let reactive_off = view! { <Textarea fluid=live/> }.to_html();
+        assert!(!reactive_off.contains("p-textarea-fluid"), "{reactive_off}");
+    });
+}

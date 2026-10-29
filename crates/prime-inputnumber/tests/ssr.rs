@@ -252,3 +252,22 @@ fn reactive_props_render_like_static() {
     locale.set(Some("de-DE".to_owned()));
     assert!(view! { <InputNumber default_value=1234.5 min_fraction_digits=2 locale=locale /> }.to_html().contains("1.234,50"));
 }
+
+#[test]
+fn fluid_inherited_from_context() {
+    let outside = view! { <InputNumber/> }.to_html();
+    assert!(!outside.contains("p-inputnumber-fluid"), "{outside}");
+    Owner::new().with(|| {
+        prime_core::fluid::provide_fluid();
+        let inherited = view! { <InputNumber/> }.to_html();
+        assert!(inherited.contains("p-inputnumber-fluid"), "{inherited}");
+        let forced_off = view! { <InputNumber fluid=false/> }.to_html();
+        assert!(!forced_off.contains("p-inputnumber-fluid"), "{forced_off}");
+        let live = RwSignal::new(None::<bool>);
+        let reactive = view! { <InputNumber fluid=live/> }.to_html();
+        assert!(reactive.contains("p-inputnumber-fluid"), "{reactive}");
+        live.set(Some(false));
+        let reactive_off = view! { <InputNumber fluid=live/> }.to_html();
+        assert!(!reactive_off.contains("p-inputnumber-fluid"), "{reactive_off}");
+    });
+}

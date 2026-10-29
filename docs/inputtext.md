@@ -6,7 +6,7 @@
 |---|---|
 | `prime-inputtext::InputText` | `packages/primeng/src/inputtext/inputtext.ts`, `inputtext/style/inputtextstyle.ts` |
 | CSS | `@primeuix/styles/inputtext` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/inputtext/*-doc.ts` (`basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`) |
+| Демонстрации | `apps/showcase/doc/inputtext/*-doc.ts` (`basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel`) |
 
 Спека: `openspec/specs/inputtext`.
 
@@ -23,7 +23,8 @@
 | Компонент `<InputText />`, а не директива на `<input>` | В Leptos нет директив на произвольный элемент. Чаще нужные атрибуты `<input>` — явные свойства. |
 | `value: RwSignal<String>` вместо `ngModel` | Двусторонняя привязка без форм-инфраструктуры. |
 | Без `value` поле неконтролируемое, `p-filled` не отслеживается | Статическому полю не нужен сигнал; в PrimeNG `p-filled` влияет только на плавающие подписи. |
-| Нет интеграции с формами, `KeyFilter`, `FloatLabel`, `IconField`, `InputGroup`, контекста `Fluid` | Вне объёма change. |
+| Нет интеграции с формами и `KeyFilter` | Вне объёма change. |
+| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
 
 ## Модель значения (образец для полей ввода)
 

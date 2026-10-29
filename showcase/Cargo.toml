@@ -32,6 +32,11 @@ prime-fieldset = { workspace = true }
 prime-accordion = { workspace = true }
 prime-toolbar = { workspace = true }
 prime-inputgroup = { workspace = true }
+prime-buttongroup = { workspace = true }
+prime-fluid = { workspace = true }
+prime-iconfield = { workspace = true }
+prime-floatlabel = { workspace = true }
+prime-iftalabel = { workspace = true }
 prime-scrollpanel = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }

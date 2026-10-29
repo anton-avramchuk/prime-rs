@@ -19,6 +19,11 @@ prime-fieldset = { workspace = true, features = ["ssr"] }
 prime-accordion = { workspace = true, features = ["ssr"] }
 prime-toolbar = { workspace = true, features = ["ssr"] }
 prime-inputgroup = { workspace = true, features = ["ssr"] }
+prime-buttongroup = { workspace = true, features = ["ssr"] }
+prime-fluid = { workspace = true, features = ["ssr"] }
+prime-iconfield = { workspace = true, features = ["ssr"] }
+prime-floatlabel = { workspace = true, features = ["ssr"] }
+prime-iftalabel = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

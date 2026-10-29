@@ -150,7 +150,7 @@ pub fn Button(
     size: OptProp<Size>,
     /// На всю ширину контейнера.
     #[prop(optional, into)]
-    fluid: Prop<bool>,
+    fluid: OptProp<bool>,
     /// Значение бейджа.
     #[prop(optional, into)]
     badge: OptProp<String>,
@@ -198,6 +198,7 @@ pub fn Button(
     let has_children = children.is_some();
     let content = children.map(|c| c());
     let badge_severity = badge_severity_or_default(&badge_severity);
+    let fluid = prime_core::fluid::fluid_prop(fluid);
     let is_static = all_static!(
         label,
         badge,

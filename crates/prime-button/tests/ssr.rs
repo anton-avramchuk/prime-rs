@@ -173,3 +173,22 @@ fn ssr_with_ripple_and_autofocus_never_touches_the_browser() {
         assert!(html.contains("p-ripple") && !html.contains("p-ink"), "{html}");
     });
 }
+
+#[test]
+fn fluid_inherited_from_context() {
+    let outside = view! { <Button label="x"/> }.to_html();
+    assert!(!outside.contains("p-button-fluid"), "{outside}");
+    Owner::new().with(|| {
+        prime_core::fluid::provide_fluid();
+        let inherited = view! { <Button label="x"/> }.to_html();
+        assert!(inherited.contains("p-button-fluid"), "{inherited}");
+        let forced_off = view! { <Button label="x" fluid=false/> }.to_html();
+        assert!(!forced_off.contains("p-button-fluid"), "{forced_off}");
+        let live = RwSignal::new(None::<bool>);
+        let reactive = view! { <Button label="x" fluid=live/> }.to_html();
+        assert!(reactive.contains("p-button-fluid"), "{reactive}");
+        live.set(Some(false));
+        let reactive_off = view! { <Button label="x" fluid=live/> }.to_html();
+        assert!(!reactive_off.contains("p-button-fluid"), "{reactive_off}");
+    });
+}

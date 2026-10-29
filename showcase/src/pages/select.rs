@@ -1,10 +1,12 @@
 //! Страница Select: демонстрации `basic`, `checkmark`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`,
-//! `loadingstate`, `sizes`, `template` из showcase PrimeNG (`apps/showcase/doc/select`). Демонстрации с Angular Forms, FloatLabel,
-//! IftaLabel, виртуальной прокруткой, `editable` и `customfilter` не переносятся; в `template` вместо флагов с CDN — коды стран.
+//! `loadingstate`, `sizes`, `template`, `floatlabel`, `iftalabel` из showcase PrimeNG (`apps/showcase/doc/select`). Демонстрации
+//! с Angular Forms, виртуальной прокруткой, `editable` и `customfilter` не переносятся; в `template` вместо флагов с CDN — коды стран.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_core::{Size, Variant};
+use prime_floatlabel::FloatLabel;
+use prime_iftalabel::IftaLabel;
 use prime_select::{Select, SelectGroup, SelectOption};
 
 const FIELD: &str = "width: 14rem";
@@ -107,6 +109,18 @@ pub fn SelectPage() -> impl IntoView {
         </Demo>
         <Demo name="template" title="Template">
             <Select options=countries() value=templated placeholder="Select a Country" filter=true item_template=item selected_item_template=selected style=FIELD />
+        </Demo>
+        <Demo name="floatlabel" title="Float Label">
+            <FloatLabel>
+                <Select options=cities() input_id="float_select" style=FIELD />
+                <label for="float_select">"Select a City"</label>
+            </FloatLabel>
+        </Demo>
+        <Demo name="iftalabel" title="Ifta Label">
+            <IftaLabel>
+                <Select options=cities() input_id="ifta_select" style=FIELD />
+                <label for="ifta_select">"Select a City"</label>
+            </IftaLabel>
         </Demo>
     }
 }

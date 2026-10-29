@@ -16,6 +16,10 @@ pub const BADGE: &str = include_str!("../css/components/badge.css");
 #[cfg(feature = "button")]
 pub const BUTTON: &str = include_str!("../css/components/button.css");
 
+/// CSS компонента `buttongroup`.
+#[cfg(feature = "buttongroup")]
+pub const BUTTONGROUP: &str = include_str!("../css/components/buttongroup.css");
+
 /// CSS компонента `card`.
 #[cfg(feature = "card")]
 pub const CARD: &str = include_str!("../css/components/card.css");
@@ -36,9 +40,17 @@ pub const DIVIDER: &str = include_str!("../css/components/divider.css");
 #[cfg(feature = "fieldset")]
 pub const FIELDSET: &str = include_str!("../css/components/fieldset.css");
 
+/// CSS компонента `floatlabel`.
+#[cfg(feature = "floatlabel")]
+pub const FLOATLABEL: &str = include_str!("../css/components/floatlabel.css");
+
 /// CSS компонента `iconfield`.
 #[cfg(feature = "iconfield")]
 pub const ICONFIELD: &str = include_str!("../css/components/iconfield.css");
+
+/// CSS компонента `iftalabel`.
+#[cfg(feature = "iftalabel")]
+pub const IFTALABEL: &str = include_str!("../css/components/iftalabel.css");
 
 /// CSS компонента `inputgroup`.
 #[cfg(feature = "inputgroup")]
@@ -130,6 +142,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("badge", BADGE),
     #[cfg(feature = "button")]
     ("button", BUTTON),
+    #[cfg(feature = "buttongroup")]
+    ("buttongroup", BUTTONGROUP),
     #[cfg(feature = "card")]
     ("card", CARD),
     #[cfg(feature = "checkbox")]
@@ -140,8 +154,12 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("divider", DIVIDER),
     #[cfg(feature = "fieldset")]
     ("fieldset", FIELDSET),
+    #[cfg(feature = "floatlabel")]
+    ("floatlabel", FLOATLABEL),
     #[cfg(feature = "iconfield")]
     ("iconfield", ICONFIELD),
+    #[cfg(feature = "iftalabel")]
+    ("iftalabel", IFTALABEL),
     #[cfg(feature = "inputgroup")]
     ("inputgroup", INPUTGROUP),
     #[cfg(feature = "inputnumber")]

@@ -80,7 +80,7 @@ pub fn InputText(
     invalid: Prop<bool>,
     /// На всю ширину контейнера.
     #[prop(optional, into)]
-    fluid: Prop<bool>,
+    fluid: OptProp<bool>,
     /// Встроенный стиль.
     #[prop(optional, into)]
     style: OptProp<String>,
@@ -104,6 +104,7 @@ pub fn InputText(
     pt: Option<Pt>,
 ) -> impl IntoView {
     let pt = pt.unwrap_or_default();
+    let fluid = prime_core::fluid::fluid_prop(fluid);
     let is_static = all_static!(
         input_type,
         id,

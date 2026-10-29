@@ -1139,5 +1139,152 @@
     "upstream": "/progressspinner",
     "oursSelector": "[data-demo=\"custom\"]",
     "upstreamSelector": "custom-doc .card"
+  },
+  {
+    "name": "buttongroup-basic",
+    "ours": "/buttongroup",
+    "upstream": "/buttongroup",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "buttongroup-icons",
+    "ours": "/buttongroup",
+    "upstream": "/buttongroup",
+    "oursSelector": "[data-demo=\"icons\"]",
+    "upstreamSelector": "icons-doc .card"
+  },
+  {
+    "name": "fluid-basic",
+    "ours": "/fluid",
+    "upstream": "/fluid",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "iconfield-basic",
+    "ours": "/iconfield",
+    "upstream": "/iconfield",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "iconfield-sizes",
+    "ours": "/iconfield",
+    "upstream": "/iconfield",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "iconfield-template",
+    "ours": "/iconfield",
+    "upstream": "/iconfield",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "iconfield-floatlabel",
+    "ours": "/iconfield",
+    "upstream": "/iconfield",
+    "oursSelector": "[data-demo=\"floatlabel\"]",
+    "upstreamSelector": "floatlabel-doc .card"
+  },
+  {
+    "name": "iconfield-iftalabel",
+    "ours": "/iconfield",
+    "upstream": "/iconfield",
+    "oursSelector": "[data-demo=\"iftalabel\"]",
+    "upstreamSelector": "iftalabel-doc .card"
+  },
+  {
+    "name": "floatlabel-basic",
+    "ours": "/floatlabel",
+    "upstream": "/floatlabel",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "floatlabel-variants",
+    "ours": "/floatlabel",
+    "upstream": "/floatlabel",
+    "oursSelector": "[data-demo=\"variants\"]",
+    "upstreamSelector": "variants-doc .card"
+  },
+  {
+    "name": "floatlabel-invalid",
+    "ours": "/floatlabel",
+    "upstream": "/floatlabel",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "iftalabel-basic",
+    "ours": "/iftalabel",
+    "upstream": "/iftalabel",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "iftalabel-invalid",
+    "ours": "/iftalabel",
+    "upstream": "/iftalabel",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "inputtext-floatlabel",
+    "ours": "/inputtext",
+    "upstream": "/inputtext",
+    "oursSelector": "[data-demo=\"floatlabel\"]",
+    "upstreamSelector": "floatlabel-doc .card"
+  },
+  {
+    "name": "inputtext-iftalabel",
+    "ours": "/inputtext",
+    "upstream": "/inputtext",
+    "oursSelector": "[data-demo=\"iftalabel\"]",
+    "upstreamSelector": "iftalabel-doc .card"
+  },
+  {
+    "name": "inputnumber-floatlabel",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"floatlabel\"]",
+    "upstreamSelector": "floatlabel-doc .card"
+  },
+  {
+    "name": "inputnumber-iftalabel",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"iftalabel\"]",
+    "upstreamSelector": "iftalabel-doc .card"
+  },
+  {
+    "name": "select-floatlabel",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"floatlabel\"]",
+    "upstreamSelector": "floatlabel-doc .card"
+  },
+  {
+    "name": "select-iftalabel",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"iftalabel\"]",
+    "upstreamSelector": "iftalabel-doc .card"
+  },
+  {
+    "name": "textarea-floatlabel",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"floatlabel\"]",
+    "upstreamSelector": "floatlabel-doc .card"
+  },
+  {
+    "name": "textarea-iftalabel",
+    "ours": "/textarea",
+    "upstream": "/textarea",
+    "oursSelector": "[data-demo=\"iftalabel\"]",
+    "upstreamSelector": "iftalabel-doc .card"
   }
 ]

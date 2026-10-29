@@ -102,7 +102,7 @@ macro_rules! button_with {
                 link=o.p(c.flags[3])
                 raised=o.p(c.flags[4])
                 rounded=o.p(c.flags[5])
-                fluid=o.p(c.fluid)
+                fluid=o.v(Some(c.fluid))
                 aria_label=o.opt_s(s(c.aria))
                 tabindex=o.v(c.tabindex)
                 button_type=o.opt_s(s(c.ty))

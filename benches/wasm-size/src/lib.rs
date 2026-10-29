@@ -148,6 +148,26 @@ cfg_if::cfg_if! {
         </prime_inputgroup::InputGroup>
     }
         }
+    } else if #[cfg(feature = "case-buttongroup")] {
+        fn case() -> impl IntoView {
+            view! { <prime_buttongroup::ButtonGroup><button class="p-button">"Save"</button><button class="p-button">"Delete"</button><button class="p-button">"Cancel"</button></prime_buttongroup::ButtonGroup> }
+        }
+    } else if #[cfg(feature = "case-fluid")] {
+        fn case() -> impl IntoView {
+            view! { <prime_fluid::Fluid><input class="p-inputtext p-component" placeholder="Input" /></prime_fluid::Fluid> }
+        }
+    } else if #[cfg(feature = "case-iconfield")] {
+        fn case() -> impl IntoView {
+            view! { <prime_iconfield::IconField><prime_iconfield::InputIcon><svg /></prime_iconfield::InputIcon><input class="p-inputtext p-component" placeholder="Search" /></prime_iconfield::IconField> }
+        }
+    } else if #[cfg(feature = "case-floatlabel")] {
+        fn case() -> impl IntoView {
+            view! { <prime_floatlabel::FloatLabel variant=prime_floatlabel::FloatLabelVariant::On><input id="u" class="p-inputtext p-component" /><label for="u">"Username"</label></prime_floatlabel::FloatLabel> }
+        }
+    } else if #[cfg(feature = "case-iftalabel")] {
+        fn case() -> impl IntoView {
+            view! { <prime_iftalabel::IftaLabel><input id="u" class="p-inputtext p-component" /><label for="u">"Username"</label></prime_iftalabel::IftaLabel> }
+        }
     } else if #[cfg(feature = "case-progressspinner")] {
         fn case() -> impl IntoView {
             view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> }

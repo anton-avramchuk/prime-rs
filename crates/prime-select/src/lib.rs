@@ -185,7 +185,7 @@ pub fn Select(
     size: OptProp<Size>,
     /// На всю ширину.
     #[prop(optional, into)]
-    fluid: Prop<bool>,
+    fluid: OptProp<bool>,
     /// Атрибут `id` метки.
     #[prop(optional, into)]
     input_id: OptProp<String>,
@@ -261,6 +261,7 @@ pub fn Select(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let locale = use_prime_config().locale;
+    let fluid = prime_core::fluid::fluid_prop(fluid);
     let props = Arc::new(Props {
         options,
         groups,

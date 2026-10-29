@@ -1,8 +1,10 @@
-//! Страница InputText: демонстрации `basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid` из showcase PrimeNG (`apps/showcase/doc/inputtext`).
+//! Страница InputText: демонстрации `basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` из showcase PrimeNG (`apps/showcase/doc/inputtext`).
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_core::{Size, Variant};
+use prime_floatlabel::FloatLabel;
+use prime_iftalabel::IftaLabel;
 use prime_inputtext::InputText;
 
 /// Страница `/inputtext`.
@@ -31,6 +33,18 @@ pub fn InputTextPage() -> impl IntoView {
         </Demo>
         <Demo name="fluid" title="Fluid">
             <InputText fluid=true placeholder="Fluid" />
+        </Demo>
+        <Demo name="floatlabel" title="Float Label">
+            <FloatLabel>
+                <InputText id="float_username" autocomplete="off" />
+                <label for="float_username">"Username"</label>
+            </FloatLabel>
+        </Demo>
+        <Demo name="iftalabel" title="Ifta Label">
+            <IftaLabel>
+                <InputText id="ifta_username" autocomplete="off" />
+                <label for="ifta_username">"Username"</label>
+            </IftaLabel>
         </Demo>
     }
 }

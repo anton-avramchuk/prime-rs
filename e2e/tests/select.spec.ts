@@ -9,7 +9,7 @@ test.describe('Select', () => {
     });
 
     test('демонстрации отрисованы со стилями темы', async ({ page }) => {
-        await expect(page.locator('[data-demo]')).toHaveCount(12);
+        await expect(page.locator('[data-demo]')).toHaveCount(14);
         const label = page.locator('[data-demo=basic] .p-select-label');
         await expect(label).toHaveText('Select a City');
         await expect(label).toHaveClass(/p-placeholder/);
@@ -134,5 +134,26 @@ test.describe('Select', () => {
         await template.click();
         await template.locator('.p-select-option', { hasText: 'Brazil' }).click();
         await expect(template.locator('.p-select-label b')).toHaveText('BR');
+    });
+
+    test('floatlabel: метка в обёртке и поднимается при вводе', async ({ page }) => {
+        await page.waitForLoadState('networkidle');
+        const demo = page.locator('[data-demo=floatlabel]');
+        await expect(demo.locator('.p-floatlabel.p-floatlabel-over .p-select')).toHaveCount(1);
+        const label = demo.locator('.p-floatlabel > label');
+        await expect(label).toHaveCount(1);
+        const before = (await label.boundingBox())!.y;
+        await demo.locator('.p-floatlabel [role=combobox]').first().focus();
+        await expect.poll(async () => (await label.boundingBox())!.y).toBeLessThan(before);
+    });
+
+    test('iftalabel: метка в обёртке над значением', async ({ page }) => {
+        const demo = page.locator('[data-demo=iftalabel]');
+        await expect(demo.locator('.p-iftalabel .p-select')).toHaveCount(1);
+        const label = demo.locator('.p-iftalabel > label');
+        const box = (await label.boundingBox())!;
+        const root = (await demo.locator('.p-iftalabel').boundingBox())!;
+        expect(box.y).toBeGreaterThanOrEqual(root.y);
+        expect(box.y + box.height).toBeLessThanOrEqual(root.y + root.height);
     });
 });

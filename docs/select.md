@@ -6,7 +6,7 @@
 |---|---|
 | `prime-select::Select` | `packages/primeng/src/select/select.ts` (`Select` и `SelectItem`), `select/style/selectstyle.ts` |
 | CSS | `@primeuix/styles/select` и `iconfield` (поле поиска), пресет Aura и блок `/* For PrimeNG */` (цвет подсказки) — `cargo xtask gen-theme`, `primeng_extra` |
-| Демонстрации | `apps/showcase/doc/select/*-doc.ts` (`basic`, `checkmark`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`, `loadingstate`, `sizes`, `template`) |
+| Демонстрации | `apps/showcase/doc/select/*-doc.ts` (`basic`, `checkmark`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`, `loadingstate`, `sizes`, `template`, `floatlabel`, `iftalabel`) |
 
 Спека: `openspec/specs/select`. Объём первого change: ядро, фильтр и группы.
 
@@ -33,8 +33,9 @@
 | Закрытие по клику снаружи и `resize` слушает `window` только пока панель открыта | `ConnectedOverlayScrollHandler` и слушатели `p-overlay` PrimeNG заменены двумя подписками. |
 | Последняя скрытая граница панели закрывает её и возвращает фокус на метку | В PrimeNG она отдаёт фокус обратно по сложной цепочке `getFirstFocusableElement`; на практике результат тот же. |
 | Метка, подсказка и значок очистки читают значение напрямую из списка вариантов; значение, которого нет среди вариантов, считается невыбранным | В PrimeNG такое значение остаётся в модели и показывается пустой меткой. |
+| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
 | Идентификатор `pn_id_<n>` берётся из общего хелпера `prime_core::ids::next_unique` | Одинаков на сервере и в браузере. |
-| Нет демонстраций `customfilter`, `editable`, `virtualscroll`, `lazyvirtualscroll`, `floatlabel`, `iftalabel`, `reactiveforms`, `templatedrivenforms`; в `template` вместо флагов с CDN коды стран | Объём change и независимость от CDN. |
+| Нет демонстраций `customfilter`, `editable`, `virtualscroll`, `lazyvirtualscroll`, `reactiveforms`, `templatedrivenforms`; в `template` вместо флагов с CDN коды стран | Объём change и независимость от CDN. |
 
 Список перестраивается только при смене вариантов, групп или строки поиска; фокус варианта, выбор и состояние метки — отдельные замыкания, поэтому элементы метки и поля поиска не пересоздаются при навигации.
 

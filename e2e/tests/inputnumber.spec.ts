@@ -9,7 +9,7 @@ test.describe('InputNumber', () => {
     });
 
     test('демонстрации отрисованы, форматы локалей и валют', async ({ page }) => {
-        await expect(page.locator('[data-demo]')).toHaveCount(12);
+        await expect(page.locator('[data-demo]')).toHaveCount(14);
         await expect(page.locator('#locale-us')).toHaveValue('1,234.50');
         await expect(page.locator('#locale-german')).toHaveValue('1.234,50');
         await expect(page.locator('#locale-indian')).toHaveValue('1,234.50');
@@ -116,5 +116,26 @@ test.describe('InputNumber', () => {
         await invalid.locator('input').click();
         await page.keyboard.type('5');
         await expect(invalid).not.toHaveClass(/p-invalid/);
+    });
+
+    test('floatlabel: метка в обёртке и поднимается при вводе', async ({ page }) => {
+        await page.waitForLoadState('networkidle');
+        const demo = page.locator('[data-demo=floatlabel]');
+        await expect(demo.locator('.p-floatlabel.p-floatlabel-over input.p-inputnumber-input')).toHaveCount(1);
+        const label = demo.locator('.p-floatlabel > label');
+        await expect(label).toHaveCount(1);
+        const before = (await label.boundingBox())!.y;
+        await demo.locator('.p-floatlabel input.p-inputnumber-input').first().focus();
+        await expect.poll(async () => (await label.boundingBox())!.y).toBeLessThan(before);
+    });
+
+    test('iftalabel: метка в обёртке над значением', async ({ page }) => {
+        const demo = page.locator('[data-demo=iftalabel]');
+        await expect(demo.locator('.p-iftalabel input.p-inputnumber-input')).toHaveCount(1);
+        const label = demo.locator('.p-iftalabel > label');
+        const box = (await label.boundingBox())!;
+        const root = (await demo.locator('.p-iftalabel').boundingBox())!;
+        expect(box.y).toBeGreaterThanOrEqual(root.y);
+        expect(box.y + box.height).toBeLessThanOrEqual(root.y + root.height);
     });
 });

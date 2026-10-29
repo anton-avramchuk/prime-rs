@@ -1668,6 +1668,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-buttongroup"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-card"
 version = "0.1.0"
 dependencies = [
@@ -1743,7 +1751,44 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-floatlabel"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
+name = "prime-fluid"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-inputnumber",
+ "prime-inputtext",
+ "prime-select",
+ "prime-textarea",
+]
+
+[[package]]
+name = "prime-iconfield"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-icons"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
+name = "prime-iftalabel"
 version = "0.1.0"
 dependencies = [
  "leptos",
@@ -2189,12 +2234,17 @@ dependencies = [
  "prime-avatargroup",
  "prime-badge",
  "prime-button",
+ "prime-buttongroup",
  "prime-card",
  "prime-checkbox",
  "prime-chip",
  "prime-divider",
  "prime-fieldset",
+ "prime-floatlabel",
+ "prime-fluid",
+ "prime-iconfield",
  "prime-icons",
+ "prime-iftalabel",
  "prime-inputgroup",
  "prime-inputnumber",
  "prime-inputtext",
@@ -2508,13 +2558,18 @@ dependencies = [
  "prime-avatargroup",
  "prime-badge",
  "prime-button",
+ "prime-buttongroup",
  "prime-card",
  "prime-checkbox",
  "prime-chip",
  "prime-core",
  "prime-divider",
  "prime-fieldset",
+ "prime-floatlabel",
+ "prime-fluid",
+ "prime-iconfield",
  "prime-icons",
+ "prime-iftalabel",
  "prime-inputgroup",
  "prime-inputnumber",
  "prime-inputtext",
@@ -3174,12 +3229,17 @@ dependencies = [
  "prime-avatargroup",
  "prime-badge",
  "prime-button",
+ "prime-buttongroup",
  "prime-card",
  "prime-checkbox",
  "prime-chip",
  "prime-divider",
  "prime-fieldset",
+ "prime-floatlabel",
+ "prime-fluid",
+ "prime-iconfield",
  "prime-icons",
+ "prime-iftalabel",
  "prime-inputgroup",
  "prime-inputnumber",
  "prime-inputtext",

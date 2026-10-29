@@ -7,7 +7,7 @@ test.describe('Textarea', () => {
     });
 
     test('демонстрации отрисованы со стилями темы', async ({ page }) => {
-        await expect(page.locator('[data-demo]')).toHaveCount(7);
+        await expect(page.locator('[data-demo]')).toHaveCount(9);
         const border = await page.locator('[data-demo=basic] textarea').evaluate((el) => getComputedStyle(el).borderTopWidth);
         expect(border).not.toBe('0px');
     });
@@ -40,5 +40,26 @@ test.describe('Textarea', () => {
         await expect(page.locator('[data-demo=invalid] .p-invalid')).toHaveCount(1);
         await expect(page.locator('[data-demo=fluid] .p-textarea-fluid')).toHaveCount(1);
         await expect(page.locator('[data-demo=disabled] textarea')).toBeDisabled();
+    });
+
+    test('floatlabel: метка в обёртке и поднимается при вводе', async ({ page }) => {
+        await page.waitForLoadState('networkidle');
+        const demo = page.locator('[data-demo=floatlabel]');
+        await expect(demo.locator('.p-floatlabel.p-floatlabel-over textarea.p-textarea')).toHaveCount(1);
+        const label = demo.locator('.p-floatlabel > label');
+        await expect(label).toHaveCount(1);
+        const before = (await label.boundingBox())!.y;
+        await demo.locator('.p-floatlabel textarea.p-textarea').first().focus();
+        await expect.poll(async () => (await label.boundingBox())!.y).toBeLessThan(before);
+    });
+
+    test('iftalabel: метка в обёртке над значением', async ({ page }) => {
+        const demo = page.locator('[data-demo=iftalabel]');
+        await expect(demo.locator('.p-iftalabel textarea.p-textarea')).toHaveCount(1);
+        const label = demo.locator('.p-iftalabel > label');
+        const box = (await label.boundingBox())!;
+        const root = (await demo.locator('.p-iftalabel').boundingBox())!;
+        expect(box.y).toBeGreaterThanOrEqual(root.y);
+        expect(box.y + box.height).toBeLessThanOrEqual(root.y + root.height);
     });
 });

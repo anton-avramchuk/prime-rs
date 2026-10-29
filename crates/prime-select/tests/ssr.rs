@@ -299,3 +299,22 @@ fn reactive_options_render_the_current_list() {
     let html = view! { <Select options=options open=open() /> }.to_html();
     assert_eq!(count(&html, "<li"), 2, "{html}");
 }
+
+#[test]
+fn fluid_inherited_from_context() {
+    let outside = view! { <Select options=cities()/> }.to_html();
+    assert!(!outside.contains("p-select-fluid"), "{outside}");
+    Owner::new().with(|| {
+        prime_core::fluid::provide_fluid();
+        let inherited = view! { <Select options=cities()/> }.to_html();
+        assert!(inherited.contains("p-select-fluid"), "{inherited}");
+        let forced_off = view! { <Select options=cities() fluid=false/> }.to_html();
+        assert!(!forced_off.contains("p-select-fluid"), "{forced_off}");
+        let live = RwSignal::new(None::<bool>);
+        let reactive = view! { <Select options=cities() fluid=live/> }.to_html();
+        assert!(reactive.contains("p-select-fluid"), "{reactive}");
+        live.set(Some(false));
+        let reactive_off = view! { <Select options=cities() fluid=live/> }.to_html();
+        assert!(!reactive_off.contains("p-select-fluid"), "{reactive_off}");
+    });
+}

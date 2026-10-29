@@ -1,9 +1,11 @@
-//! Страница Textarea: демонстрации `basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid` из showcase PrimeNG
-//! (`apps/showcase/doc/textarea`). Демонстрации `floatlabel`, `iftalabel`, `keyfilter` не перенесены (нет соответствующих компонентов).
+//! Страница Textarea: демонстрации `basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` из showcase PrimeNG
+//! (`apps/showcase/doc/textarea`). Демонстрация `keyfilter` не перенесена (нет соответствующего компонента).
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_core::{Size, Variant};
+use prime_floatlabel::FloatLabel;
+use prime_iftalabel::IftaLabel;
 use prime_textarea::Textarea;
 
 /// Страница `/textarea`.
@@ -38,6 +40,18 @@ pub fn TextareaPage() -> impl IntoView {
         </Demo>
         <Demo name="fluid" title="Fluid">
             <Textarea fluid=true rows=5u32 cols=30u32 placeholder="Fluid" />
+        </Demo>
+        <Demo name="floatlabel" title="Float Label">
+            <FloatLabel>
+                <Textarea id="float_textarea" rows=5u32 cols=30u32 />
+                <label for="float_textarea">"Over Label"</label>
+            </FloatLabel>
+        </Demo>
+        <Demo name="iftalabel" title="Ifta Label">
+            <IftaLabel>
+                <Textarea id="ifta_textarea" rows=5u32 cols=30u32 />
+                <label for="ifta_textarea">"Description"</label>
+            </IftaLabel>
         </Demo>
     }
 }
