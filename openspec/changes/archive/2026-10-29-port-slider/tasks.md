@@ -21,7 +21,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 Добавить `prime-slider` в браузерный job `ci.yml` (3 места); `docs/slider.md`; clippy, тесты, deny, machete, `openspec validate port-slider`; CI `dev` зелёный
+- [x] 4.1 Добавить `prime-slider` в браузерный job `ci.yml` (3 места); `docs/slider.md`; clippy, тесты, deny, machete, `openspec validate port-slider`; CI `dev` зелёный
 
 ## Workflow follow-up
 
