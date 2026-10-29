@@ -26,6 +26,7 @@ use prime_rating::Rating;
 use prime_scrollpanel::ScrollPanel;
 use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_skeleton::{Skeleton, SkeletonShape};
+use prime_slider::Slider;
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
 use prime_togglebutton::ToggleButton;
@@ -99,6 +100,10 @@ fn radiobutton_n(n: usize) -> String {
 
 fn rating_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Rating default_value=3 name="grade" /> }).collect_view())
+}
+
+fn slider_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Slider default_value=30.0 /> }).collect_view())
 }
 
 fn selectbutton_n(n: usize) -> String {
@@ -253,6 +258,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "radiobutton-1000", run: || radiobutton_n(1000) },
     Scenario { name: "rating-1", run: || rating_n(1) },
     Scenario { name: "rating-1000", run: || rating_n(1000) },
+    Scenario { name: "slider-1", run: || slider_n(1) },
+    Scenario { name: "slider-1000", run: || slider_n(1000) },
     Scenario { name: "selectbutton-1", run: || selectbutton_n(1) },
     Scenario { name: "selectbutton-1000", run: || selectbutton_n(1000) },
     Scenario { name: "togglebutton-1", run: || togglebutton_n(1) },

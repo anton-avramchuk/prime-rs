@@ -69,6 +69,11 @@ instances = 1000
 max_per_instance = 175
 
 [[scenario]]
+name = "slider-1000"
+instances = 1000
+max_per_instance = 72
+
+[[scenario]]
 name = "selectbutton-1000"
 instances = 1000
 max_per_instance = 86

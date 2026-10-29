@@ -406,6 +406,48 @@
     "upstreamSelector": "disabled-doc .card"
   },
   {
+    "name": "slider-basic",
+    "ours": "/slider",
+    "upstream": "/slider",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "slider-range",
+    "ours": "/slider",
+    "upstream": "/slider",
+    "oursSelector": "[data-demo=\"range\"]",
+    "upstreamSelector": "range-doc .card"
+  },
+  {
+    "name": "slider-step",
+    "ours": "/slider",
+    "upstream": "/slider",
+    "oursSelector": "[data-demo=\"step\"]",
+    "upstreamSelector": "step-doc .card"
+  },
+  {
+    "name": "slider-vertical",
+    "ours": "/slider",
+    "upstream": "/slider",
+    "oursSelector": "[data-demo=\"vertical\"]",
+    "upstreamSelector": "vertical-doc .card"
+  },
+  {
+    "name": "slider-filter",
+    "ours": "/slider",
+    "upstream": "/slider",
+    "oursSelector": "[data-demo=\"filter\"]",
+    "upstreamSelector": "filter-doc .card"
+  },
+  {
+    "name": "slider-input",
+    "ours": "/slider",
+    "upstream": "/slider",
+    "oursSelector": "[data-demo=\"input\"]",
+    "upstreamSelector": "input-doc .card"
+  },
+  {
     "name": "rating-basic",
     "ours": "/rating",
     "upstream": "/rating",

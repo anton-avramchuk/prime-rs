@@ -1870,6 +1870,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-slider"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-tag"
 version = "0.1.0"
 dependencies = [
@@ -2152,6 +2164,7 @@ dependencies = [
  "prime-scrollpanel",
  "prime-selectbutton",
  "prime-skeleton",
+ "prime-slider",
  "prime-tag",
  "prime-textarea",
  "prime-togglebutton",
@@ -2468,6 +2481,7 @@ dependencies = [
  "prime-scrollpanel",
  "prime-selectbutton",
  "prime-skeleton",
+ "prime-slider",
  "prime-tag",
  "prime-textarea",
  "prime-theme",
@@ -3128,6 +3142,7 @@ dependencies = [
  "prime-scrollpanel",
  "prime-selectbutton",
  "prime-skeleton",
+ "prime-slider",
  "prime-tag",
  "prime-textarea",
  "prime-togglebutton",

@@ -80,6 +80,10 @@ pub const SELECTBUTTON: &str = include_str!("../css/components/selectbutton.css"
 #[cfg(feature = "skeleton")]
 pub const SKELETON: &str = include_str!("../css/components/skeleton.css");
 
+/// CSS компонента `slider`.
+#[cfg(feature = "slider")]
+pub const SLIDER: &str = include_str!("../css/components/slider.css");
+
 /// CSS компонента `tag`.
 #[cfg(feature = "tag")]
 pub const TAG: &str = include_str!("../css/components/tag.css");
@@ -142,6 +146,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("selectbutton", SELECTBUTTON),
     #[cfg(feature = "skeleton")]
     ("skeleton", SKELETON),
+    #[cfg(feature = "slider")]
+    ("slider", SLIDER),
     #[cfg(feature = "tag")]
     ("tag", TAG),
     #[cfg(feature = "textarea")]
