@@ -20,7 +20,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 Добавить `prime-togglebutton` в браузерный job `ci.yml` (3 места); `docs/togglebutton.md`; clippy, тесты, deny, machete, `openspec validate port-togglebutton`; CI `dev` зелёный
+- [x] 4.1 Добавить `prime-togglebutton` в браузерный job `ci.yml` (3 места); `docs/togglebutton.md`; clippy, тесты, deny, machete, `openspec validate port-togglebutton`; CI `dev` зелёный
 
 ## Workflow follow-up
 
