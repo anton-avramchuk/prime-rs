@@ -6,6 +6,7 @@ pub mod class_names;
 pub mod collapsible;
 pub mod config;
 pub mod data_p;
+pub mod ids;
 pub mod prop;
 pub mod props;
 pub mod pt;

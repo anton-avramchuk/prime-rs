@@ -4,8 +4,8 @@
 //! Итоговое скрытие — встроенный `display: none`, который ставит [`CollapseState::initial_style`] при первом рендере
 //! и затем (только в браузере) [`bind_region`].
 
+use crate::ids::next_unique;
 use leptos::prelude::*;
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 /// Состояние «свёрнуто»: внешний двусторонний сигнал либо собственный.
 #[derive(Clone, Copy, Debug)]
@@ -73,8 +73,6 @@ pub struct CollapseIds {
     pub titlebar: String,
 }
 
-static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
-
 impl CollapseIds {
     /// Производные идентификаторы от `id`. Без `id` берётся номер из общего контекста гидратации (одинаковый на сервере и в браузере),
     /// а вне его — из глобального счётчика.
@@ -92,19 +90,6 @@ impl CollapseIds {
         };
         Self { header: format!("{root}_header"), content: format!("{root}_content"), titlebar: format!("{root}-titlebar"), root }
     }
-}
-
-#[cfg(any(feature = "ssr", feature = "hydrate"))]
-fn next_unique() -> usize {
-    match Owner::current_shared_context() {
-        Some(ctx) => ctx.next_id().into_inner(),
-        None => NEXT_ID.fetch_add(1, Ordering::Relaxed),
-    }
-}
-
-#[cfg(not(any(feature = "ssr", feature = "hydrate")))]
-fn next_unique() -> usize {
-    NEXT_ID.fetch_add(1, Ordering::Relaxed)
 }
 
 /// `aria-expanded` переключателя.

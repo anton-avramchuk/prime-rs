@@ -406,6 +406,41 @@
     "upstreamSelector": "disabled-doc .card"
   },
   {
+    "name": "rating-basic",
+    "ours": "/rating",
+    "upstream": "/rating",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "rating-disabled",
+    "ours": "/rating",
+    "upstream": "/rating",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "rating-numberofstars",
+    "ours": "/rating",
+    "upstream": "/rating",
+    "oursSelector": "[data-demo=\"numberofstars\"]",
+    "upstreamSelector": "numberofstars-doc .card"
+  },
+  {
+    "name": "rating-readonly",
+    "ours": "/rating",
+    "upstream": "/rating",
+    "oursSelector": "[data-demo=\"readonly\"]",
+    "upstreamSelector": "readonly-doc .card"
+  },
+  {
+    "name": "rating-template",
+    "ours": "/rating",
+    "upstream": "/rating",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
     "name": "selectbutton-basic",
     "ours": "/selectbutton",
     "upstream": "/selectbutton",

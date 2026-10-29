@@ -1825,6 +1825,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-rating"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-scrollpanel"
 version = "0.1.0"
 dependencies = [
@@ -2136,6 +2148,7 @@ dependencies = [
  "prime-progressbar",
  "prime-progressspinner",
  "prime-radiobutton",
+ "prime-rating",
  "prime-scrollpanel",
  "prime-selectbutton",
  "prime-skeleton",
@@ -2451,6 +2464,7 @@ dependencies = [
  "prime-progressbar",
  "prime-progressspinner",
  "prime-radiobutton",
+ "prime-rating",
  "prime-scrollpanel",
  "prime-selectbutton",
  "prime-skeleton",
@@ -3110,6 +3124,7 @@ dependencies = [
  "prime-progressbar",
  "prime-progressspinner",
  "prime-radiobutton",
+ "prime-rating",
  "prime-scrollpanel",
  "prime-selectbutton",
  "prime-skeleton",

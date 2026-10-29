@@ -2,8 +2,8 @@
 
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage, HomePage,
-    InputGroupPage, InputTextPage, MessagePage, PanelPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, ScrollPanelPage,
-    SelectButtonPage, SkeletonPage, TagPage, TextareaPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
+    InputGroupPage, InputTextPage, MessagePage, PanelPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage,
+    ScrollPanelPage, SelectButtonPage, SkeletonPage, TagPage, TextareaPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -27,6 +27,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "radiobutton",
         "togglebutton",
         "selectbutton",
+        "rating",
         "toggleswitch",
         "message",
         "progressbar",
@@ -87,6 +88,7 @@ pub fn App() -> impl IntoView {
                         <A href="/radiobutton">"RadioButton"</A>
                         <A href="/togglebutton">"ToggleButton"</A>
                         <A href="/selectbutton">"SelectButton"</A>
+                        <A href="/rating">"Rating"</A>
                         <A href="/toggleswitch">"ToggleSwitch"</A>
                         <A href="/message">"Message"</A>
                         <A href="/progressbar">"ProgressBar"</A>
@@ -119,6 +121,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("radiobutton") view=RadioButtonPage />
                         <Route path=StaticSegment("togglebutton") view=ToggleButtonPage />
                         <Route path=StaticSegment("selectbutton") view=SelectButtonPage />
+                        <Route path=StaticSegment("rating") view=RatingPage />
                         <Route path=StaticSegment("toggleswitch") view=ToggleSwitchPage />
                         <Route path=StaticSegment("message") view=MessagePage />
                         <Route path=StaticSegment("progressbar") view=ProgressBarPage />

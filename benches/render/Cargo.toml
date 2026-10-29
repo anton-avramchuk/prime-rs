@@ -25,6 +25,7 @@ prime-skeleton = { workspace = true, features = ["ssr"] }
 prime-avatargroup = { workspace = true, features = ["ssr"] }
 prime-progressbar = { workspace = true, features = ["ssr"] }
 prime-message = { workspace = true, features = ["ssr"] }
+prime-rating = { workspace = true, features = ["ssr"] }
 prime-selectbutton = { workspace = true, features = ["ssr"] }
 prime-togglebutton = { workspace = true, features = ["ssr"] }
 prime-toggleswitch = { workspace = true, features = ["ssr"] }
