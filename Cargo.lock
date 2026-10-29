@@ -3167,6 +3167,7 @@ checksum = "4f692aa943ccd88363733b77063f32cfed5bc6cbea8e6e8b251b302f881606fe"
 name = "wasm-size"
 version = "0.1.0"
 dependencies = [
+ "cfg-if",
  "leptos",
  "prime-accordion",
  "prime-avatar",

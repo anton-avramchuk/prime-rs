@@ -3,49 +3,64 @@
 use leptos::prelude::*;
 use wasm_bindgen::prelude::*;
 
-#[component]
-fn App() -> impl IntoView {
-    #[cfg(feature = "case-baseline")]
-    return view! { <div>"baseline"</div> };
-
-    #[cfg(feature = "case-one-icon")]
-    return view! { <div><prime_icons::CheckIcon /></div> };
-
-    #[cfg(feature = "case-all-icons")]
-    return view! { <div><prime_icons::AllIcons /></div> };
-
-    #[cfg(feature = "case-badge")]
-    return view! { <prime_badge::Badge value="5" severity=prime_badge::BadgeSeverity::Danger /> };
-
-    #[cfg(feature = "case-tag")]
-    return view! { <prime_tag::Tag value="New" severity=prime_tag::TagSeverity::Success rounded=true /> };
-
-    #[cfg(feature = "case-chip")]
-    return view! { <prime_chip::Chip label="Thriller" removable=true /> };
-
-    #[cfg(feature = "case-avatar")]
-    return view! { <prime_avatar::Avatar label="P" shape=prime_avatar::AvatarShape::Circle size=prime_avatar::AvatarSize::Large /> };
-
-    #[cfg(feature = "case-divider")]
-    return view! { <prime_divider::Divider align=prime_divider::DividerAlign::Center>"OR"</prime_divider::Divider> };
-
-    #[cfg(feature = "case-card")]
-    return view! { <prime_card::Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></prime_card::Card> };
-
-    #[cfg(feature = "case-inputtext")]
-    return view! { <prime_inputtext::InputText placeholder="Name" /> };
-
-    #[cfg(feature = "case-checkbox")]
-    return view! { <prime_checkbox::Checkbox binary=true default_checked=true name="agree" /> };
-
-    #[cfg(feature = "case-radiobutton")]
-    return view! { <prime_radiobutton::RadioButton default_checked=true name="pizza" value="Cheese" /> };
-
-    #[cfg(feature = "case-rating")]
-    return view! { <prime_rating::Rating default_value=3 name="grade" /> };
-
-    #[cfg(feature = "case-inputnumber")]
-    return view! {
+// Случай выбирается по приоритету: при нескольких включённых features (например, `--all-features`) побеждает первый,
+// поэтому крейт собирается при любой комбинации, а в обычной сборке с одним `case-*` типы и размер не меняются.
+cfg_if::cfg_if! {
+    if #[cfg(feature = "case-baseline")] {
+        fn case() -> impl IntoView {
+            view! { <div>"baseline"</div> }
+        }
+    } else if #[cfg(feature = "case-one-icon")] {
+        fn case() -> impl IntoView {
+            view! { <div><prime_icons::CheckIcon /></div> }
+        }
+    } else if #[cfg(feature = "case-all-icons")] {
+        fn case() -> impl IntoView {
+            view! { <div><prime_icons::AllIcons /></div> }
+        }
+    } else if #[cfg(feature = "case-badge")] {
+        fn case() -> impl IntoView {
+            view! { <prime_badge::Badge value="5" severity=prime_badge::BadgeSeverity::Danger /> }
+        }
+    } else if #[cfg(feature = "case-tag")] {
+        fn case() -> impl IntoView {
+            view! { <prime_tag::Tag value="New" severity=prime_tag::TagSeverity::Success rounded=true /> }
+        }
+    } else if #[cfg(feature = "case-chip")] {
+        fn case() -> impl IntoView {
+            view! { <prime_chip::Chip label="Thriller" removable=true /> }
+        }
+    } else if #[cfg(feature = "case-avatar")] {
+        fn case() -> impl IntoView {
+            view! { <prime_avatar::Avatar label="P" shape=prime_avatar::AvatarShape::Circle size=prime_avatar::AvatarSize::Large /> }
+        }
+    } else if #[cfg(feature = "case-divider")] {
+        fn case() -> impl IntoView {
+            view! { <prime_divider::Divider align=prime_divider::DividerAlign::Center>"OR"</prime_divider::Divider> }
+        }
+    } else if #[cfg(feature = "case-card")] {
+        fn case() -> impl IntoView {
+            view! { <prime_card::Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></prime_card::Card> }
+        }
+    } else if #[cfg(feature = "case-inputtext")] {
+        fn case() -> impl IntoView {
+            view! { <prime_inputtext::InputText placeholder="Name" /> }
+        }
+    } else if #[cfg(feature = "case-checkbox")] {
+        fn case() -> impl IntoView {
+            view! { <prime_checkbox::Checkbox binary=true default_checked=true name="agree" /> }
+        }
+    } else if #[cfg(feature = "case-radiobutton")] {
+        fn case() -> impl IntoView {
+            view! { <prime_radiobutton::RadioButton default_checked=true name="pizza" value="Cheese" /> }
+        }
+    } else if #[cfg(feature = "case-rating")] {
+        fn case() -> impl IntoView {
+            view! { <prime_rating::Rating default_value=3 name="grade" /> }
+        }
+    } else if #[cfg(feature = "case-inputnumber")] {
+        fn case() -> impl IntoView {
+            view! {
         <prime_inputnumber::InputNumber
             default_value=1234.5
             mode=prime_inputnumber::InputNumberMode::Currency
@@ -53,25 +68,29 @@ fn App() -> impl IntoView {
             locale="en-US"
             show_buttons=true
         />
-    };
-
-    #[cfg(feature = "case-select")]
-    return view! {
+    }
+        }
+    } else if #[cfg(feature = "case-select")] {
+        fn case() -> impl IntoView {
+            view! {
         <prime_select::Select
             options=["New York", "Rome", "London", "Istanbul", "Paris"].map(|c| prime_select::SelectOption::new(c, c)).to_vec()
             default_value="London"
             placeholder="Select a City"
         />
-    };
-
-    #[cfg(feature = "case-knob")]
-    return view! { <prime_knob::Knob default_value=60.0 /> };
-
-    #[cfg(feature = "case-slider")]
-    return view! { <prime_slider::Slider default_value=30.0 /> };
-
-    #[cfg(feature = "case-selectbutton")]
-    return view! {
+    }
+        }
+    } else if #[cfg(feature = "case-knob")] {
+        fn case() -> impl IntoView {
+            view! { <prime_knob::Knob default_value=60.0 /> }
+        }
+    } else if #[cfg(feature = "case-slider")] {
+        fn case() -> impl IntoView {
+            view! { <prime_slider::Slider default_value=30.0 /> }
+        }
+    } else if #[cfg(feature = "case-selectbutton")] {
+        fn case() -> impl IntoView {
+            view! {
         <prime_selectbutton::SelectButton
             options=vec![
                 prime_selectbutton::SelectButtonOption::new("One-Way", "one-way"),
@@ -79,71 +98,95 @@ fn App() -> impl IntoView {
             ]
             default_value="one-way"
         />
-    };
-
-    #[cfg(feature = "case-togglebutton")]
-    return view! { <prime_togglebutton::ToggleButton default_checked=true on_label="On" off_label="Off" /> };
-
-    #[cfg(feature = "case-toggleswitch")]
-    return view! { <prime_toggleswitch::ToggleSwitch default_checked=true name="notify" /> };
-
-    #[cfg(feature = "case-message")]
-    return view! { <prime_message::Message severity=prime_message::MessageSeverity::Success text="Saved" /> };
-
-    #[cfg(feature = "case-progressbar")]
-    return view! { <prime_progressbar::ProgressBar value=50.0 /> };
-
-    #[cfg(feature = "case-avatargroup")]
-    return view! { <prime_avatargroup::AvatarGroup><span>"a"</span></prime_avatargroup::AvatarGroup> };
-
-    #[cfg(feature = "case-skeleton")]
-    return view! { <prime_skeleton::Skeleton shape=prime_skeleton::SkeletonShape::Circle size="4rem" /> };
-
-    #[cfg(feature = "case-textarea")]
-    return view! { <prime_textarea::Textarea rows=3u32 placeholder="Text" /> };
-
-    #[cfg(feature = "case-toolbar")]
-    return view! {
+    }
+        }
+    } else if #[cfg(feature = "case-togglebutton")] {
+        fn case() -> impl IntoView {
+            view! { <prime_togglebutton::ToggleButton default_checked=true on_label="On" off_label="Off" /> }
+        }
+    } else if #[cfg(feature = "case-toggleswitch")] {
+        fn case() -> impl IntoView {
+            view! { <prime_toggleswitch::ToggleSwitch default_checked=true name="notify" /> }
+        }
+    } else if #[cfg(feature = "case-message")] {
+        fn case() -> impl IntoView {
+            view! { <prime_message::Message severity=prime_message::MessageSeverity::Success text="Saved" /> }
+        }
+    } else if #[cfg(feature = "case-progressbar")] {
+        fn case() -> impl IntoView {
+            view! { <prime_progressbar::ProgressBar value=50.0 /> }
+        }
+    } else if #[cfg(feature = "case-avatargroup")] {
+        fn case() -> impl IntoView {
+            view! { <prime_avatargroup::AvatarGroup><span>"a"</span></prime_avatargroup::AvatarGroup> }
+        }
+    } else if #[cfg(feature = "case-skeleton")] {
+        fn case() -> impl IntoView {
+            view! { <prime_skeleton::Skeleton shape=prime_skeleton::SkeletonShape::Circle size="4rem" /> }
+        }
+    } else if #[cfg(feature = "case-textarea")] {
+        fn case() -> impl IntoView {
+            view! { <prime_textarea::Textarea rows=3u32 placeholder="Text" /> }
+        }
+    } else if #[cfg(feature = "case-toolbar")] {
+        fn case() -> impl IntoView {
+            view! {
         <prime_toolbar::Toolbar
             start_template=ViewFn::from(|| view! { "Start" })
             center_template=ViewFn::from(|| view! { "Center" })
             end_template=ViewFn::from(|| view! { "End" })
         />
-    };
-
-    #[cfg(feature = "case-inputgroup")]
-    return view! {
+    }
+        }
+    } else if #[cfg(feature = "case-inputgroup")] {
+        fn case() -> impl IntoView {
+            view! {
         <prime_inputgroup::InputGroup>
             <prime_inputgroup::InputGroupAddon>"$"</prime_inputgroup::InputGroupAddon>
             <input class="p-inputtext p-component" placeholder="Price" />
             <prime_inputgroup::InputGroupAddon>".00"</prime_inputgroup::InputGroupAddon>
         </prime_inputgroup::InputGroup>
-    };
-
-    #[cfg(feature = "case-progressspinner")]
-    return view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> };
-
-    #[cfg(feature = "case-scrollpanel")]
-    return view! { <prime_scrollpanel::ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></prime_scrollpanel::ScrollPanel> };
-
-    #[cfg(feature = "case-accordion")]
-    return view! {
+    }
+        }
+    } else if #[cfg(feature = "case-progressspinner")] {
+        fn case() -> impl IntoView {
+            view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> }
+        }
+    } else if #[cfg(feature = "case-scrollpanel")] {
+        fn case() -> impl IntoView {
+            view! { <prime_scrollpanel::ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></prime_scrollpanel::ScrollPanel> }
+        }
+    } else if #[cfg(feature = "case-accordion")] {
+        fn case() -> impl IntoView {
+            view! {
         <prime_accordion::Accordion default_value=vec!["0".to_owned()]>
             <prime_accordion::AccordionPanel value="0">
                 <prime_accordion::AccordionHeader>"Header"</prime_accordion::AccordionHeader>
                 <prime_accordion::AccordionContent><p>"Content"</p></prime_accordion::AccordionContent>
             </prime_accordion::AccordionPanel>
         </prime_accordion::Accordion>
-    };
+    }
+        }
+    } else if #[cfg(feature = "case-fieldset")] {
+        fn case() -> impl IntoView {
+            view! { <prime_fieldset::Fieldset legend="Header" toggleable=true><p>"Content"</p></prime_fieldset::Fieldset> }
+        }
+    } else if #[cfg(feature = "case-panel")] {
+        fn case() -> impl IntoView {
+            view! { <prime_panel::Panel header="Header" toggleable=true><p>"Content"</p></prime_panel::Panel> }
+        }
+    } else if #[cfg(feature = "case-button")] {
+        fn case() -> impl IntoView {
+            view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> }
+        }
+    } else {
+        compile_error!("wasm-size: включите ровно один feature `case-*`");
+    }
+}
 
-    #[cfg(feature = "case-fieldset")]
-    return view! { <prime_fieldset::Fieldset legend="Header" toggleable=true><p>"Content"</p></prime_fieldset::Fieldset> };
-
-    #[cfg(feature = "case-panel")]
-    return view! { <prime_panel::Panel header="Header" toggleable=true><p>"Content"</p></prime_panel::Panel> };
-
-    #[cfg(feature = "case-button")]
-    return view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> };
+#[component]
+fn App() -> impl IntoView {
+    case()
 }
 
 /// Точка входа wasm.
