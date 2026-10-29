@@ -18,7 +18,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 `docs/inputgroup.md`; clippy, тесты, deny, machete, `openspec validate port-inputgroup`; CI `dev` зелёный
+- [x] 4.1 `docs/inputgroup.md`; clippy, тесты, deny, machete, `openspec validate port-inputgroup`; CI `dev` зелёный
 
 ## Workflow follow-up
 
