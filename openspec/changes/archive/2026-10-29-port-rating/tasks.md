@@ -21,7 +21,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 Добавить `prime-rating` в браузерный job `ci.yml` (3 места); `docs/rating.md`; clippy, тесты, deny, machete, `openspec validate port-rating`; CI `dev` зелёный
+- [x] 4.1 Добавить `prime-rating` в браузерный job `ci.yml` (3 места); `docs/rating.md`; clippy, тесты, deny, machete, `openspec validate port-rating`; CI `dev` зелёный
 
 ## Workflow follow-up
 
