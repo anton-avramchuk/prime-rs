@@ -21,7 +21,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 Добавить `prime-knob` в браузерный job `ci.yml` (3 места); `docs/knob.md`; clippy, тесты, deny, machete, `openspec validate port-knob`; CI `dev` зелёный
+- [x] 4.1 Добавить `prime-knob` в браузерный job `ci.yml` (3 места); `docs/knob.md`; clippy, тесты, deny, machete, `openspec validate port-knob`; CI `dev` зелёный
 
 ## Workflow follow-up
 
