@@ -11,8 +11,8 @@ pub mod ids;
 pub mod prop;
 pub mod props;
 pub mod pt;
-pub mod wrapper;
 mod translation_defaults;
+pub mod wrapper;
 pub mod zindex;
 
 pub use class_names::{ClassNames, class_memo};

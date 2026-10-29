@@ -26,7 +26,7 @@
 
 ## 5. Интеграция
 
-- [ ] 5.1 `docs/field-wrappers.md` (отличия от PrimeNG: контекст Fluid, демонстрации без недостающих иконок, правила `/* For PrimeNG */`); clippy с `--all-features` без исключений, тесты, deny, machete, `openspec validate port-field-wrappers`; CI `dev` зелёный
+- [x] 5.1 `docs/field-wrappers.md` (отличия от PrimeNG: контекст Fluid, демонстрации без недостающих иконок, правила `/* For PrimeNG */`); clippy с `--all-features` без исключений, тесты, deny, machete, `openspec validate port-field-wrappers`; CI `dev` зелёный
 
 ## Workflow follow-up
 
