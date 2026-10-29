@@ -38,6 +38,7 @@ prime-divider = { workspace = true }
 prime-inputtext = { workspace = true }
 prime-checkbox = { workspace = true }
 prime-radiobutton = { workspace = true }
+prime-togglebutton = { workspace = true }
 prime-toggleswitch = { workspace = true }
 prime-message = { workspace = true }
 prime-progressbar = { workspace = true }

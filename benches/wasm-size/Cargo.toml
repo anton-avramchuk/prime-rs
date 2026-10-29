@@ -33,6 +33,7 @@ case-skeleton = ["dep:prime-skeleton"]
 case-avatargroup = ["dep:prime-avatargroup"]
 case-progressbar = ["dep:prime-progressbar"]
 case-message = ["dep:prime-message"]
+case-togglebutton = ["dep:prime-togglebutton"]
 case-toggleswitch = ["dep:prime-toggleswitch"]
 case-radiobutton = ["dep:prime-radiobutton"]
 case-checkbox = ["dep:prime-checkbox"]
@@ -61,6 +62,7 @@ prime-skeleton = { workspace = true, optional = true }
 prime-avatargroup = { workspace = true, optional = true }
 prime-progressbar = { workspace = true, optional = true }
 prime-message = { workspace = true, optional = true }
+prime-togglebutton = { workspace = true, optional = true }
 prime-toggleswitch = { workspace = true, optional = true }
 prime-radiobutton = { workspace = true, optional = true }
 prime-checkbox = { workspace = true, optional = true }

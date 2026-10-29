@@ -80,6 +80,10 @@ pub const TAG: &str = include_str!("../css/components/tag.css");
 #[cfg(feature = "textarea")]
 pub const TEXTAREA: &str = include_str!("../css/components/textarea.css");
 
+/// CSS компонента `togglebutton`.
+#[cfg(feature = "togglebutton")]
+pub const TOGGLEBUTTON: &str = include_str!("../css/components/togglebutton.css");
+
 /// CSS компонента `toggleswitch`.
 #[cfg(feature = "toggleswitch")]
 pub const TOGGLESWITCH: &str = include_str!("../css/components/toggleswitch.css");
@@ -130,6 +134,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("tag", TAG),
     #[cfg(feature = "textarea")]
     ("textarea", TEXTAREA),
+    #[cfg(feature = "togglebutton")]
+    ("togglebutton", TOGGLEBUTTON),
     #[cfg(feature = "toggleswitch")]
     ("toggleswitch", TOGGLESWITCH),
     #[cfg(feature = "toolbar")]

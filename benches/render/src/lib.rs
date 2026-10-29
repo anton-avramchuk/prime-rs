@@ -26,6 +26,7 @@ use prime_scrollpanel::ScrollPanel;
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
+use prime_togglebutton::ToggleButton;
 use prime_toggleswitch::ToggleSwitch;
 use prime_toolbar::Toolbar;
 
@@ -92,6 +93,10 @@ fn checkbox_n(n: usize) -> String {
 
 fn radiobutton_n(n: usize) -> String {
     render((0..n).map(|_| view! { <RadioButton default_checked=true name="pizza" value="Cheese" /> }).collect_view())
+}
+
+fn togglebutton_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <ToggleButton default_checked=true on_label="On" off_label="Off" /> }).collect_view())
 }
 
 fn toggleswitch_n(n: usize) -> String {
@@ -229,6 +234,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "checkbox-1000", run: || checkbox_n(1000) },
     Scenario { name: "radiobutton-1", run: || radiobutton_n(1) },
     Scenario { name: "radiobutton-1000", run: || radiobutton_n(1000) },
+    Scenario { name: "togglebutton-1", run: || togglebutton_n(1) },
+    Scenario { name: "togglebutton-1000", run: || togglebutton_n(1000) },
     Scenario { name: "toggleswitch-1", run: || toggleswitch_n(1) },
     Scenario { name: "toggleswitch-1000", run: || toggleswitch_n(1000) },
     Scenario { name: "message-1", run: || message_n(1) },

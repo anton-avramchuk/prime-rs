@@ -1869,6 +1869,17 @@ name = "prime-theme"
 version = "0.1.0"
 
 [[package]]
+name = "prime-togglebutton"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-toggleswitch"
 version = "0.1.0"
 dependencies = [
@@ -2117,6 +2128,7 @@ dependencies = [
  "prime-skeleton",
  "prime-tag",
  "prime-textarea",
+ "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
  "serde_json",
@@ -2431,6 +2443,7 @@ dependencies = [
  "prime-tag",
  "prime-textarea",
  "prime-theme",
+ "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
  "tokio",
@@ -3087,6 +3100,7 @@ dependencies = [
  "prime-skeleton",
  "prime-tag",
  "prime-textarea",
+ "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
  "wasm-bindgen",

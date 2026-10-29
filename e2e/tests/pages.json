@@ -406,6 +406,48 @@
     "upstreamSelector": "disabled-doc .card"
   },
   {
+    "name": "togglebutton-basic",
+    "ours": "/togglebutton",
+    "upstream": "/togglebutton",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "togglebutton-customized",
+    "ours": "/togglebutton",
+    "upstream": "/togglebutton",
+    "oursSelector": "[data-demo=\"customized\"]",
+    "upstreamSelector": "customized-doc .card"
+  },
+  {
+    "name": "togglebutton-disabled",
+    "ours": "/togglebutton",
+    "upstream": "/togglebutton",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "togglebutton-fluid",
+    "ours": "/togglebutton",
+    "upstream": "/togglebutton",
+    "oursSelector": "[data-demo=\"fluid\"]",
+    "upstreamSelector": "fluid-doc .card"
+  },
+  {
+    "name": "togglebutton-invalid",
+    "ours": "/togglebutton",
+    "upstream": "/togglebutton",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "togglebutton-sizes",
+    "ours": "/togglebutton",
+    "upstream": "/togglebutton",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
     "name": "toggleswitch-basic",
     "ours": "/toggleswitch",
     "upstream": "/toggleswitch",

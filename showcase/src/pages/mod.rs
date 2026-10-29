@@ -21,6 +21,7 @@ mod scrollpanel;
 mod skeleton;
 mod tag;
 mod textarea;
+mod togglebutton;
 mod toggleswitch;
 mod toolbar;
 
@@ -45,6 +46,7 @@ pub use scrollpanel::ScrollPanelPage;
 pub use skeleton::SkeletonPage;
 pub use tag::TagPage;
 pub use textarea::TextareaPage;
+pub use togglebutton::ToggleButtonPage;
 pub use toggleswitch::ToggleSwitchPage;
 pub use toolbar::ToolbarPage;
 

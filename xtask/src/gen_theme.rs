@@ -108,10 +108,18 @@ fn extra_base_css(up: &Upstream) -> Result<String, String> {
     Ok(src[from..from + len].to_owned())
 }
 
-/// Часть `css`-литерала после маркера `/* For PrimeNG */` (до закрывающего обратного апострофа), если маркер есть.
+/// Часть `css`-литерала после маркера `/* For PrimeNG */` или `/* For PrimeNG (пояснение) */` (до закрывающего обратного апострофа),
+/// если маркер есть.
 fn primeng_extra_block(src: &str) -> Option<String> {
-    const MARK: &str = "/* For PrimeNG */";
-    let from = src.find(MARK)? + MARK.len();
+    const MARK: &str = "/* For PrimeNG";
+    let start = src.find(MARK)? + MARK.len();
+    let end = start + src[start..].find("*/")?;
+    // после имени маркера допустимо только пояснение в скобках: `/* For PrimeNG Something */` не маркер
+    let note = src[start..end].trim();
+    if !(note.is_empty() || (note.starts_with('(') && note.ends_with(')'))) {
+        return None;
+    }
+    let from = end + "*/".len();
     let len = src[from..].find('`')?;
     Some(src[from..from + len].trim().to_owned())
 }
@@ -122,7 +130,8 @@ fn extra_component_css(up: &Upstream) -> Result<serde_json::Map<String, Value>, 
     for name in &up.theme.primeng_extra {
         let file = up.src_dir().join(format!("{name}/style/{name}style.ts"));
         let src = std::fs::read_to_string(&file).map_err(|e| format!("{}: {e}", file.display()))?;
-        let block = primeng_extra_block(&src).ok_or_else(|| format!("в {} нет блока `/* For PrimeNG */`", file.display()))?;
+        let block = primeng_extra_block(&src)
+            .ok_or_else(|| format!("в {} нет блока `/* For PrimeNG */` (допустимо с пояснением в скобках)", file.display()))?;
         map.insert(name.clone(), Value::String(block));
     }
     Ok(map)
@@ -211,6 +220,18 @@ const classes = {};";
             )
         );
         assert_eq!(primeng_extra_block("const style = `${s}`;"), None);
+    }
+
+    #[test]
+    fn marker_may_carry_a_note() {
+        let src = "const style = `
+${s}
+
+    /* For PrimeNG (iconPos) */
+    .a { order: 1; }
+`;";
+        assert_eq!(primeng_extra_block(src).as_deref(), Some(".a { order: 1; }"));
+        assert_eq!(primeng_extra_block("`/* For PrimeNG Something */ .a{}`"), None);
     }
 
     #[test]
