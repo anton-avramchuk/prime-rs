@@ -41,6 +41,17 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-radiobutton")]
     return view! { <prime_radiobutton::RadioButton default_checked=true name="pizza" value="Cheese" /> };
 
+    #[cfg(feature = "case-selectbutton")]
+    return view! {
+        <prime_selectbutton::SelectButton
+            options=vec![
+                prime_selectbutton::SelectButtonOption::new("One-Way", "one-way"),
+                prime_selectbutton::SelectButtonOption::new("Return", "return"),
+            ]
+            default_value="one-way"
+        />
+    };
+
     #[cfg(feature = "case-togglebutton")]
     return view! { <prime_togglebutton::ToggleButton default_checked=true on_label="On" off_label="Off" /> };
 

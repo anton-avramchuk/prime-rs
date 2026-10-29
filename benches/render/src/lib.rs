@@ -23,6 +23,7 @@ use prime_progressbar::ProgressBar;
 use prime_progressspinner::ProgressSpinner;
 use prime_radiobutton::RadioButton;
 use prime_scrollpanel::ScrollPanel;
+use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
@@ -93,6 +94,17 @@ fn checkbox_n(n: usize) -> String {
 
 fn radiobutton_n(n: usize) -> String {
     render((0..n).map(|_| view! { <RadioButton default_checked=true name="pizza" value="Cheese" /> }).collect_view())
+}
+
+fn selectbutton_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                let options = vec![SelectButtonOption::new("One-Way", "one-way"), SelectButtonOption::new("Return", "return")];
+                view! { <SelectButton options=options default_value="one-way" /> }
+            })
+            .collect_view(),
+    )
 }
 
 fn togglebutton_n(n: usize) -> String {
@@ -234,6 +246,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "checkbox-1000", run: || checkbox_n(1000) },
     Scenario { name: "radiobutton-1", run: || radiobutton_n(1) },
     Scenario { name: "radiobutton-1000", run: || radiobutton_n(1000) },
+    Scenario { name: "selectbutton-1", run: || selectbutton_n(1) },
+    Scenario { name: "selectbutton-1000", run: || selectbutton_n(1000) },
     Scenario { name: "togglebutton-1", run: || togglebutton_n(1) },
     Scenario { name: "togglebutton-1000", run: || togglebutton_n(1000) },
     Scenario { name: "toggleswitch-1", run: || toggleswitch_n(1) },

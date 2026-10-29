@@ -406,6 +406,55 @@
     "upstreamSelector": "disabled-doc .card"
   },
   {
+    "name": "selectbutton-basic",
+    "ours": "/selectbutton",
+    "upstream": "/selectbutton",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "selectbutton-disabled",
+    "ours": "/selectbutton",
+    "upstream": "/selectbutton",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "selectbutton-fluid",
+    "ours": "/selectbutton",
+    "upstream": "/selectbutton",
+    "oursSelector": "[data-demo=\"fluid\"]",
+    "upstreamSelector": "fluid-doc .card"
+  },
+  {
+    "name": "selectbutton-invalid",
+    "ours": "/selectbutton",
+    "upstream": "/selectbutton",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "selectbutton-multiple",
+    "ours": "/selectbutton",
+    "upstream": "/selectbutton",
+    "oursSelector": "[data-demo=\"multiple\"]",
+    "upstreamSelector": "multiple-doc .card"
+  },
+  {
+    "name": "selectbutton-sizes",
+    "ours": "/selectbutton",
+    "upstream": "/selectbutton",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "selectbutton-template",
+    "ours": "/selectbutton",
+    "upstream": "/selectbutton",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
     "name": "togglebutton-basic",
     "ours": "/togglebutton",
     "upstream": "/togglebutton",
