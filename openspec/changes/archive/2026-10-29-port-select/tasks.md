@@ -24,7 +24,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 Добавить `prime-select` в браузерный job `ci.yml` (3 места); `docs/select.md` (отличия от PrimeNG: объём, оверлей, фильтр, значения-строки); clippy, тесты, deny, machete, `openspec validate port-select`; CI `dev` зелёный
+- [x] 4.1 Добавить `prime-select` в браузерный job `ci.yml` (3 места); `docs/select.md` (отличия от PrimeNG: объём, оверлей, фильтр, значения-строки); clippy, тесты, deny, machete, `openspec validate port-select`; CI `dev` зелёный
 
 ## Workflow follow-up
 
