@@ -113,7 +113,7 @@ fn root_modifiers_and_data_p() {
     ] {
         assert!(html.contains(expected), "{expected}: {html}");
     }
-    assert!(html.contains("p-select-lg p-inputfield-lg") == false);
+    assert!(!html.contains("p-select-lg p-inputfield-lg"));
     let html = view! { <Select options=cities() size=Size::Large /> }.to_html();
     assert!(html.contains("p-select-lg p-inputfield-lg"), "{html}");
 }
