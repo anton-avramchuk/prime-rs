@@ -28,7 +28,7 @@
 
 ## 5. Интеграция
 
-- [ ] 5.1 Добавить `prime-inputnumber` в браузерный job `ci.yml` (3 места); `docs/inputnumber.md` (отличия от PrimeNG, в том числе локали, `beforeinput`, курсор); clippy, тесты, deny, machete, `openspec validate port-inputnumber`; CI `dev` зелёный
+- [x] 5.1 Добавить `prime-inputnumber` в браузерный job `ci.yml` (3 места); `docs/inputnumber.md` (отличия от PrimeNG, в том числе локали, `beforeinput`, курсор); clippy, тесты, deny, machete, `openspec validate port-inputnumber`; CI `dev` зелёный
 
 ## Workflow follow-up
 
