@@ -16,6 +16,7 @@ use prime_divider::{Divider, DividerAlign};
 use prime_fieldset::Fieldset;
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_inputgroup::{InputGroup, InputGroupAddon};
+use prime_inputnumber::{InputNumber, InputNumberMode};
 use prime_inputtext::InputText;
 use prime_knob::Knob;
 use prime_message::{Message, MessageSeverity};
@@ -101,6 +102,14 @@ fn radiobutton_n(n: usize) -> String {
 
 fn rating_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Rating default_value=3 name="grade" /> }).collect_view())
+}
+
+fn inputnumber_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| view! { <InputNumber default_value=1234.5 mode=InputNumberMode::Currency currency="USD" locale="en-US" show_buttons=true /> })
+            .collect_view(),
+    )
 }
 
 fn knob_n(n: usize) -> String {
@@ -263,6 +272,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "radiobutton-1000", run: || radiobutton_n(1000) },
     Scenario { name: "rating-1", run: || rating_n(1) },
     Scenario { name: "rating-1000", run: || rating_n(1000) },
+    Scenario { name: "inputnumber-1", run: || inputnumber_n(1) },
+    Scenario { name: "inputnumber-1000", run: || inputnumber_n(1000) },
     Scenario { name: "knob-1", run: || knob_n(1) },
     Scenario { name: "knob-1000", run: || knob_n(1000) },
     Scenario { name: "slider-1", run: || slider_n(1) },

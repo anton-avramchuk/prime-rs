@@ -72,6 +72,11 @@ feature = "case-rating"
 max_delta_bytes = 300000
 
 [[case]]
+name = "inputnumber"
+feature = "case-inputnumber"
+max_delta_bytes = 480000
+
+[[case]]
 name = "knob"
 feature = "case-knob"
 max_delta_bytes = 305000

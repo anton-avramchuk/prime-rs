@@ -42,6 +42,7 @@ prime-rating = { workspace = true }
 prime-selectbutton = { workspace = true }
 prime-slider = { workspace = true }
 prime-knob = { workspace = true }
+prime-inputnumber = { workspace = true }
 prime-togglebutton = { workspace = true }
 prime-toggleswitch = { workspace = true }
 prime-message = { workspace = true }

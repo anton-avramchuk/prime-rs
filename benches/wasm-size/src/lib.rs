@@ -44,6 +44,17 @@ fn App() -> impl IntoView {
     #[cfg(feature = "case-rating")]
     return view! { <prime_rating::Rating default_value=3 name="grade" /> };
 
+    #[cfg(feature = "case-inputnumber")]
+    return view! {
+        <prime_inputnumber::InputNumber
+            default_value=1234.5
+            mode=prime_inputnumber::InputNumberMode::Currency
+            currency="USD"
+            locale="en-US"
+            show_buttons=true
+        />
+    };
+
     #[cfg(feature = "case-knob")]
     return view! { <prime_knob::Knob default_value=60.0 /> };
 

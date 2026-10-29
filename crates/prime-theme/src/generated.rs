@@ -40,6 +40,10 @@ pub const FIELDSET: &str = include_str!("../css/components/fieldset.css");
 #[cfg(feature = "inputgroup")]
 pub const INPUTGROUP: &str = include_str!("../css/components/inputgroup.css");
 
+/// CSS компонента `inputnumber`.
+#[cfg(feature = "inputnumber")]
+pub const INPUTNUMBER: &str = include_str!("../css/components/inputnumber.css");
+
 /// CSS компонента `inputtext`.
 #[cfg(feature = "inputtext")]
 pub const INPUTTEXT: &str = include_str!("../css/components/inputtext.css");
@@ -130,6 +134,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("fieldset", FIELDSET),
     #[cfg(feature = "inputgroup")]
     ("inputgroup", INPUTGROUP),
+    #[cfg(feature = "inputnumber")]
+    ("inputnumber", INPUTNUMBER),
     #[cfg(feature = "inputtext")]
     ("inputtext", INPUTTEXT),
     #[cfg(feature = "knob")]

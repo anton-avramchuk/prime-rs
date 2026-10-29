@@ -1759,6 +1759,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-inputnumber"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "prime-inputtext",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-inputtext"
 version = "0.1.0"
 dependencies = [
@@ -2166,6 +2181,7 @@ dependencies = [
  "prime-fieldset",
  "prime-icons",
  "prime-inputgroup",
+ "prime-inputnumber",
  "prime-inputtext",
  "prime-knob",
  "prime-message",
@@ -2484,6 +2500,7 @@ dependencies = [
  "prime-fieldset",
  "prime-icons",
  "prime-inputgroup",
+ "prime-inputnumber",
  "prime-inputtext",
  "prime-knob",
  "prime-message",
@@ -3146,6 +3163,7 @@ dependencies = [
  "prime-fieldset",
  "prime-icons",
  "prime-inputgroup",
+ "prime-inputnumber",
  "prime-inputtext",
  "prime-knob",
  "prime-message",

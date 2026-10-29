@@ -406,6 +406,90 @@
     "upstreamSelector": "disabled-doc .card"
   },
   {
+    "name": "inputnumber-locale",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"locale\"]",
+    "upstreamSelector": "locale-doc .card"
+  },
+  {
+    "name": "inputnumber-currency",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"currency\"]",
+    "upstreamSelector": "currency-doc .card"
+  },
+  {
+    "name": "inputnumber-numerals",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"numerals\"]",
+    "upstreamSelector": "numerals-doc .card"
+  },
+  {
+    "name": "inputnumber-prefixsuffix",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"prefixsuffix\"]",
+    "upstreamSelector": "prefixsuffix-doc .card"
+  },
+  {
+    "name": "inputnumber-buttons",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"buttons\"]",
+    "upstreamSelector": "buttons-doc .card"
+  },
+  {
+    "name": "inputnumber-vertical",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"vertical\"]",
+    "upstreamSelector": "vertical-doc .card"
+  },
+  {
+    "name": "inputnumber-clearicon",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"clearicon\"]",
+    "upstreamSelector": "clearicon-doc .card"
+  },
+  {
+    "name": "inputnumber-sizes",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "inputnumber-filled",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"filled\"]",
+    "upstreamSelector": "filled-doc .card"
+  },
+  {
+    "name": "inputnumber-invalid",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "inputnumber-disabled",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "inputnumber-fluid",
+    "ours": "/inputnumber",
+    "upstream": "/inputnumber",
+    "oursSelector": "[data-demo=\"fluid\"]",
+    "upstreamSelector": "fluid-doc .card"
+  },
+  {
     "name": "knob-basic",
     "ours": "/knob",
     "upstream": "/knob",
