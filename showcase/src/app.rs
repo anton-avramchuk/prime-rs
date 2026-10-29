@@ -3,8 +3,8 @@
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage, HomePage,
     InputGroupPage, InputNumberPage, InputTextPage, KnobPage, MessagePage, PanelPage, ProgressBarPage, ProgressSpinnerPage,
-    RadioButtonPage, RatingPage, ScrollPanelPage, SelectButtonPage, SkeletonPage, SliderPage, TagPage, TextareaPage, ToggleButtonPage,
-    ToggleSwitchPage, ToolbarPage,
+    RadioButtonPage, RatingPage, ScrollPanelPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, TagPage, TextareaPage,
+    ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -32,6 +32,8 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "slider",
         "knob",
         "inputnumber",
+        "select",
+        "iconfield",
         "toggleswitch",
         "message",
         "progressbar",
@@ -96,6 +98,7 @@ pub fn App() -> impl IntoView {
                         <A href="/slider">"Slider"</A>
                         <A href="/knob">"Knob"</A>
                         <A href="/inputnumber">"InputNumber"</A>
+                        <A href="/select">"Select"</A>
                         <A href="/toggleswitch">"ToggleSwitch"</A>
                         <A href="/message">"Message"</A>
                         <A href="/progressbar">"ProgressBar"</A>
@@ -132,6 +135,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("slider") view=SliderPage />
                         <Route path=StaticSegment("knob") view=KnobPage />
                         <Route path=StaticSegment("inputnumber") view=InputNumberPage />
+                        <Route path=StaticSegment("select") view=SelectPage />
                         <Route path=StaticSegment("toggleswitch") view=ToggleSwitchPage />
                         <Route path=StaticSegment("message") view=MessagePage />
                         <Route path=StaticSegment("progressbar") view=ProgressBarPage />

@@ -406,6 +406,90 @@
     "upstreamSelector": "disabled-doc .card"
   },
   {
+    "name": "select-basic",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "select-checkmark",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"checkmark\"]",
+    "upstreamSelector": "checkmark-doc .card"
+  },
+  {
+    "name": "select-clearicon",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"clearicon\"]",
+    "upstreamSelector": "clearicon-doc .card"
+  },
+  {
+    "name": "select-disabled",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "select-filled",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"filled\"]",
+    "upstreamSelector": "filled-doc .card"
+  },
+  {
+    "name": "select-filter",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"filter\"]",
+    "upstreamSelector": "filter-doc .card"
+  },
+  {
+    "name": "select-fluid",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"fluid\"]",
+    "upstreamSelector": "fluid-doc .card"
+  },
+  {
+    "name": "select-group",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"group\"]",
+    "upstreamSelector": "group-doc .card"
+  },
+  {
+    "name": "select-invalid",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "select-loadingstate",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"loadingstate\"]",
+    "upstreamSelector": "loadingstate-doc .card"
+  },
+  {
+    "name": "select-sizes",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "select-template",
+    "ours": "/select",
+    "upstream": "/select",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
     "name": "inputnumber-locale",
     "ours": "/inputnumber",
     "upstream": "/inputnumber",

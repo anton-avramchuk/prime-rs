@@ -37,6 +37,7 @@ prime-rating = { path = "crates/prime-rating" }
 prime-slider = { path = "crates/prime-slider" }
 prime-knob = { path = "crates/prime-knob" }
 prime-inputnumber = { path = "crates/prime-inputnumber" }
+prime-select = { path = "crates/prime-select" }
 prime-toggleswitch = { path = "crates/prime-toggleswitch" }
 prime-avatargroup = { path = "crates/prime-avatargroup" }
 prime-skeleton = { path = "crates/prime-skeleton" }

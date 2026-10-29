@@ -36,6 +36,10 @@ pub const DIVIDER: &str = include_str!("../css/components/divider.css");
 #[cfg(feature = "fieldset")]
 pub const FIELDSET: &str = include_str!("../css/components/fieldset.css");
 
+/// CSS компонента `iconfield`.
+#[cfg(feature = "iconfield")]
+pub const ICONFIELD: &str = include_str!("../css/components/iconfield.css");
+
 /// CSS компонента `inputgroup`.
 #[cfg(feature = "inputgroup")]
 pub const INPUTGROUP: &str = include_str!("../css/components/inputgroup.css");
@@ -79,6 +83,10 @@ pub const RATING: &str = include_str!("../css/components/rating.css");
 /// CSS компонента `scrollpanel`.
 #[cfg(feature = "scrollpanel")]
 pub const SCROLLPANEL: &str = include_str!("../css/components/scrollpanel.css");
+
+/// CSS компонента `select`.
+#[cfg(feature = "select")]
+pub const SELECT: &str = include_str!("../css/components/select.css");
 
 /// CSS компонента `selectbutton`.
 #[cfg(feature = "selectbutton")]
@@ -132,6 +140,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("divider", DIVIDER),
     #[cfg(feature = "fieldset")]
     ("fieldset", FIELDSET),
+    #[cfg(feature = "iconfield")]
+    ("iconfield", ICONFIELD),
     #[cfg(feature = "inputgroup")]
     ("inputgroup", INPUTGROUP),
     #[cfg(feature = "inputnumber")]
@@ -154,6 +164,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("rating", RATING),
     #[cfg(feature = "scrollpanel")]
     ("scrollpanel", SCROLLPANEL),
+    #[cfg(feature = "select")]
+    ("select", SELECT),
     #[cfg(feature = "selectbutton")]
     ("selectbutton", SELECTBUTTON),
     #[cfg(feature = "skeleton")]

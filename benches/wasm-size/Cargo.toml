@@ -37,6 +37,7 @@ case-rating = ["dep:prime-rating"]
 case-selectbutton = ["dep:prime-selectbutton"]
 case-slider = ["dep:prime-slider"]
 case-knob = ["dep:prime-knob"]
+case-select = ["dep:prime-select"]
 case-inputnumber = ["dep:prime-inputnumber"]
 case-togglebutton = ["dep:prime-togglebutton"]
 case-toggleswitch = ["dep:prime-toggleswitch"]
@@ -71,6 +72,7 @@ prime-rating = { workspace = true, optional = true }
 prime-selectbutton = { workspace = true, optional = true }
 prime-slider = { workspace = true, optional = true }
 prime-knob = { workspace = true, optional = true }
+prime-select = { workspace = true, optional = true }
 prime-inputnumber = { workspace = true, optional = true }
 prime-togglebutton = { workspace = true, optional = true }
 prime-toggleswitch = { workspace = true, optional = true }

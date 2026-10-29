@@ -39,6 +39,7 @@ prime-inputtext = { workspace = true }
 prime-checkbox = { workspace = true }
 prime-radiobutton = { workspace = true }
 prime-rating = { workspace = true }
+prime-select = { workspace = true }
 prime-selectbutton = { workspace = true }
 prime-slider = { workspace = true }
 prime-knob = { workspace = true }

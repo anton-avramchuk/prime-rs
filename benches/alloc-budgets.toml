@@ -74,6 +74,11 @@ instances = 1000
 max_per_instance = 130
 
 [[scenario]]
+name = "select-1000"
+instances = 1000
+max_per_instance = 250
+
+[[scenario]]
 name = "knob-1000"
 instances = 1000
 max_per_instance = 60

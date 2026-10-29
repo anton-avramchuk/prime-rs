@@ -55,6 +55,15 @@ fn App() -> impl IntoView {
         />
     };
 
+    #[cfg(feature = "case-select")]
+    return view! {
+        <prime_select::Select
+            options=["New York", "Rome", "London", "Istanbul", "Paris"].map(|c| prime_select::SelectOption::new(c, c)).to_vec()
+            default_value="London"
+            placeholder="Select a City"
+        />
+    };
+
     #[cfg(feature = "case-knob")]
     return view! { <prime_knob::Knob default_value=60.0 /> };
 

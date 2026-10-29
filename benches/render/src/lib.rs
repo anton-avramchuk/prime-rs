@@ -26,6 +26,7 @@ use prime_progressspinner::ProgressSpinner;
 use prime_radiobutton::RadioButton;
 use prime_rating::Rating;
 use prime_scrollpanel::ScrollPanel;
+use prime_select::{Select, SelectOption};
 use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_slider::Slider;
@@ -108,6 +109,17 @@ fn inputnumber_n(n: usize) -> String {
     render(
         (0..n)
             .map(|_| view! { <InputNumber default_value=1234.5 mode=InputNumberMode::Currency currency="USD" locale="en-US" show_buttons=true /> })
+            .collect_view(),
+    )
+}
+
+fn select_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                let options = ["New York", "Rome", "London", "Istanbul", "Paris"].map(|c| SelectOption::new(c, c)).to_vec();
+                view! { <Select options=options default_value="London" placeholder="Select a City" /> }
+            })
             .collect_view(),
     )
 }
@@ -274,6 +286,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "rating-1000", run: || rating_n(1000) },
     Scenario { name: "inputnumber-1", run: || inputnumber_n(1) },
     Scenario { name: "inputnumber-1000", run: || inputnumber_n(1000) },
+    Scenario { name: "select-1", run: || select_n(1) },
+    Scenario { name: "select-1000", run: || select_n(1000) },
     Scenario { name: "knob-1", run: || knob_n(1) },
     Scenario { name: "knob-1000", run: || knob_n(1000) },
     Scenario { name: "slider-1", run: || slider_n(1) },

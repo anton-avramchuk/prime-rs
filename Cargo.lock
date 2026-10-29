@@ -1877,6 +1877,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-select"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-selectbutton"
 version = "0.1.0"
 dependencies = [
@@ -2191,6 +2206,7 @@ dependencies = [
  "prime-radiobutton",
  "prime-rating",
  "prime-scrollpanel",
+ "prime-select",
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
@@ -2510,6 +2526,7 @@ dependencies = [
  "prime-radiobutton",
  "prime-rating",
  "prime-scrollpanel",
+ "prime-select",
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
@@ -3173,6 +3190,7 @@ dependencies = [
  "prime-radiobutton",
  "prime-rating",
  "prime-scrollpanel",
+ "prime-select",
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
