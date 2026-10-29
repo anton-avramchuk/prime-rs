@@ -20,7 +20,7 @@
 
 ## 4. Интеграция
 
-- [ ] 4.1 Добавить `prime-selectbutton` в браузерный job `ci.yml` (3 места); `docs/selectbutton.md`; clippy, тесты, deny, machete, `openspec validate port-selectbutton`; CI `dev` зелёный
+- [x] 4.1 Добавить `prime-selectbutton` в браузерный job `ci.yml` (3 места); `docs/selectbutton.md`; clippy, тесты, deny, machete, `openspec validate port-selectbutton`; CI `dev` зелёный
 
 ## Workflow follow-up
 
