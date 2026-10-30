@@ -19,7 +19,7 @@
 ## 4. Интеграция
 
 - [x] 4.1 `docs/popover.md` (отличия от PrimeNG, что не проверялось); `prime-popover` в браузерный job `ci.yml` (три места)
-- [ ] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-popover`; CI `dev` зелёный
+- [x] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-popover`; CI `dev` зелёный
 
 ## Workflow follow-up
 
