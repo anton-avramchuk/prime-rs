@@ -18,7 +18,7 @@
 ## 4. Интеграция
 
 - [x] 4.1 `docs/breadcrumb.md` (отличия от PrimeNG: нет `routerLink`, `BreadcrumbItem` вместо `MenuItem`, `Steps` не переносится, демонстрация `router` пропущена)
-- [ ] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features`, тесты, deny, machete, `openspec validate port-breadcrumb`; CI `dev` зелёный
+- [x] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features`, тесты, deny, machete, `openspec validate port-breadcrumb`; CI `dev` зелёный
 
 ## Workflow follow-up
 
