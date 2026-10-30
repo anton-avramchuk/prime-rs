@@ -21,6 +21,7 @@ use prime_fluid::Fluid;
 use prime_iconfield::{IconField, InputIcon};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_iftalabel::IftaLabel;
+use prime_inplace::Inplace;
 use prime_inputgroup::{InputGroup, InputGroupAddon};
 use prime_inputnumber::{InputNumber, InputNumberMode};
 use prime_inputotp::InputOtp;
@@ -381,6 +382,21 @@ fn inputotp_n(n: usize) -> String {
     render((0..n).map(|_| view! { <InputOtp length=6 /> }).collect_view())
 }
 
+fn inplace_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <Inplace
+                        display=ViewFn::from(|| view! { <span>"View Content"</span> })
+                        content=Callback::new(|_close| view! { <p>"Content"</p> }.into_any())
+                    />
+                }
+            })
+            .collect_view(),
+    )
+}
+
 fn password_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Password toggle_mask=true /> }).collect_view())
 }
@@ -485,6 +501,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "breadcrumb-1000", run: || breadcrumb_n(1000) },
     Scenario { name: "inputotp-1", run: || inputotp_n(1) },
     Scenario { name: "inputotp-1000", run: || inputotp_n(1000) },
+    Scenario { name: "inplace-1", run: || inplace_n(1) },
+    Scenario { name: "inplace-1000", run: || inplace_n(1000) },
     Scenario { name: "password-1", run: || password_n(1) },
     Scenario { name: "password-1000", run: || password_n(1000) },
     Scenario { name: "scrolltop-1", run: || scrolltop_n(1) },

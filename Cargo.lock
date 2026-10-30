@@ -1807,6 +1807,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-inplace"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-inputgroup"
 version = "0.1.0"
 dependencies = [
@@ -2326,6 +2341,7 @@ dependencies = [
  "prime-iconfield",
  "prime-icons",
  "prime-iftalabel",
+ "prime-inplace",
  "prime-inputgroup",
  "prime-inputnumber",
  "prime-inputotp",
@@ -2658,6 +2674,7 @@ dependencies = [
  "prime-iconfield",
  "prime-icons",
  "prime-iftalabel",
+ "prime-inplace",
  "prime-inputgroup",
  "prime-inputnumber",
  "prime-inputotp",
@@ -3335,6 +3352,7 @@ dependencies = [
  "prime-iconfield",
  "prime-icons",
  "prime-iftalabel",
+ "prime-inplace",
  "prime-inputgroup",
  "prime-inputnumber",
  "prime-inputotp",

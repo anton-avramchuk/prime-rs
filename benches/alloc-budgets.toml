@@ -227,3 +227,8 @@ max_per_instance = 32
 name = "password-1000"
 instances = 1000
 max_per_instance = 110
+
+[[scenario]]
+name = "inplace-1000"
+instances = 1000
+max_per_instance = 35

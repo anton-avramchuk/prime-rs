@@ -16,6 +16,6 @@ utils = "0.7.2"
 [theme]
 dark_mode_selector = ".p-dark"
 # Компоненты, для которых генерируется CSS; новый компонент добавляется в список вместе с его портом.
-components = ["badge", "avatar", "button", "card", "accordion", "checkbox", "chip", "divider", "fieldset", "inputtext", "message", "panel", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "select", "iconfield", "inputnumber", "knob", "slider", "rating", "selectbutton", "togglebutton", "toggleswitch", "toolbar", "scrollpanel", "progressspinner", "inputgroup", "buttongroup", "floatlabel", "iftalabel", "overlaybadge", "timeline", "metergroup", "breadcrumb", "inputotp", "scrolltop", "password"]
+components = ["badge", "avatar", "button", "card", "accordion", "checkbox", "chip", "divider", "fieldset", "inputtext", "message", "panel", "progressbar", "radiobutton", "skeleton", "tag", "textarea", "select", "iconfield", "inputnumber", "knob", "slider", "rating", "selectbutton", "togglebutton", "toggleswitch", "toolbar", "scrollpanel", "progressspinner", "inputgroup", "buttongroup", "floatlabel", "iftalabel", "overlaybadge", "timeline", "metergroup", "breadcrumb", "inputotp", "scrolltop", "password", "inplace"]
 # Компоненты, у которых берётся и блок `/* For PrimeNG */` из `<имя>style.ts` (для остальных он не нужен).
 primeng_extra = ["accordion", "togglebutton", "select", "password"]

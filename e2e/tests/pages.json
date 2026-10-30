@@ -1517,5 +1517,33 @@
     "upstream": "/password",
     "oursSelector": "[data-demo=\"disabled\"]",
     "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "inplace-basic",
+    "ours": "/inplace",
+    "upstream": "/inplace",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "inplace-input",
+    "ours": "/inplace",
+    "upstream": "/inplace",
+    "oursSelector": "[data-demo=\"input\"]",
+    "upstreamSelector": "input-doc .card"
+  },
+  {
+    "name": "inplace-image",
+    "ours": "/inplace",
+    "upstream": "/inplace",
+    "oursSelector": "[data-demo=\"image\"]",
+    "upstreamSelector": "image-doc .card"
+  },
+  {
+    "name": "inplace-lazy",
+    "ours": "/inplace",
+    "upstream": "/inplace",
+    "oursSelector": "[data-demo=\"lazy\"]",
+    "upstreamSelector": "lazy-doc .card"
   }
 ]

@@ -225,3 +225,8 @@ max_delta_bytes = 600000
 name = "password"
 feature = "case-password"
 max_delta_bytes = 540000
+
+[[case]]
+name = "inplace"
+feature = "case-inplace"
+max_delta_bytes = 550000

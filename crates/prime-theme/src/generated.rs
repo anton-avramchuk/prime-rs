@@ -56,6 +56,10 @@ pub const ICONFIELD: &str = include_str!("../css/components/iconfield.css");
 #[cfg(feature = "iftalabel")]
 pub const IFTALABEL: &str = include_str!("../css/components/iftalabel.css");
 
+/// CSS компонента `inplace`.
+#[cfg(feature = "inplace")]
+pub const INPLACE: &str = include_str!("../css/components/inplace.css");
+
 /// CSS компонента `inputgroup`.
 #[cfg(feature = "inputgroup")]
 pub const INPUTGROUP: &str = include_str!("../css/components/inputgroup.css");
@@ -190,6 +194,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("iconfield", ICONFIELD),
     #[cfg(feature = "iftalabel")]
     ("iftalabel", IFTALABEL),
+    #[cfg(feature = "inplace")]
+    ("inplace", INPLACE),
     #[cfg(feature = "inputgroup")]
     ("inputgroup", INPUTGROUP),
     #[cfg(feature = "inputnumber")]

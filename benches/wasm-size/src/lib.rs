@@ -190,6 +190,15 @@ cfg_if::cfg_if! {
         fn case() -> impl IntoView {
             view! { <prime_inputotp::InputOtp length=6 /> }
         }
+    } else if #[cfg(feature = "case-inplace")] {
+        fn case() -> impl IntoView {
+            view! {
+                <prime_inplace::Inplace
+                    display=ViewFn::from(|| view! { <span>"View Content"</span> })
+                    content=Callback::new(|_close| view! { <p>"Content"</p> }.into_any())
+                />
+            }
+        }
     } else if #[cfg(feature = "case-password")] {
         fn case() -> impl IntoView {
             view! { <prime_password::Password toggle_mask=true /> }
