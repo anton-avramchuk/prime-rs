@@ -181,6 +181,11 @@ cfg_if::cfg_if! {
         fn case() -> impl IntoView {
             view! { <prime_metergroup::MeterGroup value={vec![prime_metergroup::MeterItem::new("Apps", "#34d399", 16.0)]} /> }
         }
+    } else if #[cfg(feature = "case-breadcrumb")] {
+        fn case() -> impl IntoView {
+            let model = vec![prime_breadcrumb::BreadcrumbItem::new().label("Electronics"), prime_breadcrumb::BreadcrumbItem::new().label("Computer")];
+            view! { <prime_breadcrumb::Breadcrumb model=model home=prime_breadcrumb::BreadcrumbItem::new() /> }
+        }
     } else if #[cfg(feature = "case-progressspinner")] {
         fn case() -> impl IntoView {
             view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> }

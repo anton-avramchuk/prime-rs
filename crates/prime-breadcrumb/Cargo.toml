@@ -1,0 +1,29 @@
+[package]
+name = "prime-breadcrumb"
+description = "prime-rs: компонент Breadcrumb (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-badge/ssr", "prime-icons/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-badge/hydrate", "prime-icons/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-badge = { workspace = true }
+prime-icons = { workspace = true, features = ["chevronright", "home"] }
+web-sys = { workspace = true, features = ["Event", "MouseEvent"] }
+
+[dev-dependencies]
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[lints]
+workspace = true

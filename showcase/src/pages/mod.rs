@@ -3,6 +3,7 @@
 mod accordion;
 mod avatar;
 mod badge;
+mod breadcrumb;
 mod button;
 mod buttongroup;
 mod card;
@@ -42,6 +43,7 @@ mod toolbar;
 pub use accordion::AccordionPage;
 pub use avatar::AvatarPage;
 pub use badge::BadgePage;
+pub use breadcrumb::BreadcrumbPage;
 pub use button::ButtonPage;
 pub use buttongroup::ButtonGroupPage;
 pub use card::CardPage;

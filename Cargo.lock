@@ -1654,6 +1654,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-breadcrumb"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-badge",
+ "prime-core",
+ "prime-icons",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-button"
 version = "0.1.0"
 dependencies = [
@@ -2258,6 +2269,7 @@ dependencies = [
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
+ "prime-breadcrumb",
  "prime-button",
  "prime-buttongroup",
  "prime-card",
@@ -2585,6 +2597,7 @@ dependencies = [
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
+ "prime-breadcrumb",
  "prime-button",
  "prime-buttongroup",
  "prime-card",
@@ -3259,6 +3272,7 @@ dependencies = [
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
+ "prime-breadcrumb",
  "prime-button",
  "prime-buttongroup",
  "prime-card",

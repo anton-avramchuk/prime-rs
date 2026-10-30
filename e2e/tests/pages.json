@@ -1363,5 +1363,19 @@
     "upstream": "/metergroup",
     "oursSelector": "[data-demo=\"icon\"]",
     "upstreamSelector": "icon-doc .card"
+  },
+  {
+    "name": "breadcrumb-basic",
+    "ours": "/breadcrumb",
+    "upstream": "/breadcrumb",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "breadcrumb-template",
+    "ours": "/breadcrumb",
+    "upstream": "/breadcrumb",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

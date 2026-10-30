@@ -205,3 +205,8 @@ max_delta_bytes = 124000
 name = "metergroup"
 feature = "case-metergroup"
 max_delta_bytes = 198000
+
+[[case]]
+name = "breadcrumb"
+feature = "case-breadcrumb"
+max_delta_bytes = 247000

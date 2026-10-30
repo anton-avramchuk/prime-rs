@@ -40,6 +40,7 @@ prime-iftalabel = { workspace = true }
 prime-overlaybadge = { workspace = true }
 prime-timeline = { workspace = true }
 prime-metergroup = { workspace = true }
+prime-breadcrumb = { workspace = true }
 prime-scrollpanel = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }

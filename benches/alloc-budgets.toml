@@ -207,3 +207,8 @@ max_per_instance = 100
 name = "metergroup-1000"
 instances = 1000
 max_per_instance = 180
+
+[[scenario]]
+name = "breadcrumb-1000"
+instances = 1000
+max_per_instance = 177
