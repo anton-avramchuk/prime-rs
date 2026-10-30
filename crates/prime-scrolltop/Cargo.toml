@@ -1,0 +1,37 @@
+[package]
+name = "prime-scrolltop"
+description = "prime-rs: компонент ScrollTop (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-button/ssr", "prime-icons/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-button/hydrate", "prime-icons/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-button = { workspace = true }
+prime-icons = { workspace = true, features = ["chevronup"] }
+web-sys = { workspace = true, features = ["Document", "Element", "Event", "EventTarget", "HtmlElement", "MouseEvent", "ScrollBehavior", "ScrollToOptions", "Window"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { workspace = true }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+wasm-bindgen-futures = "0.4"
+js-sys = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "Event", "CssStyleDeclaration", "ScrollToOptions", "ScrollBehavior", "HtmlCollection"] }
+
+[lints]
+workspace = true

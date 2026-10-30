@@ -112,6 +112,10 @@ pub const RATING: &str = include_str!("../css/components/rating.css");
 #[cfg(feature = "scrollpanel")]
 pub const SCROLLPANEL: &str = include_str!("../css/components/scrollpanel.css");
 
+/// CSS компонента `scrolltop`.
+#[cfg(feature = "scrolltop")]
+pub const SCROLLTOP: &str = include_str!("../css/components/scrolltop.css");
+
 /// CSS компонента `select`.
 #[cfg(feature = "select")]
 pub const SELECT: &str = include_str!("../css/components/select.css");
@@ -210,6 +214,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("rating", RATING),
     #[cfg(feature = "scrollpanel")]
     ("scrollpanel", SCROLLPANEL),
+    #[cfg(feature = "scrolltop")]
+    ("scrolltop", SCROLLTOP),
     #[cfg(feature = "select")]
     ("select", SELECT),
     #[cfg(feature = "selectbutton")]

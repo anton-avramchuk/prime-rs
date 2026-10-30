@@ -4,8 +4,8 @@ use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage,
     FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InputGroupPage, InputNumberPage, InputOtpPage,
     InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, ProgressBarPage, ProgressSpinnerPage,
-    RadioButtonPage, RatingPage, ScrollPanelPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, TagPage, TextareaPage,
-    TimelinePage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
+    RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, TagPage,
+    TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -55,6 +55,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "metergroup",
         "breadcrumb",
         "inputotp",
+        "scrolltop",
     ]);
     view! {
         <!DOCTYPE html>
@@ -130,6 +131,7 @@ pub fn App() -> impl IntoView {
                         <A href="/metergroup">"MeterGroup"</A>
                         <A href="/breadcrumb">"Breadcrumb"</A>
                         <A href="/inputotp">"InputOtp"</A>
+                        <A href="/scrolltop">"ScrollTop"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -177,6 +179,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("metergroup") view=MeterGroupPage />
                         <Route path=StaticSegment("breadcrumb") view=BreadcrumbPage />
                         <Route path=StaticSegment("inputotp") view=InputOtpPage />
+                        <Route path=StaticSegment("scrolltop") view=ScrollTopPage />
                     </Routes>
                 </main>
             </div>

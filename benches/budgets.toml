@@ -215,3 +215,8 @@ max_delta_bytes = 247000
 name = "inputotp"
 feature = "case-inputotp"
 max_delta_bytes = 283000
+
+[[case]]
+name = "scrolltop"
+feature = "case-scrolltop"
+max_delta_bytes = 600000

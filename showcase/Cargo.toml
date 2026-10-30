@@ -42,6 +42,7 @@ prime-timeline = { workspace = true }
 prime-metergroup = { workspace = true }
 prime-breadcrumb = { workspace = true }
 prime-scrollpanel = { workspace = true }
+prime-scrolltop = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

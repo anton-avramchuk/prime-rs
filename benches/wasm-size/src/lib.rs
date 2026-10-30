@@ -190,6 +190,10 @@ cfg_if::cfg_if! {
         fn case() -> impl IntoView {
             view! { <prime_inputotp::InputOtp length=6 /> }
         }
+    } else if #[cfg(feature = "case-scrolltop")] {
+        fn case() -> impl IntoView {
+            view! { <prime_scrolltop::ScrollTop /> }
+        }
     } else if #[cfg(feature = "case-progressspinner")] {
         fn case() -> impl IntoView {
             view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> }

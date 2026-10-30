@@ -29,6 +29,7 @@ prime-timeline = { workspace = true, features = ["ssr"] }
 prime-metergroup = { workspace = true, features = ["ssr"] }
 prime-breadcrumb = { workspace = true, features = ["ssr"] }
 prime-inputotp = { workspace = true, features = ["ssr"] }
+prime-scrolltop = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

@@ -217,3 +217,8 @@ max_per_instance = 177
 name = "inputotp-1000"
 instances = 1000
 max_per_instance = 215
+
+[[scenario]]
+name = "scrolltop-1000"
+instances = 1000
+max_per_instance = 32
