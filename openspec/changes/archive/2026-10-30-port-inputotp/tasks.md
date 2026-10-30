@@ -19,7 +19,7 @@
 ## 4. Интеграция
 
 - [x] 4.1 `docs/inputotp.md` (отличия от PrimeNG, модель значения, что не проверялось); браузерный job в `ci.yml` (три места), если добавлен `tests/web.rs`
-- [ ] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features`, тесты, deny, machete, `openspec validate port-inputotp`; CI `dev` зелёный
+- [x] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features`, тесты, deny, machete, `openspec validate port-inputotp`; CI `dev` зелёный
 
 ## Workflow follow-up
 
