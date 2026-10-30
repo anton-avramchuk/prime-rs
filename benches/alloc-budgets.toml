@@ -232,3 +232,8 @@ max_per_instance = 110
 name = "inplace-1000"
 instances = 1000
 max_per_instance = 35
+
+[[scenario]]
+name = "splitter-1000"
+instances = 1000
+max_per_instance = 118

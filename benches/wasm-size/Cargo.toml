@@ -37,6 +37,7 @@ case-timeline = ["dep:prime-timeline"]
 case-metergroup = ["dep:prime-metergroup"]
 case-breadcrumb = ["dep:prime-breadcrumb"]
 case-inputotp = ["dep:prime-inputotp"]
+case-splitter = ["dep:prime-splitter"]
 case-inplace = ["dep:prime-inplace"]
 case-password = ["dep:prime-password"]
 case-scrolltop = ["dep:prime-scrolltop"]
@@ -84,6 +85,7 @@ prime-inputotp = { workspace = true, optional = true }
 prime-scrolltop = { workspace = true, optional = true }
 prime-password = { workspace = true, optional = true }
 prime-inplace = { workspace = true, optional = true }
+prime-splitter = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

@@ -219,7 +219,7 @@ max_delta_bytes = 283000
 [[case]]
 name = "scrolltop"
 feature = "case-scrolltop"
-max_delta_bytes = 600000
+max_delta_bytes = 350000
 
 [[case]]
 name = "password"
@@ -230,3 +230,8 @@ max_delta_bytes = 540000
 name = "inplace"
 feature = "case-inplace"
 max_delta_bytes = 550000
+
+[[case]]
+name = "splitter"
+feature = "case-splitter"
+max_delta_bytes = 350000

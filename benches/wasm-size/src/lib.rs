@@ -190,6 +190,14 @@ cfg_if::cfg_if! {
         fn case() -> impl IntoView {
             view! { <prime_inputotp::InputOtp length=6 /> }
         }
+    } else if #[cfg(feature = "case-splitter")] {
+        fn case() -> impl IntoView {
+            view! {
+                <prime_splitter::Splitter
+                    panels=vec![ViewFn::from(|| view! { <p>"One"</p> }), ViewFn::from(|| view! { <p>"Two"</p> })]
+                />
+            }
+        }
     } else if #[cfg(feature = "case-inplace")] {
         fn case() -> impl IntoView {
             view! {

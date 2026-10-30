@@ -1545,5 +1545,33 @@
     "upstream": "/inplace",
     "oursSelector": "[data-demo=\"lazy\"]",
     "upstreamSelector": "lazy-doc .card"
+  },
+  {
+    "name": "splitter-horizontal",
+    "ours": "/splitter",
+    "upstream": "/splitter",
+    "oursSelector": "[data-demo=\"horizontal\"]",
+    "upstreamSelector": "horizontal-doc .card"
+  },
+  {
+    "name": "splitter-vertical",
+    "ours": "/splitter",
+    "upstream": "/splitter",
+    "oursSelector": "[data-demo=\"vertical\"]",
+    "upstreamSelector": "vertical-doc .card"
+  },
+  {
+    "name": "splitter-size",
+    "ours": "/splitter",
+    "upstream": "/splitter",
+    "oursSelector": "[data-demo=\"size\"]",
+    "upstreamSelector": "size-doc .card"
+  },
+  {
+    "name": "splitter-nested",
+    "ours": "/splitter",
+    "upstream": "/splitter",
+    "oursSelector": "[data-demo=\"nested\"]",
+    "upstreamSelector": "nested-doc .card"
   }
 ]

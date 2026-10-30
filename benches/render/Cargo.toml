@@ -32,6 +32,7 @@ prime-inputotp = { workspace = true, features = ["ssr"] }
 prime-scrolltop = { workspace = true, features = ["ssr"] }
 prime-password = { workspace = true, features = ["ssr"] }
 prime-inplace = { workspace = true, features = ["ssr"] }
+prime-splitter = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

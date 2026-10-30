@@ -42,6 +42,7 @@ use prime_select::{Select, SelectOption};
 use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_slider::Slider;
+use prime_splitter::Splitter;
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
 use prime_timeline::Timeline;
@@ -382,6 +383,18 @@ fn inputotp_n(n: usize) -> String {
     render((0..n).map(|_| view! { <InputOtp length=6 /> }).collect_view())
 }
 
+fn splitter_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <Splitter panels=vec![ViewFn::from(|| view! { <p>"One"</p> }), ViewFn::from(|| view! { <p>"Two"</p> })] />
+                }
+            })
+            .collect_view(),
+    )
+}
+
 fn inplace_n(n: usize) -> String {
     render(
         (0..n)
@@ -501,6 +514,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "breadcrumb-1000", run: || breadcrumb_n(1000) },
     Scenario { name: "inputotp-1", run: || inputotp_n(1) },
     Scenario { name: "inputotp-1000", run: || inputotp_n(1000) },
+    Scenario { name: "splitter-1", run: || splitter_n(1) },
+    Scenario { name: "splitter-1000", run: || splitter_n(1000) },
     Scenario { name: "inplace-1", run: || inplace_n(1) },
     Scenario { name: "inplace-1000", run: || inplace_n(1000) },
     Scenario { name: "password-1", run: || password_n(1) },
