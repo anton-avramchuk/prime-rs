@@ -235,3 +235,8 @@ max_delta_bytes = 550000
 name = "splitter"
 feature = "case-splitter"
 max_delta_bytes = 350000
+
+[[case]]
+name = "tabs"
+feature = "case-tabs"
+max_delta_bytes = 420000

@@ -33,6 +33,7 @@ prime-scrolltop = { path = "crates/prime-scrolltop" }
 prime-password = { path = "crates/prime-password" }
 prime-inplace = { path = "crates/prime-inplace" }
 prime-splitter = { path = "crates/prime-splitter" }
+prime-tabs = { path = "crates/prime-tabs" }
 prime-textarea = { path = "crates/prime-textarea" }
 prime-checkbox = { path = "crates/prime-checkbox" }
 prime-radiobutton = { path = "crates/prime-radiobutton" }

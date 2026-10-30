@@ -46,6 +46,7 @@ prime-scrolltop = { workspace = true }
 prime-password = { workspace = true }
 prime-inplace = { workspace = true }
 prime-splitter = { workspace = true }
+prime-tabs = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

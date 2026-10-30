@@ -190,6 +190,21 @@ cfg_if::cfg_if! {
         fn case() -> impl IntoView {
             view! { <prime_inputotp::InputOtp length=6 /> }
         }
+    } else if #[cfg(feature = "case-tabs")] {
+        fn case() -> impl IntoView {
+            view! {
+                <prime_tabs::Tabs default_value="0">
+                    <prime_tabs::TabList>
+                        <prime_tabs::Tab value="0">"Header I"</prime_tabs::Tab>
+                        <prime_tabs::Tab value="1">"Header II"</prime_tabs::Tab>
+                    </prime_tabs::TabList>
+                    <prime_tabs::TabPanels>
+                        <prime_tabs::TabPanel value="0"><p>"One"</p></prime_tabs::TabPanel>
+                        <prime_tabs::TabPanel value="1"><p>"Two"</p></prime_tabs::TabPanel>
+                    </prime_tabs::TabPanels>
+                </prime_tabs::Tabs>
+            }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

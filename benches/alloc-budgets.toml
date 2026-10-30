@@ -237,3 +237,8 @@ max_per_instance = 35
 name = "splitter-1000"
 instances = 1000
 max_per_instance = 118
+
+[[scenario]]
+name = "tabs-1000"
+instances = 1000
+max_per_instance = 310

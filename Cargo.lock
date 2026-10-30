@@ -2069,6 +2069,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-tabs"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-tag"
 version = "0.1.0"
 dependencies = [
@@ -2376,6 +2390,7 @@ dependencies = [
  "prime-skeleton",
  "prime-slider",
  "prime-splitter",
+ "prime-tabs",
  "prime-tag",
  "prime-textarea",
  "prime-timeline",
@@ -2710,6 +2725,7 @@ dependencies = [
  "prime-skeleton",
  "prime-slider",
  "prime-splitter",
+ "prime-tabs",
  "prime-tag",
  "prime-textarea",
  "prime-theme",
@@ -3389,6 +3405,7 @@ dependencies = [
  "prime-skeleton",
  "prime-slider",
  "prime-splitter",
+ "prime-tabs",
  "prime-tag",
  "prime-textarea",
  "prime-timeline",

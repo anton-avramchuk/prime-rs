@@ -5,7 +5,7 @@ use crate::pages::{
     FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InplacePage, InputGroupPage, InputNumberPage,
     InputOtpPage, InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, PasswordPage, ProgressBarPage,
     ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
-    SliderPage, SplitterPage, TagPage, TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
+    SliderPage, SplitterPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -59,6 +59,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "password",
         "inplace",
         "splitter",
+        "tabs",
     ]);
     view! {
         <!DOCTYPE html>
@@ -138,6 +139,7 @@ pub fn App() -> impl IntoView {
                         <A href="/password">"Password"</A>
                         <A href="/inplace">"Inplace"</A>
                         <A href="/splitter">"Splitter"</A>
+                        <A href="/tabs">"Tabs"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -189,6 +191,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("password") view=PasswordPage />
                         <Route path=StaticSegment("inplace") view=InplacePage />
                         <Route path=StaticSegment("splitter") view=SplitterPage />
+                        <Route path=StaticSegment("tabs") view=TabsPage />
                     </Routes>
                 </main>
             </div>

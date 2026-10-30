@@ -1573,5 +1573,54 @@
     "upstream": "/splitter",
     "oursSelector": "[data-demo=\"nested\"]",
     "upstreamSelector": "nested-doc .card"
+  },
+  {
+    "name": "tabs-basic",
+    "ours": "/tabs",
+    "upstream": "/tabs",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "tabs-controlled",
+    "ours": "/tabs",
+    "upstream": "/tabs",
+    "oursSelector": "[data-demo=\"controlled\"]",
+    "upstreamSelector": "controlled-doc .card"
+  },
+  {
+    "name": "tabs-disabled",
+    "ours": "/tabs",
+    "upstream": "/tabs",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "tabs-scrollable",
+    "ours": "/tabs",
+    "upstream": "/tabs",
+    "oursSelector": "[data-demo=\"scrollable\"]",
+    "upstreamSelector": "scrollable-doc .card"
+  },
+  {
+    "name": "tabs-dynamic",
+    "ours": "/tabs",
+    "upstream": "/tabs",
+    "oursSelector": "[data-demo=\"dynamic\"]",
+    "upstreamSelector": "dynamic-doc .card"
+  },
+  {
+    "name": "tabs-lazy",
+    "ours": "/tabs",
+    "upstream": "/tabs",
+    "oursSelector": "[data-demo=\"lazy\"]",
+    "upstreamSelector": "lazy-doc .card"
+  },
+  {
+    "name": "tabs-customtemplate",
+    "ours": "/tabs",
+    "upstream": "/tabs",
+    "oursSelector": "[data-demo=\"customtemplate\"]",
+    "upstreamSelector": "customtemplate-doc .card"
   }
 ]

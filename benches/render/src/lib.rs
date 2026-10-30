@@ -43,6 +43,7 @@ use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_slider::Slider;
 use prime_splitter::Splitter;
+use prime_tabs::{Tab, TabList, TabPanel, TabPanels, Tabs};
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
 use prime_timeline::Timeline;
@@ -383,6 +384,32 @@ fn inputotp_n(n: usize) -> String {
     render((0..n).map(|_| view! { <InputOtp length=6 /> }).collect_view())
 }
 
+fn tabs_n(n: usize) -> String {
+    // Tabs передаёт состояние через контекст, поэтому части создаются внутри владельца.
+    Owner::new().with(|| {
+        render(
+            (0..n)
+                .map(|_| {
+                    view! {
+                        <Tabs default_value="0">
+                            <TabList>
+                                <Tab value="0">"Header I"</Tab>
+                                <Tab value="1">"Header II"</Tab>
+                                <Tab value="2">"Header III"</Tab>
+                            </TabList>
+                            <TabPanels>
+                                <TabPanel value="0"><p>"One"</p></TabPanel>
+                                <TabPanel value="1"><p>"Two"</p></TabPanel>
+                                <TabPanel value="2"><p>"Three"</p></TabPanel>
+                            </TabPanels>
+                        </Tabs>
+                    }
+                })
+                .collect_view(),
+        )
+    })
+}
+
 fn splitter_n(n: usize) -> String {
     render(
         (0..n)
@@ -514,6 +541,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "breadcrumb-1000", run: || breadcrumb_n(1000) },
     Scenario { name: "inputotp-1", run: || inputotp_n(1) },
     Scenario { name: "inputotp-1000", run: || inputotp_n(1000) },
+    Scenario { name: "tabs-1", run: || tabs_n(1) },
+    Scenario { name: "tabs-1000", run: || tabs_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },
     Scenario { name: "splitter-1000", run: || splitter_n(1000) },
     Scenario { name: "inplace-1", run: || inplace_n(1) },
