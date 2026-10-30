@@ -25,3 +25,4 @@ rustc-ice-*.txt
 nul
 node_modules/
 .idea
+*.log
