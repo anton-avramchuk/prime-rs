@@ -205,6 +205,14 @@ cfg_if::cfg_if! {
                 </prime_tabs::Tabs>
             }
         }
+    } else if #[cfg(feature = "case-popover")] {
+        fn case() -> impl IntoView {
+            let op = prime_popover::PopoverRef::new();
+            view! {
+                <button on:click=move |e| op.toggle(&e)>"Show"</button>
+                <prime_popover::Popover popover_ref=op><p>"Content"</p></prime_popover::Popover>
+            }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

@@ -100,6 +100,10 @@ pub const PANEL: &str = include_str!("../css/components/panel.css");
 #[cfg(feature = "password")]
 pub const PASSWORD: &str = include_str!("../css/components/password.css");
 
+/// CSS компонента `popover`.
+#[cfg(feature = "popover")]
+pub const POPOVER: &str = include_str!("../css/components/popover.css");
+
 /// CSS компонента `progressbar`.
 #[cfg(feature = "progressbar")]
 pub const PROGRESSBAR: &str = include_str!("../css/components/progressbar.css");
@@ -224,6 +228,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("panel", PANEL),
     #[cfg(feature = "password")]
     ("password", PASSWORD),
+    #[cfg(feature = "popover")]
+    ("popover", POPOVER),
     #[cfg(feature = "progressbar")]
     ("progressbar", PROGRESSBAR),
     #[cfg(feature = "progressspinner")]

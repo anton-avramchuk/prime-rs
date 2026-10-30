@@ -1942,6 +1942,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-popover"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-progressbar"
 version = "0.1.0"
 dependencies = [
@@ -2379,6 +2393,7 @@ dependencies = [
  "prime-overlaybadge",
  "prime-panel",
  "prime-password",
+ "prime-popover",
  "prime-progressbar",
  "prime-progressspinner",
  "prime-radiobutton",
@@ -2714,6 +2729,7 @@ dependencies = [
  "prime-overlaybadge",
  "prime-panel",
  "prime-password",
+ "prime-popover",
  "prime-progressbar",
  "prime-progressspinner",
  "prime-radiobutton",
@@ -3394,6 +3410,7 @@ dependencies = [
  "prime-overlaybadge",
  "prime-panel",
  "prime-password",
+ "prime-popover",
  "prime-progressbar",
  "prime-progressspinner",
  "prime-radiobutton",

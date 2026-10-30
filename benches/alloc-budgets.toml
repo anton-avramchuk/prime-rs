@@ -242,3 +242,8 @@ max_per_instance = 118
 name = "tabs-1000"
 instances = 1000
 max_per_instance = 310
+
+[[scenario]]
+name = "popover-1000"
+instances = 1000
+max_per_instance = 40

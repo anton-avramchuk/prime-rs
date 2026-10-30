@@ -32,6 +32,7 @@ use prime_metergroup::{MeterGroup, MeterItem};
 use prime_overlaybadge::OverlayBadge;
 use prime_panel::Panel;
 use prime_password::Password;
+use prime_popover::{Popover, PopoverRef};
 use prime_progressbar::ProgressBar;
 use prime_progressspinner::ProgressSpinner;
 use prime_radiobutton::RadioButton;
@@ -410,6 +411,23 @@ fn tabs_n(n: usize) -> String {
     })
 }
 
+fn popover_n(n: usize) -> String {
+    // Скрытая панель: в разметке остаётся только `PopoverRef` без элементов.
+    Owner::new().with(|| {
+        render(
+            (0..n)
+                .map(|_| {
+                    view! {
+                        <Popover popover_ref=PopoverRef::new()>
+                            <p>"Content"</p>
+                        </Popover>
+                    }
+                })
+                .collect_view(),
+        )
+    })
+}
+
 fn splitter_n(n: usize) -> String {
     render(
         (0..n)
@@ -543,6 +561,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "inputotp-1000", run: || inputotp_n(1000) },
     Scenario { name: "tabs-1", run: || tabs_n(1) },
     Scenario { name: "tabs-1000", run: || tabs_n(1000) },
+    Scenario { name: "popover-1", run: || popover_n(1) },
+    Scenario { name: "popover-1000", run: || popover_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },
     Scenario { name: "splitter-1000", run: || splitter_n(1000) },
     Scenario { name: "inplace-1", run: || inplace_n(1) },

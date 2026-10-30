@@ -47,6 +47,7 @@ prime-password = { workspace = true }
 prime-inplace = { workspace = true }
 prime-splitter = { workspace = true }
 prime-tabs = { workspace = true }
+prime-popover = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }
@@ -68,7 +69,7 @@ prime-textarea = { workspace = true }
 prime-card = { workspace = true }
 prime-icons = { workspace = true, features = ["all-icons"] }
 prime-theme = { workspace = true, features = ["all-components"] }
-web-sys = { workspace = true, features = ["Window", "Document", "Element", "DomTokenList"] }
+web-sys = { workspace = true, features = ["Window", "Document", "Element", "DomTokenList", "MouseEvent"] }
 wasm-bindgen = { workspace = true, optional = true }
 js-sys = { workspace = true, optional = true }
 console_error_panic_hook = { version = "0.1", optional = true }

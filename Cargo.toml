@@ -65,6 +65,7 @@ prime-overlaybadge = { path = "crates/prime-overlaybadge" }
 prime-breadcrumb = { path = "crates/prime-breadcrumb" }
 prime-timeline = { path = "crates/prime-timeline" }
 prime-metergroup = { path = "crates/prime-metergroup" }
+prime-popover = { path = "crates/prime-popover" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

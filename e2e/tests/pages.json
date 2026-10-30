@@ -1622,5 +1622,33 @@
     "upstream": "/tabs",
     "oursSelector": "[data-demo=\"customtemplate\"]",
     "upstreamSelector": "customtemplate-doc .card"
+  },
+  {
+    "name": "popover-basic",
+    "ours": "/popover",
+    "upstream": "/popover",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "popover-target",
+    "ours": "/popover",
+    "upstream": "/popover",
+    "oursSelector": "[data-demo=\"target\"]",
+    "upstreamSelector": "target-doc .card"
+  },
+  {
+    "name": "popover-selectdata",
+    "ours": "/popover",
+    "upstream": "/popover",
+    "oursSelector": "[data-demo=\"selectdata\"]",
+    "upstreamSelector": "selectdata-doc .card"
+  },
+  {
+    "name": "popover-template",
+    "ours": "/popover",
+    "upstream": "/popover",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]
