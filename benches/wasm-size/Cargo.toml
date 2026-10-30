@@ -36,6 +36,7 @@ case-overlaybadge = ["dep:prime-overlaybadge"]
 case-timeline = ["dep:prime-timeline"]
 case-metergroup = ["dep:prime-metergroup"]
 case-breadcrumb = ["dep:prime-breadcrumb"]
+case-inputotp = ["dep:prime-inputotp"]
 case-scrollpanel = ["dep:prime-scrollpanel"]
 case-progressspinner = ["dep:prime-progressspinner"]
 case-skeleton = ["dep:prime-skeleton"]
@@ -76,6 +77,7 @@ prime-overlaybadge = { workspace = true, optional = true }
 prime-timeline = { workspace = true, optional = true }
 prime-metergroup = { workspace = true, optional = true }
 prime-breadcrumb = { workspace = true, optional = true }
+prime-inputotp = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

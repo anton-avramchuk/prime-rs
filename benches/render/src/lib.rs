@@ -23,6 +23,7 @@ use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_iftalabel::IftaLabel;
 use prime_inputgroup::{InputGroup, InputGroupAddon};
 use prime_inputnumber::{InputNumber, InputNumberMode};
+use prime_inputotp::InputOtp;
 use prime_inputtext::InputText;
 use prime_knob::Knob;
 use prime_message::{Message, MessageSeverity};
@@ -374,6 +375,10 @@ fn breadcrumb_n(n: usize) -> String {
     )
 }
 
+fn inputotp_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <InputOtp length=6 /> }).collect_view())
+}
+
 fn scrollpanel_n(n: usize) -> String {
     render((0..n).map(|_| view! { <ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></ScrollPanel> }).collect_view())
 }
@@ -468,6 +473,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "metergroup-1000", run: || metergroup_n(1000) },
     Scenario { name: "breadcrumb-1", run: || breadcrumb_n(1) },
     Scenario { name: "breadcrumb-1000", run: || breadcrumb_n(1000) },
+    Scenario { name: "inputotp-1", run: || inputotp_n(1) },
+    Scenario { name: "inputotp-1000", run: || inputotp_n(1000) },
     Scenario { name: "scrollpanel-1", run: || scrollpanel_n(1) },
     Scenario { name: "scrollpanel-1000", run: || scrollpanel_n(1000) },
     Scenario { name: "progressspinner-1", run: || progressspinner_n(1) },

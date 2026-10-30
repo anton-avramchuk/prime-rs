@@ -64,6 +64,10 @@ pub const INPUTGROUP: &str = include_str!("../css/components/inputgroup.css");
 #[cfg(feature = "inputnumber")]
 pub const INPUTNUMBER: &str = include_str!("../css/components/inputnumber.css");
 
+/// CSS компонента `inputotp`.
+#[cfg(feature = "inputotp")]
+pub const INPUTOTP: &str = include_str!("../css/components/inputotp.css");
+
 /// CSS компонента `inputtext`.
 #[cfg(feature = "inputtext")]
 pub const INPUTTEXT: &str = include_str!("../css/components/inputtext.css");
@@ -182,6 +186,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("inputgroup", INPUTGROUP),
     #[cfg(feature = "inputnumber")]
     ("inputnumber", INPUTNUMBER),
+    #[cfg(feature = "inputotp")]
+    ("inputotp", INPUTOTP),
     #[cfg(feature = "inputtext")]
     ("inputtext", INPUTTEXT),
     #[cfg(feature = "knob")]

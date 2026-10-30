@@ -44,6 +44,7 @@ prime-breadcrumb = { workspace = true }
 prime-scrollpanel = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
+prime-inputotp = { workspace = true }
 prime-inputtext = { workspace = true }
 prime-checkbox = { workspace = true }
 prime-radiobutton = { workspace = true }

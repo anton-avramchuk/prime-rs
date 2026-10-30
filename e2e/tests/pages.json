@@ -1377,5 +1377,40 @@
     "upstream": "/breadcrumb",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "inputotp-basic",
+    "ours": "/inputotp",
+    "upstream": "/inputotp",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "inputotp-mask",
+    "ours": "/inputotp",
+    "upstream": "/inputotp",
+    "oursSelector": "[data-demo=\"mask\"]",
+    "upstreamSelector": "mask-doc .card"
+  },
+  {
+    "name": "inputotp-integeronly",
+    "ours": "/inputotp",
+    "upstream": "/inputotp",
+    "oursSelector": "[data-demo=\"integeronly\"]",
+    "upstreamSelector": "integeronly-doc .card"
+  },
+  {
+    "name": "inputotp-sizes",
+    "ours": "/inputotp",
+    "upstream": "/inputotp",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "inputotp-template",
+    "ours": "/inputotp",
+    "upstream": "/inputotp",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

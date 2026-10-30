@@ -210,3 +210,8 @@ max_delta_bytes = 198000
 name = "breadcrumb"
 feature = "case-breadcrumb"
 max_delta_bytes = 247000
+
+[[case]]
+name = "inputotp"
+feature = "case-inputotp"
+max_delta_bytes = 283000

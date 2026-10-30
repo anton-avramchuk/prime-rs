@@ -1,0 +1,33 @@
+[package]
+name = "prime-inputotp"
+description = "prime-rs: компонент InputOtp (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-inputtext/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-inputtext/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-inputtext = { workspace = true }
+web-sys = { workspace = true, features = ["ClipboardEvent", "DataTransfer", "Element", "Event", "EventTarget", "FocusEvent", "HtmlElement", "HtmlInputElement", "InputEvent", "KeyboardEvent"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "HtmlInputElement", "Event", "EventInit", "InputEvent", "InputEventInit", "KeyboardEvent", "KeyboardEventInit", "FocusEvent", "ClipboardEvent", "ClipboardEventInit", "DataTransfer"] }
+
+[lints]
+workspace = true

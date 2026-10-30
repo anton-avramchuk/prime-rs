@@ -1830,6 +1830,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-inputotp"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-inputtext",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-inputtext"
 version = "0.1.0"
 dependencies = [
@@ -2284,6 +2297,7 @@ dependencies = [
  "prime-iftalabel",
  "prime-inputgroup",
  "prime-inputnumber",
+ "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
  "prime-message",
@@ -2613,6 +2627,7 @@ dependencies = [
  "prime-iftalabel",
  "prime-inputgroup",
  "prime-inputnumber",
+ "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
  "prime-message",
@@ -3287,6 +3302,7 @@ dependencies = [
  "prime-iftalabel",
  "prime-inputgroup",
  "prime-inputnumber",
+ "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
  "prime-message",

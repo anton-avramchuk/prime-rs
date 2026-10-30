@@ -186,6 +186,10 @@ cfg_if::cfg_if! {
             let model = vec![prime_breadcrumb::BreadcrumbItem::new().label("Electronics"), prime_breadcrumb::BreadcrumbItem::new().label("Computer")];
             view! { <prime_breadcrumb::Breadcrumb model=model home=prime_breadcrumb::BreadcrumbItem::new() /> }
         }
+    } else if #[cfg(feature = "case-inputotp")] {
+        fn case() -> impl IntoView {
+            view! { <prime_inputotp::InputOtp length=6 /> }
+        }
     } else if #[cfg(feature = "case-progressspinner")] {
         fn case() -> impl IntoView {
             view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> }
