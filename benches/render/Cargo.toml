@@ -35,6 +35,7 @@ prime-inplace = { workspace = true, features = ["ssr"] }
 prime-splitter = { workspace = true, features = ["ssr"] }
 prime-tabs = { workspace = true, features = ["ssr"] }
 prime-popover = { workspace = true, features = ["ssr"] }
+prime-drawer = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

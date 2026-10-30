@@ -2,10 +2,11 @@
 
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage,
-    FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InplacePage, InputGroupPage, InputNumberPage,
-    InputOtpPage, InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, PasswordPage, PopoverPage,
-    ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage,
-    SkeletonPage, SliderPage, SplitterPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
+    DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InplacePage, InputGroupPage,
+    InputNumberPage, InputOtpPage, InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, PasswordPage,
+    PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage,
+    SelectPage, SkeletonPage, SliderPage, SplitterPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage,
+    ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -61,6 +62,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "splitter",
         "tabs",
         "popover",
+        "drawer",
     ]);
     view! {
         <!DOCTYPE html>
@@ -142,6 +144,7 @@ pub fn App() -> impl IntoView {
                         <A href="/splitter">"Splitter"</A>
                         <A href="/tabs">"Tabs"</A>
                         <A href="/popover">"Popover"</A>
+                        <A href="/drawer">"Drawer"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -195,6 +198,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("splitter") view=SplitterPage />
                         <Route path=StaticSegment("tabs") view=TabsPage />
                         <Route path=StaticSegment("popover") view=PopoverPage />
+                        <Route path=StaticSegment("drawer") view=DrawerPage />
                     </Routes>
                 </main>
             </div>

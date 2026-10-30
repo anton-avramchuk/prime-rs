@@ -245,3 +245,8 @@ max_delta_bytes = 420000
 name = "popover"
 feature = "case-popover"
 max_delta_bytes = 325000
+
+[[case]]
+name = "drawer"
+feature = "case-drawer"
+max_delta_bytes = 655000

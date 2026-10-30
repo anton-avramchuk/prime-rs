@@ -118,3 +118,21 @@ async fn portal_renders_into_body_and_is_removed_on_unmount() {
     assert!(doc.get_element_by_id("portal-content").is_none(), "после размонтирования содержимое удалено");
     host.remove();
 }
+
+#[wasm_bindgen_test]
+fn body_scroll_lock_is_counted() {
+    let body = web_sys::window().unwrap().document().unwrap().body().unwrap();
+    let locked = || body.class_list().contains("p-overflow-hidden");
+    assert!(!locked());
+    prime_dom::block_body_scroll();
+    prime_dom::block_body_scroll();
+    assert!(locked());
+    assert!(!body.style().get_property_value("--p-scrollbar-width").unwrap().is_empty());
+    prime_dom::unblock_body_scroll();
+    assert!(locked(), "вторая блокировка ещё держит класс");
+    prime_dom::unblock_body_scroll();
+    assert!(!locked());
+    assert!(body.style().get_property_value("--p-scrollbar-width").unwrap().is_empty());
+    prime_dom::unblock_body_scroll();
+    assert!(!locked(), "лишнее снятие безвредно");
+}

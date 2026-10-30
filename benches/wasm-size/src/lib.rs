@@ -213,6 +213,14 @@ cfg_if::cfg_if! {
                 <prime_popover::Popover popover_ref=op><p>"Content"</p></prime_popover::Popover>
             }
         }
+    } else if #[cfg(feature = "case-drawer")] {
+        fn case() -> impl IntoView {
+            let visible = RwSignal::new(false);
+            view! {
+                <button on:click=move |_| visible.set(true)>"Show"</button>
+                <prime_drawer::Drawer visible=visible header="Drawer"><p>"Content"</p></prime_drawer::Drawer>
+            }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

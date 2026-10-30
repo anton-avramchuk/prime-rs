@@ -15,6 +15,7 @@ use prime_card::Card;
 use prime_checkbox::Checkbox;
 use prime_chip::Chip;
 use prime_divider::{Divider, DividerAlign};
+use prime_drawer::Drawer;
 use prime_fieldset::Fieldset;
 use prime_floatlabel::{FloatLabel, FloatLabelVariant};
 use prime_fluid::Fluid;
@@ -428,6 +429,23 @@ fn popover_n(n: usize) -> String {
     })
 }
 
+fn drawer_n(n: usize) -> String {
+    // Скрытая панель: в разметке остаётся только служебная разметка без элементов.
+    Owner::new().with(|| {
+        render(
+            (0..n)
+                .map(|_| {
+                    view! {
+                        <Drawer header="Drawer">
+                            <p>"Content"</p>
+                        </Drawer>
+                    }
+                })
+                .collect_view(),
+        )
+    })
+}
+
 fn splitter_n(n: usize) -> String {
     render(
         (0..n)
@@ -563,6 +581,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tabs-1000", run: || tabs_n(1000) },
     Scenario { name: "popover-1", run: || popover_n(1) },
     Scenario { name: "popover-1000", run: || popover_n(1000) },
+    Scenario { name: "drawer-1", run: || drawer_n(1) },
+    Scenario { name: "drawer-1000", run: || drawer_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },
     Scenario { name: "splitter-1000", run: || splitter_n(1000) },
     Scenario { name: "inplace-1", run: || inplace_n(1) },

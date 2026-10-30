@@ -111,6 +111,65 @@ pub fn align_overlay(overlay: &HtmlElement, target: &HtmlElement, mode: AlignMod
     Some(placement)
 }
 
+const SCROLL_LOCK_CLASS: &str = "p-overflow-hidden";
+
+thread_local! {
+    static SCROLL_LOCKS: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+}
+
+/// Учитывает ещё одну блокировку; `true`, если она первая (класс нужно поставить).
+fn lock_acquire(count: &mut usize) -> bool {
+    *count += 1;
+    *count == 1
+}
+
+/// Снимает одну блокировку; `true`, если она последняя (класс нужно убрать). Лишнее снятие ничего не меняет.
+fn lock_release(count: &mut usize) -> bool {
+    if *count == 0 {
+        return false;
+    }
+    *count -= 1;
+    *count == 0
+}
+
+/// Блокирует прокрутку страницы (порт `blockBodyScroll`): `body` получает класс `p-overflow-hidden`,
+/// а `--p-scrollbar-width` — ширину полосы прокрутки, чтобы вёрстка не дёргалась.
+///
+/// Вызовы считаются: класс снимается, когда выполнено столько же [`unblock_body_scroll`]. Вне браузера ничего не делает.
+pub fn block_body_scroll() {
+    let Some(doc) = document() else { return };
+    if !SCROLL_LOCKS.with(|c| {
+        let mut n = c.get();
+        let first = lock_acquire(&mut n);
+        c.set(n);
+        first
+    }) {
+        return;
+    }
+    if let (Some(body), Some(root)) = (doc.body(), doc.document_element()) {
+        let bar = window().and_then(|w| w.inner_width().ok()).and_then(|w| w.as_f64()).unwrap_or(0.0) - f64::from(root.client_width());
+        let _ = body.style().set_property("--p-scrollbar-width", &format!("{}px", bar.max(0.0)));
+        let _ = body.class_list().add_1(SCROLL_LOCK_CLASS);
+    }
+}
+
+/// Снимает блокировку, поставленную [`block_body_scroll`]; класс убирается вместе с последней.
+pub fn unblock_body_scroll() {
+    let Some(doc) = document() else { return };
+    if !SCROLL_LOCKS.with(|c| {
+        let mut n = c.get();
+        let last = lock_release(&mut n);
+        c.set(n);
+        last
+    }) {
+        return;
+    }
+    if let Some(body) = doc.body() {
+        let _ = body.style().remove_property("--p-scrollbar-width");
+        let _ = body.class_list().remove_1(SCROLL_LOCK_CLASS);
+    }
+}
+
 /// Приводит `Element` к `HtmlElement`.
 pub fn as_html(el: &web_sys::Element) -> Option<HtmlElement> {
     el.clone().dyn_into::<HtmlElement>().ok()
@@ -119,6 +178,28 @@ pub fn as_html(el: &web_sys::Element) -> Option<HtmlElement> {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod ssr_tests {
     use super::*;
+
+    #[test]
+    fn scroll_lock_counter() {
+        // (операции: true = блокировка, false = снятие) → (первая/последняя на каждом шаге)
+        let cases: [(&[bool], &[bool]); 4] = [
+            (&[true], &[true]),
+            (&[true, true, false, false], &[true, false, false, true]),
+            (&[false], &[false]),
+            (&[true, false, false, true], &[true, true, false, true]),
+        ];
+        for (ops, want) in cases {
+            let mut n = 0;
+            let got: Vec<bool> = ops.iter().map(|&acquire| if acquire { lock_acquire(&mut n) } else { lock_release(&mut n) }).collect();
+            assert_eq!(got, want, "{ops:?}");
+        }
+    }
+
+    #[test]
+    fn scroll_lock_is_a_noop_without_a_browser() {
+        block_body_scroll();
+        unblock_body_scroll();
+    }
 
     #[test]
     fn no_browser_means_no_panic_and_neutral_values() {

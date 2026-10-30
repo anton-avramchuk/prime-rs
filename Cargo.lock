@@ -1748,6 +1748,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-drawer"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-fieldset"
 version = "0.1.0"
 dependencies = [
@@ -2376,6 +2392,7 @@ dependencies = [
  "prime-checkbox",
  "prime-chip",
  "prime-divider",
+ "prime-drawer",
  "prime-fieldset",
  "prime-floatlabel",
  "prime-fluid",
@@ -2712,6 +2729,7 @@ dependencies = [
  "prime-chip",
  "prime-core",
  "prime-divider",
+ "prime-drawer",
  "prime-fieldset",
  "prime-floatlabel",
  "prime-fluid",
@@ -3393,6 +3411,7 @@ dependencies = [
  "prime-checkbox",
  "prime-chip",
  "prime-divider",
+ "prime-drawer",
  "prime-fieldset",
  "prime-floatlabel",
  "prime-fluid",

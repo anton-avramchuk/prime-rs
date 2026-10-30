@@ -108,14 +108,20 @@ fn extra_base_css(up: &Upstream) -> Result<String, String> {
     Ok(src[from..from + len].to_owned())
 }
 
-/// Часть `css`-литерала после маркера `/* For PrimeNG */` или `/* For PrimeNG (пояснение) */` (до закрывающего обратного апострофа),
-/// если маркер есть.
+/// Часть `css`-литерала после маркера `/* For PrimeNG */`, `/* For PrimeNG (пояснение) */` или `/** For PrimeNG **/`
+/// (до закрывающего обратного апострофа), если маркер есть.
 fn primeng_extra_block(src: &str) -> Option<String> {
-    const MARK: &str = "/* For PrimeNG";
-    let start = src.find(MARK)? + MARK.len();
+    const NAME: &str = "For PrimeNG";
+    let at = src.find(NAME)?;
+    let before = src[..at].trim_end();
+    if !(before.ends_with("/*") || before.ends_with("/**")) {
+        return None;
+    }
+    let start = at + NAME.len();
     let end = start + src[start..].find("*/")?;
-    // после имени маркера допустимо только пояснение в скобках: `/* For PrimeNG Something */` не маркер
-    let note = src[start..end].trim();
+    // после имени маркера допустимо только пояснение в скобках: `/* For PrimeNG Something */` не маркер;
+    // лишние звёздочки (`/** For PrimeNG **/`) отбрасываются
+    let note = src[start..end].trim().trim_end_matches('*').trim();
     if !(note.is_empty() || (note.starts_with('(') && note.ends_with(')'))) {
         return None;
     }
@@ -232,6 +238,19 @@ ${s}
 `;";
         assert_eq!(primeng_extra_block(src).as_deref(), Some(".a { order: 1; }"));
         assert_eq!(primeng_extra_block("`/* For PrimeNG Something */ .a{}`"), None);
+    }
+
+    #[test]
+    fn marker_with_double_stars() {
+        let src = "const style = `
+${s}
+
+/** For PrimeNG **/
+.p-drawer { position: fixed; }
+`;";
+        assert_eq!(primeng_extra_block(src).as_deref(), Some(".p-drawer { position: fixed; }"));
+        // слово без комментария — не маркер
+        assert_eq!(primeng_extra_block("`For PrimeNG */ .a{}`"), None);
     }
 
     #[test]

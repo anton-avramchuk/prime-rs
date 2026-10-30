@@ -17,7 +17,7 @@ pub mod focus;
 pub mod position;
 pub mod ripple;
 
-pub use dom::{AlignMode, align_overlay};
+pub use dom::{AlignMode, align_overlay, block_body_scroll, unblock_body_scroll};
 pub use focus::{FocusTrap, first_focusable, last_focusable};
 pub use leptos::portal::Portal;
 pub use position::{Origin, Placement, absolute_position, relative_position};

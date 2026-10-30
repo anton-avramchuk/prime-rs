@@ -48,6 +48,7 @@ prime-inplace = { workspace = true }
 prime-splitter = { workspace = true }
 prime-tabs = { workspace = true }
 prime-popover = { workspace = true }
+prime-drawer = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

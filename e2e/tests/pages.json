@@ -1650,5 +1650,47 @@
     "upstream": "/popover",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "drawer-basic",
+    "ours": "/drawer",
+    "upstream": "/drawer",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "drawer-position",
+    "ours": "/drawer",
+    "upstream": "/drawer",
+    "oursSelector": "[data-demo=\"position\"]",
+    "upstreamSelector": "position-doc .card"
+  },
+  {
+    "name": "drawer-size",
+    "ours": "/drawer",
+    "upstream": "/drawer",
+    "oursSelector": "[data-demo=\"size\"]",
+    "upstreamSelector": "size-doc .card"
+  },
+  {
+    "name": "drawer-fullscreen",
+    "ours": "/drawer",
+    "upstream": "/drawer",
+    "oursSelector": "[data-demo=\"fullscreen\"]",
+    "upstreamSelector": "fullscreen-doc .card"
+  },
+  {
+    "name": "drawer-template",
+    "ours": "/drawer",
+    "upstream": "/drawer",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "drawer-headless",
+    "ours": "/drawer",
+    "upstream": "/drawer",
+    "oursSelector": "[data-demo=\"headless\"]",
+    "upstreamSelector": "headless-doc .card"
   }
 ]

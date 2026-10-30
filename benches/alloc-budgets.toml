@@ -247,3 +247,8 @@ max_per_instance = 310
 name = "popover-1000"
 instances = 1000
 max_per_instance = 40
+
+[[scenario]]
+name = "drawer-1000"
+instances = 1000
+max_per_instance = 45

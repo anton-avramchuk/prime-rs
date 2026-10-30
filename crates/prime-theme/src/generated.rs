@@ -40,6 +40,10 @@ pub const CHIP: &str = include_str!("../css/components/chip.css");
 #[cfg(feature = "divider")]
 pub const DIVIDER: &str = include_str!("../css/components/divider.css");
 
+/// CSS компонента `drawer`.
+#[cfg(feature = "drawer")]
+pub const DRAWER: &str = include_str!("../css/components/drawer.css");
+
 /// CSS компонента `fieldset`.
 #[cfg(feature = "fieldset")]
 pub const FIELDSET: &str = include_str!("../css/components/fieldset.css");
@@ -198,6 +202,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("chip", CHIP),
     #[cfg(feature = "divider")]
     ("divider", DIVIDER),
+    #[cfg(feature = "drawer")]
+    ("drawer", DRAWER),
     #[cfg(feature = "fieldset")]
     ("fieldset", FIELDSET),
     #[cfg(feature = "floatlabel")]
