@@ -19,7 +19,7 @@
 ## 4. Интеграция
 
 - [x] 4.1 `docs/display-batch.md` (отличия от PrimeNG: перечисление `align`, шаблоны-колбэки, иконки `MeterItem`, демонстрации без недостающих иконок)
-- [ ] 4.2 `cargo fmt --all -- --check`, clippy с исключениями CI и с `--all-features`, тесты, deny, machete, `openspec validate port-display-batch`; CI `dev` зелёный
+- [x] 4.2 `cargo fmt --all -- --check`, clippy с исключениями CI и с `--all-features`, тесты, deny, machete, `openspec validate port-display-batch`; CI `dev` зелёный
 
 ## Workflow follow-up
 
