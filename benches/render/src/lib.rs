@@ -25,6 +25,8 @@ use prime_inputnumber::{InputNumber, InputNumberMode};
 use prime_inputtext::InputText;
 use prime_knob::Knob;
 use prime_message::{Message, MessageSeverity};
+use prime_metergroup::{MeterGroup, MeterItem};
+use prime_overlaybadge::OverlayBadge;
 use prime_panel::Panel;
 use prime_progressbar::ProgressBar;
 use prime_progressspinner::ProgressSpinner;
@@ -37,6 +39,7 @@ use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_slider::Slider;
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
+use prime_timeline::Timeline;
 use prime_togglebutton::ToggleButton;
 use prime_toggleswitch::ToggleSwitch;
 use prime_toolbar::Toolbar;
@@ -326,6 +329,36 @@ fn iftalabel_n(n: usize) -> String {
     )
 }
 
+fn overlaybadge_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <OverlayBadge value="2" severity=BadgeSeverity::Danger><CheckIcon /></OverlayBadge> }).collect_view())
+}
+
+fn timeline_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                let content = Callback::new(|e: &'static str| view! { <b>{e}</b> }.into_any());
+                view! { <Timeline value={vec!["Ordered", "Processing", "Shipped", "Delivered"]} content=content /> }
+            })
+            .collect_view(),
+    )
+}
+
+fn metergroup_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                let items = vec![
+                    MeterItem::new("Apps", "#34d399", 16.0),
+                    MeterItem::new("Messages", "#fbbf24", 8.0),
+                    MeterItem::new("Media", "#60a5fa", 24.0),
+                ];
+                view! { <MeterGroup value={items} /> }
+            })
+            .collect_view(),
+    )
+}
+
 fn scrollpanel_n(n: usize) -> String {
     render((0..n).map(|_| view! { <ScrollPanel style="width: 100%; height: 150px"><p>"Content"</p></ScrollPanel> }).collect_view())
 }
@@ -412,6 +445,12 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "floatlabel-1000", run: || floatlabel_n(1000) },
     Scenario { name: "iftalabel-1", run: || iftalabel_n(1) },
     Scenario { name: "iftalabel-1000", run: || iftalabel_n(1000) },
+    Scenario { name: "overlaybadge-1", run: || overlaybadge_n(1) },
+    Scenario { name: "overlaybadge-1000", run: || overlaybadge_n(1000) },
+    Scenario { name: "timeline-1", run: || timeline_n(1) },
+    Scenario { name: "timeline-1000", run: || timeline_n(1000) },
+    Scenario { name: "metergroup-1", run: || metergroup_n(1) },
+    Scenario { name: "metergroup-1000", run: || metergroup_n(1000) },
     Scenario { name: "scrollpanel-1", run: || scrollpanel_n(1) },
     Scenario { name: "scrollpanel-1000", run: || scrollpanel_n(1000) },
     Scenario { name: "progressspinner-1", run: || progressspinner_n(1) },

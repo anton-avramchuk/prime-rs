@@ -24,6 +24,9 @@ prime-fluid = { workspace = true, features = ["ssr"] }
 prime-iconfield = { workspace = true, features = ["ssr"] }
 prime-floatlabel = { workspace = true, features = ["ssr"] }
 prime-iftalabel = { workspace = true, features = ["ssr"] }
+prime-overlaybadge = { workspace = true, features = ["ssr"] }
+prime-timeline = { workspace = true, features = ["ssr"] }
+prime-metergroup = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

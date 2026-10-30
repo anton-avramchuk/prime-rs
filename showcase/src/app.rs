@@ -3,8 +3,9 @@
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage, FieldsetPage,
     FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InputGroupPage, InputNumberPage, InputTextPage, KnobPage,
-    MessagePage, PanelPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, SelectButtonPage,
-    SelectPage, SkeletonPage, SliderPage, TagPage, TextareaPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
+    MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage,
+    ScrollPanelPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, TagPage, TextareaPage, TimelinePage, ToggleButtonPage,
+    ToggleSwitchPage, ToolbarPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -49,6 +50,9 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "buttongroup",
         "floatlabel",
         "iftalabel",
+        "overlaybadge",
+        "timeline",
+        "metergroup",
     ]);
     view! {
         <!DOCTYPE html>
@@ -119,6 +123,9 @@ pub fn App() -> impl IntoView {
                         <A href="/iconfield">"IconField"</A>
                         <A href="/floatlabel">"FloatLabel"</A>
                         <A href="/iftalabel">"IftaLabel"</A>
+                        <A href="/overlaybadge">"OverlayBadge"</A>
+                        <A href="/timeline">"Timeline"</A>
+                        <A href="/metergroup">"MeterGroup"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -161,6 +168,9 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("iconfield") view=IconFieldPage />
                         <Route path=StaticSegment("floatlabel") view=FloatLabelPage />
                         <Route path=StaticSegment("iftalabel") view=IftaLabelPage />
+                        <Route path=StaticSegment("overlaybadge") view=OverlayBadgePage />
+                        <Route path=StaticSegment("timeline") view=TimelinePage />
+                        <Route path=StaticSegment("metergroup") view=MeterGroupPage />
                     </Routes>
                 </main>
             </div>

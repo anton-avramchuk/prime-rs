@@ -72,6 +72,14 @@ pub const KNOB: &str = include_str!("../css/components/knob.css");
 #[cfg(feature = "message")]
 pub const MESSAGE: &str = include_str!("../css/components/message.css");
 
+/// CSS компонента `metergroup`.
+#[cfg(feature = "metergroup")]
+pub const METERGROUP: &str = include_str!("../css/components/metergroup.css");
+
+/// CSS компонента `overlaybadge`.
+#[cfg(feature = "overlaybadge")]
+pub const OVERLAYBADGE: &str = include_str!("../css/components/overlaybadge.css");
+
 /// CSS компонента `panel`.
 #[cfg(feature = "panel")]
 pub const PANEL: &str = include_str!("../css/components/panel.css");
@@ -119,6 +127,10 @@ pub const TAG: &str = include_str!("../css/components/tag.css");
 /// CSS компонента `textarea`.
 #[cfg(feature = "textarea")]
 pub const TEXTAREA: &str = include_str!("../css/components/textarea.css");
+
+/// CSS компонента `timeline`.
+#[cfg(feature = "timeline")]
+pub const TIMELINE: &str = include_str!("../css/components/timeline.css");
 
 /// CSS компонента `togglebutton`.
 #[cfg(feature = "togglebutton")]
@@ -170,6 +182,10 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("knob", KNOB),
     #[cfg(feature = "message")]
     ("message", MESSAGE),
+    #[cfg(feature = "metergroup")]
+    ("metergroup", METERGROUP),
+    #[cfg(feature = "overlaybadge")]
+    ("overlaybadge", OVERLAYBADGE),
     #[cfg(feature = "panel")]
     ("panel", PANEL),
     #[cfg(feature = "progressbar")]
@@ -194,6 +210,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("tag", TAG),
     #[cfg(feature = "textarea")]
     ("textarea", TEXTAREA),
+    #[cfg(feature = "timeline")]
+    ("timeline", TIMELINE),
     #[cfg(feature = "togglebutton")]
     ("togglebutton", TOGGLEBUTTON),
     #[cfg(feature = "toggleswitch")]

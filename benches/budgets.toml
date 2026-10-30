@@ -190,3 +190,18 @@ max_delta_bytes = 100000
 name = "iftalabel"
 feature = "case-iftalabel"
 max_delta_bytes = 79000
+
+[[case]]
+name = "overlaybadge"
+feature = "case-overlaybadge"
+max_delta_bytes = 115000
+
+[[case]]
+name = "timeline"
+feature = "case-timeline"
+max_delta_bytes = 124000
+
+[[case]]
+name = "metergroup"
+feature = "case-metergroup"
+max_delta_bytes = 198000

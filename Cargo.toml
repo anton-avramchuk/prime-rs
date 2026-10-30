@@ -55,6 +55,9 @@ prime-fluid = { path = "crates/prime-fluid" }
 prime-iconfield = { path = "crates/prime-iconfield" }
 prime-floatlabel = { path = "crates/prime-floatlabel" }
 prime-iftalabel = { path = "crates/prime-iftalabel" }
+prime-overlaybadge = { path = "crates/prime-overlaybadge" }
+prime-timeline = { path = "crates/prime-timeline" }
+prime-metergroup = { path = "crates/prime-metergroup" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

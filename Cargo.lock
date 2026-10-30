@@ -1856,6 +1856,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-metergroup"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
+
+[[package]]
+name = "prime-overlaybadge"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-badge",
+ "prime-core",
+]
+
+[[package]]
 name = "prime-panel"
 version = "0.1.0"
 dependencies = [
@@ -1990,6 +2007,14 @@ dependencies = [
 [[package]]
 name = "prime-theme"
 version = "0.1.0"
+
+[[package]]
+name = "prime-timeline"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-core",
+]
 
 [[package]]
 name = "prime-togglebutton"
@@ -2250,6 +2275,8 @@ dependencies = [
  "prime-inputtext",
  "prime-knob",
  "prime-message",
+ "prime-metergroup",
+ "prime-overlaybadge",
  "prime-panel",
  "prime-progressbar",
  "prime-progressspinner",
@@ -2262,6 +2289,7 @@ dependencies = [
  "prime-slider",
  "prime-tag",
  "prime-textarea",
+ "prime-timeline",
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
@@ -2575,6 +2603,8 @@ dependencies = [
  "prime-inputtext",
  "prime-knob",
  "prime-message",
+ "prime-metergroup",
+ "prime-overlaybadge",
  "prime-panel",
  "prime-progressbar",
  "prime-progressspinner",
@@ -2588,6 +2618,7 @@ dependencies = [
  "prime-tag",
  "prime-textarea",
  "prime-theme",
+ "prime-timeline",
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
@@ -3245,6 +3276,8 @@ dependencies = [
  "prime-inputtext",
  "prime-knob",
  "prime-message",
+ "prime-metergroup",
+ "prime-overlaybadge",
  "prime-panel",
  "prime-progressbar",
  "prime-progressspinner",
@@ -3257,6 +3290,7 @@ dependencies = [
  "prime-slider",
  "prime-tag",
  "prime-textarea",
+ "prime-timeline",
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",

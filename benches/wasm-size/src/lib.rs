@@ -168,6 +168,19 @@ cfg_if::cfg_if! {
         fn case() -> impl IntoView {
             view! { <prime_iftalabel::IftaLabel><input id="u" class="p-inputtext p-component" /><label for="u">"Username"</label></prime_iftalabel::IftaLabel> }
         }
+    } else if #[cfg(feature = "case-overlaybadge")] {
+        fn case() -> impl IntoView {
+            view! { <prime_overlaybadge::OverlayBadge value="2"><span>"x"</span></prime_overlaybadge::OverlayBadge> }
+        }
+    } else if #[cfg(feature = "case-timeline")] {
+        fn case() -> impl IntoView {
+            let content = Callback::new(|e: &'static str| view! { <b>{e}</b> }.into_any());
+            view! { <prime_timeline::Timeline value={vec!["a", "b", "c"]} content=content /> }
+        }
+    } else if #[cfg(feature = "case-metergroup")] {
+        fn case() -> impl IntoView {
+            view! { <prime_metergroup::MeterGroup value={vec![prime_metergroup::MeterItem::new("Apps", "#34d399", 16.0)]} /> }
+        }
     } else if #[cfg(feature = "case-progressspinner")] {
         fn case() -> impl IntoView {
             view! { <prime_progressspinner::ProgressSpinner aria_label="loading" /> }

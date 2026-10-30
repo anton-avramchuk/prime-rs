@@ -1,0 +1,24 @@
+[package]
+name = "prime-overlaybadge"
+description = "prime-rs: компонент OverlayBadge (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-badge/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-badge/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-badge = { workspace = true }
+
+[dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[lints]
+workspace = true

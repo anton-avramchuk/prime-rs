@@ -1286,5 +1286,82 @@
     "upstream": "/textarea",
     "oursSelector": "[data-demo=\"iftalabel\"]",
     "upstreamSelector": "iftalabel-doc .card"
+  },
+  {
+    "name": "overlaybadge-basic",
+    "ours": "/overlaybadge",
+    "upstream": "/badge",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "overlay-doc .card"
+  },
+  {
+    "name": "timeline-basic",
+    "ours": "/timeline",
+    "upstream": "/timeline",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "timeline-alignment",
+    "ours": "/timeline",
+    "upstream": "/timeline",
+    "oursSelector": "[data-demo=\"alignment\"]",
+    "upstreamSelector": "alignment-doc .card"
+  },
+  {
+    "name": "timeline-horizontal",
+    "ours": "/timeline",
+    "upstream": "/timeline",
+    "oursSelector": "[data-demo=\"horizontal\"]",
+    "upstreamSelector": "horizontal-doc .card"
+  },
+  {
+    "name": "timeline-opposite",
+    "ours": "/timeline",
+    "upstream": "/timeline",
+    "oursSelector": "[data-demo=\"opposite\"]",
+    "upstreamSelector": "opposite-doc .card"
+  },
+  {
+    "name": "metergroup-basic",
+    "ours": "/metergroup",
+    "upstream": "/metergroup",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "metergroup-multiple",
+    "ours": "/metergroup",
+    "upstream": "/metergroup",
+    "oursSelector": "[data-demo=\"multiple\"]",
+    "upstreamSelector": "multiple-doc .card"
+  },
+  {
+    "name": "metergroup-minmax",
+    "ours": "/metergroup",
+    "upstream": "/metergroup",
+    "oursSelector": "[data-demo=\"minmax\"]",
+    "upstreamSelector": "minmax-doc .card"
+  },
+  {
+    "name": "metergroup-vertical",
+    "ours": "/metergroup",
+    "upstream": "/metergroup",
+    "oursSelector": "[data-demo=\"vertical\"]",
+    "upstreamSelector": "vertical-doc .card"
+  },
+  {
+    "name": "metergroup-label",
+    "ours": "/metergroup",
+    "upstream": "/metergroup",
+    "oursSelector": "[data-demo=\"label\"]",
+    "upstreamSelector": "label-doc .card"
+  },
+  {
+    "name": "metergroup-icon",
+    "ours": "/metergroup",
+    "upstream": "/metergroup",
+    "oursSelector": "[data-demo=\"icon\"]",
+    "upstreamSelector": "icon-doc .card"
   }
 ]

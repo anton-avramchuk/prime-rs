@@ -192,3 +192,18 @@ max_per_instance = 10
 name = "iftalabel-1000"
 instances = 1000
 max_per_instance = 10
+
+[[scenario]]
+name = "overlaybadge-1000"
+instances = 1000
+max_per_instance = 19
+
+[[scenario]]
+name = "timeline-1000"
+instances = 1000
+max_per_instance = 100
+
+[[scenario]]
+name = "metergroup-1000"
+instances = 1000
+max_per_instance = 180
