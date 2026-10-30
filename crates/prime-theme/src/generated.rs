@@ -92,6 +92,10 @@ pub const OVERLAYBADGE: &str = include_str!("../css/components/overlaybadge.css"
 #[cfg(feature = "panel")]
 pub const PANEL: &str = include_str!("../css/components/panel.css");
 
+/// CSS компонента `password`.
+#[cfg(feature = "password")]
+pub const PASSWORD: &str = include_str!("../css/components/password.css");
+
 /// CSS компонента `progressbar`.
 #[cfg(feature = "progressbar")]
 pub const PROGRESSBAR: &str = include_str!("../css/components/progressbar.css");
@@ -204,6 +208,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("overlaybadge", OVERLAYBADGE),
     #[cfg(feature = "panel")]
     ("panel", PANEL),
+    #[cfg(feature = "password")]
+    ("password", PASSWORD),
     #[cfg(feature = "progressbar")]
     ("progressbar", PROGRESSBAR),
     #[cfg(feature = "progressspinner")]

@@ -222,3 +222,8 @@ max_per_instance = 215
 name = "scrolltop-1000"
 instances = 1000
 max_per_instance = 32
+
+[[scenario]]
+name = "password-1000"
+instances = 1000
+max_per_instance = 110

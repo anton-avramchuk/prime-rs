@@ -1426,5 +1426,96 @@
     "upstream": "/scrolltop",
     "oursSelector": "[data-demo=\"element\"]",
     "upstreamSelector": "element-doc .card"
+  },
+  {
+    "name": "password-basic",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "password-meter",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"meter\"]",
+    "upstreamSelector": "meter-doc .card"
+  },
+  {
+    "name": "password-locale",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"locale\"]",
+    "upstreamSelector": "locale-doc .card"
+  },
+  {
+    "name": "password-template",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "password-floatlabel",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"floatlabel\"]",
+    "upstreamSelector": "floatlabel-doc .card"
+  },
+  {
+    "name": "password-iftalabel",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"iftalabel\"]",
+    "upstreamSelector": "iftalabel-doc .card"
+  },
+  {
+    "name": "password-togglemask",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"togglemask\"]",
+    "upstreamSelector": "togglemask-doc .card"
+  },
+  {
+    "name": "password-clearicon",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"clearicon\"]",
+    "upstreamSelector": "clearicon-doc .card"
+  },
+  {
+    "name": "password-sizes",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "password-fluid",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"fluid\"]",
+    "upstreamSelector": "fluid-doc .card"
+  },
+  {
+    "name": "password-filled",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"filled\"]",
+    "upstreamSelector": "filled-doc .card"
+  },
+  {
+    "name": "password-invalid",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "password-disabled",
+    "ours": "/password",
+    "upstream": "/password",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
   }
 ]

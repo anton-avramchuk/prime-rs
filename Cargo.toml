@@ -30,6 +30,7 @@ prime-card = { path = "crates/prime-card" }
 prime-inputtext = { path = "crates/prime-inputtext" }
 prime-inputotp = { path = "crates/prime-inputotp" }
 prime-scrolltop = { path = "crates/prime-scrolltop" }
+prime-password = { path = "crates/prime-password" }
 prime-textarea = { path = "crates/prime-textarea" }
 prime-checkbox = { path = "crates/prime-checkbox" }
 prime-radiobutton = { path = "crates/prime-radiobutton" }

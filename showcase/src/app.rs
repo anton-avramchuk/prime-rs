@@ -3,7 +3,7 @@
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage,
     FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InputGroupPage, InputNumberPage, InputOtpPage,
-    InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, ProgressBarPage, ProgressSpinnerPage,
+    InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, PasswordPage, ProgressBarPage, ProgressSpinnerPage,
     RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, TagPage,
     TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
 };
@@ -56,6 +56,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "breadcrumb",
         "inputotp",
         "scrolltop",
+        "password",
     ]);
     view! {
         <!DOCTYPE html>
@@ -132,6 +133,7 @@ pub fn App() -> impl IntoView {
                         <A href="/breadcrumb">"Breadcrumb"</A>
                         <A href="/inputotp">"InputOtp"</A>
                         <A href="/scrolltop">"ScrollTop"</A>
+                        <A href="/password">"Password"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -180,6 +182,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("breadcrumb") view=BreadcrumbPage />
                         <Route path=StaticSegment("inputotp") view=InputOtpPage />
                         <Route path=StaticSegment("scrolltop") view=ScrollTopPage />
+                        <Route path=StaticSegment("password") view=PasswordPage />
                     </Routes>
                 </main>
             </div>

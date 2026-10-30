@@ -30,6 +30,7 @@ use prime_message::{Message, MessageSeverity};
 use prime_metergroup::{MeterGroup, MeterItem};
 use prime_overlaybadge::OverlayBadge;
 use prime_panel::Panel;
+use prime_password::Password;
 use prime_progressbar::ProgressBar;
 use prime_progressspinner::ProgressSpinner;
 use prime_radiobutton::RadioButton;
@@ -380,6 +381,10 @@ fn inputotp_n(n: usize) -> String {
     render((0..n).map(|_| view! { <InputOtp length=6 /> }).collect_view())
 }
 
+fn password_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Password toggle_mask=true /> }).collect_view())
+}
+
 fn scrolltop_n(n: usize) -> String {
     render((0..n).map(|_| view! { <ScrollTop /> }).collect_view())
 }
@@ -480,6 +485,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "breadcrumb-1000", run: || breadcrumb_n(1000) },
     Scenario { name: "inputotp-1", run: || inputotp_n(1) },
     Scenario { name: "inputotp-1000", run: || inputotp_n(1000) },
+    Scenario { name: "password-1", run: || password_n(1) },
+    Scenario { name: "password-1000", run: || password_n(1000) },
     Scenario { name: "scrolltop-1", run: || scrolltop_n(1) },
     Scenario { name: "scrolltop-1000", run: || scrolltop_n(1000) },
     Scenario { name: "scrollpanel-1", run: || scrollpanel_n(1) },
