@@ -221,6 +221,14 @@ cfg_if::cfg_if! {
                 <prime_drawer::Drawer visible=visible header="Drawer"><p>"Content"</p></prime_drawer::Drawer>
             }
         }
+    } else if #[cfg(feature = "case-dialog")] {
+        fn case() -> impl IntoView {
+            let visible = RwSignal::new(false);
+            view! {
+                <button on:click=move |_| visible.set(true)>"Show"</button>
+                <prime_dialog::Dialog visible=visible header="Header" modal=true maximizable=true><p>"Content"</p></prime_dialog::Dialog>
+            }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

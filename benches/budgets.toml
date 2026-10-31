@@ -250,3 +250,8 @@ max_delta_bytes = 325000
 name = "drawer"
 feature = "case-drawer"
 max_delta_bytes = 655000
+
+[[case]]
+name = "dialog"
+feature = "case-dialog"
+max_delta_bytes = 765000

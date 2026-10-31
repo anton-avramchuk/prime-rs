@@ -1692,5 +1692,68 @@
     "upstream": "/drawer",
     "oursSelector": "[data-demo=\"headless\"]",
     "upstreamSelector": "headless-doc .card"
+  },
+  {
+    "name": "dialog-basic",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "dialog-position",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"position\"]",
+    "upstreamSelector": "position-doc .card"
+  },
+  {
+    "name": "dialog-modal",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"modal\"]",
+    "upstreamSelector": "modal-doc .card"
+  },
+  {
+    "name": "dialog-withoutmodal",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"withoutmodal\"]",
+    "upstreamSelector": "withoutmodal-doc .card"
+  },
+  {
+    "name": "dialog-maximizable",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"maximizable\"]",
+    "upstreamSelector": "maximizable-doc .card"
+  },
+  {
+    "name": "dialog-responsive",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"responsive\"]",
+    "upstreamSelector": "responsive-doc .card"
+  },
+  {
+    "name": "dialog-longcontent",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"longcontent\"]",
+    "upstreamSelector": "longcontent-doc .card"
+  },
+  {
+    "name": "dialog-template",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "dialog-headless",
+    "ours": "/dialog",
+    "upstream": "/dialog",
+    "oursSelector": "[data-demo=\"headless\"]",
+    "upstreamSelector": "headless-doc .card"
   }
 ]

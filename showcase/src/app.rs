@@ -1,8 +1,8 @@
 //! Оболочка страницы, меню и маршруты.
 
 use crate::pages::{
-    AccordionPage, AvatarPage, BadgePage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DividerPage,
-    DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InplacePage, InputGroupPage,
+    AccordionPage, AvatarPage, BadgePage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DialogPage,
+    DividerPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InplacePage, InputGroupPage,
     InputNumberPage, InputOtpPage, InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, PasswordPage,
     PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage,
     SelectPage, SkeletonPage, SliderPage, SplitterPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage,
@@ -63,6 +63,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "tabs",
         "popover",
         "drawer",
+        "dialog",
     ]);
     view! {
         <!DOCTYPE html>
@@ -145,6 +146,7 @@ pub fn App() -> impl IntoView {
                         <A href="/tabs">"Tabs"</A>
                         <A href="/popover">"Popover"</A>
                         <A href="/drawer">"Drawer"</A>
+                        <A href="/dialog">"Dialog"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -199,6 +201,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("tabs") view=TabsPage />
                         <Route path=StaticSegment("popover") view=PopoverPage />
                         <Route path=StaticSegment("drawer") view=DrawerPage />
+                        <Route path=StaticSegment("dialog") view=DialogPage />
                     </Routes>
                 </main>
             </div>

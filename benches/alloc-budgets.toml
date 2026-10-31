@@ -252,3 +252,8 @@ max_per_instance = 40
 name = "drawer-1000"
 instances = 1000
 max_per_instance = 45
+
+[[scenario]]
+name = "dialog-1000"
+instances = 1000
+max_per_instance = 75
