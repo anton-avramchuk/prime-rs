@@ -57,7 +57,8 @@ timeline = []
 togglebutton = []
 toggleswitch = []
 toolbar = []
-all-components = ["accordion", "avatar", "badge", "breadcrumb", "button", "buttongroup", "card", "checkbox", "chip", "dialog", "divider", "drawer", "fieldset", "floatlabel", "iconfield", "iftalabel", "inplace", "inputgroup", "inputnumber", "inputotp", "inputtext", "knob", "message", "metergroup", "overlaybadge", "panel", "password", "popover", "progressbar", "progressspinner", "radiobutton", "rating", "scrollpanel", "scrolltop", "select", "selectbutton", "skeleton", "slider", "splitter", "tabs", "tag", "textarea", "timeline", "togglebutton", "toggleswitch", "toolbar"]
+tooltip = []
+all-components = ["accordion", "avatar", "badge", "breadcrumb", "button", "buttongroup", "card", "checkbox", "chip", "dialog", "divider", "drawer", "fieldset", "floatlabel", "iconfield", "iftalabel", "inplace", "inputgroup", "inputnumber", "inputotp", "inputtext", "knob", "message", "metergroup", "overlaybadge", "panel", "password", "popover", "progressbar", "progressspinner", "radiobutton", "rating", "scrollpanel", "scrolltop", "select", "selectbutton", "skeleton", "slider", "splitter", "tabs", "tag", "textarea", "timeline", "togglebutton", "toggleswitch", "toolbar", "tooltip"]
 # END GENERATED FEATURES
 
 [lints]

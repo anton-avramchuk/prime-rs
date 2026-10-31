@@ -1755,5 +1755,47 @@
     "upstream": "/dialog",
     "oursSelector": "[data-demo=\"headless\"]",
     "upstreamSelector": "headless-doc .card"
+  },
+  {
+    "name": "tooltip-position",
+    "ours": "/tooltip",
+    "upstream": "/tooltip",
+    "oursSelector": "[data-demo=\"position\"]",
+    "upstreamSelector": "position-doc .card"
+  },
+  {
+    "name": "tooltip-event",
+    "ours": "/tooltip",
+    "upstream": "/tooltip",
+    "oursSelector": "[data-demo=\"event\"]",
+    "upstreamSelector": "event-doc .card"
+  },
+  {
+    "name": "tooltip-delay",
+    "ours": "/tooltip",
+    "upstream": "/tooltip",
+    "oursSelector": "[data-demo=\"delay\"]",
+    "upstreamSelector": "delay-doc .card"
+  },
+  {
+    "name": "tooltip-autohide",
+    "ours": "/tooltip",
+    "upstream": "/tooltip",
+    "oursSelector": "[data-demo=\"autohide\"]",
+    "upstreamSelector": "autohide-doc .card"
+  },
+  {
+    "name": "tooltip-options",
+    "ours": "/tooltip",
+    "upstream": "/tooltip",
+    "oursSelector": "[data-demo=\"options\"]",
+    "upstreamSelector": "options-doc .card"
+  },
+  {
+    "name": "tooltip-custom",
+    "ours": "/tooltip",
+    "upstream": "/tooltip",
+    "oursSelector": "[data-demo=\"custom\"]",
+    "upstreamSelector": "custom-doc .card"
   }
 ]

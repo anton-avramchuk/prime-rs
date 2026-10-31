@@ -6,7 +6,7 @@ use crate::pages::{
     InputNumberPage, InputOtpPage, InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, PasswordPage,
     PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage,
     SelectPage, SkeletonPage, SliderPage, SplitterPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage,
-    ToolbarPage,
+    ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -64,6 +64,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "popover",
         "drawer",
         "dialog",
+        "tooltip",
     ]);
     view! {
         <!DOCTYPE html>
@@ -147,6 +148,7 @@ pub fn App() -> impl IntoView {
                         <A href="/popover">"Popover"</A>
                         <A href="/drawer">"Drawer"</A>
                         <A href="/dialog">"Dialog"</A>
+                        <A href="/tooltip">"Tooltip"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -202,6 +204,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("popover") view=PopoverPage />
                         <Route path=StaticSegment("drawer") view=DrawerPage />
                         <Route path=StaticSegment("dialog") view=DialogPage />
+                        <Route path=StaticSegment("tooltip") view=TooltipPage />
                     </Routes>
                 </main>
             </div>

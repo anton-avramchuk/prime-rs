@@ -68,6 +68,7 @@ prime-metergroup = { path = "crates/prime-metergroup" }
 prime-popover = { path = "crates/prime-popover" }
 prime-drawer = { path = "crates/prime-drawer" }
 prime-dialog = { path = "crates/prime-dialog" }
+prime-tooltip = { path = "crates/prime-tooltip" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

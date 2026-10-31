@@ -1,0 +1,38 @@
+[package]
+name = "prime-tooltip"
+description = "prime-rs: директива Tooltip (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-dom/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-dom/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-dom = { workspace = true }
+wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }
+web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "TouchEvent", "FocusEvent", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration", "DomRect", "AddEventListenerOptions"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+prime-button = { workspace = true, features = ["ssr"] }
+prime-inputtext = { workspace = true, features = ["ssr"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+wasm-bindgen-futures = "0.4"
+prime-button = { workspace = true }
+prime-inputtext = { workspace = true }
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "HtmlInputElement", "Event", "KeyboardEvent", "KeyboardEventInit", "MouseEvent", "MouseEventInit", "FocusEvent", "DomRect", "CssStyleDeclaration"] }
+
+[lints]
+workspace = true

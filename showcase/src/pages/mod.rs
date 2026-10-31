@@ -48,6 +48,7 @@ mod timeline;
 mod togglebutton;
 mod toggleswitch;
 mod toolbar;
+mod tooltip;
 
 pub use accordion::AccordionPage;
 pub use avatar::AvatarPage;
@@ -97,6 +98,7 @@ pub use timeline::TimelinePage;
 pub use togglebutton::ToggleButtonPage;
 pub use toggleswitch::ToggleSwitchPage;
 pub use toolbar::ToolbarPage;
+pub use tooltip::TooltipPage;
 
 use leptos::prelude::*;
 

@@ -229,6 +229,13 @@ cfg_if::cfg_if! {
                 <prime_dialog::Dialog visible=visible header="Header" modal=true maximizable=true><p>"Content"</p></prime_dialog::Dialog>
             }
         }
+    } else if #[cfg(feature = "case-tooltip")] {
+        fn case() -> impl IntoView {
+            use prime_tooltip::{TooltipOptions, tooltip};
+            view! {
+                <span use:tooltip=TooltipOptions::text("Enter your username")>"Hover"</span>
+            }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

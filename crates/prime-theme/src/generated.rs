@@ -184,6 +184,10 @@ pub const TOGGLESWITCH: &str = include_str!("../css/components/toggleswitch.css"
 #[cfg(feature = "toolbar")]
 pub const TOOLBAR: &str = include_str!("../css/components/toolbar.css");
 
+/// CSS компонента `tooltip`.
+#[cfg(feature = "tooltip")]
+pub const TOOLTIP: &str = include_str!("../css/components/tooltip.css");
+
 /// Пары «имя — CSS» для включённых компонентов.
 pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     #[cfg(feature = "accordion")]
@@ -278,4 +282,6 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("toggleswitch", TOGGLESWITCH),
     #[cfg(feature = "toolbar")]
     ("toolbar", TOOLBAR),
+    #[cfg(feature = "tooltip")]
+    ("tooltip", TOOLTIP),
 ];

@@ -257,3 +257,8 @@ max_per_instance = 45
 name = "dialog-1000"
 instances = 1000
 max_per_instance = 75
+
+[[scenario]]
+name = "tooltip-1000"
+instances = 1000
+max_per_instance = 3

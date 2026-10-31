@@ -53,6 +53,7 @@ use prime_timeline::Timeline;
 use prime_togglebutton::ToggleButton;
 use prime_toggleswitch::ToggleSwitch;
 use prime_toolbar::Toolbar;
+use prime_tooltip::{TooltipOptions, TooltipPosition, tooltip};
 
 /// Сценарий: имя и функция, возвращающая HTML.
 pub struct Scenario {
@@ -464,6 +465,19 @@ fn dialog_n(n: usize) -> String {
     })
 }
 
+fn tooltip_n(n: usize) -> String {
+    // Директива в SSR не вызывается: измеряется построение параметров и разметка элемента.
+    render(
+        (0..n)
+            .map(|_| {
+                view! {
+                    <span use:tooltip=TooltipOptions::text("Enter your username").position(TooltipPosition::Top)>"Hover"</span>
+                }
+            })
+            .collect_view(),
+    )
+}
+
 fn splitter_n(n: usize) -> String {
     render(
         (0..n)
@@ -603,6 +617,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "drawer-1000", run: || drawer_n(1000) },
     Scenario { name: "dialog-1", run: || dialog_n(1) },
     Scenario { name: "dialog-1000", run: || dialog_n(1000) },
+    Scenario { name: "tooltip-1", run: || tooltip_n(1) },
+    Scenario { name: "tooltip-1000", run: || tooltip_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },
     Scenario { name: "splitter-1000", run: || splitter_n(1000) },
     Scenario { name: "inplace-1", run: || inplace_n(1) },

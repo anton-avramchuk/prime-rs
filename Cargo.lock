@@ -2190,6 +2190,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-tooltip"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-dom",
+ "prime-inputtext",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "proc-macro-utils"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2446,6 +2462,7 @@ dependencies = [
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
+ "prime-tooltip",
  "serde_json",
 ]
 
@@ -2785,6 +2802,7 @@ dependencies = [
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
+ "prime-tooltip",
  "tokio",
  "wasm-bindgen",
  "web-sys",
@@ -3467,6 +3485,7 @@ dependencies = [
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
+ "prime-tooltip",
  "wasm-bindgen",
 ]
 
