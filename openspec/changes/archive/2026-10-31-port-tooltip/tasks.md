@@ -23,7 +23,7 @@
 ## 5. Интеграция
 
 - [x] 5.1 `docs/tooltip.md` (отличия от PrimeNG, что не проверялось); `prime-tooltip` в браузерный job `ci.yml` (три места)
-- [ ] 5.2 `cargo fmt --all -- --check`, clippy с `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-tooltip`; CI `dev` зелёный
+- [x] 5.2 `cargo fmt --all -- --check`, clippy с `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-tooltip`; CI `dev` зелёный
 
 ## Workflow follow-up
 
