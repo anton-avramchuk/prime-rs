@@ -1797,5 +1797,82 @@
     "upstream": "/tooltip",
     "oursSelector": "[data-demo=\"custom\"]",
     "upstreamSelector": "custom-doc .card"
+  },
+  {
+    "name": "toast-basic",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "toast-severity",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"severity\"]",
+    "upstreamSelector": "severity-doc .card"
+  },
+  {
+    "name": "toast-multiple",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"multiple\"]",
+    "upstreamSelector": "multiple-doc .card"
+  },
+  {
+    "name": "toast-position",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"position\"]",
+    "upstreamSelector": "position-doc .card"
+  },
+  {
+    "name": "toast-sticky",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"sticky\"]",
+    "upstreamSelector": "sticky-doc .card"
+  },
+  {
+    "name": "toast-life",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"life\"]",
+    "upstreamSelector": "life-doc .card"
+  },
+  {
+    "name": "toast-clear",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"clear\"]",
+    "upstreamSelector": "clear-doc .card"
+  },
+  {
+    "name": "toast-target",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"target\"]",
+    "upstreamSelector": "target-doc .card"
+  },
+  {
+    "name": "toast-responsive",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"responsive\"]",
+    "upstreamSelector": "responsive-doc .card"
+  },
+  {
+    "name": "toast-template",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "toast-headless",
+    "ours": "/toast",
+    "upstream": "/toast",
+    "oursSelector": "[data-demo=\"headless\"]",
+    "upstreamSelector": "headless-doc .card"
   }
 ]

@@ -42,6 +42,7 @@ case-popover = ["dep:prime-popover"]
 case-drawer = ["dep:prime-drawer"]
 case-dialog = ["dep:prime-dialog"]
 case-tooltip = ["dep:prime-tooltip"]
+case-toast = ["dep:prime-toast"]
 case-splitter = ["dep:prime-splitter"]
 case-inplace = ["dep:prime-inplace"]
 case-password = ["dep:prime-password"]
@@ -96,6 +97,7 @@ prime-popover = { workspace = true, optional = true }
 prime-drawer = { workspace = true, optional = true }
 prime-dialog = { workspace = true, optional = true }
 prime-tooltip = { workspace = true, optional = true }
+prime-toast = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

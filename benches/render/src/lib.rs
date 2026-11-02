@@ -50,6 +50,7 @@ use prime_tabs::{Tab, TabList, TabPanel, TabPanels, Tabs};
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
 use prime_timeline::Timeline;
+use prime_toast::{Toast, provide_message_service};
 use prime_togglebutton::ToggleButton;
 use prime_toggleswitch::ToggleSwitch;
 use prime_toolbar::Toolbar;
@@ -478,6 +479,14 @@ fn tooltip_n(n: usize) -> String {
     )
 }
 
+fn toast_n(n: usize) -> String {
+    // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
+    Owner::new().with(|| {
+        provide_message_service();
+        render((0..n).map(|_| view! { <Toast /> }).collect_view())
+    })
+}
+
 fn splitter_n(n: usize) -> String {
     render(
         (0..n)
@@ -619,6 +628,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "dialog-1000", run: || dialog_n(1000) },
     Scenario { name: "tooltip-1", run: || tooltip_n(1) },
     Scenario { name: "tooltip-1000", run: || tooltip_n(1000) },
+    Scenario { name: "toast-1", run: || toast_n(1) },
+    Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },
     Scenario { name: "splitter-1000", run: || splitter_n(1000) },
     Scenario { name: "inplace-1", run: || inplace_n(1) },

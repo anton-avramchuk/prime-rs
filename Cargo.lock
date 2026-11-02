@@ -2160,6 +2160,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-toast"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-togglebutton"
 version = "0.1.0"
 dependencies = [
@@ -2459,6 +2474,7 @@ dependencies = [
  "prime-tag",
  "prime-textarea",
  "prime-timeline",
+ "prime-toast",
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
@@ -2799,6 +2815,7 @@ dependencies = [
  "prime-textarea",
  "prime-theme",
  "prime-timeline",
+ "prime-toast",
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",
@@ -3482,6 +3499,7 @@ dependencies = [
  "prime-tag",
  "prime-textarea",
  "prime-timeline",
+ "prime-toast",
  "prime-togglebutton",
  "prime-toggleswitch",
  "prime-toolbar",

@@ -236,6 +236,15 @@ cfg_if::cfg_if! {
                 <span use:tooltip=TooltipOptions::text("Enter your username")>"Hover"</span>
             }
         }
+    } else if #[cfg(feature = "case-toast")] {
+        fn case() -> impl IntoView {
+            use prime_toast::{Toast, ToastMessage, ToastSeverity, provide_message_service};
+            let service = provide_message_service();
+            view! {
+                <Toast />
+                <button on:click=move |_| service.add(ToastMessage::new(ToastSeverity::Success, "Success", "Message Content"))>"Show"</button>
+            }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

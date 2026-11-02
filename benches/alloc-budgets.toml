@@ -262,3 +262,8 @@ max_per_instance = 75
 name = "tooltip-1000"
 instances = 1000
 max_per_instance = 3
+
+[[scenario]]
+name = "toast-1000"
+instances = 1000
+max_per_instance = 36

@@ -260,3 +260,8 @@ max_delta_bytes = 765000
 name = "tooltip"
 feature = "case-tooltip"
 max_delta_bytes = 170000
+
+[[case]]
+name = "toast"
+feature = "case-toast"
+max_delta_bytes = 370000

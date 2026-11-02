@@ -69,6 +69,7 @@ prime-popover = { path = "crates/prime-popover" }
 prime-drawer = { path = "crates/prime-drawer" }
 prime-dialog = { path = "crates/prime-dialog" }
 prime-tooltip = { path = "crates/prime-tooltip" }
+prime-toast = { path = "crates/prime-toast" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

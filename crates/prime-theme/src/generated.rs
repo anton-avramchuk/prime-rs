@@ -172,6 +172,10 @@ pub const TEXTAREA: &str = include_str!("../css/components/textarea.css");
 #[cfg(feature = "timeline")]
 pub const TIMELINE: &str = include_str!("../css/components/timeline.css");
 
+/// CSS компонента `toast`.
+#[cfg(feature = "toast")]
+pub const TOAST: &str = include_str!("../css/components/toast.css");
+
 /// CSS компонента `togglebutton`.
 #[cfg(feature = "togglebutton")]
 pub const TOGGLEBUTTON: &str = include_str!("../css/components/togglebutton.css");
@@ -276,6 +280,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("textarea", TEXTAREA),
     #[cfg(feature = "timeline")]
     ("timeline", TIMELINE),
+    #[cfg(feature = "toast")]
+    ("toast", TOAST),
     #[cfg(feature = "togglebutton")]
     ("togglebutton", TOGGLEBUTTON),
     #[cfg(feature = "toggleswitch")]

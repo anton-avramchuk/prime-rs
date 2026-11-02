@@ -5,8 +5,8 @@ use crate::pages::{
     DividerPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InplacePage, InputGroupPage,
     InputNumberPage, InputOtpPage, InputTextPage, KnobPage, MessagePage, MeterGroupPage, OverlayBadgePage, PanelPage, PasswordPage,
     PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage,
-    SelectPage, SkeletonPage, SliderPage, SplitterPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToggleButtonPage, ToggleSwitchPage,
-    ToolbarPage, TooltipPage,
+    SelectPage, SkeletonPage, SliderPage, SplitterPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToastPage, ToggleButtonPage,
+    ToggleSwitchPage, ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -65,6 +65,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "drawer",
         "dialog",
         "tooltip",
+        "toast",
     ]);
     view! {
         <!DOCTYPE html>
@@ -149,6 +150,7 @@ pub fn App() -> impl IntoView {
                         <A href="/drawer">"Drawer"</A>
                         <A href="/dialog">"Dialog"</A>
                         <A href="/tooltip">"Tooltip"</A>
+                        <A href="/toast">"Toast"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -205,6 +207,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("drawer") view=DrawerPage />
                         <Route path=StaticSegment("dialog") view=DialogPage />
                         <Route path=StaticSegment("tooltip") view=TooltipPage />
+                        <Route path=StaticSegment("toast") view=ToastPage />
                     </Routes>
                 </main>
             </div>
