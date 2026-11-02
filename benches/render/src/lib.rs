@@ -29,6 +29,7 @@ use prime_inputnumber::{InputNumber, InputNumberMode};
 use prime_inputotp::InputOtp;
 use prime_inputtext::InputText;
 use prime_knob::Knob;
+use prime_menu::{Menu, MenuItem};
 use prime_message::{Message, MessageSeverity};
 use prime_metergroup::{MeterGroup, MeterItem};
 use prime_overlaybadge::OverlayBadge;
@@ -479,6 +480,11 @@ fn tooltip_n(n: usize) -> String {
     )
 }
 
+fn menu_n(n: usize) -> String {
+    let model = || vec![MenuItem::new().label("New"), MenuItem::new().label("Search"), MenuItem::new().label("Settings")];
+    render((0..n).map(|_| view! { <Menu model=model() /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -628,6 +634,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "dialog-1000", run: || dialog_n(1000) },
     Scenario { name: "tooltip-1", run: || tooltip_n(1) },
     Scenario { name: "tooltip-1000", run: || tooltip_n(1000) },
+    Scenario { name: "menu-1", run: || menu_n(1) },
+    Scenario { name: "menu-1000", run: || menu_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

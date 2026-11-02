@@ -1913,6 +1913,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-menu"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-message"
 version = "0.1.0"
 dependencies = [
@@ -2453,6 +2467,7 @@ dependencies = [
  "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
+ "prime-menu",
  "prime-message",
  "prime-metergroup",
  "prime-overlaybadge",
@@ -2793,6 +2808,7 @@ dependencies = [
  "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
+ "prime-menu",
  "prime-message",
  "prime-metergroup",
  "prime-overlaybadge",
@@ -3478,6 +3494,7 @@ dependencies = [
  "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
+ "prime-menu",
  "prime-message",
  "prime-metergroup",
  "prime-overlaybadge",

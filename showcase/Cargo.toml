@@ -14,8 +14,8 @@ name = "showcase"
 path = "src/main.rs"
 
 [features]
-hydrate = ["leptos/hydrate", "dep:wasm-bindgen", "dep:js-sys", "dep:console_error_panic_hook"]
-ssr = ["leptos/ssr", "leptos_router/ssr", "dep:axum", "dep:tokio", "dep:leptos_axum"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "dep:wasm-bindgen", "dep:js-sys", "dep:console_error_panic_hook"]
+ssr = ["leptos/ssr", "prime-core/ssr", "leptos_router/ssr", "dep:axum", "dep:tokio", "dep:leptos_axum"]
 
 [dependencies]
 leptos = { workspace = true }
@@ -52,6 +52,7 @@ prime-drawer = { workspace = true }
 prime-dialog = { workspace = true }
 prime-tooltip = { workspace = true }
 prime-toast = { workspace = true }
+prime-menu = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

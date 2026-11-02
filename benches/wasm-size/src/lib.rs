@@ -245,6 +245,11 @@ cfg_if::cfg_if! {
                 <button on:click=move |_| service.add(ToastMessage::new(ToastSeverity::Success, "Success", "Message Content"))>"Show"</button>
             }
         }
+    } else if #[cfg(feature = "case-menu")] {
+        fn case() -> impl IntoView {
+            use prime_menu::{Menu, MenuItem};
+            view! { <Menu model=vec![MenuItem::new().label("New"), MenuItem::new().label("Search")] /> }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

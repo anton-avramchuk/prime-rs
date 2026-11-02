@@ -1874,5 +1874,40 @@
     "upstream": "/toast",
     "oursSelector": "[data-demo=\"headless\"]",
     "upstreamSelector": "headless-doc .card"
+  },
+  {
+    "name": "menu-basic",
+    "ours": "/menu",
+    "upstream": "/menu",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "menu-group",
+    "ours": "/menu",
+    "upstream": "/menu",
+    "oursSelector": "[data-demo=\"group\"]",
+    "upstreamSelector": "group-doc .card"
+  },
+  {
+    "name": "menu-command",
+    "ours": "/menu",
+    "upstream": "/menu",
+    "oursSelector": "[data-demo=\"command\"]",
+    "upstreamSelector": "command-doc .card"
+  },
+  {
+    "name": "menu-popup",
+    "ours": "/menu",
+    "upstream": "/menu",
+    "oursSelector": "[data-demo=\"popup\"]",
+    "upstreamSelector": "popup-doc .card"
+  },
+  {
+    "name": "menu-template",
+    "ours": "/menu",
+    "upstream": "/menu",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

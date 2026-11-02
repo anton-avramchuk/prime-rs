@@ -267,3 +267,8 @@ max_per_instance = 3
 name = "toast-1000"
 instances = 1000
 max_per_instance = 36
+
+[[scenario]]
+name = "menu-1000"
+instances = 1000
+max_per_instance = 175
