@@ -104,6 +104,10 @@ pub const MESSAGE: &str = include_str!("../css/components/message.css");
 #[cfg(feature = "metergroup")]
 pub const METERGROUP: &str = include_str!("../css/components/metergroup.css");
 
+/// CSS компонента `multiselect`.
+#[cfg(feature = "multiselect")]
+pub const MULTISELECT: &str = include_str!("../css/components/multiselect.css");
+
 /// CSS компонента `overlaybadge`.
 #[cfg(feature = "overlaybadge")]
 pub const OVERLAYBADGE: &str = include_str!("../css/components/overlaybadge.css");
@@ -254,6 +258,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("message", MESSAGE),
     #[cfg(feature = "metergroup")]
     ("metergroup", METERGROUP),
+    #[cfg(feature = "multiselect")]
+    ("multiselect", MULTISELECT),
     #[cfg(feature = "overlaybadge")]
     ("overlaybadge", OVERLAYBADGE),
     #[cfg(feature = "panel")]

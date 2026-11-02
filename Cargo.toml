@@ -72,6 +72,7 @@ prime-tooltip = { path = "crates/prime-tooltip" }
 prime-toast = { path = "crates/prime-toast" }
 prime-menu = { path = "crates/prime-menu" }
 prime-listbox = { path = "crates/prime-listbox" }
+prime-multiselect = { path = "crates/prime-multiselect" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

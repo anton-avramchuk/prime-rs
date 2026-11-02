@@ -33,6 +33,7 @@ use prime_listbox::{Listbox, ListboxOption};
 use prime_menu::{Menu, MenuItem};
 use prime_message::{Message, MessageSeverity};
 use prime_metergroup::{MeterGroup, MeterItem};
+use prime_multiselect::{MultiSelect, MultiSelectOption};
 use prime_overlaybadge::OverlayBadge;
 use prime_panel::Panel;
 use prime_password::Password;
@@ -499,6 +500,20 @@ fn listbox_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Listbox options=options() /> }).collect_view())
 }
 
+fn multiselect_n(n: usize) -> String {
+    let options = || {
+        vec![
+            MultiSelectOption::new("New York", "NY"),
+            MultiSelectOption::new("Rome", "RM"),
+            MultiSelectOption::new("London", "LDN"),
+            MultiSelectOption::new("Istanbul", "IST"),
+            MultiSelectOption::new("Paris", "PRS"),
+        ]
+    };
+    let selected = || RwSignal::new(vec!["NY".to_owned(), "LDN".to_owned()]);
+    render((0..n).map(|_| view! { <MultiSelect options=options() values=selected() /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -652,6 +667,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "menu-1000", run: || menu_n(1000) },
     Scenario { name: "listbox-1", run: || listbox_n(1) },
     Scenario { name: "listbox-1000", run: || listbox_n(1000) },
+    Scenario { name: "multiselect-1", run: || multiselect_n(1) },
+    Scenario { name: "multiselect-1000", run: || multiselect_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

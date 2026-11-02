@@ -277,3 +277,8 @@ max_per_instance = 175
 name = "listbox-1000"
 instances = 1000
 max_per_instance = 330
+
+[[scenario]]
+name = "multiselect-1000"
+instances = 1000
+max_per_instance = 445

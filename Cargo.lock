@@ -1964,6 +1964,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-multiselect"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-checkbox",
+ "prime-chip",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-overlaybadge"
 version = "0.1.0"
 dependencies = [
@@ -2485,6 +2502,7 @@ dependencies = [
  "prime-menu",
  "prime-message",
  "prime-metergroup",
+ "prime-multiselect",
  "prime-overlaybadge",
  "prime-panel",
  "prime-password",
@@ -2827,6 +2845,7 @@ dependencies = [
  "prime-menu",
  "prime-message",
  "prime-metergroup",
+ "prime-multiselect",
  "prime-overlaybadge",
  "prime-panel",
  "prime-password",
@@ -3514,6 +3533,7 @@ dependencies = [
  "prime-menu",
  "prime-message",
  "prime-metergroup",
+ "prime-multiselect",
  "prime-overlaybadge",
  "prime-panel",
  "prime-password",

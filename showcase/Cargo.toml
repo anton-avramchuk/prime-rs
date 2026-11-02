@@ -54,6 +54,7 @@ prime-tooltip = { workspace = true }
 prime-toast = { workspace = true }
 prime-menu = { workspace = true }
 prime-listbox = { workspace = true }
+prime-multiselect = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

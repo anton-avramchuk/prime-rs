@@ -1972,5 +1972,103 @@
     "upstream": "/listbox",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "multiselect-basic",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "multiselect-chips",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"chips\"]",
+    "upstreamSelector": "chips-doc .card"
+  },
+  {
+    "name": "multiselect-clearicon",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"clearicon\"]",
+    "upstreamSelector": "clearicon-doc .card"
+  },
+  {
+    "name": "multiselect-disabled",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "multiselect-filled",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"filled\"]",
+    "upstreamSelector": "filled-doc .card"
+  },
+  {
+    "name": "multiselect-filter",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"filter\"]",
+    "upstreamSelector": "filter-doc .card"
+  },
+  {
+    "name": "multiselect-fluid",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"fluid\"]",
+    "upstreamSelector": "fluid-doc .card"
+  },
+  {
+    "name": "multiselect-group",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"group\"]",
+    "upstreamSelector": "group-doc .card"
+  },
+  {
+    "name": "multiselect-invalid",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "multiselect-loadingstate",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"loadingstate\"]",
+    "upstreamSelector": "loadingstate-doc .card"
+  },
+  {
+    "name": "multiselect-sizes",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "multiselect-template",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "multiselect-floatlabel",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"floatlabel\"]",
+    "upstreamSelector": "floatlabel-doc .card"
+  },
+  {
+    "name": "multiselect-iftalabel",
+    "ours": "/multiselect",
+    "upstream": "/multiselect",
+    "oursSelector": "[data-demo=\"iftalabel\"]",
+    "upstreamSelector": "iftalabel-doc .card"
   }
 ]

@@ -275,3 +275,8 @@ max_delta_bytes = 400000
 name = "listbox"
 feature = "case-listbox"
 max_delta_bytes = 650000
+
+[[case]]
+name = "multiselect"
+feature = "case-multiselect"
+max_delta_bytes = 930000

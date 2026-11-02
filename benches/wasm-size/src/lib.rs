@@ -255,6 +255,11 @@ cfg_if::cfg_if! {
             use prime_listbox::{Listbox, ListboxOption};
             view! { <Listbox options=vec![ListboxOption::new("New York", "NY"), ListboxOption::new("London", "LDN")] /> }
         }
+    } else if #[cfg(feature = "case-multiselect")] {
+        fn case() -> impl IntoView {
+            use prime_multiselect::{MultiSelect, MultiSelectOption};
+            view! { <MultiSelect options=vec![MultiSelectOption::new("New York", "NY"), MultiSelectOption::new("London", "LDN")] /> }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {
