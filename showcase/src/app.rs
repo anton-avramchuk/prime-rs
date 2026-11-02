@@ -4,9 +4,9 @@ use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DialogPage,
     DividerPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InplacePage, InputGroupPage,
     InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage,
-    OverlayBadgePage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage,
-    ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SplitterPage, TabsPage, TagPage, TextareaPage,
-    TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
+    OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage,
+    RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SplitterPage, TabsPage, TagPage,
+    TextareaPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -69,6 +69,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "menu",
         "listbox",
         "multiselect",
+        "paginator",
     ]);
     view! {
         <!DOCTYPE html>
@@ -157,6 +158,7 @@ pub fn App() -> impl IntoView {
                         <A href="/menu">"Menu"</A>
                         <A href="/listbox">"Listbox"</A>
                         <A href="/multiselect">"MultiSelect"</A>
+                        <A href="/paginator">"Paginator"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -217,6 +219,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("menu") view=MenuPage />
                         <Route path=StaticSegment("listbox") view=ListboxPage />
                         <Route path=StaticSegment("multiselect") view=MultiSelectPage />
+                        <Route path=StaticSegment("paginator") view=PaginatorPage />
                     </Routes>
                 </main>
             </div>

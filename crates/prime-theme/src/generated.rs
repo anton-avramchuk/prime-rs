@@ -112,6 +112,10 @@ pub const MULTISELECT: &str = include_str!("../css/components/multiselect.css");
 #[cfg(feature = "overlaybadge")]
 pub const OVERLAYBADGE: &str = include_str!("../css/components/overlaybadge.css");
 
+/// CSS компонента `paginator`.
+#[cfg(feature = "paginator")]
+pub const PAGINATOR: &str = include_str!("../css/components/paginator.css");
+
 /// CSS компонента `panel`.
 #[cfg(feature = "panel")]
 pub const PANEL: &str = include_str!("../css/components/panel.css");
@@ -262,6 +266,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("multiselect", MULTISELECT),
     #[cfg(feature = "overlaybadge")]
     ("overlaybadge", OVERLAYBADGE),
+    #[cfg(feature = "paginator")]
+    ("paginator", PAGINATOR),
     #[cfg(feature = "panel")]
     ("panel", PANEL),
     #[cfg(feature = "password")]

@@ -260,6 +260,11 @@ cfg_if::cfg_if! {
             use prime_multiselect::{MultiSelect, MultiSelectOption};
             view! { <MultiSelect options=vec![MultiSelectOption::new("New York", "NY"), MultiSelectOption::new("London", "LDN")] /> }
         }
+    } else if #[cfg(feature = "case-paginator")] {
+        fn case() -> impl IntoView {
+            use prime_paginator::{Paginator, RowsPerPage};
+            view! { <Paginator total_records=120 rows_per_page_options=vec![RowsPerPage::Rows(10), RowsPerPage::Rows(20)] /> }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

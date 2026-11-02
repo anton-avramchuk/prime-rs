@@ -2070,5 +2070,33 @@
     "upstream": "/multiselect",
     "oursSelector": "[data-demo=\"iftalabel\"]",
     "upstreamSelector": "iftalabel-doc .card"
+  },
+  {
+    "name": "paginator-basic",
+    "ours": "/paginator",
+    "upstream": "/paginator",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "paginator-currentpagereport",
+    "ours": "/paginator",
+    "upstream": "/paginator",
+    "oursSelector": "[data-demo=\"currentpagereport\"]",
+    "upstreamSelector": "currentpagereport-doc .card"
+  },
+  {
+    "name": "paginator-template",
+    "ours": "/paginator",
+    "upstream": "/paginator",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "paginator-images",
+    "ours": "/paginator",
+    "upstream": "/paginator",
+    "oursSelector": "[data-demo=\"images\"]",
+    "upstreamSelector": "images-doc .card"
   }
 ]

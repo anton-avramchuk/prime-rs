@@ -35,6 +35,7 @@ use prime_message::{Message, MessageSeverity};
 use prime_metergroup::{MeterGroup, MeterItem};
 use prime_multiselect::{MultiSelect, MultiSelectOption};
 use prime_overlaybadge::OverlayBadge;
+use prime_paginator::{Paginator, RowsPerPage};
 use prime_panel::Panel;
 use prime_password::Password;
 use prime_popover::{Popover, PopoverRef};
@@ -514,6 +515,11 @@ fn multiselect_n(n: usize) -> String {
     render((0..n).map(|_| view! { <MultiSelect options=options() values=selected() /> }).collect_view())
 }
 
+fn paginator_n(n: usize) -> String {
+    let options = || vec![RowsPerPage::Rows(10), RowsPerPage::Rows(20), RowsPerPage::Rows(30)];
+    render((0..n).map(|_| view! { <Paginator total_records=120 rows_per_page_options=options() /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -669,6 +675,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "listbox-1000", run: || listbox_n(1000) },
     Scenario { name: "multiselect-1", run: || multiselect_n(1) },
     Scenario { name: "multiselect-1000", run: || multiselect_n(1000) },
+    Scenario { name: "paginator-1", run: || paginator_n(1) },
+    Scenario { name: "paginator-1000", run: || paginator_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

@@ -282,3 +282,8 @@ max_per_instance = 330
 name = "multiselect-1000"
 instances = 1000
 max_per_instance = 445
+
+[[scenario]]
+name = "paginator-1000"
+instances = 1000
+max_per_instance = 395

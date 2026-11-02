@@ -280,3 +280,8 @@ max_delta_bytes = 650000
 name = "multiselect"
 feature = "case-multiselect"
 max_delta_bytes = 930000
+
+[[case]]
+name = "paginator"
+feature = "case-paginator"
+max_delta_bytes = 1320000

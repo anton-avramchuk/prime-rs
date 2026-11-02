@@ -1990,6 +1990,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-paginator"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "prime-inputnumber",
+ "prime-select",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-panel"
 version = "0.1.0"
 dependencies = [
@@ -2504,6 +2520,7 @@ dependencies = [
  "prime-metergroup",
  "prime-multiselect",
  "prime-overlaybadge",
+ "prime-paginator",
  "prime-panel",
  "prime-password",
  "prime-popover",
@@ -2847,6 +2864,7 @@ dependencies = [
  "prime-metergroup",
  "prime-multiselect",
  "prime-overlaybadge",
+ "prime-paginator",
  "prime-panel",
  "prime-password",
  "prime-popover",
@@ -3535,6 +3553,7 @@ dependencies = [
  "prime-metergroup",
  "prime-multiselect",
  "prime-overlaybadge",
+ "prime-paginator",
  "prime-panel",
  "prime-password",
  "prime-popover",
