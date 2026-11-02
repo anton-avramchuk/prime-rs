@@ -297,3 +297,8 @@ max_per_instance = 270
 name = "imagecompare-1000"
 instances = 1000
 max_per_instance = 14
+
+[[scenario]]
+name = "blockui-1000"
+instances = 1000
+max_per_instance = 31

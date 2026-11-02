@@ -3,6 +3,7 @@
 mod accordion;
 mod avatar;
 mod badge;
+mod blockui;
 mod breadcrumb;
 mod button;
 mod buttongroup;
@@ -60,6 +61,7 @@ mod tooltip;
 pub use accordion::AccordionPage;
 pub use avatar::AvatarPage;
 pub use badge::BadgePage;
+pub use blockui::BlockUiPage;
 pub use breadcrumb::BreadcrumbPage;
 pub use button::ButtonPage;
 pub use buttongroup::ButtonGroupPage;

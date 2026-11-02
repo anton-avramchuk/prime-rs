@@ -1654,6 +1654,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-blockui"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-breadcrumb"
 version = "0.1.0"
 dependencies = [
@@ -2519,6 +2533,7 @@ dependencies = [
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
+ "prime-blockui",
  "prime-breadcrumb",
  "prime-button",
  "prime-buttongroup",
@@ -2864,6 +2879,7 @@ dependencies = [
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
+ "prime-blockui",
  "prime-breadcrumb",
  "prime-button",
  "prime-buttongroup",
@@ -3556,6 +3572,7 @@ dependencies = [
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
+ "prime-blockui",
  "prime-breadcrumb",
  "prime-button",
  "prime-buttongroup",

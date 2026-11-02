@@ -12,6 +12,10 @@ pub const AVATAR: &str = include_str!("../css/components/avatar.css");
 #[cfg(feature = "badge")]
 pub const BADGE: &str = include_str!("../css/components/badge.css");
 
+/// CSS компонента `blockui`.
+#[cfg(feature = "blockui")]
+pub const BLOCKUI: &str = include_str!("../css/components/blockui.css");
+
 /// CSS компонента `breadcrumb`.
 #[cfg(feature = "breadcrumb")]
 pub const BREADCRUMB: &str = include_str!("../css/components/breadcrumb.css");
@@ -224,6 +228,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("avatar", AVATAR),
     #[cfg(feature = "badge")]
     ("badge", BADGE),
+    #[cfg(feature = "blockui")]
+    ("blockui", BLOCKUI),
     #[cfg(feature = "breadcrumb")]
     ("breadcrumb", BREADCRUMB),
     #[cfg(feature = "button")]

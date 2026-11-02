@@ -76,6 +76,7 @@ prime-multiselect = { path = "crates/prime-multiselect" }
 prime-paginator = { path = "crates/prime-paginator" }
 prime-stepper = { path = "crates/prime-stepper" }
 prime-imagecompare = { path = "crates/prime-imagecompare" }
+prime-blockui = { path = "crates/prime-blockui" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

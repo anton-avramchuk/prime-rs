@@ -1,0 +1,1 @@
+:root,:host{--p-blockui-border-radius:var(--p-content-border-radius);} .p-blockui{position:relative;}.p-blockui-mask{border-radius:var(--p-blockui-border-radius);}.p-blockui-mask.p-overlay-mask{position:absolute;}.p-blockui-mask-document.p-overlay-mask{position:fixed;}

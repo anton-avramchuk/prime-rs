@@ -2147,5 +2147,19 @@
     "upstream": "/imagecompare",
     "oursSelector": "[data-demo=\"responsive\"]",
     "upstreamSelector": "responsive-doc .card"
+  },
+  {
+    "name": "blockui-basic",
+    "ours": "/blockui",
+    "upstream": "/blockui",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "blockui-document",
+    "ours": "/blockui",
+    "upstream": "/blockui",
+    "oursSelector": "[data-demo=\"document\"]",
+    "upstreamSelector": "document-doc .card"
   }
 ]

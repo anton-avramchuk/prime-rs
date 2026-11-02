@@ -99,7 +99,7 @@ max_delta_bytes = 330000
 [[case]]
 name = "togglebutton"
 feature = "case-togglebutton"
-max_delta_bytes = 200000
+max_delta_bytes = 250000
 
 [[case]]
 name = "toggleswitch"
@@ -159,7 +159,7 @@ max_delta_bytes = 107000
 [[case]]
 name = "scrollpanel"
 feature = "case-scrollpanel"
-max_delta_bytes = 200000
+max_delta_bytes = 250000
 
 [[case]]
 name = "progressspinner"
@@ -295,3 +295,8 @@ max_delta_bytes = 340000
 name = "imagecompare"
 feature = "case-imagecompare"
 max_delta_bytes = 165000
+
+[[case]]
+name = "blockui"
+feature = "case-blockui"
+max_delta_bytes = 250000

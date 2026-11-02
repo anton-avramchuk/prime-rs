@@ -8,6 +8,7 @@ use prime_accordion::{Accordion, AccordionContent, AccordionHeader, AccordionPan
 use prime_avatar::{Avatar, AvatarShape, AvatarSize};
 use prime_avatargroup::AvatarGroup;
 use prime_badge::{Badge, BadgeSeverity};
+use prime_blockui::BlockUI;
 use prime_breadcrumb::{Breadcrumb, BreadcrumbItem};
 use prime_button::{Button, ButtonSeverity};
 use prime_buttongroup::ButtonGroup;
@@ -556,6 +557,11 @@ fn imagecompare_n(n: usize) -> String {
     )
 }
 
+fn blockui_n(n: usize) -> String {
+    // На сервере маска не выводится: измеряется только обвязка компонента.
+    render((0..n).map(|_| view! { <BlockUI blocked=true><span>"Loading"</span></BlockUI> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -717,6 +723,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "stepper-1000", run: || stepper_n(1000) },
     Scenario { name: "imagecompare-1", run: || imagecompare_n(1) },
     Scenario { name: "imagecompare-1000", run: || imagecompare_n(1000) },
+    Scenario { name: "blockui-1", run: || blockui_n(1) },
+    Scenario { name: "blockui-1000", run: || blockui_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },
