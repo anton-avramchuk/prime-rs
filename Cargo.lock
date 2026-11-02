@@ -2180,7 +2180,6 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-core",
- "prime-dom",
  "prime-icons",
  "wasm-bindgen",
  "wasm-bindgen-futures",

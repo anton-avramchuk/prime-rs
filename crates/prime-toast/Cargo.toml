@@ -9,13 +9,12 @@ rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr", "prime-dom/ssr", "prime-icons/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-dom/hydrate", "prime-icons/hydrate"]
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-icons/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-icons/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
 prime-core = { workspace = true }
-prime-dom = { workspace = true }
 prime-icons = { workspace = true, features = ["times", "check", "infocircle", "timescircle", "exclamationtriangle"] }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "EventTarget", "MouseEvent", "AnimationEvent", "HtmlElement", "Element", "Node", "Document", "Window", "HtmlHeadElement", "CssStyleDeclaration"] }
