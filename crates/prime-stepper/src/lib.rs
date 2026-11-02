@@ -28,6 +28,7 @@
 mod state;
 
 use leptos::prelude::*;
+use leptos::tachys::reactive_graph::OwnedView;
 use prime_core::collapsible::hidden_style;
 use prime_core::{ClassNames, OptProp, Prop, Pt};
 use std::sync::Arc;
@@ -98,18 +99,21 @@ fn bool_attr(v: bool) -> &'static str {
     if v { "true" } else { "false" }
 }
 
-/// Выполняет `f` в дочернем владельце, чтобы положенный в `f` контекст не протёк на соседей, идущих после компонента.
+/// Строит `f` в дочернем владельце, чтобы положенный в `f` контекст не протёк на соседей, идущих после компонента.
 ///
-/// Владелец держится до очистки родителя: сам по себе он освободился бы сразу и унёс бы за собой реактивные значения потомков.
-fn scoped<T>(f: impl FnOnce() -> T) -> T {
+/// Возвращаемый вид помнит владельца и строится, обновляется и гидратируется внутри него, поэтому реактивные потомки
+/// (например, шаги, добавляемые условием) тоже находят контекст. Владелец держится до очистки родителя: сам по себе он
+/// освободился бы сразу и унёс бы за собой реактивные значения потомков.
+fn scoped(f: impl FnOnce() -> AnyView) -> OwnedView<AnyView> {
     match Owner::current() {
         Some(parent) => {
             let owner = parent.child();
             let out = owner.with(f);
-            on_cleanup(move || drop(owner));
-            out
+            let keep = owner.clone();
+            on_cleanup(move || drop(keep));
+            OwnedView::new_with_owner(out, owner)
         }
-        None => f(),
+        None => OwnedView::new_with_owner(f(), Owner::new()),
     }
 }
 
@@ -159,7 +163,7 @@ pub fn Stepper(
     };
     let content = scoped(|| {
         provide_context(ctx);
-        children()
+        children().into_any()
     });
     let class = {
         let pt = pt.clone();
@@ -435,7 +439,7 @@ pub fn StepItem(
     });
     let content = scoped(|| {
         provide_context(ItemCtx { value });
-        children()
+        children().into_any()
     });
     let active = {
         let current = ctx.value;
