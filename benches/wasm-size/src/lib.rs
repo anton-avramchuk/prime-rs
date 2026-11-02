@@ -281,6 +281,11 @@ cfg_if::cfg_if! {
                 </Stepper>
             }
         }
+    } else if #[cfg(feature = "case-imagecompare")] {
+        fn case() -> impl IntoView {
+            use prime_imagecompare::ImageCompare;
+            view! { <ImageCompare left=|| view! { <img src="a.jpg" /> } right=|| view! { <img src="b.jpg" /> } /> }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

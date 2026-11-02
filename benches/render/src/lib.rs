@@ -23,6 +23,7 @@ use prime_fluid::Fluid;
 use prime_iconfield::{IconField, InputIcon};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_iftalabel::IftaLabel;
+use prime_imagecompare::ImageCompare;
 use prime_inplace::Inplace;
 use prime_inputgroup::{InputGroup, InputGroupAddon};
 use prime_inputnumber::{InputNumber, InputNumberMode};
@@ -547,6 +548,14 @@ fn stepper_n(n: usize) -> String {
     })
 }
 
+fn imagecompare_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| view! { <ImageCompare left=|| view! { <img src="a.jpg" /> } right=|| view! { <img src="b.jpg" /> } /> })
+            .collect_view(),
+    )
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -706,6 +715,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "paginator-1000", run: || paginator_n(1000) },
     Scenario { name: "stepper-1", run: || stepper_n(1) },
     Scenario { name: "stepper-1000", run: || stepper_n(1000) },
+    Scenario { name: "imagecompare-1", run: || imagecompare_n(1) },
+    Scenario { name: "imagecompare-1000", run: || imagecompare_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

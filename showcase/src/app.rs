@@ -2,11 +2,12 @@
 
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage, DialogPage,
-    DividerPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, InplacePage, InputGroupPage,
-    InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage,
-    OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage,
-    RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SplitterPage, StepperPage,
-    TabsPage, TagPage, TextareaPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
+    DividerPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, ImageComparePage,
+    InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage, MessagePage,
+    MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage,
+    ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
+    SliderPage, SplitterPage, StepperPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage,
+    ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -71,6 +72,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "multiselect",
         "paginator",
         "stepper",
+        "imagecompare",
     ]);
     view! {
         <!DOCTYPE html>
@@ -161,6 +163,7 @@ pub fn App() -> impl IntoView {
                         <A href="/multiselect">"MultiSelect"</A>
                         <A href="/paginator">"Paginator"</A>
                         <A href="/stepper">"Stepper"</A>
+                        <A href="/imagecompare">"ImageCompare"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -223,6 +226,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("multiselect") view=MultiSelectPage />
                         <Route path=StaticSegment("paginator") view=PaginatorPage />
                         <Route path=StaticSegment("stepper") view=StepperPage />
+                        <Route path=StaticSegment("imagecompare") view=ImageComparePage />
                     </Routes>
                 </main>
             </div>

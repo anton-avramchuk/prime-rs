@@ -2133,5 +2133,19 @@
     "upstream": "/stepper",
     "oursSelector": "[data-demo=\"stepsonly\"]",
     "upstreamSelector": "stepsonly-doc .card"
+  },
+  {
+    "name": "imagecompare-basic",
+    "ours": "/imagecompare",
+    "upstream": "/imagecompare",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "imagecompare-responsive",
+    "ours": "/imagecompare",
+    "upstream": "/imagecompare",
+    "oursSelector": "[data-demo=\"responsive\"]",
+    "upstreamSelector": "responsive-doc .card"
   }
 ]
