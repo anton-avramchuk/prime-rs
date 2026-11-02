@@ -43,6 +43,7 @@ prime-menu = { workspace = true, features = ["ssr"] }
 prime-listbox = { workspace = true, features = ["ssr"] }
 prime-multiselect = { workspace = true, features = ["ssr"] }
 prime-paginator = { workspace = true, features = ["ssr"] }
+prime-stepper = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

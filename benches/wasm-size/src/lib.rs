@@ -265,6 +265,22 @@ cfg_if::cfg_if! {
             use prime_paginator::{Paginator, RowsPerPage};
             view! { <Paginator total_records=120 rows_per_page_options=vec![RowsPerPage::Rows(10), RowsPerPage::Rows(20)] /> }
         }
+    } else if #[cfg(feature = "case-stepper")] {
+        fn case() -> impl IntoView {
+            use prime_stepper::{Step, StepList, StepPanel, StepPanels, Stepper};
+            view! {
+                <Stepper default_value=1u32>
+                    <StepList>
+                        <Step value=1u32>"Header I"</Step>
+                        <Step value=2u32>"Header II"</Step>
+                    </StepList>
+                    <StepPanels>
+                        <StepPanel value=1u32>"Content I"</StepPanel>
+                        <StepPanel value=2u32>"Content II"</StepPanel>
+                    </StepPanels>
+                </Stepper>
+            }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

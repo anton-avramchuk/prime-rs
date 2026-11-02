@@ -287,3 +287,8 @@ max_per_instance = 445
 name = "paginator-1000"
 instances = 1000
 max_per_instance = 395
+
+[[scenario]]
+name = "stepper-1000"
+instances = 1000
+max_per_instance = 270

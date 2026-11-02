@@ -2098,5 +2098,40 @@
     "upstream": "/paginator",
     "oursSelector": "[data-demo=\"images\"]",
     "upstreamSelector": "images-doc .card"
+  },
+  {
+    "name": "stepper-basic",
+    "ours": "/stepper",
+    "upstream": "/stepper",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "stepper-linear",
+    "ours": "/stepper",
+    "upstream": "/stepper",
+    "oursSelector": "[data-demo=\"linear\"]",
+    "upstreamSelector": "linear-doc .card"
+  },
+  {
+    "name": "stepper-vertical",
+    "ours": "/stepper",
+    "upstream": "/stepper",
+    "oursSelector": "[data-demo=\"vertical\"]",
+    "upstreamSelector": "vertical-doc .card"
+  },
+  {
+    "name": "stepper-template",
+    "ours": "/stepper",
+    "upstream": "/stepper",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "stepper-stepsonly",
+    "ours": "/stepper",
+    "upstream": "/stepper",
+    "oursSelector": "[data-demo=\"stepsonly\"]",
+    "upstreamSelector": "stepsonly-doc .card"
   }
 ]

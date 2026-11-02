@@ -285,3 +285,8 @@ max_delta_bytes = 930000
 name = "paginator"
 feature = "case-paginator"
 max_delta_bytes = 1320000
+
+[[case]]
+name = "stepper"
+feature = "case-stepper"
+max_delta_bytes = 340000

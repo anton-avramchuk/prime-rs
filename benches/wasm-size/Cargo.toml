@@ -47,6 +47,7 @@ case-menu = ["dep:prime-menu"]
 case-listbox = ["dep:prime-listbox"]
 case-multiselect = ["dep:prime-multiselect"]
 case-paginator = ["dep:prime-paginator"]
+case-stepper = ["dep:prime-stepper"]
 case-splitter = ["dep:prime-splitter"]
 case-inplace = ["dep:prime-inplace"]
 case-password = ["dep:prime-password"]
@@ -106,6 +107,7 @@ prime-menu = { workspace = true, optional = true }
 prime-listbox = { workspace = true, optional = true }
 prime-multiselect = { workspace = true, optional = true }
 prime-paginator = { workspace = true, optional = true }
+prime-stepper = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

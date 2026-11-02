@@ -130,14 +130,26 @@ fn primeng_extra_block(src: &str) -> Option<String> {
     Some(src[from..from + len].trim().to_owned())
 }
 
+/// Запасной вариант без маркера: часть `css`-литерала после первой интерполяции базового стиля (`${имя_style}`) до закрывающего
+/// обратного апострофа, если после интерполяции есть правила.
+fn block_after_style_interpolation(src: &str) -> Option<String> {
+    let open = src.find("${")?;
+    let close = open + src[open..].find('}')?;
+    let from = close + 1;
+    let len = src[from..].find('`')?;
+    let block = src[from..from + len].trim();
+    (!block.is_empty()).then(|| block.to_owned())
+}
+
 /// Блоки `For PrimeNG` перечисленных в `primeng_extra` компонентов: имя → исходный текст с `dt('…')`.
 fn extra_component_css(up: &Upstream) -> Result<serde_json::Map<String, Value>, String> {
     let mut map = serde_json::Map::new();
     for name in &up.theme.primeng_extra {
         let file = up.src_dir().join(format!("{name}/style/{name}style.ts"));
         let src = std::fs::read_to_string(&file).map_err(|e| format!("{}: {e}", file.display()))?;
-        let block = primeng_extra_block(&src)
-            .ok_or_else(|| format!("в {} нет блока `/* For PrimeNG */` (допустимо с пояснением в скобках)", file.display()))?;
+        let block = primeng_extra_block(&src).or_else(|| block_after_style_interpolation(&src)).ok_or_else(|| {
+            format!("в {} нет блока `/* For PrimeNG */` (допустимо с пояснением в скобках) и правил после `${{…_style}}`", file.display())
+        })?;
         map.insert(name.clone(), Value::String(block));
     }
     Ok(map)
@@ -226,6 +238,34 @@ const classes = {};";
             )
         );
         assert_eq!(primeng_extra_block("const style = `${s}`;"), None);
+    }
+
+    #[test]
+    fn falls_back_to_rules_after_the_style_interpolation() {
+        let src = "const style = /*css*/ `
+${stepper_style}
+.p-steppanel .p-motion {
+    display: grid;
+}
+`;
+const classes = {};";
+        assert_eq!(
+            block_after_style_interpolation(src).as_deref(),
+            Some(
+                ".p-steppanel .p-motion {
+    display: grid;
+}"
+            )
+        );
+        assert_eq!(
+            block_after_style_interpolation(
+                "const style = `
+${x_style}
+`;"
+            ),
+            None
+        );
+        assert_eq!(block_after_style_interpolation("const style = `.a{}`;"), None);
     }
 
     #[test]

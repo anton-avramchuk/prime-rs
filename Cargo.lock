@@ -2177,6 +2177,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-stepper"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-tabs"
 version = "0.1.0"
 dependencies = [
@@ -2535,6 +2548,7 @@ dependencies = [
  "prime-skeleton",
  "prime-slider",
  "prime-splitter",
+ "prime-stepper",
  "prime-tabs",
  "prime-tag",
  "prime-textarea",
@@ -2879,6 +2893,7 @@ dependencies = [
  "prime-skeleton",
  "prime-slider",
  "prime-splitter",
+ "prime-stepper",
  "prime-tabs",
  "prime-tag",
  "prime-textarea",
@@ -3568,6 +3583,7 @@ dependencies = [
  "prime-skeleton",
  "prime-slider",
  "prime-splitter",
+ "prime-stepper",
  "prime-tabs",
  "prime-tag",
  "prime-textarea",

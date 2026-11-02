@@ -50,6 +50,7 @@ use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_slider::Slider;
 use prime_splitter::Splitter;
+use prime_stepper::{Step, StepList, StepPanel, StepPanels, Stepper};
 use prime_tabs::{Tab, TabList, TabPanel, TabPanels, Tabs};
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
@@ -520,6 +521,32 @@ fn paginator_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Paginator total_records=120 rows_per_page_options=options() /> }).collect_view())
 }
 
+fn stepper_n(n: usize) -> String {
+    // Контекст группы шагов лежит в владельце.
+    Owner::new().with(|| {
+        render(
+            (0..n)
+                .map(|_| {
+                    view! {
+                        <Stepper default_value=1u32>
+                            <StepList>
+                                <Step value=1u32>"Header I"</Step>
+                                <Step value=2u32>"Header II"</Step>
+                                <Step value=3u32>"Header III"</Step>
+                            </StepList>
+                            <StepPanels>
+                                <StepPanel value=1u32>"Content I"</StepPanel>
+                                <StepPanel value=2u32>"Content II"</StepPanel>
+                                <StepPanel value=3u32>"Content III"</StepPanel>
+                            </StepPanels>
+                        </Stepper>
+                    }
+                })
+                .collect_view(),
+        )
+    })
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -677,6 +704,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "multiselect-1000", run: || multiselect_n(1000) },
     Scenario { name: "paginator-1", run: || paginator_n(1) },
     Scenario { name: "paginator-1000", run: || paginator_n(1000) },
+    Scenario { name: "stepper-1", run: || stepper_n(1) },
+    Scenario { name: "stepper-1000", run: || stepper_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },
