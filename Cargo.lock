@@ -1913,6 +1913,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-listbox"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-checkbox",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-menu"
 version = "0.1.0"
 dependencies = [
@@ -2466,6 +2481,7 @@ dependencies = [
  "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
+ "prime-listbox",
  "prime-menu",
  "prime-message",
  "prime-metergroup",
@@ -2807,6 +2823,7 @@ dependencies = [
  "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
+ "prime-listbox",
  "prime-menu",
  "prime-message",
  "prime-metergroup",
@@ -3493,6 +3510,7 @@ dependencies = [
  "prime-inputotp",
  "prime-inputtext",
  "prime-knob",
+ "prime-listbox",
  "prime-menu",
  "prime-message",
  "prime-metergroup",

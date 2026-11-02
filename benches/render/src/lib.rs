@@ -29,6 +29,7 @@ use prime_inputnumber::{InputNumber, InputNumberMode};
 use prime_inputotp::InputOtp;
 use prime_inputtext::InputText;
 use prime_knob::Knob;
+use prime_listbox::{Listbox, ListboxOption};
 use prime_menu::{Menu, MenuItem};
 use prime_message::{Message, MessageSeverity};
 use prime_metergroup::{MeterGroup, MeterItem};
@@ -485,6 +486,19 @@ fn menu_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menu model=model() /> }).collect_view())
 }
 
+fn listbox_n(n: usize) -> String {
+    let options = || {
+        vec![
+            ListboxOption::new("New York", "NY"),
+            ListboxOption::new("Rome", "RM"),
+            ListboxOption::new("London", "LDN"),
+            ListboxOption::new("Istanbul", "IST"),
+            ListboxOption::new("Paris", "PRS"),
+        ]
+    };
+    render((0..n).map(|_| view! { <Listbox options=options() /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -636,6 +650,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tooltip-1000", run: || tooltip_n(1000) },
     Scenario { name: "menu-1", run: || menu_n(1) },
     Scenario { name: "menu-1000", run: || menu_n(1000) },
+    Scenario { name: "listbox-1", run: || listbox_n(1) },
+    Scenario { name: "listbox-1000", run: || listbox_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

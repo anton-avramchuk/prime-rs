@@ -250,6 +250,11 @@ cfg_if::cfg_if! {
             use prime_menu::{Menu, MenuItem};
             view! { <Menu model=vec![MenuItem::new().label("New"), MenuItem::new().label("Search")] /> }
         }
+    } else if #[cfg(feature = "case-listbox")] {
+        fn case() -> impl IntoView {
+            use prime_listbox::{Listbox, ListboxOption};
+            view! { <Listbox options=vec![ListboxOption::new("New York", "NY"), ListboxOption::new("London", "LDN")] /> }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

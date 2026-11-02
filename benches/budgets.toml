@@ -270,3 +270,8 @@ max_delta_bytes = 370000
 name = "menu"
 feature = "case-menu"
 max_delta_bytes = 400000
+
+[[case]]
+name = "listbox"
+feature = "case-listbox"
+max_delta_bytes = 650000

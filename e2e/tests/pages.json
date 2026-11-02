@@ -1909,5 +1909,68 @@
     "upstream": "/menu",
     "oursSelector": "[data-demo=\"template\"]",
     "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "listbox-basic",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "listbox-multiple",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"multiple\"]",
+    "upstreamSelector": "multiple-doc .card"
+  },
+  {
+    "name": "listbox-group",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"group\"]",
+    "upstreamSelector": "group-doc .card"
+  },
+  {
+    "name": "listbox-filter",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"filter\"]",
+    "upstreamSelector": "filter-doc .card"
+  },
+  {
+    "name": "listbox-checkbox",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"checkbox\"]",
+    "upstreamSelector": "checkbox-doc .card"
+  },
+  {
+    "name": "listbox-checkmark",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"checkmark\"]",
+    "upstreamSelector": "checkmark-doc .card"
+  },
+  {
+    "name": "listbox-disabled",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "listbox-invalid",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"invalid\"]",
+    "upstreamSelector": "invalid-doc .card"
+  },
+  {
+    "name": "listbox-template",
+    "ours": "/listbox",
+    "upstream": "/listbox",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
   }
 ]

@@ -88,6 +88,10 @@ pub const INPUTTEXT: &str = include_str!("../css/components/inputtext.css");
 #[cfg(feature = "knob")]
 pub const KNOB: &str = include_str!("../css/components/knob.css");
 
+/// CSS компонента `listbox`.
+#[cfg(feature = "listbox")]
+pub const LISTBOX: &str = include_str!("../css/components/listbox.css");
+
 /// CSS компонента `menu`.
 #[cfg(feature = "menu")]
 pub const MENU: &str = include_str!("../css/components/menu.css");
@@ -242,6 +246,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("inputtext", INPUTTEXT),
     #[cfg(feature = "knob")]
     ("knob", KNOB),
+    #[cfg(feature = "listbox")]
+    ("listbox", LISTBOX),
     #[cfg(feature = "menu")]
     ("menu", MENU),
     #[cfg(feature = "message")]
