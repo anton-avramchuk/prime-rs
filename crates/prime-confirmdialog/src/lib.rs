@@ -113,6 +113,7 @@ impl Core {
     }
 
     /// Окно закрыли крестиком, `Escape` или маской: отказ с типом `Cancel`.
+    #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     fn cancelled(&self) {
         if self.answered.try_update_value(std::mem::take).unwrap_or(false) {
             return;
@@ -296,7 +297,8 @@ pub fn ConfirmDialog(
             core.visible.try_set(false);
         });
     }
-    // Окно закрыто не нами (крестик, `Escape`, маска): это отказ.
+    // Окно закрыто не нами (крестик, `Escape`, маска): это отказ. Эффекты нужны только в браузере.
+    #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
         Effect::new(move |was: Option<bool>| {
