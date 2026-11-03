@@ -2161,5 +2161,82 @@
     "upstream": "/blockui",
     "oursSelector": "[data-demo=\"document\"]",
     "upstreamSelector": "document-doc .card"
+  },
+  {
+    "name": "splitbutton-basic",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "splitbutton-disabled",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"disabled\"]",
+    "upstreamSelector": "disabled-doc .card"
+  },
+  {
+    "name": "splitbutton-icons",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"icons\"]",
+    "upstreamSelector": "icons-doc .card"
+  },
+  {
+    "name": "splitbutton-outlined",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"outlined\"]",
+    "upstreamSelector": "outlined-doc .card"
+  },
+  {
+    "name": "splitbutton-raised",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"raised\"]",
+    "upstreamSelector": "raised-doc .card"
+  },
+  {
+    "name": "splitbutton-raisedtext",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"raisedtext\"]",
+    "upstreamSelector": "raisedtext-doc .card"
+  },
+  {
+    "name": "splitbutton-rounded",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"rounded\"]",
+    "upstreamSelector": "rounded-doc .card"
+  },
+  {
+    "name": "splitbutton-severity",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"severity\"]",
+    "upstreamSelector": "severity-doc .card"
+  },
+  {
+    "name": "splitbutton-sizes",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"sizes\"]",
+    "upstreamSelector": "sizes-doc .card"
+  },
+  {
+    "name": "splitbutton-template",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"template\"]",
+    "upstreamSelector": "template-doc .card"
+  },
+  {
+    "name": "splitbutton-text",
+    "ours": "/splitbutton",
+    "upstream": "/splitbutton",
+    "oursSelector": "[data-demo=\"text\"]",
+    "upstreamSelector": "text-doc .card"
   }
 ]

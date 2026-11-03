@@ -2191,6 +2191,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-splitbutton"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "prime-menu",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-splitter"
 version = "0.1.0"
 dependencies = [
@@ -2576,6 +2593,7 @@ dependencies = [
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
+ "prime-splitbutton",
  "prime-splitter",
  "prime-stepper",
  "prime-tabs",
@@ -2923,6 +2941,7 @@ dependencies = [
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
+ "prime-splitbutton",
  "prime-splitter",
  "prime-stepper",
  "prime-tabs",
@@ -3615,6 +3634,7 @@ dependencies = [
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
+ "prime-splitbutton",
  "prime-splitter",
  "prime-stepper",
  "prime-tabs",

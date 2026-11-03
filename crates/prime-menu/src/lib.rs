@@ -95,6 +95,11 @@ impl MenuRef {
         self.visible.get()
     }
 
+    /// Меню сейчас показано (без подписки).
+    pub fn visible_untracked(&self) -> bool {
+        self.visible.get_untracked()
+    }
+
     /// Показывает меню у `currentTarget` события.
     pub fn show(&self, event: &web_sys::Event) {
         if let Some(target) = event_target(event) {

@@ -59,6 +59,7 @@ prime-paginator = { workspace = true }
 prime-stepper = { workspace = true }
 prime-imagecompare = { workspace = true }
 prime-blockui = { workspace = true }
+prime-splitbutton = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

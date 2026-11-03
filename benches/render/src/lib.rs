@@ -51,6 +51,7 @@ use prime_select::{Select, SelectOption};
 use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_slider::Slider;
+use prime_splitbutton::SplitButton;
 use prime_splitter::Splitter;
 use prime_stepper::{Step, StepList, StepPanel, StepPanels, Stepper};
 use prime_tabs::{Tab, TabList, TabPanel, TabPanels, Tabs};
@@ -562,6 +563,11 @@ fn blockui_n(n: usize) -> String {
     render((0..n).map(|_| view! { <BlockUI blocked=true><span>"Loading"</span></BlockUI> }).collect_view())
 }
 
+fn splitbutton_n(n: usize) -> String {
+    let model = || vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete"), MenuItem::new().label("Upload")];
+    render((0..n).map(|_| view! { <SplitButton label="Save" model=model() /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -725,6 +731,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "imagecompare-1000", run: || imagecompare_n(1000) },
     Scenario { name: "blockui-1", run: || blockui_n(1) },
     Scenario { name: "blockui-1000", run: || blockui_n(1000) },
+    Scenario { name: "splitbutton-1", run: || splitbutton_n(1) },
+    Scenario { name: "splitbutton-1000", run: || splitbutton_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

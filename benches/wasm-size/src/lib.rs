@@ -291,6 +291,12 @@ cfg_if::cfg_if! {
             use prime_blockui::BlockUI;
             view! { <BlockUI blocked=true><span>"Loading"</span></BlockUI> }
         }
+    } else if #[cfg(feature = "case-splitbutton")] {
+        fn case() -> impl IntoView {
+            use prime_menu::MenuItem;
+            use prime_splitbutton::SplitButton;
+            view! { <SplitButton label="Save" model=vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")] /> }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

@@ -302,3 +302,8 @@ max_per_instance = 14
 name = "blockui-1000"
 instances = 1000
 max_per_instance = 31
+
+[[scenario]]
+name = "splitbutton-1000"
+instances = 1000
+max_per_instance = 160

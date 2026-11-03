@@ -300,3 +300,8 @@ max_delta_bytes = 165000
 name = "blockui"
 feature = "case-blockui"
 max_delta_bytes = 250000
+
+[[case]]
+name = "splitbutton"
+feature = "case-splitbutton"
+max_delta_bytes = 850000
