@@ -83,6 +83,7 @@ prime-image = { path = "crates/prime-image" }
 prime-confirmation = { path = "crates/prime-confirmation" }
 prime-confirmpopup = { path = "crates/prime-confirmpopup" }
 prime-confirmdialog = { path = "crates/prime-confirmdialog" }
+prime-speeddial = { path = "crates/prime-speeddial" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

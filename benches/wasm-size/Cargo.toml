@@ -55,6 +55,7 @@ case-dock = ["dep:prime-dock"]
 case-image = ["dep:prime-image"]
 case-confirmpopup = ["dep:prime-confirmpopup", "dep:prime-confirmation"]
 case-confirmdialog = ["dep:prime-confirmdialog", "dep:prime-confirmation"]
+case-speeddial = ["dep:prime-speeddial"]
 case-splitter = ["dep:prime-splitter"]
 case-inplace = ["dep:prime-inplace"]
 case-password = ["dep:prime-password"]
@@ -123,6 +124,7 @@ prime-image = { workspace = true, optional = true }
 prime-confirmation = { workspace = true, optional = true }
 prime-confirmpopup = { workspace = true, optional = true }
 prime-confirmdialog = { workspace = true, optional = true }
+prime-speeddial = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

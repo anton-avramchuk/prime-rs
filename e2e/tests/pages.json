@@ -2266,5 +2266,12 @@
     "upstream": "/confirmdialog",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "speeddial-linear",
+    "ours": "/speeddial",
+    "upstream": "/speeddial",
+    "oursSelector": "[data-demo=\"linear\"]",
+    "upstreamSelector": "linear-doc .card"
   }
 ]

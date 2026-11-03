@@ -6,8 +6,8 @@ use crate::pages::{
     IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage,
     KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage,
     PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage,
-    SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SplitButtonPage, SplitterPage, StepperPage, TabsPage, TagPage, TextareaPage,
-    TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
+    SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, TabsPage, TagPage,
+    TextareaPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -79,6 +79,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "image",
         "confirmpopup",
         "confirmdialog",
+        "speeddial",
     ]);
     view! {
         <!DOCTYPE html>
@@ -176,6 +177,7 @@ pub fn App() -> impl IntoView {
                         <A href="/image">"Image"</A>
                         <A href="/confirmpopup">"ConfirmPopup"</A>
                         <A href="/confirmdialog">"ConfirmDialog"</A>
+                        <A href="/speeddial">"SpeedDial"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -245,6 +247,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("image") view=ImagePage />
                         <Route path=StaticSegment("confirmpopup") view=ConfirmPopupPage />
                         <Route path=StaticSegment("confirmdialog") view=ConfirmDialogPage />
+                        <Route path=StaticSegment("speeddial") view=SpeedDialPage />
                     </Routes>
                 </main>
             </div>

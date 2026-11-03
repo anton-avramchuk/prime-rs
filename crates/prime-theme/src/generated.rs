@@ -192,6 +192,10 @@ pub const SKELETON: &str = include_str!("../css/components/skeleton.css");
 #[cfg(feature = "slider")]
 pub const SLIDER: &str = include_str!("../css/components/slider.css");
 
+/// CSS компонента `speeddial`.
+#[cfg(feature = "speeddial")]
+pub const SPEEDDIAL: &str = include_str!("../css/components/speeddial.css");
+
 /// CSS компонента `splitbutton`.
 #[cfg(feature = "splitbutton")]
 pub const SPLITBUTTON: &str = include_str!("../css/components/splitbutton.css");
@@ -338,6 +342,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("skeleton", SKELETON),
     #[cfg(feature = "slider")]
     ("slider", SLIDER),
+    #[cfg(feature = "speeddial")]
+    ("speeddial", SPEEDDIAL),
     #[cfg(feature = "splitbutton")]
     ("splitbutton", SPLITBUTTON),
     #[cfg(feature = "splitter")]

@@ -297,6 +297,11 @@ cfg_if::cfg_if! {
             use prime_splitbutton::SplitButton;
             view! { <SplitButton label="Save" model=vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")] /> }
         }
+    } else if #[cfg(feature = "case-speeddial")] {
+        fn case() -> impl IntoView {
+            use prime_speeddial::{SpeedDial, SpeedDialItem};
+            view! { <SpeedDial model=vec![SpeedDialItem::new().label("Add"), SpeedDialItem::new().label("Update")] /> }
+        }
     } else if #[cfg(feature = "case-confirmdialog")] {
         fn case() -> impl IntoView {
             use prime_confirmation::provide_confirmation_service;

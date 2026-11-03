@@ -327,3 +327,8 @@ max_per_instance = 36
 name = "confirmdialog-1000"
 instances = 1000
 max_per_instance = 124
+
+[[scenario]]
+name = "speeddial-1000"
+instances = 1000
+max_per_instance = 238

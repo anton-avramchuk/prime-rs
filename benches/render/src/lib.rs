@@ -56,6 +56,7 @@ use prime_select::{Select, SelectOption};
 use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_skeleton::{Skeleton, SkeletonShape};
 use prime_slider::Slider;
+use prime_speeddial::{SpeedDial, SpeedDialItem};
 use prime_splitbutton::SplitButton;
 use prime_splitter::Splitter;
 use prime_stepper::{Step, StepList, StepPanel, StepPanels, Stepper};
@@ -596,6 +597,11 @@ fn confirmdialog_n(n: usize) -> String {
     })
 }
 
+fn speeddial_n(n: usize) -> String {
+    let model = || vec![SpeedDialItem::new().label("Add"), SpeedDialItem::new().label("Update"), SpeedDialItem::new().label("Delete")];
+    render((0..n).map(|_| view! { <SpeedDial model=model() /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -769,6 +775,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "confirmpopup-1000", run: || confirmpopup_n(1000) },
     Scenario { name: "confirmdialog-1", run: || confirmdialog_n(1) },
     Scenario { name: "confirmdialog-1000", run: || confirmdialog_n(1000) },
+    Scenario { name: "speeddial-1", run: || speeddial_n(1) },
+    Scenario { name: "speeddial-1000", run: || speeddial_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

@@ -325,3 +325,8 @@ max_delta_bytes = 584000
 name = "confirmdialog"
 feature = "case-confirmdialog"
 max_delta_bytes = 1096000
+
+[[case]]
+name = "speeddial"
+feature = "case-speeddial"
+max_delta_bytes = 553000

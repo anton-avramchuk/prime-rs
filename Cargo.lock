@@ -2263,6 +2263,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-speeddial"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-icons",
+ "prime-tooltip",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-splitbutton"
 version = "0.1.0"
 dependencies = [
@@ -2670,6 +2686,7 @@ dependencies = [
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
+ "prime-speeddial",
  "prime-splitbutton",
  "prime-splitter",
  "prime-stepper",
@@ -3023,6 +3040,7 @@ dependencies = [
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
+ "prime-speeddial",
  "prime-splitbutton",
  "prime-splitter",
  "prime-stepper",
@@ -3721,6 +3739,7 @@ dependencies = [
  "prime-selectbutton",
  "prime-skeleton",
  "prime-slider",
+ "prime-speeddial",
  "prime-splitbutton",
  "prime-splitter",
  "prime-stepper",
