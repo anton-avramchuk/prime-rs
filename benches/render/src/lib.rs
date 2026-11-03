@@ -17,6 +17,7 @@ use prime_checkbox::Checkbox;
 use prime_chip::Chip;
 use prime_dialog::Dialog;
 use prime_divider::{Divider, DividerAlign};
+use prime_dock::{Dock, DockItem};
 use prime_drawer::Drawer;
 use prime_fieldset::Fieldset;
 use prime_floatlabel::{FloatLabel, FloatLabelVariant};
@@ -568,6 +569,11 @@ fn splitbutton_n(n: usize) -> String {
     render((0..n).map(|_| view! { <SplitButton label="Save" model=model() /> }).collect_view())
 }
 
+fn dock_n(n: usize) -> String {
+    let model = || vec![DockItem::new().label("Finder"), DockItem::new().label("Terminal"), DockItem::new().label("Photos")];
+    render((0..n).map(|_| view! { <Dock model=model() /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -733,6 +739,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "blockui-1000", run: || blockui_n(1000) },
     Scenario { name: "splitbutton-1", run: || splitbutton_n(1) },
     Scenario { name: "splitbutton-1000", run: || splitbutton_n(1000) },
+    Scenario { name: "dock-1", run: || dock_n(1) },
+    Scenario { name: "dock-1000", run: || dock_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

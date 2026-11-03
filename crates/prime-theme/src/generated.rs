@@ -48,6 +48,10 @@ pub const DIALOG: &str = include_str!("../css/components/dialog.css");
 #[cfg(feature = "divider")]
 pub const DIVIDER: &str = include_str!("../css/components/divider.css");
 
+/// CSS компонента `dock`.
+#[cfg(feature = "dock")]
+pub const DOCK: &str = include_str!("../css/components/dock.css");
+
 /// CSS компонента `drawer`.
 #[cfg(feature = "drawer")]
 pub const DRAWER: &str = include_str!("../css/components/drawer.css");
@@ -250,6 +254,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("dialog", DIALOG),
     #[cfg(feature = "divider")]
     ("divider", DIVIDER),
+    #[cfg(feature = "dock")]
+    ("dock", DOCK),
     #[cfg(feature = "drawer")]
     ("drawer", DRAWER),
     #[cfg(feature = "fieldset")]

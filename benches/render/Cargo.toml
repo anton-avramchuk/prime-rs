@@ -47,6 +47,7 @@ prime-stepper = { workspace = true, features = ["ssr"] }
 prime-imagecompare = { workspace = true, features = ["ssr"] }
 prime-blockui = { workspace = true, features = ["ssr"] }
 prime-splitbutton = { workspace = true, features = ["ssr"] }
+prime-dock = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

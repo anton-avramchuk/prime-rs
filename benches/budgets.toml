@@ -305,3 +305,8 @@ max_delta_bytes = 250000
 name = "splitbutton"
 feature = "case-splitbutton"
 max_delta_bytes = 850000
+
+[[case]]
+name = "dock"
+feature = "case-dock"
+max_delta_bytes = 322000

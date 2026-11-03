@@ -1,0 +1,34 @@
+[package]
+name = "prime-dock"
+description = "prime-rs: компонент Dock (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-badge/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-badge/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-badge = { workspace = true }
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true, features = ["Event", "FocusEvent", "KeyboardEvent", "MouseEvent", "HtmlElement", "Element", "Window", "EventTarget", "MediaQueryList", "MediaQueryListEvent"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+js-sys = { workspace = true }
+wasm-bindgen-futures = "0.4"
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "Event", "FocusEvent", "KeyboardEvent", "KeyboardEventInit", "MouseEvent", "EventTarget", "CssStyleDeclaration"] }
+
+[lints]
+workspace = true

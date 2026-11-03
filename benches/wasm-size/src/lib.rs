@@ -297,6 +297,11 @@ cfg_if::cfg_if! {
             use prime_splitbutton::SplitButton;
             view! { <SplitButton label="Save" model=vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")] /> }
         }
+    } else if #[cfg(feature = "case-dock")] {
+        fn case() -> impl IntoView {
+            use prime_dock::{Dock, DockItem};
+            view! { <Dock model=vec![DockItem::new().label("Finder"), DockItem::new().label("Terminal")] /> }
+        }
     } else if #[cfg(feature = "case-splitter")] {
         fn case() -> impl IntoView {
             view! {

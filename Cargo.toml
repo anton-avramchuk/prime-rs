@@ -78,6 +78,7 @@ prime-stepper = { path = "crates/prime-stepper" }
 prime-imagecompare = { path = "crates/prime-imagecompare" }
 prime-blockui = { path = "crates/prime-blockui" }
 prime-splitbutton = { path = "crates/prime-splitbutton" }
+prime-dock = { path = "crates/prime-dock" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

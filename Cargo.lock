@@ -1768,6 +1768,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-dock"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-badge",
+ "prime-core",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-dom"
 version = "0.1.0"
 dependencies = [
@@ -2559,6 +2573,7 @@ dependencies = [
  "prime-chip",
  "prime-dialog",
  "prime-divider",
+ "prime-dock",
  "prime-drawer",
  "prime-fieldset",
  "prime-floatlabel",
@@ -2907,6 +2922,7 @@ dependencies = [
  "prime-core",
  "prime-dialog",
  "prime-divider",
+ "prime-dock",
  "prime-drawer",
  "prime-fieldset",
  "prime-floatlabel",
@@ -3600,6 +3616,7 @@ dependencies = [
  "prime-chip",
  "prime-dialog",
  "prime-divider",
+ "prime-dock",
  "prime-drawer",
  "prime-fieldset",
  "prime-floatlabel",

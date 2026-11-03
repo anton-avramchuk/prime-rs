@@ -51,6 +51,7 @@ case-stepper = ["dep:prime-stepper"]
 case-imagecompare = ["dep:prime-imagecompare"]
 case-blockui = ["dep:prime-blockui"]
 case-splitbutton = ["dep:prime-splitbutton", "dep:prime-menu"]
+case-dock = ["dep:prime-dock"]
 case-splitter = ["dep:prime-splitter"]
 case-inplace = ["dep:prime-inplace"]
 case-password = ["dep:prime-password"]
@@ -114,6 +115,7 @@ prime-stepper = { workspace = true, optional = true }
 prime-imagecompare = { workspace = true, optional = true }
 prime-blockui = { workspace = true, optional = true }
 prime-splitbutton = { workspace = true, optional = true }
+prime-dock = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

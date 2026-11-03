@@ -2,9 +2,9 @@
 
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage,
-    DialogPage, DividerPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, ImageComparePage,
-    InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage, MessagePage,
-    MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage,
+    DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage,
+    ImageComparePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage,
+    MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage,
     ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
     SliderPage, SplitButtonPage, SplitterPage, StepperPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToastPage, ToggleButtonPage,
     ToggleSwitchPage, ToolbarPage, TooltipPage,
@@ -75,6 +75,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "imagecompare",
         "blockui",
         "splitbutton",
+        "dock",
     ]);
     view! {
         <!DOCTYPE html>
@@ -168,6 +169,7 @@ pub fn App() -> impl IntoView {
                         <A href="/imagecompare">"ImageCompare"</A>
                         <A href="/blockui">"BlockUI"</A>
                         <A href="/splitbutton">"SplitButton"</A>
+                        <A href="/dock">"Dock"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -233,6 +235,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("imagecompare") view=ImageComparePage />
                         <Route path=StaticSegment("blockui") view=BlockUiPage />
                         <Route path=StaticSegment("splitbutton") view=SplitButtonPage />
+                        <Route path=StaticSegment("dock") view=DockPage />
                     </Routes>
                 </main>
             </div>

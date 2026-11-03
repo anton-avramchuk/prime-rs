@@ -2238,5 +2238,12 @@
     "upstream": "/splitbutton",
     "oursSelector": "[data-demo=\"text\"]",
     "upstreamSelector": "text-doc .card"
+  },
+  {
+    "name": "dock-basic",
+    "ours": "/dock",
+    "upstream": "/dock",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]
