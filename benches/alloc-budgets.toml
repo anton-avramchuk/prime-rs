@@ -337,3 +337,8 @@ max_per_instance = 238
 name = "carousel-1000"
 instances = 1000
 max_per_instance = 480
+
+[[scenario]]
+name = "tieredmenu-1000"
+instances = 1000
+max_per_instance = 415

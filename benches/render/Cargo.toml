@@ -54,6 +54,7 @@ prime-confirmpopup = { workspace = true, features = ["ssr"] }
 prime-confirmdialog = { workspace = true, features = ["ssr"] }
 prime-speeddial = { workspace = true, features = ["ssr"] }
 prime-carousel = { workspace = true, features = ["ssr"] }
+prime-tieredmenu = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

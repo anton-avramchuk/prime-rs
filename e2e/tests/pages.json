@@ -2280,5 +2280,12 @@
     "upstream": "/carousel",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "tieredmenu-basic",
+    "ours": "/tieredmenu",
+    "upstream": "/tieredmenu",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

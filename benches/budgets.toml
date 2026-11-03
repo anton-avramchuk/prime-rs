@@ -335,3 +335,8 @@ max_delta_bytes = 553000
 name = "carousel"
 feature = "case-carousel"
 max_delta_bytes = 841000
+
+[[case]]
+name = "tieredmenu"
+feature = "case-tieredmenu"
+max_delta_bytes = 590000

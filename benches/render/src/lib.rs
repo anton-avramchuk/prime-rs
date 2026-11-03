@@ -64,6 +64,7 @@ use prime_stepper::{Step, StepList, StepPanel, StepPanels, Stepper};
 use prime_tabs::{Tab, TabList, TabPanel, TabPanels, Tabs};
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
+use prime_tieredmenu::TieredMenu;
 use prime_timeline::Timeline;
 use prime_toast::{Toast, provide_message_service};
 use prime_togglebutton::ToggleButton;
@@ -611,6 +612,20 @@ fn carousel_n(n: usize) -> String {
     )
 }
 
+fn tieredmenu_n(n: usize) -> String {
+    let model = || {
+        vec![
+            MenuItem::new()
+                .label("File")
+                .items(vec![MenuItem::new().label("New").items(vec![MenuItem::new().label("Document")]), MenuItem::new().label("Open")]),
+            MenuItem::new().label("Edit"),
+            MenuItem::separator(),
+            MenuItem::new().label("Quit"),
+        ]
+    };
+    render((0..n).map(|_| view! { <TieredMenu model=model() /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -788,6 +803,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "speeddial-1000", run: || speeddial_n(1000) },
     Scenario { name: "carousel-1", run: || carousel_n(1) },
     Scenario { name: "carousel-1000", run: || carousel_n(1000) },
+    Scenario { name: "tieredmenu-1", run: || tieredmenu_n(1) },
+    Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

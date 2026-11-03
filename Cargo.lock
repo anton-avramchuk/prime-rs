@@ -2374,6 +2374,22 @@ name = "prime-theme"
 version = "0.1.0"
 
 [[package]]
+name = "prime-tieredmenu"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "prime-menu",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-timeline"
 version = "0.1.0"
 dependencies = [
@@ -2709,6 +2725,7 @@ dependencies = [
  "prime-tabs",
  "prime-tag",
  "prime-textarea",
+ "prime-tieredmenu",
  "prime-timeline",
  "prime-toast",
  "prime-togglebutton",
@@ -3065,6 +3082,7 @@ dependencies = [
  "prime-tag",
  "prime-textarea",
  "prime-theme",
+ "prime-tieredmenu",
  "prime-timeline",
  "prime-toast",
  "prime-togglebutton",
@@ -3764,6 +3782,7 @@ dependencies = [
  "prime-tabs",
  "prime-tag",
  "prime-textarea",
+ "prime-tieredmenu",
  "prime-timeline",
  "prime-toast",
  "prime-togglebutton",

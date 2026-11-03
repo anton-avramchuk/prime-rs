@@ -224,6 +224,10 @@ pub const TAG: &str = include_str!("../css/components/tag.css");
 #[cfg(feature = "textarea")]
 pub const TEXTAREA: &str = include_str!("../css/components/textarea.css");
 
+/// CSS компонента `tieredmenu`.
+#[cfg(feature = "tieredmenu")]
+pub const TIEREDMENU: &str = include_str!("../css/components/tieredmenu.css");
+
 /// CSS компонента `timeline`.
 #[cfg(feature = "timeline")]
 pub const TIMELINE: &str = include_str!("../css/components/timeline.css");
@@ -362,6 +366,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("tag", TAG),
     #[cfg(feature = "textarea")]
     ("textarea", TEXTAREA),
+    #[cfg(feature = "tieredmenu")]
+    ("tieredmenu", TIEREDMENU),
     #[cfg(feature = "timeline")]
     ("timeline", TIMELINE),
     #[cfg(feature = "toast")]
