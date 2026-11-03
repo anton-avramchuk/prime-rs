@@ -297,6 +297,11 @@ cfg_if::cfg_if! {
             use prime_splitbutton::SplitButton;
             view! { <SplitButton label="Save" model=vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")] /> }
         }
+    } else if #[cfg(feature = "case-carousel")] {
+        fn case() -> impl IntoView {
+            use prime_carousel::Carousel;
+            view! { <Carousel value=vec![1, 2, 3, 4] num_visible=2 item=Callback::new(|v: i32| view! { <span>{v}</span> }.into_any()) /> }
+        }
     } else if #[cfg(feature = "case-speeddial")] {
         fn case() -> impl IntoView {
             use prime_speeddial::{SpeedDial, SpeedDialItem};

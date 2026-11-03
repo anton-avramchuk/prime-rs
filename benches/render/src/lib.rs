@@ -13,6 +13,7 @@ use prime_breadcrumb::{Breadcrumb, BreadcrumbItem};
 use prime_button::{Button, ButtonSeverity};
 use prime_buttongroup::ButtonGroup;
 use prime_card::Card;
+use prime_carousel::Carousel;
 use prime_checkbox::Checkbox;
 use prime_chip::Chip;
 use prime_confirmation::provide_confirmation_service;
@@ -602,6 +603,14 @@ fn speeddial_n(n: usize) -> String {
     render((0..n).map(|_| view! { <SpeedDial model=model() /> }).collect_view())
 }
 
+fn carousel_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| view! { <Carousel value=vec![1, 2, 3, 4, 5] num_visible=2 item=Callback::new(|v: i32| view! { <span>{v}</span> }.into_any()) /> })
+            .collect_view(),
+    )
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -777,6 +786,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "confirmdialog-1000", run: || confirmdialog_n(1000) },
     Scenario { name: "speeddial-1", run: || speeddial_n(1) },
     Scenario { name: "speeddial-1000", run: || speeddial_n(1000) },
+    Scenario { name: "carousel-1", run: || carousel_n(1) },
+    Scenario { name: "carousel-1000", run: || carousel_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

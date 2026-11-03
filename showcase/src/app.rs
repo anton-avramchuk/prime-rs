@@ -1,13 +1,13 @@
 //! Оболочка страницы, меню и маршруты.
 
 use crate::pages::{
-    AccordionPage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage,
-    ConfirmDialogPage, ConfirmPopupPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage,
-    IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage,
-    KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage,
-    PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage,
-    SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, TabsPage, TagPage,
-    TextareaPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
+    AccordionPage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CarouselPage, CheckboxPage,
+    ChipPage, ConfirmDialogPage, ConfirmPopupPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage,
+    HomePage, IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage,
+    InputTextPage, KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage,
+    PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage,
+    ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage,
+    TabsPage, TagPage, TextareaPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -80,6 +80,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "confirmpopup",
         "confirmdialog",
         "speeddial",
+        "carousel",
     ]);
     view! {
         <!DOCTYPE html>
@@ -178,6 +179,7 @@ pub fn App() -> impl IntoView {
                         <A href="/confirmpopup">"ConfirmPopup"</A>
                         <A href="/confirmdialog">"ConfirmDialog"</A>
                         <A href="/speeddial">"SpeedDial"</A>
+                        <A href="/carousel">"Carousel"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -248,6 +250,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("confirmpopup") view=ConfirmPopupPage />
                         <Route path=StaticSegment("confirmdialog") view=ConfirmDialogPage />
                         <Route path=StaticSegment("speeddial") view=SpeedDialPage />
+                        <Route path=StaticSegment("carousel") view=CarouselPage />
                     </Routes>
                 </main>
             </div>

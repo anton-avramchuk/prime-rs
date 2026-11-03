@@ -66,6 +66,7 @@ prime-confirmation = { workspace = true }
 prime-confirmpopup = { workspace = true }
 prime-confirmdialog = { workspace = true }
 prime-speeddial = { workspace = true }
+prime-carousel = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

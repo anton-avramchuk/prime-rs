@@ -32,6 +32,10 @@ pub const BUTTONGROUP: &str = include_str!("../css/components/buttongroup.css");
 #[cfg(feature = "card")]
 pub const CARD: &str = include_str!("../css/components/card.css");
 
+/// CSS компонента `carousel`.
+#[cfg(feature = "carousel")]
+pub const CAROUSEL: &str = include_str!("../css/components/carousel.css");
+
 /// CSS компонента `checkbox`.
 #[cfg(feature = "checkbox")]
 pub const CHECKBOX: &str = include_str!("../css/components/checkbox.css");
@@ -262,6 +266,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("buttongroup", BUTTONGROUP),
     #[cfg(feature = "card")]
     ("card", CARD),
+    #[cfg(feature = "carousel")]
+    ("carousel", CAROUSEL),
     #[cfg(feature = "checkbox")]
     ("checkbox", CHECKBOX),
     #[cfg(feature = "chip")]

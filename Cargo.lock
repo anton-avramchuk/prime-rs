@@ -1709,6 +1709,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-carousel"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-checkbox"
 version = "0.1.0"
 dependencies = [
@@ -2643,6 +2658,7 @@ dependencies = [
  "prime-button",
  "prime-buttongroup",
  "prime-card",
+ "prime-carousel",
  "prime-checkbox",
  "prime-chip",
  "prime-confirmation",
@@ -2996,6 +3012,7 @@ dependencies = [
  "prime-button",
  "prime-buttongroup",
  "prime-card",
+ "prime-carousel",
  "prime-checkbox",
  "prime-chip",
  "prime-confirmation",
@@ -3696,6 +3713,7 @@ dependencies = [
  "prime-button",
  "prime-buttongroup",
  "prime-card",
+ "prime-carousel",
  "prime-checkbox",
  "prime-chip",
  "prime-confirmation",

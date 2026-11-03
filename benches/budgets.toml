@@ -330,3 +330,8 @@ max_delta_bytes = 1096000
 name = "speeddial"
 feature = "case-speeddial"
 max_delta_bytes = 553000
+
+[[case]]
+name = "carousel"
+feature = "case-carousel"
+max_delta_bytes = 841000

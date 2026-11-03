@@ -2273,5 +2273,12 @@
     "upstream": "/speeddial",
     "oursSelector": "[data-demo=\"linear\"]",
     "upstreamSelector": "linear-doc .card"
+  },
+  {
+    "name": "carousel-basic",
+    "ours": "/carousel",
+    "upstream": "/carousel",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]
