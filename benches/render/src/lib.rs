@@ -25,6 +25,7 @@ use prime_fluid::Fluid;
 use prime_iconfield::{IconField, InputIcon};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_iftalabel::IftaLabel;
+use prime_image::Image;
 use prime_imagecompare::ImageCompare;
 use prime_inplace::Inplace;
 use prime_inputgroup::{InputGroup, InputGroupAddon};
@@ -574,6 +575,10 @@ fn dock_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Dock model=model() /> }).collect_view())
 }
 
+fn image_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <Image src="photo.jpg" alt="Photo" width="250" preview=true /> }).collect_view())
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -741,6 +746,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "splitbutton-1000", run: || splitbutton_n(1000) },
     Scenario { name: "dock-1", run: || dock_n(1) },
     Scenario { name: "dock-1000", run: || dock_n(1000) },
+    Scenario { name: "image-1", run: || image_n(1) },
+    Scenario { name: "image-1000", run: || image_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

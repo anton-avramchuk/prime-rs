@@ -72,6 +72,10 @@ pub const ICONFIELD: &str = include_str!("../css/components/iconfield.css");
 #[cfg(feature = "iftalabel")]
 pub const IFTALABEL: &str = include_str!("../css/components/iftalabel.css");
 
+/// CSS компонента `image`.
+#[cfg(feature = "image")]
+pub const IMAGE: &str = include_str!("../css/components/image.css");
+
 /// CSS компонента `imagecompare`.
 #[cfg(feature = "imagecompare")]
 pub const IMAGECOMPARE: &str = include_str!("../css/components/imagecompare.css");
@@ -266,6 +270,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("iconfield", ICONFIELD),
     #[cfg(feature = "iftalabel")]
     ("iftalabel", IFTALABEL),
+    #[cfg(feature = "image")]
+    ("image", IMAGE),
     #[cfg(feature = "imagecompare")]
     ("imagecompare", IMAGECOMPARE),
     #[cfg(feature = "inplace")]

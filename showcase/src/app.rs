@@ -3,11 +3,11 @@
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage,
     DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage,
-    ImageComparePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage,
-    MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage,
-    ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
-    SliderPage, SplitButtonPage, SplitterPage, StepperPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToastPage, ToggleButtonPage,
-    ToggleSwitchPage, ToolbarPage, TooltipPage,
+    ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage,
+    MenuPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage,
+    ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage,
+    SkeletonPage, SliderPage, SplitButtonPage, SplitterPage, StepperPage, TabsPage, TagPage, TextareaPage, TimelinePage, ToastPage,
+    ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -76,6 +76,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "blockui",
         "splitbutton",
         "dock",
+        "image",
     ]);
     view! {
         <!DOCTYPE html>
@@ -170,6 +171,7 @@ pub fn App() -> impl IntoView {
                         <A href="/blockui">"BlockUI"</A>
                         <A href="/splitbutton">"SplitButton"</A>
                         <A href="/dock">"Dock"</A>
+                        <A href="/image">"Image"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -236,6 +238,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("blockui") view=BlockUiPage />
                         <Route path=StaticSegment("splitbutton") view=SplitButtonPage />
                         <Route path=StaticSegment("dock") view=DockPage />
+                        <Route path=StaticSegment("image") view=ImagePage />
                     </Routes>
                 </main>
             </div>

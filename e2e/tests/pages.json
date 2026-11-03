@@ -2245,5 +2245,12 @@
     "upstream": "/dock",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "image-basic",
+    "ours": "/image",
+    "upstream": "/image",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

@@ -1867,6 +1867,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-image"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-imagecompare"
 version = "0.1.0"
 dependencies = [
@@ -2581,6 +2596,7 @@ dependencies = [
  "prime-iconfield",
  "prime-icons",
  "prime-iftalabel",
+ "prime-image",
  "prime-imagecompare",
  "prime-inplace",
  "prime-inputgroup",
@@ -2930,6 +2946,7 @@ dependencies = [
  "prime-iconfield",
  "prime-icons",
  "prime-iftalabel",
+ "prime-image",
  "prime-imagecompare",
  "prime-inplace",
  "prime-inputgroup",
@@ -3624,6 +3641,7 @@ dependencies = [
  "prime-iconfield",
  "prime-icons",
  "prime-iftalabel",
+ "prime-image",
  "prime-imagecompare",
  "prime-inplace",
  "prime-inputgroup",

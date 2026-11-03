@@ -312,3 +312,8 @@ max_per_instance = 160
 name = "dock-1000"
 instances = 1000
 max_per_instance = 160
+
+[[scenario]]
+name = "image-1000"
+instances = 1000
+max_per_instance = 115

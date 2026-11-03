@@ -310,3 +310,8 @@ max_delta_bytes = 850000
 name = "dock"
 feature = "case-dock"
 max_delta_bytes = 322000
+
+[[case]]
+name = "image"
+feature = "case-image"
+max_delta_bytes = 474000
