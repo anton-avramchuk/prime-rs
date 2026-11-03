@@ -17,11 +17,13 @@ leptos = { workspace = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = [
     "Window", "Document", "Element", "HtmlElement", "Node", "NodeList", "DomRect",
-    "CssStyleDeclaration", "DomTokenList", "Event", "EventTarget", "MouseEvent", "MouseEventInit", "FocusEvent", "HtmlCollection",
+    "CssStyleDeclaration", "DomTokenList", "Event", "EventTarget", "MouseEvent", "MouseEventInit", "FocusEvent", "HtmlCollection", "FocusOptions",
 ] }
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
 wasm-bindgen-test = { workspace = true }
+js-sys = { workspace = true }
+wasm-bindgen-futures = "0.4"
 leptos = { workspace = true, features = ["csr"] }
 
 [lints]

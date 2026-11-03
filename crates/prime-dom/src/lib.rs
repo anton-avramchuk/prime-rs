@@ -7,7 +7,8 @@
 //! - [`dom::align_overlay`] — измеряет якорь и оверлей и записывает `top`, `left`, `transform-origin`;
 //! - [`FocusTrap`] — ловушка фокуса на служебных элементах `.p-hidden-focusable`, как `pFocusTrap`;
 //! - [`Portal`] — вынос содержимого в `body` (из Leptos);
-//! - [`Ripple`] — `span.p-ink`, активируемый на `mousedown`.
+//! - [`Ripple`] — `span.p-ink`, активируемый на `mousedown`;
+//! - [`scroll`] — закрытие всплывающих панелей по прокрутке ([`watch_scroll`]).
 //!
 //! Браузерные тесты: `cargo test -p prime-dom --target wasm32-unknown-unknown --test web`
 //! (нужны `wasm-bindgen-cli` и `chromedriver`, см. `docs/build.md`).
@@ -16,9 +17,11 @@ pub mod dom;
 pub mod focus;
 pub mod position;
 pub mod ripple;
+pub mod scroll;
 
 pub use dom::{AlignMode, align_overlay, block_body_scroll, unblock_body_scroll};
 pub use focus::{FocusTrap, first_focusable, last_focusable};
 pub use leptos::portal::Portal;
 pub use position::{Origin, Placement, absolute_position, relative_position};
 pub use ripple::Ripple;
+pub use scroll::{focus_no_scroll, scroll_hides, target_moved, watch_scroll};

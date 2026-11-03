@@ -19,7 +19,7 @@ prime-dom = { workspace = true }
 prime-menu = { workspace = true }
 prime-icons = { workspace = true, features = ["angleright"] }
 wasm-bindgen = { workspace = true }
-web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "FocusEvent", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration", "MediaQueryList", "MediaQueryListEvent", "Navigator", "DomRect", "ScrollIntoViewOptions", "ScrollLogicalPosition", "FocusOptions"] }
+web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "FocusEvent", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration", "MediaQueryList", "MediaQueryListEvent", "Navigator", "DomRect", "ScrollIntoViewOptions", "ScrollLogicalPosition"] }
 
 # ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]

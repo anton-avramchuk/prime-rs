@@ -2,7 +2,9 @@
 #![cfg(target_arch = "wasm32")]
 
 use prime_dom::dom::{document, element_size};
-use prime_dom::{AlignMode, FocusTrap, Origin, Ripple, align_overlay};
+use prime_dom::{AlignMode, FocusTrap, Origin, Ripple, align_overlay, focus_no_scroll, watch_scroll};
+use std::cell::Cell;
+use std::rc::Rc;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_test::*;
 use web_sys::{HtmlElement, MouseEvent, MouseEventInit};
@@ -135,4 +137,65 @@ fn body_scroll_lock_is_counted() {
     assert!(body.style().get_property_value("--p-scrollbar-width").unwrap().is_empty());
     prime_dom::unblock_body_scroll();
     assert!(!locked(), "лишнее снятие безвредно");
+}
+
+async fn sleep(ms: i32) {
+    let promise = js_sys::Promise::new(&mut |resolve, _| {
+        web_sys::window().unwrap().set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, ms).unwrap();
+    });
+    wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
+}
+
+#[wasm_bindgen_test]
+async fn scroll_watch_hides_for_an_ancestor_or_a_moved_target_only() {
+    let doc = document().unwrap();
+    let scroller = make("div", "position:fixed;top:0;left:200px;width:200px;height:100px;overflow:auto");
+    let target = doc.create_element("button").unwrap().dyn_into::<HtmlElement>().unwrap();
+    target.set_attribute("style", "display:block;width:50px;height:20px").unwrap();
+    scroller.append_child(&target).unwrap();
+    let spacer = doc.create_element("div").unwrap();
+    spacer.set_attribute("style", "height:1000px").unwrap();
+    scroller.append_child(&spacer).unwrap();
+
+    let count = Rc::new(Cell::new(0));
+    let c = count.clone();
+    let unwatch = watch_scroll(target.clone(), move || c.set(c.get() + 1)).expect("подписка");
+
+    // прокрутка документа без сдвига цели ничего не закрывает
+    doc.dispatch_event(&web_sys::Event::new("scroll").unwrap()).unwrap();
+    assert_eq!(count.get(), 0, "цель не сдвинулась");
+    // цель сдвинулась (как при прокрутке страницы): документ закрывает
+    target.style().set_property("margin-top", "30px").unwrap();
+    doc.dispatch_event(&web_sys::Event::new("scroll").unwrap()).unwrap();
+    assert_eq!(count.get(), 1, "цель сдвинулась");
+    target.style().set_property("margin-top", "0").unwrap();
+    // прокрутка предка цели закрывает
+    scroller.set_scroll_top(60);
+    sleep(150).await;
+    assert!(count.get() >= 2, "предок прокручен: {}", count.get());
+    let after = count.get();
+    // после отписки обработчик молчит
+    unwatch();
+    scroller.set_scroll_top(0);
+    sleep(150).await;
+    assert_eq!(count.get(), after);
+    scroller.remove();
+}
+
+#[wasm_bindgen_test]
+fn focus_without_scroll_keeps_the_page_in_place() {
+    let far = make("button", "position:absolute;top:6000px;left:0;width:50px;height:20px");
+    let tall = make("div", "position:absolute;top:0;left:0;width:1px;height:7000px");
+    let window = web_sys::window().unwrap();
+    window.scroll_to_with_x_and_y(0.0, 0.0);
+    focus_no_scroll(&far);
+    assert_eq!(window.scroll_y().unwrap(), 0.0, "страница не прокручена");
+    assert!(document().unwrap().active_element().unwrap().is_same_node(Some(&far)), "фокус всё же на кнопке");
+    // контроль: обычный focus() страницу прокручивает, значит проверка выше что-то доказывает
+    far.blur().unwrap();
+    far.focus().unwrap();
+    assert!(window.scroll_y().unwrap() > 0.0, "обычный focus прокручивает страницу");
+    window.scroll_to_with_x_and_y(0.0, 0.0);
+    tall.remove();
+    far.remove();
 }

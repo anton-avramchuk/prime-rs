@@ -191,9 +191,7 @@ impl Core {
         #[cfg(target_arch = "wasm32")]
         if let Some(list) = self.list.get_untracked() {
             // Без прокрутки страницы: иначе она сдвинула бы цель и закрыла всплывающее меню по `scroll`.
-            let options = web_sys::FocusOptions::new();
-            options.set_prevent_scroll(true);
-            let _ = list.focus_with_options(&options);
+            prime_dom::focus_no_scroll(&list);
         }
     }
 
@@ -455,35 +453,12 @@ impl Core {
             }
         });
         self.cleanups.update_value(|c| c.push(Box::new(move || resize.remove())));
-        // `scroll` не всплывает: слушаем в фазе захвата на окне и закрываем, если прокручен предок цели.
+        // Прокрутка предка цели (или сдвинувшая цель прокрутка страницы) закрывает меню.
         let this = self.clone();
-        let origin = target.get_bounding_client_rect();
-        let (origin_top, origin_left) = (origin.top(), origin.left());
-        let on_scroll = wasm_bindgen::closure::Closure::<dyn FnMut(web_sys::Event)>::new(move |e: web_sys::Event| {
-            let scrolled = e.target().and_then(|t| t.dyn_into::<web_sys::Node>().ok());
-            // Прокрутка самой страницы закрывает меню, только если цель действительно сдвинулась (браузер может прокрутить
-            // страницу сам, например при вставке содержимого).
-            let moved = this.r.target.with_value(|t| {
-                t.as_ref().is_none_or(|t| {
-                    let rect = t.get_bounding_client_rect();
-                    (rect.top() - origin_top).abs() > 1.0 || (rect.left() - origin_left).abs() > 1.0
-                })
-            });
-            let is_document = moved && scrolled.as_ref().is_some_and(|n| n.node_type() == web_sys::Node::DOCUMENT_NODE);
-            let is_doc_node = scrolled.as_ref().is_some_and(|n| n.node_type() == web_sys::Node::DOCUMENT_NODE);
-            let ancestor = !is_doc_node
-                && this.r.target.with_value(|t| t.as_ref().is_some_and(|t| scrolled.as_ref().is_some_and(|s| s.contains(Some(t)))));
-            if is_document || ancestor {
-                this.hide_menu();
-            }
-        });
-        if let Some(window) = web_sys::window() {
-            let _ = window.add_event_listener_with_callback_and_bool("scroll", on_scroll.as_ref().unchecked_ref(), true);
-            self.cleanups.update_value(|c| {
-                c.push(Box::new(move || {
-                    let _ = window.remove_event_listener_with_callback_and_bool("scroll", on_scroll.as_ref().unchecked_ref(), true);
-                }));
-            });
+        if let Some(target) = self.r.target.get_value()
+            && let Some(unwatch) = prime_dom::watch_scroll(target, move || this.hide_menu())
+        {
+            self.cleanups.update_value(|c| c.push(unwatch));
         }
         if let Some(cb) = self.on_show {
             cb.run(());

@@ -196,7 +196,7 @@ impl Core {
         {
             set_timeout(
                 move || {
-                    let _ = button.focus();
+                    prime_dom::focus_no_scroll(&button);
                 },
                 Duration::from_millis(5),
             );
@@ -257,27 +257,12 @@ impl Core {
             c.push(Box::new(move || resize.remove()));
         });
 
-        // `scroll` не всплывает: слушаем в фазе захвата на окне и закрываем, если прокручен предок цели.
+        // Прокрутка предка цели (или сдвинувшая цель прокрутка страницы) закрывает панель.
         let this = self.clone();
-        let on_scroll = wasm_bindgen::closure::Closure::<dyn FnMut(web_sys::Event)>::new(move |e: web_sys::Event| {
-            let scrolled = e.target().and_then(|t| t.dyn_into::<web_sys::Node>().ok());
-            let is_document = scrolled.as_ref().is_some_and(|n| n.node_type() == web_sys::Node::DOCUMENT_NODE);
-            let ancestor = this
-                .confirmation
-                .get_value()
-                .and_then(|c| c.target)
-                .is_some_and(|t| scrolled.as_ref().is_some_and(|s| s.contains(Some(&t))));
-            if is_document || ancestor {
-                this.hide();
-            }
-        });
-        if let Some(window) = web_sys::window() {
-            let _ = window.add_event_listener_with_callback_and_bool("scroll", on_scroll.as_ref().unchecked_ref(), true);
-            self.cleanups.update_value(|c| {
-                c.push(Box::new(move || {
-                    let _ = window.remove_event_listener_with_callback_and_bool("scroll", on_scroll.as_ref().unchecked_ref(), true);
-                }));
-            });
+        if let Some(target) = self.confirmation.get_value().and_then(|c| c.target)
+            && let Some(unwatch) = prime_dom::watch_scroll(target, move || this.hide())
+        {
+            self.cleanups.update_value(|c| c.push(unwatch));
         }
     }
 
