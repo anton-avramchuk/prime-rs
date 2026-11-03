@@ -2287,5 +2287,12 @@
     "upstream": "/tieredmenu",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "steps-basic",
+    "ours": "/steps",
+    "upstream": "/steps",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

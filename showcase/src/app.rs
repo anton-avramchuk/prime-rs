@@ -7,7 +7,8 @@ use crate::pages::{
     InputTextPage, KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage,
     PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage,
     ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage,
-    TabsPage, TagPage, TextareaPage, TieredMenuPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
+    StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
+    TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -82,6 +83,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "speeddial",
         "carousel",
         "tieredmenu",
+        "steps",
     ]);
     view! {
         <!DOCTYPE html>
@@ -182,6 +184,7 @@ pub fn App() -> impl IntoView {
                         <A href="/speeddial">"SpeedDial"</A>
                         <A href="/carousel">"Carousel"</A>
                         <A href="/tieredmenu">"TieredMenu"</A>
+                        <A href="/steps">"Steps"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -254,6 +257,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("speeddial") view=SpeedDialPage />
                         <Route path=StaticSegment("carousel") view=CarouselPage />
                         <Route path=StaticSegment("tieredmenu") view=TieredMenuPage />
+                        <Route path=StaticSegment("steps") view=StepsPage />
                     </Routes>
                 </main>
             </div>

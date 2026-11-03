@@ -297,6 +297,11 @@ cfg_if::cfg_if! {
             use prime_splitbutton::SplitButton;
             view! { <SplitButton label="Save" model=vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")] /> }
         }
+    } else if #[cfg(feature = "case-steps")] {
+        fn case() -> impl IntoView {
+            use prime_steps::{Steps, StepsItem};
+            view! { <Steps model=vec![StepsItem::new().label("One"), StepsItem::new().label("Two")] active_index=0usize /> }
+        }
     } else if #[cfg(feature = "case-tieredmenu")] {
         fn case() -> impl IntoView {
             use prime_menu::MenuItem;

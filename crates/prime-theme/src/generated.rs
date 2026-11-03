@@ -212,6 +212,10 @@ pub const SPLITTER: &str = include_str!("../css/components/splitter.css");
 #[cfg(feature = "stepper")]
 pub const STEPPER: &str = include_str!("../css/components/stepper.css");
 
+/// CSS компонента `steps`.
+#[cfg(feature = "steps")]
+pub const STEPS: &str = include_str!("../css/components/steps.css");
+
 /// CSS компонента `tabs`.
 #[cfg(feature = "tabs")]
 pub const TABS: &str = include_str!("../css/components/tabs.css");
@@ -360,6 +364,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("splitter", SPLITTER),
     #[cfg(feature = "stepper")]
     ("stepper", STEPPER),
+    #[cfg(feature = "steps")]
+    ("steps", STEPS),
     #[cfg(feature = "tabs")]
     ("tabs", TABS),
     #[cfg(feature = "tag")]

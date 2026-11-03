@@ -340,3 +340,8 @@ max_delta_bytes = 841000
 name = "tieredmenu"
 feature = "case-tieredmenu"
 max_delta_bytes = 590000
+
+[[case]]
+name = "steps"
+feature = "case-steps"
+max_delta_bytes = 231000
