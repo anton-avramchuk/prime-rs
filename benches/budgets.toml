@@ -315,3 +315,8 @@ max_delta_bytes = 322000
 name = "image"
 feature = "case-image"
 max_delta_bytes = 474000
+
+[[case]]
+name = "confirmpopup"
+feature = "case-confirmpopup"
+max_delta_bytes = 584000

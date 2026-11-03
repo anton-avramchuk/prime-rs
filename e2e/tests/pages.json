@@ -2252,5 +2252,12 @@
     "upstream": "/image",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "confirmpopup-basic",
+    "ours": "/confirmpopup",
+    "upstream": "/confirmpopup",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

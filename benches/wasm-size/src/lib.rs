@@ -297,6 +297,13 @@ cfg_if::cfg_if! {
             use prime_splitbutton::SplitButton;
             view! { <SplitButton label="Save" model=vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")] /> }
         }
+    } else if #[cfg(feature = "case-confirmpopup")] {
+        fn case() -> impl IntoView {
+            use prime_confirmation::provide_confirmation_service;
+            use prime_confirmpopup::ConfirmPopup;
+            provide_confirmation_service();
+            view! { <ConfirmPopup /> }
+        }
     } else if #[cfg(feature = "case-image")] {
         fn case() -> impl IntoView {
             use prime_image::Image;

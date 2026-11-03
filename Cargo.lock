@@ -1735,6 +1735,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-confirmation"
+version = "0.1.0"
+dependencies = [
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
+name = "prime-confirmpopup"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-confirmation",
+ "prime-core",
+ "prime-dom",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-core"
 version = "0.1.0"
 dependencies = [
@@ -2586,6 +2613,8 @@ dependencies = [
  "prime-card",
  "prime-checkbox",
  "prime-chip",
+ "prime-confirmation",
+ "prime-confirmpopup",
  "prime-dialog",
  "prime-divider",
  "prime-dock",
@@ -2935,6 +2964,8 @@ dependencies = [
  "prime-card",
  "prime-checkbox",
  "prime-chip",
+ "prime-confirmation",
+ "prime-confirmpopup",
  "prime-core",
  "prime-dialog",
  "prime-divider",
@@ -3631,6 +3662,8 @@ dependencies = [
  "prime-card",
  "prime-checkbox",
  "prime-chip",
+ "prime-confirmation",
+ "prime-confirmpopup",
  "prime-dialog",
  "prime-divider",
  "prime-dock",

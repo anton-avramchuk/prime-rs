@@ -1,0 +1,27 @@
+[package]
+name = "prime-confirmation"
+description = "prime-rs: Confirmation и ConfirmationService (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-button/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-button/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-button = { workspace = true }
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true, features = ["Event", "EventTarget", "HtmlElement"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[lints]
+workspace = true

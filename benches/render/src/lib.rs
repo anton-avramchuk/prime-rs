@@ -15,6 +15,8 @@ use prime_buttongroup::ButtonGroup;
 use prime_card::Card;
 use prime_checkbox::Checkbox;
 use prime_chip::Chip;
+use prime_confirmation::provide_confirmation_service;
+use prime_confirmpopup::ConfirmPopup;
 use prime_dialog::Dialog;
 use prime_divider::{Divider, DividerAlign};
 use prime_dock::{Dock, DockItem};
@@ -579,6 +581,13 @@ fn image_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Image src="photo.jpg" alt="Photo" width="250" preview=true /> }).collect_view())
 }
 
+fn confirmpopup_n(n: usize) -> String {
+    Owner::new().with(|| {
+        provide_confirmation_service();
+        (0..n).map(|_| view! { <ConfirmPopup /> }).collect_view().into_view().to_html()
+    })
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -748,6 +757,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "dock-1000", run: || dock_n(1000) },
     Scenario { name: "image-1", run: || image_n(1) },
     Scenario { name: "image-1000", run: || image_n(1000) },
+    Scenario { name: "confirmpopup-1", run: || confirmpopup_n(1) },
+    Scenario { name: "confirmpopup-1000", run: || confirmpopup_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

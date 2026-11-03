@@ -80,6 +80,8 @@ prime-blockui = { path = "crates/prime-blockui" }
 prime-splitbutton = { path = "crates/prime-splitbutton" }
 prime-dock = { path = "crates/prime-dock" }
 prime-image = { path = "crates/prime-image" }
+prime-confirmation = { path = "crates/prime-confirmation" }
+prime-confirmpopup = { path = "crates/prime-confirmpopup" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
