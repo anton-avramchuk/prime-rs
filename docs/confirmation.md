@@ -5,6 +5,7 @@
 | Наш тип | Исходники PrimeNG |
 |---|---|
 | `Confirmation`, `ConfirmButtonProps`, `ConfirmFocus` | `packages/primeng/src/api/confirmation.ts` |
+| `ConfirmEventType` | `packages/primeng/src/api/confirmeventtype.ts` |
 | `ConfirmationService`, `ConfirmEvent`, `provide_confirmation_service`, `use_confirmation_service` | `packages/primeng/src/api/confirmationservice.ts` |
 
 Спека: `openspec/specs/confirmation`.
@@ -29,7 +30,7 @@ service.close();
 | `ConfirmationService` — `Copy`-хэндл в контексте Leptos (`provide_confirmation_service` / `use_confirmation_service`), подписчики вызываются синхронно | В Leptos нет внедрения зависимостей; `Subject` заменён списком подписчиков (как `MessageService`). |
 | `accept` и `reject` — `Callback<()>`, а не `Function` с эмиттерами `acceptEvent`/`rejectEvent` | Нет `EventEmitter`. |
 | `acceptButtonProps` и `rejectButtonProps` — структура `ConfirmButtonProps` (`label`, `severity`, `outlined`, `text`, `size`), а не произвольный объект | Типизированное подмножество свойств `Button`, нужное компонентам. |
-| Нет `closeButtonProps` и `ConfirmationService.onAccept` | Относятся к `ConfirmDialog`; добавятся вместе с ним. |
+| Нет `closeButtonProps` и `ConfirmationService.onAccept` | Не используются демонстрациями `ConfirmDialog` и `ConfirmPopup`. |
 | Значки — `ViewFn` | Нет PrimeIcons. |
 | `target` — `HtmlElement` (из события — `Confirmation::target_event`) | `EventTarget` в PrimeNG приводится к элементу. |
 

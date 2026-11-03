@@ -2259,5 +2259,12 @@
     "upstream": "/confirmpopup",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "confirmdialog-basic",
+    "ours": "/confirmdialog",
+    "upstream": "/confirmdialog",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

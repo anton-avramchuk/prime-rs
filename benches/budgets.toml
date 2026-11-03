@@ -320,3 +320,8 @@ max_delta_bytes = 474000
 name = "confirmpopup"
 feature = "case-confirmpopup"
 max_delta_bytes = 584000
+
+[[case]]
+name = "confirmdialog"
+feature = "case-confirmdialog"
+max_delta_bytes = 1096000

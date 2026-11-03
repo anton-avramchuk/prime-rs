@@ -5,6 +5,28 @@ use prime_button::ButtonSeverity;
 use prime_core::props::Size;
 use wasm_bindgen::JsCast;
 
+/// Как закрыто окно подтверждения (`ConfirmEventType` PrimeNG).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ConfirmEventType {
+    /// Согласие кнопкой.
+    Accept,
+    /// Отказ кнопкой.
+    Reject,
+    /// Окно закрыто без выбора: крестик, `Escape`, клик по маске.
+    Cancel,
+}
+
+impl ConfirmEventType {
+    /// Значение, как в PrimeNG.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Accept => "accept",
+            Self::Reject => "reject",
+            Self::Cancel => "cancel",
+        }
+    }
+}
+
 /// Какой элемент получает фокус при показе.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum ConfirmFocus {

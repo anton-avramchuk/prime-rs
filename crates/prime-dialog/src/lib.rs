@@ -793,7 +793,9 @@ fn build_dialog(core: &Arc<Core>, pt: &Arc<DialogPt>, parts: &Arc<Parts>) -> Any
             let title = match parts.header_content.clone() {
                 Some(custom) => custom.run().into_any(),
                 None => {
-                    let text = parts.header.get();
+                    // Реактивно: ConfirmDialog меняет заголовок при замене подтверждения на месте.
+                    let header = parts.header.clone();
+                    let text = move || header.get();
                     view! { <span id=label_id.clone() class={pt.title.merge_class("p-dialog-title")} {..pt.title.attrs()}>{text}</span> }.into_any()
                 }
             };

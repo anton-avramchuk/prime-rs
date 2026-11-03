@@ -16,6 +16,7 @@ use prime_card::Card;
 use prime_checkbox::Checkbox;
 use prime_chip::Chip;
 use prime_confirmation::provide_confirmation_service;
+use prime_confirmdialog::ConfirmDialog;
 use prime_confirmpopup::ConfirmPopup;
 use prime_dialog::Dialog;
 use prime_divider::{Divider, DividerAlign};
@@ -588,6 +589,13 @@ fn confirmpopup_n(n: usize) -> String {
     })
 }
 
+fn confirmdialog_n(n: usize) -> String {
+    Owner::new().with(|| {
+        provide_confirmation_service();
+        (0..n).map(|_| view! { <ConfirmDialog /> }).collect_view().into_view().to_html()
+    })
+}
+
 fn toast_n(n: usize) -> String {
     // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
     Owner::new().with(|| {
@@ -759,6 +767,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "image-1000", run: || image_n(1000) },
     Scenario { name: "confirmpopup-1", run: || confirmpopup_n(1) },
     Scenario { name: "confirmpopup-1000", run: || confirmpopup_n(1000) },
+    Scenario { name: "confirmdialog-1", run: || confirmdialog_n(1) },
+    Scenario { name: "confirmdialog-1000", run: || confirmdialog_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },
     Scenario { name: "toast-1000", run: || toast_n(1000) },
     Scenario { name: "splitter-1", run: || splitter_n(1) },

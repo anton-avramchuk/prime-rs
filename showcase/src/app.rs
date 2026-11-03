@@ -2,12 +2,12 @@
 
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CheckboxPage, ChipPage,
-    ConfirmPopupPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage, IconFieldPage,
-    IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage, KnobPage,
-    ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage,
-    PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage,
-    SelectPage, SkeletonPage, SliderPage, SplitButtonPage, SplitterPage, StepperPage, TabsPage, TagPage, TextareaPage, TimelinePage,
-    ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
+    ConfirmDialogPage, ConfirmPopupPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, HomePage,
+    IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage, InputTextPage,
+    KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage,
+    PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage,
+    SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SplitButtonPage, SplitterPage, StepperPage, TabsPage, TagPage, TextareaPage,
+    TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -78,6 +78,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "dock",
         "image",
         "confirmpopup",
+        "confirmdialog",
     ]);
     view! {
         <!DOCTYPE html>
@@ -174,6 +175,7 @@ pub fn App() -> impl IntoView {
                         <A href="/dock">"Dock"</A>
                         <A href="/image">"Image"</A>
                         <A href="/confirmpopup">"ConfirmPopup"</A>
+                        <A href="/confirmdialog">"ConfirmDialog"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -242,6 +244,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("dock") view=DockPage />
                         <Route path=StaticSegment("image") view=ImagePage />
                         <Route path=StaticSegment("confirmpopup") view=ConfirmPopupPage />
+                        <Route path=StaticSegment("confirmdialog") view=ConfirmDialogPage />
                     </Routes>
                 </main>
             </div>

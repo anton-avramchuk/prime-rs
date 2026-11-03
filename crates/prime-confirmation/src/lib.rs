@@ -24,5 +24,5 @@
 mod confirmation;
 mod service;
 
-pub use confirmation::{ConfirmButtonProps, ConfirmFocus, Confirmation};
+pub use confirmation::{ConfirmButtonProps, ConfirmEventType, ConfirmFocus, Confirmation};
 pub use service::{ConfirmEvent, ConfirmationService, provide_confirmation_service, use_confirmation_service};

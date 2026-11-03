@@ -2,7 +2,9 @@
 #![cfg(not(target_arch = "wasm32"))]
 
 use leptos::prelude::*;
-use prime_confirmation::{ConfirmButtonProps, ConfirmEvent, ConfirmFocus, Confirmation, ConfirmationService, provide_confirmation_service};
+use prime_confirmation::{
+    ConfirmButtonProps, ConfirmEvent, ConfirmEventType, ConfirmFocus, Confirmation, ConfirmationService, provide_confirmation_service,
+};
 
 fn log() -> StoredValue<Vec<String>> {
     StoredValue::new(Vec::new())
@@ -99,4 +101,11 @@ fn missing_service_panics_with_a_hint() {
     Owner::new().with(|| {
         let _ = prime_confirmation::use_confirmation_service();
     });
+}
+
+#[test]
+fn event_type_values() {
+    assert_eq!(ConfirmEventType::Accept.as_str(), "accept");
+    assert_eq!(ConfirmEventType::Reject.as_str(), "reject");
+    assert_eq!(ConfirmEventType::Cancel.as_str(), "cancel");
 }
