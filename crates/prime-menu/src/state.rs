@@ -35,6 +35,8 @@ pub struct MenuItem {
     pub separator: bool,
     /// Подпункты: пункт становится заголовком группы.
     pub items: Vec<MenuItem>,
+    /// Группа изначально раскрыта (только PanelMenu).
+    pub expanded: bool,
     /// Дополнительный класс `li`.
     pub style_class: Option<String>,
     /// Встроенный стиль `li`.
@@ -60,6 +62,7 @@ impl Default for MenuItem {
             visible: true,
             separator: false,
             items: Vec::new(),
+            expanded: false,
             style_class: None,
             style: None,
             link_class: None,
@@ -131,6 +134,12 @@ impl MenuItem {
     /// Подпункты (группа).
     pub fn items(mut self, items: Vec<MenuItem>) -> Self {
         self.items = items;
+        self
+    }
+
+    /// Раскрывает группу изначально (только PanelMenu).
+    pub fn expanded(mut self, expanded: bool) -> Self {
+        self.expanded = expanded;
         self
     }
 

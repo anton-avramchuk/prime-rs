@@ -47,6 +47,7 @@ use prime_multiselect::{MultiSelect, MultiSelectOption};
 use prime_overlaybadge::OverlayBadge;
 use prime_paginator::{Paginator, RowsPerPage};
 use prime_panel::Panel;
+use prime_panelmenu::PanelMenu;
 use prime_password::Password;
 use prime_popover::{Popover, PopoverRef};
 use prime_progressbar::ProgressBar;
@@ -643,6 +644,20 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn panelmenu_n(n: usize) -> String {
+    let model = || {
+        vec![
+            MenuItem::new().label("Files").expanded(true).items(vec![
+                MenuItem::new().label("Documents").items(vec![MenuItem::new().label("Invoices")]),
+                MenuItem::new().label("Images"),
+            ]),
+            MenuItem::new().label("Cloud").items(vec![MenuItem::new().label("Upload")]),
+            MenuItem::new().label("Quit"),
+        ]
+    };
+    render((0..n).map(|_| view! { <PanelMenu model=model() /> }).collect_view())
+}
+
 fn contextmenu_n(n: usize) -> String {
     let model = || {
         vec![
@@ -854,6 +869,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "panelmenu-1", run: || panelmenu_n(1) },
+    Scenario { name: "panelmenu-1000", run: || panelmenu_n(1000) },
     Scenario { name: "contextmenu-1", run: || contextmenu_n(1) },
     Scenario { name: "contextmenu-1000", run: || contextmenu_n(1000) },
     Scenario { name: "steps-1", run: || steps_n(1) },

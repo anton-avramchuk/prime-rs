@@ -156,6 +156,10 @@ pub const PAGINATOR: &str = include_str!("../css/components/paginator.css");
 #[cfg(feature = "panel")]
 pub const PANEL: &str = include_str!("../css/components/panel.css");
 
+/// CSS компонента `panelmenu`.
+#[cfg(feature = "panelmenu")]
+pub const PANELMENU: &str = include_str!("../css/components/panelmenu.css");
+
 /// CSS компонента `password`.
 #[cfg(feature = "password")]
 pub const PASSWORD: &str = include_str!("../css/components/password.css");
@@ -344,6 +348,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("paginator", PAGINATOR),
     #[cfg(feature = "panel")]
     ("panel", PANEL),
+    #[cfg(feature = "panelmenu")]
+    ("panelmenu", PANELMENU),
     #[cfg(feature = "password")]
     ("password", PASSWORD),
     #[cfg(feature = "popover")]

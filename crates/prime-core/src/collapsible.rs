@@ -167,16 +167,30 @@ pub fn animate(el: &web_sys::HtmlElement, expanding: bool, done: impl FnOnce() +
     use std::rc::Rc;
     use std::time::Duration;
 
+    // Каждый запуск получает свой номер: устаревший запуск (быстрое повторное переключение) ничего не меняет по завершении,
+    // иначе его запасной таймер скрыл бы уже раскрытую область.
+    thread_local! {
+        static RUN: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
+    }
+    let run = RUN.with(|c| {
+        c.set(c.get().wrapping_add(1));
+        c.get().to_string()
+    });
+    let _ = el.set_attribute("data-p-collapse-run", &run);
     let class = animation_class(expanding);
+    let _ = el.class_list().remove_2(animation_class(true), animation_class(false));
     let _ = el.style().remove_property("display");
     let _ = el.class_list().add_1(class);
 
     type Done = Rc<RefCell<Option<Box<dyn FnOnce()>>>>;
     let done: Done = Rc::new(RefCell::new(Some(Box::new(done))));
     let finish: Rc<dyn Fn()> = {
-        let el = el.clone();
+        let (el, run) = (el.clone(), run.clone());
         Rc::new(move || {
             let Some(done) = done.borrow_mut().take() else { return };
+            if el.get_attribute("data-p-collapse-run").as_deref() != Some(run.as_str()) {
+                return;
+            }
             let _ = el.class_list().remove_1(class);
             if !expanding {
                 let _ = el.style().set_property("display", "none");

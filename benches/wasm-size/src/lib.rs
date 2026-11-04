@@ -303,6 +303,12 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-panelmenu")] {
+        fn case() -> impl IntoView {
+            use prime_menu::MenuItem;
+            use prime_panelmenu::PanelMenu;
+            view! { <PanelMenu model=vec![MenuItem::new().label("Files").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
+        }
     } else if #[cfg(feature = "case-contextmenu")] {
         fn case() -> impl IntoView {
             use prime_contextmenu::{ContextMenu, ContextMenuRef};

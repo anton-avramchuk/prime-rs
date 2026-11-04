@@ -2308,5 +2308,12 @@
     "upstream": "/menubar",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "panelmenu-basic",
+    "ours": "/panelmenu",
+    "upstream": "/panelmenu",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

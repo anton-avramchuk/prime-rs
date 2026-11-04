@@ -89,6 +89,7 @@ prime-tieredmenu = { path = "crates/prime-tieredmenu" }
 prime-steps = { path = "crates/prime-steps" }
 prime-contextmenu = { path = "crates/prime-contextmenu" }
 prime-menubar = { path = "crates/prime-menubar" }
+prime-panelmenu = { path = "crates/prime-panelmenu" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

@@ -2170,6 +2170,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-panelmenu"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "prime-menu",
+ "prime-tieredmenu",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-password"
 version = "0.1.0"
 dependencies = [
@@ -2757,6 +2773,7 @@ dependencies = [
  "prime-overlaybadge",
  "prime-paginator",
  "prime-panel",
+ "prime-panelmenu",
  "prime-password",
  "prime-popover",
  "prime-progressbar",
@@ -3116,6 +3133,7 @@ dependencies = [
  "prime-overlaybadge",
  "prime-paginator",
  "prime-panel",
+ "prime-panelmenu",
  "prime-password",
  "prime-popover",
  "prime-progressbar",
@@ -3820,6 +3838,7 @@ dependencies = [
  "prime-overlaybadge",
  "prime-paginator",
  "prime-panel",
+ "prime-panelmenu",
  "prime-password",
  "prime-popover",
  "prime-progressbar",

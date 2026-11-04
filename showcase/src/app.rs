@@ -5,10 +5,10 @@ use crate::pages::{
     ChipPage, ConfirmDialogPage, ConfirmPopupPage, ContextMenuPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage,
     FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage,
     InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage,
-    MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage,
-    RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage,
-    SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage, TimelinePage, ToastPage,
-    ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
+    MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage,
+    ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
+    SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage,
+    TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -86,6 +86,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "steps",
         "contextmenu",
         "menubar",
+        "panelmenu",
     ]);
     view! {
         <!DOCTYPE html>
@@ -189,6 +190,7 @@ pub fn App() -> impl IntoView {
                         <A href="/steps">"Steps"</A>
                         <A href="/contextmenu">"ContextMenu"</A>
                         <A href="/menubar">"Menubar"</A>
+                        <A href="/panelmenu">"PanelMenu"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -264,6 +266,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("steps") view=StepsPage />
                         <Route path=StaticSegment("contextmenu") view=ContextMenuPage />
                         <Route path=StaticSegment("menubar") view=MenubarPage />
+                        <Route path=StaticSegment("panelmenu") view=PanelMenuPage />
                     </Routes>
                 </main>
             </div>
