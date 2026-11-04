@@ -350,3 +350,8 @@ max_delta_bytes = 231000
 name = "contextmenu"
 feature = "case-contextmenu"
 max_delta_bytes = 612000
+
+[[case]]
+name = "menubar"
+feature = "case-menubar"
+max_delta_bytes = 549000

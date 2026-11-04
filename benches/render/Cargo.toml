@@ -57,6 +57,7 @@ prime-carousel = { workspace = true, features = ["ssr"] }
 prime-tieredmenu = { workspace = true, features = ["ssr"] }
 prime-steps = { workspace = true, features = ["ssr"] }
 prime-contextmenu = { workspace = true, features = ["ssr"] }
+prime-menubar = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

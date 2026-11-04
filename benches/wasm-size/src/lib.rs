@@ -297,6 +297,12 @@ cfg_if::cfg_if! {
             use prime_splitbutton::SplitButton;
             view! { <SplitButton label="Save" model=vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")] /> }
         }
+    } else if #[cfg(feature = "case-menubar")] {
+        fn case() -> impl IntoView {
+            use prime_menu::MenuItem;
+            use prime_menubar::Menubar;
+            view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
+        }
     } else if #[cfg(feature = "case-contextmenu")] {
         fn case() -> impl IntoView {
             use prime_contextmenu::{ContextMenu, ContextMenuRef};

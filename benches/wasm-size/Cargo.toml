@@ -59,6 +59,7 @@ case-speeddial = ["dep:prime-speeddial"]
 case-carousel = ["dep:prime-carousel"]
 case-tieredmenu = ["dep:prime-tieredmenu", "dep:prime-menu"]
 case-steps = ["dep:prime-steps"]
+case-menubar = ["dep:prime-menubar", "dep:prime-menu", "dep:prime-tieredmenu"]
 case-contextmenu = ["dep:prime-contextmenu", "dep:prime-menu", "dep:prime-tieredmenu"]
 case-splitter = ["dep:prime-splitter"]
 case-inplace = ["dep:prime-inplace"]
@@ -133,6 +134,7 @@ prime-carousel = { workspace = true, optional = true }
 prime-tieredmenu = { workspace = true, optional = true }
 prime-steps = { workspace = true, optional = true }
 prime-contextmenu = { workspace = true, optional = true }
+prime-menubar = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

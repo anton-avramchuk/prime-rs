@@ -128,6 +128,10 @@ pub const LISTBOX: &str = include_str!("../css/components/listbox.css");
 #[cfg(feature = "menu")]
 pub const MENU: &str = include_str!("../css/components/menu.css");
 
+/// CSS компонента `menubar`.
+#[cfg(feature = "menubar")]
+pub const MENUBAR: &str = include_str!("../css/components/menubar.css");
+
 /// CSS компонента `message`.
 #[cfg(feature = "message")]
 pub const MESSAGE: &str = include_str!("../css/components/message.css");
@@ -326,6 +330,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("listbox", LISTBOX),
     #[cfg(feature = "menu")]
     ("menu", MENU),
+    #[cfg(feature = "menubar")]
+    ("menubar", MENUBAR),
     #[cfg(feature = "message")]
     ("message", MESSAGE),
     #[cfg(feature = "metergroup")]

@@ -40,6 +40,7 @@ use prime_inputtext::InputText;
 use prime_knob::Knob;
 use prime_listbox::{Listbox, ListboxOption};
 use prime_menu::{Menu, MenuItem};
+use prime_menubar::Menubar;
 use prime_message::{Message, MessageSeverity};
 use prime_metergroup::{MeterGroup, MeterItem};
 use prime_multiselect::{MultiSelect, MultiSelectOption};
@@ -628,6 +629,20 @@ fn tieredmenu_n(n: usize) -> String {
     render((0..n).map(|_| view! { <TieredMenu model=model() /> }).collect_view())
 }
 
+fn menubar_n(n: usize) -> String {
+    let model = || {
+        vec![
+            MenuItem::new()
+                .label("File")
+                .items(vec![MenuItem::new().label("New").items(vec![MenuItem::new().label("Document")]), MenuItem::new().label("Open")]),
+            MenuItem::new().label("Edit"),
+            MenuItem::separator(),
+            MenuItem::new().label("Quit"),
+        ]
+    };
+    render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
+}
+
 fn contextmenu_n(n: usize) -> String {
     let model = || {
         vec![
@@ -837,6 +852,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "carousel-1000", run: || carousel_n(1000) },
     Scenario { name: "tieredmenu-1", run: || tieredmenu_n(1) },
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
+    Scenario { name: "menubar-1", run: || menubar_n(1) },
+    Scenario { name: "menubar-1000", run: || menubar_n(1000) },
     Scenario { name: "contextmenu-1", run: || contextmenu_n(1) },
     Scenario { name: "contextmenu-1000", run: || contextmenu_n(1000) },
     Scenario { name: "steps-1", run: || steps_n(1) },

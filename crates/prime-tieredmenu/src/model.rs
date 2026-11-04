@@ -309,6 +309,83 @@ impl<'a> Tree<'a> {
         state.active.retain(|k| self.node(k).is_some_and(|p| p.parent_key != parent_key));
     }
 
+    /// Узел под фокусом и признак «он в подменю» (родитель в пути раскрытых).
+    fn focused_node(&self, state: &State) -> Option<(&'a Node, bool)> {
+        let visible = self.visible(state);
+        let node = state.focus.index.and_then(|i| visible.get(i).copied())?;
+        let in_submenu = !node.parent_key.is_empty() && state.active.contains(&node.parent_key);
+        Some((node, in_submenu))
+    }
+
+    /// Раскрывает группу под фокусом и ставит фокус «внутрь» с пустым индексом (общая часть стрелок меню-бара).
+    fn enter_group(&self, state: &mut State, node: &Node) {
+        self.item_change(state, node, false, false);
+        state.focus = Focus { index: None, parent_key: node.key.clone() };
+    }
+
+    /// Меню-бар, ↓: на группе корня раскрывает её и входит; на листе корня ничего; в подменю — следующий пункт.
+    pub fn bar_down(&self, state: &mut State) {
+        match self.focused_node(state) {
+            Some((node, _)) if node.level == 0 => {
+                if self.is_group(node) {
+                    self.enter_group(state, node);
+                    self.arrow_down(state);
+                }
+            }
+            _ => self.arrow_down(state),
+        }
+    }
+
+    /// Меню-бар, →: в подменю на группе раскрывает её и входит, на листе ничего; на корне — следующий пункт.
+    pub fn bar_right(&self, state: &mut State) {
+        match self.focused_node(state) {
+            Some((node, true)) => {
+                if self.is_group(node) {
+                    self.enter_group(state, node);
+                    self.arrow_down(state);
+                }
+            }
+            _ => self.arrow_down(state),
+        }
+    }
+
+    /// Меню-бар, ←: в подменю поднимается на родителя и сворачивает его; на корне — предыдущий пункт.
+    pub fn bar_left(&self, state: &mut State) {
+        match self.focused_node(state) {
+            Some((node, true)) => {
+                if let Some(parent) = self.node(&node.parent_key) {
+                    self.item_change(state, parent, false, false);
+                    let level = state.focus.parent_key.clone();
+                    state.active.retain(|k| self.node(k).is_some_and(|p| p.parent_key != level));
+                }
+            }
+            _ => self.arrow_up(state),
+        }
+    }
+
+    /// Меню-бар, ↑: на группе корня раскрывает её и ставит фокус на последний пункт; на первом пункте подменю поднимается
+    /// на родителя и сворачивает его; иначе — предыдущий пункт.
+    pub fn bar_up(&self, state: &mut State) {
+        match self.focused_node(state) {
+            Some((node, _)) if node.level == 0 => {
+                if self.is_group(node) {
+                    self.enter_group(state, node);
+                    let visible = self.visible(state);
+                    let last = self.last(&visible);
+                    self.focus_index(state, last);
+                }
+            }
+            Some((node, _)) if state.focus.index == Some(0) => {
+                let grand = self.node(&node.parent_key).map_or_else(String::new, |p| p.parent_key.clone());
+                state.focus = Focus { index: None, parent_key: grand };
+                self.arrow_up(state);
+                let level = state.focus.parent_key.clone();
+                state.active.retain(|k| self.node(k).is_some_and(|p| p.parent_key != level));
+            }
+            _ => self.arrow_up(state),
+        }
+    }
+
     /// `Home`.
     pub fn home(&self, state: &mut State) {
         let visible = self.visible(state);
@@ -604,6 +681,70 @@ mod tests {
         // ← на корне ничего не меняет в фокусе
         tree.arrow_left(&mut st);
         assert_eq!(st.focus.index, Some(0));
+    }
+
+    #[test]
+    fn bar_keys_walk_the_root_horizontally_and_submenus_vertically() {
+        let items = menu();
+        let nodes = build(&items);
+        let tree = Tree { nodes: &nodes, items: &items };
+        let mut st = State::default();
+        // → на пустом фокусе — первый допустимый
+        tree.bar_right(&mut st);
+        assert_eq!(st.focus.index, Some(0));
+        tree.bar_right(&mut st);
+        assert_eq!(st.focus.index, Some(1), "Edit");
+        tree.bar_right(&mut st);
+        tree.bar_right(&mut st);
+        assert_eq!(st.focus.index, Some(4), "Users → Quit, разделитель пропущен");
+        tree.bar_right(&mut st);
+        assert_eq!(st.focus.index, Some(4), "дальше некуда");
+        tree.bar_left(&mut st);
+        assert_eq!(st.focus.index, Some(2), "← по корню — предыдущий");
+        // ↓ на листе корня ничего не делает
+        tree.bar_down(&mut st);
+        assert!(st.active.is_empty() && st.focus.index == Some(2));
+        // ↓ на группе раскрывает её и входит
+        tree.home(&mut st);
+        tree.bar_down(&mut st);
+        assert_eq!(st.active, ["0"]);
+        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() });
+        // ↓ / ↑ внутри подменю
+        tree.bar_down(&mut st);
+        assert_eq!(st.focus.index, Some(1));
+        tree.bar_up(&mut st);
+        assert_eq!(st.focus.index, Some(0), "New");
+        // → на группе раскрывает вложенную и входит
+        tree.bar_right(&mut st);
+        assert_eq!(st.active, ["0", "0_0"]);
+        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0_0".into() });
+        // → на листе подменю ничего не делает
+        tree.bar_right(&mut st);
+        assert_eq!(st.active, ["0", "0_0"]);
+        // ↑ на первом пункте возвращает на родителя и сворачивает его подменю
+        tree.bar_up(&mut st);
+        assert_eq!(st.active, ["0"]);
+        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() }, "фокус на New");
+        // ← поднимается на родителя и сворачивает ветку
+        tree.bar_left(&mut st);
+        assert_eq!(st.active, Vec::<String>::new());
+        assert_eq!(st.focus, Focus { index: Some(0), parent_key: String::new() }, "фокус на File");
+    }
+
+    #[test]
+    fn bar_up_on_a_root_group_opens_it_at_the_last_item() {
+        let items = menu();
+        let nodes = build(&items);
+        let tree = Tree { nodes: &nodes, items: &items };
+        let mut st = State::default();
+        tree.bar_right(&mut st);
+        tree.bar_up(&mut st);
+        assert_eq!(st.active, ["0"]);
+        assert_eq!(
+            st.focus,
+            Focus { index: Some(1), parent_key: "0".into() },
+            "Print отключён, разделитель пропущен: последний допустимый — Open"
+        );
     }
 
     #[test]

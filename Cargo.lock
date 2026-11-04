@@ -2075,6 +2075,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-menubar"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "prime-menu",
+ "prime-tieredmenu",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-message"
 version = "0.1.0"
 dependencies = [
@@ -2733,6 +2750,7 @@ dependencies = [
  "prime-knob",
  "prime-listbox",
  "prime-menu",
+ "prime-menubar",
  "prime-message",
  "prime-metergroup",
  "prime-multiselect",
@@ -3091,6 +3109,7 @@ dependencies = [
  "prime-knob",
  "prime-listbox",
  "prime-menu",
+ "prime-menubar",
  "prime-message",
  "prime-metergroup",
  "prime-multiselect",
@@ -3794,6 +3813,7 @@ dependencies = [
  "prime-knob",
  "prime-listbox",
  "prime-menu",
+ "prime-menubar",
  "prime-message",
  "prime-metergroup",
  "prime-multiselect",

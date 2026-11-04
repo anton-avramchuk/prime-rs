@@ -1,0 +1,37 @@
+[package]
+name = "prime-menubar"
+description = "prime-rs: компонент Menubar (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-dom/ssr", "prime-menu/ssr", "prime-icons/ssr", "prime-tieredmenu/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-dom/hydrate", "prime-menu/hydrate", "prime-icons/hydrate", "prime-tieredmenu/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-dom = { workspace = true }
+prime-menu = { workspace = true }
+prime-tieredmenu = { workspace = true }
+prime-icons = { workspace = true, features = ["angleright", "angledown", "bars"] }
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "FocusEvent", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration", "MediaQueryList", "MediaQueryListEvent", "Navigator", "ScrollIntoViewOptions", "ScrollLogicalPosition"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+js-sys = { workspace = true }
+wasm-bindgen-futures = "0.4"
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "HtmlButtonElement", "Event", "KeyboardEvent", "KeyboardEventInit", "MouseEvent", "MouseEventInit", "FocusEvent", "CssStyleDeclaration", "DomTokenList", "DomRect"] }
+
+[lints]
+workspace = true

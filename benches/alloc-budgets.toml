@@ -352,3 +352,8 @@ max_per_instance = 132
 name = "contextmenu-1000"
 instances = 1000
 max_per_instance = 425
+
+[[scenario]]
+name = "menubar-1000"
+instances = 1000
+max_per_instance = 440

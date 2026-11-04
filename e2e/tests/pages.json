@@ -2301,5 +2301,12 @@
     "upstream": "/contextmenu",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "menubar-basic",
+    "ours": "/menubar",
+    "upstream": "/menubar",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]
