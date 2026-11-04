@@ -362,3 +362,8 @@ max_per_instance = 440
 name = "panelmenu-1000"
 instances = 1000
 max_per_instance = 860
+
+[[scenario]]
+name = "megamenu-1000"
+instances = 1000
+max_per_instance = 382

@@ -124,6 +124,10 @@ pub const KNOB: &str = include_str!("../css/components/knob.css");
 #[cfg(feature = "listbox")]
 pub const LISTBOX: &str = include_str!("../css/components/listbox.css");
 
+/// CSS компонента `megamenu`.
+#[cfg(feature = "megamenu")]
+pub const MEGAMENU: &str = include_str!("../css/components/megamenu.css");
+
 /// CSS компонента `menu`.
 #[cfg(feature = "menu")]
 pub const MENU: &str = include_str!("../css/components/menu.css");
@@ -332,6 +336,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("knob", KNOB),
     #[cfg(feature = "listbox")]
     ("listbox", LISTBOX),
+    #[cfg(feature = "megamenu")]
+    ("megamenu", MEGAMENU),
     #[cfg(feature = "menu")]
     ("menu", MENU),
     #[cfg(feature = "menubar")]

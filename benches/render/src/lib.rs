@@ -39,6 +39,7 @@ use prime_inputotp::InputOtp;
 use prime_inputtext::InputText;
 use prime_knob::Knob;
 use prime_listbox::{Listbox, ListboxOption};
+use prime_megamenu::{MegaMenu, MegaMenuItem, MegaMenuSubmenu};
 use prime_menu::{Menu, MenuItem};
 use prime_menubar::Menubar;
 use prime_message::{Message, MessageSeverity};
@@ -644,6 +645,20 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn megamenu_n(n: usize) -> String {
+    let model = || {
+        vec![
+            MegaMenuItem::new().label("Furniture").columns(vec![
+                vec![MegaMenuSubmenu::new("Living").items(vec![MenuItem::new().label("Armchair"), MenuItem::new().label("Couch")])],
+                vec![MegaMenuSubmenu::new("Kitchen").items(vec![MenuItem::new().label("Chair")])],
+            ]),
+            MegaMenuItem::new().label("Sports"),
+            MegaMenuItem::from(MenuItem::new().label("Quit")),
+        ]
+    };
+    render((0..n).map(|_| view! { <MegaMenu model=model() /> }).collect_view())
+}
+
 fn panelmenu_n(n: usize) -> String {
     let model = || {
         vec![
@@ -869,6 +884,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "megamenu-1", run: || megamenu_n(1) },
+    Scenario { name: "megamenu-1000", run: || megamenu_n(1000) },
     Scenario { name: "panelmenu-1", run: || panelmenu_n(1) },
     Scenario { name: "panelmenu-1000", run: || panelmenu_n(1000) },
     Scenario { name: "contextmenu-1", run: || contextmenu_n(1) },

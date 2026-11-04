@@ -2315,5 +2315,12 @@
     "upstream": "/panelmenu",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "megamenu-basic",
+    "ours": "/megamenu",
+    "upstream": "/megamenu",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

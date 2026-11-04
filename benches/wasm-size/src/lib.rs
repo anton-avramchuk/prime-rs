@@ -303,6 +303,12 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-megamenu")] {
+        fn case() -> impl IntoView {
+            use prime_megamenu::{MegaMenu, MegaMenuItem, MegaMenuSubmenu};
+            use prime_menu::MenuItem;
+            view! { <MegaMenu model=vec![MegaMenuItem::new().label("Furniture").columns(vec![vec![MegaMenuSubmenu::new("Living").items(vec![MenuItem::new().label("Armchair")])]]), MegaMenuItem::from(MenuItem::new().label("Quit"))] /> }
+        }
     } else if #[cfg(feature = "case-panelmenu")] {
         fn case() -> impl IntoView {
             use prime_menu::MenuItem;

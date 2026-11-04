@@ -4,7 +4,7 @@ use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CarouselPage, CheckboxPage,
     ChipPage, ConfirmDialogPage, ConfirmPopupPage, ContextMenuPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage,
     FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage,
-    InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage,
+    InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MegaMenuPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage,
     MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage,
     ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
     SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage,
@@ -87,6 +87,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "contextmenu",
         "menubar",
         "panelmenu",
+        "megamenu",
     ]);
     view! {
         <!DOCTYPE html>
@@ -191,6 +192,7 @@ pub fn App() -> impl IntoView {
                         <A href="/contextmenu">"ContextMenu"</A>
                         <A href="/menubar">"Menubar"</A>
                         <A href="/panelmenu">"PanelMenu"</A>
+                        <A href="/megamenu">"MegaMenu"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -267,6 +269,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("contextmenu") view=ContextMenuPage />
                         <Route path=StaticSegment("menubar") view=MenubarPage />
                         <Route path=StaticSegment("panelmenu") view=PanelMenuPage />
+                        <Route path=StaticSegment("megamenu") view=MegaMenuPage />
                     </Routes>
                 </main>
             </div>

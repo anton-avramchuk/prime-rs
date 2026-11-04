@@ -2061,6 +2061,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-megamenu"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "prime-menu",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-menu"
 version = "0.1.0"
 dependencies = [
@@ -2765,6 +2781,7 @@ dependencies = [
  "prime-inputtext",
  "prime-knob",
  "prime-listbox",
+ "prime-megamenu",
  "prime-menu",
  "prime-menubar",
  "prime-message",
@@ -3125,6 +3142,7 @@ dependencies = [
  "prime-inputtext",
  "prime-knob",
  "prime-listbox",
+ "prime-megamenu",
  "prime-menu",
  "prime-menubar",
  "prime-message",
@@ -3830,6 +3848,7 @@ dependencies = [
  "prime-inputtext",
  "prime-knob",
  "prime-listbox",
+ "prime-megamenu",
  "prime-menu",
  "prime-menubar",
  "prime-message",

@@ -360,3 +360,8 @@ max_delta_bytes = 549000
 name = "panelmenu"
 feature = "case-panelmenu"
 max_delta_bytes = 544000
+
+[[case]]
+name = "megamenu"
+feature = "case-megamenu"
+max_delta_bytes = 601000
