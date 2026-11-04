@@ -272,6 +272,10 @@ pub const TOOLBAR: &str = include_str!("../css/components/toolbar.css");
 #[cfg(feature = "tooltip")]
 pub const TOOLTIP: &str = include_str!("../css/components/tooltip.css");
 
+/// CSS компонента `tree`.
+#[cfg(feature = "tree")]
+pub const TREE: &str = include_str!("../css/components/tree.css");
+
 /// Пары «имя — CSS» для включённых компонентов.
 pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     #[cfg(feature = "accordion")]
@@ -410,4 +414,6 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("toolbar", TOOLBAR),
     #[cfg(feature = "tooltip")]
     ("tooltip", TOOLTIP),
+    #[cfg(feature = "tree")]
+    ("tree", TREE),
 ];

@@ -365,3 +365,8 @@ max_delta_bytes = 544000
 name = "megamenu"
 feature = "case-megamenu"
 max_delta_bytes = 601000
+
+[[case]]
+name = "tree"
+feature = "case-tree"
+max_delta_bytes = 628000

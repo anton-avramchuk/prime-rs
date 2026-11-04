@@ -70,6 +70,7 @@ mod togglebutton;
 mod toggleswitch;
 mod toolbar;
 mod tooltip;
+mod tree;
 
 pub use accordion::AccordionPage;
 pub use avatar::AvatarPage;
@@ -141,6 +142,7 @@ pub use togglebutton::ToggleButtonPage;
 pub use toggleswitch::ToggleSwitchPage;
 pub use toolbar::ToolbarPage;
 pub use tooltip::TooltipPage;
+pub use tree::TreePage;
 
 use leptos::prelude::*;
 

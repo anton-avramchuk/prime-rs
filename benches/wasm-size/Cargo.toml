@@ -60,6 +60,7 @@ case-carousel = ["dep:prime-carousel"]
 case-tieredmenu = ["dep:prime-tieredmenu", "dep:prime-menu"]
 case-steps = ["dep:prime-steps"]
 case-menubar = ["dep:prime-menubar", "dep:prime-menu", "dep:prime-tieredmenu"]
+case-tree = ["dep:prime-tree"]
 case-megamenu = ["dep:prime-megamenu", "dep:prime-menu"]
 case-panelmenu = ["dep:prime-panelmenu", "dep:prime-menu"]
 case-contextmenu = ["dep:prime-contextmenu", "dep:prime-menu", "dep:prime-tieredmenu"]
@@ -139,6 +140,7 @@ prime-contextmenu = { workspace = true, optional = true }
 prime-menubar = { workspace = true, optional = true }
 prime-panelmenu = { workspace = true, optional = true }
 prime-megamenu = { workspace = true, optional = true }
+prime-tree = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

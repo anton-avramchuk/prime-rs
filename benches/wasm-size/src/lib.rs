@@ -303,6 +303,11 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-tree")] {
+        fn case() -> impl IntoView {
+            use prime_tree::{Tree, TreeNode};
+            view! { <Tree value=vec![TreeNode::new("0").label("Documents").children(vec![TreeNode::new("0-0").label("Work")]), TreeNode::new("1").label("Movies")] /> }
+        }
     } else if #[cfg(feature = "case-megamenu")] {
         fn case() -> impl IntoView {
             use prime_megamenu::{MegaMenu, MegaMenuItem, MegaMenuSubmenu};

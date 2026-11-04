@@ -2539,6 +2539,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-tree"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-checkbox",
+ "prime-core",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "proc-macro-utils"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2818,6 +2833,7 @@ dependencies = [
  "prime-toggleswitch",
  "prime-toolbar",
  "prime-tooltip",
+ "prime-tree",
  "serde_json",
 ]
 
@@ -3180,6 +3196,7 @@ dependencies = [
  "prime-toggleswitch",
  "prime-toolbar",
  "prime-tooltip",
+ "prime-tree",
  "tokio",
  "wasm-bindgen",
  "web-sys",
@@ -3885,6 +3902,7 @@ dependencies = [
  "prime-toggleswitch",
  "prime-toolbar",
  "prime-tooltip",
+ "prime-tree",
  "wasm-bindgen",
 ]
 

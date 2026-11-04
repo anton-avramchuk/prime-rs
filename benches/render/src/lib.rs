@@ -76,6 +76,7 @@ use prime_togglebutton::ToggleButton;
 use prime_toggleswitch::ToggleSwitch;
 use prime_toolbar::Toolbar;
 use prime_tooltip::{TooltipOptions, TooltipPosition, tooltip};
+use prime_tree::{Tree, TreeNode};
 
 /// Сценарий: имя и функция, возвращающая HTML.
 pub struct Scenario {
@@ -645,6 +646,20 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn tree_n(n: usize) -> String {
+    let model = || {
+        vec![
+            TreeNode::new("0").label("Documents").expanded(true).children(vec![
+                TreeNode::new("0-0").label("Work").children(vec![TreeNode::new("0-0-0").label("Expenses")]),
+                TreeNode::new("0-1").label("Home"),
+            ]),
+            TreeNode::new("1").label("Pictures").children(vec![TreeNode::new("1-0").label("logo")]),
+            TreeNode::new("2").label("Movies"),
+        ]
+    };
+    render((0..n).map(|_| view! { <Tree value=model() /> }).collect_view())
+}
+
 fn megamenu_n(n: usize) -> String {
     let model = || {
         vec![
@@ -884,6 +899,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "tree-1", run: || tree_n(1) },
+    Scenario { name: "tree-1000", run: || tree_n(1000) },
     Scenario { name: "megamenu-1", run: || megamenu_n(1) },
     Scenario { name: "megamenu-1000", run: || megamenu_n(1000) },
     Scenario { name: "panelmenu-1", run: || panelmenu_n(1) },

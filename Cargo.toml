@@ -91,6 +91,7 @@ prime-contextmenu = { path = "crates/prime-contextmenu" }
 prime-menubar = { path = "crates/prime-menubar" }
 prime-panelmenu = { path = "crates/prime-panelmenu" }
 prime-megamenu = { path = "crates/prime-megamenu" }
+prime-tree = { path = "crates/prime-tree" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

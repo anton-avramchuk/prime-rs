@@ -2322,5 +2322,12 @@
     "upstream": "/megamenu",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "tree-basic",
+    "ours": "/tree",
+    "upstream": "/tree",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

@@ -73,6 +73,7 @@ prime-contextmenu = { workspace = true }
 prime-menubar = { workspace = true }
 prime-panelmenu = { workspace = true }
 prime-megamenu = { workspace = true }
+prime-tree = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }
