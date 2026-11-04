@@ -76,6 +76,7 @@ prime-megamenu = { workspace = true }
 prime-tree = { workspace = true }
 prime-treeselect = { workspace = true }
 prime-cascadeselect = { workspace = true }
+prime-autocomplete = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

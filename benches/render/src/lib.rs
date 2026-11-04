@@ -5,6 +5,7 @@
 
 use leptos::prelude::*;
 use prime_accordion::{Accordion, AccordionContent, AccordionHeader, AccordionPanel};
+use prime_autocomplete::{AutoComplete, AutoCompleteOption};
 use prime_avatar::{Avatar, AvatarShape, AvatarSize};
 use prime_avatargroup::AvatarGroup;
 use prime_badge::{Badge, BadgeSeverity};
@@ -648,6 +649,11 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn autocomplete_n(n: usize) -> String {
+    let options = || vec![AutoCompleteOption::new("Apple"), AutoCompleteOption::new("Banana")];
+    render((0..n).map(|_| view! { <AutoComplete suggestions=options() placeholder="Search" /> }).collect_view())
+}
+
 fn cascadeselect_n(n: usize) -> String {
     let options = || {
         vec![
@@ -919,6 +925,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "autocomplete-1", run: || autocomplete_n(1) },
+    Scenario { name: "autocomplete-1000", run: || autocomplete_n(1000) },
     Scenario { name: "cascadeselect-1", run: || cascadeselect_n(1) },
     Scenario { name: "cascadeselect-1000", run: || cascadeselect_n(1000) },
     Scenario { name: "treeselect-1", run: || treeselect_n(1) },

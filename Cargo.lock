@@ -1625,6 +1625,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-autocomplete"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-chip",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "prime-inputtext",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-avatar"
 version = "0.1.0"
 dependencies = [
@@ -2794,6 +2811,7 @@ dependencies = [
  "divan",
  "leptos",
  "prime-accordion",
+ "prime-autocomplete",
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
@@ -3157,6 +3175,7 @@ dependencies = [
  "leptos_axum",
  "leptos_router",
  "prime-accordion",
+ "prime-autocomplete",
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",
@@ -3867,6 +3886,7 @@ dependencies = [
  "cfg-if",
  "leptos",
  "prime-accordion",
+ "prime-autocomplete",
  "prime-avatar",
  "prime-avatargroup",
  "prime-badge",

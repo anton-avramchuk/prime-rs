@@ -94,6 +94,7 @@ prime-megamenu = { path = "crates/prime-megamenu" }
 prime-tree = { path = "crates/prime-tree" }
 prime-treeselect = { path = "crates/prime-treeselect" }
 prime-cascadeselect = { path = "crates/prime-cascadeselect" }
+prime-autocomplete = { path = "crates/prime-autocomplete" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

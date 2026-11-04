@@ -1,6 +1,7 @@
 //! Страницы showcase: по странице на компонент и общая оболочка демонстрации.
 
 mod accordion;
+mod autocomplete;
 mod avatar;
 mod badge;
 mod blockui;
@@ -75,6 +76,7 @@ mod tree;
 mod treeselect;
 
 pub use accordion::AccordionPage;
+pub use autocomplete::AutoCompletePage;
 pub use avatar::AvatarPage;
 pub use badge::BadgePage;
 pub use blockui::BlockUiPage;

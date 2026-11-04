@@ -4,6 +4,10 @@
 #[cfg(feature = "accordion")]
 pub const ACCORDION: &str = include_str!("../css/components/accordion.css");
 
+/// CSS компонента `autocomplete`.
+#[cfg(feature = "autocomplete")]
+pub const AUTOCOMPLETE: &str = include_str!("../css/components/autocomplete.css");
+
 /// CSS компонента `avatar`.
 #[cfg(feature = "avatar")]
 pub const AVATAR: &str = include_str!("../css/components/avatar.css");
@@ -288,6 +292,8 @@ pub const TREESELECT: &str = include_str!("../css/components/treeselect.css");
 pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     #[cfg(feature = "accordion")]
     ("accordion", ACCORDION),
+    #[cfg(feature = "autocomplete")]
+    ("autocomplete", AUTOCOMPLETE),
     #[cfg(feature = "avatar")]
     ("avatar", AVATAR),
     #[cfg(feature = "badge")]

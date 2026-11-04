@@ -303,6 +303,11 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-autocomplete")] {
+        fn case() -> impl IntoView {
+            use prime_autocomplete::{AutoComplete, AutoCompleteOption};
+            view! { <AutoComplete suggestions=vec![AutoCompleteOption::new("Apple"), AutoCompleteOption::new("Banana")] placeholder="Search" /> }
+        }
     } else if #[cfg(feature = "case-cascadeselect")] {
         fn case() -> impl IntoView {
             use prime_cascadeselect::{CascadeOption, CascadeSelect};

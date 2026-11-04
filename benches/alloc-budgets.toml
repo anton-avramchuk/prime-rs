@@ -382,3 +382,8 @@ max_per_instance = 285
 name = "cascadeselect-1000"
 instances = 1000
 max_per_instance = 156
+
+[[scenario]]
+name = "autocomplete-1000"
+instances = 1000
+max_per_instance = 168

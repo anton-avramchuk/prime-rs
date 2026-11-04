@@ -63,6 +63,7 @@ prime-megamenu = { workspace = true, features = ["ssr"] }
 prime-tree = { workspace = true, features = ["ssr"] }
 prime-treeselect = { workspace = true, features = ["ssr"] }
 prime-cascadeselect = { workspace = true, features = ["ssr"] }
+prime-autocomplete = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

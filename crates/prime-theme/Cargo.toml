@@ -12,6 +12,7 @@ default = []
 # CSS компонентов: по feature на компонент, `all-components` включает все.
 # BEGIN GENERATED FEATURES
 accordion = []
+autocomplete = []
 avatar = []
 badge = []
 blockui = []
@@ -82,7 +83,7 @@ toolbar = []
 tooltip = []
 tree = []
 treeselect = []
-all-components = ["accordion", "avatar", "badge", "blockui", "breadcrumb", "button", "buttongroup", "card", "carousel", "cascadeselect", "checkbox", "chip", "confirmdialog", "confirmpopup", "contextmenu", "dialog", "divider", "dock", "drawer", "fieldset", "floatlabel", "iconfield", "iftalabel", "image", "imagecompare", "inplace", "inputgroup", "inputnumber", "inputotp", "inputtext", "knob", "listbox", "megamenu", "menu", "menubar", "message", "metergroup", "multiselect", "overlaybadge", "paginator", "panel", "panelmenu", "password", "popover", "progressbar", "progressspinner", "radiobutton", "rating", "scrollpanel", "scrolltop", "select", "selectbutton", "skeleton", "slider", "speeddial", "splitbutton", "splitter", "stepper", "steps", "tabs", "tag", "textarea", "tieredmenu", "timeline", "toast", "togglebutton", "toggleswitch", "toolbar", "tooltip", "tree", "treeselect"]
+all-components = ["accordion", "autocomplete", "avatar", "badge", "blockui", "breadcrumb", "button", "buttongroup", "card", "carousel", "cascadeselect", "checkbox", "chip", "confirmdialog", "confirmpopup", "contextmenu", "dialog", "divider", "dock", "drawer", "fieldset", "floatlabel", "iconfield", "iftalabel", "image", "imagecompare", "inplace", "inputgroup", "inputnumber", "inputotp", "inputtext", "knob", "listbox", "megamenu", "menu", "menubar", "message", "metergroup", "multiselect", "overlaybadge", "paginator", "panel", "panelmenu", "password", "popover", "progressbar", "progressspinner", "radiobutton", "rating", "scrollpanel", "scrolltop", "select", "selectbutton", "skeleton", "slider", "speeddial", "splitbutton", "splitter", "stepper", "steps", "tabs", "tag", "textarea", "tieredmenu", "timeline", "toast", "togglebutton", "toggleswitch", "toolbar", "tooltip", "tree", "treeselect"]
 # END GENERATED FEATURES
 
 [lints]

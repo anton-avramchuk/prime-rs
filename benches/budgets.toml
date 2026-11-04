@@ -380,3 +380,8 @@ max_delta_bytes = 1050000
 name = "cascadeselect"
 feature = "case-cascadeselect"
 max_delta_bytes = 590000
+
+[[case]]
+name = "autocomplete"
+feature = "case-autocomplete"
+max_delta_bytes = 796000
