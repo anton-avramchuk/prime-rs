@@ -36,6 +36,10 @@ pub const CARD: &str = include_str!("../css/components/card.css");
 #[cfg(feature = "carousel")]
 pub const CAROUSEL: &str = include_str!("../css/components/carousel.css");
 
+/// CSS компонента `cascadeselect`.
+#[cfg(feature = "cascadeselect")]
+pub const CASCADESELECT: &str = include_str!("../css/components/cascadeselect.css");
+
 /// CSS компонента `checkbox`.
 #[cfg(feature = "checkbox")]
 pub const CHECKBOX: &str = include_str!("../css/components/checkbox.css");
@@ -300,6 +304,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("card", CARD),
     #[cfg(feature = "carousel")]
     ("carousel", CAROUSEL),
+    #[cfg(feature = "cascadeselect")]
+    ("cascadeselect", CASCADESELECT),
     #[cfg(feature = "checkbox")]
     ("checkbox", CHECKBOX),
     #[cfg(feature = "chip")]

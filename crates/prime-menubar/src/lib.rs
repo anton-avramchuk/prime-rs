@@ -754,6 +754,7 @@ fn join(base: &str, extra: Option<&str>) -> String {
     }
 }
 
+#[allow(clippy::clone_on_copy)] // замыкание над `Memo` — `Copy`, `clone()` оставлен для единообразия с остальными замыканиями
 fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset: usize) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
     let key = node.key.clone();
@@ -761,9 +762,11 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
     let group = !item.items.is_empty();
     let id = item_id(&core.id, item, &key);
     let state = core.state;
+    // Memo: подменю перестраивается только при смене флага этого пункта, а не при любом изменении состояния.
     let active = {
         let key = key.clone();
-        move || state.with(|s| s.active.contains(&key))
+        let memo = Memo::new(move |_| state.with(|s| s.active.contains(&key)));
+        move || memo.get()
     };
     let focused = {
         let (core, key) = (core.clone(), key.clone());

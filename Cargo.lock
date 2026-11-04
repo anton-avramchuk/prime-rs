@@ -1724,6 +1724,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-cascadeselect"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-checkbox"
 version = "0.1.0"
 dependencies = [
@@ -2788,6 +2803,7 @@ dependencies = [
  "prime-buttongroup",
  "prime-card",
  "prime-carousel",
+ "prime-cascadeselect",
  "prime-checkbox",
  "prime-chip",
  "prime-confirmation",
@@ -3150,6 +3166,7 @@ dependencies = [
  "prime-buttongroup",
  "prime-card",
  "prime-carousel",
+ "prime-cascadeselect",
  "prime-checkbox",
  "prime-chip",
  "prime-confirmation",
@@ -3859,6 +3876,7 @@ dependencies = [
  "prime-buttongroup",
  "prime-card",
  "prime-carousel",
+ "prime-cascadeselect",
  "prime-checkbox",
  "prime-chip",
  "prime-confirmation",

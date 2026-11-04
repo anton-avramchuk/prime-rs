@@ -593,15 +593,18 @@ fn nodes_view(ctx: &Ctx, nodes: &[TreeNode], level: usize) -> AnyView {
     nodes.iter().enumerate().map(|(index, node)| node_view(ctx, node, level, index)).collect_view().into_any()
 }
 
+#[allow(clippy::clone_on_copy)] // замыкание над `Memo` — `Copy`, `clone()` оставлен для единообразия с остальными замыканиями
 fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
     let key = node.key.clone();
     let leaf = node.is_leaf();
     let mode = core.mode;
     let (expanded, selection, focus) = (core.expanded, core.selection, core.focus);
+    // Memo: поддерево перестраивается только при смене раскрытия этого узла, а не любого другого.
     let is_expanded = {
         let key = key.clone();
-        move || expanded.with(|s| s.contains(&key))
+        let memo = Memo::new(move |_| expanded.with(|s| s.contains(&key)));
+        move || memo.get()
     };
     let is_selected = {
         let key = key.clone();

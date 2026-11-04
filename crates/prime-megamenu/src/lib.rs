@@ -742,12 +742,15 @@ fn separator_view(ctx: &Ctx, key: &str, item: &MenuItem) -> AnyView {
 }
 
 /// Корневой пункт с наложением.
+#[allow(clippy::clone_on_copy)] // замыкание над `Memo` — `Copy`, `clone()` оставлен для единообразия с остальными замыканиями
 fn root_view(ctx: &Ctx, index: usize, mega: &MegaMenuItem, set_size: usize, pos_inset: usize) -> AnyView {
     let key = index.to_string();
     let group = mega.columns.iter().any(|c| !c.is_empty());
+    // Memo: наложение перестраивается только при смене флага этого пункта, а не при любом изменении состояния.
     let active = {
         let (state, key) = (ctx.core.state, key.clone());
-        move || state.with(|s| s.active.as_deref() == Some(key.as_str()))
+        let memo = Memo::new(move |_| state.with(|s| s.active.as_deref() == Some(key.as_str())));
+        move || memo.get()
     };
     let overlay = group.then(|| {
         let (ctx, active) = (ctx.clone(), active.clone());

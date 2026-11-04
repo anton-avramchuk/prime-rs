@@ -93,6 +93,7 @@ prime-panelmenu = { path = "crates/prime-panelmenu" }
 prime-megamenu = { path = "crates/prime-megamenu" }
 prime-tree = { path = "crates/prime-tree" }
 prime-treeselect = { path = "crates/prime-treeselect" }
+prime-cascadeselect = { path = "crates/prime-cascadeselect" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

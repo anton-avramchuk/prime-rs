@@ -2336,5 +2336,12 @@
     "upstream": "/treeselect",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "cascadeselect-basic",
+    "ours": "/cascadeselect",
+    "upstream": "/cascadeselect",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

@@ -14,6 +14,7 @@ use prime_button::{Button, ButtonSeverity};
 use prime_buttongroup::ButtonGroup;
 use prime_card::Card;
 use prime_carousel::Carousel;
+use prime_cascadeselect::{CascadeOption, CascadeSelect};
 use prime_checkbox::Checkbox;
 use prime_chip::Chip;
 use prime_confirmation::provide_confirmation_service;
@@ -647,6 +648,17 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn cascadeselect_n(n: usize) -> String {
+    let options = || {
+        vec![
+            CascadeOption::new("Australia")
+                .children(vec![CascadeOption::new("New South Wales").children(vec![CascadeOption::new("Sydney")])]),
+            CascadeOption::new("Canada"),
+        ]
+    };
+    render((0..n).map(|_| view! { <CascadeSelect options=options() placeholder="Select" /> }).collect_view())
+}
+
 fn treeselect_n(n: usize) -> String {
     let options = || {
         vec![TreeNode::new("0").label("Documents").children(vec![TreeNode::new("0-0").label("Work")]), TreeNode::new("1").label("Events")]
@@ -907,6 +919,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "cascadeselect-1", run: || cascadeselect_n(1) },
+    Scenario { name: "cascadeselect-1000", run: || cascadeselect_n(1000) },
     Scenario { name: "treeselect-1", run: || treeselect_n(1) },
     Scenario { name: "treeselect-1000", run: || treeselect_n(1000) },
     Scenario { name: "tree-1", run: || tree_n(1) },

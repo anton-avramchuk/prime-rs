@@ -303,6 +303,11 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-cascadeselect")] {
+        fn case() -> impl IntoView {
+            use prime_cascadeselect::{CascadeOption, CascadeSelect};
+            view! { <CascadeSelect options=vec![CascadeOption::new("Australia").children(vec![CascadeOption::new("Sydney")]), CascadeOption::new("Canada")] placeholder="Select" /> }
+        }
     } else if #[cfg(feature = "case-treeselect")] {
         fn case() -> impl IntoView {
             use prime_tree::TreeNode;
