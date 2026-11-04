@@ -59,6 +59,7 @@ case-speeddial = ["dep:prime-speeddial"]
 case-carousel = ["dep:prime-carousel"]
 case-tieredmenu = ["dep:prime-tieredmenu", "dep:prime-menu"]
 case-steps = ["dep:prime-steps"]
+case-contextmenu = ["dep:prime-contextmenu", "dep:prime-menu", "dep:prime-tieredmenu"]
 case-splitter = ["dep:prime-splitter"]
 case-inplace = ["dep:prime-inplace"]
 case-password = ["dep:prime-password"]
@@ -131,6 +132,7 @@ prime-speeddial = { workspace = true, optional = true }
 prime-carousel = { workspace = true, optional = true }
 prime-tieredmenu = { workspace = true, optional = true }
 prime-steps = { workspace = true, optional = true }
+prime-contextmenu = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

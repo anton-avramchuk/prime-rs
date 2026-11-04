@@ -2294,5 +2294,12 @@
     "upstream": "/steps",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "contextmenu-basic",
+    "ours": "/contextmenu",
+    "upstream": "/contextmenu",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

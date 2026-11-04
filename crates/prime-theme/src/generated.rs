@@ -52,6 +52,10 @@ pub const CONFIRMDIALOG: &str = include_str!("../css/components/confirmdialog.cs
 #[cfg(feature = "confirmpopup")]
 pub const CONFIRMPOPUP: &str = include_str!("../css/components/confirmpopup.css");
 
+/// CSS компонента `contextmenu`.
+#[cfg(feature = "contextmenu")]
+pub const CONTEXTMENU: &str = include_str!("../css/components/contextmenu.css");
+
 /// CSS компонента `dialog`.
 #[cfg(feature = "dialog")]
 pub const DIALOG: &str = include_str!("../css/components/dialog.css");
@@ -284,6 +288,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("confirmdialog", CONFIRMDIALOG),
     #[cfg(feature = "confirmpopup")]
     ("confirmpopup", CONFIRMPOPUP),
+    #[cfg(feature = "contextmenu")]
+    ("contextmenu", CONTEXTMENU),
     #[cfg(feature = "dialog")]
     ("dialog", DIALOG),
     #[cfg(feature = "divider")]

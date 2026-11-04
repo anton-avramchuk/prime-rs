@@ -297,6 +297,14 @@ cfg_if::cfg_if! {
             use prime_splitbutton::SplitButton;
             view! { <SplitButton label="Save" model=vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")] /> }
         }
+    } else if #[cfg(feature = "case-contextmenu")] {
+        fn case() -> impl IntoView {
+            use prime_contextmenu::{ContextMenu, ContextMenuRef};
+            use prime_menu::MenuItem;
+            let popup_ref = ContextMenuRef::new();
+            popup_ref.show_at(10.0, 10.0);
+            view! { <ContextMenu model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] popup_ref=popup_ref /> }
+        }
     } else if #[cfg(feature = "case-steps")] {
         fn case() -> impl IntoView {
             use prime_steps::{Steps, StepsItem};

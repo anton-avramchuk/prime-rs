@@ -347,3 +347,8 @@ max_per_instance = 415
 name = "steps-1000"
 instances = 1000
 max_per_instance = 132
+
+[[scenario]]
+name = "contextmenu-1000"
+instances = 1000
+max_per_instance = 425

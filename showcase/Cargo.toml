@@ -69,6 +69,7 @@ prime-speeddial = { workspace = true }
 prime-carousel = { workspace = true }
 prime-tieredmenu = { workspace = true }
 prime-steps = { workspace = true }
+prime-contextmenu = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

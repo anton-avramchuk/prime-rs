@@ -2,13 +2,13 @@
 
 use crate::pages::{
     AccordionPage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage, CarouselPage, CheckboxPage,
-    ChipPage, ConfirmDialogPage, ConfirmPopupPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage,
-    HomePage, IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputNumberPage, InputOtpPage,
-    InputTextPage, KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage, PaginatorPage,
-    PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage,
-    ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage,
-    StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage,
-    TooltipPage,
+    ChipPage, ConfirmDialogPage, ConfirmPopupPage, ContextMenuPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage,
+    FloatLabelPage, FluidPage, HomePage, IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage,
+    InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MenuPage, MessagePage, MeterGroupPage, MultiSelectPage,
+    OverlayBadgePage, PaginatorPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage,
+    RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage,
+    SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage, TimelinePage, ToastPage, ToggleButtonPage,
+    ToggleSwitchPage, ToolbarPage, TooltipPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -84,6 +84,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "carousel",
         "tieredmenu",
         "steps",
+        "contextmenu",
     ]);
     view! {
         <!DOCTYPE html>
@@ -185,6 +186,7 @@ pub fn App() -> impl IntoView {
                         <A href="/carousel">"Carousel"</A>
                         <A href="/tieredmenu">"TieredMenu"</A>
                         <A href="/steps">"Steps"</A>
+                        <A href="/contextmenu">"ContextMenu"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -258,6 +260,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("carousel") view=CarouselPage />
                         <Route path=StaticSegment("tieredmenu") view=TieredMenuPage />
                         <Route path=StaticSegment("steps") view=StepsPage />
+                        <Route path=StaticSegment("contextmenu") view=ContextMenuPage />
                     </Routes>
                 </main>
             </div>

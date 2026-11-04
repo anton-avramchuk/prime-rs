@@ -19,6 +19,7 @@ use prime_chip::Chip;
 use prime_confirmation::provide_confirmation_service;
 use prime_confirmdialog::ConfirmDialog;
 use prime_confirmpopup::ConfirmPopup;
+use prime_contextmenu::{ContextMenu, ContextMenuRef};
 use prime_dialog::Dialog;
 use prime_divider::{Divider, DividerAlign};
 use prime_dock::{Dock, DockItem};
@@ -627,6 +628,31 @@ fn tieredmenu_n(n: usize) -> String {
     render((0..n).map(|_| view! { <TieredMenu model=model() /> }).collect_view())
 }
 
+fn contextmenu_n(n: usize) -> String {
+    let model = || {
+        vec![
+            MenuItem::new()
+                .label("File")
+                .items(vec![MenuItem::new().label("New").items(vec![MenuItem::new().label("Document")]), MenuItem::new().label("Open")]),
+            MenuItem::new().label("Edit"),
+            MenuItem::separator(),
+            MenuItem::new().label("Quit"),
+        ]
+    };
+    // Меню показано: иначе на сервере нечего выводить.
+    Owner::new().with(|| {
+        render(
+            (0..n)
+                .map(|_| {
+                    let popup_ref = ContextMenuRef::new();
+                    popup_ref.show_at(10.0, 10.0);
+                    view! { <ContextMenu model=model() popup_ref=popup_ref /> }
+                })
+                .collect_view(),
+        )
+    })
+}
+
 fn steps_n(n: usize) -> String {
     let model = || vec![StepsItem::new().label("Personal"), StepsItem::new().label("Seat"), StepsItem::new().label("Payment")];
     render((0..n).map(|_| view! { <Steps model=model() active_index=1usize /> }).collect_view())
@@ -811,6 +837,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "carousel-1000", run: || carousel_n(1000) },
     Scenario { name: "tieredmenu-1", run: || tieredmenu_n(1) },
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
+    Scenario { name: "contextmenu-1", run: || contextmenu_n(1) },
+    Scenario { name: "contextmenu-1000", run: || contextmenu_n(1000) },
     Scenario { name: "steps-1", run: || steps_n(1) },
     Scenario { name: "steps-1000", run: || steps_n(1000) },
     Scenario { name: "toast-1", run: || toast_n(1) },

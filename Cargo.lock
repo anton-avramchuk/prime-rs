@@ -1793,6 +1793,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-contextmenu"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "prime-icons",
+ "prime-menu",
+ "prime-tieredmenu",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-core"
 version = "0.1.0"
 dependencies = [
@@ -2695,6 +2712,7 @@ dependencies = [
  "prime-confirmation",
  "prime-confirmdialog",
  "prime-confirmpopup",
+ "prime-contextmenu",
  "prime-dialog",
  "prime-divider",
  "prime-dock",
@@ -3051,6 +3069,7 @@ dependencies = [
  "prime-confirmation",
  "prime-confirmdialog",
  "prime-confirmpopup",
+ "prime-contextmenu",
  "prime-core",
  "prime-dialog",
  "prime-divider",
@@ -3754,6 +3773,7 @@ dependencies = [
  "prime-confirmation",
  "prime-confirmdialog",
  "prime-confirmpopup",
+ "prime-contextmenu",
  "prime-dialog",
  "prime-divider",
  "prime-dock",

@@ -87,6 +87,7 @@ prime-speeddial = { path = "crates/prime-speeddial" }
 prime-carousel = { path = "crates/prime-carousel" }
 prime-tieredmenu = { path = "crates/prime-tieredmenu" }
 prime-steps = { path = "crates/prime-steps" }
+prime-contextmenu = { path = "crates/prime-contextmenu" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
