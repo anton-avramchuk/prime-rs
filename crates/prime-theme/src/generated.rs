@@ -112,6 +112,10 @@ pub const INPLACE: &str = include_str!("../css/components/inplace.css");
 #[cfg(feature = "inputgroup")]
 pub const INPUTGROUP: &str = include_str!("../css/components/inputgroup.css");
 
+/// CSS компонента `inputmask`.
+#[cfg(feature = "inputmask")]
+pub const INPUTMASK: &str = include_str!("../css/components/inputmask.css");
+
 /// CSS компонента `inputnumber`.
 #[cfg(feature = "inputnumber")]
 pub const INPUTNUMBER: &str = include_str!("../css/components/inputnumber.css");
@@ -346,6 +350,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("inplace", INPLACE),
     #[cfg(feature = "inputgroup")]
     ("inputgroup", INPUTGROUP),
+    #[cfg(feature = "inputmask")]
+    ("inputmask", INPUTMASK),
     #[cfg(feature = "inputnumber")]
     ("inputnumber", INPUTNUMBER),
     #[cfg(feature = "inputotp")]

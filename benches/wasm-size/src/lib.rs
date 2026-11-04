@@ -303,6 +303,11 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-inputmask")] {
+        fn case() -> impl IntoView {
+            use prime_inputmask::InputMask;
+            view! { <InputMask mask="(999) 999-9999" placeholder="(999) 999-9999" /> }
+        }
     } else if #[cfg(feature = "case-autocomplete")] {
         fn case() -> impl IntoView {
             use prime_autocomplete::{AutoComplete, AutoCompleteOption};

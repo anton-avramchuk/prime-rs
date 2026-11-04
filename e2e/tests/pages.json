@@ -2350,5 +2350,12 @@
     "upstream": "/autocomplete",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "inputmask-basic",
+    "ours": "/inputmask",
+    "upstream": "/inputmask",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

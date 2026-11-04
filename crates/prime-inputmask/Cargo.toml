@@ -1,0 +1,36 @@
+[package]
+name = "prime-inputmask"
+description = "prime-rs: компонент InputMask (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-dom/ssr", "prime-icons/ssr", "prime-inputtext/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-dom/hydrate", "prime-icons/hydrate", "prime-inputtext/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-dom = { workspace = true }
+prime-inputtext = { workspace = true }
+prime-icons = { workspace = true, features = ["times"] }
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true, features = ["Event", "FocusEvent", "KeyboardEvent", "MouseEvent", "ClipboardEvent", "InputEvent", "HtmlElement", "HtmlInputElement", "Element", "Node", "Window", "Document"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+js-sys = { workspace = true }
+wasm-bindgen-futures = "0.4"
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "HtmlInputElement", "Event", "EventInit", "KeyboardEvent", "KeyboardEventInit", "FocusEvent", "MouseEvent", "MouseEventInit"] }
+
+[lints]
+workspace = true

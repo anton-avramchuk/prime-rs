@@ -36,6 +36,7 @@ use prime_image::Image;
 use prime_imagecompare::ImageCompare;
 use prime_inplace::Inplace;
 use prime_inputgroup::{InputGroup, InputGroupAddon};
+use prime_inputmask::InputMask;
 use prime_inputnumber::{InputNumber, InputNumberMode};
 use prime_inputotp::InputOtp;
 use prime_inputtext::InputText;
@@ -649,6 +650,10 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn inputmask_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <InputMask mask="(999) 999-9999" placeholder="(999) 999-9999" /> }).collect_view())
+}
+
 fn autocomplete_n(n: usize) -> String {
     let options = || vec![AutoCompleteOption::new("Apple"), AutoCompleteOption::new("Banana")];
     render((0..n).map(|_| view! { <AutoComplete suggestions=options() placeholder="Search" /> }).collect_view())
@@ -925,6 +930,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "inputmask-1", run: || inputmask_n(1) },
+    Scenario { name: "inputmask-1000", run: || inputmask_n(1000) },
     Scenario { name: "autocomplete-1", run: || autocomplete_n(1) },
     Scenario { name: "autocomplete-1000", run: || autocomplete_n(1000) },
     Scenario { name: "cascadeselect-1", run: || cascadeselect_n(1) },

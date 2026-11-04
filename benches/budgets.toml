@@ -385,3 +385,8 @@ max_delta_bytes = 590000
 name = "autocomplete"
 feature = "case-autocomplete"
 max_delta_bytes = 796000
+
+[[case]]
+name = "inputmask"
+feature = "case-inputmask"
+max_delta_bytes = 298000

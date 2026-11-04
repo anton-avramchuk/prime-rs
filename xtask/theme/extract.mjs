@@ -19,7 +19,13 @@ const base = minifyCSS([common.primitive?.css, common.semantic?.css, common.glob
 
 const out = { base, components: {} };
 for (const name of [...components].sort()) {
-    const { style } = await import(`@primeuix/styles/${name}`);
+    // У компонентов без модуля в `@primeuix/styles` (InputMask) есть только блок `For PrimeNG`.
+    let style = '';
+    try {
+        ({ style } = await import(`@primeuix/styles/${name}`));
+    } catch (e) {
+        if (e?.code !== 'ERR_MODULE_NOT_FOUND' || !extraComponentCss[name]) throw e;
+    }
     const comp = Theme.getComponent(name, undefined);
     const extraComp = extraComponentCss[name] ? resolved(extraComponentCss[name]) : '';
     const body = Theme.transformCSS(name, `${resolved(style)}${extraComp}${Css`${comp.style ?? ''}`}`);
