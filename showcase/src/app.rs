@@ -8,7 +8,7 @@ use crate::pages::{
     MultiSelectPage, OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage,
     ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
     SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage,
-    TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage,
+    TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage, TreeSelectPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -89,6 +89,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "panelmenu",
         "megamenu",
         "tree",
+        "treeselect",
     ]);
     view! {
         <!DOCTYPE html>
@@ -195,6 +196,7 @@ pub fn App() -> impl IntoView {
                         <A href="/panelmenu">"PanelMenu"</A>
                         <A href="/megamenu">"MegaMenu"</A>
                         <A href="/tree">"Tree"</A>
+                        <A href="/treeselect">"TreeSelect"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -273,6 +275,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("panelmenu") view=PanelMenuPage />
                         <Route path=StaticSegment("megamenu") view=MegaMenuPage />
                         <Route path=StaticSegment("tree") view=TreePage />
+                        <Route path=StaticSegment("treeselect") view=TreeSelectPage />
                     </Routes>
                 </main>
             </div>

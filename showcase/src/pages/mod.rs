@@ -71,6 +71,7 @@ mod toggleswitch;
 mod toolbar;
 mod tooltip;
 mod tree;
+mod treeselect;
 
 pub use accordion::AccordionPage;
 pub use avatar::AvatarPage;
@@ -143,6 +144,7 @@ pub use toggleswitch::ToggleSwitchPage;
 pub use toolbar::ToolbarPage;
 pub use tooltip::TooltipPage;
 pub use tree::TreePage;
+pub use treeselect::TreeSelectPage;
 
 use leptos::prelude::*;
 

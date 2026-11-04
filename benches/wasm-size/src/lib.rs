@@ -303,6 +303,12 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-treeselect")] {
+        fn case() -> impl IntoView {
+            use prime_tree::TreeNode;
+            use prime_treeselect::TreeSelect;
+            view! { <TreeSelect options=vec![TreeNode::new("0").label("Documents").children(vec![TreeNode::new("0-0").label("Work")])] placeholder="Select" /> }
+        }
     } else if #[cfg(feature = "case-tree")] {
         fn case() -> impl IntoView {
             use prime_tree::{Tree, TreeNode};

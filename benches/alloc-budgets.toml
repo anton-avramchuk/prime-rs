@@ -372,3 +372,8 @@ max_per_instance = 382
 name = "tree-1000"
 instances = 1000
 max_per_instance = 740
+
+[[scenario]]
+name = "treeselect-1000"
+instances = 1000
+max_per_instance = 285

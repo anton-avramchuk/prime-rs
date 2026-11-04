@@ -370,3 +370,8 @@ max_delta_bytes = 601000
 name = "tree"
 feature = "case-tree"
 max_delta_bytes = 628000
+
+[[case]]
+name = "treeselect"
+feature = "case-treeselect"
+max_delta_bytes = 1050000
