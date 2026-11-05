@@ -88,6 +88,10 @@ pub const DRAWER: &str = include_str!("../css/components/drawer.css");
 #[cfg(feature = "fieldset")]
 pub const FIELDSET: &str = include_str!("../css/components/fieldset.css");
 
+/// CSS компонента `fileupload`.
+#[cfg(feature = "fileupload")]
+pub const FILEUPLOAD: &str = include_str!("../css/components/fileupload.css");
+
 /// CSS компонента `floatlabel`.
 #[cfg(feature = "floatlabel")]
 pub const FLOATLABEL: &str = include_str!("../css/components/floatlabel.css");
@@ -346,6 +350,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("drawer", DRAWER),
     #[cfg(feature = "fieldset")]
     ("fieldset", FIELDSET),
+    #[cfg(feature = "fileupload")]
+    ("fileupload", FILEUPLOAD),
     #[cfg(feature = "floatlabel")]
     ("floatlabel", FLOATLABEL),
     #[cfg(feature = "galleria")]

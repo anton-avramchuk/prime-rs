@@ -3,13 +3,13 @@
 use crate::pages::{
     AccordionPage, AutoCompletePage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage,
     CarouselPage, CascadeSelectPage, CheckboxPage, ChipPage, ColorPickerPage, ConfirmDialogPage, ConfirmPopupPage, ContextMenuPage,
-    DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FloatLabelPage, FluidPage, GalleriaPage, HomePage, IconFieldPage,
-    IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputMaskPage, InputNumberPage, InputOtpPage, InputTextPage,
-    KnobPage, ListboxPage, MegaMenuPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage, MultiSelectPage, OverlayBadgePage,
-    PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage,
-    ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage,
-    StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage,
-    ToolbarPage, TooltipPage, TreePage, TreeSelectPage,
+    DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FileUploadPage, FloatLabelPage, FluidPage, GalleriaPage, HomePage,
+    IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputMaskPage, InputNumberPage, InputOtpPage,
+    InputTextPage, KnobPage, ListboxPage, MegaMenuPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage, MultiSelectPage,
+    OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage,
+    RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage,
+    SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage, TimelinePage, ToastPage,
+    ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage, TreeSelectPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -96,6 +96,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "inputmask",
         "colorpicker",
         "galleria",
+        "fileupload",
     ]);
     view! {
         <!DOCTYPE html>
@@ -208,6 +209,7 @@ pub fn App() -> impl IntoView {
                         <A href="/inputmask">"InputMask"</A>
                         <A href="/colorpicker">"ColorPicker"</A>
                         <A href="/galleria">"Galleria"</A>
+                        <A href="/fileupload">"FileUpload"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -292,6 +294,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("inputmask") view=InputMaskPage />
                         <Route path=StaticSegment("colorpicker") view=ColorPickerPage />
                         <Route path=StaticSegment("galleria") view=GalleriaPage />
+                        <Route path=StaticSegment("fileupload") view=FileUploadPage />
                     </Routes>
                 </main>
             </div>

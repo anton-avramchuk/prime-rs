@@ -1,0 +1,38 @@
+[package]
+name = "prime-fileupload"
+description = "prime-rs: компонент FileUpload (порт PrimeNG)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-button/ssr", "prime-message/ssr", "prime-progressbar/ssr", "prime-badge/ssr", "prime-icons/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-button/hydrate", "prime-message/hydrate", "prime-progressbar/hydrate", "prime-badge/hydrate", "prime-icons/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-button = { workspace = true }
+prime-message = { workspace = true }
+prime-progressbar = { workspace = true }
+prime-badge = { workspace = true }
+prime-icons = { workspace = true, features = ["plus", "upload", "times"] }
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "DragEvent", "DataTransfer", "File", "FileList", "Blob", "FormData", "HtmlElement", "HtmlInputElement", "Element", "Node", "Window", "Document", "Url", "XmlHttpRequest", "XmlHttpRequestUpload", "ProgressEvent"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+js-sys = { workspace = true }
+wasm-bindgen-futures = "0.4"
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "HtmlInputElement", "Event", "EventInit", "DragEvent", "DragEventInit", "DataTransfer", "DataTransferItemList", "DataTransferItem", "File", "FilePropertyBag", "FileList", "MouseEvent", "MouseEventInit", "KeyboardEvent", "KeyboardEventInit"] }
+
+[lints]
+workspace = true

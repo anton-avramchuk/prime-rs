@@ -402,3 +402,8 @@ max_per_instance = 70
 name = "galleria-1000"
 instances = 1000
 max_per_instance = 395
+
+[[scenario]]
+name = "fileupload-1000"
+instances = 1000
+max_per_instance = 250

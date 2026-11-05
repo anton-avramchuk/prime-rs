@@ -3,6 +3,8 @@
 //! Новый компонент добавляет сюда свои сценарии (один экземпляр и 1000 экземпляров) — они автоматически попадают
 //! в `render` (divan, время), `alloc` (dhat, аллокации) и `time` (медиана в JSON для сравнения с базовой линией).
 
+#![recursion_limit = "512"]
+
 use leptos::prelude::*;
 use prime_accordion::{Accordion, AccordionContent, AccordionHeader, AccordionPanel};
 use prime_autocomplete::{AutoComplete, AutoCompleteOption};
@@ -28,6 +30,7 @@ use prime_divider::{Divider, DividerAlign};
 use prime_dock::{Dock, DockItem};
 use prime_drawer::Drawer;
 use prime_fieldset::Fieldset;
+use prime_fileupload::FileUpload;
 use prime_floatlabel::{FloatLabel, FloatLabelVariant};
 use prime_fluid::Fluid;
 use prime_galleria::{Galleria, GalleriaImage};
@@ -652,6 +655,10 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn fileupload_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <FileUpload name="files[]" url="/upload" multiple=true accept="image/*" /> }).collect_view())
+}
+
 fn galleria_n(n: usize) -> String {
     let images =
         || (0..4).map(|i| GalleriaImage::new(format!("big{i}.jpg")).thumbnail(format!("small{i}.jpg")).alt("Image")).collect::<Vec<_>>();
@@ -942,6 +949,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "fileupload-1", run: || fileupload_n(1) },
+    Scenario { name: "fileupload-1000", run: || fileupload_n(1000) },
     Scenario { name: "galleria-1", run: || galleria_n(1) },
     Scenario { name: "galleria-1000", run: || galleria_n(1000) },
     Scenario { name: "colorpicker-1", run: || colorpicker_n(1) },

@@ -2371,5 +2371,12 @@
     "upstream": "/galleria",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "fileupload-advanced",
+    "ours": "/fileupload",
+    "upstream": "/fileupload",
+    "oursSelector": "[data-demo=\"advanced\"]",
+    "upstreamSelector": "advanced-doc .card"
   }
 ]

@@ -400,3 +400,8 @@ max_delta_bytes = 387000
 name = "galleria"
 feature = "case-galleria"
 max_delta_bytes = 607000
+
+[[case]]
+name = "fileupload"
+feature = "case-fileupload"
+max_delta_bytes = 1127000

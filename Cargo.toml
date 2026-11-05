@@ -98,6 +98,7 @@ prime-autocomplete = { path = "crates/prime-autocomplete" }
 prime-inputmask = { path = "crates/prime-inputmask" }
 prime-colorpicker = { path = "crates/prime-colorpicker" }
 prime-galleria = { path = "crates/prime-galleria" }
+prime-fileupload = { path = "crates/prime-fileupload" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

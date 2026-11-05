@@ -303,6 +303,11 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-fileupload")] {
+        fn case() -> impl IntoView {
+            use prime_fileupload::FileUpload;
+            view! { <FileUpload url="/upload" /> }
+        }
     } else if #[cfg(feature = "case-galleria")] {
         fn case() -> impl IntoView {
             use prime_galleria::{Galleria, GalleriaImage};
