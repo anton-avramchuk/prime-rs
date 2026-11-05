@@ -390,3 +390,8 @@ max_delta_bytes = 796000
 name = "inputmask"
 feature = "case-inputmask"
 max_delta_bytes = 298000
+
+[[case]]
+name = "colorpicker"
+feature = "case-colorpicker"
+max_delta_bytes = 387000

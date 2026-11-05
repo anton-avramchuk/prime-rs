@@ -18,6 +18,7 @@ use prime_carousel::Carousel;
 use prime_cascadeselect::{CascadeOption, CascadeSelect};
 use prime_checkbox::Checkbox;
 use prime_chip::Chip;
+use prime_colorpicker::ColorPicker;
 use prime_confirmation::provide_confirmation_service;
 use prime_confirmdialog::ConfirmDialog;
 use prime_confirmpopup::ConfirmPopup;
@@ -650,6 +651,10 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn colorpicker_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <ColorPicker /> }).collect_view())
+}
+
 fn inputmask_n(n: usize) -> String {
     render((0..n).map(|_| view! { <InputMask mask="(999) 999-9999" placeholder="(999) 999-9999" /> }).collect_view())
 }
@@ -930,6 +935,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "colorpicker-1", run: || colorpicker_n(1) },
+    Scenario { name: "colorpicker-1000", run: || colorpicker_n(1000) },
     Scenario { name: "inputmask-1", run: || inputmask_n(1) },
     Scenario { name: "inputmask-1000", run: || inputmask_n(1000) },
     Scenario { name: "autocomplete-1", run: || autocomplete_n(1) },

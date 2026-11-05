@@ -1782,6 +1782,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-colorpicker"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-dom",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-confirmation"
 version = "0.1.0"
 dependencies = [
@@ -2840,6 +2854,7 @@ dependencies = [
  "prime-cascadeselect",
  "prime-checkbox",
  "prime-chip",
+ "prime-colorpicker",
  "prime-confirmation",
  "prime-confirmdialog",
  "prime-confirmpopup",
@@ -3205,6 +3220,7 @@ dependencies = [
  "prime-cascadeselect",
  "prime-checkbox",
  "prime-chip",
+ "prime-colorpicker",
  "prime-confirmation",
  "prime-confirmdialog",
  "prime-confirmpopup",
@@ -3917,6 +3933,7 @@ dependencies = [
  "prime-cascadeselect",
  "prime-checkbox",
  "prime-chip",
+ "prime-colorpicker",
  "prime-confirmation",
  "prime-confirmdialog",
  "prime-confirmpopup",

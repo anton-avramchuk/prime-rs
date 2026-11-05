@@ -303,6 +303,11 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-colorpicker")] {
+        fn case() -> impl IntoView {
+            use prime_colorpicker::ColorPicker;
+            view! { <ColorPicker /> }
+        }
     } else if #[cfg(feature = "case-inputmask")] {
         fn case() -> impl IntoView {
             use prime_inputmask::InputMask;

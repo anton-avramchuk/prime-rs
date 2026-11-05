@@ -52,6 +52,10 @@ pub const CHECKBOX: &str = include_str!("../css/components/checkbox.css");
 #[cfg(feature = "chip")]
 pub const CHIP: &str = include_str!("../css/components/chip.css");
 
+/// CSS компонента `colorpicker`.
+#[cfg(feature = "colorpicker")]
+pub const COLORPICKER: &str = include_str!("../css/components/colorpicker.css");
+
 /// CSS компонента `confirmdialog`.
 #[cfg(feature = "confirmdialog")]
 pub const CONFIRMDIALOG: &str = include_str!("../css/components/confirmdialog.css");
@@ -320,6 +324,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("checkbox", CHECKBOX),
     #[cfg(feature = "chip")]
     ("chip", CHIP),
+    #[cfg(feature = "colorpicker")]
+    ("colorpicker", COLORPICKER),
     #[cfg(feature = "confirmdialog")]
     ("confirmdialog", CONFIRMDIALOG),
     #[cfg(feature = "confirmpopup")]

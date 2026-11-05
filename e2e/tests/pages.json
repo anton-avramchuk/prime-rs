@@ -2357,5 +2357,12 @@
     "upstream": "/inputmask",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "colorpicker-basic",
+    "ours": "/colorpicker",
+    "upstream": "/colorpicker",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

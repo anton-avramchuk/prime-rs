@@ -392,3 +392,8 @@ max_per_instance = 168
 name = "inputmask-1000"
 instances = 1000
 max_per_instance = 94
+
+[[scenario]]
+name = "colorpicker-1000"
+instances = 1000
+max_per_instance = 70
