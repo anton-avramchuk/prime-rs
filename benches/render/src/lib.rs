@@ -30,6 +30,7 @@ use prime_drawer::Drawer;
 use prime_fieldset::Fieldset;
 use prime_floatlabel::{FloatLabel, FloatLabelVariant};
 use prime_fluid::Fluid;
+use prime_galleria::{Galleria, GalleriaImage};
 use prime_iconfield::{IconField, InputIcon};
 use prime_icons::{AllIcons, CheckIcon, SpinnerIcon};
 use prime_iftalabel::IftaLabel;
@@ -651,6 +652,12 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn galleria_n(n: usize) -> String {
+    let images =
+        || (0..4).map(|i| GalleriaImage::new(format!("big{i}.jpg")).thumbnail(format!("small{i}.jpg")).alt("Image")).collect::<Vec<_>>();
+    render((0..n).map(|_| view! { <Galleria value=images() show_indicators=true /> }).collect_view())
+}
+
 fn colorpicker_n(n: usize) -> String {
     render((0..n).map(|_| view! { <ColorPicker /> }).collect_view())
 }
@@ -935,6 +942,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "galleria-1", run: || galleria_n(1) },
+    Scenario { name: "galleria-1000", run: || galleria_n(1000) },
     Scenario { name: "colorpicker-1", run: || colorpicker_n(1) },
     Scenario { name: "colorpicker-1000", run: || colorpicker_n(1000) },
     Scenario { name: "inputmask-1", run: || inputmask_n(1) },

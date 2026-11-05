@@ -395,3 +395,8 @@ max_delta_bytes = 298000
 name = "colorpicker"
 feature = "case-colorpicker"
 max_delta_bytes = 387000
+
+[[case]]
+name = "galleria"
+feature = "case-galleria"
+max_delta_bytes = 607000

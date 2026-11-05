@@ -92,6 +92,10 @@ pub const FIELDSET: &str = include_str!("../css/components/fieldset.css");
 #[cfg(feature = "floatlabel")]
 pub const FLOATLABEL: &str = include_str!("../css/components/floatlabel.css");
 
+/// CSS компонента `galleria`.
+#[cfg(feature = "galleria")]
+pub const GALLERIA: &str = include_str!("../css/components/galleria.css");
+
 /// CSS компонента `iconfield`.
 #[cfg(feature = "iconfield")]
 pub const ICONFIELD: &str = include_str!("../css/components/iconfield.css");
@@ -344,6 +348,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("fieldset", FIELDSET),
     #[cfg(feature = "floatlabel")]
     ("floatlabel", FLOATLABEL),
+    #[cfg(feature = "galleria")]
+    ("galleria", GALLERIA),
     #[cfg(feature = "iconfield")]
     ("iconfield", ICONFIELD),
     #[cfg(feature = "iftalabel")]

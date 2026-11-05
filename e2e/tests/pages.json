@@ -2364,5 +2364,12 @@
     "upstream": "/colorpicker",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "galleria-basic",
+    "ours": "/galleria",
+    "upstream": "/galleria",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]
