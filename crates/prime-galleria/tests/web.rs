@@ -206,7 +206,8 @@ async fn autoplay_stops_on_user_action() {
     });
     settle().await;
     all(&host, ".p-galleria-thumbnail")[0].click();
-    sleep(250).await;
+    // две-три смены из пяти кадров по кругу: больше — и круг замкнётся на 0
+    sleep(130).await;
     assert!(active.get_untracked() > 0, "автосмена продолжается: {}", active.get_untracked());
     host.remove();
 }
