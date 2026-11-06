@@ -303,6 +303,12 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-dataview")] {
+        fn case() -> impl IntoView {
+            use prime_dataview::DataView;
+            let list = Callback::new(|page: Vec<i32>| view! { <ul>{page.into_iter().map(|i| view! { <li>{i}</li> }).collect_view()}</ul> }.into_any());
+            view! { <DataView value=vec![1, 2, 3] list=list /> }
+        }
     } else if #[cfg(feature = "case-datepicker")] {
         fn case() -> impl IntoView {
             use prime_datepicker::DatePicker;

@@ -25,6 +25,7 @@ use prime_confirmation::provide_confirmation_service;
 use prime_confirmdialog::ConfirmDialog;
 use prime_confirmpopup::ConfirmPopup;
 use prime_contextmenu::{ContextMenu, ContextMenuRef};
+use prime_dataview::DataView;
 use prime_datepicker::{DatePicker, calendar::CalDate};
 use prime_dialog::Dialog;
 use prime_divider::{Divider, DividerAlign};
@@ -658,6 +659,19 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn dataview_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                let list = Callback::new(|page: Vec<i32>| {
+                    view! { <ul>{page.into_iter().map(|i| view! { <li>{i}</li> }).collect_view()}</ul> }.into_any()
+                });
+                view! { <DataView value=vec![1, 2, 3] list=list paginator=true default_rows=2usize /> }
+            })
+            .collect_view(),
+    )
+}
+
 fn datepicker_n(n: usize) -> String {
     render((0..n).map(|_| view! { <DatePicker inline=true today=CalDate::new(2026, 10, 5) /> }).collect_view())
 }
@@ -983,6 +997,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "dataview-1", run: || dataview_n(1) },
+    Scenario { name: "dataview-1000", run: || dataview_n(1000) },
     Scenario { name: "datepicker-1", run: || datepicker_n(1) },
     Scenario { name: "datepicker-1000", run: || datepicker_n(1000) },
     Scenario { name: "picklist-1", run: || picklist_n(1) },

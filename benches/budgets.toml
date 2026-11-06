@@ -420,3 +420,8 @@ max_delta_bytes = 1094000
 name = "datepicker"
 feature = "case-datepicker"
 max_delta_bytes = 1019000
+
+[[case]]
+name = "dataview"
+feature = "case-dataview"
+max_delta_bytes = 1462000

@@ -1865,6 +1865,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-dataview"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-core",
+ "prime-icons",
+ "prime-paginator",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-datepicker"
 version = "0.1.0"
 dependencies = [
@@ -2942,6 +2957,7 @@ dependencies = [
  "prime-confirmdialog",
  "prime-confirmpopup",
  "prime-contextmenu",
+ "prime-dataview",
  "prime-datepicker",
  "prime-dialog",
  "prime-divider",
@@ -3314,6 +3330,7 @@ dependencies = [
  "prime-confirmpopup",
  "prime-contextmenu",
  "prime-core",
+ "prime-dataview",
  "prime-datepicker",
  "prime-dialog",
  "prime-divider",
@@ -4031,6 +4048,7 @@ dependencies = [
  "prime-confirmdialog",
  "prime-confirmpopup",
  "prime-contextmenu",
+ "prime-dataview",
  "prime-datepicker",
  "prime-dialog",
  "prime-divider",

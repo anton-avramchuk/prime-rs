@@ -102,6 +102,7 @@ prime-fileupload = { path = "crates/prime-fileupload" }
 prime-orderlist = { path = "crates/prime-orderlist" }
 prime-picklist = { path = "crates/prime-picklist" }
 prime-datepicker = { path = "crates/prime-datepicker" }
+prime-dataview = { path = "crates/prime-dataview" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

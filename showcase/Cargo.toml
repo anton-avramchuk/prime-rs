@@ -84,6 +84,7 @@ prime-fileupload = { workspace = true }
 prime-orderlist = { workspace = true }
 prime-picklist = { workspace = true }
 prime-datepicker = { workspace = true }
+prime-dataview = { workspace = true }
 prime-progressspinner = { workspace = true }
 prime-divider = { workspace = true }
 prime-inputotp = { workspace = true }

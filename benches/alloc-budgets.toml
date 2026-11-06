@@ -422,3 +422,8 @@ max_per_instance = 855
 name = "datepicker-1000"
 instances = 1000
 max_per_instance = 680
+
+[[scenario]]
+name = "dataview-1000"
+instances = 1000
+max_per_instance = 190
