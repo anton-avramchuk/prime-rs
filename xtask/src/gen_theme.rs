@@ -141,11 +141,20 @@ fn block_after_style_interpolation(src: &str) -> Option<String> {
     (!block.is_empty()).then(|| block.to_owned())
 }
 
+/// Каталог исходников PrimeNG для модуля стилей `@primeuix/styles` (у большинства они совпадают; `datatable` лежит в `table`).
+fn primeng_dir(name: &str) -> &str {
+    match name {
+        "datatable" => "table",
+        other => other,
+    }
+}
+
 /// Блоки `For PrimeNG` перечисленных в `primeng_extra` компонентов: имя → исходный текст с `dt('…')`.
 fn extra_component_css(up: &Upstream) -> Result<serde_json::Map<String, Value>, String> {
     let mut map = serde_json::Map::new();
     for name in &up.theme.primeng_extra {
-        let file = up.src_dir().join(format!("{name}/style/{name}style.ts"));
+        let dir = primeng_dir(name);
+        let file = up.src_dir().join(format!("{dir}/style/{dir}style.ts"));
         let src = std::fs::read_to_string(&file).map_err(|e| format!("{}: {e}", file.display()))?;
         let block = primeng_extra_block(&src).or_else(|| block_after_style_interpolation(&src)).ok_or_else(|| {
             format!("в {} нет блока `/* For PrimeNG */` (допустимо с пояснением в скобках) и правил после `${{…_style}}`", file.display())

@@ -8,8 +8,9 @@ use crate::pages::{
     InputNumberPage, InputOtpPage, InputTextPage, KnobPage, ListboxPage, MegaMenuPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage,
     MultiSelectPage, OrderListPage, OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PickListPage, PopoverPage,
     ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage,
-    SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage,
-    TieredMenuPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage, TreeSelectPage,
+    SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, StepsPage, TablePage, TabsPage, TagPage,
+    TextareaPage, TieredMenuPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage,
+    TreeSelectPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -101,6 +102,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "picklist",
         "datepicker",
         "dataview",
+        "datatable",
     ]);
     view! {
         <!DOCTYPE html>
@@ -218,6 +220,7 @@ pub fn App() -> impl IntoView {
                         <A href="/picklist">"PickList"</A>
                         <A href="/datepicker">"DatePicker"</A>
                         <A href="/dataview">"DataView"</A>
+                        <A href="/table">"Table"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -307,6 +310,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("picklist") view=PickListPage />
                         <Route path=StaticSegment("datepicker") view=DatePickerPage />
                         <Route path=StaticSegment("dataview") view=DataViewPage />
+                        <Route path=StaticSegment("table") view=TablePage />
                     </Routes>
                 </main>
             </div>

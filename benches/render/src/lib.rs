@@ -78,6 +78,7 @@ use prime_splitbutton::SplitButton;
 use prime_splitter::Splitter;
 use prime_stepper::{Step, StepList, StepPanel, StepPanels, Stepper};
 use prime_steps::{Steps, StepsItem};
+use prime_table::{Column, Table};
 use prime_tabs::{Tab, TabList, TabPanel, TabPanels, Tabs};
 use prime_tag::{Tag, TagSeverity};
 use prime_textarea::Textarea;
@@ -659,6 +660,20 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn table_n(n: usize) -> String {
+    let columns = || {
+        vec![
+            Column::text("n", "Number", |v: &i32| v.to_string()).sortable(|a, b| a.cmp(b)),
+            Column::text("sq", "Square", |v: &i32| (v * v).to_string()),
+        ]
+    };
+    render(
+        (0..n)
+            .map(|_| view! { <Table value=vec![1, 2, 3] columns=columns() row_key=Callback::new(|v: i32| v.to_string()) /> })
+            .collect_view(),
+    )
+}
+
 fn dataview_n(n: usize) -> String {
     render(
         (0..n)
@@ -997,6 +1012,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "table-1", run: || table_n(1) },
+    Scenario { name: "table-1000", run: || table_n(1000) },
     Scenario { name: "dataview-1", run: || dataview_n(1) },
     Scenario { name: "dataview-1000", run: || dataview_n(1000) },
     Scenario { name: "datepicker-1", run: || datepicker_n(1) },

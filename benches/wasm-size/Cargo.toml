@@ -68,6 +68,7 @@ case-orderlist = ["dep:prime-orderlist", "dep:prime-listbox"]
 case-picklist = ["dep:prime-picklist", "dep:prime-listbox"]
 case-datepicker = ["dep:prime-datepicker"]
 case-dataview = ["dep:prime-dataview"]
+case-table = ["dep:prime-table"]
 case-autocomplete = ["dep:prime-autocomplete"]
 case-cascadeselect = ["dep:prime-cascadeselect"]
 case-treeselect = ["dep:prime-treeselect", "dep:prime-tree"]
@@ -163,6 +164,7 @@ prime-orderlist = { workspace = true, optional = true }
 prime-picklist = { workspace = true, optional = true }
 prime-datepicker = { workspace = true, optional = true }
 prime-dataview = { workspace = true, optional = true }
+prime-table = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

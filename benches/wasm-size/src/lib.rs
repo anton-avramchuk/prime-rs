@@ -303,6 +303,12 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-table")] {
+        fn case() -> impl IntoView {
+            use prime_table::{Column, Table};
+            let columns = vec![Column::text("n", "Number", |v: &i32| v.to_string())];
+            view! { <Table value=vec![1, 2, 3] columns=columns row_key=Callback::new(|v: i32| v.to_string()) /> }
+        }
     } else if #[cfg(feature = "case-dataview")] {
         fn case() -> impl IntoView {
             use prime_dataview::DataView;

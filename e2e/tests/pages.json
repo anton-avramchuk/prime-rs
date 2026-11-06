@@ -2406,5 +2406,12 @@
     "upstream": "/dataview",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "table-basic",
+    "ours": "/table",
+    "upstream": "/table",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]
