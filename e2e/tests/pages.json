@@ -2385,5 +2385,12 @@
     "upstream": "/orderlist",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "picklist-basic",
+    "ours": "/picklist",
+    "upstream": "/picklist",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

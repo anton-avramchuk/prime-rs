@@ -303,6 +303,12 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-picklist")] {
+        fn case() -> impl IntoView {
+            use prime_listbox::ListboxOption;
+            use prime_picklist::PickList;
+            view! { <PickList source=RwSignal::new(vec![ListboxOption::new("A", "a")]) target=RwSignal::new(vec![ListboxOption::new("B", "b")]) /> }
+        }
     } else if #[cfg(feature = "case-orderlist")] {
         fn case() -> impl IntoView {
             use prime_listbox::ListboxOption;

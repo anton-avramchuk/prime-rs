@@ -215,6 +215,9 @@ pub fn Listbox(
     /// Содержимое заголовка группы.
     #[prop(optional, into)]
     group: Option<Callback<ListboxGroup, AnyView>>,
+    /// Содержимое над шапкой списка (слот `header` PrimeNG: заголовок списка).
+    #[prop(optional, into)]
+    header_content: Option<ViewFn>,
     /// Вызывается после смены выбора пользователем.
     #[prop(optional, into)]
     on_change: Option<Callback<ListboxChange>>,
@@ -354,6 +357,7 @@ pub fn Listbox(
 
     view! {
         <div id={root_id} class={root_class} style={root_style} data-p={data} {..root_attrs}>
+            {header_content.map(|h| h.run())}
             {header}
             <div node_ref={container_ref} class={container_class} style={container_style} {..container_attrs}>
                 {content}

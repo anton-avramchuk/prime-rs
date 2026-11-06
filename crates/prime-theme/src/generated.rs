@@ -196,6 +196,10 @@ pub const PANELMENU: &str = include_str!("../css/components/panelmenu.css");
 #[cfg(feature = "password")]
 pub const PASSWORD: &str = include_str!("../css/components/password.css");
 
+/// CSS компонента `picklist`.
+#[cfg(feature = "picklist")]
+pub const PICKLIST: &str = include_str!("../css/components/picklist.css");
+
 /// CSS компонента `popover`.
 #[cfg(feature = "popover")]
 pub const POPOVER: &str = include_str!("../css/components/popover.css");
@@ -408,6 +412,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("panelmenu", PANELMENU),
     #[cfg(feature = "password")]
     ("password", PASSWORD),
+    #[cfg(feature = "picklist")]
+    ("picklist", PICKLIST),
     #[cfg(feature = "popover")]
     ("popover", POPOVER),
     #[cfg(feature = "progressbar")]

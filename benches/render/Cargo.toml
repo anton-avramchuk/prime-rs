@@ -69,6 +69,7 @@ prime-colorpicker = { workspace = true, features = ["ssr"] }
 prime-galleria = { workspace = true, features = ["ssr"] }
 prime-fileupload = { workspace = true, features = ["ssr"] }
 prime-orderlist = { workspace = true, features = ["ssr"] }
+prime-picklist = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

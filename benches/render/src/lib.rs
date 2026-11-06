@@ -59,6 +59,7 @@ use prime_paginator::{Paginator, RowsPerPage};
 use prime_panel::Panel;
 use prime_panelmenu::PanelMenu;
 use prime_password::Password;
+use prime_picklist::PickList;
 use prime_popover::{Popover, PopoverRef};
 use prime_progressbar::ProgressBar;
 use prime_progressspinner::ProgressSpinner;
@@ -656,6 +657,18 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn picklist_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                let source = RwSignal::new(vec![ListboxOption::new("Apple", "a"), ListboxOption::new("Banana", "b")]);
+                let target = RwSignal::new(vec![ListboxOption::new("Cherry", "c")]);
+                view! { <PickList source=source target=target /> }
+            })
+            .collect_view(),
+    )
+}
+
 fn orderlist_n(n: usize) -> String {
     render(
         (0..n)
@@ -965,6 +978,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "picklist-1", run: || picklist_n(1) },
+    Scenario { name: "picklist-1000", run: || picklist_n(1000) },
     Scenario { name: "orderlist-1", run: || orderlist_n(1) },
     Scenario { name: "orderlist-1000", run: || orderlist_n(1000) },
     Scenario { name: "fileupload-1", run: || fileupload_n(1) },

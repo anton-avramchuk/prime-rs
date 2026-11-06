@@ -6,10 +6,10 @@ use crate::pages::{
     DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FileUploadPage, FloatLabelPage, FluidPage, GalleriaPage, HomePage,
     IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputMaskPage, InputNumberPage, InputOtpPage,
     InputTextPage, KnobPage, ListboxPage, MegaMenuPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage, MultiSelectPage, OrderListPage,
-    OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PopoverPage, ProgressBarPage, ProgressSpinnerPage,
-    RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage, SliderPage, SpeedDialPage,
-    SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage, TimelinePage, ToastPage,
-    ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage, TreeSelectPage,
+    OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PickListPage, PopoverPage, ProgressBarPage,
+    ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
+    SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage,
+    TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage, TreeSelectPage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -98,6 +98,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "galleria",
         "fileupload",
         "orderlist",
+        "picklist",
     ]);
     view! {
         <!DOCTYPE html>
@@ -212,6 +213,7 @@ pub fn App() -> impl IntoView {
                         <A href="/galleria">"Galleria"</A>
                         <A href="/fileupload">"FileUpload"</A>
                         <A href="/orderlist">"OrderList"</A>
+                        <A href="/picklist">"PickList"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -298,6 +300,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("galleria") view=GalleriaPage />
                         <Route path=StaticSegment("fileupload") view=FileUploadPage />
                         <Route path=StaticSegment("orderlist") view=OrderListPage />
+                        <Route path=StaticSegment("picklist") view=PickListPage />
                     </Routes>
                 </main>
             </div>

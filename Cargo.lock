@@ -2329,6 +2329,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-picklist"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-icons",
+ "prime-listbox",
+ "prime-orderlist",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-popover"
 version = "0.1.0"
 dependencies = [
@@ -2942,6 +2959,7 @@ dependencies = [
  "prime-panel",
  "prime-panelmenu",
  "prime-password",
+ "prime-picklist",
  "prime-popover",
  "prime-progressbar",
  "prime-progressspinner",
@@ -3312,6 +3330,7 @@ dependencies = [
  "prime-panel",
  "prime-panelmenu",
  "prime-password",
+ "prime-picklist",
  "prime-popover",
  "prime-progressbar",
  "prime-progressspinner",
@@ -4027,6 +4046,7 @@ dependencies = [
  "prime-panel",
  "prime-panelmenu",
  "prime-password",
+ "prime-picklist",
  "prime-popover",
  "prime-progressbar",
  "prime-progressspinner",

@@ -410,3 +410,8 @@ max_delta_bytes = 1127000
 name = "orderlist"
 feature = "case-orderlist"
 max_delta_bytes = 1037000
+
+[[case]]
+name = "picklist"
+feature = "case-picklist"
+max_delta_bytes = 1094000
