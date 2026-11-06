@@ -99,6 +99,7 @@ prime-inputmask = { path = "crates/prime-inputmask" }
 prime-colorpicker = { path = "crates/prime-colorpicker" }
 prime-galleria = { path = "crates/prime-galleria" }
 prime-fileupload = { path = "crates/prime-fileupload" }
+prime-orderlist = { path = "crates/prime-orderlist" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

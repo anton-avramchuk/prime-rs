@@ -405,3 +405,8 @@ max_delta_bytes = 607000
 name = "fileupload"
 feature = "case-fileupload"
 max_delta_bytes = 1127000
+
+[[case]]
+name = "orderlist"
+feature = "case-orderlist"
+max_delta_bytes = 1037000

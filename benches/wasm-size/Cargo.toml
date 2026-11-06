@@ -64,6 +64,7 @@ case-inputmask = ["dep:prime-inputmask"]
 case-colorpicker = ["dep:prime-colorpicker"]
 case-galleria = ["dep:prime-galleria"]
 case-fileupload = ["dep:prime-fileupload"]
+case-orderlist = ["dep:prime-orderlist", "dep:prime-listbox"]
 case-autocomplete = ["dep:prime-autocomplete"]
 case-cascadeselect = ["dep:prime-cascadeselect"]
 case-treeselect = ["dep:prime-treeselect", "dep:prime-tree"]
@@ -155,6 +156,7 @@ prime-inputmask = { workspace = true, optional = true }
 prime-colorpicker = { workspace = true, optional = true }
 prime-galleria = { workspace = true, optional = true }
 prime-fileupload = { workspace = true, optional = true }
+prime-orderlist = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

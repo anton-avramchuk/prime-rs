@@ -172,6 +172,10 @@ pub const METERGROUP: &str = include_str!("../css/components/metergroup.css");
 #[cfg(feature = "multiselect")]
 pub const MULTISELECT: &str = include_str!("../css/components/multiselect.css");
 
+/// CSS компонента `orderlist`.
+#[cfg(feature = "orderlist")]
+pub const ORDERLIST: &str = include_str!("../css/components/orderlist.css");
+
 /// CSS компонента `overlaybadge`.
 #[cfg(feature = "overlaybadge")]
 pub const OVERLAYBADGE: &str = include_str!("../css/components/overlaybadge.css");
@@ -392,6 +396,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("metergroup", METERGROUP),
     #[cfg(feature = "multiselect")]
     ("multiselect", MULTISELECT),
+    #[cfg(feature = "orderlist")]
+    ("orderlist", ORDERLIST),
     #[cfg(feature = "overlaybadge")]
     ("overlaybadge", OVERLAYBADGE),
     #[cfg(feature = "paginator")]

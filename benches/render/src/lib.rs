@@ -53,6 +53,7 @@ use prime_menubar::Menubar;
 use prime_message::{Message, MessageSeverity};
 use prime_metergroup::{MeterGroup, MeterItem};
 use prime_multiselect::{MultiSelect, MultiSelectOption};
+use prime_orderlist::OrderList;
 use prime_overlaybadge::OverlayBadge;
 use prime_paginator::{Paginator, RowsPerPage};
 use prime_panel::Panel;
@@ -655,6 +656,21 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn orderlist_n(n: usize) -> String {
+    render(
+        (0..n)
+            .map(|_| {
+                let value = RwSignal::new(vec![
+                    ListboxOption::new("Apple", "a"),
+                    ListboxOption::new("Banana", "b"),
+                    ListboxOption::new("Cherry", "c"),
+                ]);
+                view! { <OrderList value=value /> }
+            })
+            .collect_view(),
+    )
+}
+
 fn fileupload_n(n: usize) -> String {
     render((0..n).map(|_| view! { <FileUpload name="files[]" url="/upload" multiple=true accept="image/*" /> }).collect_view())
 }
@@ -949,6 +965,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "orderlist-1", run: || orderlist_n(1) },
+    Scenario { name: "orderlist-1000", run: || orderlist_n(1000) },
     Scenario { name: "fileupload-1", run: || fileupload_n(1) },
     Scenario { name: "fileupload-1000", run: || fileupload_n(1000) },
     Scenario { name: "galleria-1", run: || galleria_n(1) },

@@ -2242,6 +2242,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "prime-orderlist"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "prime-button",
+ "prime-core",
+ "prime-icons",
+ "prime-listbox",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
 name = "prime-overlaybadge"
 version = "0.1.0"
 dependencies = [
@@ -2920,6 +2936,7 @@ dependencies = [
  "prime-message",
  "prime-metergroup",
  "prime-multiselect",
+ "prime-orderlist",
  "prime-overlaybadge",
  "prime-paginator",
  "prime-panel",
@@ -3289,6 +3306,7 @@ dependencies = [
  "prime-message",
  "prime-metergroup",
  "prime-multiselect",
+ "prime-orderlist",
  "prime-overlaybadge",
  "prime-paginator",
  "prime-panel",
@@ -4003,6 +4021,7 @@ dependencies = [
  "prime-message",
  "prime-metergroup",
  "prime-multiselect",
+ "prime-orderlist",
  "prime-overlaybadge",
  "prime-paginator",
  "prime-panel",

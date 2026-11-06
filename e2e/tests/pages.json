@@ -2378,5 +2378,12 @@
     "upstream": "/fileupload",
     "oursSelector": "[data-demo=\"advanced\"]",
     "upstreamSelector": "advanced-doc .card"
+  },
+  {
+    "name": "orderlist-basic",
+    "ours": "/orderlist",
+    "upstream": "/orderlist",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]

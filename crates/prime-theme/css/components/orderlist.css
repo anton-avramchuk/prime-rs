@@ -1,0 +1,1 @@
+:root,:host{--p-orderlist-controls-gap:0.5rem;--p-orderlist-gap:1.125rem;} .p-orderlist{display:flex;gap:var(--p-orderlist-gap);}.p-orderlist .p-listbox{flex:1 1 auto;}.p-orderlist-controls{display:flex;flex-direction:column;justify-content:center;gap:var(--p-orderlist-controls-gap);}.p-orderlist-controls-right .p-orderlist-controls{order:2;}
