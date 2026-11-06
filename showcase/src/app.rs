@@ -3,10 +3,10 @@
 use crate::pages::{
     AccordionPage, AutoCompletePage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage,
     CarouselPage, CascadeSelectPage, CheckboxPage, ChipPage, ColorPickerPage, ConfirmDialogPage, ConfirmPopupPage, ContextMenuPage,
-    DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FileUploadPage, FloatLabelPage, FluidPage, GalleriaPage, HomePage,
-    IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputMaskPage, InputNumberPage, InputOtpPage,
-    InputTextPage, KnobPage, ListboxPage, MegaMenuPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage, MultiSelectPage, OrderListPage,
-    OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PickListPage, PopoverPage, ProgressBarPage,
+    DatePickerPage, DialogPage, DividerPage, DockPage, DrawerPage, FieldsetPage, FileUploadPage, FloatLabelPage, FluidPage, GalleriaPage,
+    HomePage, IconFieldPage, IftaLabelPage, ImageComparePage, ImagePage, InplacePage, InputGroupPage, InputMaskPage, InputNumberPage,
+    InputOtpPage, InputTextPage, KnobPage, ListboxPage, MegaMenuPage, MenuPage, MenubarPage, MessagePage, MeterGroupPage, MultiSelectPage,
+    OrderListPage, OverlayBadgePage, PaginatorPage, PanelMenuPage, PanelPage, PasswordPage, PickListPage, PopoverPage, ProgressBarPage,
     ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage, SkeletonPage,
     SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, StepsPage, TabsPage, TagPage, TextareaPage, TieredMenuPage,
     TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage, TreeSelectPage,
@@ -99,6 +99,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "fileupload",
         "orderlist",
         "picklist",
+        "datepicker",
     ]);
     view! {
         <!DOCTYPE html>
@@ -214,6 +215,7 @@ pub fn App() -> impl IntoView {
                         <A href="/fileupload">"FileUpload"</A>
                         <A href="/orderlist">"OrderList"</A>
                         <A href="/picklist">"PickList"</A>
+                        <A href="/datepicker">"DatePicker"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -301,6 +303,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("fileupload") view=FileUploadPage />
                         <Route path=StaticSegment("orderlist") view=OrderListPage />
                         <Route path=StaticSegment("picklist") view=PickListPage />
+                        <Route path=StaticSegment("datepicker") view=DatePickerPage />
                     </Routes>
                 </main>
             </div>

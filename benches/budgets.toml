@@ -415,3 +415,8 @@ max_delta_bytes = 1037000
 name = "picklist"
 feature = "case-picklist"
 max_delta_bytes = 1094000
+
+[[case]]
+name = "datepicker"
+feature = "case-datepicker"
+max_delta_bytes = 1019000

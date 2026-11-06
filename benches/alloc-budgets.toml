@@ -417,3 +417,8 @@ max_per_instance = 420
 name = "picklist-1000"
 instances = 1000
 max_per_instance = 855
+
+[[scenario]]
+name = "datepicker-1000"
+instances = 1000
+max_per_instance = 680

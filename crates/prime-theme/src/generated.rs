@@ -68,6 +68,10 @@ pub const CONFIRMPOPUP: &str = include_str!("../css/components/confirmpopup.css"
 #[cfg(feature = "contextmenu")]
 pub const CONTEXTMENU: &str = include_str!("../css/components/contextmenu.css");
 
+/// CSS компонента `datepicker`.
+#[cfg(feature = "datepicker")]
+pub const DATEPICKER: &str = include_str!("../css/components/datepicker.css");
+
 /// CSS компонента `dialog`.
 #[cfg(feature = "dialog")]
 pub const DIALOG: &str = include_str!("../css/components/dialog.css");
@@ -348,6 +352,8 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("confirmpopup", CONFIRMPOPUP),
     #[cfg(feature = "contextmenu")]
     ("contextmenu", CONTEXTMENU),
+    #[cfg(feature = "datepicker")]
+    ("datepicker", DATEPICKER),
     #[cfg(feature = "dialog")]
     ("dialog", DIALOG),
     #[cfg(feature = "divider")]

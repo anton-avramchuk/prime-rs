@@ -2392,5 +2392,12 @@
     "upstream": "/picklist",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "datepicker-inline",
+    "ours": "/datepicker",
+    "upstream": "/datepicker",
+    "oursSelector": "[data-demo=\"inline\"]",
+    "upstreamSelector": "inline-doc .card"
   }
 ]

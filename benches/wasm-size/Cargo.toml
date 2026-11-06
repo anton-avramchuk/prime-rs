@@ -66,6 +66,7 @@ case-galleria = ["dep:prime-galleria"]
 case-fileupload = ["dep:prime-fileupload"]
 case-orderlist = ["dep:prime-orderlist", "dep:prime-listbox"]
 case-picklist = ["dep:prime-picklist", "dep:prime-listbox"]
+case-datepicker = ["dep:prime-datepicker"]
 case-autocomplete = ["dep:prime-autocomplete"]
 case-cascadeselect = ["dep:prime-cascadeselect"]
 case-treeselect = ["dep:prime-treeselect", "dep:prime-tree"]
@@ -159,6 +160,7 @@ prime-galleria = { workspace = true, optional = true }
 prime-fileupload = { workspace = true, optional = true }
 prime-orderlist = { workspace = true, optional = true }
 prime-picklist = { workspace = true, optional = true }
+prime-datepicker = { workspace = true, optional = true }
 prime-buttongroup = { workspace = true, optional = true }
 prime-fluid = { workspace = true, optional = true }
 prime-iconfield = { workspace = true, optional = true }

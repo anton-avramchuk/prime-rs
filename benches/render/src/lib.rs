@@ -25,6 +25,7 @@ use prime_confirmation::provide_confirmation_service;
 use prime_confirmdialog::ConfirmDialog;
 use prime_confirmpopup::ConfirmPopup;
 use prime_contextmenu::{ContextMenu, ContextMenuRef};
+use prime_datepicker::{DatePicker, calendar::CalDate};
 use prime_dialog::Dialog;
 use prime_divider::{Divider, DividerAlign};
 use prime_dock::{Dock, DockItem};
@@ -657,6 +658,10 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn datepicker_n(n: usize) -> String {
+    render((0..n).map(|_| view! { <DatePicker inline=true today=CalDate::new(2026, 10, 5) /> }).collect_view())
+}
+
 fn picklist_n(n: usize) -> String {
     render(
         (0..n)
@@ -978,6 +983,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "datepicker-1", run: || datepicker_n(1) },
+    Scenario { name: "datepicker-1000", run: || datepicker_n(1000) },
     Scenario { name: "picklist-1", run: || picklist_n(1) },
     Scenario { name: "picklist-1000", run: || picklist_n(1000) },
     Scenario { name: "orderlist-1", run: || orderlist_n(1) },
