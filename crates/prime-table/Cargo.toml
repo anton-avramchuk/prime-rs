@@ -1,6 +1,6 @@
 [package]
 name = "prime-table"
-description = "prime-rs: компонент Table (порт PrimeNG DataTable), этап 1"
+description = "prime-rs: компонент Table (порт PrimeNG DataTable), этап 2"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -21,8 +21,8 @@ prime-checkbox = { workspace = true }
 prime-radiobutton = { workspace = true }
 prime-badge = { workspace = true }
 prime-button = { workspace = true }
-prime-icons = { workspace = true, features = ["spinner", "sortalt", "sortamountupalt", "sortamountdown", "chevrondown", "chevronright"] }
-web-sys = { workspace = true, features = ["Event", "MouseEvent", "KeyboardEvent", "HtmlElement", "Element", "Node"] }
+prime-icons = { workspace = true, features = ["spinner", "sortalt", "sortamountupalt", "sortamountdown", "chevrondown", "chevronright", "pencil", "check", "times"] }
+web-sys = { workspace = true, features = ["Event", "MouseEvent", "KeyboardEvent", "HtmlElement", "Element", "Node", "HtmlInputElement", "FocusEvent"] }
 
 # ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
@@ -34,7 +34,7 @@ leptos = { workspace = true, features = ["csr"] }
 js-sys = { workspace = true }
 wasm-bindgen = { workspace = true }
 wasm-bindgen-futures = "0.4"
-web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "Event", "MouseEvent", "MouseEventInit", "KeyboardEvent", "KeyboardEventInit"] }
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "Event", "MouseEvent", "MouseEventInit", "KeyboardEvent", "KeyboardEventInit", "EventInit", "HtmlInputElement"] }
 
 [lints]
 workspace = true

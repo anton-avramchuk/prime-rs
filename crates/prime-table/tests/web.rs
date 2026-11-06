@@ -4,13 +4,14 @@
 #![recursion_limit = "512"]
 
 use leptos::prelude::*;
+use prime_table::model::{FilterMeta, MatchMode};
 use prime_table::model::{SelectionMode, SortMeta, SortMode};
-use prime_table::{Column, Table};
+use prime_table::{Column, EditEvent, EditMode, LazyLoadEvent, Table};
 use std::sync::{Arc, Mutex};
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use wasm_bindgen_test::*;
-use web_sys::{HtmlElement, KeyboardEvent, KeyboardEventInit, MouseEvent, MouseEventInit};
+use web_sys::{Event, EventInit, HtmlElement, HtmlInputElement, KeyboardEvent, KeyboardEventInit, MouseEvent, MouseEventInit};
 
 wasm_bindgen_test_configure!(run_in_browser);
 
@@ -323,6 +324,206 @@ async fn empty_and_loading() {
     host.remove();
 }
 
+fn type_into(input: &HtmlElement, text: &str) {
+    let input = input.clone().dyn_into::<HtmlInputElement>().unwrap();
+    input.set_value(text);
+    let init = EventInit::new();
+    init.set_bubbles(true);
+    input.dispatch_event(&Event::new_with_event_init_dict("input", &init).unwrap()).unwrap();
+}
+
+fn focus_out(el: &HtmlElement) {
+    let init = EventInit::new();
+    init.set_bubbles(true);
+    el.dispatch_event(&Event::new_with_event_init_dict("focusout", &init).unwrap()).unwrap();
+}
+
+fn first_column(host: &HtmlElement) -> String {
+    all(host, "tbody > tr > td:nth-child(1)").iter().map(|e| e.text_content().unwrap_or_default()).collect::<Vec<_>>().join(" ")
+}
+
+fn name_columns() -> Vec<Column<Product>> {
+    vec![
+        Column::text("name", "Name", |p: &Product| p.name.to_owned()).filterable(|p: &Product| p.name.to_owned()),
+        Column::text("quantity", "Quantity", |p: &Product| p.quantity.to_string())
+            .filterable(|p: &Product| p.quantity.to_string())
+            .filter_match_mode(MatchMode::Gte),
+    ]
+}
+
+async fn column_and_global_filters() {
+    let host = host();
+    let (filters, global, first) = (RwSignal::new(Vec::<FilterMeta>::new()), RwSignal::new(String::new()), RwSignal::new(2usize));
+    let log = Arc::new(Mutex::new(0usize));
+    let l = log.clone();
+    let _h = leptos::mount::mount_to(host.clone(), move || {
+        view! {
+            <Table
+                value=products()
+                columns=name_columns()
+                row_key=key()
+                filters=filters
+                global_filter=global
+                first=first
+                paginator=true
+                default_rows=2usize
+                on_filter=Callback::new(move |_| *l.lock().unwrap() += 1)
+            />
+        }
+    });
+    settle().await;
+    assert_eq!(first_column(&host), "Shirt Purse", "третья пара строк при first = 2");
+    let inputs = all(&host, "thead .p-datatable-filter input");
+    assert_eq!(inputs.len(), 2);
+    type_into(&inputs[0], "r");
+    settle().await;
+    assert_eq!(first.get_untracked(), 0, "фильтр возвращает на первую страницу");
+    assert_eq!(first_column(&host), "Ring", "начинаются на r: Ring");
+    assert_eq!(filters.get_untracked().len(), 1);
+    assert_eq!(*log.lock().unwrap(), 1);
+    // кнопка очистки появляется и снимает фильтр
+    let clear =
+        host.query_selector(".p-datatable-filter-clear-button").unwrap().expect("кнопка очистки").dyn_into::<HtmlElement>().unwrap();
+    clear.click();
+    settle().await;
+    assert!(filters.get_untracked().is_empty());
+    assert_eq!(first_column(&host), "Watch Band");
+    // числовой режим >=
+    type_into(&all(&host, "thead .p-datatable-filter input")[1], "61");
+    settle().await;
+    assert_eq!(first_column(&host), "Band Purse");
+    // глобальный фильтр
+    filters.set(Vec::new());
+    global.set("i".to_owned());
+    settle().await;
+    assert_eq!(first_column(&host), "Shirt Ring", "«i» содержат Shirt и Ring");
+    host.remove();
+}
+
+async fn cell_and_row_editing() {
+    let host = host();
+    let log = Arc::new(Mutex::new(Vec::<String>::new()));
+    let (l_init, l_done, l_cancel, l_save, l_rcancel) = (log.clone(), log.clone(), log.clone(), log.clone(), log.clone());
+    let mode = RwSignal::new(Some(EditMode::Cell));
+    let editing = RwSignal::new(Vec::<String>::new());
+    let columns = vec![
+        Column::text("name", "Name", |p: &Product| p.name.to_owned())
+            .edit_text(|p| p.name.to_owned(), |p, v| Product { name: Box::leak(v.into_boxed_str()), ..p.clone() }),
+        Column::text("quantity", "Quantity", |p: &Product| p.quantity.to_string()),
+        Column::row_editor(),
+    ];
+    let _h = leptos::mount::mount_to(host.clone(), move || {
+        view! {
+            <Table
+                value=products()
+                columns=columns.clone()
+                row_key=key()
+                edit_mode=mode
+                editing_keys=editing
+                on_edit_init=Callback::new(move |e: EditEvent<Product>| l_init.lock().unwrap().push(format!("init:{}", e.field)))
+                on_edit_complete=Callback::new(move |e: EditEvent<Product>| l_done.lock().unwrap().push(format!("done:{}>{}", e.original.name, e.row.name)))
+                on_edit_cancel=Callback::new(move |e: EditEvent<Product>| l_cancel.lock().unwrap().push(format!("cancel:{}", e.row.name)))
+                on_row_edit_save=Callback::new(move |e: EditEvent<Product>| l_save.lock().unwrap().push(format!("save:{}>{}", e.original.name, e.row.name)))
+                on_row_edit_cancel=Callback::new(move |e: EditEvent<Product>| l_rcancel.lock().unwrap().push(format!("rcancel:{}", e.row.name)))
+            />
+        }
+    });
+    settle().await;
+    // клик открывает редактор; Enter завершает
+    let cell = || all(&host, "tbody tr:nth-child(1) td:nth-child(1)")[0].clone();
+    cell().click();
+    settle().await;
+    assert!(cell().class_name().contains("p-cell-editing"));
+    let input = || cell().query_selector("input").unwrap().expect("редактор").dyn_into::<HtmlElement>().unwrap();
+    type_into(&input(), "Clock");
+    key_down(&cell(), "Enter");
+    settle().await;
+    assert!(!cell().class_name().contains("p-cell-editing"));
+    // Escape отменяет
+    cell().click();
+    settle().await;
+    type_into(&input(), "Zzz");
+    key_down(&cell(), "Escape");
+    settle().await;
+    assert!(!cell().class_name().contains("p-cell-editing"));
+    // потеря фокуса завершает
+    cell().click();
+    settle().await;
+    type_into(&input(), "Lamp");
+    focus_out(&input());
+    settle().await;
+    assert!(!cell().class_name().contains("p-cell-editing"));
+    assert_eq!(
+        log.lock().unwrap().as_slice(),
+        ["init:name", "done:Watch>Clock", "init:name", "cancel:Watch", "init:name", "done:Watch>Lamp"],
+        "данные Table не мутируются, поэтому original остаётся Watch"
+    );
+    log.lock().unwrap().clear();
+
+    // правка строки
+    mode.set(Some(EditMode::Row));
+    settle().await;
+    let init = || all(&host, "tbody tr:nth-child(2) .p-datatable-row-editor-init");
+    init()[0].click();
+    settle().await;
+    assert_eq!(editing.get_untracked(), ["c2"]);
+    let row_input = all(&host, "tbody tr:nth-child(2) input");
+    assert_eq!(row_input.len(), 1);
+    type_into(&row_input[0], "Strap");
+    all(&host, "tbody tr:nth-child(2) .p-datatable-row-editor-save")[0].click();
+    settle().await;
+    assert!(editing.get_untracked().is_empty());
+    assert!(all(&host, "tbody tr:nth-child(2) input").is_empty());
+    init()[0].click();
+    settle().await;
+    all(&host, "tbody tr:nth-child(2) .p-datatable-row-editor-cancel")[0].click();
+    settle().await;
+    assert_eq!(log.lock().unwrap().as_slice(), ["save:Band>Strap", "rcancel:Band"]);
+    host.remove();
+}
+
+async fn lazy_requests() {
+    let host = host();
+    let log = Arc::new(Mutex::new(Vec::<LazyLoadEvent>::new()));
+    let l = log.clone();
+    let columns = vec![
+        Column::text("name", "Name", |p: &Product| p.name.to_owned())
+            .sortable(|a, b| a.name.cmp(b.name))
+            .filterable(|p: &Product| p.name.to_owned()),
+    ];
+    let _h = leptos::mount::mount_to(host.clone(), move || {
+        view! {
+            <Table
+                value=products()
+                columns=columns.clone()
+                row_key=key()
+                lazy=true
+                total_records=100usize
+                paginator=true
+                default_rows=2usize
+                on_lazy_load=Callback::new(move |e: LazyLoadEvent| l.lock().unwrap().push(e))
+            />
+        }
+    });
+    settle().await;
+    assert_eq!(log.lock().unwrap().len(), 1, "запрос при монтировании");
+    assert_eq!(log.lock().unwrap()[0].first, 0);
+    assert_eq!(first_column(&host), "Watch Band Shirt Purse Ring", "строки показаны как есть");
+    all(&host, "button.p-paginator-next")[0].click();
+    settle().await;
+    assert_eq!(log.lock().unwrap().last().unwrap().first, 2);
+    header(&host, 0).click();
+    settle().await;
+    let last = log.lock().unwrap().last().unwrap().clone();
+    assert_eq!((last.first, last.sort.len()), (0, 1), "сортировка возвращает на первую страницу");
+    type_into(&all(&host, "thead .p-datatable-filter input")[0], "w");
+    settle().await;
+    let last = log.lock().unwrap().last().unwrap().clone();
+    assert_eq!(last.filters.len(), 1);
+    assert_eq!(first_column(&host), "Watch Band Shirt Purse Ring", "фильтрацию делает приложение");
+    host.remove();
+}
+
 #[wasm_bindgen_test]
 async fn table_in_the_browser() {
     single_and_multiple_sort().await;
@@ -330,4 +531,7 @@ async fn table_in_the_browser() {
     radio_and_meta_key().await;
     expansion_and_paging().await;
     empty_and_loading().await;
+    column_and_global_filters().await;
+    cell_and_row_editing().await;
+    lazy_requests().await;
 }

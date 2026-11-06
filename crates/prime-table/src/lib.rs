@@ -1,9 +1,10 @@
-//! Table — порт `p-table` (DataTable) из PrimeNG 21.1.10, этап 1.
+//! Table — порт `p-table` (DataTable) из PrimeNG 21.1.10, этап 2 (пакет 1).
 //!
-//! Таблица данных: столбцы и строки, сортировка по одному и нескольким столбцам, пагинатор, выбор строк (кликом,
-//! флажками, радиокнопками), раскрытие строк, полосатость, сетка, размер, вертикальная прокрутка и индикатор загрузки.
-//! Столбцы описываются данными ([`Column`]), логика — чистая [`model`]. Фильтры, правка ячеек, перестановка и
-//! изменение размера столбцов, заморозка, виртуальная прокрутка и группировка — следующие этапы.
+//! Таблица данных: столбцы и строки, сортировка по одному и нескольким столбцам, фильтры (по столбцам и глобальный),
+//! пагинатор, выбор строк (кликом, флажками, радиокнопками), раскрытие строк, правка ячеек и строк, ленивая загрузка,
+//! полосатость, сетка, размер, вертикальная прокрутка и индикатор загрузки.
+//! Столбцы описываются данными ([`Column`]), логика — чистая [`model`]. Перестановка и изменение размера столбцов,
+//! заморозка, виртуальная прокрутка и группировка — следующие пакеты этапа 2.
 //!
 //! ```
 //! #![recursion_limit = "512"]
@@ -24,14 +25,17 @@ pub mod model;
 
 use leptos::prelude::*;
 use model::{
-    SelectionMode, SortMeta, SortMode, all_selected, badge_of, order_of, row_click, sort_rows, toggle_all, toggle_expanded, toggle_sort,
+    FilterMeta, MatchMode, SelectionMode, SortMeta, SortMode, all_selected, badge_of, filter_rows, filter_value, order_of, row_click,
+    set_filter, sort_rows, toggle_all, toggle_expanded, toggle_sort,
 };
 use prime_badge::{Badge, BadgeSize};
 use prime_button::{Button, ButtonSeverity, ButtonVariant};
 use prime_checkbox::Checkbox;
 use prime_core::{OptProp, Prop, Pt, Size, use_prime_config};
 use prime_dataview::data::{clamp_first, page};
-use prime_icons::{ChevronDownIcon, ChevronRightIcon, SortAltIcon, SortAmountDownIcon, SortAmountUpAltIcon, SpinnerIcon};
+use prime_icons::{
+    CheckIcon, ChevronDownIcon, ChevronRightIcon, PencilIcon, SortAltIcon, SortAmountDownIcon, SortAmountUpAltIcon, SpinnerIcon, TimesIcon,
+};
 use prime_paginator::{Paginator, PaginatorPt, PaginatorState, RowsPerPage};
 use prime_radiobutton::{RadioButton, RadioButtonClick};
 use std::cmp::Ordering;
@@ -49,6 +53,8 @@ pub enum ColumnKind {
     SelectionRadio,
     /// Кнопка раскрытия строки.
     Expander,
+    /// Кнопки правки строки (режим [`EditMode::Row`]).
+    RowEditor,
 }
 
 /// Столбец таблицы.
@@ -72,6 +78,14 @@ pub struct Column<T: 'static> {
     pub style_class: Option<String>,
     /// Вид столбца.
     pub kind: ColumnKind,
+    /// В строке фильтров есть поле ввода.
+    pub filterable: bool,
+    /// Текст поля строки для фильтров (общий и столбцовый).
+    pub filter_text: Option<Callback<T, String>>,
+    /// Режим сравнения фильтра столбца.
+    pub filter_match_mode: MatchMode,
+    /// Редактор ячейки: получает черновик строки.
+    pub editor: Option<Callback<RwSignal<T>, AnyView>>,
 }
 
 impl<T: Clone + Send + Sync + 'static> Column<T> {
@@ -87,6 +101,10 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
             style: None,
             style_class: None,
             kind: ColumnKind::Data,
+            filterable: false,
+            filter_text: None,
+            filter_match_mode: MatchMode::StartsWith,
+            editor: None,
         }
     }
 
@@ -130,6 +148,72 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         column
     }
 
+    /// Столбец кнопок правки строки.
+    pub fn row_editor() -> Self {
+        let mut column = Self::new("");
+        column.kind = ColumnKind::RowEditor;
+        column.style = Some("width: 8rem".to_owned());
+        column
+    }
+
+    /// Включает фильтр столбца; `text` даёт текст поля строки.
+    pub fn filterable(mut self, text: impl Fn(&T) -> String + Send + Sync + 'static) -> Self {
+        self.filterable = true;
+        self.filter_text = Some(Callback::new(move |row: T| text(&row)));
+        self
+    }
+
+    /// Только текст поля для общего фильтра (без поля ввода в строке фильтров).
+    pub fn searchable(mut self, text: impl Fn(&T) -> String + Send + Sync + 'static) -> Self {
+        self.filter_text = Some(Callback::new(move |row: T| text(&row)));
+        self
+    }
+
+    /// Режим сравнения фильтра столбца.
+    pub fn filter_match_mode(mut self, mode: MatchMode) -> Self {
+        self.filter_match_mode = mode;
+        self
+    }
+
+    /// Редактор ячейки: получает черновик строки и меняет его.
+    pub fn editable(mut self, editor: Callback<RwSignal<T>, AnyView>) -> Self {
+        self.editor = Some(editor);
+        self
+    }
+
+    /// Текстовый редактор: `get` читает значение из строки, `set` возвращает строку с новым значением.
+    pub fn edit_text(
+        self,
+        get: impl Fn(&T) -> String + Send + Sync + 'static,
+        set: impl Fn(&T, String) -> T + Send + Sync + 'static,
+    ) -> Self {
+        let (get, set) = (Arc::new(get), Arc::new(set));
+        self.editable(Callback::new(move |draft: RwSignal<T>| {
+            let (get, set) = (get.clone(), set.clone());
+            let input = NodeRef::<leptos::html::Input>::new();
+            #[cfg(target_arch = "wasm32")]
+            Effect::new(move |_| {
+                if let Some(el) = input.get() {
+                    let _ = el.focus();
+                }
+            });
+            view! {
+                <input
+                    node_ref=input
+                    type="text"
+                    class="p-inputtext p-component"
+                    value={let get = get.clone(); move || draft.with_untracked(|r| get(r))}
+                    prop:value=move || draft.with(|r| get(r))
+                    on:input=move |e| {
+                        let value = event_target_value(&e);
+                        draft.update(|r| *r = set(r, value));
+                    }
+                />
+            }
+            .into_any()
+        }))
+    }
+
     /// Включает сортировку с заданным сравнением.
     pub fn sortable(mut self, compare: impl Fn(&T, &T) -> Ordering + Send + Sync + 'static) -> Self {
         self.sortable = true;
@@ -166,6 +250,41 @@ pub enum PaginatorPosition {
     Bottom,
     /// Сверху и снизу.
     Both,
+}
+
+/// Режим правки.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum EditMode {
+    /// Правка отдельной ячейки.
+    Cell,
+    /// Правка строки целиком.
+    Row,
+}
+
+/// Событие правки.
+#[derive(Clone, Debug)]
+pub struct EditEvent<T> {
+    /// Строка до правки.
+    pub original: T,
+    /// Строка с изменениями (для `init` и `cancel` совпадает с черновиком на этот момент).
+    pub row: T,
+    /// Поле ячейки (пусто при правке строки).
+    pub field: String,
+}
+
+/// Параметры загрузки при `lazy`.
+#[derive(Clone, Debug, PartialEq)]
+pub struct LazyLoadEvent {
+    /// Индекс первой записи страницы.
+    pub first: usize,
+    /// Число строк на странице.
+    pub rows: usize,
+    /// Сортировка.
+    pub sort: Vec<SortMeta>,
+    /// Фильтры столбцов.
+    pub filters: Vec<FilterMeta>,
+    /// Глобальный фильтр.
+    pub global_filter: String,
 }
 
 /// Событие смены страницы.
@@ -222,17 +341,146 @@ struct Core<T: Send + Sync + 'static> {
     on_row_expand: Option<Callback<T>>,
     on_row_collapse: Option<Callback<T>>,
     on_header_checkbox_toggle: Option<Callback<bool>>,
+    filters: RwSignal<Vec<FilterMeta>>,
+    global_filter: Prop<String>,
+    global_filter_fields: Prop<Vec<String>>,
+    lazy: Prop<bool>,
+    total_records: OptProp<usize>,
+    edit_mode: Prop<Option<EditMode>>,
+    editing_keys: RwSignal<Vec<String>>,
+    cell_edit: RwSignal<Option<(String, String)>>,
+    drafts: StoredValue<Vec<(String, RwSignal<T>)>>,
+    /// Владелец таблицы: черновики живут дольше кнопок, из обработчиков которых создаются.
+    owner: Option<Owner>,
+    on_filter: Option<Callback<Vec<FilterMeta>>>,
+    #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
+    on_lazy_load: Option<Callback<LazyLoadEvent>>,
+    on_edit_init: Option<Callback<EditEvent<T>>>,
+    on_edit_complete: Option<Callback<EditEvent<T>>>,
+    on_edit_cancel: Option<Callback<EditEvent<T>>>,
+    on_row_edit_init: Option<Callback<EditEvent<T>>>,
+    on_row_edit_save: Option<Callback<EditEvent<T>>>,
+    on_row_edit_cancel: Option<Callback<EditEvent<T>>>,
 }
 
 impl<T: Clone + Send + Sync + 'static> Core<T> {
-    /// Строки после сортировки.
+    /// Строки после фильтрации и сортировки (при `lazy` — как есть).
     fn processed(&self) -> Vec<T> {
+        if self.lazy.get() {
+            return self.value.get();
+        }
         let columns = self.columns.get();
         let meta = self.sort.get();
+        let filters = self.filters.get();
+        let global = self.global_filter.get();
+        let mut fields = self.global_filter_fields.get();
+        if fields.is_empty() {
+            fields = columns.iter().filter(|c| c.filter_text.is_some()).map(|c| c.field.clone()).collect();
+        }
+        let text_of = |field: &str, row: &T| {
+            columns.iter().find(|c| c.field == field).and_then(|c| c.filter_text).map_or_else(String::new, |cb| cb.run(row.clone()))
+        };
+        let filtered = self.value.with(|rows| filter_rows(rows, &filters, &global, &fields, &text_of));
         let compare = |field: &str, a: &T, b: &T| {
             columns.iter().find(|c| c.field == field).and_then(|c| c.compare).map_or(Ordering::Equal, |cb| cb.run((a.clone(), b.clone())))
         };
-        self.value.with(|rows| sort_rows(rows, &meta, &compare))
+        sort_rows(&filtered, &meta, &compare)
+    }
+
+    /// Число записей для пагинатора.
+    fn total(&self) -> usize {
+        if self.lazy.get() { self.total_records.get().unwrap_or_else(|| self.value.with(Vec::len)) } else { self.processed().len() }
+    }
+
+    fn set_column_filter(&self, field: &str, value: &str, mode: MatchMode) {
+        let next = set_filter(&self.filters.get_untracked(), field, value, mode);
+        self.first.set(0);
+        self.filters.set(next.clone());
+        if let Some(cb) = self.on_filter {
+            cb.run(next);
+        }
+    }
+
+    /// Черновик строки: существующий или новый из `row`.
+    fn draft(&self, key: &str, row: &T) -> RwSignal<T> {
+        if let Some(d) = self.drafts.with_value(|d| d.iter().find(|(k, _)| k == key).map(|(_, s)| *s)) {
+            return d;
+        }
+        let value = row.clone();
+        let draft = match &self.owner {
+            Some(owner) => owner.with(|| RwSignal::new(value)),
+            None => RwSignal::new(value),
+        };
+        self.drafts.update_value(|d| d.push((key.to_owned(), draft)));
+        draft
+    }
+
+    /// Забирает черновик строки, удаляя его из хранилища.
+    fn take_draft(&self, key: &str, row: &T) -> T {
+        let draft = self.drafts.with_value(|d| d.iter().find(|(k, _)| k == key).map(|(_, s)| *s));
+        self.drafts.update_value(|d| d.retain(|(k, _)| k != key));
+        draft.map_or_else(
+            || row.clone(),
+            |d| {
+                let value = d.get_untracked();
+                d.dispose();
+                value
+            },
+        )
+    }
+
+    fn event(&self, original: &T, row: T, field: &str) -> EditEvent<T> {
+        EditEvent { original: original.clone(), row, field: field.to_owned() }
+    }
+
+    fn start_cell_edit(&self, row: &T, field: &str) {
+        let key = self.row_key.run(row.clone());
+        let current = (key.clone(), field.to_owned());
+        if self.cell_edit.with_untracked(|c| c.as_ref() == Some(&current)) {
+            return;
+        }
+        self.drafts.update_value(|d| d.retain(|(k, _)| *k != key));
+        self.draft(&key, row);
+        self.cell_edit.set(Some(current));
+        if let Some(cb) = self.on_edit_init {
+            cb.run(self.event(row, row.clone(), field));
+        }
+    }
+
+    fn end_cell_edit(&self, row: &T, field: &str, save: bool) {
+        let key = self.row_key.run(row.clone());
+        if !self.cell_edit.with_untracked(|c| c.as_ref() == Some(&(key.clone(), field.to_owned()))) {
+            return;
+        }
+        self.cell_edit.set(None);
+        let draft = self.take_draft(&key, row);
+        let callback = if save { self.on_edit_complete } else { self.on_edit_cancel };
+        if let Some(cb) = callback {
+            cb.run(self.event(row, if save { draft } else { row.clone() }, field));
+        }
+    }
+
+    fn start_row_edit(&self, row: &T) {
+        let key = self.row_key.run(row.clone());
+        self.editing_keys.update(|k| {
+            if !k.contains(&key) {
+                k.push(key.clone());
+            }
+        });
+        self.draft(&key, row);
+        if let Some(cb) = self.on_row_edit_init {
+            cb.run(self.event(row, row.clone(), ""));
+        }
+    }
+
+    fn end_row_edit(&self, row: &T, save: bool) {
+        let key = self.row_key.run(row.clone());
+        self.editing_keys.update(|k| k.retain(|x| *x != key));
+        let draft = self.take_draft(&key, row);
+        let callback = if save { self.on_row_edit_save } else { self.on_row_edit_cancel };
+        if let Some(cb) = callback {
+            cb.run(self.event(row, if save { draft } else { row.clone() }, ""));
+        }
     }
 
     fn keys(&self, rows: &[T]) -> Vec<String> {
@@ -242,6 +490,9 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
     /// Строки текущей страницы.
     fn page_rows(&self, processed: &[T]) -> Vec<T> {
         let rows = self.rows.get();
+        if self.lazy.get() {
+            return processed.to_vec();
+        }
         let first = clamp_first(self.first.get(), processed.len(), rows);
         page(processed, self.paginator.get(), false, first, rows)
     }
@@ -441,6 +692,51 @@ pub fn Table<T>(
     /// Вызывается при переключении флажка в заголовке.
     #[prop(optional, into)]
     on_header_checkbox_toggle: Option<Callback<bool>>,
+    /// Двусторонний сигнал фильтров столбцов.
+    #[prop(optional)]
+    filters: Option<RwSignal<Vec<FilterMeta>>>,
+    /// Значение глобального фильтра (режим «содержит» по полям `global_filter_fields`).
+    #[prop(optional, into)]
+    global_filter: Prop<String>,
+    /// Поля глобального фильтра; по умолчанию — все столбцы с текстом для фильтра.
+    #[prop(optional, into)]
+    global_filter_fields: Prop<Vec<String>>,
+    /// Ленивая загрузка: сортировку, фильтры и страницы выполняет приложение по `on_lazy_load`.
+    #[prop(optional, into)]
+    lazy: Prop<bool>,
+    /// Общее число записей при `lazy`.
+    #[prop(optional, into)]
+    total_records: OptProp<usize>,
+    /// Режим правки.
+    #[prop(optional, into)]
+    edit_mode: Prop<Option<EditMode>>,
+    /// Двусторонний сигнал ключей строк в правке (режим строки).
+    #[prop(optional)]
+    editing_keys: Option<RwSignal<Vec<String>>>,
+    /// Вызывается после изменения фильтров столбцов.
+    #[prop(optional, into)]
+    on_filter: Option<Callback<Vec<FilterMeta>>>,
+    /// Вызывается при `lazy` при монтировании и смене страницы, сортировки или фильтров.
+    #[prop(optional, into)]
+    on_lazy_load: Option<Callback<LazyLoadEvent>>,
+    /// Вызывается при открытии редактора ячейки.
+    #[prop(optional, into)]
+    on_edit_init: Option<Callback<EditEvent<T>>>,
+    /// Вызывается при завершении правки ячейки.
+    #[prop(optional, into)]
+    on_edit_complete: Option<Callback<EditEvent<T>>>,
+    /// Вызывается при отмене правки ячейки.
+    #[prop(optional, into)]
+    on_edit_cancel: Option<Callback<EditEvent<T>>>,
+    /// Вызывается при начале правки строки.
+    #[prop(optional, into)]
+    on_row_edit_init: Option<Callback<EditEvent<T>>>,
+    /// Вызывается при сохранении строки.
+    #[prop(optional, into)]
+    on_row_edit_save: Option<Callback<EditEvent<T>>>,
+    /// Вызывается при отмене правки строки.
+    #[prop(optional, into)]
+    on_row_edit_cancel: Option<Callback<EditEvent<T>>>,
     /// Pass-through частей.
     #[prop(optional)]
     pt: Option<TablePt>,
@@ -474,6 +770,24 @@ where
         on_row_expand,
         on_row_collapse,
         on_header_checkbox_toggle,
+        filters: filters.unwrap_or_default(),
+        global_filter,
+        global_filter_fields,
+        lazy,
+        total_records,
+        edit_mode,
+        editing_keys: editing_keys.unwrap_or_default(),
+        cell_edit: RwSignal::new(None),
+        drafts: StoredValue::new(Vec::new()),
+        owner: Owner::current(),
+        on_filter,
+        on_lazy_load,
+        on_edit_init,
+        on_edit_complete,
+        on_edit_cancel,
+        on_row_edit_init,
+        on_row_edit_save,
+        on_row_edit_cancel,
     });
     core.radio_model.set(core.selection.with_untracked(|s| s.first().cloned()));
     let header_checked = RwSignal::new(false);
@@ -497,11 +811,35 @@ where
         });
         let c = core.clone();
         Effect::new(move |_| {
-            let total = c.processed().len();
+            let total = c.total();
             let (first, rows) = (c.first.get_untracked(), c.rows.get());
             let clamped = clamp_first(first, total, rows);
-            if clamped != first {
+            if clamped != first && !c.lazy.get_untracked() {
                 c.first.set(clamped);
+            }
+        });
+        // Новое значение глобального фильтра возвращает на первую страницу.
+        let c = core.clone();
+        Effect::new(move |previous: Option<()>| {
+            c.global_filter.get();
+            if previous.is_some() {
+                c.first.set(0);
+            }
+        });
+        // Ленивая загрузка: параметры собираются при монтировании и после каждого изменения.
+        let c = core.clone();
+        Effect::new(move |_| {
+            let event = LazyLoadEvent {
+                first: c.first.get(),
+                rows: c.rows.get(),
+                sort: c.sort.get(),
+                filters: c.filters.get(),
+                global_filter: c.global_filter.get(),
+            };
+            if c.lazy.get_untracked()
+                && let Some(cb) = c.on_lazy_load
+            {
+                cb.run(event);
             }
         });
     }
@@ -578,7 +916,7 @@ where
             (core.paginator.get() && wanted).then(|| {
                 let total = {
                     let core = core.clone();
-                    Signal::derive(move || core.value.with(Vec::len))
+                    Signal::derive(move || core.total())
                 };
                 let on_page_change = {
                     let core = core.clone();
@@ -700,14 +1038,68 @@ fn head_view<T: Clone + Send + Sync + 'static>(
                     }
                     .into_any()
                 }
-                ColumnKind::SelectionRadio | ColumnKind::Expander => {
+                ColumnKind::SelectionRadio | ColumnKind::Expander | ColumnKind::RowEditor => {
                     view! { <th class={extra_class} style={style} role="columnheader"></th> }.into_any()
                 }
                 ColumnKind::Data => sortable_header(core, column, extra_class, style),
             }
         })
         .collect_view();
-    view! { <tr role="row">{cells}</tr> }
+    let filter_row = columns.iter().any(|c| c.filterable).then(|| {
+        let cells = columns.iter().map(|column| filter_cell(core, column)).collect_view();
+        view! { <tr role="row">{cells}</tr> }
+    });
+    view! {
+        <tr role="row">{cells}</tr>
+        {filter_row}
+    }
+}
+
+/// Ячейка строки фильтров: поле ввода и кнопка очистки.
+fn filter_cell<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, column: &Column<T>) -> AnyView {
+    let (extra_class, style) = cell_attrs(column);
+    if !column.filterable {
+        return view! { <th class={extra_class} style={style} role="columnheader"></th> }.into_any();
+    }
+    let (field, mode) = (column.field.clone(), column.filter_match_mode);
+    let (value_core, value_field) = (core.clone(), field.clone());
+    let (input_core, input_field) = (core.clone(), field.clone());
+    let (show_core, show_field) = (core.clone(), field.clone());
+    let (clear_core, clear_field) = (core.clone(), field);
+    let value = move || value_core.filters.with(|f| filter_value(f, &value_field).to_owned());
+    let has_value = move || show_core.filters.with(|f| !filter_value(f, &show_field).is_empty());
+    let label = column.header.clone().unwrap_or_default();
+    view! {
+        <th class={extra_class} style={style} role="columnheader">
+            <div class="p-datatable-filter">
+                <input
+                    type="text"
+                    class="p-inputtext p-component"
+                    aria-label={format!("{label} filter")}
+                    value={value.clone()}
+                    prop:value={value}
+                    on:input=move |e| input_core.set_column_filter(&input_field, &event_target_value(&e), mode)
+                />
+                {move || {
+                    let (core, field) = (clear_core.clone(), clear_field.clone());
+                    has_value()
+                        .then(|| {
+                            view! {
+                                <button
+                                    type="button"
+                                    class="p-datatable-filter-clear-button p-button p-component p-button-icon-only p-button-text p-button-rounded p-button-secondary"
+                                    aria-label="Clear"
+                                    on:click=move |_| core.set_column_filter(&field, "", mode)
+                                >
+                                    <TimesIcon class="p-button-icon" />
+                                </button>
+                            }
+                        })
+                }}
+            </div>
+        </th>
+    }
+    .into_any()
 }
 
 fn sortable_header<T: Clone + Send + Sync + 'static>(
@@ -858,8 +1250,14 @@ fn row_view<T: Clone + Send + Sync + 'static>(
 
 fn body_cell<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, column: &Column<T>, row: &T, key: &str) -> impl IntoView + use<T> {
     let (extra_class, style) = cell_attrs(column);
+    if column.kind == ColumnKind::Data
+        && let Some(editor) = column.editor
+    {
+        return editable_cell(core, column, editor, row, key, extra_class, style).into_any();
+    }
     let content = match column.kind {
         ColumnKind::Data => column.body.map(|body| body.run(row.clone())),
+        ColumnKind::RowEditor => Some(row_editor_buttons(core, row, key)),
         ColumnKind::SelectionCheckbox => {
             let (select_core, select_row) = (core.clone(), row.clone());
             let on_change = Callback::new(move |change: prime_checkbox::CheckboxChange| {
@@ -907,7 +1305,129 @@ fn body_cell<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, column: &Col
             )
         }
     };
-    view! { <td class={extra_class} style={style} role="cell">{content}</td> }
+    view! { <td class={extra_class} style={style} role="cell">{content}</td> }.into_any()
+}
+
+/// Ячейка с редактором: показывает значение или редактор (правка ячейки или строки).
+fn editable_cell<T: Clone + Send + Sync + 'static>(
+    core: &Arc<Core<T>>,
+    column: &Column<T>,
+    editor: Callback<RwSignal<T>, AnyView>,
+    row: &T,
+    key: &str,
+    extra_class: String,
+    style: Option<String>,
+) -> AnyView {
+    let (field, body) = (column.field.clone(), column.body);
+    let editing = {
+        let (core, key, field) = (core.clone(), key.to_owned(), field.clone());
+        move || match core.edit_mode.get() {
+            Some(EditMode::Cell) => core.cell_edit.with(|e| e.as_ref().is_some_and(|(k, f)| *k == key && *f == field)),
+            Some(EditMode::Row) => core.editing_keys.with(|e| e.contains(&key)),
+            None => false,
+        }
+    };
+    let class = {
+        let (core, editing) = (core.clone(), editing.clone());
+        move || {
+            let mut cn = extra_class.clone();
+            if core.edit_mode.get().is_some() {
+                cn.push_str(" p-editable-column");
+            }
+            if editing() {
+                cn.push_str(" p-cell-editing");
+            }
+            cn
+        }
+    };
+    let content = {
+        let (core, key, row, editing) = (core.clone(), key.to_owned(), row.clone(), editing.clone());
+        move || {
+            if editing() { editor.run(core.draft(&key, &row)) } else { body.map_or_else(|| ().into_any(), |b| b.run(row.clone())) }
+        }
+    };
+    let (click_core, click_row, click_field) = (core.clone(), row.clone(), field.clone());
+    let (key_core, key_row, key_field) = (core.clone(), row.clone(), field.clone());
+    let (out_core, out_row, out_field) = (core.clone(), row.clone(), field);
+    let (click_editing, key_editing, out_editing) = (editing.clone(), editing.clone(), editing);
+    view! {
+        <td
+            class={class}
+            style={style}
+            role="cell"
+            on:click=move |_| {
+                if click_core.edit_mode.get_untracked() == Some(EditMode::Cell) && !click_editing() {
+                    click_core.start_cell_edit(&click_row, &click_field);
+                }
+            }
+            on:keydown=move |e: web_sys::KeyboardEvent| {
+                if key_core.edit_mode.get_untracked() == Some(EditMode::Cell) && key_editing() {
+                    match e.key().as_str() {
+                        "Enter" => key_core.end_cell_edit(&key_row, &key_field, true),
+                        "Escape" => key_core.end_cell_edit(&key_row, &key_field, false),
+                        _ => {}
+                    }
+                }
+            }
+            on:focusout=move |_: web_sys::FocusEvent| {
+                if out_core.edit_mode.get_untracked() == Some(EditMode::Cell) && out_editing() {
+                    out_core.end_cell_edit(&out_row, &out_field, true);
+                }
+            }
+        >
+            {content}
+        </td>
+    }
+    .into_any()
+}
+
+/// Кнопки правки строки: «изменить» либо «сохранить» и «отменить».
+fn row_editor_buttons<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, row: &T, key: &str) -> AnyView {
+    let (core, row, key) = (core.clone(), row.clone(), key.to_owned());
+    let button = |class: &'static str, icon: ViewFn, label: &'static str, on_click: Callback<()>| {
+        view! {
+            <Button
+                text=true
+                rounded=true
+                plain=true
+                variant=ButtonVariant::Text
+                severity=ButtonSeverity::Secondary
+                button_type="button"
+                icon=icon
+                aria_label=label
+                style_class=class
+                on_click=Callback::new(move |_| on_click.run(()))
+            />
+        }
+    };
+    (move || {
+        if core.editing_keys.with(|e| e.contains(&key)) {
+            let (save_core, save_row, cancel_core, cancel_row) = (core.clone(), row.clone(), core.clone(), row.clone());
+            let save = button(
+                "p-datatable-row-editor-save",
+                ViewFn::from(|| view! { <CheckIcon /> }),
+                "Save",
+                Callback::new(move |()| save_core.end_row_edit(&save_row, true)),
+            );
+            let cancel = button(
+                "p-datatable-row-editor-cancel",
+                ViewFn::from(|| view! { <TimesIcon /> }),
+                "Cancel",
+                Callback::new(move |()| cancel_core.end_row_edit(&cancel_row, false)),
+            );
+            view! { <div style="display: flex; gap: 0.25rem">{save}{cancel}</div> }.into_any()
+        } else {
+            let (init_core, init_row) = (core.clone(), row.clone());
+            button(
+                "p-datatable-row-editor-init",
+                ViewFn::from(|| view! { <PencilIcon /> }),
+                "Edit",
+                Callback::new(move |()| init_core.start_row_edit(&init_row)),
+            )
+            .into_any()
+        }
+    })
+    .into_any()
 }
 
 /// Подвал: подписи столбцов.

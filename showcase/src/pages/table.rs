@@ -1,13 +1,14 @@
-//! Страница Table (этап 1): демонстрации `basic`, `singlecolumnsort`, `multiplecolumnssort`, `paginatorbasic`,
+//! Страница Table (этап 2, пакет 1): демонстрации `basic`, `singlecolumnsort`, `multiplecolumnssort`, `paginatorbasic`,
 //! `singleselection`, `multipleselection`, `checkboxselection`, `radiobuttonselection`, `rowexpansion`, `striped`,
-//! `gridlines`, `size`, `verticalscroll`, `loadingmask` и `style` из showcase PrimeNG (`apps/showcase/doc/table`;
-//! фильтры, правка, изменение столбцов, заморозка, виртуальная прокрутка и группировка — следующие этапы).
+//! `gridlines`, `size`, `verticalscroll`, `loadingmask`, `style`, а также `filterrow`, `filterglobal`, `celledit`, `rowedit`
+//! и `lazyload` из showcase PrimeNG (`apps/showcase/doc/table`; изменение столбцов, заморозка, виртуальная прокрутка и
+//! группировка — следующие пакеты).
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_core::Size;
-use prime_table::model::{SelectionMode, SortMode};
-use prime_table::{Column, Table};
+use prime_table::model::{FilterMeta, MatchMode, SelectionMode, SortMode};
+use prime_table::{Column, EditEvent, EditMode, LazyLoadEvent, Table};
 
 #[derive(Clone, Debug)]
 struct Product {
@@ -228,6 +229,140 @@ fn Loading() -> impl IntoView {
     }
 }
 
+/// Строка с изменяемым названием для демонстраций правки.
+#[derive(Clone, Debug)]
+struct Item {
+    code: &'static str,
+    name: String,
+    quantity: u32,
+}
+
+fn items() -> Vec<Item> {
+    five().into_iter().map(|p| Item { code: p.code, name: p.name.to_owned(), quantity: p.quantity }).collect()
+}
+
+fn item_key() -> Callback<Item, String> {
+    Callback::new(|i: Item| i.code.to_owned())
+}
+
+fn edit_columns() -> Vec<Column<Item>> {
+    vec![
+        Column::text("code", "Code", |i: &Item| i.code.to_owned()),
+        Column::text("name", "Name", |i: &Item| i.name.clone()).edit_text(|i| i.name.clone(), |i, v| Item { name: v, ..i.clone() }),
+        Column::text("quantity", "Quantity", |i: &Item| i.quantity.to_string())
+            .edit_text(|i| i.quantity.to_string(), |i, v| Item { quantity: v.parse().unwrap_or(i.quantity), ..i.clone() }),
+    ]
+}
+
+#[component]
+fn FilterRow() -> impl IntoView {
+    let filters = RwSignal::new(Vec::<FilterMeta>::new());
+    let columns = vec![
+        Column::text("name", "Name", |p: &Product| p.name.to_owned()).filterable(|p: &Product| p.name.to_owned()),
+        Column::text("category", "Category", |p: &Product| p.category.to_owned())
+            .filterable(|p: &Product| p.category.to_owned())
+            .filter_match_mode(MatchMode::Contains),
+        Column::text("quantity", "Quantity", |p: &Product| p.quantity.to_string())
+            .filterable(|p: &Product| p.quantity.to_string())
+            .filter_match_mode(MatchMode::Gte),
+    ];
+    view! {
+        <div id="filter_table">
+            <Table value=products() columns=columns row_key=key() filters=filters paginator=true default_rows=5usize table_style=TABLE_STYLE />
+        </div>
+    }
+}
+
+#[component]
+fn FilterGlobal() -> impl IntoView {
+    let global = RwSignal::new(String::new());
+    let columns = vec![
+        Column::text("name", "Name", |p: &Product| p.name.to_owned()).searchable(|p: &Product| p.name.to_owned()),
+        Column::text("category", "Category", |p: &Product| p.category.to_owned()).searchable(|p: &Product| p.category.to_owned()),
+        Column::text("quantity", "Quantity", |p: &Product| p.quantity.to_string()),
+    ];
+    view! {
+        <div id="global_table">
+            <input
+                type="text"
+                class="p-inputtext p-component"
+                placeholder="Global Search"
+                style="margin-bottom: 1rem"
+                aria-label="Global Search"
+                on:input=move |e| global.set(event_target_value(&e))
+            />
+            <Table value=products() columns=columns row_key=key() global_filter=global paginator=true default_rows=5usize table_style=TABLE_STYLE />
+        </div>
+    }
+}
+
+#[component]
+fn CellEdit() -> impl IntoView {
+    let rows = RwSignal::new(items());
+    let on_done = Callback::new(move |e: EditEvent<Item>| {
+        rows.update(|r| {
+            if let Some(slot) = r.iter_mut().find(|i| i.code == e.original.code) {
+                *slot = e.row.clone();
+            }
+        });
+    });
+    view! {
+        <div id="celledit_table">
+            <Table value=rows columns=edit_columns() row_key=item_key() edit_mode=Some(EditMode::Cell) on_edit_complete=on_done table_style=TABLE_STYLE />
+        </div>
+    }
+}
+
+#[component]
+fn RowEdit() -> impl IntoView {
+    let rows = RwSignal::new(items());
+    let mut columns = edit_columns();
+    columns.push(Column::row_editor());
+    let on_save = Callback::new(move |e: EditEvent<Item>| {
+        rows.update(|r| {
+            if let Some(slot) = r.iter_mut().find(|i| i.code == e.original.code) {
+                *slot = e.row.clone();
+            }
+        });
+    });
+    view! {
+        <div id="rowedit_table">
+            <Table value=rows columns=columns row_key=item_key() edit_mode=Some(EditMode::Row) on_row_edit_save=on_save table_style=TABLE_STYLE />
+        </div>
+    }
+}
+
+#[component]
+fn LazyLoad() -> impl IntoView {
+    let rows = RwSignal::new(Vec::<Product>::new());
+    let total = RwSignal::new(0usize);
+    let on_lazy = Callback::new(move |e: LazyLoadEvent| {
+        let name = e.filters.iter().find(|f| f.field == "name").map(|f| f.value.to_lowercase()).unwrap_or_default();
+        let all: Vec<Product> = products().into_iter().filter(|p| p.name.to_lowercase().starts_with(&name)).collect();
+        total.set(all.len());
+        rows.set(all.into_iter().skip(e.first).take(e.rows).collect());
+    });
+    let columns = vec![
+        Column::text("name", "Name", |p: &Product| p.name.to_owned()).filterable(|p: &Product| p.name.to_owned()),
+        Column::text("category", "Category", |p: &Product| p.category.to_owned()),
+    ];
+    view! {
+        <div id="lazy_table">
+            <Table
+                value=rows
+                columns=columns
+                row_key=key()
+                lazy=true
+                total_records=Signal::derive(move || Some(total.get()))
+                paginator=true
+                default_rows=3usize
+                on_lazy_load=on_lazy
+                table_style=TABLE_STYLE
+            />
+        </div>
+    }
+}
+
 /// Страница `/table`.
 #[component]
 pub fn TablePage() -> impl IntoView {
@@ -268,6 +403,21 @@ pub fn TablePage() -> impl IntoView {
         </Demo>
         <Demo name="loadingmask" title="Loading Mask">
             <Loading />
+        </Demo>
+        <Demo name="filterrow" title="Filter Row">
+            <FilterRow />
+        </Demo>
+        <Demo name="filterglobal" title="Global Filter">
+            <FilterGlobal />
+        </Demo>
+        <Demo name="celledit" title="Cell Editing">
+            <CellEdit />
+        </Demo>
+        <Demo name="rowedit" title="Row Editing">
+            <RowEdit />
+        </Demo>
+        <Demo name="lazyload" title="Lazy Load">
+            <LazyLoad />
         </Demo>
     }
 }

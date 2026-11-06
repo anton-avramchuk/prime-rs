@@ -431,7 +431,7 @@ max_per_instance = 190
 [[scenario]]
 name = "table-1000"
 instances = 1000
-max_per_instance = 240
+max_per_instance = 260
 
 [[scenario]]
 name = "treetable-1000"

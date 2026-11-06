@@ -171,6 +171,99 @@ pub fn compare_option<T: Ord>(a: &Option<T>, b: &Option<T>) -> Ordering {
     }
 }
 
+/// Режим сравнения фильтра (`FilterMatchMode` PrimeNG).
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum MatchMode {
+    /// Начинается с (по умолчанию).
+    #[default]
+    StartsWith,
+    /// Содержит.
+    Contains,
+    /// Не содержит.
+    NotContains,
+    /// Заканчивается на.
+    EndsWith,
+    /// Равно.
+    Equals,
+    /// Не равно.
+    NotEquals,
+    /// Меньше (числа).
+    Lt,
+    /// Меньше или равно (числа).
+    Lte,
+    /// Больше (числа).
+    Gt,
+    /// Больше или равно (числа).
+    Gte,
+}
+
+/// Фильтр столбца.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FilterMeta {
+    /// Поле столбца.
+    pub field: String,
+    /// Искомое значение.
+    pub value: String,
+    /// Режим сравнения.
+    pub match_mode: MatchMode,
+}
+
+/// Подходит ли текст ячейки под значение фильтра. Строки сравниваются без учёта регистра; `Equals`/`NotEquals` и режимы
+/// порядка сравнивают числа как числа, если оба значения числовые.
+pub fn matches(text: &str, value: &str, mode: MatchMode) -> bool {
+    let (text, value) = (text.trim().to_lowercase(), value.trim().to_lowercase());
+    let numbers = || Some((text.parse::<f64>().ok()?, value.parse::<f64>().ok()?));
+    match mode {
+        MatchMode::StartsWith => text.starts_with(&value),
+        MatchMode::Contains => text.contains(&value),
+        MatchMode::NotContains => !text.contains(&value),
+        MatchMode::EndsWith => text.ends_with(&value),
+        MatchMode::Equals => numbers().map_or(text == value, |(a, b)| a == b),
+        MatchMode::NotEquals => numbers().map_or(text != value, |(a, b)| a != b),
+        MatchMode::Lt => numbers().is_some_and(|(a, b)| a < b),
+        MatchMode::Lte => numbers().is_some_and(|(a, b)| a <= b),
+        MatchMode::Gt => numbers().is_some_and(|(a, b)| a > b),
+        MatchMode::Gte => numbers().is_some_and(|(a, b)| a >= b),
+    }
+}
+
+/// Фильтры после ввода значения в `field`: пустое значение снимает фильтр столбца.
+pub fn set_filter(filters: &[FilterMeta], field: &str, value: &str, mode: MatchMode) -> Vec<FilterMeta> {
+    let mut next: Vec<FilterMeta> = filters.iter().filter(|f| f.field != field).cloned().collect();
+    if !value.trim().is_empty() {
+        let at = filters.iter().position(|f| f.field == field).unwrap_or(next.len()).min(next.len());
+        next.insert(at, FilterMeta { field: field.to_owned(), value: value.to_owned(), match_mode: mode });
+    }
+    next
+}
+
+/// Значение фильтра столбца (пустая строка, если фильтра нет).
+pub fn filter_value<'a>(filters: &'a [FilterMeta], field: &str) -> &'a str {
+    filters.iter().find(|f| f.field == field).map_or("", |f| f.value.as_str())
+}
+
+/// Строки, подходящие под все фильтры столбцов и под глобальный фильтр (режим `Contains` по любому из `global_fields`).
+/// `text_of(field, row)` даёт текст поля строки.
+pub fn filter_rows<T: Clone>(
+    rows: &[T],
+    filters: &[FilterMeta],
+    global: &str,
+    global_fields: &[String],
+    text_of: &dyn Fn(&str, &T) -> String,
+) -> Vec<T> {
+    let global = global.trim();
+    if filters.is_empty() && global.is_empty() {
+        return rows.to_vec();
+    }
+    rows.iter()
+        .filter(|row| {
+            filters.iter().all(|f| matches(&text_of(&f.field, row), &f.value, f.match_mode))
+                && (global.is_empty() || global_fields.iter().any(|field| matches(&text_of(field, row), global, MatchMode::Contains)))
+        })
+        .cloned()
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -291,5 +384,63 @@ mod tests {
         assert_eq!(compare_option(&Some(1), &None), Ordering::Greater);
         assert_eq!(compare_option::<i32>(&None, &None), Ordering::Equal);
         assert_eq!(compare_option(&Some(1), &Some(2)), Ordering::Less);
+    }
+
+    #[test]
+    fn match_modes() {
+        use MatchMode::*;
+        for (text, value, mode, want) in [
+            ("Bamboo Watch", "bam", StartsWith, true),
+            ("Bamboo Watch", "watch", StartsWith, false),
+            ("Bamboo Watch", "boo W", Contains, true),
+            ("Bamboo Watch", "x", NotContains, true),
+            ("Bamboo Watch", "WATCH", EndsWith, true),
+            ("Bamboo", "bamboo", Equals, true),
+            ("10", "10.0", Equals, true),
+            ("10", "9", NotEquals, true),
+            ("abc", "ABD", NotEquals, true),
+            ("5", "10", Lt, true),
+            ("10", "10", Lt, false),
+            ("10", "10", Lte, true),
+            ("11", "10", Gt, true),
+            ("10", "10", Gte, true),
+            ("abc", "10", Gt, false),
+        ] {
+            assert_eq!(matches(text, value, mode), want, "{text} {mode:?} {value}");
+        }
+    }
+
+    #[test]
+    fn set_and_read_filters() {
+        let a = set_filter(&[], "name", "bam", MatchMode::StartsWith);
+        let b = set_filter(&a, "code", "f2", MatchMode::Contains);
+        assert_eq!(b.len(), 2);
+        let c = set_filter(&b, "name", "blue", MatchMode::StartsWith);
+        assert_eq!((c[0].field.as_str(), filter_value(&c, "name")), ("name", "blue"), "порядок сохраняется");
+        let d = set_filter(&c, "name", "  ", MatchMode::StartsWith);
+        assert_eq!(d.len(), 1, "пустое значение снимает фильтр");
+        assert_eq!(filter_value(&d, "name"), "");
+    }
+
+    #[test]
+    fn filtering_rows() {
+        let rows = vec![("Bamboo Watch", "Accessories", 65), ("Black Watch", "Accessories", 72), ("Blue Band", "Fitness", 79)];
+        let text = |field: &str, r: &(&str, &str, i32)| match field {
+            "name" => r.0.to_owned(),
+            "category" => r.1.to_owned(),
+            "price" => r.2.to_string(),
+            _ => String::new(),
+        };
+        let f = |filters: &[FilterMeta], global: &str| {
+            filter_rows(&rows, filters, global, &["name".to_owned(), "category".to_owned()], &text).iter().map(|r| r.0).collect::<Vec<_>>()
+        };
+        assert_eq!(f(&[], "").len(), 3);
+        let by_name = set_filter(&[], "name", "bl", MatchMode::StartsWith);
+        assert_eq!(f(&by_name, ""), ["Black Watch", "Blue Band"]);
+        let both = set_filter(&by_name, "price", "75", MatchMode::Lt);
+        assert_eq!(f(&both, ""), ["Black Watch"], "условия складываются по И");
+        assert_eq!(f(&[], "fit"), ["Blue Band"], "глобальный фильтр: любое из полей");
+        assert_eq!(f(&by_name, "watch"), ["Black Watch"], "глобальный и столбцовый вместе");
+        assert!(f(&[], "zzz").is_empty());
     }
 }

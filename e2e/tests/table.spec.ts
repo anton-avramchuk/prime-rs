@@ -148,4 +148,79 @@ test.describe('Table', () => {
         await mask.scrollIntoViewIfNeeded();
         await expect(mask).toBeVisible();
     });
+    test('фильтры по столбцам: поле, режим, очистка и страницы', async ({ page }) => {
+        const view = page.locator('#filter_table');
+        await view.scrollIntoViewIfNeeded();
+        const names = () => view.locator('tbody > tr > td:nth-child(1)').allTextContents();
+        await expect(view.locator('tbody tr')).toHaveCount(5);
+        await view.locator('.p-datatable-filter input').nth(0).fill('bl');
+        await expect.poll(names).toEqual(['Black Watch', 'Blue Band', 'Blue T-Shirt']);
+        await expect(view.locator('.p-paginator')).toBeVisible();
+        await view.locator('.p-datatable-filter-clear-button').click();
+        await expect(view.locator('tbody tr')).toHaveCount(5);
+        await view.locator('.p-datatable-filter input').nth(2).fill('60'); // quantity >= 60
+        await expect.poll(names).toEqual(['Black Watch', 'Bracelet', 'Gaming Set']);
+        await view.locator('.p-datatable-filter input').nth(1).fill('access'); // category содержит
+        await expect.poll(names).toEqual(['Black Watch', 'Bracelet']);
+        const input = view.locator('.p-datatable-filter input').nth(0);
+        expect(await input.evaluate((el) => getComputedStyle(el).borderTopWidth)).not.toBe('0px');
+    });
+
+    test('глобальный фильтр', async ({ page }) => {
+        const view = page.locator('#global_table');
+        await view.scrollIntoViewIfNeeded();
+        await view.getByLabel('Global Search').fill('electr');
+        await expect(view.locator('tbody tr')).toHaveCount(2);
+        await view.getByLabel('Global Search').fill('zzz');
+        await expect(view.locator('.p-datatable-empty-message')).toBeVisible();
+    });
+
+    test('правка ячейки: Enter сохраняет, Escape отменяет', async ({ page }) => {
+        const view = page.locator('#celledit_table');
+        await view.scrollIntoViewIfNeeded();
+        const cell = view.locator('tbody tr').nth(0).locator('td').nth(1);
+        await cell.click();
+        await expect(cell).toHaveClass(/p-cell-editing/);
+        const input = cell.locator('input');
+        await expect(input).toBeFocused();
+        await input.fill('Clock');
+        await input.press('Enter');
+        await expect(cell).not.toHaveClass(/p-cell-editing/);
+        await expect(cell).toHaveText('Clock');
+        await cell.click();
+        await cell.locator('input').fill('Nope');
+        await cell.locator('input').press('Escape');
+        await expect(cell).toHaveText('Clock');
+        await cell.click();
+        await cell.locator('input').fill('Lamp');
+        await view.locator('tbody tr').nth(2).locator('td').nth(0).click(); // потеря фокуса завершает правку
+        await expect(cell).toHaveText('Lamp');
+    });
+
+    test('правка строки: изменить, сохранить, отменить', async ({ page }) => {
+        const view = page.locator('#rowedit_table');
+        await view.scrollIntoViewIfNeeded();
+        const row = view.locator('tbody tr').nth(1);
+        await row.locator('.p-datatable-row-editor-init').click();
+        await expect(row.locator('input')).toHaveCount(2);
+        await row.locator('input').nth(0).fill('Strap');
+        await row.locator('.p-datatable-row-editor-save').click();
+        await expect(row.locator('input')).toHaveCount(0);
+        await expect(row.locator('td').nth(1)).toHaveText('Strap');
+        await row.locator('.p-datatable-row-editor-init').click();
+        await row.locator('input').nth(0).fill('Gone');
+        await row.locator('.p-datatable-row-editor-cancel').click();
+        await expect(row.locator('td').nth(1)).toHaveText('Strap');
+    });
+
+    test('ленивая загрузка: страницы и фильтр приходят из запроса', async ({ page }) => {
+        const view = page.locator('#lazy_table');
+        await view.scrollIntoViewIfNeeded();
+        const names = () => view.locator('tbody > tr > td:nth-child(1)').allTextContents();
+        await expect.poll(names).toEqual(['Bamboo Watch', 'Black Watch', 'Blue Band']);
+        await view.locator('.p-paginator-next').click();
+        await expect.poll(names).toEqual(['Blue T-Shirt', 'Bracelet', 'Brown Purse']);
+        await view.locator('.p-datatable-filter input').fill('g');
+        await expect.poll(names).toEqual(['Galaxy Earrings', 'Game Controller', 'Gaming Set']);
+    });
 });

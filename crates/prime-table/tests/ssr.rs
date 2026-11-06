@@ -237,3 +237,121 @@ fn style_and_pass_through() {
     );
     assert!(html.contains("p-datatable-thead thead-x"), "{html}");
 }
+
+fn filter_columns() -> Vec<Column<Product>> {
+    vec![
+        Column::text("name", "Name", |p: &Product| p.name.to_owned()).filterable(|p: &Product| p.name.to_owned()),
+        Column::text("quantity", "Quantity", |p: &Product| p.quantity.to_string())
+            .filterable(|p: &Product| p.quantity.to_string())
+            .filter_match_mode(prime_table::model::MatchMode::Gte),
+        Column::text("code", "Code", |p: &Product| p.code.to_owned()).searchable(|p: &Product| p.code.to_owned()),
+    ]
+}
+
+#[test]
+fn filter_row_renders_inputs() {
+    let html = render(|| view! { <Table value=products() columns=filter_columns() row_key=key() /> }.to_html());
+    assert_eq!(html.matches("p-datatable-filter\"").count(), 2, "поле у двух фильтруемых столбцов: {html}");
+    assert!(html.contains("aria-label=\"Name filter\""), "{html}");
+    let plain = render(|| view! { <Table value=products() columns=plain_columns() row_key=key() /> }.to_html());
+    assert!(!plain.contains("p-datatable-filter"), "{plain}");
+}
+
+#[test]
+fn filters_narrow_rows() {
+    use prime_table::model::{FilterMeta, MatchMode};
+    let html = render(|| {
+        let filters = RwSignal::new(vec![FilterMeta { field: "name".into(), value: "p".into(), match_mode: MatchMode::StartsWith }]);
+        view! { <Table value=products() columns=filter_columns() row_key=key() filters=filters /> }.to_html()
+    });
+    assert!(html.contains(">Purse<") && !html.contains(">Watch<") && !html.contains(">Band<"), "{html}");
+    assert!(html.contains("value=\"p\""), "значение фильтра в поле: {html}");
+    let html = render(|| {
+        let filters = RwSignal::new(vec![FilterMeta { field: "quantity".into(), value: "30".into(), match_mode: MatchMode::Gte }]);
+        view! { <Table value=products() columns=filter_columns() row_key=key() filters=filters /> }.to_html()
+    });
+    assert!(html.contains(">Band<") && html.contains(">Purse<") && !html.contains(">Watch<") && !html.contains(">Shirt<"), "{html}");
+}
+
+#[test]
+fn global_filter_and_pagination() {
+    let html = render(|| view! { <Table value=products() columns=filter_columns() row_key=key() global_filter="c3" /> }.to_html());
+    assert!(html.contains(">Shirt<") && !html.contains(">Watch<"), "поиск по полю code (searchable): {html}");
+    let html = render(|| view! { <Table value=products() columns=filter_columns() row_key=key() global_filter="zzz" /> }.to_html());
+    assert!(html.contains("p-datatable-empty-message"), "{html}");
+    let html = render(|| {
+        view! {
+            <Table
+                value=products()
+                columns=filter_columns()
+                row_key=key()
+                global_filter="a"
+                global_filter_fields=vec!["name".to_owned()]
+                paginator=true
+                default_rows=2usize
+                show_current_page_report=true
+            />
+        }
+        .to_html()
+    });
+    assert!(html.contains("1 of 2") || html.contains("1 of 1"), "страницы считаются по отфильтрованным: {html}");
+    assert!(html.contains(">Watch<") && html.contains(">Band<") && !html.contains(">Purse<"), "{html}");
+}
+
+fn editable_columns() -> Vec<Column<Product>> {
+    vec![
+        Column::text("name", "Name", |p: &Product| p.name.to_owned())
+            .edit_text(|p| p.name.to_owned(), |p, v| Product { name: Box::leak(v.into_boxed_str()), ..p.clone() }),
+        Column::row_editor(),
+    ]
+}
+
+#[test]
+fn edit_cells_and_rows() {
+    use prime_table::EditMode;
+    let html =
+        render(|| view! { <Table value=products() columns=editable_columns() row_key=key() edit_mode=Some(EditMode::Cell) /> }.to_html());
+    assert_eq!(html.matches("p-editable-column").count(), 4, "{html}");
+    assert!(!html.contains("p-cell-editing") && html.contains("p-datatable-row-editor-init"), "{html}");
+    let html = render(|| {
+        let editing = RwSignal::new(vec!["c2".to_owned()]);
+        view! { <Table value=products() columns=editable_columns() row_key=key() edit_mode=Some(EditMode::Row) editing_keys=editing /> }
+            .to_html()
+    });
+    assert_eq!(html.matches("p-cell-editing").count(), 1, "{html}");
+    assert!(html.contains("<input") && html.contains("value=\"Band\""), "редактор с текущим значением: {html}");
+    assert_eq!(html.matches("p-datatable-row-editor-save").count(), 1, "{html}");
+    assert_eq!(html.matches("p-datatable-row-editor-init").count(), 3, "{html}");
+    let html = render(|| view! { <Table value=products() columns=editable_columns() row_key=key() /> }.to_html());
+    assert!(!html.contains("p-editable-column") && !html.contains("<input"), "без edit_mode правки нет: {html}");
+}
+
+#[test]
+fn lazy_shows_value_as_is() {
+    use prime_table::model::SortMeta;
+    let html = render(|| {
+        let sort = RwSignal::new(vec![SortMeta::new("name", 1)]);
+        view! {
+            <Table
+                value=products()
+                columns=sortable_columns()
+                row_key=key()
+                lazy=true
+                total_records=100usize
+                sort=sort
+                paginator=true
+                default_rows=2usize
+                show_current_page_report=true
+                current_page_report_template="{currentPage} of {totalPages}"
+            />
+        }
+        .to_html()
+    });
+    assert!(in_order(&html, &["Watch", "Band", "Shirt", "Purse"]), "порядок не меняется, срез не делается: {html}");
+    assert!(html.contains("1 of 50"), "страницы по total_records: {html}");
+}
+
+fn in_order(html: &str, names: &[&str]) -> bool {
+    let at: Vec<usize> = names.iter().map(|n| html.find(&format!(">{n}<")).unwrap_or_else(|| panic!("нет {n}: {html}"))).collect();
+    at.windows(2).all(|w| w[0] < w[1])
+}

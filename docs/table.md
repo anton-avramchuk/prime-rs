@@ -1,16 +1,17 @@
-# Table (этап 1)
+# Table (этап 2, пакет 1)
 
-Порт `p-table` (DataTable) из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`). Это **этап 1**: основная таблица
-без фильтров, правки ячеек, перестановки и изменения размера столбцов, заморозки, виртуальной прокрутки и группировки
-(они — этапы 2+, список ниже).
+Порт `p-table` (DataTable) из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`). Этап 1 — основная таблица;
+**этап 2, пакет 1** добавил фильтры (по столбцам и глобальный), правку ячеек и строк и ленивую загрузку. Изменение
+размера, перестановка и заморозка столбцов, группировка, виртуальная прокрутка и перестановка строк — пакеты 2–3
+(список ниже).
 
 | Наш компонент | Исходники PrimeNG |
 |---|---|
-| `prime-table::Table<T>`, `Column<T>`, `ColumnKind`, `TablePt`, `PaginatorPosition`, `PageEvent` | `packages/primeng/src/table/table.ts` (`Table`, `SortableColumn`, `SortIcon`, `TableCheckbox`, `TableHeaderCheckbox`, `TableRadioButton`, `RowToggler`), `table/style/tablestyle.ts` |
-| Сортировка, выбор, раскрытие | `prime-table::model` — чистая логика `sort`, `multisortField`, `handleRowClick`, `toggleRowsWithCheckbox`, `toggleRow`, табличные тесты |
+| `prime-table::Table<T>`, `Column<T>`, `ColumnKind`, `TablePt`, `PaginatorPosition`, `PageEvent`, `EditMode`, `EditEvent<T>`, `LazyLoadEvent` | `packages/primeng/src/table/table.ts` (`Table`, `SortableColumn`, `SortIcon`, `TableCheckbox`, `TableHeaderCheckbox`, `TableRadioButton`, `RowToggler`), `table/style/tablestyle.ts` |
+| Сортировка, выбор, раскрытие, фильтры | `prime-table::model` — чистая логика `sort`, `multisortField`, `handleRowClick`, `toggleRowsWithCheckbox`, `toggleRow`, `filter`/`executeLocalFilter` (`MatchMode`, `FilterMeta`, `matches`, `filter_rows`), табличные тесты |
 | Пагинатор, срез страницы | `prime-paginator::Paginator`, `prime_dataview::data::{page, clamp_first}` |
 | CSS | `@primeuix/styles/datatable` (`datatable` в `theme.components`) |
-| Демонстрации | `apps/showcase/doc/table/*-doc.ts` (`basic`, `singlecolumnsort`, `multiplecolumnssort`, `paginatorbasic`, `singleselection`, `multipleselection`, `checkboxselection`, `radiobuttonselection`, `rowexpansion`, `striped`/`gridlines`/`size`, `verticalscroll`, `loadingmask`) |
+| Демонстрации | `apps/showcase/doc/table/*-doc.ts` (`basic`, `singlecolumnsort`, `multiplecolumnssort`, `paginatorbasic`, `singleselection`, `multipleselection`, `checkboxselection`, `radiobuttonselection`, `rowexpansion`, `striped`/`gridlines`/`size`, `verticalscroll`, `loadingmask`; пакет 1: `filterrow`, `filterglobal`, `celledit`, `rowedit`, `lazyload`) |
 
 Спека: `openspec/specs/table`. Строки определяются ключами (`row_key`, как `dataKey`); выбор и раскрытие хранят ключи.
 
@@ -29,6 +30,23 @@ view! { <Table value=products columns=columns row_key=Callback::new(|p: Product|
 - Выбор: одиночный и множественный кликом (с `meta_key_selection` и без), столбцы флажков и радиокнопок, флажок «выбрать все» (по всем строкам либо только страницы).
 - Раскрытие строк (в том числе только одной) и содержимое раскрытия; пагинатор, `striped_rows`, `show_gridlines`, `size`, вертикальная прокрутка, индикатор загрузки, пустое сообщение, `caption`, `summary`, подвал столбцов.
 
+### Фильтры, правка, ленивая загрузка (пакет 1)
+
+```rust
+let columns = vec![
+    Column::text("name", "Name", |p: &Product| p.name.clone())
+        .filterable(|p| p.name.clone())                       // поле в строке фильтров, режим по умолчанию startsWith
+        .edit_text(|p| p.name.clone(), |p, v| Product { name: v, ..p.clone() }), // редактор ячейки
+    Column::text("qty", "Qty", |p: &Product| p.quantity.to_string()).filterable(|p| p.quantity.to_string()).filter_match_mode(MatchMode::Gte),
+    Column::row_editor(),
+];
+view! { <Table value=rows columns=columns row_key=key edit_mode=Some(EditMode::Cell) on_edit_complete=save global_filter=search /> }
+```
+
+- Фильтры: поле ввода у столбцов `filterable` во второй строке `thead` (`p-datatable-filter`), режимы `startsWith`, `contains`, `notContains`, `endsWith`, `equals`, `notEquals`, `lt`, `lte`, `gt`, `gte` (числовые — по числу), кнопка очистки, возврат на первую страницу; `filters` — двусторонний сигнал. Глобальный фильтр — `global_filter` (режим «содержит») по `global_filter_fields` или по столбцам с текстом для фильтра (`filterable`/`searchable`).
+- Правка: `edit_mode = Cell` — клик по ячейке с `editable` открывает редактор (`p-editable-column`, `p-cell-editing`), `Enter`/потеря фокуса завершают, `Escape` отменяет; `edit_mode = Row` — столбец `row_editor` с кнопками «изменить / сохранить / отменить» (`p-datatable-row-editor-*`), `editing_keys` — двусторонний сигнал.
+- `lazy`: сортировку, фильтры и страницы выполняет приложение по `on_lazy_load(LazyLoadEvent)`; число записей — `total_records`.
+
 ## Отличия
 
 | Отличие | Причина |
@@ -37,13 +55,16 @@ view! { <Table value=products columns=columns row_key=Callback::new(|p: Product|
 | Сортировка — функцией сравнения столбца, а не именем поля (`resolveFieldData`) | Строки типизированы. |
 | Сортируется копия данных, `value` не изменяется | Сигналы приложения не мутируются. |
 | Выбор хранит ключи строк (`Vec<String>`), а не объекты; `row_key` обязателен | Тип `T` произвольный, ключ задаёт приложение. |
+| Правка не меняет `value`: результат приходит в `EditEvent { original, row, field }`, приложение обновляет данные само; редактор получает черновик строки (`RwSignal<T>`) | Данные приложения не мутируются. |
+| Фильтр столбца — только строка в `thead` с полем ввода (`display="row"`), режим сравнения задаёт `Column::filter_match_mode` без меню; фильтр применяется сразу, без `filterDelay` | Меню фильтра — следующие пакеты. |
+| Значение для фильтра берётся функцией столбца (`filterable`/`searchable`), а не `resolveFieldData` | Строки типизированы. |
 | Нет диапазона выбора по Shift, `selectionAutoFocus`, контекстного меню, `rowSelectable`, `compareSelectionBy` | Этап 2+. |
 | Нет `removableSort` | Его нет и в исходнике 21.1.10. |
-| Нет `lazy`, `stateStorage`, `customSort`, `resetScrollTop`, `getBlockableElement` | Этап 2+ / вне объёма порта. |
+| Нет `stateStorage`, `customSort`, `resetScrollTop`, `getBlockableElement` | Этап 2+ / вне объёма порта. |
 
-## Не вошло в этап 1
+## Не вошло
 
-Фильтры (по столбцам и глобальный), правка ячеек и строк, изменение размера и перестановка столбцов, перетаскивание строк, заморозка столбцов и строк, виртуальная прокрутка, группировка строк (в том числе по `rowspan`), `lazy`, экспорт CSV, меню переключения столбцов, сохранение состояния, `p-table` внутри `ContextMenu`, клавиатурная навигация по строкам.
+Меню фильтра (`display="menu"`) с несколькими условиями и операторами И/ИЛИ, режимы `in`, `between`, `is`, `before`/`after`, датовые, фильтр-выпадающий список и `filterDelay`; шаблонные редакторы по умолчанию (число, дата, список), `onEditInit` с отменой, клавиша Tab между ячейками; изменение размера и перестановка столбцов, перетаскивание строк, заморозка столбцов и строк, виртуальная прокрутка, группировка строк (в том числе по `rowspan`), `lazyLoadOnInit`, экспорт CSV, меню переключения столбцов, сохранение состояния, `p-table` внутри `ContextMenu`, клавиатурная навигация по строкам.
 
 ## Что не проверялось
 
