@@ -303,6 +303,13 @@ cfg_if::cfg_if! {
             use prime_menubar::Menubar;
             view! { <Menubar model=vec![MenuItem::new().label("File").items(vec![MenuItem::new().label("New")]), MenuItem::new().label("Quit")] /> }
         }
+    } else if #[cfg(feature = "case-treetable")] {
+        fn case() -> impl IntoView {
+            use prime_table::Column;
+            use prime_treetable::{TreeNode, TreeTable};
+            let columns = vec![Column::text("n", "Number", |v: &i32| v.to_string())];
+            view! { <TreeTable value=vec![TreeNode::new("a", 1)] columns=columns /> }
+        }
     } else if #[cfg(feature = "case-table")] {
         fn case() -> impl IntoView {
             use prime_table::{Column, Table};

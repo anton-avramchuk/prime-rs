@@ -91,6 +91,7 @@ use prime_toolbar::Toolbar;
 use prime_tooltip::{TooltipOptions, TooltipPosition, tooltip};
 use prime_tree::{Tree, TreeNode};
 use prime_treeselect::TreeSelect;
+use prime_treetable::TreeTable;
 
 /// Сценарий: имя и функция, возвращающая HTML.
 pub struct Scenario {
@@ -660,6 +661,18 @@ fn menubar_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Menubar model=model() /> }).collect_view())
 }
 
+fn treetable_n(n: usize) -> String {
+    let columns = || vec![prime_table::Column::text("n", "Number", |v: &i32| v.to_string())];
+    let nodes = || {
+        vec![
+            prime_treetable::TreeNode::new("a", 1)
+                .expanded(true)
+                .children(vec![prime_treetable::TreeNode::new("b", 2), prime_treetable::TreeNode::new("c", 3)]),
+        ]
+    };
+    render((0..n).map(|_| view! { <TreeTable value=nodes() columns=columns() /> }).collect_view())
+}
+
 fn table_n(n: usize) -> String {
     let columns = || {
         vec![
@@ -1012,6 +1025,8 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "tieredmenu-1000", run: || tieredmenu_n(1000) },
     Scenario { name: "menubar-1", run: || menubar_n(1) },
     Scenario { name: "menubar-1000", run: || menubar_n(1000) },
+    Scenario { name: "treetable-1", run: || treetable_n(1) },
+    Scenario { name: "treetable-1000", run: || treetable_n(1000) },
     Scenario { name: "table-1", run: || table_n(1) },
     Scenario { name: "table-1000", run: || table_n(1000) },
     Scenario { name: "dataview-1", run: || dataview_n(1) },

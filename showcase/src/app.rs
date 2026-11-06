@@ -10,7 +10,7 @@ use crate::pages::{
     ProgressBarPage, ProgressSpinnerPage, RadioButtonPage, RatingPage, ScrollPanelPage, ScrollTopPage, SelectButtonPage, SelectPage,
     SkeletonPage, SliderPage, SpeedDialPage, SplitButtonPage, SplitterPage, StepperPage, StepsPage, TablePage, TabsPage, TagPage,
     TextareaPage, TieredMenuPage, TimelinePage, ToastPage, ToggleButtonPage, ToggleSwitchPage, ToolbarPage, TooltipPage, TreePage,
-    TreeSelectPage,
+    TreeSelectPage, TreeTablePage,
 };
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
@@ -103,6 +103,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "datepicker",
         "dataview",
         "datatable",
+        "treetable",
     ]);
     view! {
         <!DOCTYPE html>
@@ -221,6 +222,7 @@ pub fn App() -> impl IntoView {
                         <A href="/datepicker">"DatePicker"</A>
                         <A href="/dataview">"DataView"</A>
                         <A href="/table">"Table"</A>
+                        <A href="/treetable">"TreeTable"</A>
                     </nav>
                     <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
                         "Светлая / тёмная схема"
@@ -311,6 +313,7 @@ pub fn App() -> impl IntoView {
                         <Route path=StaticSegment("datepicker") view=DatePickerPage />
                         <Route path=StaticSegment("dataview") view=DataViewPage />
                         <Route path=StaticSegment("table") view=TablePage />
+                        <Route path=StaticSegment("treetable") view=TreeTablePage />
                     </Routes>
                 </main>
             </div>

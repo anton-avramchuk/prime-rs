@@ -1,0 +1,39 @@
+[package]
+name = "prime-treetable"
+description = "prime-rs: компонент TreeTable (порт PrimeNG), этап 1"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[features]
+default = []
+ssr = ["leptos/ssr", "prime-core/ssr", "prime-table/ssr", "prime-paginator/ssr", "prime-checkbox/ssr", "prime-badge/ssr", "prime-icons/ssr"]
+hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-table/hydrate", "prime-paginator/hydrate", "prime-checkbox/hydrate", "prime-badge/hydrate", "prime-icons/hydrate"]
+
+[dependencies]
+leptos = { workspace = true }
+prime-core = { workspace = true }
+prime-table = { workspace = true }
+prime-dataview = { workspace = true }
+prime-paginator = { workspace = true }
+prime-checkbox = { workspace = true }
+prime-badge = { workspace = true }
+prime-icons = { workspace = true, features = ["spinner", "sortalt", "sortamountupalt", "sortamountdown", "chevrondown", "chevronright"] }
+web-sys = { workspace = true, features = ["Event", "MouseEvent", "KeyboardEvent", "HtmlElement", "Element", "Node"] }
+
+# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+leptos = { workspace = true, features = ["ssr"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+leptos = { workspace = true, features = ["csr"] }
+js-sys = { workspace = true }
+wasm-bindgen = { workspace = true }
+wasm-bindgen-futures = "0.4"
+web-sys = { workspace = true, features = ["Document", "Window", "Element", "HtmlElement", "Event", "MouseEvent", "MouseEventInit", "KeyboardEvent", "KeyboardEventInit"] }
+
+[lints]
+workspace = true

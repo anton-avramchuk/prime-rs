@@ -73,6 +73,7 @@ prime-picklist = { workspace = true, features = ["ssr"] }
 prime-datepicker = { workspace = true, features = ["ssr"] }
 prime-dataview = { workspace = true, features = ["ssr"] }
 prime-table = { workspace = true, features = ["ssr"] }
+prime-treetable = { workspace = true, features = ["ssr"] }
 prime-scrollpanel = { workspace = true, features = ["ssr"] }
 prime-progressspinner = { workspace = true, features = ["ssr"] }
 prime-skeleton = { workspace = true, features = ["ssr"] }

@@ -324,6 +324,10 @@ pub const TREE: &str = include_str!("../css/components/tree.css");
 #[cfg(feature = "treeselect")]
 pub const TREESELECT: &str = include_str!("../css/components/treeselect.css");
 
+/// CSS компонента `treetable`.
+#[cfg(feature = "treetable")]
+pub const TREETABLE: &str = include_str!("../css/components/treetable.css");
+
 /// Пары «имя — CSS» для включённых компонентов.
 pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     #[cfg(feature = "accordion")]
@@ -488,4 +492,6 @@ pub(crate) static COMPONENTS: &[(&str, &str)] = &[
     ("tree", TREE),
     #[cfg(feature = "treeselect")]
     ("treeselect", TREESELECT),
+    #[cfg(feature = "treetable")]
+    ("treetable", TREETABLE),
 ];

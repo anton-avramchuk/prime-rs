@@ -83,6 +83,7 @@ mod toolbar;
 mod tooltip;
 mod tree;
 mod treeselect;
+mod treetable;
 
 pub use accordion::AccordionPage;
 pub use autocomplete::AutoCompletePage;
@@ -167,6 +168,7 @@ pub use toolbar::ToolbarPage;
 pub use tooltip::TooltipPage;
 pub use tree::TreePage;
 pub use treeselect::TreeSelectPage;
+pub use treetable::TreeTablePage;
 
 use leptos::prelude::*;
 

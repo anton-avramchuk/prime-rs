@@ -2413,5 +2413,12 @@
     "upstream": "/table",
     "oursSelector": "[data-demo=\"basic\"]",
     "upstreamSelector": "basic-doc .card"
+  },
+  {
+    "name": "treetable-basic",
+    "ours": "/treetable",
+    "upstream": "/treetable",
+    "oursSelector": "[data-demo=\"basic\"]",
+    "upstreamSelector": "basic-doc .card"
   }
 ]
