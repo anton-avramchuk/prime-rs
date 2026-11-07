@@ -14,7 +14,6 @@ pub fn TextareaPage() -> impl IntoView {
     let value = RwSignal::new(String::new());
     let auto = RwSignal::new(String::new());
     view! {
-        <h2>"Textarea"</h2>
         <Demo name="basic" title="Basic">
             <Textarea value=value rows=5u32 cols=30u32 />
             <span data-testid="echo">{move || value.get().len().to_string()}</span>

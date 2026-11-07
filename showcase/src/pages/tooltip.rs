@@ -14,7 +14,6 @@ use prime_tooltip::{TooltipEvent, TooltipOptions, TooltipPosition, tooltip};
 #[component]
 pub fn TooltipPage() -> impl IntoView {
     view! {
-        <h2>"Tooltip"</h2>
         <Demo name="position" title="Position">
             <InputText placeholder="Right" use:tooltip=TooltipOptions::text("Enter your username").position(TooltipPosition::Right) />
             <InputText placeholder="Top" use:tooltip=TooltipOptions::text("Enter your username").position(TooltipPosition::Top) />

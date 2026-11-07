@@ -177,7 +177,6 @@ fn Loading() -> impl IntoView {
 #[component]
 pub fn TreeTablePage() -> impl IntoView {
     view! {
-        <h2>"TreeTable"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

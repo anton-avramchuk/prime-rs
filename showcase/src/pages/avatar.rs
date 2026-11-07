@@ -20,7 +20,6 @@ pub fn AvatarPage() -> impl IntoView {
     let violet = "background-color: #ece9fc; color: #2a1261; margin-right: 0.5rem";
     let blue = "background-color: #dee9fc; color: #1a2551";
     view! {
-        <h2>"Avatar"</h2>
         <Demo name="label" title="Label">
             <Avatar label="P" size=AvatarSize::XLarge style="margin-right: 0.5rem" />
             <Avatar label="V" size=AvatarSize::Large style=violet />

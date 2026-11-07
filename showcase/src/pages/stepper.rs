@@ -117,7 +117,6 @@ pub fn StepperPage() -> impl IntoView {
             .map(|label| (label, RwSignal::new(false)))
             .collect();
     view! {
-        <h2>"Stepper"</h2>
         <Demo name="basic" title="Basic">
             {wizard!(basic, false)}
             <span data-testid="echo">{move || basic.get().map(|v| v.to_string()).unwrap_or_default()}</span>

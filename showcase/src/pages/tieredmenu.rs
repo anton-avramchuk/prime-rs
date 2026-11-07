@@ -108,7 +108,6 @@ fn template_item(ctx: TieredMenuItemContext) -> AnyView {
 #[component]
 pub fn TieredMenuPage() -> impl IntoView {
     view! {
-        <h2>"TieredMenu"</h2>
         <Demo name="basic" title="Basic">
             <TieredMenu id="basic_menu" model=items() style="width: 250px" />
         </Demo>

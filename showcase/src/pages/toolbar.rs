@@ -16,7 +16,6 @@ use prime_toolbar::Toolbar;
 #[component]
 pub fn ToolbarPage() -> impl IntoView {
     view! {
-        <h2>"Toolbar"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%">
                 <Toolbar

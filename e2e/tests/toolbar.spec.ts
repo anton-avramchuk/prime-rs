@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Toolbar', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/toolbar');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-toolbar')).toBeVisible();
     });
 

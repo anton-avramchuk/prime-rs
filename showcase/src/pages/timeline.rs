@@ -37,7 +37,6 @@ fn year() -> Callback<&'static str, AnyView> {
 #[component]
 pub fn TimelinePage() -> impl IntoView {
     view! {
-        <h2>"Timeline"</h2>
         <Demo name="basic" title="Basic">
             <Timeline value={events()} content=status() />
         </Demo>

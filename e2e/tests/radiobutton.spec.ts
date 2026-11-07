@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('RadioButton', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/radiobutton');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=group] .p-radiobutton').first()).toBeAttached();
     });
 

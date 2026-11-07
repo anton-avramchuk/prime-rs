@@ -67,7 +67,6 @@ fn Template() -> impl IntoView {
 #[component]
 pub fn CascadeSelectPage() -> impl IntoView {
     view! {
-        <h2>"CascadeSelect"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

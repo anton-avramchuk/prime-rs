@@ -1,5 +1,6 @@
 //! Оболочка страницы, меню и маршруты.
 
+use crate::doc::{DOC_CSS, DocNav, DocPage};
 use crate::pages::{
     AccordionPage, AutoCompletePage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage,
     CarouselPage, CascadeSelectPage, CheckboxPage, ChipPage, ColorPickerPage, ConfirmDialogPage, ConfirmPopupPage, ContextMenuPage,
@@ -15,7 +16,7 @@ use crate::pages::{
 use leptos::hydration::{AutoReload, HydrationScripts};
 use leptos::prelude::*;
 use leptos_router::StaticSegment;
-use leptos_router::components::{A, Route, Router, Routes};
+use leptos_router::components::{Route, Router, Routes};
 
 const DARK_CLASS: &str = "p-dark";
 
@@ -106,21 +107,22 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "treetable",
     ]);
     view! {
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="utf-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>"prime-rs"</title>
-                <AutoReload options=options.clone() />
-                <HydrationScripts options />
-                <style>{css}</style>
-            </head>
-            <body>
-                <App />
-            </body>
-        </html>
-    }
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="utf-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <title>"prime-rs"</title>
+                    <AutoReload options=options.clone() />
+                    <HydrationScripts options />
+                    <style>{css}</style>
+    <style>{DOC_CSS}</style>
+                </head>
+                <body>
+                    <App />
+                </body>
+            </html>
+        }
 }
 
 /// Переключает класс тёмной схемы на `<html>`; на сервере ничего не делает.
@@ -134,189 +136,106 @@ fn toggle_dark() {
 #[component]
 pub fn App() -> impl IntoView {
     view! {
-        <Router>
-            <div data-testid="app" style="font-family: sans-serif; padding: 1.5rem; background: var(--p-content-background); color: var(--p-text-color); min-height: 100vh">
-                <header style="display: flex; align-items: center; justify-content: space-between">
-                    <h1>"prime-rs"</h1>
-                    <nav style="display: flex; gap: 1rem" data-testid="nav">
-                        <A href="/">"Home"</A>
-                        <A href="/button">"Button"</A>
-                        <A href="/badge">"Badge"</A>
-                        <A href="/tag">"Tag"</A>
-                        <A href="/chip">"Chip"</A>
-                        <A href="/avatar">"Avatar"</A>
-                        <A href="/divider">"Divider"</A>
-                        <A href="/card">"Card"</A>
-                        <A href="/inputtext">"InputText"</A>
-                        <A href="/checkbox">"Checkbox"</A>
-                        <A href="/radiobutton">"RadioButton"</A>
-                        <A href="/togglebutton">"ToggleButton"</A>
-                        <A href="/selectbutton">"SelectButton"</A>
-                        <A href="/rating">"Rating"</A>
-                        <A href="/slider">"Slider"</A>
-                        <A href="/knob">"Knob"</A>
-                        <A href="/inputnumber">"InputNumber"</A>
-                        <A href="/select">"Select"</A>
-                        <A href="/toggleswitch">"ToggleSwitch"</A>
-                        <A href="/message">"Message"</A>
-                        <A href="/progressbar">"ProgressBar"</A>
-                        <A href="/skeleton">"Skeleton"</A>
-                        <A href="/textarea">"Textarea"</A>
-                        <A href="/panel">"Panel"</A>
-                        <A href="/fieldset">"Fieldset"</A>
-                        <A href="/accordion">"Accordion"</A>
-                        <A href="/toolbar">"Toolbar"</A>
-                        <A href="/scrollpanel">"ScrollPanel"</A>
-                        <A href="/progressspinner">"ProgressSpinner"</A>
-                        <A href="/inputgroup">"InputGroup"</A>
-                        <A href="/buttongroup">"ButtonGroup"</A>
-                        <A href="/fluid">"Fluid"</A>
-                        <A href="/iconfield">"IconField"</A>
-                        <A href="/floatlabel">"FloatLabel"</A>
-                        <A href="/iftalabel">"IftaLabel"</A>
-                        <A href="/overlaybadge">"OverlayBadge"</A>
-                        <A href="/timeline">"Timeline"</A>
-                        <A href="/metergroup">"MeterGroup"</A>
-                        <A href="/breadcrumb">"Breadcrumb"</A>
-                        <A href="/inputotp">"InputOtp"</A>
-                        <A href="/scrolltop">"ScrollTop"</A>
-                        <A href="/password">"Password"</A>
-                        <A href="/inplace">"Inplace"</A>
-                        <A href="/splitter">"Splitter"</A>
-                        <A href="/tabs">"Tabs"</A>
-                        <A href="/popover">"Popover"</A>
-                        <A href="/drawer">"Drawer"</A>
-                        <A href="/dialog">"Dialog"</A>
-                        <A href="/tooltip">"Tooltip"</A>
-                        <A href="/toast">"Toast"</A>
-                        <A href="/menu">"Menu"</A>
-                        <A href="/listbox">"Listbox"</A>
-                        <A href="/multiselect">"MultiSelect"</A>
-                        <A href="/paginator">"Paginator"</A>
-                        <A href="/stepper">"Stepper"</A>
-                        <A href="/imagecompare">"ImageCompare"</A>
-                        <A href="/blockui">"BlockUI"</A>
-                        <A href="/splitbutton">"SplitButton"</A>
-                        <A href="/dock">"Dock"</A>
-                        <A href="/image">"Image"</A>
-                        <A href="/confirmpopup">"ConfirmPopup"</A>
-                        <A href="/confirmdialog">"ConfirmDialog"</A>
-                        <A href="/speeddial">"SpeedDial"</A>
-                        <A href="/carousel">"Carousel"</A>
-                        <A href="/tieredmenu">"TieredMenu"</A>
-                        <A href="/steps">"Steps"</A>
-                        <A href="/contextmenu">"ContextMenu"</A>
-                        <A href="/menubar">"Menubar"</A>
-                        <A href="/panelmenu">"PanelMenu"</A>
-                        <A href="/megamenu">"MegaMenu"</A>
-                        <A href="/tree">"Tree"</A>
-                        <A href="/treeselect">"TreeSelect"</A>
-                        <A href="/cascadeselect">"CascadeSelect"</A>
-                        <A href="/autocomplete">"AutoComplete"</A>
-                        <A href="/inputmask">"InputMask"</A>
-                        <A href="/colorpicker">"ColorPicker"</A>
-                        <A href="/galleria">"Galleria"</A>
-                        <A href="/fileupload">"FileUpload"</A>
-                        <A href="/orderlist">"OrderList"</A>
-                        <A href="/picklist">"PickList"</A>
-                        <A href="/datepicker">"DatePicker"</A>
-                        <A href="/dataview">"DataView"</A>
-                        <A href="/table">"Table"</A>
-                        <A href="/treetable">"TreeTable"</A>
-                    </nav>
-                    <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
-                        "Светлая / тёмная схема"
-                    </button>
-                </header>
-                <main>
-                    <Routes fallback=|| "Страница не найдена">
-                        <Route path=StaticSegment("") view=HomePage />
-                        <Route path=StaticSegment("button") view=ButtonPage />
-                        <Route path=StaticSegment("badge") view=BadgePage />
-                        <Route path=StaticSegment("tag") view=TagPage />
-                        <Route path=StaticSegment("chip") view=ChipPage />
-                        <Route path=StaticSegment("avatar") view=AvatarPage />
-                        <Route path=StaticSegment("divider") view=DividerPage />
-                        <Route path=StaticSegment("card") view=CardPage />
-                        <Route path=StaticSegment("inputtext") view=InputTextPage />
-                        <Route path=StaticSegment("checkbox") view=CheckboxPage />
-                        <Route path=StaticSegment("radiobutton") view=RadioButtonPage />
-                        <Route path=StaticSegment("togglebutton") view=ToggleButtonPage />
-                        <Route path=StaticSegment("selectbutton") view=SelectButtonPage />
-                        <Route path=StaticSegment("rating") view=RatingPage />
-                        <Route path=StaticSegment("slider") view=SliderPage />
-                        <Route path=StaticSegment("knob") view=KnobPage />
-                        <Route path=StaticSegment("inputnumber") view=InputNumberPage />
-                        <Route path=StaticSegment("select") view=SelectPage />
-                        <Route path=StaticSegment("toggleswitch") view=ToggleSwitchPage />
-                        <Route path=StaticSegment("message") view=MessagePage />
-                        <Route path=StaticSegment("progressbar") view=ProgressBarPage />
-                        <Route path=StaticSegment("skeleton") view=SkeletonPage />
-                        <Route path=StaticSegment("textarea") view=TextareaPage />
-                        <Route path=StaticSegment("panel") view=PanelPage />
-                        <Route path=StaticSegment("fieldset") view=FieldsetPage />
-                        <Route path=StaticSegment("accordion") view=AccordionPage />
-                        <Route path=StaticSegment("toolbar") view=ToolbarPage />
-                        <Route path=StaticSegment("scrollpanel") view=ScrollPanelPage />
-                        <Route path=StaticSegment("progressspinner") view=ProgressSpinnerPage />
-                        <Route path=StaticSegment("inputgroup") view=InputGroupPage />
-                        <Route path=StaticSegment("buttongroup") view=ButtonGroupPage />
-                        <Route path=StaticSegment("fluid") view=FluidPage />
-                        <Route path=StaticSegment("iconfield") view=IconFieldPage />
-                        <Route path=StaticSegment("floatlabel") view=FloatLabelPage />
-                        <Route path=StaticSegment("iftalabel") view=IftaLabelPage />
-                        <Route path=StaticSegment("overlaybadge") view=OverlayBadgePage />
-                        <Route path=StaticSegment("timeline") view=TimelinePage />
-                        <Route path=StaticSegment("metergroup") view=MeterGroupPage />
-                        <Route path=StaticSegment("breadcrumb") view=BreadcrumbPage />
-                        <Route path=StaticSegment("inputotp") view=InputOtpPage />
-                        <Route path=StaticSegment("scrolltop") view=ScrollTopPage />
-                        <Route path=StaticSegment("password") view=PasswordPage />
-                        <Route path=StaticSegment("inplace") view=InplacePage />
-                        <Route path=StaticSegment("splitter") view=SplitterPage />
-                        <Route path=StaticSegment("tabs") view=TabsPage />
-                        <Route path=StaticSegment("popover") view=PopoverPage />
-                        <Route path=StaticSegment("drawer") view=DrawerPage />
-                        <Route path=StaticSegment("dialog") view=DialogPage />
-                        <Route path=StaticSegment("tooltip") view=TooltipPage />
-                        <Route path=StaticSegment("toast") view=ToastPage />
-                        <Route path=StaticSegment("menu") view=MenuPage />
-                        <Route path=StaticSegment("listbox") view=ListboxPage />
-                        <Route path=StaticSegment("multiselect") view=MultiSelectPage />
-                        <Route path=StaticSegment("paginator") view=PaginatorPage />
-                        <Route path=StaticSegment("stepper") view=StepperPage />
-                        <Route path=StaticSegment("imagecompare") view=ImageComparePage />
-                        <Route path=StaticSegment("blockui") view=BlockUiPage />
-                        <Route path=StaticSegment("splitbutton") view=SplitButtonPage />
-                        <Route path=StaticSegment("dock") view=DockPage />
-                        <Route path=StaticSegment("image") view=ImagePage />
-                        <Route path=StaticSegment("confirmpopup") view=ConfirmPopupPage />
-                        <Route path=StaticSegment("confirmdialog") view=ConfirmDialogPage />
-                        <Route path=StaticSegment("speeddial") view=SpeedDialPage />
-                        <Route path=StaticSegment("carousel") view=CarouselPage />
-                        <Route path=StaticSegment("tieredmenu") view=TieredMenuPage />
-                        <Route path=StaticSegment("steps") view=StepsPage />
-                        <Route path=StaticSegment("contextmenu") view=ContextMenuPage />
-                        <Route path=StaticSegment("menubar") view=MenubarPage />
-                        <Route path=StaticSegment("panelmenu") view=PanelMenuPage />
-                        <Route path=StaticSegment("megamenu") view=MegaMenuPage />
-                        <Route path=StaticSegment("tree") view=TreePage />
-                        <Route path=StaticSegment("treeselect") view=TreeSelectPage />
-                        <Route path=StaticSegment("cascadeselect") view=CascadeSelectPage />
-                        <Route path=StaticSegment("autocomplete") view=AutoCompletePage />
-                        <Route path=StaticSegment("inputmask") view=InputMaskPage />
-                        <Route path=StaticSegment("colorpicker") view=ColorPickerPage />
-                        <Route path=StaticSegment("galleria") view=GalleriaPage />
-                        <Route path=StaticSegment("fileupload") view=FileUploadPage />
-                        <Route path=StaticSegment("orderlist") view=OrderListPage />
-                        <Route path=StaticSegment("picklist") view=PickListPage />
-                        <Route path=StaticSegment("datepicker") view=DatePickerPage />
-                        <Route path=StaticSegment("dataview") view=DataViewPage />
-                        <Route path=StaticSegment("table") view=TablePage />
-                        <Route path=StaticSegment("treetable") view=TreeTablePage />
-                    </Routes>
-                </main>
-            </div>
-        </Router>
-    }
+            <Router>
+                <div data-testid="app" style="font-family: sans-serif; padding: 1.5rem; background: var(--p-content-background); color: var(--p-text-color); min-height: 100vh">
+                    <header style="display: flex; align-items: center; justify-content: space-between">
+                        <h1>"prime-rs"</h1>
+                                            <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
+                            "Светлая / тёмная схема"
+                        </button>
+                    </header>
+                    <div class="doc-shell">
+    <DocNav />
+    <main>
+                        <Routes fallback=|| "Страница не найдена">
+                            <Route path=StaticSegment("") view=HomePage />
+                            <Route path=StaticSegment("button") view=|| view! { <DocPage name="button"><ButtonPage /></DocPage> } />
+                            <Route path=StaticSegment("badge") view=|| view! { <DocPage name="badge"><BadgePage /></DocPage> } />
+                            <Route path=StaticSegment("tag") view=|| view! { <DocPage name="tag"><TagPage /></DocPage> } />
+                            <Route path=StaticSegment("chip") view=|| view! { <DocPage name="chip"><ChipPage /></DocPage> } />
+                            <Route path=StaticSegment("avatar") view=|| view! { <DocPage name="avatar"><AvatarPage /></DocPage> } />
+                            <Route path=StaticSegment("divider") view=|| view! { <DocPage name="divider"><DividerPage /></DocPage> } />
+                            <Route path=StaticSegment("card") view=|| view! { <DocPage name="card"><CardPage /></DocPage> } />
+                            <Route path=StaticSegment("inputtext") view=|| view! { <DocPage name="inputtext"><InputTextPage /></DocPage> } />
+                            <Route path=StaticSegment("checkbox") view=|| view! { <DocPage name="checkbox"><CheckboxPage /></DocPage> } />
+                            <Route path=StaticSegment("radiobutton") view=|| view! { <DocPage name="radiobutton"><RadioButtonPage /></DocPage> } />
+                            <Route path=StaticSegment("togglebutton") view=|| view! { <DocPage name="togglebutton"><ToggleButtonPage /></DocPage> } />
+                            <Route path=StaticSegment("selectbutton") view=|| view! { <DocPage name="selectbutton"><SelectButtonPage /></DocPage> } />
+                            <Route path=StaticSegment("rating") view=|| view! { <DocPage name="rating"><RatingPage /></DocPage> } />
+                            <Route path=StaticSegment("slider") view=|| view! { <DocPage name="slider"><SliderPage /></DocPage> } />
+                            <Route path=StaticSegment("knob") view=|| view! { <DocPage name="knob"><KnobPage /></DocPage> } />
+                            <Route path=StaticSegment("inputnumber") view=|| view! { <DocPage name="inputnumber"><InputNumberPage /></DocPage> } />
+                            <Route path=StaticSegment("select") view=|| view! { <DocPage name="select"><SelectPage /></DocPage> } />
+                            <Route path=StaticSegment("toggleswitch") view=|| view! { <DocPage name="toggleswitch"><ToggleSwitchPage /></DocPage> } />
+                            <Route path=StaticSegment("message") view=|| view! { <DocPage name="message"><MessagePage /></DocPage> } />
+                            <Route path=StaticSegment("progressbar") view=|| view! { <DocPage name="progressbar"><ProgressBarPage /></DocPage> } />
+                            <Route path=StaticSegment("skeleton") view=|| view! { <DocPage name="skeleton"><SkeletonPage /></DocPage> } />
+                            <Route path=StaticSegment("textarea") view=|| view! { <DocPage name="textarea"><TextareaPage /></DocPage> } />
+                            <Route path=StaticSegment("panel") view=|| view! { <DocPage name="panel"><PanelPage /></DocPage> } />
+                            <Route path=StaticSegment("fieldset") view=|| view! { <DocPage name="fieldset"><FieldsetPage /></DocPage> } />
+                            <Route path=StaticSegment("accordion") view=|| view! { <DocPage name="accordion"><AccordionPage /></DocPage> } />
+                            <Route path=StaticSegment("toolbar") view=|| view! { <DocPage name="toolbar"><ToolbarPage /></DocPage> } />
+                            <Route path=StaticSegment("scrollpanel") view=|| view! { <DocPage name="scrollpanel"><ScrollPanelPage /></DocPage> } />
+                            <Route path=StaticSegment("progressspinner") view=|| view! { <DocPage name="progressspinner"><ProgressSpinnerPage /></DocPage> } />
+                            <Route path=StaticSegment("inputgroup") view=|| view! { <DocPage name="inputgroup"><InputGroupPage /></DocPage> } />
+                            <Route path=StaticSegment("buttongroup") view=|| view! { <DocPage name="buttongroup"><ButtonGroupPage /></DocPage> } />
+                            <Route path=StaticSegment("fluid") view=|| view! { <DocPage name="fluid"><FluidPage /></DocPage> } />
+                            <Route path=StaticSegment("iconfield") view=|| view! { <DocPage name="iconfield"><IconFieldPage /></DocPage> } />
+                            <Route path=StaticSegment("floatlabel") view=|| view! { <DocPage name="floatlabel"><FloatLabelPage /></DocPage> } />
+                            <Route path=StaticSegment("iftalabel") view=|| view! { <DocPage name="iftalabel"><IftaLabelPage /></DocPage> } />
+                            <Route path=StaticSegment("overlaybadge") view=|| view! { <DocPage name="overlaybadge"><OverlayBadgePage /></DocPage> } />
+                            <Route path=StaticSegment("timeline") view=|| view! { <DocPage name="timeline"><TimelinePage /></DocPage> } />
+                            <Route path=StaticSegment("metergroup") view=|| view! { <DocPage name="metergroup"><MeterGroupPage /></DocPage> } />
+                            <Route path=StaticSegment("breadcrumb") view=|| view! { <DocPage name="breadcrumb"><BreadcrumbPage /></DocPage> } />
+                            <Route path=StaticSegment("inputotp") view=|| view! { <DocPage name="inputotp"><InputOtpPage /></DocPage> } />
+                            <Route path=StaticSegment("scrolltop") view=|| view! { <DocPage name="scrolltop"><ScrollTopPage /></DocPage> } />
+                            <Route path=StaticSegment("password") view=|| view! { <DocPage name="password"><PasswordPage /></DocPage> } />
+                            <Route path=StaticSegment("inplace") view=|| view! { <DocPage name="inplace"><InplacePage /></DocPage> } />
+                            <Route path=StaticSegment("splitter") view=|| view! { <DocPage name="splitter"><SplitterPage /></DocPage> } />
+                            <Route path=StaticSegment("tabs") view=|| view! { <DocPage name="tabs"><TabsPage /></DocPage> } />
+                            <Route path=StaticSegment("popover") view=|| view! { <DocPage name="popover"><PopoverPage /></DocPage> } />
+                            <Route path=StaticSegment("drawer") view=|| view! { <DocPage name="drawer"><DrawerPage /></DocPage> } />
+                            <Route path=StaticSegment("dialog") view=|| view! { <DocPage name="dialog"><DialogPage /></DocPage> } />
+                            <Route path=StaticSegment("tooltip") view=|| view! { <DocPage name="tooltip"><TooltipPage /></DocPage> } />
+                            <Route path=StaticSegment("toast") view=|| view! { <DocPage name="toast"><ToastPage /></DocPage> } />
+                            <Route path=StaticSegment("menu") view=|| view! { <DocPage name="menu"><MenuPage /></DocPage> } />
+                            <Route path=StaticSegment("listbox") view=|| view! { <DocPage name="listbox"><ListboxPage /></DocPage> } />
+                            <Route path=StaticSegment("multiselect") view=|| view! { <DocPage name="multiselect"><MultiSelectPage /></DocPage> } />
+                            <Route path=StaticSegment("paginator") view=|| view! { <DocPage name="paginator"><PaginatorPage /></DocPage> } />
+                            <Route path=StaticSegment("stepper") view=|| view! { <DocPage name="stepper"><StepperPage /></DocPage> } />
+                            <Route path=StaticSegment("imagecompare") view=|| view! { <DocPage name="imagecompare"><ImageComparePage /></DocPage> } />
+                            <Route path=StaticSegment("blockui") view=|| view! { <DocPage name="blockui"><BlockUiPage /></DocPage> } />
+                            <Route path=StaticSegment("splitbutton") view=|| view! { <DocPage name="splitbutton"><SplitButtonPage /></DocPage> } />
+                            <Route path=StaticSegment("dock") view=|| view! { <DocPage name="dock"><DockPage /></DocPage> } />
+                            <Route path=StaticSegment("image") view=|| view! { <DocPage name="image"><ImagePage /></DocPage> } />
+                            <Route path=StaticSegment("confirmpopup") view=|| view! { <DocPage name="confirmpopup"><ConfirmPopupPage /></DocPage> } />
+                            <Route path=StaticSegment("confirmdialog") view=|| view! { <DocPage name="confirmdialog"><ConfirmDialogPage /></DocPage> } />
+                            <Route path=StaticSegment("speeddial") view=|| view! { <DocPage name="speeddial"><SpeedDialPage /></DocPage> } />
+                            <Route path=StaticSegment("carousel") view=|| view! { <DocPage name="carousel"><CarouselPage /></DocPage> } />
+                            <Route path=StaticSegment("tieredmenu") view=|| view! { <DocPage name="tieredmenu"><TieredMenuPage /></DocPage> } />
+                            <Route path=StaticSegment("steps") view=|| view! { <DocPage name="steps"><StepsPage /></DocPage> } />
+                            <Route path=StaticSegment("contextmenu") view=|| view! { <DocPage name="contextmenu"><ContextMenuPage /></DocPage> } />
+                            <Route path=StaticSegment("menubar") view=|| view! { <DocPage name="menubar"><MenubarPage /></DocPage> } />
+                            <Route path=StaticSegment("panelmenu") view=|| view! { <DocPage name="panelmenu"><PanelMenuPage /></DocPage> } />
+                            <Route path=StaticSegment("megamenu") view=|| view! { <DocPage name="megamenu"><MegaMenuPage /></DocPage> } />
+                            <Route path=StaticSegment("tree") view=|| view! { <DocPage name="tree"><TreePage /></DocPage> } />
+                            <Route path=StaticSegment("treeselect") view=|| view! { <DocPage name="treeselect"><TreeSelectPage /></DocPage> } />
+                            <Route path=StaticSegment("cascadeselect") view=|| view! { <DocPage name="cascadeselect"><CascadeSelectPage /></DocPage> } />
+                            <Route path=StaticSegment("autocomplete") view=|| view! { <DocPage name="autocomplete"><AutoCompletePage /></DocPage> } />
+                            <Route path=StaticSegment("inputmask") view=|| view! { <DocPage name="inputmask"><InputMaskPage /></DocPage> } />
+                            <Route path=StaticSegment("colorpicker") view=|| view! { <DocPage name="colorpicker"><ColorPickerPage /></DocPage> } />
+                            <Route path=StaticSegment("galleria") view=|| view! { <DocPage name="galleria"><GalleriaPage /></DocPage> } />
+                            <Route path=StaticSegment("fileupload") view=|| view! { <DocPage name="fileupload"><FileUploadPage /></DocPage> } />
+                            <Route path=StaticSegment("orderlist") view=|| view! { <DocPage name="orderlist"><OrderListPage /></DocPage> } />
+                            <Route path=StaticSegment("picklist") view=|| view! { <DocPage name="picklist"><PickListPage /></DocPage> } />
+                            <Route path=StaticSegment("datepicker") view=|| view! { <DocPage name="datepicker"><DatePickerPage /></DocPage> } />
+                            <Route path=StaticSegment("dataview") view=|| view! { <DocPage name="dataview"><DataViewPage /></DocPage> } />
+                            <Route path=StaticSegment("table") view=|| view! { <DocPage name="table"><TablePage /></DocPage> } />
+                            <Route path=StaticSegment("treetable") view=|| view! { <DocPage name="treetable"><TreeTablePage /></DocPage> } />
+                        </Routes>
+                    </main>
+    </div>
+                </div>
+            </Router>
+        }
 }

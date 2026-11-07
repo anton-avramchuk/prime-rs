@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Avatar', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/avatar');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=label] .p-avatar').first()).toBeVisible();
     });
 

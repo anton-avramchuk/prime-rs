@@ -66,7 +66,6 @@ fn Clear() -> impl IntoView {
 #[component]
 pub fn TreeSelectPage() -> impl IntoView {
     view! {
-        <h2>"TreeSelect"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

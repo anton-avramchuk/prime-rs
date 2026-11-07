@@ -367,7 +367,6 @@ fn LazyLoad() -> impl IntoView {
 #[component]
 pub fn TablePage() -> impl IntoView {
     view! {
-        <h2>"Table"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

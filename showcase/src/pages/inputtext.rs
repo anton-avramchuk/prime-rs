@@ -12,7 +12,6 @@ use prime_inputtext::InputText;
 pub fn InputTextPage() -> impl IntoView {
     let value = RwSignal::new(String::new());
     view! {
-        <h2>"InputText"</h2>
         <Demo name="basic" title="Basic">
             <InputText value=value placeholder="Введите текст" />
             <span data-testid="echo">{move || value.get()}</span>

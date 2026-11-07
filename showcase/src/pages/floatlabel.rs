@@ -12,7 +12,6 @@ use prime_inputtext::InputText;
 pub fn FloatLabelPage() -> impl IntoView {
     let invalid_value = RwSignal::new(String::new());
     view! {
-        <h2>"FloatLabel"</h2>
         <Demo name="basic" title="Basic">
             <FloatLabel>
                 <InputText id="username" autocomplete="off" />

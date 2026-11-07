@@ -101,7 +101,6 @@ fn template_item(ctx: ContextMenuItemContext) -> AnyView {
 #[component]
 pub fn ContextMenuPage() -> impl IntoView {
     view! {
-        <h2>"ContextMenu"</h2>
         <Demo name="basic" title="Basic">
             <div
                 id="basic_target"

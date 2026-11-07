@@ -43,7 +43,6 @@ pub fn InputNumberPage() -> impl IntoView {
     let disabled = RwSignal::new(Some(50.0));
     let fluid = RwSignal::new(Some(50.0));
     view! {
-        <h2>"InputNumber"</h2>
         <Demo name="locale" title="Locale">
             <div style={ROW}>
                 <div style={CELL}>

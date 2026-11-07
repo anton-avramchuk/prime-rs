@@ -15,6 +15,8 @@ test.describe('Password', () => {
 
     test('фокус открывает панель с подсказкой, потеря фокуса закрывает', async ({ page }) => {
         const demo = page.locator('[data-demo=meter]');
+        // у нижнего края окна панель открылась бы сверху: ставим поле у верха окна
+        await demo.evaluate((el) => el.scrollIntoView({ block: 'start' }));
         await demo.locator('input').click();
         const panel = demo.locator('.p-password-overlay');
         await expect(panel).toBeVisible();

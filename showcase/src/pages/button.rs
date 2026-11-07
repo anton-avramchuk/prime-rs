@@ -49,7 +49,6 @@ pub fn ButtonPage() -> impl IntoView {
         set_timeout(move || loading.set(false), Duration::from_secs(2));
     });
     view! {
-        <h2>"Button"</h2>
         <Demo name="basic" title="Basic">
             <Button label="Submit" />
         </Demo>

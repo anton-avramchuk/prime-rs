@@ -104,6 +104,7 @@ test.describe('Tooltip', () => {
             (el as HTMLElement).style.position = 'fixed';
             (el as HTMLElement).style.right = '0px';
             (el as HTMLElement).style.top = '300px';
+            (el as HTMLElement).style.zIndex = '1000'; // над боковым оглавлением страницы
         });
         await input.hover();
         await expect(tip(page)).toBeVisible();

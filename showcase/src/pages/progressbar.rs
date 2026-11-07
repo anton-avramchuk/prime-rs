@@ -26,7 +26,6 @@ pub fn ProgressBarPage() -> impl IntoView {
     });
     let content = Callback::new(|v: Option<f64>| view! { <span>{format!("{}/100", v.unwrap_or_default())}</span> }.into_any());
     view! {
-        <h2>"ProgressBar"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%">
                 <ProgressBar value=50.0 />

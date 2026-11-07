@@ -15,7 +15,6 @@ const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, se
 #[component]
 pub fn ScrollTopPage() -> impl IntoView {
     view! {
-        <h2>"ScrollTop"</h2>
         <Demo name="basic" title="Basic">
             <div style="display: flex; flex-direction: column; align-items: center">
                 <p>"Scroll down the page to display the ScrollTop component."</p>

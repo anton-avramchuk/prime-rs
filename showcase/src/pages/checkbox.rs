@@ -22,7 +22,6 @@ pub fn CheckboxPage() -> impl IntoView {
         }
     };
     view! {
-        <h2>"Checkbox"</h2>
         <Demo name="basic" title="Basic">
             <Checkbox binary=true checked=checked />
             <span data-testid="echo">{move || checked.get().to_string()}</span>

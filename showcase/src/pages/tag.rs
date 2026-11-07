@@ -31,7 +31,6 @@ macro_rules! severities {
 #[component]
 pub fn TagPage() -> impl IntoView {
     view! {
-        <h2>"Tag"</h2>
         <Demo name="basic" title="Basic">
             <Tag value="New" />
         </Demo>

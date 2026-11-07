@@ -57,7 +57,6 @@ pub fn AccordionPage() -> impl IntoView {
     let toggle_icon =
         Callback::new(|active: bool| if active { view! { <MinusIcon /> }.into_any() } else { view! { <PlusIcon /> }.into_any() });
     view! {
-        <h2>"Accordion"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%">
                 <Accordion default_value=v(&["0"])>

@@ -61,7 +61,6 @@ pub fn MultiSelectPage() -> impl IntoView {
         view! { <div style="display: flex; align-items: center; gap: 0.5rem"><b>{o.value}</b><span>{o.label}</span></div> }.into_any()
     });
     view! {
-        <h2>"MultiSelect"</h2>
         <Demo name="basic" title="Basic">
             <MultiSelect options=cities() values=basic placeholder="Select Cities" max_selected_labels=3 style=FIELD />
             <span data-testid="echo">{move || basic.get().join(",")}</span>

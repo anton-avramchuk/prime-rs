@@ -123,7 +123,6 @@ fn HeadlessDemo() -> impl IntoView {
 #[component]
 pub fn ConfirmPopupPage() -> impl IntoView {
     view! {
-        <h2>"ConfirmPopup"</h2>
         <Demo name="basic" title="Basic">
             <BasicDemo />
         </Demo>

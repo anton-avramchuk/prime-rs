@@ -11,7 +11,6 @@ use prime_overlaybadge::{BadgeSeverity, OverlayBadge};
 #[component]
 pub fn OverlayBadgePage() -> impl IntoView {
     view! {
-        <h2>"OverlayBadge"</h2>
         <Demo name="basic" title="Basic">
             <OverlayBadge value="2">
                 <span style="font-size: 2rem; display: inline-flex"><InfoCircleIcon /></span>

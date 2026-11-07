@@ -31,7 +31,6 @@ pub fn MessagePage() -> impl IntoView {
         set_timeout(move || visible.set(false), Duration::from_millis(3000));
     };
     view! {
-        <h2>"Message"</h2>
         <Demo name="basic" title="Basic">
             <Message>"Message Content"</Message>
         </Demo>

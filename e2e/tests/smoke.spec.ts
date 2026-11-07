@@ -4,6 +4,8 @@ test('страница гидрируется, иконки и переключ�
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto('/');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
     await expect(page.locator('[data-testid=icons] svg')).toHaveCount(54);
 
     const bg = () => page.getByTestId('app').evaluate((el) => getComputedStyle(el).backgroundColor);

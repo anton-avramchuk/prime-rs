@@ -53,6 +53,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt --all --check
+      - name: Данные сайта документации актуальны
+        run: cargo xtask gen-docs --check
 
   deny:
     name: cargo-deny

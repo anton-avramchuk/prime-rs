@@ -18,7 +18,6 @@ pub fn InputGroupPage() -> impl IntoView {
     let checked = RwSignal::new(false);
     let radio = RwSignal::new(None::<String>);
     view! {
-        <h2>"InputGroup"</h2>
         <Demo name="basic" title="Basic">
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; width: 100%">
                 <InputGroup>

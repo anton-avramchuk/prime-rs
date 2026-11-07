@@ -125,7 +125,6 @@ fn Template() -> impl IntoView {
 #[component]
 pub fn AutoCompletePage() -> impl IntoView {
     view! {
-        <h2>"AutoComplete"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

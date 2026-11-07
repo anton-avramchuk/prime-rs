@@ -151,7 +151,6 @@ fn HeadlessDemo() -> impl IntoView {
 #[component]
 pub fn ConfirmDialogPage() -> impl IntoView {
     view! {
-        <h2>"ConfirmDialog"</h2>
         <Demo name="basic" title="Basic">
             <BasicDemo />
         </Demo>

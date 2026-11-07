@@ -58,7 +58,6 @@ fn Clear() -> impl IntoView {
 #[component]
 pub fn InputMaskPage() -> impl IntoView {
     view! {
-        <h2>"InputMask"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

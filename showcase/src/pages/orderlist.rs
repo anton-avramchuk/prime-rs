@@ -51,7 +51,6 @@ fn Controls() -> impl IntoView {
 #[component]
 pub fn OrderListPage() -> impl IntoView {
     view! {
-        <h2>"OrderList"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

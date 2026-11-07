@@ -74,7 +74,6 @@ fn Formats() -> impl IntoView {
 #[component]
 pub fn ColorPickerPage() -> impl IntoView {
     view! {
-        <h2>"ColorPicker"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

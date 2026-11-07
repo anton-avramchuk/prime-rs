@@ -29,7 +29,6 @@ fn with_icons() -> Vec<MeterItem> {
 #[component]
 pub fn MeterGroupPage() -> impl IntoView {
     view! {
-        <h2>"MeterGroup"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%">
                 <MeterGroup value={vec![MeterItem::new("Space used", "var(--p-primary-color)", 15.0)]} />

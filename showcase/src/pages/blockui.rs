@@ -24,7 +24,6 @@ pub fn BlockUiPage() -> impl IntoView {
         set_timeout(move || document_blocked.set(false), Duration::from_secs(3));
     };
     view! {
-        <h2>"BlockUI"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%">
                 <div style="display: flex; gap: 0.5rem">

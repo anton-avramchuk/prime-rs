@@ -4,6 +4,7 @@ mod affected;
 mod bench;
 mod clean;
 mod diff;
+mod gen_docs;
 mod gen_icons;
 mod gen_spec;
 mod gen_theme;
@@ -18,6 +19,7 @@ cargo xtask <команда>
 Команды:
   upstream-diff [--to <rev>]   портированные компоненты, изменившиеся в PrimeNG с закреплённого коммита
   gen-spec <имя> [--out <файл>] заготовка спеки компонента из исходников PrimeNG
+  gen-docs [--check]           данные сайта документации showcase/src/generated.rs из исходников
   gen-icons                    сгенерировать crates/prime-icons из иконок PrimeNG
   gen-theme                    сгенерировать CSS темы Aura в crates/prime-theme (нужен Node)
   wasm-size [--budgets <файл>] вклад компонентов в размер wasm и проверка бюджетов (benches/budgets.toml)
@@ -70,6 +72,7 @@ fn run(args: &[String]) -> Result<(), String> {
             println!("иконок сгенерировано: {n} (+ blank вручную)");
             Ok(())
         }
+        Some("gen-docs") => gen_docs::run(&root, args.iter().any(|a| a == "--check")),
         Some("gen-theme") => {
             let up = upstream::Upstream::load(&root)?;
             gen_theme::run(&root, &up)

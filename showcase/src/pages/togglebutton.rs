@@ -24,7 +24,6 @@ pub fn ToggleButtonPage() -> impl IntoView {
     let invalid = RwSignal::new(false);
     let not_checked = Signal::derive(move || !invalid.get());
     view! {
-        <h2>"ToggleButton"</h2>
         <Demo name="basic" title="Basic">
             <ToggleButton checked=basic on_label="On" off_label="Off" style="width: 6rem" />
             <span data-testid="echo">{move || basic.get().to_string()}</span>

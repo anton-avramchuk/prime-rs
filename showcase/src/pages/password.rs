@@ -30,7 +30,6 @@ pub fn PasswordPage() -> impl IntoView {
     let (invalid1, invalid2) = (RwSignal::new(String::new()), RwSignal::new(String::new()));
     let disabled = RwSignal::new(String::new());
     view! {
-        <h2>"Password"</h2>
         <Demo name="basic" title="Basic">
             <Password value=basic feedback=false autocomplete="off" />
         </Demo>

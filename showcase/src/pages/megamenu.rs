@@ -93,7 +93,6 @@ fn template_item(ctx: MegaMenuItemContext) -> AnyView {
 #[component]
 pub fn MegaMenuPage() -> impl IntoView {
     view! {
-        <h2>"MegaMenu"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%"><MegaMenu id="basic_menu" model=items() /></div>
         </Demo>

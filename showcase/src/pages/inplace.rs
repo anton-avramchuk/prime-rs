@@ -23,7 +23,6 @@ pub fn InplacePage() -> impl IntoView {
         ]);
     });
     view! {
-        <h2>"Inplace"</h2>
         <Demo name="basic" title="Basic">
             <Inplace
                 display=ViewFn::from(|| view! { <span>"View Content"</span> })

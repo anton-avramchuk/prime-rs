@@ -8,6 +8,8 @@ test.describe('ProgressSpinner', () => {
         page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
         page.on('pageerror', (e) => errors.push(e.message));
         await page.goto('/progressspinner');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-progressspinner')).toBeVisible();
     });
 

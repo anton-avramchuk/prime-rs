@@ -12,7 +12,6 @@ use prime_inputtext::InputText;
 pub fn IftaLabelPage() -> impl IntoView {
     let invalid_value = RwSignal::new(String::new());
     view! {
-        <h2>"IftaLabel"</h2>
         <Demo name="basic" title="Basic">
             <IftaLabel>
                 <InputText id="username" autocomplete="off" />

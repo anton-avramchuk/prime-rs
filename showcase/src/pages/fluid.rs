@@ -20,7 +20,6 @@ fn cities() -> Vec<SelectOption> {
 #[component]
 pub fn FluidPage() -> impl IntoView {
     view! {
-        <h2>"Fluid"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%; display: flex; flex-direction: column; gap: 1rem">
                 <Fluid>

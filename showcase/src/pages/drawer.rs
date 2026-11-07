@@ -25,7 +25,6 @@ pub fn DrawerPage() -> impl IntoView {
     let open = |signal: RwSignal<bool>| Callback::new(move |_: web_sys::MouseEvent| signal.set(true));
 
     view! {
-        <h2>"Drawer"</h2>
         <Demo name="basic" title="Basic">
             <Drawer visible=basic header="Drawer">
                 <p>{LOREM}</p>

@@ -35,7 +35,6 @@ pub fn PopoverPage() -> impl IntoView {
     let selected = RwSignal::new(None::<&'static str>);
 
     view! {
-        <h2>"Popover"</h2>
         <Demo name="basic" title="Basic">
             <div style="position: relative">
                 <Button label="Share" on_click=Callback::new(move |e: web_sys::MouseEvent| basic.toggle(&e)) />

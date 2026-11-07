@@ -2,6 +2,9 @@
 #![recursion_limit = "512"]
 
 mod app;
+mod doc;
+#[rustfmt::skip]
+mod generated;
 mod pages;
 
 pub use app::{App, shell};

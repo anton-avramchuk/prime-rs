@@ -52,7 +52,6 @@ pub fn SplitButtonPage() -> impl IntoView {
     let check = ViewFn::from(|| view! { <CheckIcon /> });
     let cog = ViewFn::from(|| view! { <RefreshIcon /> });
     view! {
-        <h2>"SplitButton"</h2>
         <Toast />
         <Demo name="basic" title="Basic">
             <SplitButton label="Save" on_click=save model=items(service) />

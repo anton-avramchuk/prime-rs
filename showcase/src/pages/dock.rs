@@ -53,7 +53,6 @@ pub fn DockPage() -> impl IntoView {
         }
     };
     view! {
-        <h2>"Dock"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%">
                 <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem">

@@ -27,7 +27,6 @@ pub fn SelectButtonPage() -> impl IntoView {
     let item = Callback::new(|(option, _): (SelectButtonOption, usize)| view! { <strong>{option.label}</strong> }.into_any());
     let payment_options = (1..=3).map(|n| SelectButtonOption::new(format!("Option {n}"), n.to_string())).collect::<Vec<_>>();
     view! {
-        <h2>"SelectButton"</h2>
         <Demo name="basic" title="Basic">
             <SelectButton options=state_options() value=basic aria_labelledby="basic" />
             <span data-testid="echo">{move || basic.get().unwrap_or_default()}</span>

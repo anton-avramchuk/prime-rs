@@ -161,7 +161,6 @@ fn template_item(node: TreeNode) -> AnyView {
 #[component]
 pub fn TreePage() -> impl IntoView {
     view! {
-        <h2>"Tree"</h2>
         <Demo name="basic" title="Basic">
             <Tree id="basic_tree" style=width() value=files() />
         </Demo>

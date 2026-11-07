@@ -167,7 +167,6 @@ fn Loading() -> impl IntoView {
 #[component]
 pub fn DataViewPage() -> impl IntoView {
     view! {
-        <h2>"DataView"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

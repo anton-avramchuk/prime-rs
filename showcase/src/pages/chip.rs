@@ -17,7 +17,6 @@ const AVATARS: &str = "https://primefaces.org/cdn/primeng/images/demo/avatar";
 #[component]
 pub fn ChipPage() -> impl IntoView {
     view! {
-        <h2>"Chip"</h2>
         <Demo name="basic" title="Basic">
             <Chip label="Action" />
             <Chip label="Comedy" />

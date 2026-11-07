@@ -180,7 +180,6 @@ fn TemplateDemo() -> impl IntoView {
 #[component]
 pub fn SpeedDialPage() -> impl IntoView {
     view! {
-        <h2>"SpeedDial"</h2>
         <Demo name="linear" title="Linear">
             <LinearDemo />
         </Demo>

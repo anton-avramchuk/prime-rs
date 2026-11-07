@@ -12,7 +12,6 @@ const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, se
 pub fn FieldsetPage() -> impl IntoView {
     let collapsed = RwSignal::new(false);
     view! {
-        <h2>"Fieldset"</h2>
         <Demo name="basic" title="Basic">
             <Fieldset legend="Header">
                 <p style="margin: 0">{LOREM}</p>

@@ -55,7 +55,6 @@ pub fn ListboxPage() -> impl IntoView {
         view! { <div style="display: flex; align-items: center; gap: 0.5rem"><b>{o.value}</b><span>{o.label}</span></div> }.into_any()
     });
     view! {
-        <h2>"Listbox"</h2>
         <Demo name="basic" title="Basic">
             <Listbox options=cities() value=basic style=FIELD />
             <span data-testid="echo">{move || basic.get().unwrap_or_default()}</span>

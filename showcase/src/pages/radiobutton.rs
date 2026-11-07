@@ -20,7 +20,6 @@ pub fn RadioButtonPage() -> impl IntoView {
         }
     };
     view! {
-        <h2>"RadioButton"</h2>
         <Demo name="group" title="Group">
             <div style="display: flex; flex-wrap: wrap; gap: 1rem">
                 {option("Cheese", "ingredient1")} {option("Mushroom", "ingredient2")} {option("Pepper", "ingredient3")}

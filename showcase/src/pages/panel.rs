@@ -18,7 +18,6 @@ const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, se
 pub fn PanelPage() -> impl IntoView {
     let collapsed = RwSignal::new(false);
     view! {
-        <h2>"Panel"</h2>
         <Demo name="basic" title="Basic">
             <Panel header="Header">
                 <p style="margin: 0">{LOREM}</p>

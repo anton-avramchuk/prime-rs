@@ -40,7 +40,6 @@ pub fn InputOtpPage() -> impl IntoView {
         .into_any()
     });
     view! {
-        <h2>"InputOtp"</h2>
         <Demo name="basic" title="Basic">
             <InputOtp value=basic />
             <span data-testid="echo-basic">{move || basic.get()}</span>

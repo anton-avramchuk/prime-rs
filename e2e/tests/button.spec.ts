@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Button', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/button');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         // ждём гидрацию: клик по Loading работает только после неё
         await expect(page.locator('[data-demo=loading] button')).toBeVisible();
         await page.waitForTimeout(500);

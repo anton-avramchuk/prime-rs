@@ -49,7 +49,6 @@ fn Filter() -> impl IntoView {
 #[component]
 pub fn PickListPage() -> impl IntoView {
     view! {
-        <h2>"PickList"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

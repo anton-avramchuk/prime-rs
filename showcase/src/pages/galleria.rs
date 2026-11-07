@@ -178,7 +178,6 @@ fn FullScreen() -> impl IntoView {
 #[component]
 pub fn GalleriaPage() -> impl IntoView {
     view! {
-        <h2>"Galleria"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

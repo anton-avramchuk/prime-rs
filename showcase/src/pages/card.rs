@@ -13,7 +13,6 @@ const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. I
 #[component]
 pub fn CardPage() -> impl IntoView {
     view! {
-        <h2>"Card"</h2>
         <Demo name="basic" title="Basic">
             <Card header="Simple Card">
                 <p style="margin: 0">{LOREM}</p>

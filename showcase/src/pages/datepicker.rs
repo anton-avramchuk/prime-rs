@@ -120,7 +120,6 @@ fn MultipleMonths() -> impl IntoView {
 #[component]
 pub fn DatePickerPage() -> impl IntoView {
     view! {
-        <h2>"DatePicker"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

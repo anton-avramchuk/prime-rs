@@ -21,7 +21,6 @@ pub fn ImageComparePage() -> impl IntoView {
     let (left, right) = (picture("0ea5e9", "1e3a8a", "Before"), picture("f59e0b", "9a3412", "After"));
     let (left2, right2) = (left.clone(), right.clone());
     view! {
-        <h2>"ImageCompare"</h2>
         <Demo name="basic" title="Basic">
             <ImageCompare
                 left=move || view! { <img src={left.clone()} alt="Before" /> }

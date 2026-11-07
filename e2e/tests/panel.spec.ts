@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Panel', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/panel');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-panel')).toBeVisible();
         // дожидаемся гидратации: первая кнопка получает обработчик
         await page.waitForFunction(() => document.querySelector('[data-demo=toggleable] .p-panel-toggle-button') !== null);

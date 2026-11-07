@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Fieldset', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/fieldset');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-fieldset')).toBeVisible();
         await page.waitForFunction(() => document.querySelector('[data-demo=toggleable] .p-fieldset-toggle-button') !== null);
         await page.waitForTimeout(300);

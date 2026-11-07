@@ -25,7 +25,6 @@ pub fn SkeletonPage() -> impl IntoView {
         }
     };
     view! {
-        <h2>"Skeleton"</h2>
         <Demo name="shapes" title="Shapes">
             <div style="display: flex; flex-wrap: wrap; width: 100%">
                 <div style="width: 50%; padding: 1rem; box-sizing: border-box">

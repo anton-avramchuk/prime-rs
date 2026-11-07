@@ -170,6 +170,7 @@ pub use tree::TreePage;
 pub use treeselect::TreeSelectPage;
 pub use treetable::TreeTablePage;
 
+use crate::doc::DemoCode;
 use leptos::prelude::*;
 
 /// Одна демонстрация. Разметка повторяет showcase PrimeNG (`<имя-doc> .card`), чтобы страницы можно было сравнивать скриншотами:
@@ -192,6 +193,7 @@ pub fn Demo(
             >
                 {children()}
             </div>
+            <DemoCode demo=name />
         </section>
     }
 }

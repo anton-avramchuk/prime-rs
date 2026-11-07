@@ -148,7 +148,6 @@ fn TemplateDemo() -> impl IntoView {
 #[component]
 pub fn MenuPage() -> impl IntoView {
     view! {
-        <h2>"Menu"</h2>
         <BasicDemo />
         <GroupDemo />
         <CommandDemo />

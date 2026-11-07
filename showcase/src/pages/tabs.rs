@@ -48,7 +48,6 @@ pub fn TabsPage() -> impl IntoView {
         }
     };
     view! {
-        <h2>"Tabs"</h2>
         <Demo name="basic" title="Basic">
             <Tabs default_value="0" style="width: 100%">
                 <TabList>

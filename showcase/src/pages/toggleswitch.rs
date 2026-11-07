@@ -19,7 +19,6 @@ pub fn ToggleSwitchPage() -> impl IntoView {
             },
         );
     view! {
-        <h2>"ToggleSwitch"</h2>
         <Demo name="basic" title="Basic">
             <ToggleSwitch checked=basic />
             <span data-testid="echo">{move || basic.get().to_string()}</span>

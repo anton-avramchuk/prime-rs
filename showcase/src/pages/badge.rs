@@ -8,7 +8,6 @@ use prime_badge::{Badge, BadgeSeverity, BadgeSize};
 #[component]
 pub fn BadgePage() -> impl IntoView {
     view! {
-        <h2>"Badge"</h2>
         <Demo name="basic" title="Basic">
             <Badge value="2" />
         </Demo>

@@ -12,7 +12,6 @@ const AT_VERO: &str = "At vero eos et accusamus et iusto odio dignissimos ducimu
 #[component]
 pub fn ScrollPanelPage() -> impl IntoView {
     view! {
-        <h2>"ScrollPanel"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%">
                 <ScrollPanel style="width: 100%; height: 150px">

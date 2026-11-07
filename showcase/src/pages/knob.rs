@@ -25,7 +25,6 @@ pub fn KnobPage() -> impl IntoView {
     let at_max = Signal::derive(move || controlled.get() >= 100.0);
     let at_min = Signal::derive(move || controlled.get() <= 0.0);
     view! {
-        <h2>"Knob"</h2>
         <Demo name="basic" title="Basic">
             <Knob value=basic aria_label="Basic" />
             <span data-testid="echo">{move || basic.get().to_string()}</span>

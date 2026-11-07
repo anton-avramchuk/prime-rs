@@ -12,7 +12,6 @@ use prime_icons::{CheckIcon, PencilIcon, PlusIcon, TimesIcon, TrashIcon};
 #[component]
 pub fn ButtonGroupPage() -> impl IntoView {
     view! {
-        <h2>"ButtonGroup"</h2>
         <Demo name="basic" title="Basic">
             <ButtonGroup>
                 <Button label="Save" icon=ViewFn::from(|| view! { <CheckIcon /> }) />

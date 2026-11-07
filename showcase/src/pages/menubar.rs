@@ -86,7 +86,6 @@ fn template_item(ctx: MenubarItemContext) -> AnyView {
 #[component]
 pub fn MenubarPage() -> impl IntoView {
     view! {
-        <h2>"Menubar"</h2>
         <Demo name="basic" title="Basic">
             <Menubar id="basic_menu" model=items() />
         </Demo>

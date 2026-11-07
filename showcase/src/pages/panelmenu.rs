@@ -162,7 +162,6 @@ fn ControlledDemo() -> impl IntoView {
 #[component]
 pub fn PanelMenuPage() -> impl IntoView {
     view! {
-        <h2>"PanelMenu"</h2>
         <Demo name="basic" title="Basic">
             <PanelMenu id="basic_menu" style="width: 100%; max-width: 20rem" model=items() />
         </Demo>

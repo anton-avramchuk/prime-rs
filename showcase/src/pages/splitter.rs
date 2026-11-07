@@ -34,7 +34,6 @@ pub fn SplitterPage() -> impl IntoView {
         }
     });
     view! {
-        <h2>"Splitter"</h2>
         <Demo name="horizontal" title="Horizontal">
             <Splitter style="width: 100%; height: 300px" panels=vec![cell("Panel 1"), cell("Panel 2")] />
         </Demo>

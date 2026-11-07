@@ -26,6 +26,8 @@ for (const scenario of [
 ]) {
     test(`память и время: ${scenario.label}, создание и удаление в цикле`, async ({ page }) => {
         await page.goto('/');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         const cdp = await page.context().newCDPSession(page);
         await cdp.send('Performance.enable');
 

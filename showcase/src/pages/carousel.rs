@@ -74,7 +74,6 @@ fn responsive() -> Vec<Responsive> {
 #[component]
 pub fn CarouselPage() -> impl IntoView {
     view! {
-        <h2>"Carousel"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%" data-testid="basic">
                 <Carousel value=products() num_visible=3 num_scroll=3 responsive_options=responsive() item=Callback::new(card) />

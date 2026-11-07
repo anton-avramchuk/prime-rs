@@ -62,7 +62,6 @@ fn InteractiveDemo() -> impl IntoView {
 #[component]
 pub fn StepsPage() -> impl IntoView {
     view! {
-        <h2>"Steps"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%" data-testid="basic">
                 <Steps model=plain() active_index=1usize />

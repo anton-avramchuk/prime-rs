@@ -99,7 +99,6 @@ fn Custom() -> impl IntoView {
 #[component]
 pub fn FileUploadPage() -> impl IntoView {
     view! {
-        <h2>"FileUpload"</h2>
         <Demo name="basic" title="Basic">
             <Basic />
         </Demo>

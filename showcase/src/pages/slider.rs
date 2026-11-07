@@ -43,7 +43,6 @@ pub fn SliderPage() -> impl IntoView {
         }
     });
     view! {
-        <h2>"Slider"</h2>
         <Demo name="basic" title="Basic">
             <Slider value=basic style="width: 14rem" aria_label="Basic" />
             <span data-testid="echo">{move || basic.get().to_string()}</span>

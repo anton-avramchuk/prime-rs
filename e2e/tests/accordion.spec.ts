@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Accordion', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/accordion');
+        // клики до гидратации (загрузка wasm) теряются
+        await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-accordion')).toBeVisible();
         await page.waitForFunction(() => document.querySelector('[data-demo=controlled] .p-accordionheader') !== null);
         await page.waitForTimeout(300);

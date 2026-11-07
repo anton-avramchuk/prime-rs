@@ -29,7 +29,6 @@ pub fn BreadcrumbPage() -> impl IntoView {
         view! { <a class="p-breadcrumb-item-link" href=item.url style="cursor: pointer">{icon}</a> }.into_any()
     });
     view! {
-        <h2>"Breadcrumb"</h2>
         <Demo name="basic" title="Basic">
             <Breadcrumb model=basic home=BreadcrumbItem::new() />
         </Demo>

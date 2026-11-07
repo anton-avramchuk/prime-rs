@@ -15,7 +15,6 @@ pub fn RatingPage() -> impl IntoView {
     let on_icon = Callback::new(|i: RatingIcon| view! { <span class={i.class} style="color: var(--p-red-500, red)">"♥"</span> }.into_any());
     let off_icon = Callback::new(|i: RatingIcon| view! { <span class={i.class}>"♡"</span> }.into_any());
     view! {
-        <h2>"Rating"</h2>
         <Demo name="basic" title="Basic">
             <Rating value=basic />
             <span data-testid="echo">{move || basic.get().map(|v| v.to_string()).unwrap_or_default()}</span>

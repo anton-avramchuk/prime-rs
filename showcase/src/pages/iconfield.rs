@@ -15,7 +15,6 @@ use prime_inputtext::InputText;
 #[component]
 pub fn IconFieldPage() -> impl IntoView {
     view! {
-        <h2>"IconField"</h2>
         <Demo name="basic" title="Basic">
             <IconField>
                 <InputIcon>

@@ -26,7 +26,6 @@ pub fn ImagePage() -> impl IntoView {
     let tpl = picture("10b981", "064e3b", "Custom", 400);
     let (tpl_image, tpl_preview) = (tpl.clone(), tpl.clone());
     view! {
-        <h2>"Image"</h2>
         <Demo name="basic" title="Basic">
             <Image src={basic} alt="Image" width="250" />
         </Demo>

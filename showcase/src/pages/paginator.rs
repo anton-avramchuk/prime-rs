@@ -42,7 +42,6 @@ pub fn PaginatorPage() -> impl IntoView {
         }
     });
     view! {
-        <h2>"Paginator"</h2>
         <Demo name="basic" title="Basic">
             <Paginator first=first rows=rows total_records=120 rows_per_page_options=rows_options() />
             <span data-testid="echo">{move || format!("first={} rows={}", first.get(), rows.get())}</span>

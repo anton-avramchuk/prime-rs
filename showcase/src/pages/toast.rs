@@ -247,7 +247,6 @@ fn HeadlessDemo() -> impl IntoView {
 #[component]
 pub fn ToastPage() -> impl IntoView {
     view! {
-        <h2>"Toast"</h2>
         <BasicDemo />
         <SeverityDemo />
         <MultipleDemo />

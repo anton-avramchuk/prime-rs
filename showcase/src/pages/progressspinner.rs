@@ -8,7 +8,6 @@ use prime_progressspinner::ProgressSpinner;
 #[component]
 pub fn ProgressSpinnerPage() -> impl IntoView {
     view! {
-        <h2>"ProgressSpinner"</h2>
         <Demo name="basic" title="Basic">
             <ProgressSpinner aria_label="loading" />
         </Demo>

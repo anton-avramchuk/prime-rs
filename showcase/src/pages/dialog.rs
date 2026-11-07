@@ -73,7 +73,6 @@ pub fn DialogPage() -> impl IntoView {
     };
 
     view! {
-        <h2>"Dialog"</h2>
         <Demo name="basic" title="Basic">
             <Button label="Show" on_click=open(basic) />
             <Dialog visible=basic header="Edit Profile" modal=true style="width: 25rem">

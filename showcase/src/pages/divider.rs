@@ -15,7 +15,6 @@ const LOREM: &str =
 #[component]
 pub fn DividerPage() -> impl IntoView {
     view! {
-        <h2>"Divider"</h2>
         <Demo name="basic" title="Basic">
             <div style="width: 100%">
                 <p>{LOREM}</p>
