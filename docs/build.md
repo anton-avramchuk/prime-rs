@@ -42,7 +42,9 @@ export CARGO_TARGET_DIR="$HOME/.cache/cargo-target"
 
 Заметно растят `target/` разные наборы features одних и тех же крейтов (`ssr`, `hydrate`, CSR, wasm: у `tachys` до пяти копий) и release-сборки
 бенчмарков. Рабочая копия, в которой выполнялись все команды подряд, дошла до 4,5 ГБ: периодически запускайте `cargo xtask clean`
-и используйте общий `CARGO_TARGET_DIR`.
+и используйте общий `CARGO_TARGET_DIR`. Предел размера cargo не поддерживает; держать `target/` в рамках (например, 5 ГБ) можно
+`cargo xtask clean --max-size 5` (cargo-sweep не удаляет артефакты, нужные текущей сборке, поэтому вплотную к лимиту он гарантий не даёт).
+Отладочная информация уже урезана (`debug = "line-tables-only"` для своих крейтов, `debug = false` для зависимостей, см. `[profile.dev]`).
 
 ## Команды xtask
 
@@ -50,6 +52,7 @@ export CARGO_TARGET_DIR="$HOME/.cache/cargo-target"
 cargo xtask upstream-diff [--to <rev>]   # какие портированные компоненты изменились в PrimeNG
 cargo xtask gen-spec <имя> [--out файл]  # заготовка спеки из исходников PrimeNG
 cargo xtask clean [--days N]             # cargo-sweep: удалить артефакты target/ старше N дней (по умолчанию 7)
+cargo xtask clean --max-size 5           # удалить самые старые артефакты, пока target/ больше 5 ГБ (можно вместе с --days)
 ```
 
 `upstream-diff` и `gen-spec` читают `upstream.toml`; путь к клону PrimeNG можно переопределить `PRIMENG_PATH`.

@@ -27,7 +27,7 @@ cargo xtask <команда>
   bench-compare <база> <сейчас> [--threshold 10] [--fail-over]
                                сравнить каталоги отчётов бенчмарков (*.json), вывод — Markdown
   affected [--base <ref> | файлы...]  затронутые крейты для выборочных проверок CI (формат $GITHUB_OUTPUT)
-  clean [--days <N>]           удалить артефакты target/ старше N дней (по умолчанию 7)
+  clean [--days <N>] [--max-size <ГБ>]  удалить артефакты target/ старше N дней (по умолчанию 7) и/или самые старые, пока target/ больше ГБ
 ";
 
 fn root() -> PathBuf {
@@ -102,8 +102,9 @@ fn run(args: &[String]) -> Result<(), String> {
             Ok(())
         }
         Some("clean") => {
-            let days = flag(args, "--days").map_or(Ok(7), |d| d.parse::<u32>().map_err(|e| format!("--days: {e}")))?;
-            clean::run(&root, days)
+            let days = flag(args, "--days").map(|d| d.parse::<u32>().map_err(|e| format!("--days: {e}"))).transpose()?;
+            let max_gb = flag(args, "--max-size").map(|d| d.parse::<u32>().map_err(|e| format!("--max-size: {e}"))).transpose()?;
+            clean::run(&root, days, max_gb)
         }
         Some("--help" | "-h" | "help") | None => {
             print!("{HELP}");
