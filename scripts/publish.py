@@ -9,19 +9,22 @@ version is already on crates.io are skipped, so a failed run can be re-run.
 Waits and retries when crates.io has not yet indexed a dependency or rate-limits us.
 """
 
+import email.utils
 import json
 import os
+import re
 import subprocess
 import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
 
 USER_AGENT = "prime-rs-publish (github actions)"
-RETRIES = 12
+RETRIES = 200
 WAIT_SECONDS = 60
-# Pause after each successful publish, so crates.io's new-crate rate limit is not hit.
-PUBLISH_DELAY_SECONDS = int(os.environ.get("PUBLISH_DELAY_SECONDS", "120"))
+# Pause after each successful publish. crates.io allows one new crate per 10 minutes after a burst of 5.
+PUBLISH_DELAY_SECONDS = int(os.environ.get("PUBLISH_DELAY_SECONDS", "600"))
 
 
 def workspace_packages():
@@ -82,8 +85,19 @@ def publish(name):
         )
         if not retryable or attempt == RETRIES:
             raise SystemExit(f"publishing {name} failed (attempt {attempt})")
-        print(f"{name}: waiting {WAIT_SECONDS}s before retry {attempt + 1}/{RETRIES}", flush=True)
-        time.sleep(WAIT_SECONDS)
+        wait = retry_wait(output)
+        print(f"{name}: waiting {wait}s before retry {attempt + 1}/{RETRIES}", flush=True)
+        time.sleep(wait)
+
+
+def retry_wait(output):
+    """Seconds to wait: until the time crates.io gives in a 429 response, otherwise a fixed interval."""
+    match = re.search(r"try again after (.+? GMT)", output)
+    if not match:
+        return WAIT_SECONDS
+    reset = email.utils.parsedate_to_datetime(match.group(1))
+    delta = (reset - datetime.now(timezone.utc)).total_seconds() + 30
+    return max(WAIT_SECONDS, int(delta))
 
 
 def main():
