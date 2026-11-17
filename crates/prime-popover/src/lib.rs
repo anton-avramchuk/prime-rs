@@ -1,7 +1,7 @@
-//! Popover — порт `p-popover` из PrimeNG 21.1.10.
+//! Popover — port of `p-popover` from PrimeNG 21.1.10.
 //!
-//! Плавающая панель с произвольным содержимым рядом с элементом-триггером. Панелью управляет [`PopoverRef`]
-//! (аналог `op.toggle($event)` из PrimeNG): его создают заранее, передают в [`Popover`] и вызывают из обработчиков.
+//! A floating panel with arbitrary content next to a trigger element. The panel is controlled by [`PopoverRef`]
+//! (the counterpart of `op.toggle($event)` in PrimeNG): create it in advance, pass it to [`Popover`] and call it from handlers.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -13,7 +13,7 @@
 //!     </Popover>
 //! }
 //! .to_html();
-//! // пока панель не показана, в разметке её нет
+//! // while the panel is not shown, it is not in the markup
 //! assert!(!html.contains("p-popover") && !html.contains("Body"));
 //! ```
 
@@ -35,16 +35,16 @@ use prime_dom::dom::{AlignMode, align_overlay};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
-/// Pass-through частей [`Popover`].
+/// Pass-through of the [`Popover`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct PopoverPt {
-    /// Корень панели.
+    /// Panel root.
     pub root: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
 }
 
-/// Управляющий объект панели: `toggle`/`show`/`hide` от события и цели.
+/// Panel control object: `toggle`/`show`/`hide` from an event and a target.
 #[derive(Clone, Copy)]
 pub struct PopoverRef {
     visible: RwSignal<bool>,
@@ -58,7 +58,7 @@ impl Default for PopoverRef {
     }
 }
 
-/// Цель по умолчанию: `currentTarget` события, а если его нет — `target`.
+/// Default target: the event's `currentTarget`, or `target` if there is none.
 fn event_target(event: &web_sys::Event) -> Option<web_sys::HtmlElement> {
     event
         .current_target()
@@ -67,41 +67,41 @@ fn event_target(event: &web_sys::Event) -> Option<web_sys::HtmlElement> {
 }
 
 impl PopoverRef {
-    /// Создаёт скрытую панель. Вызывать внутри компонента (владелец сигналов).
+    /// Creates a hidden panel. Call inside a component (the signal owner).
     pub fn new() -> Self {
         Self { visible: RwSignal::new(false), target: StoredValue::new_local(None), pending: StoredValue::new_local(None) }
     }
 
-    /// Панель сейчас показана (с подпиской).
+    /// The panel is currently shown (subscribes).
     pub fn visible(&self) -> bool {
         self.visible.get()
     }
 
-    /// Показывает панель у `currentTarget` события.
+    /// Shows the panel at the event's `currentTarget`.
     pub fn show(&self, event: &web_sys::Event) {
         if let Some(target) = event_target(event) {
             self.show_target(target);
         }
     }
 
-    /// Показывает панель у явной цели.
+    /// Shows the panel at an explicit target.
     pub fn show_at(&self, target: &web_sys::HtmlElement) {
         self.show_target(target.clone());
     }
 
-    /// Переключает панель; цель — `currentTarget` события.
+    /// Toggles the panel; the target is the event's `currentTarget`.
     pub fn toggle(&self, event: &web_sys::Event) {
         if let Some(target) = event_target(event) {
             self.toggle_target(target);
         }
     }
 
-    /// Переключает панель, выравнивая её по явной цели.
+    /// Toggles the panel, aligning it to an explicit target.
     pub fn toggle_at(&self, target: &web_sys::HtmlElement) {
         self.toggle_target(target.clone());
     }
 
-    /// Скрывает панель.
+    /// Hides the panel.
     pub fn hide(&self) {
         self.pending.set_value(None);
         self.visible.try_set(false);
@@ -119,7 +119,7 @@ impl PopoverRef {
             Retarget::Show => self.show_target(target),
             Retarget::Hide => self.hide(),
             Retarget::Switch => {
-                // Скрыть у старой цели и показать у новой в следующем тике: иначе панель не пересоздастся.
+                // Hide at the old target and show at the new one on the next tick: otherwise the panel is not recreated.
                 self.visible.set(false);
                 self.pending.set_value(Some(target));
                 let this = *self;
@@ -139,7 +139,7 @@ impl PopoverRef {
     }
 }
 
-/// Состояние, общее для обработчиков окна.
+/// State shared by the window handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     r: PopoverRef,
@@ -157,7 +157,7 @@ struct Core {
 }
 
 impl Core {
-    /// Снимает подписки на окно и освобождает z-index.
+    /// Removes the window subscriptions and releases the z-index.
     fn release(&self) {
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
             cleanup();
@@ -175,7 +175,7 @@ impl Core {
         (inside_panel, inside_target)
     }
 
-    /// Панель только что показана: z-index, выравнивание, стрелка, фокус, подписки, `on_show`.
+    /// The panel has just been shown: z-index, alignment, arrow, focus, subscriptions, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let (Some(panel), Some(target)) = (self.panel.get_untracked(), self.r.target.get_value()) else { return };
@@ -209,7 +209,7 @@ impl Core {
             );
         }
 
-        // Подписки — в следующем тике: клик, открывший панель, ещё всплывает к окну и закрыл бы её сам.
+        // Subscriptions on the next tick: the click that opened the panel is still bubbling to the window and would close it itself.
         let this = self.clone();
         let handle = set_timeout_with_handle(
             move || {
@@ -228,7 +228,7 @@ impl Core {
         }
     }
 
-    /// Клик снаружи, Escape, изменение размера окна и прокрутка предка цели скрывают панель.
+    /// A click outside, Escape, a window resize and a scroll of the target's ancestor hide the panel.
     #[cfg(target_arch = "wasm32")]
     fn bind_window(self: &Arc<Self>) {
         let this = self.clone();
@@ -260,7 +260,7 @@ impl Core {
             c.push(Box::new(move || resize.remove()));
         });
 
-        // Прокрутка предка цели (или сдвинувшая цель прокрутка страницы) закрывает панель.
+        // A scroll of the target's ancestor (or a page scroll that moved the target) closes the panel.
         let this = self.clone();
         if let Some(target) = self.r.target.get_value()
             && let Some(unwatch) = prime_dom::watch_scroll(target, move || this.r.hide())
@@ -269,7 +269,7 @@ impl Core {
         }
     }
 
-    /// Панель только что скрыта: подписки сняты, цель забыта, `on_hide`.
+    /// The panel has just been hidden: subscriptions removed, target forgotten, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -283,51 +283,51 @@ impl Core {
     }
 }
 
-/// Плавающая панель, привязанная к элементу-триггеру.
+/// A floating panel bound to a trigger element.
 ///
-/// Каждое свойство принимает значение или сигнал. Панель выводится внутри собственного места в разметке (не в `body`),
-/// поэтому для выравнивания родитель должен быть `position: relative`, а не `overflow: hidden`.
+/// Every property accepts a value or a signal. The panel is rendered in its own place in the markup (not in `body`),
+/// so for alignment the parent must be `position: relative`, not `overflow: hidden`.
 #[component]
 pub fn Popover(
-    /// Управляющий объект: через него панель показывают, скрывают и переключают.
+    /// Control object: used to show, hide and toggle the panel.
     popover_ref: PopoverRef,
-    /// Закрывать панель кликом вне неё и вне цели.
+    /// Close the panel on a click outside it and outside the target.
     #[prop(optional, default = Prop::Static(true), into)]
     dismissable: Prop<bool>,
-    /// Фокусировать при показе первый элемент с `autofocus`.
+    /// On show, focus the first element with `autofocus`.
     #[prop(optional, default = Prop::Static(true), into)]
     focus_on_show: Prop<bool>,
-    /// Автоматически назначать `z-index`.
+    /// Assign `z-index` automatically.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the config value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Атрибут `aria-label` панели.
+    /// `aria-label` attribute of the panel.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` панели.
+    /// `aria-labelledby` attribute of the panel.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Атрибут `id` панели.
+    /// `id` attribute of the panel.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Встроенный стиль панели.
+    /// Inline style of the panel.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс панели.
+    /// Extra class of the panel.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается после показа и выравнивания панели.
+    /// Called after the panel is shown and aligned.
     #[prop(optional, into)]
     on_show: Option<Callback<()>>,
-    /// Вызывается после скрытия панели.
+    /// Called after the panel is hidden.
     #[prop(optional, into)]
     on_hide: Option<Callback<()>>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<PopoverPt>,
-    /// Содержимое панели.
+    /// Panel content.
     children: ChildrenFn,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
@@ -350,13 +350,13 @@ pub fn Popover(
         let core = core.clone();
         on_cleanup(move || core.release());
     }
-    // Побочные эффекты показа и скрытия (положение, слушатели, фокус) — только в браузере.
+    // Side effects of showing and hiding (position, listeners, focus) — browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
         Effect::new(move |_| {
             let visible = core.r.visible.get();
-            // Панель попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
+            // The panel lands in the DOM after this effect, so we also watch the reference to it.
             let mounted = core.panel.get().is_some();
             let was = core.was_visible.get_value();
             if visible && mounted && !was {

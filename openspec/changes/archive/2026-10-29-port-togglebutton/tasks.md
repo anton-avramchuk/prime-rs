@@ -1,27 +1,27 @@
 # Tasks
 
-## 1. Крейт и компонент
+## 1. Crate and component
 
-- [x] 1.1 Создать крейт `crates/prime-togglebutton` (`publish = false`, features `ssr`/`hydrate`, зависимость `prime-core`, dev-зависимости для wasm как у `prime-toggleswitch`), добавить в workspace; проверить `cargo check -p prime-togglebutton --all-features`
-- [x] 1.2 `state.rs`: классы корня и `data-p` по `togglebuttonstyle.ts` и `ToggleButton.dataP`, табличный тест
-- [x] 1.3 Реализовать `ToggleButton`, `ToggleButtonPt`, `ToggleButtonChange`, `IconPos` (состояние, метки и иконки, слоты, атрибуты, клик и клавиши, `allow_empty`); SSR-тесты (структура, классы, `data-p`, атрибуты, `tabindex`, слоты, `pt`)
-- [x] 1.4 Браузерные тесты `tests/web.rs`: клик, Enter и Space, `disabled`, `allow_empty`, один `on_change` на нажатие, `on_focus` и `on_blur`
-- [x] 1.5 rustdoc с примером; `cargo test -p prime-togglebutton --all-features`
+- [x] 1.1 Create the crate `crates/prime-togglebutton` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`, the dev-dependencies for wasm as in `prime-toggleswitch`), add it to the workspace; check `cargo check -p prime-togglebutton --all-features`
+- [x] 1.2 `state.rs`: the root classes and `data-p` per `togglebuttonstyle.ts` and `ToggleButton.dataP`, a table test
+- [x] 1.3 Implement `ToggleButton`, `ToggleButtonPt`, `ToggleButtonChange`, `IconPos` (state, labels and icons, slots, attributes, click and keys, `allow_empty`); SSR tests (structure, classes, `data-p`, attributes, `tabindex`, slots, `pt`)
+- [x] 1.4 Browser tests `tests/web.rs`: click, Enter and Space, `disabled`, `allow_empty`, one `on_change` per press, `on_focus` and `on_blur`
+- [x] 1.5 rustdoc with an example; `cargo test -p prime-togglebutton --all-features`
 
-## 2. Тема, showcase, e2e
+## 2. Theme, showcase, e2e
 
-- [x] 2.1 Расширить `primeng_extra_block` в `xtask/src/gen_theme.rs` (маркер `/* For PrimeNG (…) */`), добавить `togglebutton` в `theme.components` и `primeng_extra` (`upstream.toml`), `cargo xtask gen-theme`, убедиться, что CSS других компонентов не изменился, подключить CSS
-- [x] 2.2 Страница `/togglebutton` (`basic`, `customized`, `disabled`, `fluid`, `invalid`, `sizes`), меню, маршрут, `stylesheet(&[..])`
-- [x] 2.3 `e2e/tests/pages.json` и `e2e/tests/togglebutton.spec.ts`; `npx playwright test togglebutton`
+- [x] 2.1 Extend `primeng_extra_block` in `xtask/src/gen_theme.rs` (the marker `/* For PrimeNG (…) */`), add `togglebutton` to `theme.components` and `primeng_extra` (`upstream.toml`), `cargo xtask gen-theme`, check that the CSS of the other components did not change, connect the CSS
+- [x] 2.2 The `/togglebutton` page (`basic`, `customized`, `disabled`, `fluid`, `invalid`, `sizes`), the menu, the route, `stylesheet(&[..])`
+- [x] 2.3 `e2e/tests/pages.json` and `e2e/tests/togglebutton.spec.ts`; `npx playwright test togglebutton`
 
-## 3. Бенчмарки и бюджеты
+## 3. Benchmarks and budgets
 
-- [x] 3.1 Сценарии `togglebutton-1`, `togglebutton-1000`, `case-togglebutton`, бюджеты по измерению
+- [x] 3.1 Scenarios `togglebutton-1`, `togglebutton-1000`, `case-togglebutton`, budgets by measurement
 
-## 4. Интеграция
+## 4. Integration
 
-- [x] 4.1 Добавить `prime-togglebutton` в браузерный job `ci.yml` (3 места); `docs/togglebutton.md`; clippy, тесты, deny, machete, `openspec validate port-togglebutton`; CI `dev` зелёный
+- [x] 4.1 Add `prime-togglebutton` to the browser job of `ci.yml` (3 places); `docs/togglebutton.md`; clippy, tests, deny, machete, `openspec validate port-togglebutton`; CI `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
+- Archive after CI.

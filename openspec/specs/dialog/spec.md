@@ -1,127 +1,127 @@
 # dialog Specification
 
 ## Purpose
-Dialog показывает окно поверх страницы с заголовком, содержимым и подвалом; окно можно перетаскивать, масштабировать и разворачивать на весь экран, оно закрывается кнопкой, клавишей Escape и (при настройке) кликом по маске.
+Dialog shows a window over the page with a header, content and footer; the window can be dragged, resized and maximized to full screen, and it is closed by a button, the Escape key and (optionally) a click on the mask.
 
 ## Requirements
 
-### Requirement: Разметка
-Пока `visible` ложно и анимация выхода не доиграла, `Dialog` крейта `prime-dialog` SHALL не выводить ничего. Показанный диалог SHALL состоять из маски `div.p-dialog-mask` и вложенного в неё окна `div.p-dialog.p-component` с `role` (по умолчанию `dialog`), `aria-modal="true"` и `aria-labelledby`, указывающим на название. Окно SHALL содержать `div.p-dialog-header` (при `show_header`), `div.p-dialog-content` с `children` и `div.p-dialog-footer` только при заданном `footer`. Маска и окно SHALL находиться в `body`, а не внутри места объявления компонента. `style`, `style_class`, `content_style`, `content_style_class`, `mask_style`, `mask_style_class` и `pt` SHALL применяться к соответствующим частям.
+### Requirement: Markup
+While `visible` is false and the leave animation has not finished, `Dialog` of the `prime-dialog` crate SHALL render nothing. A shown dialog SHALL consist of a `div.p-dialog-mask` mask and a `div.p-dialog.p-component` window nested in it with `role` (default `dialog`), `aria-modal="true"` and `aria-labelledby` pointing at the title. The window SHALL contain `div.p-dialog-header` (with `show_header`), `div.p-dialog-content` with `children` and `div.p-dialog-footer` only when `footer` is set. The mask and window SHALL be located in `body`, not inside the component's declaration place. `style`, `style_class`, `content_style`, `content_style_class`, `mask_style`, `mask_style_class` and `pt` SHALL apply to the corresponding parts.
 
-#### Scenario: Скрыт по умолчанию
-- **WHEN** `visible` ложно и диалог ни разу не показывали
-- **THEN** в документе нет `.p-dialog` и `.p-dialog-mask`
+#### Scenario: Hidden by default
+- **WHEN** `visible` is false and the dialog has never been shown
+- **THEN** there is no `.p-dialog` or `.p-dialog-mask` in the document
 
-#### Scenario: Показан
-- **WHEN** `visible` становится истинным при `header="Header"`
-- **THEN** в `body` есть `.p-dialog-mask > .p-dialog[role=dialog][aria-modal=true]` с названием «Header»
+#### Scenario: Shown
+- **WHEN** `visible` becomes true with `header="Header"`
+- **THEN** `body` contains `.p-dialog-mask > .p-dialog[role=dialog][aria-modal=true]` with the title "Header"
 
-### Requirement: Заголовок и кнопки
-Заголовок SHALL содержать название `span.p-dialog-title` (при `header` и без `header_content`) либо `header_content`, и блок `div.p-dialog-header-actions` с кнопкой максимизации `p-dialog-maximize-button` при `maximizable` и кнопкой закрытия `p-dialog-close-button` при `closable`. Кнопки SHALL иметь `aria-label` из локали (`aria.close`, `aria.maximizeLabel` / `aria.minimizeLabel`). При `headless` SHALL выводиться только переданное представление, без заголовка, содержимого и подвала.
+### Requirement: Header and buttons
+The header SHALL contain the `span.p-dialog-title` title (with `header` and without `header_content`) or `header_content`, and a `div.p-dialog-header-actions` block with the `p-dialog-maximize-button` maximize button when `maximizable` and the `p-dialog-close-button` close button when `closable`. The buttons SHALL have an `aria-label` from the locale (`aria.close`, `aria.maximizeLabel` / `aria.minimizeLabel`). With `headless`, only the supplied view SHALL be rendered, without header, content and footer.
 
-#### Scenario: Кнопки по настройкам
-- **WHEN** `maximizable` включён, `closable` выключен
-- **THEN** в заголовке есть кнопка максимизации и нет кнопки закрытия
+#### Scenario: Buttons by settings
+- **WHEN** `maximizable` is on and `closable` is off
+- **THEN** the header has a maximize button and no close button
 
-### Requirement: Значение видимости
-`visible` SHALL быть двусторонним сигналом `bool`: истина показывает диалог, ложь закрывает. Закрытие пользователем (кнопка, Escape, маска) SHALL записывать ложь в `visible`.
+### Requirement: Visibility value
+`visible` SHALL be a two-way `bool` signal: true shows the dialog, false closes it. A user-initiated close (button, Escape, mask) SHALL write false to `visible`.
 
-#### Scenario: Закрытие кнопкой
-- **WHEN** диалог показан и пользователь нажимает кнопку закрытия
-- **THEN** `visible` ложно, а окно убирается после анимации выхода
+#### Scenario: Closing via button
+- **WHEN** the dialog is shown and the user presses the close button
+- **THEN** `visible` is false, and the window is removed after the leave animation
 
-### Requirement: Позиция
-`position` SHALL выбирать положение окна на экране: центр, край или угол. Маска SHALL получать класс `p-dialog-<position>` для положений, отличных от центра, и выравнивать окно соответствующим образом.
+### Requirement: Position
+`position` SHALL select the window's position on the screen: center, edge or corner. The mask SHALL get the class `p-dialog-<position>` for positions other than center and align the window accordingly.
 
-#### Scenario: Угол
+#### Scenario: Corner
 - **WHEN** `position=BottomRight`
-- **THEN** окно прижато к правому нижнему углу окна браузера, у маски `p-dialog-bottomright`
+- **THEN** the window is pressed to the bottom right corner of the browser window, the mask has `p-dialog-bottomright`
 
-### Requirement: Модальность
-При `modal` маска SHALL получать `p-overlay-mask`, перехватывать клики и блокировать прокрутку страницы на время показа. Без `modal` маска SHALL оставаться в разметке, но не перехватывать клики страницы и не блокировать прокрутку. При `dismissable_mask` и `closable` нажатие кнопки мыши на самой маске (не на окне) SHALL закрывать диалог.
+### Requirement: Modality
+With `modal` the mask SHALL get `p-overlay-mask`, intercept clicks and block page scrolling while shown. Without `modal` the mask SHALL stay in the markup but not intercept page clicks and not block scrolling. With `dismissable_mask` and `closable`, a mouse button press on the mask itself (not on the window) SHALL close the dialog.
 
-#### Scenario: Немодальный диалог
-- **WHEN** `modal` выключен и пользователь кликает по странице за окном
-- **THEN** клик достигает страницы, диалог остаётся видимым
+#### Scenario: Non-modal dialog
+- **WHEN** `modal` is off and the user clicks the page behind the window
+- **THEN** the click reaches the page, the dialog stays visible
 
-#### Scenario: Закрытие по маске
-- **WHEN** `modal` и `dismissable_mask` включены и пользователь нажимает на маску вне окна
-- **THEN** диалог закрывается
+#### Scenario: Closing by mask
+- **WHEN** `modal` and `dismissable_mask` are on and the user presses the mask outside the window
+- **THEN** the dialog closes
 
-#### Scenario: Нажатие внутри окна
-- **WHEN** `dismissable_mask` включён и пользователь нажимает внутри окна
-- **THEN** диалог остаётся видимым
+#### Scenario: Press inside the window
+- **WHEN** `dismissable_mask` is on and the user presses inside the window
+- **THEN** the dialog stays visible
 
 ### Requirement: Escape
-При `close_on_escape` и `closable` клавиша `Escape` SHALL закрывать диалог; при нескольких открытых — только верхний по `z-index`. После закрытия слушатель SHALL быть снят.
+With `close_on_escape` and `closable`, the `Escape` key SHALL close the dialog; with several open, only the topmost by `z-index`. After closing, the listener SHALL be removed.
 
-#### Scenario: Вложенные диалоги
-- **WHEN** открыты два диалога и нажат Escape
-- **THEN** закрывается только верхний
+#### Scenario: Nested dialogs
+- **WHEN** two dialogs are open and Escape is pressed
+- **THEN** only the topmost closes
 
-### Requirement: Перетаскивание
-При `draggable` нажатие кнопки мыши на заголовке (но не на блоке кнопок) и движение указателя SHALL перемещать окно (`position: fixed`, `left`, `top`, `margin: 0`). При `keep_in_viewport` окно SHALL не выходить за пределы экрана и за `min_x` / `min_y`. После отпускания кнопки SHALL вызываться `on_drag_end`. Без `draggable` окно не перемещается.
+### Requirement: Dragging
+With `draggable`, a mouse button press on the header (but not on the buttons block) and pointer movement SHALL move the window (`position: fixed`, `left`, `top`, `margin: 0`). With `keep_in_viewport`, the window SHALL NOT go beyond the screen or `min_x` / `min_y`. After the button is released, `on_drag_end` SHALL be called. Without `draggable` the window does not move.
 
-#### Scenario: Перетаскивание заголовка
-- **WHEN** пользователь нажимает на заголовок и сдвигает указатель на 50 px вправо
-- **THEN** окно сдвинулось на 50 px вправо
+#### Scenario: Dragging the header
+- **WHEN** the user presses the header and moves the pointer 50 px to the right
+- **THEN** the window moved 50 px to the right
 
-#### Scenario: Граница экрана
-- **WHEN** окно тянут за левую границу экрана при `keep_in_viewport`
-- **THEN** левый край окна не заходит левее `min_x`
+#### Scenario: Screen boundary
+- **WHEN** the window is dragged toward the left screen edge with `keep_in_viewport`
+- **THEN** the window's left edge does not go left of `min_x`
 
-### Requirement: Изменение размера
-При `resizable` окно SHALL содержать `div.p-resizable-handle`; нажатие на него и движение указателя SHALL менять ширину и высоту окна и высоту содержимого, пока окно помещается в экран и не меньше `min-width` / `min-height`. Начало SHALL вызывать `on_resize_init`, конец — `on_resize_end`.
+### Requirement: Resizing
+With `resizable`, the window SHALL contain a `div.p-resizable-handle`; pressing it and moving the pointer SHALL change the window width and height and the content height, as long as the window fits the screen and is not smaller than `min-width` / `min-height`. The start SHALL call `on_resize_init`, the end — `on_resize_end`.
 
-#### Scenario: Расширение
-- **WHEN** пользователь тянет ручку на 40 px вправо
-- **THEN** окно стало шире
+#### Scenario: Widening
+- **WHEN** the user drags the handle 40 px to the right
+- **THEN** the window became wider
 
-### Requirement: Максимизация
-При `maximizable` кнопка максимизации SHALL переключать на окне класс `p-dialog-maximized` и значок кнопки (`windowmaximize` / `windowminimize`), вызывать `on_maximize` и блокировать прокрутку страницы, если диалог немодальный и без `block_scroll`. При закрытии максимизация SHALL сбрасываться.
+### Requirement: Maximizing
+With `maximizable`, the maximize button SHALL toggle the `p-dialog-maximized` class on the window and the button icon (`windowmaximize` / `windowminimize`), call `on_maximize` and block page scrolling if the dialog is non-modal and without `block_scroll`. On closing, maximization SHALL be reset.
 
-#### Scenario: Разворачивание
-- **WHEN** пользователь нажимает кнопку максимизации
-- **THEN** у окна есть `p-dialog-maximized`, `on_maximize` вызван
+#### Scenario: Expanding
+- **WHEN** the user presses the maximize button
+- **THEN** the window has `p-dialog-maximized`, `on_maximize` is called
 
-### Requirement: Адаптивная ширина
-При `breakpoints` в `head` SHALL добавляться элемент `style` с правилами `@media screen and (max-width: <ширина>)`, задающими ширину окна без `p-dialog-maximized`; после закрытия и размонтирования элемент SHALL удаляться.
+### Requirement: Responsive width
+With `breakpoints`, a `style` element with `@media screen and (max-width: <width>)` rules setting the window width without `p-dialog-maximized` SHALL be added to `head`; after closing and unmounting the element SHALL be removed.
 
-#### Scenario: Правило для ширины
-- **WHEN** `breakpoints` содержит `("575px", "90vw")`
-- **THEN** в `head` есть правило с `max-width: 575px` и `width: 90vw`
+#### Scenario: Width rule
+- **WHEN** `breakpoints` contains `("575px", "90vw")`
+- **THEN** `head` has a rule with `max-width: 575px` and `width: 90vw`
 
-### Requirement: Анимация
-При показе окно SHALL получать класс `p-dialog-enter-active`, при закрытии — `p-dialog-leave-active`; модальная маска — `p-overlay-mask-enter-active` и `p-overlay-mask-leave-active`. Окно SHALL оставаться в DOM до `animationend` (или до истечения запасного времени, если анимации нет).
+### Requirement: Animation
+On show the window SHALL get the class `p-dialog-enter-active`, on closing — `p-dialog-leave-active`; the modal mask — `p-overlay-mask-enter-active` and `p-overlay-mask-leave-active`. The window SHALL stay in the DOM until `animationend` (or until the fallback time elapses if there is no animation).
 
-#### Scenario: Выход
-- **WHEN** диалог закрывают
-- **THEN** сначала у окна `p-dialog-leave-active`, после окончания анимации окна и маски нет в документе
+#### Scenario: Leave
+- **WHEN** the dialog is closed
+- **THEN** first the window has `p-dialog-leave-active`, after the animation ends the window and mask are gone from the document
 
-### Requirement: Фокус
-Пока окно показано, при `focus_trap` `Tab` и `Shift+Tab` SHALL циклически перемещать фокус внутри окна. При `focus_on_show` фокус SHALL получать первый фокусируемый элемент содержимого, а при его отсутствии — подвала, затем заголовка.
+### Requirement: Focus
+While the window is shown, with `focus_trap` `Tab` and `Shift+Tab` SHALL cycle focus within the window. With `focus_on_show`, focus SHALL go to the first focusable element of the content, or, if there is none, of the footer, then the header.
 
-#### Scenario: Фокус при показе
-- **WHEN** в содержимом есть поле ввода и диалог показан
-- **THEN** фокус на этом поле
+#### Scenario: Focus on show
+- **WHEN** the content has an input field and the dialog is shown
+- **THEN** focus is on that field
 
-### Requirement: Слои
-При `auto_z_index` окно SHALL получать `z-index` группы модальных окон со смещением `base_z_index`, а маска — на единицу ниже; индекс SHALL освобождаться после закрытия.
+### Requirement: Layers
+With `auto_z_index`, the window SHALL get the `z-index` of the modal window group offset by `base_z_index`, and the mask one below; the index SHALL be released after closing.
 
-#### Scenario: Два диалога
-- **WHEN** открыты два диалога
-- **THEN** `z-index` позже открытого выше
+#### Scenario: Two dialogs
+- **WHEN** two dialogs are open
+- **THEN** the `z-index` of the later opened one is higher
 
-### Requirement: События
-`on_show` SHALL вызываться один раз после показа, `on_hide` — один раз при закрытии любым способом.
+### Requirement: Events
+`on_show` SHALL be called once after showing, `on_hide` — once on closing by any means.
 
-#### Scenario: Порядок событий
-- **WHEN** диалог показан и закрыт
-- **THEN** `on_show` вызван один раз до `on_hide`
+#### Scenario: Event order
+- **WHEN** the dialog is shown and closed
+- **THEN** `on_show` is called once before `on_hide`
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) `Dialog` SHALL отрисовываться скрытым и не обращаться к `window` и `document`; гидратация SHALL не расходиться с серверной разметкой.
+### Requirement: Rendering without a browser
+Outside the browser (SSR), `Dialog` SHALL render hidden and not access `window` and `document`; hydration SHALL NOT diverge from the server markup.
 
 #### Scenario: SSR
-- **WHEN** страница с `Dialog` отрисована на сервере
-- **THEN** маски и окна в разметке нет
+- **WHEN** a page with `Dialog` is rendered on the server
+- **THEN** there are no mask and window in the markup

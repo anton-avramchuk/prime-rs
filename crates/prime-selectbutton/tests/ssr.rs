@@ -1,4 +1,4 @@
-//! Структура DOM, метки, выбор, классы, `data-p`, слот и `pt` SelectButton (SSR).
+//! DOM structure, labels, selection, classes, `data-p`, slot and `pt` of SelectButton (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -48,7 +48,7 @@ fn single_value_marks_only_the_selected_button() {
     let button = &html[html.find(r#"aria-pressed="true""#).unwrap()..];
     let button = &button[..button.find("</div>").unwrap()];
     assert!(button.contains("Return"), "{html}");
-    // `default_value` без сигнала
+    // `default_value` without a signal
     let html = view! { <SelectButton options=options() default_value="multi" /> }.to_html();
     assert_eq!(count(&html, r#"aria-pressed="true""#), 1, "{html}");
 }
@@ -60,7 +60,7 @@ fn multiple_values_mark_every_selected_button() {
     assert_eq!(count(&html, r#"aria-pressed="true""#), 2, "{html}");
     let html = view! { <SelectButton options=options() multiple=true default_values=vec!["return".to_owned()] /> }.to_html();
     assert_eq!(count(&html, r#"aria-pressed="true""#), 1, "{html}");
-    // в множественном режиме одиночное значение игнорируется
+    // in multiple mode a single value is ignored
     let html = view! { <SelectButton options=options() multiple=true value=RwSignal::new(Some("return".to_owned())) /> }.to_html();
     assert_eq!(count(&html, r#"aria-pressed="true""#), 0, "{html}");
 }
@@ -73,7 +73,7 @@ fn disabled_component_and_disabled_option() {
     let html = view! { <SelectButton options=opts /> }.to_html();
     assert_eq!(count(&html, r#"data-p-disabled="true""#), 1, "{html}");
     assert_eq!(count(&html, r#"data-p-disabled="false""#), 1, "{html}");
-    assert!(html.find(" p-disabled").unwrap() > html.find(">A<").unwrap(), "disabled только у второй кнопки: {html}");
+    assert!(html.find(" p-disabled").unwrap() > html.find(">A<").unwrap(), "disabled only on the second button: {html}");
 }
 
 #[test]
@@ -84,7 +84,7 @@ fn root_modifiers_and_aria() {
     {
         assert!(html.contains(expected), "{expected}: {html}");
     }
-    // `invalid` не передаётся кнопкам, `fluid` передаётся
+    // `invalid` is not passed to the buttons, `fluid` is
     assert_eq!(count(&html, "p-invalid"), 1, "{html}");
     assert_eq!(count(&html, "p-togglebutton-fluid"), 3, "{html}");
 }

@@ -1,70 +1,70 @@
 # benchmarking Specification
 
 ## Purpose
-Бенчмарки SSR-рендера и аллокаций, бюджеты размера wasm, контроль регрессий и браузерные замеры памяти.
+Benchmarks of SSR rendering and allocations, wasm size budgets, regression control and browser memory measurements.
 
 ## Requirements
 
-### Requirement: Бенчмарки SSR-рендера
-Система SHALL содержать бенчмарки, измеряющие время рендера каждого портированного компонента в HTML-строку на типичных наборах пропсов и на большом числе экземпляров.
+### Requirement: SSR rendering benchmarks
+The system SHALL contain benchmarks that measure the render time of each ported component into an HTML string, on typical sets of props and on a large number of instances.
 
-#### Scenario: Запуск бенчмарка компонента
-- **WHEN** запускается бенчмарк
-- **THEN** выводится время рендера одного экземпляра и 1000 экземпляров
+#### Scenario: Running a component benchmark
+- **WHEN** the benchmark is run
+- **THEN** the render time of one instance and of 1000 instances is printed
 
-### Requirement: Измерение аллокаций
-Система SHALL измерять число и суммарный объём аллокаций при рендере компонента и выводить их в отчёте бенчмарка.
+### Requirement: Allocation measurement
+The system SHALL measure the number and the total size of allocations when a component is rendered, and print them in the benchmark report.
 
-#### Scenario: Отчёт об аллокациях
-- **WHEN** бенчмарк завершается
-- **THEN** отчёт содержит число аллокаций и пиковый объём памяти на рендер
+#### Scenario: Allocation report
+- **WHEN** the benchmark finishes
+- **THEN** the report contains the number of allocations and the peak memory per render
 
-### Requirement: Бюджет размера wasm
-Для каждого компонента SHALL быть задан бюджет вклада в размер wasm-бинарника, и CI SHALL сообщать о превышении бюджета.
+### Requirement: wasm size budget
+For each component a budget of its contribution to the wasm binary size SHALL be set, and CI SHALL report when the budget is exceeded.
 
-#### Scenario: Превышение бюджета
-- **WHEN** PR увеличивает вклад компонента выше бюджета
-- **THEN** проверка CI падает с указанием компонента, размера и бюджета
+#### Scenario: Budget exceeded
+- **WHEN** a PR increases a component's contribution above the budget
+- **THEN** the CI check fails, stating the component, the size and the budget
 
-### Requirement: Контроль регрессий
-Система SHALL сравнивать результаты бенчмарков с базовой линией основной ветки. Регрессия более 10 % по времени или по аллокациям SHALL выводиться комментарием в PR; блокировать слияние она SHALL только после явного включения блокировки.
+### Requirement: Regression control
+The system SHALL compare the benchmark results with the baseline of the main branch. A regression of more than 10 % in time or in allocations SHALL be reported with a comment in the PR; it SHALL block the merge only after blocking has been explicitly enabled.
 
-#### Scenario: Регрессия 15 %
-- **WHEN** PR замедляет рендер компонента на 15 %
-- **THEN** в PR появляется комментарий с результатом, слияние не блокируется
+#### Scenario: 15 % regression
+- **WHEN** a PR slows the rendering of a component by 15 %
+- **THEN** a comment with the result appears in the PR, and the merge is not blocked
 
-### Requirement: Браузерные бенчмарки памяти
-По расписанию SHALL выполняться браузерные замеры времени создания N компонентов и использования памяти кучи, а результаты сохраняться как артефакты.
+### Requirement: Browser memory benchmarks
+On a schedule, browser measurements of the time to create N components and of heap memory usage SHALL run, and the results SHALL be saved as artifacts.
 
-#### Scenario: Еженедельный замер
-- **WHEN** выполняется еженедельный job
-- **THEN** формируется отчёт о времени и памяти для сценариев «1000 компонентов» и «создание и удаление в цикле»
+#### Scenario: Weekly measurement
+- **WHEN** the weekly job runs
+- **THEN** a report on time and memory is produced for the scenarios "1000 components" and "creation and removal in a loop"
 
-### Requirement: Сборка классов и data-p без аллокации
-Общая сборка строк `class` и `data-p` в `prime-core` SHALL не выполнять кучевых аллокаций для строк, составленных только из констант компонента (без пользовательских `style_class` и `pt`): такие строки SHALL возвращаться как `&'static str` из ограниченной таблицы интернирования. Строки с пользовательскими классами SHALL собираться на стековом буфере и выдаваться одной `String`.
+### Requirement: Building class and data-p without allocation
+The common building of the `class` and `data-p` strings in `prime-core` SHALL perform no heap allocations for strings composed only of component constants (without user `style_class` and `pt`): such strings SHALL be returned as `&'static str` from a bounded interning table. Strings with user classes SHALL be assembled in a stack buffer and returned as a single `String`.
 
-#### Scenario: Повторный рендер того же состояния
-- **WHEN** один и тот же компонент в одном состоянии отрисовывается второй раз
-- **THEN** строки `class` и `data-p` не аллоцируют
+#### Scenario: Repeated render of the same state
+- **WHEN** the same component in the same state is rendered a second time
+- **THEN** the `class` and `data-p` strings do not allocate
 
-#### Scenario: Пользовательский класс
-- **WHEN** передан `style_class`
-- **THEN** итоговая строка равна прежней по содержимому и не попадает в таблицу интернирования
+#### Scenario: User class
+- **WHEN** `style_class` is passed
+- **THEN** the resulting string equals the previous one in content and does not enter the interning table
 
-### Requirement: Бюджеты аллокаций следуют измерениям
-Бюджеты в `benches/alloc-budgets.toml` SHALL не превышать округлённое вверх измеренное значение более чем на 15 % (но не менее чем на 1 аллокацию запаса).
+### Requirement: Allocation budgets follow the measurements
+The budgets in `benches/alloc-budgets.toml` SHALL not exceed the measured value rounded up by more than 15 % (but by at least 1 allocation of margin).
 
-#### Scenario: Проверка бюджетов
-- **WHEN** выполняется `cargo xtask alloc-budget`
-- **THEN** все сценарии укладываются в бюджеты, а запас над округлённым измерением не превышает 15 %
+#### Scenario: Budget check
+- **WHEN** `cargo xtask alloc-budget` is run
+- **THEN** all scenarios fit the budgets, and the margin above the rounded measurement does not exceed 15 %
 
-### Requirement: Статическая ветвь без клиентских примитивов
-Компоненты со статической ветвью (Button, Chip) SHALL при SSR не создавать `NodeRef`, `Arc<Props>` и `Arc<Pt>`, если свойства статические: они допустимы только в реактивной ветви и на клиенте.
+### Requirement: Static branch without client primitives
+Components with a static branch (Button, Chip) SHALL NOT create `NodeRef`, `Arc<Props>` and `Arc<Pt>` during SSR when the properties are static: these are allowed only in the reactive branch and on the client.
 
-#### Scenario: Статическая кнопка при SSR
-- **WHEN** отрисовывается `Button` со статическими свойствами на нативной цели
-- **THEN** число аллокаций на экземпляр укладывается в бюджет `button-1000` и не включает `NodeRef`
+#### Scenario: Static button during SSR
+- **WHEN** `Button` with static properties is rendered on a native target
+- **THEN** the number of allocations per instance fits the budget `button-1000` and does not include `NodeRef`
 
-#### Scenario: Поведение не меняется
-- **WHEN** кнопка `disabled` или в состоянии загрузки
-- **THEN** `on_click` по-прежнему не вызывается, а браузерные тесты Button и Chip проходят
+#### Scenario: Behaviour unchanged
+- **WHEN** the button is `disabled` or in the loading state
+- **THEN** `on_click` is still not called, and the browser tests of Button and Chip pass

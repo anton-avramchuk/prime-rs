@@ -1,43 +1,43 @@
-//! Чистая календарная логика DatePicker (по `datepicker.ts` PrimeNG, без DOM и без внешних библиотек дат).
+//! Pure DatePicker calendar logic (after PrimeNG `datepicker.ts`, no DOM and no external date libraries).
 //!
-//! Месяц хранится числом 0–11, как в JavaScript `Date`; день недели — 0 (воскресенье) – 6.
+//! Month is stored as 0-11, like JavaScript `Date`; weekday is 0 (Sunday) to 6.
 
 use std::cmp::Ordering;
 
-/// Календарная дата без времени и часового пояса.
+/// Calendar date without time or time zone.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct CalDate {
-    /// Год.
+    /// Year.
     pub year: i32,
-    /// Месяц 0–11.
+    /// Month 0-11.
     pub month: u32,
-    /// День 1–31.
+    /// Day 1-31.
     pub day: u32,
 }
 
 impl CalDate {
-    /// Дата; несуществующий день не проверяется (см. [`CalDate::is_valid`]).
+    /// Date; a nonexistent day is not checked (see [`CalDate::is_valid`]).
     pub fn new(year: i32, month: u32, day: u32) -> Self {
         Self { year, month, day }
     }
 
-    /// Дата существует в календаре.
+    /// The date exists in the calendar.
     pub fn is_valid(&self) -> bool {
         self.month < 12 && self.day >= 1 && self.day <= days_in_month(self.month, self.year)
     }
 
-    /// Номер дня от 1970-01-01.
+    /// Day number since 1970-01-01.
     pub fn days(&self) -> i64 {
         days_from_civil(self.year, self.month + 1, self.day)
     }
 
-    /// Дата по номеру дня от 1970-01-01.
+    /// Date from a day number since 1970-01-01.
     pub fn from_days(days: i64) -> Self {
         let (y, m, d) = civil_from_days(days);
         Self { year: y, month: m - 1, day: d }
     }
 
-    /// День недели: 0 — воскресенье.
+    /// Weekday: 0 is Sunday.
     pub fn weekday(&self) -> u32 {
         (self.days() + 4).rem_euclid(7) as u32
     }
@@ -55,12 +55,12 @@ impl Ord for CalDate {
     }
 }
 
-/// Високосный год.
+/// Leap year.
 pub fn is_leap(year: i32) -> bool {
     (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
 }
 
-/// Число дней в месяце (`getDaysCountInMonth`).
+/// Number of days in a month (`getDaysCountInMonth`).
 pub fn days_in_month(month: u32, year: i32) -> u32 {
     match month {
         0 | 2 | 4 | 6 | 7 | 9 | 11 => 31,
@@ -75,7 +75,7 @@ pub fn days_in_month(month: u32, year: i32) -> u32 {
     }
 }
 
-/// Дни от 1970-01-01 (алгоритм Говарда Хиннанта), месяц 1–12.
+/// Days since 1970-01-01 (Howard Hinnant's algorithm), month 1-12.
 fn days_from_civil(y: i32, m: u32, d: u32) -> i64 {
     let y = i64::from(if m <= 2 { y - 1 } else { y });
     let era = y.div_euclid(400);
@@ -99,59 +99,59 @@ fn civil_from_days(z: i64) -> (i32, u32, u32) {
     ((y + i64::from(m <= 2)) as i32, m, d)
 }
 
-/// Режим выбора.
+/// Selection mode.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum SelectionMode {
-    /// Одна дата (по умолчанию).
+    /// A single date (default).
     #[default]
     Single,
-    /// Несколько дат.
+    /// Multiple dates.
     Multiple,
-    /// Диапазон: `[начало]` или `[начало, конец]`.
+    /// Range: `[start]` or `[start, end]`.
     Range,
 }
 
-/// Ячейка дня календаря.
+/// Calendar day cell.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct DayCell {
-    /// День месяца.
+    /// Day of month.
     pub day: u32,
-    /// Месяц 0–11.
+    /// Month 0-11.
     pub month: u32,
-    /// Год.
+    /// Year.
     pub year: i32,
-    /// День соседнего месяца.
+    /// Day of an adjacent month.
     pub other_month: bool,
-    /// Сегодня.
+    /// Today.
     pub today: bool,
-    /// Можно выбрать.
+    /// Selectable.
     pub selectable: bool,
 }
 
 impl DayCell {
-    /// Дата ячейки.
+    /// Cell date.
     pub fn date(&self) -> CalDate {
         CalDate::new(self.year, self.month, self.day)
     }
 }
 
-/// Ограничения выбора.
+/// Selection constraints.
 #[derive(Clone, Debug, Default)]
 pub struct Limits {
-    /// Минимальная дата.
+    /// Minimum date.
     pub min: Option<CalDate>,
-    /// Максимальная дата.
+    /// Maximum date.
     pub max: Option<CalDate>,
-    /// Недоступные даты.
+    /// Disabled dates.
     pub disabled_dates: Vec<CalDate>,
-    /// Недоступные дни недели (0 — воскресенье).
+    /// Disabled weekdays (0 is Sunday).
     pub disabled_days: Vec<u32>,
-    /// Разрешён выбор дней соседних месяцев.
+    /// Selecting days of adjacent months is allowed.
     pub select_other_months: bool,
 }
 
 impl Limits {
-    /// Дату можно выбрать (`isSelectable`).
+    /// The date is selectable (`isSelectable`).
     pub fn selectable(&self, date: CalDate, other_month: bool) -> bool {
         if other_month && !self.select_other_months {
             return false;
@@ -166,16 +166,16 @@ impl Limits {
     }
 }
 
-/// Месяц календаря: сетка недель и номера недель.
+/// Calendar month: week grid and week numbers.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Month {
-    /// Месяц 0–11.
+    /// Month 0-11.
     pub month: u32,
-    /// Год.
+    /// Year.
     pub year: i32,
-    /// Недели по семь ячеек.
+    /// Weeks of seven cells.
     pub weeks: Vec<Vec<DayCell>>,
-    /// Номера недель.
+    /// Week numbers.
     pub week_numbers: Vec<u32>,
 }
 
@@ -187,14 +187,14 @@ fn next_month(month: u32, year: i32) -> (u32, i32) {
     if month == 11 { (0, year + 1) } else { (month + 1, year) }
 }
 
-/// Индекс столбца первого дня месяца с учётом первого дня недели (`getFirstDayOfMonthIndex`).
+/// Column index of the first day of the month, given the first day of the week (`getFirstDayOfMonthIndex`).
 pub fn first_day_index(month: u32, year: i32, first_day_of_week: u32) -> u32 {
     let sunday_index = if first_day_of_week > 0 { 7 - first_day_of_week } else { 0 };
     let index = CalDate::new(year, month, 1).weekday() + sunday_index;
     if index >= 7 { index - 7 } else { index }
 }
 
-/// Номер недели (`getWeekNumber`): по умолчанию неделя ISO, иначе от первого дня года.
+/// Week number (`getWeekNumber`): ISO week by default, otherwise counted from the first day of the year.
 pub fn week_number(date: CalDate, first_day_of_week: u32, start_week_from_first_day_of_year: bool) -> u32 {
     let weekday = i64::from(date.weekday());
     let shifted = if start_week_from_first_day_of_year {
@@ -207,7 +207,7 @@ pub fn week_number(date: CalDate, first_day_of_week: u32, start_week_from_first_
     ((shifted - jan1.days()) / 7) as u32 + 1
 }
 
-/// Сетка месяца (`createMonth`).
+/// Month grid (`createMonth`).
 pub fn create_month(
     month: u32,
     year: i32,
@@ -258,7 +258,7 @@ pub fn create_month(
     Month { month, year, weeks, week_numbers: numbers }
 }
 
-/// Несколько последовательных месяцев (`createMonths`).
+/// Several consecutive months (`createMonths`).
 #[allow(clippy::too_many_arguments)]
 pub fn create_months(
     month: u32,
@@ -279,23 +279,23 @@ pub fn create_months(
         .collect()
 }
 
-/// Десять лет «десятилетия», содержащего год (`yearPickerValues`).
+/// Ten years of the "decade" containing the year (`yearPickerValues`).
 pub fn decade_years(year: i32) -> Vec<i32> {
     let base = year - year.rem_euclid(10);
     (0..10).map(|i| base + i).collect()
 }
 
-/// В месяце нет ни одной доступной даты (`isMonthDisabled`).
+/// The month has no available dates (`isMonthDisabled`).
 pub fn month_disabled(month: u32, year: i32, limits: &Limits) -> bool {
     !(1..=days_in_month(month, year)).any(|d| limits.selectable(CalDate::new(year, month, d), false))
 }
 
-/// В году нет ни одной доступной даты (`isYearDisabled`).
+/// The year has no available dates (`isYearDisabled`).
 pub fn year_disabled(year: i32, limits: &Limits) -> bool {
     (0..12).all(|m| month_disabled(m, year, limits))
 }
 
-/// Выбрана ли дата (`isSelected`).
+/// Whether the date is selected (`isSelected`).
 pub fn is_selected(mode: SelectionMode, value: &[CalDate], date: CalDate) -> bool {
     match mode {
         SelectionMode::Single | SelectionMode::Multiple => value.contains(&date),
@@ -307,7 +307,7 @@ pub fn is_selected(mode: SelectionMode, value: &[CalDate], date: CalDate) -> boo
     }
 }
 
-/// Классы ячейки дня для режима диапазона: начало и конец, середина.
+/// Day cell classes for range mode: start and end, middle.
 pub fn range_role(value: &[CalDate], date: CalDate) -> Option<RangeRole> {
     match value {
         [start, end] if date == *start || date == *end => Some(RangeRole::Edge),
@@ -317,16 +317,16 @@ pub fn range_role(value: &[CalDate], date: CalDate) -> Option<RangeRole> {
     }
 }
 
-/// Роль дня в выбранном диапазоне.
+/// Role of a day in the selected range.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RangeRole {
-    /// Начало или конец.
+    /// Start or end.
     Edge,
-    /// Между началом и концом.
+    /// Between start and end.
     Middle,
 }
 
-/// Новое значение после выбора даты (`onDateSelect` и `selectDate`); `max_count` — предел для `Multiple`.
+/// New value after selecting a date (`onDateSelect` and `selectDate`); `max_count` is the limit for `Multiple`.
 pub fn select_date(mode: SelectionMode, value: &[CalDate], date: CalDate, max_count: Option<usize>) -> Vec<CalDate> {
     match mode {
         SelectionMode::Single => vec![date],
@@ -348,7 +348,7 @@ pub fn select_date(mode: SelectionMode, value: &[CalDate], date: CalDate, max_co
     }
 }
 
-/// Выбор завершён и панель можно закрыть (`hideOnDateTimeSelect`).
+/// Selection is complete and the panel can be closed (`hideOnDateTimeSelect`).
 pub fn selection_complete(mode: SelectionMode, value: &[CalDate]) -> bool {
     match mode {
         SelectionMode::Single => !value.is_empty(),
@@ -357,18 +357,18 @@ pub fn selection_complete(mode: SelectionMode, value: &[CalDate]) -> bool {
     }
 }
 
-/// Названия месяцев и дней для форматирования.
+/// Month and day names for formatting.
 #[derive(Clone, Debug)]
 pub struct Names {
-    /// Полные названия месяцев.
+    /// Full month names.
     pub months: Vec<String>,
-    /// Краткие названия месяцев.
+    /// Short month names.
     pub months_short: Vec<String>,
-    /// Полные названия дней недели (с воскресенья).
+    /// Full weekday names (starting from Sunday).
     pub days: Vec<String>,
-    /// Краткие названия дней недели.
+    /// Short weekday names.
     pub days_short: Vec<String>,
-    /// Минимальные названия дней недели.
+    /// Minimal weekday names.
     pub days_min: Vec<String>,
 }
 
@@ -398,13 +398,13 @@ impl Default for Names {
     }
 }
 
-/// Форматирование даты (`formatDate`, формат jQuery UI: `d dd o oo D DD m mm M MM y yy`, `'literal'`).
+/// Date formatting (`formatDate`, jQuery UI format: `d dd o oo D DD m mm M MM y yy`, `'literal'`).
 pub fn format_date(date: CalDate, format: &str, names: &Names) -> String {
     let chars: Vec<char> = format.chars().collect();
     let mut out = String::new();
     let mut i = 0;
     let mut literal = false;
-    // Сколько подряд идёт символ `c` начиная с позиции `i + 1`: потребляет их.
+    // How many consecutive `c` characters there are starting at position `i + 1`: consumes them.
     let look = |i: &mut usize, c: char| -> bool {
         let hit = *i + 1 < chars.len() && chars[*i + 1] == c;
         if hit {
@@ -473,7 +473,7 @@ pub fn format_date(date: CalDate, format: &str, names: &Names) -> String {
     out
 }
 
-/// Разбор даты по формату (`parseDate`); `today` задаёт век для двузначного года.
+/// Parse a date by format (`parseDate`); `today` supplies the century for a two-digit year.
 pub fn parse_date(text: &str, format: &str, names: &Names, today: CalDate) -> Option<CalDate> {
     let fmt: Vec<char> = format.chars().collect();
     let src: Vec<char> = text.chars().collect();
@@ -501,7 +501,7 @@ pub fn parse_date(text: &str, format: &str, names: &Names, today: CalDate) -> Op
         src[start..end].iter().collect::<String>().parse().ok()
     };
     let name = |pos: &mut usize, long: &[String], short: &[String]| -> Option<usize> {
-        // Самое длинное совпадение среди полных и кратких названий, без учёта регистра.
+        // Longest match among full and short names, case-insensitive.
         let mut best: Option<(usize, usize)> = None;
         for (index, candidate) in long.iter().zip(short.iter()).enumerate() {
             for text in [candidate.0, candidate.1] {
@@ -611,7 +611,7 @@ mod tests {
 
     #[test]
     fn weekdays_and_days() {
-        // (дата, день недели) — проверено по календарю
+        // (date, weekday) - verified against the calendar
         for (date, weekday) in
             [(d(1970, 0, 1), 4), (d(2000, 0, 1), 6), (d(2024, 1, 29), 4), (d(2026, 10, 5), 4), (d(2023, 11, 31), 0), (d(1900, 2, 1), 4)]
         {
@@ -636,10 +636,10 @@ mod tests {
 
     #[test]
     fn first_day_indexes() {
-        // ноябрь 2026 начинается в воскресенье
+        // November 2026 starts on Sunday
         assert_eq!(first_day_index(10, 2026, 0), 0);
-        assert_eq!(first_day_index(10, 2026, 1), 6, "неделя с понедельника");
-        // февраль 2024 начинается в четверг
+        assert_eq!(first_day_index(10, 2026, 1), 6, "week starts on Monday");
+        // February 2024 starts on Thursday
         assert_eq!(first_day_index(1, 2024, 0), 4);
         assert_eq!(first_day_index(1, 2024, 1), 3);
     }
@@ -651,12 +651,12 @@ mod tests {
         assert_eq!(m.weeks.len(), 5);
         assert!(m.weeks.iter().all(|w| w.len() == 7));
         let first = m.weeks[0][0];
-        assert_eq!((first.day, first.month, first.other_month), (1, 10, false), "ноябрь 2026 начинается с воскресенья");
+        assert_eq!((first.day, first.month, first.other_month), (1, 10, false), "November 2026 starts on Sunday");
         let last = m.weeks[4][6];
-        assert_eq!((last.day, last.month, last.other_month), (5, 11, true), "хвост из декабря");
+        assert_eq!((last.day, last.month, last.other_month), (5, 11, true), "tail from December");
         assert_eq!(m.weeks.iter().flatten().filter(|c| c.today).count(), 1);
-        assert!(m.weeks.iter().flatten().filter(|c| c.other_month).all(|c| !c.selectable), "соседние месяцы недоступны по умолчанию");
-        // с понедельника первая неделя начинается с 26 октября
+        assert!(m.weeks.iter().flatten().filter(|c| c.other_month).all(|c| !c.selectable), "adjacent months are unavailable by default");
+        // with Monday start the first week starts on October 26
         let m = create_month(10, 2026, today, 1, &Limits::default(), false, false);
         let first = m.weeks[0][0];
         assert_eq!((first.day, first.month, first.other_month), (26, 9, true));
@@ -679,7 +679,7 @@ mod tests {
             (d(2026, 10, 21), false),
             (d(2026, 10, 16), true),
         ] {
-            // 2026-11-15 — воскресенье, 16 — понедельник
+            // 2026-11-15 is Sunday, 16 is Monday
             assert_eq!(limits.selectable(date, false), want, "{date:?}");
         }
         assert!(!Limits::default().selectable(d(2026, 10, 1), true));
@@ -690,7 +690,7 @@ mod tests {
 
     #[test]
     fn week_numbers() {
-        // ISO-недели
+        // ISO weeks
         for (date, want) in [(d(2026, 0, 1), 1), (d(2024, 11, 30), 1), (d(2021, 0, 3), 53), (d(2026, 10, 5), 45), (d(2024, 2, 4), 10)] {
             assert_eq!(week_number(date, 0, false), want, "{date:?}");
         }
@@ -702,13 +702,13 @@ mod tests {
         let (a, b, c) = (d(2026, 10, 1), d(2026, 10, 5), d(2026, 10, 9));
         assert_eq!(select_date(Single, &[a], b, None), [b]);
         assert_eq!(select_date(Multiple, &[a], b, None), [a, b]);
-        assert_eq!(select_date(Multiple, &[a, b], a, None), [b], "повторный выбор снимает");
+        assert_eq!(select_date(Multiple, &[a, b], a, None), [b], "selecting again deselects");
         assert!(select_date(Multiple, &[a], a, None).is_empty());
-        assert_eq!(select_date(Multiple, &[a, b], c, Some(2)), [a, b], "предел maxDateCount");
+        assert_eq!(select_date(Multiple, &[a, b], c, Some(2)), [a, b], "maxDateCount limit");
         assert_eq!(select_date(Range, &[], a, None), [a]);
         assert_eq!(select_date(Range, &[b], c, None), [b, c]);
-        assert_eq!(select_date(Range, &[b], a, None), [a], "конец раньше начала — новое начало");
-        assert_eq!(select_date(Range, &[a, b], c, None), [c], "полный диапазон начинается заново");
+        assert_eq!(select_date(Range, &[b], a, None), [a], "end before start becomes a new start");
+        assert_eq!(select_date(Range, &[a, b], c, None), [c], "a full range starts over");
         assert!(selection_complete(Single, &[a]) && !selection_complete(Single, &[]));
         assert!(!selection_complete(Multiple, &[a, b]));
         assert!(selection_complete(Range, &[a, b]) && !selection_complete(Range, &[a]));

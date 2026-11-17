@@ -1,7 +1,7 @@
-//! OrderList — порт `p-orderlist` из PrimeNG 21.1.10.
+//! OrderList — port of `p-orderlist` from PrimeNG 21.1.10.
 //!
-//! Список с изменяемым порядком: выбранные элементы двигаются кнопками вверх, в начало, вниз и в конец. Сам список,
-//! выбор и поиск — готовый [`Listbox`](prime_listbox::Listbox); перестановка — чистая логика в [`reorder`].
+//! A list with a changeable order: selected items are moved with the up, to-top, down and to-bottom buttons. The list itself,
+//! selection and search are the ready-made [`Listbox`](prime_listbox::Listbox); reordering is pure logic in [`reorder`].
 //!
 //! ```
 //! #![recursion_limit = "512"]
@@ -25,13 +25,13 @@ use prime_icons::{AngleDoubleDownIcon, AngleDoubleUpIcon, AngleDownIcon, AngleUp
 use prime_listbox::{Listbox, ListboxOption, ListboxPt};
 use std::sync::Arc;
 
-/// Положение кнопок относительно списка.
+/// Position of the buttons relative to the list.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum ControlsPosition {
-    /// Слева (по умолчанию).
+    /// Left (default).
     #[default]
     Left,
-    /// Справа.
+    /// Right.
     Right,
 }
 
@@ -44,22 +44,22 @@ impl ControlsPosition {
     }
 }
 
-/// Pass-through частей [`OrderList`].
+/// Pass-through parts of [`OrderList`].
 #[derive(Clone, Debug, Default)]
 pub struct OrderListPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Панель кнопок.
+    /// Button panel.
     pub controls: Pt,
-    /// Кнопка «вверх».
+    /// "Up" button.
     pub move_up_button: Pt,
-    /// Кнопка «в начало».
+    /// "To top" button.
     pub move_top_button: Pt,
-    /// Кнопка «вниз».
+    /// "Down" button.
     pub move_down_button: Pt,
-    /// Кнопка «в конец».
+    /// "To bottom" button.
     pub move_bottom_button: Pt,
-    /// Части списка.
+    /// List parts.
     pub listbox: ListboxPt,
 }
 
@@ -71,62 +71,62 @@ enum Move {
     Bottom,
 }
 
-/// Список с изменяемым порядком элементов.
+/// A list with a changeable item order.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` и `selection` — двусторонние сигналы.
+/// Every property accepts a value or a signal; `value` and `selection` are two-way signals.
 #[component]
 pub fn OrderList(
-    /// Элементы в текущем порядке.
+    /// Items in the current order.
     value: RwSignal<Vec<ListboxOption>>,
-    /// Значения выбранных элементов; без сигнала хранятся внутри.
+    /// Values of the selected items; without a signal they are kept internally.
     #[prop(optional)]
     selection: Option<RwSignal<Vec<String>>>,
-    /// Положение кнопок.
+    /// Position of the buttons.
     #[prop(optional, into)]
     controls_position: Prop<ControlsPosition>,
-    /// Поле поиска над списком.
+    /// Search field above the list.
     #[prop(optional, into)]
     filter: Prop<bool>,
-    /// Подсказка поля поиска.
+    /// Placeholder of the search field.
     #[prop(optional, into)]
     filter_placeholder: OptProp<String>,
-    /// Чередующиеся цвета строк.
+    /// Alternating row colors.
     #[prop(optional, into)]
     striped_rows: Prop<bool>,
-    /// Для выбора нужна клавиша Ctrl/Meta.
+    /// Selection requires the Ctrl/Meta key.
     #[prop(optional, into)]
     meta_key_selection: Prop<bool>,
-    /// Недоступен.
+    /// Unavailable.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Высота списка.
+    /// Height of the list.
     #[prop(optional, default = Prop::Static(Some("14rem".to_owned())), into)]
     scroll_height: OptProp<String>,
-    /// Атрибут `tabindex` списка.
+    /// `tabindex` attribute of the list.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label` списка.
+    /// `aria-label` attribute of the list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Встроенный стиль списка.
+    /// Inline style of the list.
     #[prop(optional, into)]
     list_style: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Свой вид элемента (вариант и признак выбора).
+    /// Custom item view (the option and the selected flag).
     #[prop(optional, into)]
     option: Option<Callback<(ListboxOption, bool), AnyView>>,
-    /// Вызывается после перестановки; получает значения выбранных элементов.
+    /// Called after reordering; receives the values of the selected items.
     #[prop(optional, into)]
     on_reorder: Option<Callback<Vec<String>>>,
-    /// Вызывается при изменении выбора.
+    /// Called when the selection changes.
     #[prop(optional, into)]
     on_selection_change: Option<Callback<Vec<String>>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<OrderListPt>,
 ) -> impl IntoView {

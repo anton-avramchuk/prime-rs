@@ -1,4 +1,4 @@
-//! Сверка сгенерированного CSS с токенами Aura и проверка выборочной загрузки стилей компонентов.
+//! Checks the generated CSS against the Aura tokens and verifies selective loading of component styles.
 
 use prime_theme::{BASE, DARK_MODE_SELECTOR};
 
@@ -20,7 +20,7 @@ fn primary_and_surface_tokens_match_aura() {
 
 #[test]
 fn dark_mode_uses_the_configured_selector() {
-    assert!(BASE.contains(&format!("{DARK_MODE_SELECTOR}{{")), "нет правил для {DARK_MODE_SELECTOR}");
+    assert!(BASE.contains(&format!("{DARK_MODE_SELECTOR}{{")), "no rules for {DARK_MODE_SELECTOR}");
 }
 
 #[test]
@@ -35,8 +35,8 @@ fn only_requested_component_css_is_included() {
     let css = stylesheet(&["button"]);
     assert!(css.starts_with(BASE));
     assert!(css.contains(".p-button"));
-    assert!(!css.contains(".p-badge-dot"), "CSS badge не запрашивался");
-    assert!(component("card").is_none(), "feature card не включён");
+    assert!(!css.contains(".p-badge-dot"), "badge CSS was not requested");
+    assert!(component("card").is_none(), "the card feature is not enabled");
     assert_eq!(stylesheet(&["nope"]), BASE);
 }
 
@@ -50,15 +50,15 @@ fn badge_css_is_available_when_its_feature_is_on() {
 
 #[test]
 fn no_unresolved_dt_calls_in_generated_css() {
-    assert!(!BASE.contains("dt("), "в base.css остался dt(");
-    assert!(BASE.contains("--p-scrollbar-width") || !BASE.contains("scrollbar"), "base: токен scrollbar не подставлен");
+    assert!(!BASE.contains("dt("), "dt( left in base.css");
+    assert!(BASE.contains("--p-scrollbar-width") || !BASE.contains("scrollbar"), "base: scrollbar token not substituted");
 }
 
 #[cfg(feature = "button")]
 #[test]
 fn button_css_uses_resolved_token_variables() {
-    let css = prime_theme::component("button").expect("feature button включён");
-    assert!(!css.contains("dt("), "в CSS Button остался dt()");
-    assert!(css.contains("var(--p-button-primary-background)"), "токены не подставлены");
-    assert!(css.contains(".p-button-danger"), "нет стиля серьёзности");
+    let css = prime_theme::component("button").expect("the button feature is enabled");
+    assert!(!css.contains("dt("), "dt() left in Button CSS");
+    assert!(css.contains("var(--p-button-primary-background)"), "tokens not substituted");
+    assert!(css.contains(".p-button-danger"), "no severity style");
 }

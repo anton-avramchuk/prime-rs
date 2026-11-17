@@ -1,31 +1,31 @@
 # Avatar
 
-Порт `p-avatar` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+A port of `p-avatar` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-avatar::Avatar` | `packages/primeng/src/avatar/avatar.ts`, `avatar/style/avatarstyle.ts` |
-| CSS | `@primeuix/styles/avatar` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/avatar/*-doc.ts` (`label`, `icon`, `image`, `shape`, `size`, `template`) |
+| CSS | `@primeuix/styles/avatar` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/avatar/*-doc.ts` (`label`, `icon`, `image`, `shape`, `size`, `template`) |
 
-Спека: `openspec/specs/avatar`.
+Spec: `openspec/specs/avatar`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы `p-avatar p-component`, `p-avatar-image`, `p-avatar-circle`, `p-avatar-lg`, `p-avatar-xl`, `p-avatar-label`, `p-avatar-icon`.
-- `data-p` всегда содержит форму и размер, включая значения по умолчанию (`square normal`), и стоит на корне, метке, иконке и изображении.
-- Приоритет блоков: метка, иконка, изображение; `aria-label` и `aria-labelledby` на корне, `aria-label` также на изображении.
-- `p-avatar-image` на корне определяется по заданному `image` (как `image != null`).
+- Classes `p-avatar p-component`, `p-avatar-image`, `p-avatar-circle`, `p-avatar-lg`, `p-avatar-xl`, `p-avatar-label`, `p-avatar-icon`.
+- `data-p` always contains the shape and size, including the defaults (`square normal`), and is on the root, label, icon and image.
+- Block priority: label, icon, image; `aria-label` and `aria-labelledby` on the root, `aria-label` also on the image.
+- `p-avatar-image` on the root is determined by the `image` being set (like `image != null`).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-avatar>` | Хост в Angular — деталь фреймворка. |
-| Иконка — `ViewFn`, а не строка класса PrimeIcons | Шрифта нет. |
-| Иконка `pi-user` в демонстрации заменена `HomeIcon` | В 53 иконках PrimeNG нет пользователя. |
+| The root is a `<div>`, not the `<p-avatar>` host | In Angular the host is a framework detail. |
+| The icon is a `ViewFn`, not a PrimeIcons class string | There is no font. |
+| The `pi-user` icon in the demo is replaced with `HomeIcon` | The 53 PrimeNG icons have no user icon. |
 
-## Производительность
+## Performance
 
-SSR: 15 аллокаций на экземпляр (бюджет 18); вклад в сырой wasm +137 КБ (бюджет 180 КБ, из них почти всё — общая реактивная среда Leptos).
-Шаблон — как у Button (`docs/button.md`).
+SSR: 15 allocations per instance (budget 18); contribution to raw wasm +137 KB (budget 180 KB, almost all of it the shared Leptos reactive runtime).
+The template is the same as Button (`docs/button.md`).

@@ -1,130 +1,130 @@
 ## Purpose
-Select позволяет выбрать одно значение из списка вариантов в выпадающей панели с поиском, группами и полным управлением с клавиатуры.
+Select lets the user choose a single value from a list of options in a dropdown panel with search, groups and full keyboard control.
 
 ## ADDED Requirements
 
-### Requirement: Значение и метка
-Компонент `Select` крейта `prime-select` SHALL принимать двусторонний `value` (`RwSignal<Option<String>>`); без него SHALL вести внутреннее состояние, начинающееся с `default_value`. Метка (`span.p-select-label`) SHALL показывать `label` варианта (в группах — среди вариантов всех групп) с выбранным значением, при отсутствии выбора — `placeholder` с классом `p-placeholder`, а без `placeholder` — пустую метку с классом `p-select-label-empty`. `selected_item_template` SHALL заменять содержимое метки для выбранного варианта. При внешнем изменении `value` метка SHALL обновляться; значение, которого нет среди вариантов, SHALL считаться невыбранным.
+### Requirement: Value and label
+The `Select` component of the `prime-select` crate SHALL accept a two-way `value` (`RwSignal<Option<String>>`); without it, it SHALL keep internal state starting from `default_value`. The label (`span.p-select-label`) SHALL show the `label` of the option with the selected value (with groups, among the options of all groups); when nothing is selected, the `placeholder` with the `p-placeholder` class, and without a `placeholder`, an empty label with the `p-select-label-empty` class. `selected_item_template` SHALL replace the label content for the selected option. When `value` changes externally, the label SHALL update; a value that is not among the options SHALL be treated as unselected.
 
-#### Scenario: Выбранное значение
-- **WHEN** значение равно значению варианта «New York»
-- **THEN** метка показывает «New York» без класса `p-placeholder`
+#### Scenario: Selected value
+- **WHEN** the value equals the value of the option "New York"
+- **THEN** the label shows "New York" without the `p-placeholder` class
 
-#### Scenario: Подсказка
-- **WHEN** значения нет и задан `placeholder = "Select a City"`
-- **THEN** метка показывает «Select a City» с классом `p-placeholder`
+#### Scenario: Placeholder
+- **WHEN** there is no value and `placeholder = "Select a City"` is set
+- **THEN** the label shows "Select a City" with the `p-placeholder` class
 
-#### Scenario: Неизвестное значение
-- **WHEN** значение не совпадает ни с одним вариантом
-- **THEN** метка показывает подсказку
+#### Scenario: Unknown value
+- **WHEN** the value matches no option
+- **THEN** the label shows the placeholder
 
-### Requirement: Панель
-Панель `div.p-select-overlay` SHALL открываться по клику на поле, стрелкам вниз и вверх, `Enter`, `Space`, `Home`/`End` и набору печатного символа, а также программно через двусторонний `open`; закрываться по повторному клику, `Escape`, `Tab`, выбору варианта, клику вне компонента и изменению размера окна. Открытая панель SHALL быть расположена под полем (над ним, если снизу не хватает места) с z-index группы оверлеев, а `aria-expanded` метки и кнопки SHALL быть `true`. При открытии выбранный вариант SHALL прокручиваться в видимую область, а при `filter` фокус SHALL переходить в поле поиска (кроме `autofocus_filter = false`). Закрытие по `Escape` и выбору SHALL возвращать фокус на метку. При `disabled`, `readonly` и `loading` панель SHALL не открываться. События `on_show` и `on_hide` SHALL вызываться при открытии и закрытии.
+### Requirement: Panel
+The `div.p-select-overlay` panel SHALL open on a click on the field, the down and up arrows, `Enter`, `Space`, `Home`/`End` and typing a printable character, and programmatically via the two-way `open`; it SHALL close on a repeated click, `Escape`, `Tab`, option selection, a click outside the component and a window resize. An open panel SHALL be positioned below the field (above it if there is not enough room below) with the overlay group z-index, and `aria-expanded` of the label and the button SHALL be `true`. On open, the selected option SHALL be scrolled into view, and with `filter` focus SHALL move to the search field (except with `autofocus_filter = false`). Closing by `Escape` and by selection SHALL return focus to the label. With `disabled`, `readonly` and `loading` the panel SHALL NOT open. The `on_show` and `on_hide` events SHALL be called on open and close.
 
-#### Scenario: Открытие кликом
-- **WHEN** пользователь кликает по закрытому полю
-- **THEN** панель открыта, `aria-expanded="true"`, вызван `on_show`
+#### Scenario: Open by click
+- **WHEN** the user clicks the closed field
+- **THEN** the panel is open, `aria-expanded="true"`, `on_show` was called
 
-#### Scenario: Закрытие снаружи
-- **WHEN** панель открыта и пользователь нажимает вне компонента
-- **THEN** панель закрыта, вызван `on_hide`
+#### Scenario: Close from outside
+- **WHEN** the panel is open and the user presses outside the component
+- **THEN** the panel is closed, `on_hide` was called
 
-#### Scenario: Недоступно
-- **WHEN** задан `disabled`
-- **THEN** клик по полю панель не открывает
+#### Scenario: Disabled
+- **WHEN** `disabled` is set
+- **THEN** a click on the field does not open the panel
 
-### Requirement: Выбор вариантов
-Клик по варианту SHALL выбирать его значение, закрывать панель и вызывать `on_change` один раз с новым значением и исходным событием; клик по уже выбранному варианту SHALL только закрывать панель. Недоступные варианты (`disabled`) SHALL не выбираться и пропускаться клавиатурой. Выбранный вариант SHALL иметь `aria-selected="true"` и класс `p-select-option-selected` (при `checkmark` — галочку `p-select-option-check-icon`, у остальных пустой значок `p-select-option-blank-icon`). Вариант под фокусом SHALL иметь класс `p-focus` и `data-p-focused`; `focus_on_hover` (по умолчанию включён) SHALL переносить фокус на вариант под указателем. `item_template` SHALL заменять содержимое варианта, получая вариант.
+### Requirement: Option selection
+A click on an option SHALL select its value, close the panel and call `on_change` once with the new value and the original event; a click on an already selected option SHALL only close the panel. Disabled options (`disabled`) SHALL NOT be selectable and SHALL be skipped by the keyboard. The selected option SHALL have `aria-selected="true"` and the `p-select-option-selected` class (with `checkmark`, a `p-select-option-check-icon` checkmark, and the others get an empty `p-select-option-blank-icon` icon). The focused option SHALL have the `p-focus` class and `data-p-focused`; `focus_on_hover` (on by default) SHALL move focus to the option under the pointer. `item_template` SHALL replace the option content, receiving the option.
 
-#### Scenario: Выбор
-- **WHEN** панель открыта и пользователь кликает по «London»
-- **THEN** значение равно значению «London», панель закрыта, `on_change` вызван один раз
+#### Scenario: Selection
+- **WHEN** the panel is open and the user clicks "London"
+- **THEN** the value equals the value of "London", the panel is closed, `on_change` was called once
 
-#### Scenario: Недоступный вариант
-- **WHEN** пользователь кликает по варианту с `disabled`
-- **THEN** значение и состояние панели не меняются
+#### Scenario: Disabled option
+- **WHEN** the user clicks an option with `disabled`
+- **THEN** the value and the panel state do not change
 
-#### Scenario: Галочка
-- **WHEN** задан `checkmark`
-- **THEN** у выбранного варианта есть `p-select-option-check-icon`, у остальных `p-select-option-blank-icon`
+#### Scenario: Checkmark
+- **WHEN** `checkmark` is set
+- **THEN** the selected option has `p-select-option-check-icon`, the others have `p-select-option-blank-icon`
 
-### Requirement: Клавиатура
-Метка SHALL принимать фокус (`tabindex`, по умолчанию `0`; при `disabled` равен `-1`). Стрелка вниз SHALL открывать панель, а в открытой — переносить фокус на следующий доступный вариант; стрелка вверх — на предыдущий (с `Alt` выбирает вариант под фокусом и закрывает панель); `Home` и `End` — на первый и последний доступный вариант; `PageUp` и `PageDown` — прокручивать к началу и концу списка; `Enter` и `Space` на закрытой панели открывать её, а на открытой выбирать вариант под фокусом и закрывать; `Escape` закрывать; `Tab` на открытой панели выбирать вариант под фокусом (если он есть) и закрывать панель; `Delete` при `show_clear` очищать значение. Набор печатных символов SHALL открывать панель и переносить фокус на первый вариант, метка которого начинается с набранного (накопленные символы сбрасываются через 500 мс). При `select_on_focus` перенос фокуса SHALL выбирать вариант без закрытия панели. Метка SHALL иметь `aria-activedescendant`, указывающий на вариант под фокусом.
+### Requirement: Keyboard
+The label SHALL accept focus (`tabindex`, default `0`; `-1` with `disabled`). Arrow down SHALL open the panel, and in an open one move focus to the next enabled option; arrow up to the previous one (with `Alt` it selects the focused option and closes the panel); `Home` and `End` to the first and last enabled option; `PageUp` and `PageDown` scroll to the start and end of the list; `Enter` and `Space` on a closed panel open it, and on an open one select the focused option and close; `Escape` closes; `Tab` on an open panel selects the focused option (if any) and closes the panel; `Delete` with `show_clear` clears the value. Typing printable characters SHALL open the panel and move focus to the first option whose label starts with the typed text (accumulated characters reset after 500 ms). With `select_on_focus`, moving focus SHALL select the option without closing the panel. The label SHALL have `aria-activedescendant` pointing to the focused option.
 
-#### Scenario: Навигация
-- **WHEN** панель открыта, фокус на первом варианте и нажата стрелка вниз
-- **THEN** фокус на втором, а недоступные варианты пропущены
+#### Scenario: Navigation
+- **WHEN** the panel is open, focus is on the first option and arrow down is pressed
+- **THEN** focus is on the second, and disabled options are skipped
 
-#### Scenario: Выбор Enter
-- **WHEN** фокус на варианте и нажат `Enter`
-- **THEN** вариант выбран, панель закрыта, фокус на метке
+#### Scenario: Selection by Enter
+- **WHEN** focus is on an option and `Enter` is pressed
+- **THEN** the option is selected, the panel is closed, focus is on the label
 
-#### Scenario: Поиск набором
-- **WHEN** набраны символы «Lo»
-- **THEN** фокус на первом варианте, чья метка начинается с «lo» без учёта регистра
+#### Scenario: Type-ahead search
+- **WHEN** the characters "Lo" are typed
+- **THEN** focus is on the first option whose label starts with "lo", case-insensitive
 
-#### Scenario: Закрытие Escape
-- **WHEN** панель открыта и нажат `Escape`
-- **THEN** панель закрыта, значение не изменилось
+#### Scenario: Close by Escape
+- **WHEN** the panel is open and `Escape` is pressed
+- **THEN** the panel is closed, the value did not change
 
-### Requirement: Поиск
-При `filter` панель SHALL содержать поле поиска (`input.p-select-filter` в `p-iconfield` со значком поиска и подсказкой `filter_placeholder`), а список SHALL показывать варианты, метка которых содержит введённую строку без учёта регистра; в группах SHALL остаться только группы с подходящими вариантами. Ввод SHALL сбрасывать фокус варианта, вызывать `on_filter` со строкой и пересчитывать положение панели. Если подходящих вариантов нет, SHALL выводиться `li.p-select-empty-message` с `empty_filter_message` (по умолчанию «No results found»). Клавиши в поле поиска SHALL работать как в списке (стрелки, `Enter`, `Escape`, `Tab`), а `Home`, `End` и стрелки влево и вправо — перемещать курсор. При `reset_filter_on_hide` строка SHALL сбрасываться при закрытии.
+### Requirement: Search
+With `filter`, the panel SHALL contain a search field (`input.p-select-filter` in `p-iconfield` with a search icon and the `filter_placeholder` hint), and the list SHALL show options whose label contains the entered string, case-insensitive; with groups, only groups with matching options SHALL remain. Input SHALL reset option focus, call `on_filter` with the string and recompute the panel position. If there are no matching options, `li.p-select-empty-message` SHALL be rendered with `empty_filter_message` (default "No results found"). Keys in the search field SHALL work as in the list (arrows, `Enter`, `Escape`, `Tab`), while `Home`, `End` and the left and right arrows move the cursor. With `reset_filter_on_hide`, the string SHALL be reset on close.
 
-#### Scenario: Фильтрация
-- **WHEN** введено «or»
-- **THEN** в списке только варианты, содержащие «or» без учёта регистра
+#### Scenario: Filtering
+- **WHEN** "or" is entered
+- **THEN** the list has only options containing "or", case-insensitive
 
-#### Scenario: Нет совпадений
-- **WHEN** введено «zzz»
-- **THEN** список содержит только сообщение «No results found»
+#### Scenario: No matches
+- **WHEN** "zzz" is entered
+- **THEN** the list contains only the message "No results found"
 
-### Requirement: Группы и пустой список
-При заданных `groups` список SHALL показывать для каждой группы `li.p-select-option-group` с `span.p-select-option-group-label` (или `group_template`), за которой идут её варианты; заголовки групп SHALL не выбираться и не получать фокус клавиатуры. Без вариантов SHALL выводиться `li.p-select-empty-message` с `empty_message` (по умолчанию «No results found»). Каждый вариант SHALL иметь `role="option"`, `aria-label`, `aria-setsize` (число выбираемых вариантов) и `aria-posinset` (номер среди выбираемых).
+### Requirement: Groups and empty list
+When `groups` are set, the list SHALL show for each group an `li.p-select-option-group` with a `span.p-select-option-group-label` (or `group_template`), followed by its options; group headers SHALL NOT be selectable and SHALL NOT receive keyboard focus. Without options, `li.p-select-empty-message` SHALL be rendered with `empty_message` (default "No results found"). Each option SHALL have `role="option"`, `aria-label`, `aria-setsize` (number of selectable options) and `aria-posinset` (number among the selectable ones).
 
-#### Scenario: Группа
-- **WHEN** заданы две группы по три варианта
-- **THEN** список содержит два заголовка и шесть вариантов в порядке групп, `aria-setsize="6"`
+#### Scenario: Group
+- **WHEN** two groups of three options are set
+- **THEN** the list contains two headers and six options in group order, `aria-setsize="6"`
 
-#### Scenario: Пустой список
-- **WHEN** вариантов нет
-- **THEN** панель содержит сообщение «No results found»
+#### Scenario: Empty list
+- **WHEN** there are no options
+- **THEN** the panel contains the message "No results found"
 
-### Requirement: Очистка и состояние загрузки
-При `show_clear`, выбранном значении и не `disabled` SHALL выводиться значок очистки `p-select-clear-icon`; клик по нему SHALL сбрасывать значение в `None`, не открывая панель, и вызывать `on_clear`. При `loading` кнопка `p-select-dropdown` SHALL показывать значок загрузки `p-select-loading-icon` вместо стрелки, а ввод и открытие панели SHALL быть заблокированы.
+### Requirement: Clear and loading state
+With `show_clear`, a selected value and not `disabled`, the `p-select-clear-icon` clear icon SHALL be rendered; a click on it SHALL reset the value to `None` without opening the panel and call `on_clear`. With `loading`, the `p-select-dropdown` button SHALL show the `p-select-loading-icon` loading icon instead of the arrow, and input and opening the panel SHALL be blocked.
 
-#### Scenario: Очистка
-- **WHEN** выбран вариант, `show_clear` и клик по значку
-- **THEN** значение `None`, метка показывает подсказку, панель не открылась, вызван `on_clear`
+#### Scenario: Clear
+- **WHEN** an option is selected, `show_clear` is set and the icon is clicked
+- **THEN** the value is `None`, the label shows the placeholder, the panel did not open, `on_clear` was called
 
-#### Scenario: Загрузка
-- **WHEN** задан `loading`
-- **THEN** вместо стрелки значок загрузки, клик по полю панель не открывает
+#### Scenario: Loading
+- **WHEN** `loading` is set
+- **THEN** the loading icon replaces the arrow, a click on the field does not open the panel
 
-### Requirement: Структура, классы и атрибуты
-Корень SHALL быть `<div class="p-select p-component p-inputwrapper">` с модификаторами `p-disabled`, `p-variant-filled`, `p-focus`, `p-invalid`, `p-inputwrapper-filled`, `p-inputwrapper-focus` (в фокусе или при открытой панели), `p-select-open`, `p-select-fluid`, `p-select-sm p-inputfield-sm`, `p-select-lg p-inputfield-lg`, `style_class` и атрибутами `id` и `data-p` (`invalid`, `disabled`, `focus`, `fluid`, `filled`, размер). Метка SHALL иметь `role="combobox"`, `aria-haspopup="listbox"`, `aria-expanded`, `aria-controls` (на список при открытой панели), `aria-disabled`, `aria-label` (заданный или метка варианта), `aria-labelledby`, `aria-required`, `required`, `disabled`, `id` (`input_id`). Кнопка SHALL иметь `role="button"`, `aria-label="dropdown trigger"`, `aria-haspopup="listbox"`, `aria-expanded`. Список SHALL иметь `role="listbox"`, `aria-label` из перевода `aria.listLabel`, а идентификаторы вариантов — `{id}_{индекс}`, где индекс считается по списку вместе с заголовками групп.
+### Requirement: Structure, classes and attributes
+The root SHALL be `<div class="p-select p-component p-inputwrapper">` with the modifiers `p-disabled`, `p-variant-filled`, `p-focus`, `p-invalid`, `p-inputwrapper-filled`, `p-inputwrapper-focus` (focused or with an open panel), `p-select-open`, `p-select-fluid`, `p-select-sm p-inputfield-sm`, `p-select-lg p-inputfield-lg`, `style_class` and the attributes `id` and `data-p` (`invalid`, `disabled`, `focus`, `fluid`, `filled`, size). The label SHALL have `role="combobox"`, `aria-haspopup="listbox"`, `aria-expanded`, `aria-controls` (to the list when the panel is open), `aria-disabled`, `aria-label` (the given one or the option label), `aria-labelledby`, `aria-required`, `required`, `disabled`, `id` (`input_id`). The button SHALL have `role="button"`, `aria-label="dropdown trigger"`, `aria-haspopup="listbox"`, `aria-expanded`. The list SHALL have `role="listbox"`, `aria-label` from the `aria.listLabel` translation, and option identifiers `{id}_{index}`, where the index is counted over the list together with group headers.
 
-#### Scenario: Корень открытого поля
-- **WHEN** панель открыта, задан `size = Large`
-- **THEN** у корня `p-select-open p-inputwrapper-focus p-select-lg p-inputfield-lg`
+#### Scenario: Root of an open field
+- **WHEN** the panel is open and `size = Large` is set
+- **THEN** the root has `p-select-open p-inputwrapper-focus p-select-lg p-inputfield-lg`
 
-#### Scenario: Недоступное поле
-- **WHEN** задан `disabled`
-- **THEN** у корня `p-disabled`, у метки `tabindex="-1"`, `aria-disabled="true"`, `disabled`
+#### Scenario: Disabled field
+- **WHEN** `disabled` is set
+- **THEN** the root has `p-disabled`, the label has `tabindex="-1"`, `aria-disabled="true"`, `disabled`
 
-### Requirement: Свойства и pass-through
-Свойства `options`, `groups`, `placeholder`, `show_clear`, `checkmark`, `filter`, `loading`, `disabled`, `readonly`, `invalid`, `variant`, `size`, `fluid`, `scroll_height`, сообщения, подписи, `style`, `style_class`, `panel_style`, `panel_style_class` SHALL принимать значение или сигнал и обновлять разметку при смене сигнала. `pt` SHALL принимать части `root`, `label`, `clear_icon`, `dropdown`, `dropdown_icon`, `loading_icon`, `overlay`, `header`, `filter`, `list_container`, `list`, `option_group`, `option_group_label`, `option`, `option_label`, `option_check_icon`, `option_blank_icon`, `empty_message`, добавляя классы, стиль и атрибуты без замены собственных.
+### Requirement: Properties and pass-through
+The properties `options`, `groups`, `placeholder`, `show_clear`, `checkmark`, `filter`, `loading`, `disabled`, `readonly`, `invalid`, `variant`, `size`, `fluid`, `scroll_height`, messages, labels, `style`, `style_class`, `panel_style`, `panel_style_class` SHALL accept a value or a signal and update the markup when the signal changes. `pt` SHALL accept the parts `root`, `label`, `clear_icon`, `dropdown`, `dropdown_icon`, `loading_icon`, `overlay`, `header`, `filter`, `list_container`, `list`, `option_group`, `option_group_label`, `option`, `option_label`, `option_check_icon`, `option_blank_icon`, `empty_message`, adding classes, style and attributes without replacing the component's own.
 
-#### Scenario: Реактивные варианты
-- **WHEN** `options` передан сигналом и пополняется при открытой панели
-- **THEN** список обновляется без закрытия панели
+#### Scenario: Reactive options
+- **WHEN** `options` is passed as a signal and grows while the panel is open
+- **THEN** the list updates without closing the panel
 
-#### Scenario: Класс через pt
-- **WHEN** в `pt.option` передан класс `custom`
-- **THEN** у каждого варианта есть `custom` и `p-select-option`
+#### Scenario: Class via pt
+- **WHEN** the class `custom` is passed in `pt.option`
+- **THEN** every option has `custom` and `p-select-option`
 
-### Requirement: Стоимость отрисовки Select
-Число аллокаций на экземпляр при SSR (панель закрыта) SHALL укладываться в бюджет `select-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `select` в `benches/budgets.toml`.
+### Requirement: Select render cost
+The number of allocations per instance in SSR (panel closed) SHALL fit the `select-1000` budget in `benches/alloc-budgets.toml`, and the contribution to wasm SHALL fit the `select` budget in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Select не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** Select values do not exceed the budgets

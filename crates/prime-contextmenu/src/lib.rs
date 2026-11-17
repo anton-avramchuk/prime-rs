@@ -1,8 +1,8 @@
-//! ContextMenu — порт `p-contextmenu` из PrimeNG 21.1.10.
+//! ContextMenu — a port of PrimeNG 21.1.10's `p-contextmenu`.
 //!
-//! Меню с вложенными подменю, которое открывается у курсора по правому клику (событие `contextmenu`) на цели, на всём документе
-//! (`global`) или вручную через [`ContextMenuRef`]; на сенсорных устройствах — долгим касанием (`press_delay`). Пункты —
-//! [`prime_menu::MenuItem`]; логика путей, клавиатуры и поиска — общая с `TieredMenu` (крейт `prime-tieredmenu`).
+//! A menu with nested submenus that opens at the cursor on a right click (the `contextmenu` event) on a target, on the whole document
+//! (`global`) or manually via [`ContextMenuRef`]; on touch devices by a long press (`press_delay`). Items are
+//! [`prime_menu::MenuItem`]; the path, keyboard and search logic is shared with `TieredMenu` (the `prime-tieredmenu` crate).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -41,45 +41,45 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Pass-through частей [`ContextMenu`].
+/// Pass-through of the [`ContextMenu`] parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ContextMenuPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Корневой список.
+    /// Root list.
     pub root_list: Pt,
-    /// Пункт `li`.
+    /// The `li` item.
     pub item: Pt,
-    /// Содержимое пункта.
+    /// Item content.
     pub item_content: Pt,
-    /// Ссылка пункта.
+    /// Item link.
     pub item_link: Pt,
-    /// Значок пункта.
+    /// Item icon.
     pub item_icon: Pt,
-    /// Подпись пункта.
+    /// Item label.
     pub item_label: Pt,
-    /// Стрелка группы.
+    /// Group arrow.
     pub submenu_icon: Pt,
-    /// Подменю.
+    /// Submenu.
     pub submenu: Pt,
-    /// Разделитель.
+    /// Separator.
     pub separator: Pt,
 }
 
-/// Контекст представления `item`.
+/// Context of the `item` view.
 #[derive(Clone)]
 pub struct ContextMenuItemContext {
-    /// Пункт.
+    /// Item.
     pub item: MenuItem,
-    /// Есть ли у пункта подменю.
+    /// Whether the item has a submenu.
     pub has_submenu: bool,
 }
 
-/// Управляющий объект меню: показ в точке страницы, скрытие, переключение.
+/// Menu control object: show at a page point, hide, toggle.
 #[derive(Clone, Copy)]
 pub struct ContextMenuRef {
     visible: RwSignal<bool>,
-    /// Точка показа (координаты страницы) и номер показа: повторный показ при открытом меню только переставляет панель.
+    /// Show point (page coordinates) and show counter: showing again while the menu is open only moves the panel.
     at: RwSignal<(f64, f64, u32)>,
 }
 
@@ -90,17 +90,17 @@ impl Default for ContextMenuRef {
 }
 
 impl ContextMenuRef {
-    /// Создаёт скрытое меню. Вызывать внутри компонента (владелец сигналов).
+    /// Creates a hidden menu. Call inside a component (the signal owner).
     pub fn new() -> Self {
         Self { visible: RwSignal::new(false), at: RwSignal::new((0.0, 0.0, 0)) }
     }
 
-    /// Меню показано (с подпиской).
+    /// The menu is shown (with a subscription).
     pub fn visible(&self) -> bool {
         self.visible.get()
     }
 
-    /// Показывает меню в точке (`page_x`, `page_y`) страницы.
+    /// Shows the menu at the page point (`page_x`, `page_y`).
     pub fn show_at(&self, page_x: f64, page_y: f64) {
         self.at.update(|(x, y, n)| {
             *x = page_x;
@@ -110,14 +110,14 @@ impl ContextMenuRef {
         self.visible.set(true);
     }
 
-    /// Показывает меню у курсора события, отменяя действие по умолчанию и всплытие.
+    /// Shows the menu at the event's cursor, cancelling the default action and propagation.
     pub fn show(&self, event: &web_sys::MouseEvent) {
         event.prevent_default();
         event.stop_propagation();
         self.show_at(f64::from(event.page_x()), f64::from(event.page_y()));
     }
 
-    /// Показывает меню, если оно скрыто, иначе скрывает.
+    /// Shows the menu if hidden, otherwise hides it.
     pub fn toggle(&self, event: &web_sys::MouseEvent) {
         if self.visible.get_untracked() {
             self.hide();
@@ -126,20 +126,20 @@ impl ContextMenuRef {
         }
     }
 
-    /// Скрывает меню.
+    /// Hides the menu.
     pub fn hide(&self) {
         self.visible.try_set(false);
     }
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: String,
     model: Prop<Vec<MenuItem>>,
     nodes: Memo<Vec<Node>>,
     state: RwSignal<State>,
-    /// Сторона подменю по ключу группы (`100%` или `-100%`).
+    /// Submenu side by group key (`100%` or `-100%`).
     sides: RwSignal<HashMap<String, &'static str>>,
     focused: RwSignal<bool>,
     focused_key: Memo<Option<String>>,
@@ -148,7 +148,7 @@ struct Core {
     auto_display: Prop<bool>,
     auto_z_index: Prop<bool>,
     base_z_index: Prop<i32>,
-    /// Левый верхний угол панели (относительно её предка для позиционирования); пока `None`, панель скрыта.
+    /// Top-left corner of the panel (relative to its positioning ancestor); while `None`, the panel is hidden.
     place: RwSignal<Option<(f64, f64)>>,
     z: RwSignal<Option<i32>>,
     panel: NodeRef<leptos::html::Div>,
@@ -191,7 +191,7 @@ impl Core {
         }
     }
 
-    /// Закрывает всё: путь, фокус и само меню.
+    /// Closes everything: the path, focus and the menu itself.
     fn hide_menu(&self) {
         self.update(|t, st| t.hide(st));
         self.r.hide();
@@ -206,7 +206,7 @@ impl Core {
         }
     }
 
-    /// Клик по содержимому пункта.
+    /// Click on item content.
     fn item_click(&self, event: web_sys::MouseEvent, key: &str) {
         let Some(item) = self.tree(|t| t.node(key).map(|n| t.item(n).clone())) else { return };
         if should_prevent_default(&item) || item.disabled {
@@ -227,7 +227,7 @@ impl Core {
         self.focus_list();
     }
 
-    /// Наведение на содержимое пункта.
+    /// Hover over item content.
     fn item_hover(&self, key: &str) {
         if !self.auto_display.get_untracked() {
             return;
@@ -252,7 +252,7 @@ impl Core {
         }
     }
 
-    /// `Enter`/`Space`: клик по ссылке пункта под фокусом.
+    /// `Enter`/`Space`: click on the link of the focused item.
     fn enter(&self) {
         #[cfg(target_arch = "wasm32")]
         if let Some(id) = self.tree(|t| t.focused_id(&self.state.get_untracked(), &self.id))
@@ -267,7 +267,7 @@ impl Core {
         self.update(|t, st| t.after_enter(st));
     }
 
-    /// Печатаемый символ: поиск по началу подписи; строка поиска сбрасывается через 500 мс.
+    /// Printable character: search by label start; the search string is reset after 500 ms.
     fn type_char(&self, ch: &str) {
         self.search.update_value(|s| s.push_str(ch));
         let text = self.search.get_value();
@@ -358,7 +358,7 @@ impl Core {
         });
     }
 
-    /// Ставит панель у курсора: считает размеры (панель пока скрыта) и переводит точку страницы в координаты предка.
+    /// Places the panel at the cursor: measures it (the panel is still hidden) and converts the page point to the ancestor's coordinates.
     #[cfg(target_arch = "wasm32")]
     fn position(&self) {
         let Some(panel) = self.panel.get_untracked() else { return };
@@ -368,7 +368,7 @@ impl Core {
         self.place.set(Some((left, top)));
     }
 
-    /// Меню только что показано: слой, положение, фокус, подписки, `on_show`.
+    /// The menu has just been shown: layer, position, focus, subscriptions, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         if self.auto_z_index.get_untracked() {
@@ -384,12 +384,12 @@ impl Core {
         self.bind_outside();
     }
 
-    /// Новый показ (или первый): сброс пути и фокуса, положение у курсора, фокус списка, `on_show`.
+    /// A new (or first) show: reset path and focus, position at the cursor, focus the list, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn reposition(&self) {
         self.update(|t, st| t.hide(st));
         self.position();
-        // Скрытый (`visibility: hidden`) список фокус не принимает: ждём, пока положение попадёт в стиль.
+        // A hidden (`visibility: hidden`) list does not take focus: wait until the position lands in the style.
         let list = self.list;
         set_timeout(
             move || {
@@ -404,7 +404,7 @@ impl Core {
         }
     }
 
-    /// Слушатель клика вне меню (в следующем тике: клик, открывший меню, ещё всплывает). Правая кнопка и Ctrl-клик не закрывают.
+    /// Listener for a click outside the menu (on the next tick: the click that opened the menu is still bubbling). Right button and Ctrl-click do not close.
     #[cfg(target_arch = "wasm32")]
     fn bind_outside(self: &Arc<Self>) {
         let this = self.clone();
@@ -429,7 +429,7 @@ impl Core {
         }
     }
 
-    /// Меню только что скрыто: подписки сняты, состояние сброшено, `on_hide`.
+    /// The menu has just been hidden: subscriptions removed, state reset, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -442,7 +442,7 @@ impl Core {
         }
     }
 
-    /// Считает сторону раскрытых подменю по месту в окне (`nestedPosition`).
+    /// Computes the side of expanded submenus from the room in the window (`nestedPosition`).
     #[cfg(target_arch = "wasm32")]
     fn place_submenus(self: &Arc<Self>) {
         let this = self.clone();
@@ -454,7 +454,7 @@ impl Core {
                 let inner = window.inner_width().ok().and_then(|v| v.as_f64()).unwrap_or(client);
                 let (scrollbar, viewport) = ((inner - client).max(0.0), client.max(1.0));
                 let scroll_x = window.scroll_x().unwrap_or(0.0);
-                // Компонент мог быть размонтирован до срабатывания таймера.
+                // The component may have been unmounted before the timer fired.
                 let Some(active) = this.state.try_get_untracked().map(|s| s.active) else { return };
                 let mut next = HashMap::new();
                 for key in active {
@@ -478,7 +478,7 @@ impl Core {
     }
 }
 
-/// Всё, что нужно для вывода уровней.
+/// Everything needed to output the levels.
 #[derive(Clone)]
 struct Ctx {
     core: Arc<Core>,
@@ -487,70 +487,70 @@ struct Ctx {
     submenu_icon: Option<ViewFn>,
 }
 
-/// Контекстное меню с вложенными подменю.
+/// Context menu with nested submenus.
 ///
-/// Свойства принимают значение или сигнал. Панель выводится внутри собственного места в разметке (не в `body`) и позиционируется
-/// абсолютно, поэтому предок не должен быть `overflow: hidden`.
+/// Properties accept a value or a signal. The panel is output in its own place in the markup (not in `body`) and positioned
+/// absolutely, so the ancestor must not be `overflow: hidden`.
 #[component]
 pub fn ContextMenu(
-    /// Пункты.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<MenuItem>>,
-    /// Управляющий объект меню.
+    /// Menu control object.
     #[prop(optional)]
     popup_ref: Option<ContextMenuRef>,
-    /// CSS-селектор цели: правый клик по ней открывает меню.
+    /// CSS selector of the target: a right click on it opens the menu.
     #[prop(optional, into)]
     target: OptProp<String>,
-    /// Открывать меню по правому клику на всём документе.
+    /// Open the menu on a right click anywhere in the document.
     #[prop(optional, into)]
     global: Prop<bool>,
-    /// Событие-триггер (по умолчанию `contextmenu`).
+    /// Trigger event (`contextmenu` by default).
     #[prop(optional, into)]
     trigger_event: OptProp<String>,
-    /// Задержка долгого касания в миллисекундах (по умолчанию 500).
+    /// Long-press delay in milliseconds (500 by default).
     #[prop(optional, default = 500, into)]
     press_delay: u32,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Ширина окна, до которой включён режим `p-contextmenu-mobile` (по умолчанию `960px`).
+    /// Window width up to which the `p-contextmenu-mobile` mode is on (`960px` by default).
     #[prop(optional, into)]
     breakpoint: OptProp<String>,
-    /// Автоматически назначать `z-index`.
+    /// Assign `z-index` automatically.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the config value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Раскрывать группы при наведении (после первого раскрытия кликом).
+    /// Expand groups on hover (after the first expansion by click).
     #[prop(optional, default = Prop::Static(true), into)]
     auto_display: Prop<bool>,
-    /// Атрибут `id`.
+    /// The `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `aria-label` корневого списка.
+    /// The `aria-label` attribute of the root list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` корневого списка.
+    /// The `aria-labelledby` attribute of the root list.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<ContextMenuPt>,
-    /// Своё содержимое пункта вместо ссылки.
+    /// Custom item content instead of the link.
     #[prop(optional)]
     item: Option<Callback<ContextMenuItemContext, AnyView>>,
-    /// Своя стрелка группы.
+    /// Custom group arrow.
     #[prop(optional, into)]
     submenu_icon: Option<ViewFn>,
-    /// Меню показано.
+    /// The menu is shown.
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-    /// Меню скрыто.
+    /// The menu is hidden.
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
 ) -> impl IntoView {
@@ -609,12 +609,12 @@ pub fn ContextMenu(
     #[cfg(target_arch = "wasm32")]
     {
         client::bind_media(breakpoint.get_untracked().unwrap_or_else(|| "960px".to_owned()), core.mobile);
-        // Показ, повторный показ и скрытие.
+        // Show, show again and hide.
         let c1 = core.clone();
         Effect::new(move |_| {
             let open = c1.r.visible.get();
             let (_, _, shows) = c1.r.at.get();
-            // Панель попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
+            // The panel gets into the DOM after this effect, so the reference to it is tracked too.
             let mounted = c1.panel.get().is_some();
             let was = c1.was_open.get_value();
             if open && mounted && !was {
@@ -629,13 +629,13 @@ pub fn ContextMenu(
                 c1.closed();
             }
         });
-        // Сторона подменю по месту в окне.
+        // Submenu side by room in the window.
         let c3 = core.clone();
         Effect::new(move |_| {
             c3.state.with(|s| s.active.len());
             c3.place_submenus();
         });
-        // Триггер: цель, документ, долгое касание.
+        // Trigger: target, document, long press.
         let c4 = core.clone();
         let (target, global, trigger_event) = (target.clone(), global.clone(), trigger_event.clone());
         Effect::new(move |prev: Option<()>| {
@@ -670,7 +670,7 @@ pub fn ContextMenu(
             let root_style = {
                 let (pt, style, core) = (pt.clone(), style.clone(), core.clone());
                 move || {
-                    // Пока положение не посчитано, панель невидима: иначе она мигнула бы не на месте.
+                    // Until the position is computed the panel is invisible: otherwise it would flash in the wrong place.
                     let base = match core.place.get() {
                         Some((left, top)) => format!("position: absolute; left: {left}px; top: {top}px"),
                         None => "position: absolute; left: 0; top: 0; visibility: hidden".to_owned(),
@@ -722,7 +722,7 @@ pub fn ContextMenu(
 
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 impl Core {
-    /// Подписка живёт до размонтирования компонента (в отличие от подписок показа, которые снимаются при скрытии).
+    /// The subscription lives until the component is unmounted (unlike the show subscriptions, which are removed on hide).
     #[cfg(target_arch = "wasm32")]
     fn cleanups_forever(&self, remove: Box<dyn FnOnce()>) {
         let held = StoredValue::new_local(Some(remove));
@@ -734,7 +734,7 @@ impl Core {
     }
 }
 
-/// Пункты одного уровня.
+/// Items of one level.
 fn items_view(ctx: &Ctx, parent_key: &str) -> AnyView {
     let core = &ctx.core;
     let rows: Vec<(Node, MenuItem)> = core.tree(|t| t.siblings(parent_key).into_iter().map(|n| (n.clone(), t.item(n).clone())).collect());
@@ -766,14 +766,14 @@ fn join(base: &str, extra: Option<&str>) -> String {
     }
 }
 
-#[allow(clippy::clone_on_copy)] // замыкание над `Memo` — `Copy`, `clone()` оставлен для единообразия с остальными замыканиями
+#[allow(clippy::clone_on_copy)] // a closure over `Memo` is `Copy`, `clone()` is kept for consistency with the other closures
 fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset: usize) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
     let key = node.key.clone();
     let group = !item.items.is_empty();
     let id = item_id(&core.id, item, &key);
     let state = core.state;
-    // Memo: подменю перестраивается только при смене флага этого пункта, а не при любом изменении состояния.
+    // Memo: the submenu is rebuilt only when this item's flag changes, not on any state change.
     let active = {
         let key = key.clone();
         let memo = Memo::new(move |_| state.with(|s| s.active.contains(&key)));
@@ -860,7 +860,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
     .into_any()
 }
 
-/// Стандартное содержимое пункта: ссылка со значком, подписью и стрелкой группы.
+/// Standard item content: a link with an icon, label and group arrow.
 fn link_view(ctx: &Ctx, item: &MenuItem, group: bool) -> AnyView {
     let pt = &ctx.pt;
     let icon = item.icon.clone().map(|icon| {
@@ -894,7 +894,7 @@ fn link_view(ctx: &Ctx, item: &MenuItem, group: bool) -> AnyView {
 
 #[cfg(target_arch = "wasm32")]
 mod client {
-    //! Браузерная часть: `matchMedia`, триггеры показа, перевод точки страницы в координаты панели.
+    //! Browser part: `matchMedia`, show triggers, converting the page point to panel coordinates.
 
     use super::{ContextMenuRef, Viewport, place};
     use leptos::leptos_dom::helpers::set_timeout_with_handle;
@@ -902,7 +902,7 @@ mod client {
     use leptos::wasm_bindgen::{JsCast, closure::Closure};
     use std::time::Duration;
 
-    /// Ведёт `mobile` по медиазапросу и снимает слушатель при размонтировании.
+    /// Drives `mobile` from the media query and removes the listener on unmount.
     pub fn bind_media(breakpoint: String, mobile: RwSignal<bool>) {
         let Some(window) = web_sys::window() else { return };
         let Some(query) = window.match_media(&format!("(max-width: {breakpoint})")).ok().flatten() else { return };
@@ -919,7 +919,7 @@ mod client {
         });
     }
 
-    /// Вешает слушатель и возвращает функцию снятия.
+    /// Attaches a listener and returns a removal function.
     fn listen(target: &web_sys::EventTarget, name: &str, handler: impl FnMut(web_sys::Event) + 'static) -> Box<dyn FnOnce()> {
         let closure = Closure::<dyn FnMut(web_sys::Event)>::new(handler);
         let _ = target.add_event_listener_with_callback(name, closure.as_ref().unchecked_ref());
@@ -936,7 +936,7 @@ mod client {
         })
     }
 
-    /// Подключает показ меню к цели или документу; возвращает функцию снятия всех слушателей.
+    /// Attaches menu showing to a target or the document; returns a function that removes all the listeners.
     pub fn bind_trigger(r: &ContextMenuRef, target: Option<String>, global: bool, event: &str, press_delay: u32) -> Box<dyn FnOnce()> {
         let Some(document) = web_sys::window().and_then(|w| w.document()) else { return Box::new(|| {}) };
         let host: Option<web_sys::EventTarget> = if global {
@@ -978,7 +978,7 @@ mod client {
         })
     }
 
-    /// Считает положение панели у курсора и переводит его в координаты предка для позиционирования.
+    /// Computes the panel position at the cursor and converts it to the ancestor's coordinates for positioning.
     pub fn place_panel(panel: &web_sys::HtmlElement, page_x: f64, page_y: f64) -> (f64, f64) {
         let Some(window) = web_sys::window() else { return (page_x, page_y) };
         let Some(document) = window.document() else { return (page_x, page_y) };
@@ -989,7 +989,7 @@ mod client {
         let scrollbar = (inner - client).max(0.0);
         let view = Viewport { width: inner - scrollbar, height, scroll_x, scroll_y };
         let (left, top) = place(page_x, page_y, f64::from(panel.offset_width()), f64::from(panel.offset_height()), view);
-        // Предок для позиционирования: абсолютная панель считается от него, а не от страницы.
+        // Positioning ancestor: an absolute panel is measured from it, not from the page.
         let (mut ox, mut oy) = (0.0, 0.0);
         if let Some(parent) = panel.offset_parent().and_then(|p| p.dyn_into::<web_sys::HtmlElement>().ok()) {
             let static_body = parent.tag_name().eq_ignore_ascii_case("body")

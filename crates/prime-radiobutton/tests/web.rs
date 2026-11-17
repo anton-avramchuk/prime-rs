@@ -1,4 +1,4 @@
-//! Поведение RadioButton в реальном браузере (wasm-bindgen-test): выбор в группе, `disabled`, события.
+//! RadioButton behaviour in a real browser (wasm-bindgen-test): selection in a group, `disabled`, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;

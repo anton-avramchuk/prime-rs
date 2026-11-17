@@ -1,51 +1,51 @@
 ## ADDED Requirements
 
-### Requirement: Один компонент — один крейт
-Каждый компонент PrimeNG SHALL портироваться в отдельный крейт `crates/prime-<name>`, где `<name>` совпадает с именем каталога компонента в PrimeNG. Общий код SHALL жить в `prime-core`, `prime-dom`, `prime-theme` и `prime-icons`, а не в крейтах компонентов.
+### Requirement: One component, one crate
+Each PrimeNG component SHALL be ported to a separate crate `crates/prime-<name>`, where `<name>` matches the component's directory name in PrimeNG. Shared code SHALL live in `prime-core`, `prime-dom`, `prime-theme` and `prime-icons`, not in component crates.
 
-#### Scenario: Именование крейта компонента
-- **WHEN** добавляется порт компонента `button`
-- **THEN** создаётся крейт `crates/prime-button`, и он указан в workspace как участник
+#### Scenario: Component crate naming
+- **WHEN** a port of the `button` component is added
+- **THEN** the crate `crates/prime-button` is created and listed in the workspace as a member
 
-#### Scenario: Компонент не дублирует общий код
-- **WHEN** компоненту нужны ClassNames, z-index или позиционирование
-- **THEN** он зависит от `prime-core` или `prime-dom`, а не содержит собственную копию
+#### Scenario: Component does not duplicate shared code
+- **WHEN** a component needs ClassNames, z-index or positioning
+- **THEN** it depends on `prime-core` or `prime-dom` rather than containing its own copy
 
-### Requirement: Единый workspace и версии зависимостей
-Репозиторий SHALL быть одним Cargo workspace, в котором версии внешних зависимостей объявлены один раз в `[workspace.dependencies]`, а крейты на них ссылаются.
+### Requirement: Single workspace and dependency versions
+The repository SHALL be a single Cargo workspace in which external dependency versions are declared once in `[workspace.dependencies]` and crates reference them.
 
-#### Scenario: Сборка workspace
-- **WHEN** выполняется `cargo check --workspace`
-- **THEN** сборка завершается без ошибок, и в `Cargo.lock` нет нескольких версий `leptos`
+#### Scenario: Workspace build
+- **WHEN** `cargo check --workspace` is run
+- **THEN** the build finishes without errors, and `Cargo.lock` has no multiple versions of `leptos`
 
-### Requirement: Режимы CSR и SSR/hydrate
-Каждый крейт, зависящий от Leptos, SHALL собираться в режимах CSR, `ssr` и `hydrate` через одноимённые feature-флаги. Код, обращающийся к `window` или `document`, SHALL выполняться только на клиенте.
+### Requirement: CSR and SSR/hydrate modes
+Every crate that depends on Leptos SHALL build in the CSR, `ssr` and `hydrate` modes via the feature flags of the same names. Code that touches `window` or `document` SHALL run only on the client.
 
-#### Scenario: SSR-сборка
-- **WHEN** крейт собирается с `--features ssr` для нативной цели
-- **THEN** сборка проходит, а рендер компонента в строку не обращается к DOM API
+#### Scenario: SSR build
+- **WHEN** a crate is built with `--features ssr` for a native target
+- **THEN** the build succeeds, and rendering a component to a string does not touch the DOM API
 
-#### Scenario: Клиентская сборка
-- **WHEN** крейт собирается для `wasm32-unknown-unknown` с `--features hydrate`
-- **THEN** сборка проходит без ошибок
+#### Scenario: Client build
+- **WHEN** a crate is built for `wasm32-unknown-unknown` with `--features hydrate`
+- **THEN** the build succeeds without errors
 
-### Requirement: Зафиксированный тулчейн
-Репозиторий SHALL закреплять версию Rust в `rust-toolchain.toml` (stable) вместе с таргетом `wasm32-unknown-unknown` и компонентами `rustfmt`, `clippy`.
+### Requirement: Pinned toolchain
+The repository SHALL pin the Rust version in `rust-toolchain.toml` (stable) together with the `wasm32-unknown-unknown` target and the `rustfmt` and `clippy` components.
 
-#### Scenario: Свежий клон
-- **WHEN** разработчик клонирует репозиторий и запускает `cargo build`
-- **THEN** используется закреплённый тулчейн, а нужный таргет устанавливается автоматически
+#### Scenario: Fresh clone
+- **WHEN** a developer clones the repository and runs `cargo build`
+- **THEN** the pinned toolchain is used, and the needed target is installed automatically
 
-### Requirement: Лицензия и атрибуция
-Репозиторий SHALL распространяться под MIT, а файл `NOTICE` SHALL содержать копирайт PrimeNG и закреплённую версию, из которой выполнен порт.
+### Requirement: License and attribution
+The repository SHALL be distributed under MIT, and the `NOTICE` file SHALL contain the PrimeNG copyright and the pinned version the port was made from.
 
-#### Scenario: Проверка NOTICE
-- **WHEN** просматривается корень репозитория
-- **THEN** присутствуют `LICENSE` и `NOTICE` с упоминанием PrimeNG
+#### Scenario: Checking NOTICE
+- **WHEN** the repository root is viewed
+- **THEN** `LICENSE` and `NOTICE` mentioning PrimeNG are present
 
-### Requirement: Служебные файлы Windows
-В `.gitignore` SHALL быть исключены файлы `nul`, чтобы они не попадали в коммиты.
+### Requirement: Windows service files
+`nul` files SHALL be excluded in `.gitignore` so that they do not end up in commits.
 
-#### Scenario: Случайный файл nul
-- **WHEN** в рабочей копии появляется файл `nul`
-- **THEN** `git status` его не показывает
+#### Scenario: Stray nul file
+- **WHEN** a `nul` file appears in the working copy
+- **THEN** `git status` does not show it

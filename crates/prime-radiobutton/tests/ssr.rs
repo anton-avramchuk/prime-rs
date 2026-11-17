@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `data-p*`, группа, `pt` и паритет ветвей RadioButton (SSR).
+//! DOM structure, classes, `data-p*`, group, `pt` and static/reactive parity of RadioButton (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

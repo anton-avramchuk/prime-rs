@@ -1,16 +1,16 @@
-//! Password — порт `p-password` из PrimeNG 21.1.10.
+//! Password — port of `p-password` from PrimeNG 21.1.10.
 //!
-//! Корень `span.p-password` с полем [`InputText`], необязательными значками очистки и показа пароля и панелью-подсказкой
-//! `div.p-password-overlay` со шкалой надёжности. Значение — необязательный двусторонний `value: RwSignal<String>`.
+//! Root `span.p-password` with an [`InputText`] field, optional clear and show-password icons and a hint panel
+//! `div.p-password-overlay` with a strength meter. The value is an optional two-way `value: RwSignal<String>`.
 //!
-//! Надёжность по умолчанию считается [`strength`] (то же, что регулярные выражения PrimeNG по умолчанию); свои правила
-//! задаёт свойство `strength`.
+//! Strength is computed by [`strength`] by default (same as the default PrimeNG regular expressions); custom rules
+//! are set by the `strength` property.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_password::Password;
 //!
-//! let html = view! { <Password toggle_mask=true placeholder="Пароль" /> }.to_html();
+//! let html = view! { <Password toggle_mask=true placeholder="Password" /> }.to_html();
 //! assert!(html.contains("p-password-input") && html.contains(r#"type="password""#) && html.contains("p-password-unmask-icon"));
 //! ```
 
@@ -27,137 +27,137 @@ use std::sync::Arc;
 
 pub use state::{PasswordStrength, Phase, RootState, root_classes, strength};
 
-/// Pass-through частей [`Password`].
+/// Pass-through parts of [`Password`].
 #[derive(Clone, Debug, Default)]
 pub struct PasswordPt {
-    /// Корень.
+        /// Root.
     pub root: Pt,
-    /// Значок очистки.
+        /// Clear icon.
     pub clear_icon: Pt,
-    /// Значок «скрыть пароль».
+        /// "Hide password" icon.
     pub mask_icon: Pt,
-    /// Значок «показать пароль».
+        /// "Show password" icon.
     pub unmask_icon: Pt,
-    /// Панель.
+        /// Panel.
     pub overlay: Pt,
-    /// Содержимое панели.
+        /// Panel content.
     pub content: Pt,
-    /// Шкала.
+        /// Meter.
     pub meter: Pt,
-    /// Метка шкалы.
+        /// Meter label.
     pub meter_label: Pt,
-    /// Текст под шкалой.
+        /// Text below the meter.
     pub meter_text: Pt,
 }
 
-/// Поле ввода пароля с индикатором надёжности.
+/// Password input field with a strength indicator.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` — двусторонний сигнал.
+/// Each property accepts a value or a signal; `value` is a two-way signal.
 #[component]
 pub fn Password(
-    /// Двусторонний сигнал значения; без него значение хранится внутри.
+        /// Two-way value signal; without it the value is stored internally.
     #[prop(optional)]
     value: Option<RwSignal<String>>,
-    /// Показывать панель с шкалой надёжности (по умолчанию да).
+        /// Show the panel with the strength meter (default yes).
     #[prop(default = Prop::Static(true), into)]
     feedback: Prop<bool>,
-    /// Значок показа пароля.
+        /// Show-password icon.
     #[prop(optional, into)]
     toggle_mask: Prop<bool>,
-    /// Значок очистки (виден при непустом значении).
+        /// Clear icon (visible when the value is non-empty).
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-    /// Своя оценка надёжности; пустое значение оценивать не нужно (оно считается подсказкой).
+        /// Custom strength estimate; an empty value need not be estimated (it counts as a prompt).
     #[prop(optional, into)]
     strength: Option<Callback<String, Option<PasswordStrength>>>,
-    /// Подсказка при пустом значении; по умолчанию из локали (`passwordPrompt`).
+        /// Prompt for an empty value; from the locale by default (`passwordPrompt`).
     #[prop(optional, into)]
     prompt_label: OptProp<String>,
-    /// Подпись слабого пароля; по умолчанию из локали (`weak`).
+        /// Label of a weak password; from the locale by default (`weak`).
     #[prop(optional, into)]
     weak_label: OptProp<String>,
-    /// Подпись среднего пароля; по умолчанию из локали (`medium`).
+        /// Label of a medium password; from the locale by default (`medium`).
     #[prop(optional, into)]
     medium_label: OptProp<String>,
-    /// Подпись сильного пароля; по умолчанию из локали (`strong`).
+        /// Label of a strong password; from the locale by default (`strong`).
     #[prop(optional, into)]
     strong_label: OptProp<String>,
-    /// Подсказка в пустом поле.
+        /// Placeholder in an empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Атрибут `autocomplete` поля.
+        /// `autocomplete` attribute of the field.
     #[prop(optional, into)]
     autocomplete: OptProp<String>,
-    /// Атрибут `id` поля.
+        /// `id` attribute of the field.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Атрибут `aria-label` поля.
+        /// `aria-label` attribute of the field.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Максимальная длина.
+        /// Maximum length.
     #[prop(optional, into)]
     max_length: OptProp<i32>,
-    /// Недоступно.
+        /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Только для чтения.
+        /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Обязательное.
+        /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Недопустимое значение.
+        /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Вариант оформления.
+        /// Styling variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Размер.
+        /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину.
+        /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Встроенный стиль корня.
+        /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+        /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Встроенный стиль поля.
+        /// Inline style of the field.
     #[prop(optional, into)]
     input_style: OptProp<String>,
-    /// Дополнительный класс поля.
+        /// Additional class of the field.
     #[prop(optional, into)]
     input_style_class: OptProp<String>,
-    /// Заголовок панели.
+        /// Panel header.
     #[prop(optional, into)]
     header: Option<ViewFn>,
-    /// Подвал панели.
+        /// Panel footer.
     #[prop(optional, into)]
     footer: Option<ViewFn>,
-    /// Своё содержимое панели вместо шкалы.
+        /// Custom panel content instead of the meter.
     #[prop(optional, into)]
     content: Option<ViewFn>,
-    /// Значок «показать пароль».
+        /// "Show password" icon.
     #[prop(optional, into)]
     show_icon: Option<ViewFn>,
-    /// Значок «скрыть пароль».
+        /// "Hide password" icon.
     #[prop(optional, into)]
     hide_icon: Option<ViewFn>,
-    /// Значок очистки.
+        /// Clear icon.
     #[prop(optional, into)]
     clear_icon: Option<ViewFn>,
-    /// Вызывается при получении фокуса полем.
+        /// Called when the field receives focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса полем.
+        /// Called when the field loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается после очистки значка.
+        /// Called after the icon is cleared.
     #[prop(optional, into)]
     on_clear: Option<Callback<()>>,
-    /// Pass-through частей.
+        /// Pass-through parts.
     #[prop(optional)]
     pt: Option<PasswordPt>,
 ) -> impl IntoView {
@@ -287,7 +287,7 @@ pub fn Password(
         move || {
             toggle_mask.get().then(|| {
                 let click = move |_: web_sys::MouseEvent| unmasked.update(|u| *u = !*u);
-                // Фокус остаётся в поле, иначе `blur` закроет панель раньше клика.
+                // Focus stays in the field, otherwise `blur` would close the panel before the click.
                 let keep_focus = |ev: web_sys::MouseEvent| ev.prevent_default();
                 if unmasked.get() {
                     let part = &pt.mask_icon;

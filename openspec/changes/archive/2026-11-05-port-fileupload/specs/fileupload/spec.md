@@ -1,64 +1,64 @@
 # fileupload Specification
 
 ## Purpose
-FileUpload — выбор, проверка и загрузка файлов.
+FileUpload — choosing, validating and uploading files.
 
 ## ADDED Requirements
 
-### Requirement: Проверка файлов
-Файл SHALL приниматься, если он проходит `accept` (список через запятую: MIME-тип точно, шаблон `тип/*` по типу, либо расширение `.ext` без учёта регистра), не превышает `max_file_size` и ещё не выбран (совпадение имени, типа и размера). Отклонённый файл SHALL давать сообщение `error` из шаблонов «{0}: Invalid file type, allowed file types: {1}.» / «{0}: Invalid file size, maximum upload size is {1}.».
+### Requirement: File validation
+A file SHALL be accepted if it passes `accept` (a comma-separated list: an exact MIME type, a `type/*` pattern by type, or an `.ext` extension case-insensitively), does not exceed `max_file_size` and is not yet selected (name, type and size match). A rejected file SHALL produce an `error` message from the templates "{0}: Invalid file type, allowed file types: {1}." / "{0}: Invalid file size, maximum upload size is {1}.".
 
-#### Scenario: Тип
-- **WHEN** `accept = "image/*"`, файл `a.pdf` (`application/pdf`)
-- **THEN** файл отклонён, сообщение «a.pdf: Invalid file type, allowed file types: image/*.»
+#### Scenario: Type
+- **WHEN** `accept = "image/*"`, file `a.pdf` (`application/pdf`)
+- **THEN** the file is rejected, message "a.pdf: Invalid file type, allowed file types: image/*."
 
-#### Scenario: Расширение
-- **WHEN** `accept = ".PDF"`, файл `a.pdf`
-- **THEN** файл принят
+#### Scenario: Extension
+- **WHEN** `accept = ".PDF"`, file `a.pdf`
+- **THEN** the file is accepted
 
-#### Scenario: Размер
-- **WHEN** `max_file_size = 1000`, файл 2048 байт
-- **THEN** отклонён, в сообщении «1000.000 B»
+#### Scenario: Size
+- **WHEN** `max_file_size = 1000`, a 2048-byte file
+- **THEN** rejected, the message contains "1000.000 B"
 
-### Requirement: Размер и подписи
-`format_size` SHALL выводить размер как `{число с тремя знаками} {единица}` с единицами B, KB, MB, …, основание 1024; `0` — «0 B». В режиме `basic` подпись SHALL быть: метка выбора при `auto`; имя файла при одном файле; «Files» при нескольких (шаблон `fileChosenMessage`); «No file chosen» без файлов.
+### Requirement: Size and labels
+`format_size` SHALL output the size as `{number with three decimals} {unit}` with units B, KB, MB, …, base 1024; `0` — "0 B". In `basic` mode the label SHALL be: the choose label with `auto`; the file name for a single file; "Files" for several (the `fileChosenMessage` template); "No file chosen" without files.
 
-#### Scenario: Единицы
-- **WHEN** 1536 байт
+#### Scenario: Units
+- **WHEN** 1536 bytes
 - **THEN** «1.500 KB»
 
-### Requirement: Разметка
-`FileUpload` SHALL выводить `div.p-fileupload.p-fileupload-<mode>.p-component`. В `advanced` — `input[type=file]` (`multiple`, `accept`, `disabled`, `aria-label`), `.p-fileupload-header` с кнопками выбора (`p-fileupload-choose-button`), загрузки (`-upload-button`, если не `auto` и `show_upload_button`) и отмены (`-cancel-button`, если не `auto` и `show_cancel_button`), `.p-fileupload-content`. Кнопка загрузки недоступна без файлов или при превышении лимита; отмены — без файлов или во время загрузки; выбора — при достижении `file_limit` или `disabled`. Файлы SHALL выводиться в `.p-fileupload-file-list` > `.p-fileupload-file` с миниатюрой (для изображений), `.p-fileupload-file-name`, `.p-fileupload-file-size`, значком «Pending» (`warn`) или «Completed» (`success`) и кнопкой удаления.
+### Requirement: Markup
+`FileUpload` SHALL render `div.p-fileupload.p-fileupload-<mode>.p-component`. In `advanced` — `input[type=file]` (`multiple`, `accept`, `disabled`, `aria-label`), `.p-fileupload-header` with the choose (`p-fileupload-choose-button`), upload (`-upload-button`, if not `auto` and `show_upload_button`) and cancel (`-cancel-button`, if not `auto` and `show_cancel_button`) buttons, `.p-fileupload-content`. The upload button is disabled without files or when the limit is exceeded; cancel — without files or during upload; choose — when `file_limit` is reached or `disabled`. Files SHALL be rendered in `.p-fileupload-file-list` > `.p-fileupload-file` with a thumbnail (for images), `.p-fileupload-file-name`, `.p-fileupload-file-size`, a "Pending" (`warn`) or "Completed" (`success`) icon and a remove button.
 
-#### Scenario: Пустой
-- **WHEN** файлов нет
-- **THEN** есть три кнопки, у загрузки и отмены `disabled`, списка и индикатора нет
+#### Scenario: Empty
+- **WHEN** there are no files
+- **THEN** there are three buttons, upload and cancel are `disabled`, there is no list and no indicator
 
-#### Scenario: Автозагрузка
+#### Scenario: Auto upload
 - **WHEN** `auto = true`
-- **THEN** кнопок загрузки и отмены нет
+- **THEN** there are no upload and cancel buttons
 
-### Requirement: Выбор и удаление
-Выбор через поле и перетаскивание на содержимое SHALL добавлять валидные файлы (без `multiple` — заменять текущие), вызывать `on_select`, проверять `file_limit` (сообщение «Maximum number of files exceeded, limit is N at most.») и при `auto` запускать загрузку. Перетаскивание SHALL подсвечивать содержимое классом `p-fileupload-highlight`. Кнопка удаления SHALL убирать файл и вызывать `on_remove`; отмена SHALL очищать список и вызывать `on_clear`.
+### Requirement: Selection and removal
+Selection through the field and drag onto the content SHALL add valid files (without `multiple` — replace the current ones), call `on_select`, check `file_limit` (message "Maximum number of files exceeded, limit is N at most.") and with `auto` start the upload. Dragging SHALL highlight the content with the `p-fileupload-highlight` class. The remove button SHALL remove the file and call `on_remove`; cancel SHALL clear the list and call `on_clear`.
 
-#### Scenario: Один файл
-- **WHEN** без `multiple` выбран второй файл
-- **THEN** в списке только он
+#### Scenario: Single file
+- **WHEN** without `multiple` a second file is selected
+- **THEN** only it is in the list
 
-#### Scenario: Лимит
-- **WHEN** `file_limit = 1`, выбраны два файла
-- **THEN** сообщение о превышении лимита, кнопка загрузки недоступна
+#### Scenario: Limit
+- **WHEN** `file_limit = 1`, two files are selected
+- **THEN** a limit exceeded message, the upload button is disabled
 
-### Requirement: Загрузка
-Загрузка SHALL отправлять `FormData` (поле `name`, имена файлов) методом `method` на `url` через `XMLHttpRequest` с заголовками и `with_credentials`, показывать прогресс (0–100) и вызывать `on_before_upload`, `on_send`, `on_progress`. Ответ 2xx SHALL вызывать `on_upload`, иначе (и при сетевой ошибке) — `on_error`; файлы после ответа SHALL переходить в список загруженных, список ожидающих — очищаться. При `custom_upload` SHALL вызываться `on_upload_handler` вместо отправки.
+### Requirement: Upload
+Upload SHALL send `FormData` (field `name`, the file names) with the `method` method to `url` via `XMLHttpRequest` with the headers and `with_credentials`, show progress (0–100) and call `on_before_upload`, `on_send`, `on_progress`. A 2xx response SHALL call `on_upload`, otherwise (and on a network error) — `on_error`; after the response the files SHALL move to the uploaded list, and the pending list SHALL be cleared. With `custom_upload`, `on_upload_handler` SHALL be called instead of sending.
 
-#### Scenario: Ошибка сервера
-- **WHEN** сервер отвечает 404
-- **THEN** вызван `on_error`, идёт возврат кнопок в доступное состояние
+#### Scenario: Server error
+- **WHEN** the server responds 404
+- **THEN** `on_error` is called, the buttons return to the available state
 
-### Requirement: Режим basic
-В `basic` SHALL выводиться кнопка выбора (`p-fileupload-choose-button`), поле и подпись в `.p-fileupload-basic-content`; `Space`/`Enter` на кнопке открывают выбор; сообщения — перед содержимым.
+### Requirement: Basic mode
+In `basic` the choose button (`p-fileupload-choose-button`), the input and the label SHALL be rendered in `.p-fileupload-basic-content`; `Space`/`Enter` on the button open the chooser; messages — before the content.
 
-#### Scenario: Подпись
-- **WHEN** выбран один файл `a.txt`
-- **THEN** подпись «a.txt»
+#### Scenario: Label
+- **WHEN** one file `a.txt` is selected
+- **THEN** the label is "a.txt"

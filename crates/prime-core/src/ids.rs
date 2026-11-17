@@ -1,10 +1,10 @@
-//! Уникальные номера для идентификаторов и имён (`pn_id_<n>`).
+//! Unique numbers for identifiers and names (`pn_id_<n>`).
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
 
-/// Следующий уникальный номер: из общего контекста гидратации (одинаковый на сервере и в браузере), а вне его — из глобального счётчика.
+/// Next unique number: from the shared hydration context (the same on the server and in the browser), and outside it from the global counter.
 ///
 /// ```
 /// use prime_core::ids::next_unique;
@@ -21,7 +21,7 @@ pub fn next_unique() -> usize {
     }
 }
 
-/// Следующий уникальный номер из глобального счётчика.
+/// Next unique number from the global counter.
 ///
 /// ```
 /// use prime_core::ids::next_unique;

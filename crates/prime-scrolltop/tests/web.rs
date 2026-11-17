@@ -1,5 +1,5 @@
-//! Поведение ScrollTop в реальном браузере (wasm-bindgen-test): порог, возврат, начальная проверка, клик, родитель,
-//! положение, z-index и снятие подписки.
+//! ScrollTop behavior in a real browser (wasm-bindgen-test): threshold, return, initial check, click, parent,
+//! position, z-index and unsubscribing.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -20,7 +20,7 @@ fn host() -> HtmlElement {
     el
 }
 
-/// Высокая страница, чтобы окно прокручивалось.
+/// A tall page so that the window scrolls.
 fn spacer() -> HtmlElement {
     let el = host();
     el.style().set_property("height", "4000px").unwrap();
@@ -58,19 +58,19 @@ async fn window_shows_above_threshold_and_hides_on_return() {
     leptos::task::tick().await;
     scroll_window(400);
     sleep(250).await;
-    assert!(window_button().is_none(), "на пороге кнопки нет");
+    assert!(window_button().is_none(), "no button at the threshold");
     scroll_window(401);
     sleep(250).await;
-    let b = window_button().expect("выше порога кнопка показана");
+    let b = window_button().expect("above the threshold the button is shown");
     assert!(b.get_attribute("aria-label").as_deref() == Some("Scroll Top"));
     assert!(b.query_selector(".p-scrolltop-icon").unwrap().is_some());
-    let z: i32 = b.style().get_property_value("z-index").unwrap().parse().expect("z-index выдан");
-    assert!(z > 1000, "z-index {z} выше базы Overlay");
+    let z: i32 = b.style().get_property_value("z-index").unwrap().parse().expect("z-index assigned");
+    assert!(z > 1000, "z-index {z} is above the Overlay base");
     assert_eq!(prime_core::zindex::current(), z);
     scroll_window(0);
     sleep(800).await;
-    assert!(window_button().is_none(), "после возврата кнопка скрыта");
-    assert_eq!(prime_core::zindex::current(), 0, "z-index возвращён");
+    assert!(window_button().is_none(), "after returning the button is hidden");
+    assert_eq!(prime_core::zindex::current(), 0, "z-index returned");
     tall.remove();
     host.remove();
 }
@@ -83,7 +83,7 @@ async fn already_scrolled_page_shows_button_on_mount() {
     let host = host();
     let _h = leptos::mount::mount_to(host.clone(), || view! { <ScrollTop /> });
     sleep(250).await;
-    assert!(window_button().is_some(), "кнопка показана без нового scroll");
+    assert!(window_button().is_some(), "the button is shown without a new scroll");
     scroll_window(0);
     sleep(800).await;
     tall.remove();
@@ -98,7 +98,7 @@ async fn click_scrolls_window_to_top_and_hides_button() {
     leptos::task::tick().await;
     scroll_window(900);
     sleep(250).await;
-    window_button().expect("показана").click();
+    window_button().expect("shown").click();
     sleep(800).await;
     assert_eq!(web_sys::window().unwrap().scroll_y().unwrap(), 0.0);
     assert!(window_button().is_none());
@@ -133,15 +133,15 @@ async fn parent_target_follows_parent_scroll() {
         view! { <ScrollTop target=ScrollTopTarget::Parent threshold=100.0 behavior=ScrollTopBehavior::Auto /> }
     });
     sleep(250).await;
-    let b = button(&scroller).expect("у родителя кнопка в DOM");
-    assert_eq!(style_of(&b, "display"), "none", "ниже порога спрятана");
+    let b = button(&scroller).expect("the parent has a button in the DOM");
+    assert_eq!(style_of(&b, "display"), "none", "hidden below the threshold");
     assert!(b.class_name().contains("p-scrolltop-sticky"));
     scroller.set_scroll_top(150);
     sleep(250).await;
-    assert_ne!(style_of(&b, "display"), "none", "выше порога видна");
+    assert_ne!(style_of(&b, "display"), "none", "visible above the threshold");
     b.click();
     sleep(800).await;
-    assert_eq!(scroller.scroll_top(), 0, "клик прокрутил родителя");
+    assert_eq!(scroller.scroll_top(), 0, "the click scrolled the parent");
     assert_eq!(style_of(&b, "display"), "none");
     assert_eq!(prime_core::zindex::current(), 0);
     scroller.remove();
@@ -159,12 +159,12 @@ async fn unmount_removes_listener_and_releases_z_index() {
     assert_ne!(prime_core::zindex::current(), 0);
     drop(handle);
     sleep(20).await;
-    assert_eq!(prime_core::zindex::current(), 0, "z-index возвращён при уничтожении");
+    assert_eq!(prime_core::zindex::current(), 0, "z-index returned on destruction");
     scroll_window(0);
     sleep(50).await;
     scroll_window(700);
     sleep(250).await;
-    assert!(window_button().is_none(), "после уничтожения подписки нет");
+    assert!(window_button().is_none(), "no subscription after destruction");
     scroll_window(0);
     tall.remove();
     host.remove();

@@ -1,9 +1,9 @@
-//! Чистая логика Accordion: переключение значения и выбор соседнего заголовка (по `accordion.ts` PrimeNG).
+//! Pure Accordion logic: value toggling and picking the neighbouring header (after PrimeNG `accordion.ts`).
 
-/// Список активных значений после клика по панели `value`.
+/// List of active values after a click on the panel `value`.
 ///
-/// В одиночном режиме открывается только эта панель (повторный клик по единственной активной закрывает её),
-/// при `multiple` значение добавляется в список или убирается из него.
+/// In single mode only this panel is opened (a repeated click on the only active one closes it),
+/// with `multiple` the value is added to the list or removed from it.
 ///
 /// ```
 /// use prime_accordion::toggle_value;
@@ -27,12 +27,12 @@ pub fn toggle_value(current: &[String], value: &str, multiple: bool) -> Vec<Stri
     } else if active && current.len() == 1 {
         Vec::new()
     } else {
-        // Внешний сигнал в одиночном режиме мог содержать несколько значений: клик оставляет только эту панель.
+        // The external signal in single mode could contain several values: a click leaves only this panel.
         vec![value.to_owned()]
     }
 }
 
-/// Клавиша перемещения фокуса между заголовками.
+/// Key for moving focus between headers.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Nav {
     /// ArrowDown.
@@ -45,10 +45,10 @@ pub enum Nav {
     Last,
 }
 
-/// Индекс панели, чей заголовок получает фокус. `disabled[i]` — отключена ли панель `i`, `from` — текущая.
+/// Index of the panel whose header receives focus. `disabled[i]` — whether panel `i` is disabled, `from` — the current one.
 ///
-/// Стрелки пропускают отключённые панели; если дальше в этом направлении подходящей нет, переход идёт по кругу
-/// к первой (вниз) или последней (вверх) не отключённой. `None`, когда все панели отключены.
+/// Arrows skip disabled panels; if there is no suitable one further in that direction, the move wraps around
+/// to the first (down) or last (up) non-disabled one. `None` when all panels are disabled.
 ///
 /// ```
 /// use prime_accordion::{Nav, nav_target};
@@ -108,8 +108,8 @@ mod tests {
 
         let some = [true, false, true, false, true];
         assert_eq!(nav_target(&some, 1, Nav::Next), Some(3));
-        assert_eq!(nav_target(&some, 3, Nav::Next), Some(1), "после последней доступной — по кругу к первой доступной");
-        assert_eq!(nav_target(&some, 1, Nav::Prev), Some(3), "перед первой доступной — по кругу к последней доступной");
+        assert_eq!(nav_target(&some, 3, Nav::Next), Some(1), "after the last available — wraps around to the first available");
+        assert_eq!(nav_target(&some, 1, Nav::Prev), Some(3), "before the first available — wraps around to the last available");
         assert_eq!((nav_target(&some, 3, Nav::First), nav_target(&some, 1, Nav::Last)), (Some(1), Some(3)));
 
         assert_eq!(nav_target(&[true, true], 0, Nav::Next), None);

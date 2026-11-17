@@ -1,23 +1,23 @@
-//! Описание подтверждения (`Confirmation` PrimeNG).
+//! Confirmation description (PrimeNG `Confirmation`).
 
 use leptos::prelude::*;
 use prime_button::ButtonSeverity;
 use prime_core::props::Size;
 use wasm_bindgen::JsCast;
 
-/// Как закрыто окно подтверждения (`ConfirmEventType` PrimeNG).
+/// How the confirmation window was closed (PrimeNG `ConfirmEventType`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ConfirmEventType {
-    /// Согласие кнопкой.
+    /// Accepted with the button.
     Accept,
-    /// Отказ кнопкой.
+    /// Rejected with the button.
     Reject,
-    /// Окно закрыто без выбора: крестик, `Escape`, клик по маске.
+    /// Window closed without a choice: close icon, `Escape`, click on the mask.
     Cancel,
 }
 
 impl ConfirmEventType {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Accept => "accept",
@@ -27,22 +27,22 @@ impl ConfirmEventType {
     }
 }
 
-/// Какой элемент получает фокус при показе.
+/// Which element receives focus when shown.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum ConfirmFocus {
-    /// Кнопка согласия (по умолчанию).
+    /// Accept button (default).
     #[default]
     Accept,
-    /// Кнопка отказа.
+    /// Reject button.
     Reject,
-    /// Кнопка закрытия (ConfirmDialog).
+    /// Close button (ConfirmDialog).
     Close,
-    /// Фокус не переносится.
+    /// Focus is not moved.
     None,
 }
 
 impl ConfirmFocus {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Accept => "accept",
@@ -53,148 +53,148 @@ impl ConfirmFocus {
     }
 }
 
-/// Свойства кнопки подтверждения (`acceptButtonProps` и `rejectButtonProps` PrimeNG, нужная часть).
+/// Properties of a confirmation button (`acceptButtonProps` and `rejectButtonProps` in PrimeNG, relevant part).
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ConfirmButtonProps {
-    /// Подпись.
+    /// Label.
     pub label: Option<String>,
-    /// Цвет.
+    /// Color.
     pub severity: Option<ButtonSeverity>,
-    /// Кнопка с рамкой.
+    /// Button with an outline.
     pub outlined: Option<bool>,
-    /// Текстовая кнопка.
+    /// Text button.
     pub text: Option<bool>,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
 }
 
 impl ConfirmButtonProps {
-    /// Пустые свойства.
+    /// Empty properties.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Подпись.
+    /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
     }
 
-    /// Цвет.
+    /// Color.
     pub fn severity(mut self, severity: ButtonSeverity) -> Self {
         self.severity = Some(severity);
         self
     }
 
-    /// Кнопка с рамкой.
+    /// Button with an outline.
     pub fn outlined(mut self, outlined: bool) -> Self {
         self.outlined = Some(outlined);
         self
     }
 
-    /// Текстовая кнопка.
+    /// Text button.
     pub fn text(mut self, text: bool) -> Self {
         self.text = Some(text);
         self
     }
 
-    /// Размер.
+    /// Size.
     pub fn size(mut self, size: Size) -> Self {
         self.size = Some(size);
         self
     }
 }
 
-/// Описание подтверждения. Не заданные поля — `None`.
+/// Confirmation description. Unset fields are `None`.
 #[derive(Clone, Default)]
 pub struct Confirmation {
-    /// Ключ: показывает подтверждение только компонент с таким же `key` (оба не заданы — тоже совпадение).
+    /// Key: only a component with the same `key` shows this confirmation (if neither is set, that is also a match).
     pub key: Option<String>,
-    /// Текст вопроса.
+    /// Question text.
     pub message: Option<String>,
-    /// Заголовок (ConfirmDialog).
+    /// Header (ConfirmDialog).
     pub header: Option<String>,
-    /// Значок рядом с текстом.
+    /// Icon next to the text.
     pub icon: Option<ViewFn>,
-    /// Элемент, у которого показывается панель (ConfirmPopup) и на который возвращается фокус.
+    /// Element the panel is shown for (ConfirmPopup) and to which focus returns.
     pub target: Option<web_sys::HtmlElement>,
-    /// Вызывается при согласии.
+    /// Called on accept.
     pub accept: Option<Callback<()>>,
-    /// Вызывается при отказе.
+    /// Called on reject.
     pub reject: Option<Callback<()>>,
-    /// Подпись кнопки согласия.
+    /// Accept button label.
     pub accept_label: Option<String>,
-    /// Подпись кнопки отказа.
+    /// Reject button label.
     pub reject_label: Option<String>,
-    /// Значок кнопки согласия.
+    /// Accept button icon.
     pub accept_icon: Option<ViewFn>,
-    /// Значок кнопки отказа.
+    /// Reject button icon.
     pub reject_icon: Option<ViewFn>,
-    /// Показывать ли кнопку согласия (по умолчанию да).
+    /// Whether to show the accept button (default: yes).
     pub accept_visible: Option<bool>,
-    /// Показывать ли кнопку отказа (по умолчанию да).
+    /// Whether to show the reject button (default: yes).
     pub reject_visible: Option<bool>,
-    /// Дополнительный класс кнопки согласия.
+    /// Extra CSS class of the accept button.
     pub accept_button_style_class: Option<String>,
-    /// Дополнительный класс кнопки отказа.
+    /// Extra CSS class of the reject button.
     pub reject_button_style_class: Option<String>,
-    /// Свойства кнопки согласия.
+    /// Accept button properties.
     pub accept_button_props: Option<ConfirmButtonProps>,
-    /// Свойства кнопки отказа.
+    /// Reject button properties.
     pub reject_button_props: Option<ConfirmButtonProps>,
-    /// Фокус при показе.
+    /// Focus when shown.
     pub default_focus: Option<ConfirmFocus>,
-    /// Закрывать ли клавишей `Escape` (по умолчанию да).
+    /// Whether to close with the `Escape` key (default: yes).
     pub close_on_escape: Option<bool>,
-    /// Закрывать ли кликом вне окна (по умолчанию для ConfirmPopup да).
+    /// Whether to close on click outside the window (default: yes for ConfirmPopup).
     pub dismissable_mask: Option<bool>,
-    /// Блокировать ли прокрутку страницы (ConfirmDialog).
+    /// Whether to block page scrolling (ConfirmDialog).
     pub block_scroll: Option<bool>,
-    /// Есть ли кнопка закрытия (ConfirmDialog).
+    /// Whether there is a close button (ConfirmDialog).
     pub closable: Option<bool>,
-    /// Положение окна (ConfirmDialog).
+    /// Window position (ConfirmDialog).
     pub position: Option<String>,
-    /// Модальное ли окно (ConfirmDialog).
+    /// Whether the window is modal (ConfirmDialog).
     pub modal: Option<bool>,
 }
 
 impl Confirmation {
-    /// Пустое подтверждение.
+    /// Empty confirmation.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Ключ.
+    /// Key.
     pub fn key(mut self, key: impl Into<String>) -> Self {
         self.key = Some(key.into());
         self
     }
 
-    /// Текст вопроса.
+    /// Question text.
     pub fn message(mut self, message: impl Into<String>) -> Self {
         self.message = Some(message.into());
         self
     }
 
-    /// Заголовок.
+    /// Header.
     pub fn header(mut self, header: impl Into<String>) -> Self {
         self.header = Some(header.into());
         self
     }
 
-    /// Значок рядом с текстом.
+    /// Icon next to the text.
     pub fn icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.icon = Some(icon.into());
         self
     }
 
-    /// Цель — элемент.
+    /// Target — an element.
     pub fn target(mut self, target: web_sys::HtmlElement) -> Self {
         self.target = Some(target);
         self
     }
 
-    /// Цель — `currentTarget` события (в его отсутствие `target`).
+    /// Target — the event's `currentTarget` (or `target` if absent).
     pub fn target_event(mut self, event: &web_sys::Event) -> Self {
         self.target = event
             .current_target()
@@ -203,126 +203,126 @@ impl Confirmation {
         self
     }
 
-    /// Обработчик согласия.
+    /// Accept handler.
     pub fn accept(mut self, accept: impl Into<Callback<()>>) -> Self {
         self.accept = Some(accept.into());
         self
     }
 
-    /// Обработчик отказа.
+    /// Reject handler.
     pub fn reject(mut self, reject: impl Into<Callback<()>>) -> Self {
         self.reject = Some(reject.into());
         self
     }
 
-    /// Подпись кнопки согласия.
+    /// Accept button label.
     pub fn accept_label(mut self, label: impl Into<String>) -> Self {
         self.accept_label = Some(label.into());
         self
     }
 
-    /// Подпись кнопки отказа.
+    /// Reject button label.
     pub fn reject_label(mut self, label: impl Into<String>) -> Self {
         self.reject_label = Some(label.into());
         self
     }
 
-    /// Значок кнопки согласия.
+    /// Accept button icon.
     pub fn accept_icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.accept_icon = Some(icon.into());
         self
     }
 
-    /// Значок кнопки отказа.
+    /// Reject button icon.
     pub fn reject_icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.reject_icon = Some(icon.into());
         self
     }
 
-    /// Показывать ли кнопку согласия.
+    /// Whether to show the accept button.
     pub fn accept_visible_flag(mut self, visible: bool) -> Self {
         self.accept_visible = Some(visible);
         self
     }
 
-    /// Показывать ли кнопку отказа.
+    /// Whether to show the reject button.
     pub fn reject_visible_flag(mut self, visible: bool) -> Self {
         self.reject_visible = Some(visible);
         self
     }
 
-    /// Дополнительный класс кнопки согласия.
+    /// Extra CSS class of the accept button.
     pub fn accept_button_style_class(mut self, class: impl Into<String>) -> Self {
         self.accept_button_style_class = Some(class.into());
         self
     }
 
-    /// Дополнительный класс кнопки отказа.
+    /// Extra CSS class of the reject button.
     pub fn reject_button_style_class(mut self, class: impl Into<String>) -> Self {
         self.reject_button_style_class = Some(class.into());
         self
     }
 
-    /// Свойства кнопки согласия.
+    /// Accept button properties.
     pub fn accept_button_props(mut self, props: ConfirmButtonProps) -> Self {
         self.accept_button_props = Some(props);
         self
     }
 
-    /// Свойства кнопки отказа.
+    /// Reject button properties.
     pub fn reject_button_props(mut self, props: ConfirmButtonProps) -> Self {
         self.reject_button_props = Some(props);
         self
     }
 
-    /// Фокус при показе.
+    /// Focus when shown.
     pub fn default_focus(mut self, focus: ConfirmFocus) -> Self {
         self.default_focus = Some(focus);
         self
     }
 
-    /// Закрывать ли клавишей `Escape`.
+    /// Whether to close with the `Escape` key.
     pub fn close_on_escape(mut self, close: bool) -> Self {
         self.close_on_escape = Some(close);
         self
     }
 
-    /// Закрывать ли кликом вне окна.
+    /// Whether to close on click outside the window.
     pub fn dismissable_mask(mut self, dismissable: bool) -> Self {
         self.dismissable_mask = Some(dismissable);
         self
     }
 
-    /// Блокировать ли прокрутку страницы.
+    /// Whether to block page scrolling.
     pub fn block_scroll(mut self, block: bool) -> Self {
         self.block_scroll = Some(block);
         self
     }
 
-    /// Есть ли кнопка закрытия.
+    /// Whether there is a close button.
     pub fn closable(mut self, closable: bool) -> Self {
         self.closable = Some(closable);
         self
     }
 
-    /// Положение окна.
+    /// Window position.
     pub fn position(mut self, position: impl Into<String>) -> Self {
         self.position = Some(position.into());
         self
     }
 
-    /// Модальное ли окно.
+    /// Whether the window is modal.
     pub fn modal(mut self, modal: bool) -> Self {
         self.modal = Some(modal);
         self
     }
 
-    /// Показана ли кнопка согласия (`acceptVisible !== false`).
+    /// Whether the accept button is shown (`acceptVisible !== false`).
     pub fn accept_visible(&self) -> bool {
         self.accept_visible != Some(false)
     }
 
-    /// Показана ли кнопка отказа (`rejectVisible !== false`).
+    /// Whether the reject button is shown (`rejectVisible !== false`).
     pub fn reject_visible(&self) -> bool {
         self.reject_visible != Some(false)
     }

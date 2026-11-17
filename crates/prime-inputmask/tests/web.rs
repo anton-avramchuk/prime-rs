@@ -1,7 +1,7 @@
-//! Поведение InputMask в реальном браузере (wasm-bindgen-test): ввод по маске, удаление со сдвигом, вставка, потеря фокуса,
-//! `unmask`, внешнее значение, очистка, `readonly`.
+//! InputMask behaviour in a real browser (wasm-bindgen-test): typing by the mask, deletion with shifts, paste, blur,
+//! `unmask`, external value, clearing, `readonly`.
 //!
-//! Сценарии идут одним последовательным тестом: фокус общий на страницу. Стили темы не подключены.
+//! The scenarios run as one sequential test: focus is shared by the page. Theme styles are not connected.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -27,7 +27,7 @@ fn host() -> HtmlElement {
 }
 
 fn input(host: &HtmlElement) -> HtmlInputElement {
-    host.query_selector("input").unwrap().unwrap_or_else(|| panic!("нет input: {}", host.outer_html())).dyn_into().unwrap()
+    host.query_selector("input").unwrap().unwrap_or_else(|| panic!("no input: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 async fn sleep(ms: i32) {
@@ -37,7 +37,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам и таймерам фокуса (10 мс) примениться.
+/// Gives effects and the focus timer (10 ms) time to apply.
 async fn settle() {
     sleep(40).await;
 }
@@ -80,27 +80,27 @@ async fn typing_fills_the_mask() {
     assert_eq!(i.value(), "");
     i.focus().unwrap();
     settle().await;
-    assert_eq!(i.value(), "__-__", "при фокусе виден буфер маски");
+    assert_eq!(i.value(), "__-__", "the mask buffer is visible on focus");
     assert_eq!(caret(&i), (0, 0));
-    assert!(!press(&i, "x"), "неподходящий символ поглощается");
+    assert!(!press(&i, "x"), "an unsuitable character is swallowed");
     assert_eq!(i.value(), "__-__");
     press(&i, "1");
     assert_eq!((i.value().as_str(), caret(&i)), ("1_-__", (1, 1)));
     press(&i, "2");
-    assert_eq!((i.value().as_str(), caret(&i)), ("12-__", (3, 3)), "постоянный символ пропущен");
-    assert_eq!(value.get_untracked(), "12-__", "значение следует за полем");
+    assert_eq!((i.value().as_str(), caret(&i)), ("12-__", (3, 3)), "the constant character is skipped");
+    assert_eq!(value.get_untracked(), "12-__", "the value follows the field");
     assert!(log.lock().unwrap().iter().all(|l| l != "complete"));
     press(&i, "3");
     press(&i, "4");
     assert_eq!(i.value(), "12-34");
     assert_eq!(value.get_untracked(), "12-34");
-    assert_eq!(log.lock().unwrap().iter().filter(|l| *l == "complete").count(), 1, "on_complete при заполнении");
+    assert_eq!(log.lock().unwrap().iter().filter(|l| *l == "complete").count(), 1, "on_complete when filled");
     assert!(log.lock().unwrap().contains(&"unmasked:1234".to_owned()));
     press(&i, "5");
-    assert_eq!(i.value(), "12-34", "за пределами маски ввод игнорируется");
+    assert_eq!(i.value(), "12-34", "input beyond the mask is ignored");
     i.blur().unwrap();
     settle().await;
-    assert_eq!(i.value(), "12-34", "полное значение остаётся");
+    assert_eq!(i.value(), "12-34", "a full value stays");
     host.remove();
 }
 
@@ -110,23 +110,23 @@ async fn deleting_shifts_left() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <InputMask mask="99-99" value=value /> });
     settle().await;
     let i = input(&host);
-    assert_eq!(i.value(), "12-34", "начальное значение разложено по маске");
+    assert_eq!(i.value(), "12-34", "the initial value is laid out by the mask");
     i.focus().unwrap();
     settle().await;
-    assert_eq!(caret(&i), (0, 5), "полная маска выделяется целиком");
+    assert_eq!(caret(&i), (0, 5), "a full mask is selected entirely");
     i.set_selection_range(5, 5).unwrap();
     press(&i, "Backspace");
-    assert_eq!((i.value().as_str(), caret(&i)), ("12-3_", (4, 4)), "Backspace удаляет символ слева");
+    assert_eq!((i.value().as_str(), caret(&i)), ("12-3_", (4, 4)), "Backspace removes the character on the left");
     i.set_selection_range(1, 1).unwrap();
     press(&i, "Delete");
-    assert_eq!(i.value(), "13-__", "Delete удаляет символ справа со сдвигом");
+    assert_eq!(i.value(), "13-__", "Delete removes the character on the right with a shift");
     i.set_selection_range(0, 5).unwrap();
     press(&i, "Backspace");
-    assert_eq!(i.value(), "__-__", "выделение удаляется целиком");
+    assert_eq!(i.value(), "__-__", "the selection is removed entirely");
     assert_eq!(value.get_untracked(), "__-__");
     i.blur().unwrap();
     settle().await;
-    assert_eq!(i.value(), "", "пустая маска при потере фокуса очищается");
+    assert_eq!(i.value(), "", "an empty mask is cleared on blur");
     assert_eq!(value.get_untracked(), "");
     host.remove();
 }
@@ -142,7 +142,7 @@ async fn blur_clears_incomplete_and_keeps_with_auto_clear_off() {
     type_str(&i, "12");
     i.blur().unwrap();
     settle().await;
-    assert_eq!((i.value().as_str(), value.get_untracked().as_str()), ("", ""), "неполное значение очищается");
+    assert_eq!((i.value().as_str(), value.get_untracked().as_str()), ("", ""), "an incomplete value is cleared");
     host.remove();
 
     let host = self::host();
@@ -156,7 +156,7 @@ async fn blur_clears_incomplete_and_keeps_with_auto_clear_off() {
     type_str(&i, "12");
     i.blur().unwrap();
     settle().await;
-    assert_eq!(i.value(), "12-##", "без auto_clear остаётся");
+    assert_eq!(i.value(), "12-##", "without auto_clear it stays");
     assert_eq!(value.get_untracked(), "12-##");
     host.remove();
 }
@@ -172,7 +172,7 @@ async fn paste_and_input_are_laid_out_by_the_mask() {
     i.set_value("555-123-4567");
     i.dispatch_event(&web_sys::Event::new("input").unwrap()).unwrap();
     sleep(60).await;
-    assert_eq!(i.value(), "(555) 123-4567", "вставленный текст распределён по маске");
+    assert_eq!(i.value(), "(555) 123-4567", "the pasted text is distributed over the mask");
     assert_eq!(value.get_untracked(), "(555) 123-4567");
     host.remove();
 }
@@ -186,7 +186,7 @@ async fn unmask_escape_readonly_and_external_value() {
     i.focus().unwrap();
     settle().await;
     type_str(&i, "12z");
-    assert_eq!(value.get_untracked(), "12", "при unmask значение — введённые символы");
+    assert_eq!(value.get_untracked(), "12", "with unmask the value is the entered characters");
     assert_eq!(i.value(), "(12_) __a".replace('a', "_"));
     press(&i, "3");
     press(&i, "4");
@@ -194,18 +194,18 @@ async fn unmask_escape_readonly_and_external_value() {
     press(&i, "q");
     assert_eq!(value.get_untracked(), "12345q");
     assert_eq!(i.value(), "(123) 45q");
-    // Escape возвращает текст на момент фокуса.
+    // Escape returns the text as it was at focus.
     i.blur().unwrap();
     settle().await;
     i.focus().unwrap();
     settle().await;
     press(&i, "Backspace");
     press(&i, "Escape");
-    assert_eq!(i.value(), "(123) 45q", "Escape восстанавливает текст");
-    // Внешнее значение.
+    assert_eq!(i.value(), "(123) 45q", "Escape restores the text");
+    // External value.
     value.set("98765z".to_owned());
     settle().await;
-    assert_eq!(i.value(), "(987) 65z", "внешнее значение пересчитывается по маске");
+    assert_eq!(i.value(), "(987) 65z", "the external value is recalculated by the mask");
     host.remove();
 
     let host = self::host();
@@ -215,7 +215,7 @@ async fn unmask_escape_readonly_and_external_value() {
     let i = input(&host);
     i.focus().unwrap();
     settle().await;
-    assert_eq!(i.value(), "", "в режиме чтения буфер не показывается");
+    assert_eq!(i.value(), "", "in read-only mode the buffer is not shown");
     press(&i, "1");
     assert_eq!(i.value(), "");
     host.remove();
@@ -229,18 +229,18 @@ async fn clear_icon_resets() {
         view! { <InputMask mask="99-99" value=value show_clear=true on_clear=Callback::new(move |_| l.lock().unwrap().push("clear".into())) /> }
     });
     settle().await;
-    let icon = host.query_selector(".p-inputmask-clear-icon").unwrap().expect("значок очистки");
+    let icon = host.query_selector(".p-inputmask-clear-icon").unwrap().expect("clear icon");
     let init = MouseEventInit::new();
     init.set_bubbles(true);
     icon.dispatch_event(&MouseEvent::new_with_mouse_event_init_dict("click", &init).unwrap()).unwrap();
     settle().await;
     assert_eq!((input(&host).value().as_str(), value.get_untracked().as_str()), ("", ""));
-    assert!(host.query_selector(".p-inputmask-clear-icon").unwrap().is_none(), "значок исчез");
+    assert!(host.query_selector(".p-inputmask-clear-icon").unwrap().is_none(), "the icon disappears");
     assert_eq!(log.lock().unwrap().as_slice(), ["clear"]);
     let i = input(&host);
     i.focus().unwrap();
     settle().await;
-    assert_eq!(i.value(), "__-__", "после очистки буфер снова пуст");
+    assert_eq!(i.value(), "__-__", "after clearing the buffer is empty again");
     host.remove();
 }
 
@@ -253,7 +253,7 @@ async fn typing_right_after_focus_is_not_reset_by_the_delayed_caret() {
     i.focus().unwrap();
     type_str(&i, "1234");
     sleep(60).await;
-    assert_eq!(i.value(), "12-34", "отложенная запись буфера (10 мс) не затирает уже введённое");
+    assert_eq!(i.value(), "12-34", "the deferred buffer write (10 ms) does not overwrite what was already typed");
     host.remove();
 }
 

@@ -1,53 +1,53 @@
 # InputNumber
 
-Порт `p-inputnumber` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10's `p-inputnumber` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-inputnumber::InputNumber` | `packages/primeng/src/inputnumber/inputnumber.ts`, `inputnumber/style/inputnumberstyle.ts` |
-| CSS | `@primeuix/styles/inputnumber` и пресет Aura (`cargo xtask gen-theme`); поле — CSS `inputtext` |
-| Демонстрации | `apps/showcase/doc/inputnumber/*-doc.ts` (`locale`, `currency`, `numerals`, `prefixsuffix`, `buttons`, `vertical`, `clearicon`, `sizes`, `filled`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel`) |
+| CSS | `@primeuix/styles/inputnumber` and the Aura preset (`cargo xtask gen-theme`); the field uses the `inputtext` CSS |
+| Demos | `apps/showcase/doc/inputnumber/*-doc.ts` (`locale`, `currency`, `numerals`, `prefixsuffix`, `buttons`, `vertical`, `clearicon`, `sizes`, `filled`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel`) |
 
-Спека: `openspec/specs/inputnumber`.
+Spec: `openspec/specs/inputnumber`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Структура: корень `span.p-inputnumber p-component p-inputwrapper`, внутри `input[role=spinbutton]` с классами `InputText` и `p-inputnumber-input`, значок очистки `p-inputnumber-clear-icon`, кнопки `p-inputnumber-button` (`stacked` — в `p-inputnumber-button-group`, `horizontal` и `vertical` — по отдельности); `tabindex=-1` и `aria-hidden` у кнопок.
-- Классы корня и `data-p` (`invalid`, `disabled`, `focus`, `fluid`, `filled`, `empty`, размер, раскладка), `p-inputwrapper-filled` при `allow_empty = false`.
-- Атрибуты поля: `role=spinbutton`, `inputmode=decimal`, `aria-valuemin/max/now`, `min`, `max`, `step` (по умолчанию 1) и необязательные.
-- Правила набора: только цифры, минус (в начале числа и при `min` меньше нуля) и десятичный разделитель локали; число знаков дроби ограничено максимумом; в дробной части цифра замещает следующую; вставка разбирается как число.
-- Как в PrimeNG, набрать десятичный разделитель в числе без дробной части можно только при явно заданном `max_fraction_digits`: по умолчанию (демонстрация «Integer Only») поле принимает целые, а дробь появляется из значения, `min_fraction_digits` или вставки.
-- Backspace и Delete: пропускают разделитель групп, не трогают префикс и суффикс, цифру дроби в режиме `Currency` заменяют нулём, в `Decimal` убирают при числе знаков больше `min_fraction_digits`, единственную целую цифру заменяют нулём (результат не больше нуля становится пустым).
-- Пока набирается число без десятичного разделителя, `min_fraction_digits` дополняет дробь нулями (`1` → `1.00`); набранный «хвост» дроби сохраняется (`1.`, `1.50`).
-- Фиксация (`Enter`, `Tab`, потеря фокуса) разбирает текст, ограничивает `min..max`, форматирует заново; пустое поле — `None` (при `allow_empty = false` — `0`).
-- Шаги: стрелки и кнопки, удержание кнопки повторяет шаг через 500 мс каждые 40 мс; `maxlength` блокирует шаг, делающий текст длиннее.
-- Клавиши с `Shift` и `Alt` браузеру не мешают и не передаются в `on_key_down`.
+- Structure: root `span.p-inputnumber p-component p-inputwrapper`, inside it `input[role=spinbutton]` with the `InputText` and `p-inputnumber-input` classes, the clear icon `p-inputnumber-clear-icon`, the `p-inputnumber-button` buttons (`stacked` in `p-inputnumber-button-group`, `horizontal` and `vertical` separately); `tabindex=-1` and `aria-hidden` on the buttons.
+- Root classes and `data-p` (`invalid`, `disabled`, `focus`, `fluid`, `filled`, `empty`, size, layout), `p-inputwrapper-filled` when `allow_empty = false`.
+- Field attributes: `role=spinbutton`, `inputmode=decimal`, `aria-valuemin/max/now`, `min`, `max`, `step` (1 by default) and the optional ones.
+- Typing rules: only digits, a minus (at the start of the number and when `min` is below zero) and the locale's decimal separator; the number of fraction digits is limited by the maximum; in the fraction part a digit replaces the next one; paste is parsed as a number.
+- As in PrimeNG, a decimal separator can be typed into a number with no fraction part only when `max_fraction_digits` is set explicitly: by default (the "Integer Only" demo) the field accepts integers, and a fraction appears from the value, `min_fraction_digits` or paste.
+- Backspace and Delete: skip the group separator, do not touch the prefix and suffix, replace a fraction digit with zero in `Currency` mode, remove it in `Decimal` when the digit count exceeds `min_fraction_digits`, and replace a lone integer digit with zero (a result not greater than zero becomes empty).
+- While a number is typed without a decimal separator, `min_fraction_digits` pads the fraction with zeros (`1` → `1.00`); the typed fraction "tail" is kept (`1.`, `1.50`).
+- Commit (`Enter`, `Tab`, focus loss) parses the text, clamps to `min..max` and formats again; an empty field is `None` (`0` when `allow_empty = false`).
+- Steps: arrows and buttons; holding a button repeats the step after 500 ms every 40 ms; `maxlength` blocks a step that would make the text longer.
+- Keys with `Shift` and `Alt` do not interfere with the browser and are not passed to `on_key_down`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<span>`, а не хост `<p-inputnumber>` | Хост в Angular — деталь фреймворка. |
-| `value: RwSignal<Option<f64>>` вместо `ngModel`; без него внутреннее состояние (`default_value`) | Двусторонняя привязка без форм-инфраструктуры. |
-| Собственный форматтер на таблице из семи локалей (`en-US`, `en-GB`, `en-IN`, `de-DE`, `fr-FR`, `ja-JP`, `ru-RU`) и шести валют (USD, EUR, GBP, JPY, INR, RUB) вместо `Intl.NumberFormat`; неизвестная локаль — `en-US`, неизвестная валюта — код | В Rust нет Intl, а SSR и браузер должны давать один текст (решение пользователя); ICU4X дал бы заметный рост wasm. Символы валют и их позиции в таблице — приближение к CLDR. |
-| `locale` по умолчанию `en-US`, а не язык браузера | На сервере языка браузера нет. |
-| «jp-JP» из демонстрации `currency` заменён на `ja-JP` | `jp-JP` — не существующая локаль, Intl молча берёт локаль по умолчанию. |
-| Округление «от нуля» по кратчайшему десятичному представлению (`1.005` → `1.01`) | Так делают ICU и V8. |
-| Ввод через `beforeinput` вместо `keypress` и разбора строки по ветвям `updateInput` | `keypress` устарел и не работает на мобильных клавиатурах. |
-| Курсор после правки ставится «после того же числа значимых символов» (цифр, разделителя) | Проще проверять; в обычных случаях совпадает с PrimeNG, в редких (вставка в середину с группами) может отличаться на символ. |
-| Минус принимается и как ASCII `-` в локалях с другим знаком (`ru-RU`: `U+2212`) | В PrimeNG приходилось вводить знак локали. |
-| Десятичный разделитель — только знак локали (`,` в `de-DE`, `.` не принимается) | Точка в `de-DE` — разделитель групп; PrimeNG добавляет только цифровую клавишу `NumpadDecimal`. |
-| `Home`/`End` работают и при `min`/`max` равном нулю | В PrimeNG проверка `if (this.min())` пропускает ноль. |
-| Шаг округляет шум двоичной арифметики до 12 знаков (`0.1 + 0.2` → `0.3`) | Без этого значение получает хвост `0.30000000000000004`. |
-| `on_input` получает текст после правки | В PrimeNG `formattedValue` — текст до правки. |
-| Класс `p-disabled` у кнопок не выводится | В PrimeNG он зависит от `maxlength()` вместо значения и фактически никогда не включается. |
-| Только ASCII-цифры; нет компактных, процентных и единичных режимов, `minlength`, `localeMatcher`, `autofocus`, Angular Forms | Вне объёма change. |
-| Не перенесены демонстрации `reactiveforms`, `templatedrivenforms` | Формы вне объёма. |
-| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
-| `readonly` и `disabled` одинаково блокируют ввод, шаги и вставку | У недоступного поля браузер не шлёт событий; блокировка нужна для синтетических событий и кнопок. |
+| The root is a `<span>`, not the `<p-inputnumber>` host | The host in Angular is a framework detail. |
+| `value: RwSignal<Option<f64>>` instead of `ngModel`; without it, internal state (`default_value`) | Two-way binding without forms infrastructure. |
+| Own formatter on a table of seven locales (`en-US`, `en-GB`, `en-IN`, `de-DE`, `fr-FR`, `ja-JP`, `ru-RU`) and six currencies (USD, EUR, GBP, JPY, INR, RUB) instead of `Intl.NumberFormat`; an unknown locale is `en-US`, an unknown currency is its code | Rust has no Intl, and SSR and the browser must produce the same text (user decision); ICU4X would noticeably grow the wasm. Currency symbols and their positions in the table approximate CLDR. |
+| `locale` defaults to `en-US`, not the browser language | There is no browser language on the server. |
+| "jp-JP" from the `currency` demo is replaced with `ja-JP` | `jp-JP` is not an existing locale; Intl silently falls back to the default locale. |
+| Rounding half away from zero on the shortest decimal representation (`1.005` → `1.01`) | ICU and V8 do this. |
+| Input via `beforeinput` instead of `keypress` and string parsing by `updateInput` branches | `keypress` is deprecated and does not work on mobile keyboards. |
+| After an edit the caret is placed "after the same number of significant characters" (digits, separator) | Easier to verify; in ordinary cases it matches PrimeNG, in rare ones (paste in the middle with groups) it may differ by one character. |
+| A minus is also accepted as ASCII `-` in locales with a different sign (`ru-RU`: `U+2212`) | In PrimeNG one had to type the locale's sign. |
+| The decimal separator is only the locale's sign (`,` in `de-DE`, `.` is not accepted) | The dot in `de-DE` is the group separator; PrimeNG only adds the numeric `NumpadDecimal` key. |
+| `Home`/`End` also work when `min`/`max` equals zero | In PrimeNG the `if (this.min())` check skips zero. |
+| A step rounds binary arithmetic noise to 12 digits (`0.1 + 0.2` → `0.3`) | Otherwise the value gets the tail `0.30000000000000004`. |
+| `on_input` receives the text after the edit | In PrimeNG `formattedValue` is the text before the edit. |
+| The `p-disabled` class on buttons is not emitted | In PrimeNG it depends on `maxlength()` instead of the value and is effectively never enabled. |
+| ASCII digits only; no compact, percent or unit modes, `minlength`, `localeMatcher`, `autofocus`, Angular Forms | Out of scope of the change. |
+| The `reactiveforms` and `templatedrivenforms` demos are not ported | Forms are out of scope. |
+| The `fluid` property is `OptProp<bool>`: without a value it comes from the `Fluid` context | Like `hasFluid = fluid() ?? !!pcFluid` in PrimeNG; see `docs/field-wrappers.md`. |
+| `readonly` and `disabled` equally block input, steps and paste | A disabled field gets no events from the browser; the block is needed for synthetic events and buttons. |
 
-Приставки и суффиксы с цифрами (например, `prefix="3D "`) не поддерживаются: цифры в обрамлении принимаются за часть числа при поиске границ числовой части.
+Prefixes and suffixes with digits (for example, `prefix="3D "`) are not supported: digits in the surrounding text are taken as part of the number when finding the bounds of the numeric part.
 
-## Производительность
+## Performance
 
-SSR: 119 аллокаций на экземпляр с валютой и кнопками (бюджет 130), HTML ≈ 2,3 КБ (две иконки кнопок); вклад в сырой wasm +437 КБ (бюджет 480 КБ) — форматтер, разбор и правка текста.
+SSR: 119 allocations per instance with a currency and buttons (budget 130), HTML ≈ 2.3 KB (two button icons); contribution to raw wasm +437 KB (budget 480 KB) — the formatter, parsing and text editing.

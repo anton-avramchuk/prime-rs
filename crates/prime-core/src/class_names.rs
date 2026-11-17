@@ -1,17 +1,17 @@
-//! Построитель списка CSS-классов (аналог `cn` из `@primeuix/utils`).
+//! CSS class list builder (analogous to `cn` from `@primeuix/utils`).
 
 use leptos::prelude::*;
 use std::borrow::Cow;
 use std::collections::BTreeSet;
 use std::sync::{Mutex, OnceLock, PoisonError};
 
-/// Размер стекового буфера, байт: типичный набор классов компонента (с модификаторами) умещается без кучи.
+/// Stack buffer size, bytes: a typical set of component classes (with modifiers) fits without the heap.
 const STACK: usize = 192;
 
-/// Максимум записей в таблице интернирования: константных комбинаций классов у компонента десятки.
+/// Maximum entries in the interning table: a component has dozens of constant class combinations.
 const MAX_INTERNED: usize = 4096;
 
-/// Буфер строки: стек, при переполнении — куча.
+/// String buffer: stack, heap on overflow.
 #[derive(Clone, Debug)]
 enum Buf {
     Stack { data: [u8; STACK], len: usize },
@@ -21,7 +21,7 @@ enum Buf {
 impl Buf {
     fn as_str(&self) -> &str {
         match self {
-            // Записываются только целые `&str`, поэтому границы символов сохраняются.
+            // Only whole `&str`s are written, so character boundaries are preserved.
             Self::Stack { data, len } => std::str::from_utf8(&data[..*len]).unwrap_or_default(),
             Self::Heap(s) => s,
         }
@@ -48,10 +48,10 @@ impl Buf {
     }
 }
 
-/// Собирает классы в одну строку: без пустых и повторяющихся классов, на стековом буфере.
+/// Collects classes into one string: without empty or duplicate classes, on a stack buffer.
 ///
-/// `finish()` отдаёт `String`. `finish_cow()` для строк из одних констант компонента (без [`add_user`](Self::add_user))
-/// возвращает интернированный `&'static str` без аллокации.
+/// `finish()` returns a `String`. `finish_cow()` for strings made only of component constants (without [`add_user`](Self::add_user))
+/// returns an interned `&'static str` without allocation.
 ///
 /// ```
 /// use prime_core::ClassNames;
@@ -73,17 +73,17 @@ impl Default for ClassNames {
 }
 
 impl ClassNames {
-    /// Пустой построитель.
+    /// Empty builder.
     pub fn new() -> Self {
         Self { buf: Buf::Stack { data: [0; STACK], len: 0 }, dynamic: false }
     }
 
-    /// Пустой построитель; ёмкость не нужна (стековый буфер), параметр оставлен для совместимости.
+    /// Empty builder; capacity is not needed (stack buffer), the parameter is kept for compatibility.
     pub fn with_capacity(_capacity: usize) -> Self {
         Self::new()
     }
 
-    /// Добавляет один или несколько классов через пробел.
+    /// Adds one or several space-separated classes.
     pub fn add(&mut self, classes: &str) -> &mut Self {
         for class in classes.split_whitespace() {
             if !self.contains(class) {
@@ -96,7 +96,7 @@ impl ClassNames {
         self
     }
 
-    /// Добавляет классы, если условие истинно.
+    /// Adds classes if the condition is true.
     pub fn add_if(&mut self, condition: bool, classes: &str) -> &mut Self {
         if condition {
             self.add(classes);
@@ -104,7 +104,7 @@ impl ClassNames {
         self
     }
 
-    /// Добавляет классы, если они заданы.
+    /// Adds classes if they are set.
     pub fn add_opt(&mut self, classes: Option<&str>) -> &mut Self {
         if let Some(c) = classes {
             self.add(c);
@@ -112,7 +112,7 @@ impl ClassNames {
         self
     }
 
-    /// Добавляет пользовательские классы (`style_class`, `pt`): строка перестаёт быть константной и не интернируется.
+    /// Adds user classes (`style_class`, `pt`): the string stops being constant and is not interned.
     pub fn add_user(&mut self, classes: Option<&str>) -> &mut Self {
         if let Some(c) = classes.filter(|c| !c.trim().is_empty()) {
             self.dynamic = true;
@@ -125,7 +125,7 @@ impl ClassNames {
         self.buf.as_str().split(' ').any(|c| c == class)
     }
 
-    /// Готовая строка.
+    /// The finished string.
     pub fn finish(self) -> String {
         match self.buf {
             Buf::Heap(s) => s,
@@ -133,13 +133,13 @@ impl ClassNames {
         }
     }
 
-    /// Готовая строка без аллокации для константных комбинаций классов (интернирование), иначе `String`.
+    /// The finished string without allocation for constant class combinations (interning), otherwise a `String`.
     pub fn finish_cow(self) -> Cow<'static, str> {
         if self.dynamic { Cow::Owned(self.finish()) } else { intern(self.buf.as_str()) }
     }
 }
 
-/// Находит или добавляет строку в глобальную таблицу; сверх лимита возвращает `String`.
+/// Finds or adds a string in the global table; beyond the limit returns a `String`.
 fn intern(s: &str) -> Cow<'static, str> {
     static TABLE: OnceLock<Mutex<BTreeSet<&'static str>>> = OnceLock::new();
     let mut table = TABLE.get_or_init(Default::default).lock().unwrap_or_else(PoisonError::into_inner);
@@ -154,7 +154,7 @@ fn intern(s: &str) -> Cow<'static, str> {
     Cow::Borrowed(leaked)
 }
 
-/// Реактивный атрибут `class`: пересчитывается и уведомляет подписчиков только при изменении строки.
+/// Reactive `class` attribute: recomputed and notifies subscribers only when the string changes.
 pub fn class_memo(build: impl Fn(&mut ClassNames) + Send + Sync + 'static) -> Memo<String> {
     Memo::new(move |_| {
         let mut cn = ClassNames::new();

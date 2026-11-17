@@ -1,5 +1,5 @@
-//! Страница Message: демонстрации `basic`, `closable`, `severity`, `outlined`, `simple`, `sizes`, `life` из showcase PrimeNG
-//! (`apps/showcase/doc/message`). Иконки `pi pi-*` заменены SVG-иконками prime-icons.
+//! Message page: demos `basic`, `closable`, `severity`, `outlined`, `simple`, `sizes`, `life` from the PrimeNG showcase
+//! (`apps/showcase/doc/message`). `pi pi-*` icons are replaced by prime-icons SVG icons.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn severities(variant: Option<MessageVariant>) -> impl IntoView {
     SEVERITIES.iter().map(|(severity, text)| view! { <Message severity=*severity variant=variant>{*text}</Message> }).collect_view()
 }
 
-/// Страница `/message`.
+/// The `/message` page.
 #[component]
 pub fn MessagePage() -> impl IntoView {
     let visible = RwSignal::new(false);

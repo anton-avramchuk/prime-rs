@@ -2,48 +2,48 @@
 
 ## Context
 
-Требования — в `specs/scrollpanel`. Исходники PrimeNG 21.1.10: `packages/primeng/src/scrollpanel/scrollpanel.ts`, `scrollpanel/style/scrollpanelstyle.ts`, демонстрации `apps/showcase/doc/scrollpanel` (`basic`, `custom`). CSS `scrollpanel` добавится через `cargo xtask gen-theme` (`upstream.toml`); блок `/* For PrimeNG */` не нужен, но `.p-scrollpanel { display: block }` из `scrollpanelstyle.ts` стоит проверить: если отсутствует в сгенерированном CSS, добавить компонент в `primeng_extra`. Шаблон крейта — `prime-toolbar` (две ветви, `macro_rules!`, `Props`), клиентская часть — по образцу `prime-core::collapsible` (код под `cfg(target_arch = "wasm32")`, SSR-путь пустой).
+Requirements are in `specs/scrollpanel`. PrimeNG 21.1.10 sources: `packages/primeng/src/scrollpanel/scrollpanel.ts`, `scrollpanel/style/scrollpanelstyle.ts`, demos `apps/showcase/doc/scrollpanel` (`basic`, `custom`). The `scrollpanel` CSS will be added via `cargo xtask gen-theme` (`upstream.toml`); the `/* For PrimeNG */` block is not needed, but `.p-scrollpanel { display: block }` from `scrollpanelstyle.ts` should be checked: if it is missing from the generated CSS, add the component to `primeng_extra`. The crate template is `prime-toolbar` (two branches, `macro_rules!`, `Props`), the client part follows `prime-core::collapsible` (code under `cfg(target_arch = "wasm32")`, empty SSR path).
 
 ## Decisions
 
-### D1. Разметка и ветви
-Статическая ветвь — когда `style` и `style_class` статические; иначе реактивная. Разметка — `macro_rules!`, выражения атрибутов корня меняются. `id` содержимого — `pn_id_{n}_content` из `CollapseIds`-подобного счётчика `prime-core` (тот же `next_unique`, детерминирован в SSR/гидрации); при необходимости открыть в `collapsible` небольшую публичную функцию `unique_id(suffix)`, а не дублировать счётчик.
+### D1. Markup and branches
+The static branch is used when `style` and `style_class` are static; otherwise the reactive one. The markup is a `macro_rules!`, the root attribute expressions vary. The content `id` is `pn_id_{n}_content` from a `CollapseIds`-like counter of `prime-core` (the same `next_unique`, deterministic in SSR/hydration); if needed, expose a small public function `unique_id(suffix)` in `collapsible` rather than duplicating the counter.
 
-### D2. Состояние — в обработчиках, не в сигналах
-`lastScrollLeft/Top`, `orientation`, `scrollXRatio/YRatio`, `lastPageX/Y`, флаги перетаскивания — изменяемое состояние экземпляра. Хранится в `Rc<RefCell<State>>`/`StoredValue`, не в сигналах: пересчёт не должен вызывать перерисовку Leptos. Исключение — `aria-valuenow`: PrimeNG обновляет его через change detection; мы пишем атрибут напрямую в DOM (`set_attribute`) из обработчика `scroll`, поэтому реактивность не нужна.
+### D2. State lives in handlers, not signals
+`lastScrollLeft/Top`, `orientation`, `scrollXRatio/YRatio`, `lastPageX/Y`, drag flags are mutable instance state. Stored in `Rc<RefCell<State>>`/`StoredValue`, not in signals: recalculation must not trigger a Leptos re-render. The exception is `aria-valuenow`: PrimeNG updates it via change detection; we write the attribute directly to the DOM (`set_attribute`) from the `scroll` handler, so reactivity is not needed.
 
-### D3. Стили полос — прямая запись в DOM
-`moveBar` измеряет контент и пишет `style.cssText` и `data-p-scrollpanel-hidden`/класс `p-scrollpanel-hidden` на элементы полос через `web-sys`, внутри `requestAnimationFrame` (как в оригинале). Атрибут `style` полос не отдаётся Leptos (иначе реактивная перезапись затрёт расчёт). Для `pt.bar_*.style` Leptos не пишет `style` на эти элементы; такой `pt`-стиль применяется к полосе один раз при монтировании через `cssText` до первого `moveBar` (и затирается им — отличие, фиксируется в docs).
+### D3. Bar styles: direct DOM writes
+`moveBar` measures the content and writes `style.cssText` and `data-p-scrollpanel-hidden`/the `p-scrollpanel-hidden` class on the bar elements via `web-sys`, inside `requestAnimationFrame` (as in the original). The bars' `style` attribute is not handed to Leptos (otherwise a reactive rewrite would wipe the calculation). For `pt.bar_*.style` Leptos does not write `style` on these elements; such a `pt` style is applied to the bar once on mount via `cssText` before the first `moveBar` (and is overwritten by it, a difference recorded in docs).
 
-### D4. Слушатели и очистка
-Клиентский `Effect`/`on_mount` после монтирования: `scroll` и `mouseenter` на содержимом, `resize` на окне, `mousedown` на обеих полосах (через `on:` Leptos для полос и содержимого; `resize` и документные — вручную через `Closure`). Документные `mousemove`/`mouseup` вешаются на `mousedown` и снимаются на `mouseup` и в `on_cleanup`. Замыкания хранятся в состоянии для снятия. Используется `window.request_animation_frame`; если недоступен — `setTimeout(0)` (запасной вариант как `timeoutFrame`).
+### D4. Listeners and cleanup
+A client `Effect`/`on_mount` after mounting: `scroll` and `mouseenter` on the content, `resize` on the window, `mousedown` on both bars (via Leptos `on:` for the bars and the content; `resize` and document ones manually via `Closure`). Document `mousemove`/`mouseup` are attached on `mousedown` and removed on `mouseup` and in `on_cleanup`. Closures are kept in the state for removal. `window.request_animation_frame` is used; if unavailable, `setTimeout(0)` (a fallback like `timeoutFrame`).
 
-### D5. Клавиатура
-`keydown`/`keyup`/`focus`/`blur` на полосах — `on:` Leptos. Таймер 40 мс — `set_timeout`, предыдущий очищается. `event.code` читается как в оригинале. Различие: `orientation` хранится в `State`.
+### D5. Keyboard
+`keydown`/`keyup`/`focus`/`blur` on the bars use Leptos `on:`. The 40 ms timer is `set_timeout`, the previous one is cleared. `event.code` is read as in the original. Difference: `orientation` is kept in `State`.
 
 ### D6. `calculateContainerHeight`
-Выполняется один раз после монтирования, только в браузере; `getHeight` PrimeUI заменяется `offsetHeight` минус паддинги и рамки (`getComputedStyle`). Результат записывается в `style.height` корня; поскольку Leptos может управлять `style` корня, запись идёт только если `style`/`pt.root` не задали `height`, иначе Leptos перезапишет при реактивном обновлении — случай реактивного `style` вместе с `max-height` документируется как ограничение.
+Runs once after mounting, only in the browser; PrimeUI's `getHeight` is replaced by `offsetHeight` minus paddings and borders (`getComputedStyle`). The result is written to the root `style.height`; since Leptos may manage the root `style`, the write happens only if `style`/`pt.root` did not set `height`, otherwise Leptos would overwrite it on a reactive update; the case of a reactive `style` together with `max-height` is documented as a limitation.
 
-### D7. Публичные методы
-`ScrollPanelRef` — клонируемая ручка (`StoredValue<Option<…>>` с `NodeRef` содержимого и замыканием `refresh`). `refresh()` вызывает `moveBar`; `scroll_top` клампит значение. Вне wasm — no-op.
+### D7. Public methods
+`ScrollPanelRef` is a cloneable handle (`StoredValue<Option<…>>` with the content `NodeRef` and a `refresh` closure). `refresh()` calls `moveBar`; `scroll_top` clamps the value. Outside wasm it is a no-op.
 
-### D8. Слот содержимого
-`content_template: Option<ViewFn>`; при наличии выводится вместо `children`. Для `ng-content` + `ngTemplateOutlet` в оригинале выводятся оба; у нас — взаимоисключающе (как `@if` в шаблоне оригинала).
+### D8. Content slot
+`content_template: Option<ViewFn>`; when present it is rendered instead of `children`. For `ng-content` + `ngTemplateOutlet` the original renders both; ours are mutually exclusive (like the `@if` in the original template).
 
-### D9. Тесты
-SSR-тесты — структура, ARIA, `pt`, паритет ветвей. Браузерные (`tests/web.rs`, `wasm-bindgen-test`) — скрытие полосы, формулы размера/позиции, перетаскивание (синтетические `MouseEvent`), стрелки, `scroll_top` с клампом, снятие слушателей. Чистая арифметика (`bar_size`, `bar_offset`) выносится в обычные функции и проверяется нативными юнит-тестами.
+### D9. Tests
+SSR tests: structure, ARIA, `pt`, branch parity. Browser tests (`tests/web.rs`, `wasm-bindgen-test`): bar hiding, size/position formulas, dragging (synthetic `MouseEvent`), arrows, `scroll_top` with clamping, listener removal. Pure arithmetic (`bar_size`, `bar_offset`) is extracted into ordinary functions and checked by native unit tests.
 
 ## Risks / Trade-offs
 
-- [Запись в `style` полос вне Leptos] → полосы без реактивного `style`; сценарий с `pt.style` описан в docs.
-- [Тесты зависят от геометрии вёрстки] → браузерный тест задаёт фиксированные размеры инлайном и проверяет относительные величины.
-- [`mousemove` документа и утечки замыканий] → снятие в `mouseup` и `on_cleanup`; тест на размонтирование.
-- [Возможный `display: block` из `scrollpanelstyle.ts`] → проверить после `gen-theme`.
+- [Writing bar `style` outside Leptos] → bars without a reactive `style`; the `pt.style` scenario is described in docs.
+- [Tests depend on layout geometry] → the browser test sets fixed sizes inline and checks relative values.
+- [Document `mousemove` and closure leaks] → removal in `mouseup` and `on_cleanup`; an unmount test.
+- [Possible `display: block` from `scrollpanelstyle.ts`] → check after `gen-theme`.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback is `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

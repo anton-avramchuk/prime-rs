@@ -1,4 +1,4 @@
-//! Разметка MultiSelect (SSR): корень, скрытое поле, метка в режимах `comma` и `chip`, значки, классы по состояниям, `pt`.
+//! MultiSelect markup (SSR): root, hidden field, label in `comma` and `chip` modes, icons, state classes, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -167,7 +167,7 @@ fn open_panel_is_rendered_from_the_open_signal() {
     assert!(html.contains("p-multiselect-list-container") && html.contains("max-height: 200px"), "{html}");
     assert!(html.contains("role=\"listbox\"") && html.contains("aria-multiselectable=\"true\""), "{html}");
     assert_eq!(html.matches("role=\"option\"").count(), 5, "{html}");
-    assert_eq!(html.matches("class=\"p-hidden-accessible p-hidden-focusable\"").count(), 2, "две скрытые границы: {html}");
+    assert_eq!(html.matches("class=\"p-hidden-accessible p-hidden-focusable\"").count(), 2, "two hidden boundaries: {html}");
     assert!(html.contains("id=\"o_0\"") && html.contains("id=\"o_4\""), "{html}");
 }
 
@@ -182,9 +182,9 @@ fn options_carry_checkbox_and_selection_markup() {
         "{html}"
     );
     assert!(html.contains("aria-setsize=\"5\"") && html.contains("aria-posinset=\"3\""), "{html}");
-    // флажок у каждого из пяти вариантов и один в шапке
+    // a checkbox for each of the five options and one in the header
     assert_eq!(html.matches("p-checkbox p-component").count(), 6, "{html}");
-    assert_eq!(html.matches("p-checkbox-checked p-highlight").count(), 1, "выбран только London; шапка не отмечена: {html}");
+    assert_eq!(html.matches("p-checkbox-checked p-highlight").count(), 1, "only London is selected; the header is not checked: {html}");
     let off = render(|| view! { <MultiSelect options=cities() values=values open=open highlight_on_select=false /> }.to_html());
     assert!(!off.contains("p-multiselect-option-selected"), "{off}");
 }
@@ -195,7 +195,7 @@ fn selection_limit_disables_unselected_options_and_hides_toggle_all() {
     let values = picked(&["NY", "LDN"]);
     let html = render(|| view! { <MultiSelect options=cities() values=values open=open selection_limit=2 /> }.to_html());
     assert_eq!(html.matches("p-multiselect-option p-disabled").count(), 3, "{html}");
-    assert_eq!(html.matches("p-checkbox p-component").count(), 5, "флажка «выбрать все» нет: {html}");
+    assert_eq!(html.matches("p-checkbox p-component").count(), 5, "no \"select all\" checkbox: {html}");
     let below = render(|| view! { <MultiSelect options=cities() values=values open=open selection_limit=3 /> }.to_html());
     assert!(!below.contains("p-multiselect-option p-disabled"), "{below}");
 }

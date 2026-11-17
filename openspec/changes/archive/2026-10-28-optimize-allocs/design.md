@@ -2,40 +2,40 @@
 
 ## Context
 
-`ClassNames::new()` резервирует `String` на 96 байт, каждый `finish()` отдаёт её; `data_p()` строит ещё одну; `merge_class` — третью. Пол Leptos для `div`+`span` — 2 аллокации на экземпляр (`floor-1000`), статический `AvatarGroup` — 6, из них 2 — строка класса и `Arc<Pt>`.
+`ClassNames::new()` reserves a `String` of 96 bytes, each `finish()` hands it out; `data_p()` builds another; `merge_class` a third. The Leptos floor for `div`+`span` is 2 allocations per instance (`floor-1000`), a static `AvatarGroup` is 6, of which 2 are the class string and `Arc<Pt>`.
 
 ## Goals / Non-Goals
 
-**Goals:** убрать аллокации на строки классов и `data-p` в типичных состояниях; убрать `Arc`, не нужные статической ветви; HTML не меняется.
-**Non-Goals:** публичный API, размер wasm, реактивная ветвь (кроме общей сборки строк).
+**Goals:** remove allocations for class and `data-p` strings in typical states; remove `Arc`s not needed by the static branch; HTML does not change.
+**Non-Goals:** public API, wasm size, the reactive branch (except the shared string assembly).
 
 ## Decisions
 
-### D1. Стековый буфер в `ClassNames`
-Буфер 192 байта на стеке; при переполнении — переход на `String`. `finish()` по-прежнему возвращает `String` (одна аллокация, как раньше, но без промежуточной).
+### D1. Stack buffer in `ClassNames`
+A 192-byte buffer on the stack; on overflow it switches to `String`. `finish()` still returns a `String` (one allocation, as before, but without an intermediate one).
 
-### D2. Интернирование
-`finish_cow()`: если классы добавлялись только через `add`/`add_if` (константы компонента), строка ищется в глобальном `HashSet<&'static str>` (за `Mutex`) и при промахе один раз «протекает» (`Box::leak`). Таблица ограничена 4096 записями — сверх лимита возвращается `String`. Если использовались `add_opt` с `Some` (пользовательские `style_class`, `pt`), интернирование не применяется: значения неограниченны.
-*Альтернатива*: таблицы `&'static str` по комбинациям флагов — десятки комбинаций на компонент, ломкая поддержка.
+### D2. Interning
+`finish_cow()`: if the classes were added only via `add`/`add_if` (component constants), the string is looked up in a global `HashSet<&'static str>` (behind a `Mutex`) and on a miss is "leaked" once (`Box::leak`). The table is limited to 4096 entries — beyond the limit a `String` is returned. If `add_opt` with `Some` was used (user `style_class`, `pt`), interning is not applied: the values are unbounded.
+*Alternative*: `&'static str` tables by flag combinations — dozens of combinations per component, brittle maintenance.
 
 ### D3. `data-p`
-То же интернирование: `DataP::finish_cow()`; функции `data_p(&state)` возвращают `Cow<'static, str>`.
+The same interning: `DataP::finish_cow()`; the `data_p(&state)` functions return `Cow<'static, str>`.
 
-### D4. `Arc` в статической ветви
-`Arc<Props>`/`Arc<Pt>` нужны замыканиям реактивной ветви и обработчикам событий. Там, где в статической ветви их нет, они создаются только в реактивной.
+### D4. `Arc` in the static branch
+`Arc<Props>`/`Arc<Pt>` are needed by the closures of the reactive branch and by event handlers. Where the static branch does not have them, they are created only in the reactive one.
 
-### D5. Контроль
-Замеры до и после — `cargo bench -p render-bench --bench alloc`; новые бюджеты — с запасом ≈10% над измерением. Паритет ветвей и HTML проверяют существующие тесты.
+### D5. Verification
+Measurements before and after — `cargo bench -p render-bench --bench alloc`; new budgets — with ≈10% headroom over the measurement. Branch parity and HTML are checked by the existing tests.
 
 ## Risks / Trade-offs
 
-- [Протекающая таблица растёт] → ограничена 4096 записями, ключи — только константные комбинации.
-- [`Mutex` в многопоточном SSR] → критическая секция — поиск в хэш-таблице; при конкуренции допустимо; на wasm блокировки нет.
+- [The leaking table grows] → limited to 4096 entries, keys are only constant combinations.
+- [`Mutex` in multithreaded SSR] → the critical section is a hash table lookup; acceptable under contention; there is no locking on wasm.
 
 ## Migration Plan
 
-Внутренний рефакторинг без изменения API. Откат — `git revert`.
+Internal refactoring without an API change. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

@@ -1,9 +1,9 @@
-//! Чистая логика Badge: из свойств в классы и `data-p` (по `badgestyle.ts` и `Badge.dataP` PrimeNG).
+//! Pure Badge logic: from properties to classes and `data-p` (after PrimeNG `badgestyle.ts` and `Badge.dataP`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Серьёзность бейджа.
+/// Badge severity.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum BadgeSeverity {
     /// `secondary`.
@@ -21,7 +21,7 @@ pub enum BadgeSeverity {
 }
 
 impl BadgeSeverity {
-    /// Значение, как в PrimeNG.
+    /// Value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Secondary => "secondary",
@@ -34,7 +34,7 @@ impl BadgeSeverity {
     }
 }
 
-/// Размер бейджа.
+/// Badge size.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum BadgeSize {
     /// `small`.
@@ -46,7 +46,7 @@ pub enum BadgeSize {
 }
 
 impl BadgeSize {
-    /// Значение, как в PrimeNG.
+    /// Value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Small => "small",
@@ -56,16 +56,16 @@ impl BadgeSize {
     }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p` (значение заимствовано, без копирования строки).
+/// Snapshot of the properties that affect classes and `data-p` (the value is borrowed, no string copy).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct BadgeState<'a> {
-    /// Значение.
+    /// Value.
     pub value: Option<&'a str>,
-    /// Серьёзность.
+    /// Severity.
     pub severity: Option<BadgeSeverity>,
-    /// Размер.
+    /// Size.
     pub size: Option<BadgeSize>,
-    /// Скрыт ли бейдж.
+    /// Whether the badge is hidden.
     pub disabled: bool,
 }
 
@@ -73,7 +73,7 @@ fn is_circle(value: Option<&str>) -> bool {
     value.is_some_and(|v| v.chars().count() == 1)
 }
 
-/// Добавляет классы корня в порядке `badgestyle.ts`.
+/// Adds the root classes in the order of `badgestyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &BadgeState) {
     cn.add("p-badge p-component")
         .add_if(is_circle(s.value), "p-badge-circle")
@@ -93,14 +93,14 @@ pub fn write_classes(cn: &mut ClassNames, s: &BadgeState) {
     }
 }
 
-/// Классы корня строкой.
+/// Root classes as a string.
 pub fn classes(s: &BadgeState) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_classes(&mut cn, s);
     cn.finish_cow()
 }
 
-/// Значение `data-p`: `circle`, `empty`, `disabled`, серьёзность, размер.
+/// `data-p` value: `circle`, `empty`, `disabled`, severity, size.
 pub fn data_p(s: &BadgeState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(is_circle(s.value), "circle")
@@ -151,7 +151,7 @@ mod tests {
 
     #[test]
     fn circle_counts_characters_not_bytes() {
-        assert!(is_circle(Some("я")));
-        assert!(!is_circle(Some("яя")));
+        assert!(is_circle(Some("é")));
+        assert!(!is_circle(Some("éé")));
     }
 }

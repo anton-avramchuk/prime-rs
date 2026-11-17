@@ -1,5 +1,5 @@
-//! Страница CascadeSelect: демонстрации `basic`, `clearicon`, `disabled`, `invalid`, `loading` и `template` из showcase PrimeNG
-//! (`apps/showcase/doc/cascadeselect`; формы Angular не переносятся).
+//! CascadeSelect page: demos `basic`, `clearicon`, `disabled`, `invalid`, `loading` and `template` from the PrimeNG showcase
+//! (`apps/showcase/doc/cascadeselect`; Angular forms are not ported).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -63,7 +63,7 @@ fn Template() -> impl IntoView {
     view! { <CascadeSelect id="template_select" options=countries() value=value option=option placeholder="Select a City" style=WIDTH /> }
 }
 
-/// Страница `/cascadeselect`.
+/// `/cascadeselect` page.
 #[component]
 pub fn CascadeSelectPage() -> impl IntoView {
     view! {

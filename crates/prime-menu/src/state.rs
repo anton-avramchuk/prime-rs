@@ -1,51 +1,51 @@
-//! Модель пункта и чистая логика Menu: разворачивание модели в строки, идентификаторы, классы, выбор следующего пункта
-//! (по `menu.ts` PrimeNG).
+//! Item model and pure Menu logic: expanding the model into rows, identifiers, classes, choosing the next item
+//! (after PrimeNG `menu.ts`).
 
 use leptos::prelude::*;
 
-/// Нажатие на пункт: событие и пункт.
+/// Item press: the event and the item.
 #[derive(Clone)]
 pub struct MenuCommand {
-    /// Исходное событие.
+        /// Source event.
     pub event: web_sys::MouseEvent,
-    /// Нажатый пункт.
+        /// Pressed item.
     pub item: MenuItem,
 }
 
-/// Пункт Menu (вместо `MenuItem` PrimeNG, без полей маршрутизатора Angular).
+/// Menu item (instead of PrimeNG `MenuItem`, without Angular router fields).
 #[derive(Clone)]
 pub struct MenuItem {
-    /// Идентификатор элемента `li`; по умолчанию `<id меню>_<i>[_<j>]`.
+        /// Identifier of the `li` element; by default `<menu id>_<i>[_<j>]`.
     pub id: Option<String>,
-    /// Подпись.
+        /// Label.
     pub label: Option<String>,
-    /// Значок (например, иконка из `prime-icons`).
+        /// Icon (for example, an icon from `prime-icons`).
     pub icon: Option<ViewFn>,
-    /// Адрес ссылки; без него переход по ссылке отменяется.
+        /// Link address; without it, following the link is cancelled.
     pub url: Option<String>,
-    /// `target` ссылки.
+        /// Link `target`.
     pub target: Option<String>,
-    /// `title` ссылки.
+        /// Link `title`.
     pub title: Option<String>,
-    /// Отключён: нажатие ничего не вызывает.
+        /// Disabled: pressing does nothing.
     pub disabled: bool,
-    /// Виден (по умолчанию да).
+        /// Visible (default yes).
     pub visible: bool,
-    /// Разделитель вместо пункта.
+        /// Separator instead of an item.
     pub separator: bool,
-    /// Подпункты: пункт становится заголовком группы.
+        /// Subitems: the item becomes a group header.
     pub items: Vec<MenuItem>,
-    /// Группа изначально раскрыта (только PanelMenu).
+        /// Group initially expanded (PanelMenu only).
     pub expanded: bool,
-    /// Дополнительный класс `li`.
+        /// Additional class of `li`.
     pub style_class: Option<String>,
-    /// Встроенный стиль `li`.
+        /// Inline style of `li`.
     pub style: Option<String>,
-    /// Дополнительный класс ссылки.
+        /// Additional class of the link.
     pub link_class: Option<String>,
-    /// Дополнительный класс значка.
+        /// Additional class of the icon.
     pub icon_class: Option<String>,
-    /// Команда, вызываемая при нажатии.
+        /// Command called on press.
     pub command: Option<Callback<MenuCommand>>,
 }
 
@@ -73,129 +73,129 @@ impl Default for MenuItem {
 }
 
 impl MenuItem {
-    /// Пункт без свойств.
+        /// Item without properties.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Разделитель.
+        /// Separator.
     pub fn separator() -> Self {
         Self { separator: true, ..Self::default() }
     }
 
-    /// Идентификатор `li`.
+        /// Identifier of `li`.
     pub fn id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self
     }
 
-    /// Подпись.
+        /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
     }
 
-    /// Значок.
+        /// Icon.
     pub fn icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.icon = Some(icon.into());
         self
     }
 
-    /// Адрес ссылки.
+        /// Link address.
     pub fn url(mut self, url: impl Into<String>) -> Self {
         self.url = Some(url.into());
         self
     }
 
-    /// `target` ссылки.
+        /// Link `target`.
     pub fn target(mut self, target: impl Into<String>) -> Self {
         self.target = Some(target.into());
         self
     }
 
-    /// `title` ссылки.
+        /// Link `title`.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = Some(title.into());
         self
     }
 
-    /// Отключает пункт.
+        /// Disables the item.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 
-    /// Показывает или скрывает пункт.
+        /// Shows or hides the item.
     pub fn visible(mut self, visible: bool) -> Self {
         self.visible = visible;
         self
     }
 
-    /// Подпункты (группа).
+        /// Subitems (group).
     pub fn items(mut self, items: Vec<MenuItem>) -> Self {
         self.items = items;
         self
     }
 
-    /// Раскрывает группу изначально (только PanelMenu).
+        /// Expands the group initially (PanelMenu only).
     pub fn expanded(mut self, expanded: bool) -> Self {
         self.expanded = expanded;
         self
     }
 
-    /// Команда при нажатии.
+        /// Command on press.
     pub fn command(mut self, command: impl Into<Callback<MenuCommand>>) -> Self {
         self.command = Some(command.into());
         self
     }
 
-    /// Дополнительный класс `li`.
+        /// Additional class of `li`.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 
-    /// Встроенный стиль `li`.
+        /// Inline style of `li`.
     pub fn style(mut self, style: impl Into<String>) -> Self {
         self.style = Some(style.into());
         self
     }
 
-    /// Дополнительный класс ссылки.
+        /// Additional class of the link.
     pub fn link_class(mut self, class: impl Into<String>) -> Self {
         self.link_class = Some(class.into());
         self
     }
 
-    /// Дополнительный класс значка.
+        /// Additional class of the icon.
     pub fn icon_class(mut self, class: impl Into<String>) -> Self {
         self.icon_class = Some(class.into());
         self
     }
 }
 
-/// Строка списка после разворачивания модели.
+/// List row after expanding the model.
 #[derive(Clone)]
 pub enum Row {
-    /// Разделитель.
+        /// Separator.
     Separator,
-    /// Заголовок группы.
+        /// Group header.
     Header(MenuItem),
-    /// Пункт с вычисленным идентификатором.
+        /// Item with a computed identifier.
     Item {
-        /// Идентификатор `li`.
+                /// Identifier of `li`.
         id: String,
-        /// Пункт.
+                /// Item.
         item: MenuItem,
     },
 }
 
-/// Модель содержит группы: хотя бы у одного пункта есть подпункты (как `hasSubMenu` PrimeNG).
+/// The model contains groups: at least one item has subitems (like PrimeNG `hasSubMenu`).
 pub fn has_submenu(model: &[MenuItem]) -> bool {
     model.iter().any(|m| !m.items.is_empty())
 }
 
-/// Идентификатор пункта: `id` пункта либо `<menu_id>_<i>[_<j>]`.
+/// Item identifier: the item's `id` or `<menu_id>_<i>[_<j>]`.
 pub fn item_id(item: &MenuItem, menu_id: &str, i: usize, j: Option<usize>) -> String {
     match (&item.id, j) {
         (Some(id), _) => id.clone(),
@@ -204,7 +204,7 @@ pub fn item_id(item: &MenuItem, menu_id: &str, i: usize, j: Option<usize>) -> St
     }
 }
 
-/// Разворачивает модель в плоский список строк: невидимые пункты и группы отбрасываются.
+/// Expands the model into a flat list of rows: invisible items and groups are dropped.
 pub fn flatten(model: &[MenuItem], menu_id: &str) -> Vec<Row> {
     let mut rows = Vec::new();
     if has_submenu(model) {
@@ -240,7 +240,7 @@ fn push_item(rows: &mut Vec<Row>, item: &MenuItem, id: String) {
     }
 }
 
-/// Идентификаторы доступных (не отключённых) пунктов по порядку.
+/// Identifiers of available (not disabled) items in order.
 pub fn enabled_ids(rows: &[Row]) -> Vec<String> {
     rows.iter()
         .filter_map(|r| match r {
@@ -250,31 +250,31 @@ pub fn enabled_ids(rows: &[Row]) -> Vec<String> {
         .collect()
 }
 
-/// Следующий доступный пункт после `current` (последний остаётся последним); без текущего — первый.
+/// Next available item after `current` (the last stays last); without a current one — the first.
 pub fn next_id(ids: &[String], current: Option<&str>) -> Option<String> {
     let pos = current.and_then(|c| ids.iter().position(|i| i == c));
     let target = pos.map_or(0, |p| p + 1);
     ids.get(target.min(ids.len().saturating_sub(1))).cloned()
 }
 
-/// Предыдущий доступный пункт перед `current` (первый остаётся первым); без текущего — первый.
+/// Previous available item before `current` (the first stays first); without a current one — the first.
 pub fn prev_id(ids: &[String], current: Option<&str>) -> Option<String> {
     let pos = current.and_then(|c| ids.iter().position(|i| i == c));
     let target = pos.map_or(0, |p| p.saturating_sub(1));
     ids.get(target).cloned()
 }
 
-/// Классы корня.
+/// Root classes.
 pub fn root_classes(popup: bool) -> &'static str {
     if popup { "p-menu p-component p-menu-overlay" } else { "p-menu p-component" }
 }
 
-/// Инлайн-стиль корня: `absolute` у всплывающего, `relative` у статичного.
+/// Root inline style: `absolute` for popup, `relative` for static.
 pub fn root_style(popup: bool) -> &'static str {
     if popup { "position: absolute;" } else { "position: relative;" }
 }
 
-/// Классы `li` пункта.
+/// Classes of the item `li`.
 pub fn item_classes(item: &MenuItem, focused: bool) -> String {
     let mut cn = String::from("p-menu-item");
     if focused {
@@ -290,12 +290,12 @@ pub fn item_classes(item: &MenuItem, focused: bool) -> String {
     cn
 }
 
-/// Нужно ли отменять переход по ссылке: пункт отключён либо без `url`.
+/// Whether to cancel following the link: the item is disabled or has no `url`.
 pub fn should_prevent_default(item: &MenuItem) -> bool {
     item.disabled || item.url.is_none()
 }
 
-/// Можно ли вызвать команду пункта.
+/// Whether the item command can be called.
 pub fn can_run_command(item: &MenuItem) -> bool {
     !item.disabled && item.command.is_some()
 }

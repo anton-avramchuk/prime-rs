@@ -1,19 +1,19 @@
-//! Чистая логика Inplace: классы вида и переходы состояния (по `inplace.ts` и `inplacestyle.ts` PrimeNG).
+//! Pure Inplace logic: view classes and state transitions (based on PrimeNG `inplace.ts` and `inplacestyle.ts`).
 
-/// Действие пользователя.
+/// User action.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Action {
-    /// Клик по виду.
+    /// Click on the view.
     Click,
-    /// `Enter` на виде.
+    /// `Enter` on the view.
     Enter,
-    /// Кнопка закрытия или функция закрытия из содержимого.
+    /// The close button or the close function from the content.
     Close,
 }
 
-/// Новое состояние `active` после действия.
+/// New `active` state after the action.
 ///
-/// При `disabled` не меняется ничего; `prevent_click` отключает клик и закрытие, но не `Enter` (как в PrimeNG).
+/// When `disabled`, nothing changes; `prevent_click` disables the click and closing, but not `Enter` (as in PrimeNG).
 pub fn next_state(active: bool, action: Action, disabled: bool, prevent_click: bool) -> bool {
     if disabled {
         return active;
@@ -26,7 +26,7 @@ pub fn next_state(active: bool, action: Action, disabled: bool, prevent_click: b
     }
 }
 
-/// Классы вида.
+/// View classes.
 pub fn display_classes(disabled: bool) -> &'static str {
     if disabled { "p-inplace-display p-disabled" } else { "p-inplace-display" }
 }

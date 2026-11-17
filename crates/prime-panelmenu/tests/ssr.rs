@@ -1,4 +1,4 @@
-//! Разметка PanelMenu (SSR): корень, панели, заголовки, области, деревья, `aria-*`, начальное раскрытие, шаблоны, `pt`.
+//! PanelMenu markup (SSR): root, panels, headers, areas, trees, `aria-*`, initial expansion, templates, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -32,7 +32,7 @@ fn model() -> Vec<MenuItem> {
 fn markup_has_panels_headers_regions_and_trees() {
     let html = render(|| view! { <PanelMenu id="pm" model=model() /> }.to_html());
     assert!(html.contains("id=\"pm\"") && html.contains("p-panelmenu p-component"), "{html}");
-    assert_eq!(html.matches("class=\"p-panelmenu-panel\"").count(), 3, "скрытый корневой пункт не выводится: {html}");
+    assert_eq!(html.matches("class=\"p-panelmenu-panel\"").count(), 3, "a hidden root item is not rendered: {html}");
     assert_eq!(html.matches("role=\"button\"").count(), 3, "{html}");
     assert!(html.contains("id=\"pm_0_header\"") && html.contains("id=\"pm_2_header\"") && html.contains("id=\"pm_3_header\""), "{html}");
     assert!(!html.contains("pm_1_header") && !html.contains("Skipped"), "{html}");
@@ -59,7 +59,7 @@ fn collapsed_by_default_and_expanded_from_the_model() {
     let html = render(|| view! { <PanelMenu id="pm" model=model() /> }.to_html());
     assert!(!html.contains("p-panelmenu-expanded") && !html.contains("p-panelmenu-header-active"), "{html}");
     assert!(html.contains("aria-expanded=\"false\"") && !html.contains("aria-expanded=\"true\""), "{html}");
-    assert!(html.contains("display: none"), "свёрнутая область скрыта: {html}");
+    assert!(html.contains("display: none"), "the collapsed area is hidden: {html}");
 
     let mut open = model();
     open[0].expanded = true;
@@ -78,20 +78,20 @@ fn items_carry_tree_aria_and_classes() {
     assert_eq!(
         html.matches("role=\"treeitem\"").count(),
         4,
-        "Docs, Invoices, Images и Upload (панель Cloud): скрытый и разделитель не считаются: {html}"
+        "Docs, Invoices, Images and Upload (panel Cloud): the hidden one and the separator do not count: {html}"
     );
     assert_eq!(html.matches("role=\"separator\"").count(), 1, "{html}");
     assert!(html.contains("p-menuitem-separator"), "{html}");
     assert!(html.contains("id=\"pm_0_0\"") && html.contains("id=\"pm_0_0_0\"") && html.contains("id=\"pm_0_2\""), "{html}");
     assert!(!html.contains("Hidden"), "{html}");
-    assert!(html.contains("aria-setsize=\"2\"") && html.contains("aria-posinset=\"2\""), "Docs/Images из двух: {html}");
+    assert!(html.contains("aria-setsize=\"2\"") && html.contains("aria-posinset=\"2\""), "Docs/Images out of two: {html}");
     assert!(html.contains("aria-level=\"1\"") && html.contains("aria-level=\"2\""), "{html}");
     assert!(html.contains("class=\"p-panelmenu-item\"") && html.contains("data-p-focused=\"false\""), "{html}");
     assert!(
         html.contains("p-panelmenu-item-content") && html.contains("p-panelmenu-item-link") && html.contains("p-panelmenu-item-label"),
         "{html}"
     );
-    assert!(html.contains("class=\"p-panelmenu-submenu\""), "вложенный список: {html}");
+    assert!(html.contains("class=\"p-panelmenu-submenu\""), "nested list: {html}");
 }
 
 #[test]
@@ -99,8 +99,8 @@ fn nested_group_toggles_its_own_region() {
     let mut m = model();
     m[0].expanded = true;
     let html = render(|| view! { <PanelMenu id="pm" model=m /> }.to_html());
-    assert!(html.contains("id=\"pm_0_0_list\""), "вложенный список выводится и в свёрнутом виде: {html}");
-    assert_eq!(html.matches("p-panelmenu-expanded").count(), 1, "раскрыта только корневая панель: {html}");
+    assert!(html.contains("id=\"pm_0_0_list\""), "the nested list is rendered even when collapsed: {html}");
+    assert_eq!(html.matches("p-panelmenu-expanded").count(), 1, "only the root panel is expanded: {html}");
 }
 
 #[test]
@@ -114,7 +114,7 @@ fn disabled_and_link_properties() {
     );
     assert!(html.contains("href=\"/quit\"") && html.contains("target=\"_blank\"") && html.contains("title=\"Leave\""), "{html}");
     assert!(html.contains("p-panelmenu-header quit") && html.contains("p-panelmenu-header-link lnk"), "{html}");
-    assert!(!html.contains("p-panelmenu-header-icon"), "значок выводится только при icon: {html}");
+    assert!(!html.contains("p-panelmenu-header-icon"), "the icon is rendered only with icon: {html}");
 }
 
 #[test]
@@ -122,7 +122,7 @@ fn link_tabindex_follows_expansion() {
     let mut m = model();
     m[0].expanded = true;
     let html = render(|| view! { <PanelMenu id="pm" model=m /> }.to_html());
-    assert!(html.contains("tabindex=\"0\""), "ссылки раскрытой панели доступны для Tab: {html}");
+    assert!(html.contains("tabindex=\"0\""), "links of the expanded panel are reachable by Tab: {html}");
     let closed = render(|| view! { <PanelMenu id="pm" model=model() /> }.to_html());
     assert!(!closed.contains("p-panelmenu-item-link\" tabindex=\"0\""), "{closed}");
 }

@@ -1,4 +1,4 @@
-//! Toast в SSR: пустой контейнер с положением и классами; сервис работает без браузера.
+//! Toast in SSR: empty container with position and classes; the service works without a browser.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -44,7 +44,7 @@ fn pt_is_applied_to_the_container() {
 }
 
 #[test]
-#[should_panic(expected = "MessageService не найден")]
+#[should_panic(expected = "MessageService not found")]
 fn toast_without_service_panics_with_a_clear_message() {
     Owner::new().with(|| {
         let _ = view! { <Toast /> }.to_html();
@@ -68,11 +68,11 @@ fn service_delivers_events_in_order_and_stops_after_unsubscribe() {
         service.add_all(vec![]);
         service.clear();
         service.clear_key("k");
-        assert_eq!(*log.lock().unwrap(), ["add:1", "add:2", "clear:-", "clear:k"], "пустой add_all ничего не шлёт");
+        assert_eq!(*log.lock().unwrap(), ["add:1", "add:2", "clear:-", "clear:k"], "empty add_all sends nothing");
         service.unsubscribe(id);
         service.add(ToastMessage::default());
         service.clear();
-        assert_eq!(log.lock().unwrap().len(), 4, "после отписки события не приходят");
+        assert_eq!(log.lock().unwrap().len(), 4, "no events arrive after unsubscribe");
     });
 }
 
@@ -113,6 +113,6 @@ fn message_builder_sets_every_field() {
         (Some("pi-x"), Some("pi-y"), Some("a"), Some("b"))
     );
     let d = ToastMessage::default();
-    assert!(d.closable && !d.sticky && d.severity == ToastSeverity::Info && d.key.is_none(), "по умолчанию: info, закрываемое");
+    assert!(d.closable && !d.sticky && d.severity == ToastSeverity::Info && d.key.is_none(), "default: info, closable");
     assert_eq!(ToastSeverity::Custom("custom".into()).as_str(), "custom");
 }

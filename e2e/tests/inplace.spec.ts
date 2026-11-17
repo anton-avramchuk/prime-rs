@@ -7,7 +7,7 @@ test.describe('Inplace', () => {
         await expect(page.locator('[data-demo=basic] .p-inplace-display')).toBeVisible();
     });
 
-    test('структура: четыре демонстрации, вид доступен с клавиатуры', async ({ page }) => {
+    test('structure: four demos, the view is reachable from the keyboard', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(4);
         const display = page.locator('[data-demo=basic] .p-inplace-display');
         await expect(display).toHaveAttribute('role', 'button');
@@ -16,21 +16,21 @@ test.describe('Inplace', () => {
         await expect(page.locator('[data-demo=basic] .p-inplace-content')).toHaveCount(0);
     });
 
-    test('клик показывает содержимое и скрывает вид', async ({ page }) => {
+    test('click shows the content and hides the view', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         await demo.locator('.p-inplace-display').click();
         await expect(demo.locator('.p-inplace-content')).toContainText('Lorem ipsum');
         await expect(demo.locator('.p-inplace-display')).toHaveCount(0);
     });
 
-    test('Enter на виде активирует', async ({ page }) => {
+    test('Enter on the view activates it', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         await demo.locator('.p-inplace-display').focus();
         await page.keyboard.press('Enter');
         await expect(demo.locator('.p-inplace-content')).toBeVisible();
     });
 
-    test('input: кнопка закрывает и возвращает вид', async ({ page }) => {
+    test('input: the button closes it and returns the view', async ({ page }) => {
         const demo = page.locator('[data-demo=input]');
         await demo.locator('.p-inplace-display').click();
         await demo.locator('input').fill('hello');
@@ -39,7 +39,7 @@ test.describe('Inplace', () => {
         await expect(demo.locator('.p-inplace-content')).toHaveCount(0);
     });
 
-    test('lazy: данные подгружаются при активации', async ({ page }) => {
+    test('lazy: data is loaded on activation', async ({ page }) => {
         const demo = page.locator('[data-demo=lazy]');
         await expect(demo.locator('tbody tr')).toHaveCount(0);
         await demo.locator('.p-inplace-display').click();
@@ -47,7 +47,7 @@ test.describe('Inplace', () => {
         await expect(demo.locator('tbody')).toContainText('Bamboo Watch');
     });
 
-    test('image: вид со значком и подписью', async ({ page }) => {
+    test('image: a view with an icon and a caption', async ({ page }) => {
         const demo = page.locator('[data-demo=image]');
         await expect(demo.locator('.p-inplace-display svg')).toBeVisible();
         await expect(demo.locator('.p-inplace-display')).toContainText('View Photo');

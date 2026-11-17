@@ -1,35 +1,35 @@
 # Checkbox
 
-Порт `p-checkbox` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-checkbox` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-checkbox::Checkbox` | `packages/primeng/src/checkbox/checkbox.ts`, `checkbox/style/checkboxstyle.ts` |
-| CSS | `@primeuix/styles/checkbox` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/checkbox/*-doc.ts` (`basic`, `multiple`, `filled`, `sizes`, `indeterminate`, `invalid`, `disabled`) |
+| CSS | `@primeuix/styles/checkbox` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/checkbox/*-doc.ts` (`basic`, `multiple`, `filled`, `sizes`, `indeterminate`, `invalid`, `disabled`) |
 
-Спека: `openspec/specs/checkbox`.
+Spec: `openspec/specs/checkbox`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Структура: корень, внутри `input.p-checkbox-input`, затем `div.p-checkbox-box` с иконкой `check` или `minus` (`p-checkbox-icon`).
-- Классы корня и их порядок: `p-checkbox p-component`, `p-checkbox-checked p-highlight`, `p-disabled`, `p-invalid`, `p-variant-filled`, `p-checkbox-sm p-inputfield-sm`, `p-checkbox-lg p-inputfield-lg`.
-- Атрибуты `data-p-highlight`, `data-p-checked`, `data-p-disabled` на корне и `data-p` на корне и боксе.
-- Режимы `binary` и набор значений; `indeterminate` не считается отмеченным и сбрасывается после изменения.
+- Structure: root, inside it `input.p-checkbox-input`, then `div.p-checkbox-box` with a `check` or `minus` icon (`p-checkbox-icon`).
+- Root classes and their order: `p-checkbox p-component`, `p-checkbox-checked p-highlight`, `p-disabled`, `p-invalid`, `p-variant-filled`, `p-checkbox-sm p-inputfield-sm`, `p-checkbox-lg p-inputfield-lg`.
+- Attributes `data-p-highlight`, `data-p-checked`, `data-p-disabled` on the root and `data-p` on the root and the box.
+- The `binary` and set-of-values modes; `indeterminate` does not count as checked and is reset after a change.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-checkbox>` | Хост в Angular — деталь фреймворка. |
-| `checked: RwSignal<bool>` (binary) и `model: RwSignal<Vec<String>>` (набор) вместо `ngModel` | Двусторонняя привязка без форм-инфраструктуры; значения набора — строки. |
-| Нет `trueValue`/`falseValue` произвольных типов | Только `bool`. |
-| `icon_template: ViewFn` вместо `checkboxIcon` (класс) и шаблона `#icon` | Слоты Leptos. |
-| `pt.icon` задаёт только класс, `data-p` у иконки нет | Иконка — отдельный компонент `prime-icons`, не принимает произвольные атрибуты. |
-| Без сигналов флажок неконтролируемый (`default_checked`), классы корня не отслеживаются | Статическая ветвь не создаёт сигналов. |
-| Нет интеграции с формами | Вне объёма change. |
+| The root is a `<div>`, not the host `<p-checkbox>` | The Angular host is a framework detail. |
+| `checked: RwSignal<bool>` (binary) and `model: RwSignal<Vec<String>>` (set) instead of `ngModel` | Two-way binding without form infrastructure; set values are strings. |
+| No arbitrary `trueValue`/`falseValue` types | Only `bool`. |
+| `icon_template: ViewFn` instead of `checkboxIcon` (a class) and the `#icon` template | Leptos slots. |
+| `pt.icon` sets only the class, the icon has no `data-p` | The icon is a separate `prime-icons` component and does not accept arbitrary attributes. |
+| Without signals the checkbox is uncontrolled (`default_checked`), root classes are not tracked | The static branch creates no signals. |
+| No form integration | Outside the scope of the change. |
 
-## Производительность
+## Performance
 
-SSR: 34 аллокации на экземпляр с иконкой (бюджет 42); вклад в сырой wasm +201 КБ (бюджет 250 КБ).
-Шаблон — как у InputText (`docs/inputtext.md`) и Button (`docs/button.md`); замыкания реактивной ветви собираются через `rx(props, pt, fn)` над общими `Arc`.
+SSR: 34 allocations per instance with an icon (budget 42); contribution to raw wasm +201 KB (budget 250 KB).
+Template — as for InputText (`docs/inputtext.md`) and Button (`docs/button.md`); the closures of the reactive branch are assembled via `rx(props, pt, fn)` over shared `Arc`s.

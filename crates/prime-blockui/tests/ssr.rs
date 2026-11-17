@@ -1,4 +1,4 @@
-//! BlockUI вне браузера: маска не выводится ни при каком `blocked`.
+//! BlockUI outside the browser: the mask is never rendered, whatever `blocked` is.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

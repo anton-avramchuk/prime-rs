@@ -1,7 +1,7 @@
-//! Поведение TieredMenu в реальном браузере (wasm-bindgen-test): раскрытие кликом и наведением, листья и команды, клавиатура
-//! по уровням, поиск по символам, клик вне, сторона подменю, узкое окно, режим `popup` и шаблоны.
+//! TieredMenu behavior in a real browser (wasm-bindgen-test): expanding by click and hover, leaves and commands, keyboard
+//! across levels, character search, outside click, submenu side, narrow window, `popup` mode and templates.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели окна общие на страницу. Стили темы не подключены.
+//! Scenarios run as one sequential test: window listeners are shared per page. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -28,7 +28,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}: {}", host.outer_html())).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("missing {sel}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -42,7 +42,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться и слушателю окна повеситься (в следующем тике).
+/// Lets effects apply and the window listener attach (on the next tick).
 async fn settle() {
     sleep(60).await;
 }
@@ -125,7 +125,7 @@ async fn click_expands_collapses_and_leaves_close() {
     assert!(is_active(&host, "m", "0_0"));
     click(&host, "m", "0_0");
     settle().await;
-    assert!(!is_active(&host, "m", "0_0") && is_active(&host, "m", "0"), "повторный клик сворачивает ветку");
+    assert!(!is_active(&host, "m", "0_0") && is_active(&host, "m", "0"), "a repeated click collapses the branch");
     click(&host, "m", "0");
     settle().await;
     assert!(!is_active(&host, "m", "0") && !has(&host, ".p-tieredmenu-submenu"));
@@ -135,15 +135,15 @@ async fn click_expands_collapses_and_leaves_close() {
     settle().await;
     click(&host, "m", "0_0_1");
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu-submenu"), "лист закрывает все подменю");
+    assert!(!has(&host, ".p-tieredmenu-submenu"), "a leaf closes all submenus");
     assert_eq!(*log.lock().unwrap(), ["Folder"]);
-    assert!(doc().active_element().unwrap().is_same_node(Some(&q(&host, ".p-tieredmenu-root-list"))), "фокус в корневом списке");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&q(&host, ".p-tieredmenu-root-list"))), "focus is in the root list");
     click(&host, "m", "1");
     settle().await;
     click(&host, "m", "0");
     settle().await;
-    assert!(is_active(&host, "m", "0") && !is_active(&host, "m", "1"), "соседняя группа закрывает прежнюю");
-    // отключённый пункт команду не вызывает
+    assert!(is_active(&host, "m", "0") && !is_active(&host, "m", "1"), "a sibling group closes the previous one");
+    // a disabled item does not invoke its command
     click(&host, "m", "0_3");
     settle().await;
     assert_eq!(*log.lock().unwrap(), ["Folder"]);
@@ -160,12 +160,12 @@ async fn hover_opens_only_after_a_click() {
     settle().await;
     hover(&host, "h", "1");
     settle().await;
-    assert!(!is_active(&host, "h", "1"), "до клика наведение не раскрывает");
+    assert!(!is_active(&host, "h", "1"), "hover does not expand before a click");
     click(&host, "h", "0");
     settle().await;
     hover(&host, "h", "1");
     settle().await;
-    assert!(is_active(&host, "h", "1") && !is_active(&host, "h", "0"), "после клика наведение раскрывает соседнюю группу");
+    assert!(is_active(&host, "h", "1") && !is_active(&host, "h", "0"), "after a click, hover expands the sibling group");
     host.remove();
 
     let host = self::host();
@@ -189,7 +189,7 @@ async fn hover_opens_only_after_a_click() {
     click(&host, "h", "0");
     hover(&host, "h", "1");
     settle().await;
-    assert!(!is_active(&host, "h", "1"), "на узком окне наведение путь не меняет");
+    assert!(!is_active(&host, "h", "1"), "in a narrow window hover does not change the path");
     host.remove();
 }
 
@@ -203,10 +203,10 @@ async fn outside_click_closes_submenus() {
     assert!(has(&host, ".p-tieredmenu-submenu"));
     q(&host, ".p-tieredmenu-root-list").click();
     settle().await;
-    assert!(has(&host, ".p-tieredmenu-submenu"), "клик внутри меню не закрывает");
+    assert!(has(&host, ".p-tieredmenu-submenu"), "a click inside the menu does not close it");
     doc().body().unwrap().click();
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu-submenu"), "клик вне закрывает");
+    assert!(!has(&host, ".p-tieredmenu-submenu"), "an outside click closes it");
     host.remove();
 }
 
@@ -222,7 +222,7 @@ async fn keyboard_walks_the_levels() {
     assert!(list.get_attribute("aria-activedescendant").is_none());
     list.focus().unwrap();
     settle().await;
-    assert!(!key(&list, "ArrowDown"), "стрелка перехвачена");
+    assert!(!key(&list, "ArrowDown"), "the arrow key is intercepted");
     settle().await;
     assert_eq!(focused(&host).as_deref(), Some("k_0"));
     assert_eq!(list.get_attribute("aria-activedescendant").as_deref(), Some("k_0"));
@@ -230,7 +230,7 @@ async fn keyboard_walks_the_levels() {
     key(&list, "ArrowDown");
     key(&list, "ArrowDown");
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_4"), "Edit → Users → Quit, разделитель пропущен");
+    assert_eq!(focused(&host).as_deref(), Some("k_4"), "Edit → Users → Quit, separator skipped");
     key(&list, "ArrowUp");
     settle().await;
     assert_eq!(focused(&host).as_deref(), Some("k_2"));
@@ -244,38 +244,38 @@ async fn keyboard_walks_the_levels() {
     key(&list, "ArrowRight");
     settle().await;
     assert!(is_active(&host, "k", "0"));
-    assert_eq!(focused(&host).as_deref(), Some("k_0_0"), "фокус ушёл внутрь на New");
+    assert_eq!(focused(&host).as_deref(), Some("k_0_0"), "focus moved inside to New");
     key(&list, "ArrowRight");
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_0_0_0"), "→ раскрывает New и идёт к Share");
+    assert_eq!(focused(&host).as_deref(), Some("k_0_0_0"), "→ expands New and moves to Share");
     key(&list, "ArrowDown");
     key(&list, "ArrowDown");
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_0_0_1"), "на границе остаётся");
+    assert_eq!(focused(&host).as_deref(), Some("k_0_0_1"), "stays at the boundary");
     key(&list, "ArrowLeft");
     settle().await;
     assert!(!is_active(&host, "k", "0_0") && is_active(&host, "k", "0"));
-    assert_eq!(focused(&host).as_deref(), Some("k_0_0"), "← вернулся на New");
+    assert_eq!(focused(&host).as_deref(), Some("k_0_0"), "← returned to New");
     key(&list, "ArrowDown");
     key(&list, "ArrowDown");
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_0_1"), "Print отключён: остались на Open");
+    assert_eq!(focused(&host).as_deref(), Some("k_0_1"), "Print is disabled: stayed on Open");
     key(&list, "Enter");
     settle().await;
-    assert_eq!(*log.lock().unwrap(), ["Open"], "Enter активирует пункт");
-    assert!(!has(&host, ".p-tieredmenu-submenu"), "лист закрыл всё");
+    assert_eq!(*log.lock().unwrap(), ["Open"], "Enter activates the item");
+    assert!(!has(&host, ".p-tieredmenu-submenu"), "the leaf closed everything");
     key(&list, "ArrowRight");
     key(&list, "Escape");
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu-submenu"), "Escape закрывает");
+    assert!(!has(&host, ".p-tieredmenu-submenu"), "Escape closes");
     assert_eq!(focused(&host).as_deref(), Some("k_0"));
     key(&list, "ArrowRight");
     settle().await;
     assert!(has(&host, ".p-tieredmenu-submenu"));
     key(&list, "Tab");
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu-submenu"), "Tab закрывает");
-    assert!(press(&list, "KeyZ", "z", false) || true, "поиск без совпадений безвреден");
+    assert!(!has(&host, ".p-tieredmenu-submenu"), "Tab closes");
+    assert!(press(&list, "KeyZ", "z", false) || true, "a search with no matches is harmless");
     host.remove();
 }
 
@@ -291,15 +291,15 @@ async fn typing_searches_by_prefix_and_resets() {
     assert_eq!(focused(&host).as_deref(), Some("s_1"), "Edit");
     press(&list, "KeyU", "u", false);
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("s_1"), "«eu» не найдено: остаёмся на Edit");
+    assert_eq!(focused(&host).as_deref(), Some("s_1"), ""eu" not found: stay on Edit");
     sleep(600).await;
     press(&list, "KeyU", "u", false);
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("s_2"), "после сброса буфера «u» → Users");
+    assert_eq!(focused(&host).as_deref(), Some("s_2"), "after the buffer reset, "u" → Users");
     sleep(600).await;
     press(&list, "KeyF", "f", true);
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("s_0"), "f → File по кругу");
+    assert_eq!(focused(&host).as_deref(), Some("s_0"), "f → File, wrapping around");
     host.remove();
 }
 
@@ -312,7 +312,7 @@ async fn submenu_flips_near_the_right_edge() {
     click(&host, "f", "0");
     sleep(120).await;
     let sub = q(&host, ".p-tieredmenu-submenu");
-    assert_eq!(sub.style().get_property_value("left").unwrap(), "-100%", "справа нет места — подменю слева");
+    assert_eq!(sub.style().get_property_value("left").unwrap(), "-100%", "no room on the right, so the submenu is on the left");
     assert_eq!(sub.style().get_property_value("top").unwrap(), "0px");
     host.remove();
 
@@ -323,7 +323,7 @@ async fn submenu_flips_near_the_right_edge() {
     settle().await;
     click(&host, "f", "0");
     sleep(120).await;
-    assert_eq!(q(&host, ".p-tieredmenu-submenu").style().get_property_value("left").unwrap(), "100%", "места хватает — справа");
+    assert_eq!(q(&host, ".p-tieredmenu-submenu").style().get_property_value("left").unwrap(), "100%", "enough room, so it is on the right");
     host.remove();
 }
 
@@ -352,19 +352,19 @@ async fn popup_mode() {
         }
     });
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu"), "пока не показано — нет в DOM");
+    assert!(!has(&host, ".p-tieredmenu"), "not shown yet, so not in the DOM");
     let trigger = q(&host, "#trigger");
     trigger.click();
     settle().await;
     let root = q(&host, ".p-tieredmenu");
     assert!(root.class_name().contains("p-tieredmenu-overlay"));
-    assert!(root.style().get_property_value("z-index").unwrap().parse::<i32>().unwrap() >= 1000, "слой группы Menu");
+    assert!(root.style().get_property_value("z-index").unwrap().parse::<i32>().unwrap() >= 1000, "Menu group layer");
     assert_eq!(root.style().get_property_value("position").unwrap(), "absolute");
-    assert!(doc().active_element().unwrap().is_same_node(Some(&q(&host, ".p-tieredmenu-root-list"))), "фокус в списке");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&q(&host, ".p-tieredmenu-root-list"))), "focus is in the list");
     assert_eq!(*events.lock().unwrap(), ["show"]);
     trigger.click();
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu"), "повторный toggle скрывает");
+    assert!(!has(&host, ".p-tieredmenu"), "a repeated toggle hides it");
     assert_eq!(*events.lock().unwrap(), ["show", "hide"]);
 
     trigger.click();
@@ -373,7 +373,7 @@ async fn popup_mode() {
     settle().await;
     click(&host, "p", "0_1");
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu"), "лист скрывает всё меню");
+    assert!(!has(&host, ".p-tieredmenu"), "a leaf hides the whole menu");
     assert_eq!(*log.lock().unwrap(), ["Open"]);
 
     trigger.click();
@@ -382,7 +382,7 @@ async fn popup_mode() {
     settle().await;
     doc().body().unwrap().click();
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu"), "клик вне скрывает");
+    assert!(!has(&host, ".p-tieredmenu"), "an outside click hides it");
 
     trigger.click();
     settle().await;
@@ -390,21 +390,21 @@ async fn popup_mode() {
     key(&list, "Escape");
     settle().await;
     assert!(!has(&host, ".p-tieredmenu"));
-    assert!(doc().active_element().unwrap().is_same_node(Some(&trigger)), "Escape возвращает фокус на цель");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&trigger)), "Escape returns focus to the target");
 
     trigger.click();
     settle().await;
     let list = q(&host, ".p-tieredmenu-root-list");
     press(&list, "ArrowUp", "ArrowUp", true);
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu"), "Alt+↑ скрывает");
+    assert!(!has(&host, ".p-tieredmenu"), "Alt+↑ hides it");
     assert!(doc().active_element().unwrap().is_same_node(Some(&trigger)));
 
     trigger.click();
     settle().await;
     r.lock().unwrap().unwrap().hide();
     settle().await;
-    assert!(!has(&host, ".p-tieredmenu"), "hide() скрывает");
+    assert!(!has(&host, ".p-tieredmenu"), "hide() hides it");
     host.remove();
 }
 
@@ -428,7 +428,7 @@ async fn item_template_replaces_the_link() {
     assert_eq!(q(&li(&host, "t", "0"), ".tpl").text_content().as_deref(), Some("File+"));
     click(&host, "t", "0");
     settle().await;
-    assert!(is_active(&host, "t", "0"), "клик по своему содержимому тоже раскрывает группу");
+    assert!(is_active(&host, "t", "0"), "a click on its own content also expands the group");
     host.remove();
 }
 

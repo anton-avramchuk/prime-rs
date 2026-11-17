@@ -1,9 +1,9 @@
-//! Carousel — порт `p-carousel` из PrimeNG 21.1.10.
+//! Carousel — port of PrimeNG 21.1.10 `p-carousel`.
 //!
-//! Ряд элементов, показываемых страницами по `num_visible` штук. Листается кнопками, точками-индикаторами, автопрокруткой
-//! (`autoplay_interval`) и свайпом; в бесконечном режиме (`circular`) по краям лежат клоны, а переход через границу завершается
-//! скачком без анимации. Размеры страниц меняются по `responsive_options` на `resize` окна. Вся арифметика страниц и смещений — в
-//! чистой модели [`Track`] (см. модуль `model`).
+//! A row of items shown in pages of `num_visible` items. It is navigated with buttons, dot indicators, autoplay
+//! (`autoplay_interval`) and swipe; in infinite mode (`circular`) clones sit at the edges, and crossing the boundary finishes
+//! with a jump without animation. Page sizes change per `responsive_options` on window `resize`. All page and offset arithmetic lives in
+//! the pure [`Track`] model (see the `model` module).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -35,61 +35,61 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Ориентация.
+/// Orientation.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum CarouselOrientation {
-    /// По горизонтали (по умолчанию).
+    /// Horizontal (default).
     #[default]
     Horizontal,
-    /// По вертикали.
+    /// Vertical.
     Vertical,
 }
 
 impl CarouselOrientation {
-    /// Вертикальная ли ориентация.
+    /// Whether the orientation is vertical.
     pub fn is_vertical(self) -> bool {
         self == Self::Vertical
     }
 }
 
-/// Pass-through частей [`Carousel`].
+/// Pass-through parts of [`Carousel`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CarouselPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Шапка.
+    /// Header.
     pub header: Pt,
-    /// Контейнер содержимого.
+    /// Content container.
     pub content_container: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
-    /// Кнопка «назад».
+    /// "Previous" button.
     pub prev_button: Pt,
-    /// Окно.
+    /// Viewport.
     pub viewport: Pt,
-    /// Список элементов.
+    /// Item list.
     pub item_list: Pt,
-    /// Элемент.
+    /// Item.
     pub item: Pt,
-    /// Клон элемента.
+    /// Item clone.
     pub item_clone: Pt,
-    /// Кнопка «вперёд».
+    /// "Next" button.
     pub next_button: Pt,
-    /// Список индикаторов.
+    /// Indicator list.
     pub indicator_list: Pt,
-    /// Индикатор.
+    /// Indicator.
     pub indicator: Pt,
-    /// Кнопка индикатора.
+    /// Indicator button.
     pub indicator_button: Pt,
-    /// Подвал.
+    /// Footer.
     pub footer: Pt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     track: RwSignal<Track>,
-    /// Смещение, применённое к `transform` (может отличаться от логического при переходе через клоны).
+    /// Offset applied to `transform` (may differ from the logical one when crossing clones).
     applied: RwSignal<i32>,
     transitioning: RwSignal<bool>,
     items_hidden: RwSignal<bool>,
@@ -128,7 +128,7 @@ impl Core {
         }
     }
 
-    /// Шаг: смещение применяется с переходом, логическое состояние приводится сразу.
+    /// Step: the offset is applied with a transition, the logical state is settled immediately.
     fn step(&self, dir: Dir, page: Option<usize>) {
         let (len, circular) = (self.len.get_untracked(), self.circular.get_untracked());
         let mut track = self.track.get_untracked();
@@ -189,7 +189,7 @@ impl Core {
         let _ = change_allow;
     }
 
-    /// Свайп по разности координат вдоль оси ориентации.
+    /// Swipe by the coordinate difference along the orientation axis.
     fn swipe_diff(&self, diff: f64) {
         match swipe(diff) {
             Some(Dir::Forward) => self.nav_forward(None),
@@ -217,7 +217,7 @@ impl Core {
         }
     }
 
-    /// Пересчёт после смены свойств, длины или размеров окна (`onAfterContentChecked` и `calculatePosition`).
+    /// Recompute after a change of props, length or window size (`onAfterContentChecked` and `calculatePosition`).
     #[cfg(target_arch = "wasm32")]
     fn recompute(self: &Arc<Self>) {
         let (nv, ns) = (self.num_visible.get_untracked(), self.num_scroll.get_untracked());
@@ -244,7 +244,7 @@ impl Core {
         }
     }
 
-    /// Переносит фокус на кнопку точки `index`.
+    /// Moves focus to the button of dot `index`.
     fn focus_indicator(&self, index: usize) {
         #[cfg(target_arch = "wasm32")]
         if let Some(list) = self.indicators.get_untracked()
@@ -269,92 +269,92 @@ impl Core {
     }
 }
 
-/// Ряд элементов со страницами, индикаторами, автопрокруткой и бесконечным режимом.
+/// A row of items with pages, indicators, autoplay and infinite mode.
 ///
-/// Свойства принимают значение или сигнал. Элементы строятся шаблоном `item` один раз на смену `value`.
+/// Props accept a value or a signal. Items are built by the `item` template once per `value` change.
 #[component]
 pub fn Carousel<T>(
-    /// Элементы.
+    /// Items.
     #[prop(optional, into)]
     value: Prop<Vec<T>>,
-    /// Текущая страница; двусторонний сигнал.
+    /// Current page; two-way signal.
     #[prop(optional)]
     page: Option<RwSignal<usize>>,
-    /// Число видимых элементов.
+    /// Number of visible items.
     #[prop(optional, default = Prop::Static(1), into)]
     num_visible: Prop<usize>,
-    /// Число элементов за прокрутку.
+    /// Number of items per scroll.
     #[prop(optional, default = Prop::Static(1), into)]
     num_scroll: Prop<usize>,
-    /// Варианты адаптивности.
+    /// Responsive options.
     #[prop(optional, into)]
     responsive_options: Vec<Responsive>,
-    /// Ориентация.
+    /// Orientation.
     #[prop(optional, into)]
     orientation: Prop<CarouselOrientation>,
-    /// Высота окна при вертикальной ориентации.
+    /// Viewport height in vertical orientation.
     #[prop(optional, default = Prop::Static("300px".to_owned()), into)]
     vertical_view_port_height: Prop<String>,
-    /// Дополнительный класс контейнера содержимого.
+    /// Extra class of the content container.
     #[prop(optional, into)]
     content_class: OptProp<String>,
-    /// Дополнительный класс списка индикаторов.
+    /// Extra class of the indicator list.
     #[prop(optional, into)]
     indicators_content_class: OptProp<String>,
-    /// Встроенный стиль списка индикаторов.
+    /// Inline style of the indicator list.
     #[prop(optional, into)]
     indicators_content_style: OptProp<String>,
-    /// Дополнительный класс кнопки индикатора.
+    /// Extra class of the indicator button.
     #[prop(optional, into)]
     indicator_style_class: OptProp<String>,
-    /// Встроенный стиль кнопки индикатора.
+    /// Inline style of the indicator button.
     #[prop(optional, into)]
     indicator_style: OptProp<String>,
-    /// Бесконечный режим.
+    /// Infinite mode.
     #[prop(optional, into)]
     circular: Prop<bool>,
-    /// Показывать индикаторы.
+    /// Show indicators.
     #[prop(optional, default = Prop::Static(true), into)]
     show_indicators: Prop<bool>,
-    /// Показывать кнопки «назад» и «вперёд».
+    /// Show the "previous" and "next" buttons.
     #[prop(optional, default = Prop::Static(true), into)]
     show_navigators: Prop<bool>,
-    /// Период автопрокрутки, мс (`0` — выключена).
+    /// Autoplay period, ms (`0` — disabled).
     #[prop(optional, into)]
     autoplay_interval: Prop<u32>,
-    /// Атрибут `id`.
+    /// `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Цвет кнопки «назад».
+    /// Color of the "previous" button.
     #[prop(optional, default = Prop::Static(Some(ButtonSeverity::Secondary)), into)]
     prev_button_severity: OptProp<ButtonSeverity>,
-    /// Цвет кнопки «вперёд».
+    /// Color of the "next" button.
     #[prop(optional, default = Prop::Static(Some(ButtonSeverity::Secondary)), into)]
     next_button_severity: OptProp<ButtonSeverity>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<CarouselPt>,
-    /// Шаблон элемента.
+    /// Item template.
     item: Callback<T, AnyView>,
-    /// Шапка.
+    /// Header.
     #[prop(optional, into)]
     header: Option<ViewFn>,
-    /// Подвал.
+    /// Footer.
     #[prop(optional, into)]
     footer: Option<ViewFn>,
-    /// Значок кнопки «назад».
+    /// Icon of the "previous" button.
     #[prop(optional, into)]
     previous_icon: Option<ViewFn>,
-    /// Значок кнопки «вперёд».
+    /// Icon of the "next" button.
     #[prop(optional, into)]
     next_icon: Option<ViewFn>,
-    /// Страница изменилась.
+    /// The page changed.
     #[prop(optional)]
     on_page: Option<Callback<usize>>,
 ) -> impl IntoView
@@ -403,7 +403,7 @@ where
         let core = core.clone();
         on_cleanup(move || core.release());
     }
-    // Пересчёт, адаптивность, автопрокрутка и внешняя смена страницы — только в браузере.
+    // Recompute, responsiveness, autoplay and external page change — browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let (c1, nv, ns, circ) = (core.clone(), num_visible.clone(), num_scroll.clone(), circular.clone());
@@ -462,7 +462,7 @@ where
     let (slide_label, slide_number, page_label) =
         (locale_text("aria.slide"), locale_text("aria.slideNumber"), locale_text("aria.pageLabel"));
 
-    // Элементы: строятся на смену значения, состояние — реактивные атрибуты.
+    // Items: built on value change, state — reactive attributes.
     let items = {
         let (core, pt, value, item) = (core.clone(), pt.clone(), value.clone(), item);
         let (slide_label, slide_number) = (slide_label.clone(), slide_number.clone());
@@ -499,7 +499,7 @@ where
             (starting, finishing).into_any()
         }
     };
-    // Кнопки навигации.
+    // Navigation buttons.
     let nav_button = |forward: bool| -> AnyView {
         let (core, pt) = (core.clone(), pt.clone());
         let (severity, icon) =
@@ -596,7 +596,7 @@ where
         }
     };
 
-    // Индикаторы.
+    // Indicators.
     let indicators = {
         let (core, pt) = (core.clone(), pt.clone());
         move || {
@@ -700,7 +700,7 @@ where
     }
 }
 
-/// Точка-индикатор страницы.
+/// Page indicator dot.
 fn dot_view(
     core: &Arc<Core>,
     pt: &Arc<CarouselPt>,
@@ -754,7 +754,7 @@ fn dot_view(
     .into_any()
 }
 
-/// Реальный элемент.
+/// Real item.
 fn real_item(core: &Arc<Core>, pt: &Arc<CarouselPt>, index: usize, content: AnyView, slide_label: &str, slide_number: &str) -> AnyView {
     let (track, len, circular) = (core.track, core.len, core.circular.clone());
     let range = move || {
@@ -813,7 +813,7 @@ fn real_item(core: &Arc<Core>, pt: &Arc<CarouselPt>, index: usize, content: AnyV
     .into_any()
 }
 
-/// Клон элемента (бесконечный режим); у клонов начала есть `aria`-подписи, у клонов конца — нет.
+/// Item clone (infinite mode); start clones have `aria` labels, end clones do not.
 #[allow(clippy::too_many_arguments)]
 fn clone_item(
     core: &Arc<Core>,

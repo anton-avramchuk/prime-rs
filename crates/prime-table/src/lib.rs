@@ -1,10 +1,10 @@
-//! Table — порт `p-table` (DataTable) из PrimeNG 21.1.10, этап 2 (пакет 1).
+//! Table - port of `p-table` (DataTable) from PrimeNG 21.1.10, stage 2 (package 1).
 //!
-//! Таблица данных: столбцы и строки, сортировка по одному и нескольким столбцам, фильтры (по столбцам и глобальный),
-//! пагинатор, выбор строк (кликом, флажками, радиокнопками), раскрытие строк, правка ячеек и строк, ленивая загрузка,
-//! полосатость, сетка, размер, вертикальная прокрутка и индикатор загрузки.
-//! Столбцы описываются данными ([`Column`]), логика — чистая [`model`]. Перестановка и изменение размера столбцов,
-//! заморозка, виртуальная прокрутка и группировка — следующие пакеты этапа 2.
+//! Data table: columns and rows, sorting by one or several columns, filters (per-column and global),
+//! paginator, row selection (click, checkboxes, radio buttons), row expansion, cell and row editing, lazy loading,
+//! stripes, grid lines, size, vertical scrolling and a loading indicator.
+//! Columns are described by data ([`Column`]), the logic is the pure [`model`]. Column reordering and resizing,
+//! freezing, virtual scrolling and grouping are the next packages of stage 2.
 //!
 //! ```
 //! #![recursion_limit = "512"]
@@ -41,55 +41,55 @@ use prime_radiobutton::{RadioButton, RadioButtonClick};
 use std::cmp::Ordering;
 use std::sync::Arc;
 
-/// Вид столбца.
+/// Column kind.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum ColumnKind {
-    /// Данные: ячейка строится `body`.
+    /// Data: the cell is built by `body`.
     #[default]
     Data,
-    /// Флажок выбора строки (в заголовке — «выбрать все»).
+    /// Row selection checkbox (in the header, "select all").
     SelectionCheckbox,
-    /// Радиокнопка выбора строки.
+    /// Row selection radio button.
     SelectionRadio,
-    /// Кнопка раскрытия строки.
+    /// Row expansion button.
     Expander,
-    /// Кнопки правки строки (режим [`EditMode::Row`]).
+    /// Row editing buttons ([`EditMode::Row`] mode).
     RowEditor,
 }
 
-/// Столбец таблицы.
+/// Table column.
 #[derive(Clone)]
 pub struct Column<T: 'static> {
-    /// Поле: идентификатор столбца в сортировке.
+    /// Field: the column identifier in sorting.
     pub field: String,
-    /// Заголовок.
+    /// Header.
     pub header: Option<String>,
-    /// Подпись в подвале таблицы.
+    /// Table footer label.
     pub footer: Option<String>,
-    /// Построение ячейки.
+    /// Cell builder.
     pub body: Option<Callback<T, AnyView>>,
-    /// Можно сортировать (нужен `compare`).
+    /// Can be sorted (needs `compare`).
     pub sortable: bool,
-    /// Сравнение строк для сортировки.
+    /// Row comparison for sorting.
     pub compare: Option<Callback<(T, T), Ordering>>,
-    /// Встроенный стиль ячеек заголовка и тела.
+    /// Inline style of header and body cells.
     pub style: Option<String>,
-    /// Дополнительный класс ячеек.
+    /// Extra class of the cells.
     pub style_class: Option<String>,
-    /// Вид столбца.
+    /// Column kind.
     pub kind: ColumnKind,
-    /// В строке фильтров есть поле ввода.
+    /// The filter row has an input.
     pub filterable: bool,
-    /// Текст поля строки для фильтров (общий и столбцовый).
+    /// Row field text for filters (global and per-column).
     pub filter_text: Option<Callback<T, String>>,
-    /// Режим сравнения фильтра столбца.
+    /// Column filter match mode.
     pub filter_match_mode: MatchMode,
-    /// Редактор ячейки: получает черновик строки.
+    /// Cell editor: receives the row draft.
     pub editor: Option<Callback<RwSignal<T>, AnyView>>,
 }
 
 impl<T: Clone + Send + Sync + 'static> Column<T> {
-    /// Пустой столбец поля `field`.
+    /// Empty column for the `field` field.
     pub fn new(field: impl Into<String>) -> Self {
         Self {
             field: field.into(),
@@ -108,7 +108,7 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         }
     }
 
-    /// Текстовый столбец: ячейка — строка, возвращаемая `cell`.
+    /// Text column: the cell is the string returned by `cell`.
     pub fn text(field: impl Into<String>, header: impl Into<String>, cell: impl Fn(&T) -> String + Send + Sync + 'static) -> Self {
         let mut column = Self::new(field);
         column.header = Some(header.into());
@@ -116,7 +116,7 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         column
     }
 
-    /// Столбец с произвольной ячейкой.
+    /// Column with an arbitrary cell.
     pub fn custom(field: impl Into<String>, header: impl Into<String>, body: Callback<T, AnyView>) -> Self {
         let mut column = Self::new(field);
         column.header = Some(header.into());
@@ -124,7 +124,7 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         column
     }
 
-    /// Столбец флажков выбора.
+    /// Selection checkbox column.
     pub fn selection_checkbox() -> Self {
         let mut column = Self::new("");
         column.kind = ColumnKind::SelectionCheckbox;
@@ -132,7 +132,7 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         column
     }
 
-    /// Столбец радиокнопок выбора.
+    /// Selection radio button column.
     pub fn selection_radio() -> Self {
         let mut column = Self::new("");
         column.kind = ColumnKind::SelectionRadio;
@@ -140,7 +140,7 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         column
     }
 
-    /// Столбец кнопок раскрытия строки.
+    /// Row expansion button column.
     pub fn expander() -> Self {
         let mut column = Self::new("");
         column.kind = ColumnKind::Expander;
@@ -148,7 +148,7 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         column
     }
 
-    /// Столбец кнопок правки строки.
+    /// Row editing button column.
     pub fn row_editor() -> Self {
         let mut column = Self::new("");
         column.kind = ColumnKind::RowEditor;
@@ -156,32 +156,32 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         column
     }
 
-    /// Включает фильтр столбца; `text` даёт текст поля строки.
+    /// Enables the column filter; `text` gives the text of the row field.
     pub fn filterable(mut self, text: impl Fn(&T) -> String + Send + Sync + 'static) -> Self {
         self.filterable = true;
         self.filter_text = Some(Callback::new(move |row: T| text(&row)));
         self
     }
 
-    /// Только текст поля для общего фильтра (без поля ввода в строке фильтров).
+    /// Only the field text for the global filter (no input in the filter row).
     pub fn searchable(mut self, text: impl Fn(&T) -> String + Send + Sync + 'static) -> Self {
         self.filter_text = Some(Callback::new(move |row: T| text(&row)));
         self
     }
 
-    /// Режим сравнения фильтра столбца.
+    /// Column filter match mode.
     pub fn filter_match_mode(mut self, mode: MatchMode) -> Self {
         self.filter_match_mode = mode;
         self
     }
 
-    /// Редактор ячейки: получает черновик строки и меняет его.
+    /// Cell editor: receives the row draft and changes it.
     pub fn editable(mut self, editor: Callback<RwSignal<T>, AnyView>) -> Self {
         self.editor = Some(editor);
         self
     }
 
-    /// Текстовый редактор: `get` читает значение из строки, `set` возвращает строку с новым значением.
+    /// Text editor: `get` reads the value from the row, `set` returns the row with the new value.
     pub fn edit_text(
         self,
         get: impl Fn(&T) -> String + Send + Sync + 'static,
@@ -214,108 +214,108 @@ impl<T: Clone + Send + Sync + 'static> Column<T> {
         }))
     }
 
-    /// Включает сортировку с заданным сравнением.
+    /// Enables sorting with the given comparison.
     pub fn sortable(mut self, compare: impl Fn(&T, &T) -> Ordering + Send + Sync + 'static) -> Self {
         self.sortable = true;
         self.compare = Some(Callback::new(move |(a, b): (T, T)| compare(&a, &b)));
         self
     }
 
-    /// Подпись в подвале.
+    /// Footer label.
     pub fn footer(mut self, footer: impl Into<String>) -> Self {
         self.footer = Some(footer.into());
         self
     }
 
-    /// Встроенный стиль ячеек.
+    /// Inline style of the cells.
     pub fn style(mut self, style: impl Into<String>) -> Self {
         self.style = Some(style.into());
         self
     }
 
-    /// Дополнительный класс ячеек.
+    /// Extra class of the cells.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 }
 
-/// Положение пагинатора.
+/// Paginator position.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum PaginatorPosition {
-    /// Сверху.
+    /// Top.
     Top,
-    /// Снизу (по умолчанию).
+    /// Bottom (default).
     #[default]
     Bottom,
-    /// Сверху и снизу.
+    /// Top and bottom.
     Both,
 }
 
-/// Режим правки.
+/// Edit mode.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum EditMode {
-    /// Правка отдельной ячейки.
+    /// Editing a single cell.
     Cell,
-    /// Правка строки целиком.
+    /// Editing a whole row.
     Row,
 }
 
-/// Событие правки.
+/// Edit event.
 #[derive(Clone, Debug)]
 pub struct EditEvent<T> {
-    /// Строка до правки.
+    /// Row before editing.
     pub original: T,
-    /// Строка с изменениями (для `init` и `cancel` совпадает с черновиком на этот момент).
+    /// Row with changes (for `init` and `cancel` it matches the draft at that moment).
     pub row: T,
-    /// Поле ячейки (пусто при правке строки).
+    /// Cell field (empty when editing a row).
     pub field: String,
 }
 
-/// Параметры загрузки при `lazy`.
+/// Load parameters for `lazy`.
 #[derive(Clone, Debug, PartialEq)]
 pub struct LazyLoadEvent {
-    /// Индекс первой записи страницы.
+    /// Index of the first record of the page.
     pub first: usize,
-    /// Число строк на странице.
+    /// Number of rows per page.
     pub rows: usize,
-    /// Сортировка.
+    /// Sorting.
     pub sort: Vec<SortMeta>,
-    /// Фильтры столбцов.
+    /// Column filters.
     pub filters: Vec<FilterMeta>,
-    /// Глобальный фильтр.
+    /// Global filter.
     pub global_filter: String,
 }
 
-/// Событие смены страницы.
+/// Page change event.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct PageEvent {
-    /// Индекс первой записи.
+    /// Index of the first record.
     pub first: usize,
-    /// Число строк на странице.
+    /// Number of rows per page.
     pub rows: usize,
 }
 
-/// Pass-through частей [`Table`].
+/// Pass-through of the [`Table`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct TablePt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Контейнер таблицы.
+    /// Table container.
     pub table_container: Pt,
-    /// Таблица.
+    /// Table.
     pub table: Pt,
-    /// Заголовок таблицы (`thead`).
+    /// Table header (`thead`).
     pub thead: Pt,
-    /// Тело (`tbody`).
+    /// Body (`tbody`).
     pub tbody: Pt,
-    /// Подвал (`tfoot`).
+    /// Footer (`tfoot`).
     pub tfoot: Pt,
-    /// Части пагинатора.
+    /// Paginator parts.
     pub paginator: PaginatorPt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 struct Core<T: Send + Sync + 'static> {
     value: Prop<Vec<T>>,
     columns: Prop<Vec<Column<T>>>,
@@ -350,7 +350,7 @@ struct Core<T: Send + Sync + 'static> {
     editing_keys: RwSignal<Vec<String>>,
     cell_edit: RwSignal<Option<(String, String)>>,
     drafts: StoredValue<Vec<(String, RwSignal<T>)>>,
-    /// Владелец таблицы: черновики живут дольше кнопок, из обработчиков которых создаются.
+    /// Table owner: drafts outlive the buttons whose handlers create them.
     owner: Option<Owner>,
     on_filter: Option<Callback<Vec<FilterMeta>>>,
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
@@ -364,7 +364,7 @@ struct Core<T: Send + Sync + 'static> {
 }
 
 impl<T: Clone + Send + Sync + 'static> Core<T> {
-    /// Строки после фильтрации и сортировки (при `lazy` — как есть).
+    /// Rows after filtering and sorting (as is when `lazy`).
     fn processed(&self) -> Vec<T> {
         if self.lazy.get() {
             return self.value.get();
@@ -387,7 +387,7 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
         sort_rows(&filtered, &meta, &compare)
     }
 
-    /// Число записей для пагинатора.
+    /// Number of records for the paginator.
     fn total(&self) -> usize {
         if self.lazy.get() { self.total_records.get().unwrap_or_else(|| self.value.with(Vec::len)) } else { self.processed().len() }
     }
@@ -401,7 +401,7 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
         }
     }
 
-    /// Черновик строки: существующий или новый из `row`.
+    /// Row draft: an existing one or a new one from `row`.
     fn draft(&self, key: &str, row: &T) -> RwSignal<T> {
         if let Some(d) = self.drafts.with_value(|d| d.iter().find(|(k, _)| k == key).map(|(_, s)| *s)) {
             return d;
@@ -415,7 +415,7 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
         draft
     }
 
-    /// Забирает черновик строки, удаляя его из хранилища.
+    /// Takes the row draft, removing it from the store.
     fn take_draft(&self, key: &str, row: &T) -> T {
         let draft = self.drafts.with_value(|d| d.iter().find(|(k, _)| k == key).map(|(_, s)| *s));
         self.drafts.update_value(|d| d.retain(|(k, _)| k != key));
@@ -487,7 +487,7 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
         rows.iter().map(|r| self.row_key.run(r.clone())).collect()
     }
 
-    /// Строки текущей страницы.
+    /// Rows of the current page.
     fn page_rows(&self, processed: &[T]) -> Vec<T> {
         let rows = self.rows.get();
         if self.lazy.get() {
@@ -543,201 +543,201 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
         }
     }
 
-    /// Ключи строк, на которые действует флажок в заголовке.
+    /// Keys of the rows the header checkbox acts on.
     fn header_keys(&self) -> Vec<String> {
         let processed = self.processed();
         if self.selection_page_only.get_untracked() { self.keys(&self.page_rows(&processed)) } else { self.keys(&processed) }
     }
 }
 
-/// Таблица данных.
+/// Data table.
 ///
-/// Каждое свойство принимает значение или сигнал; `selection`, `expanded_keys`, `sort`, `first` и `rows` — двусторонние сигналы.
+/// Every property accepts a value or a signal; `selection`, `expanded_keys`, `sort`, `first` and `rows` are two-way signals.
 #[component]
 pub fn Table<T>(
-    /// Строки.
+    /// Rows.
     #[prop(optional, into)]
     value: Prop<Vec<T>>,
-    /// Столбцы.
+    /// Columns.
     #[prop(optional, into)]
     columns: Prop<Vec<Column<T>>>,
-    /// Ключ строки (аналог `dataKey`): нужен для выбора и раскрытия.
+    /// Row key (like `dataKey`): needed for selection and expansion.
     row_key: Callback<T, String>,
-    /// Режим выбора строк кликом.
+    /// Row selection mode on click.
     #[prop(optional, into)]
     selection_mode: Prop<Option<SelectionMode>>,
-    /// Двусторонний сигнал ключей выбранных строк.
+    /// Two-way signal of the selected row keys.
     #[prop(optional)]
     selection: Option<RwSignal<Vec<String>>>,
-    /// Для выбора нужна клавиша Ctrl/⌘ (иначе — переключатель).
+    /// Selection needs the Ctrl/⌘ key (otherwise it is a toggle).
     #[prop(optional, into)]
     meta_key_selection: Prop<bool>,
-    /// Флажок в заголовке действует только на текущую страницу.
+    /// The header checkbox acts only on the current page.
     #[prop(optional, into)]
     selection_page_only: Prop<bool>,
-    /// Режим сортировки.
+    /// Sort mode.
     #[prop(optional, into)]
     sort_mode: Prop<SortMode>,
-    /// Двусторонний сигнал сортировки.
+    /// Two-way signal of the sort.
     #[prop(optional)]
     sort: Option<RwSignal<Vec<SortMeta>>>,
-    /// Порядок при первой сортировке столбца (1 или -1).
+    /// Order on the first sort of a column (1 or -1).
     #[prop(optional, default = Prop::Static(1), into)]
     default_sort_order: Prop<i32>,
-    /// Возвращаться на первую страницу при сортировке.
+    /// Return to the first page on sort.
     #[prop(optional, default = Prop::Static(true), into)]
     reset_page_on_sort: Prop<bool>,
-    /// Включить пагинатор.
+    /// Enable the paginator.
     #[prop(optional, into)]
     paginator: Prop<bool>,
-    /// Двусторонний сигнал индекса первой записи страницы.
+    /// Two-way signal of the index of the first record of the page.
     #[prop(optional)]
     first: Option<RwSignal<usize>>,
-    /// Двусторонний сигнал числа строк на странице.
+    /// Two-way signal of the number of rows per page.
     #[prop(optional)]
     rows: Option<RwSignal<usize>>,
-    /// Число строк по умолчанию (когда `rows` не передан).
+    /// Default number of rows (when `rows` is not passed).
     #[prop(optional, default = 10)]
     default_rows: usize,
-    /// Число ссылок на страницы.
+    /// Number of page links.
     #[prop(optional, default = Prop::Static(5), into)]
     page_links: Prop<usize>,
-    /// Варианты числа строк на странице.
+    /// Options for the number of rows per page.
     #[prop(optional, into)]
     rows_per_page_options: Prop<Vec<RowsPerPage>>,
-    /// Положение пагинатора.
+    /// Paginator position.
     #[prop(optional, into)]
     paginator_position: Prop<PaginatorPosition>,
-    /// Показывать пагинатор при единственной странице.
+    /// Show the paginator when there is a single page.
     #[prop(optional, default = Prop::Static(true), into)]
     always_show_paginator: Prop<bool>,
-    /// Шаблон отчёта о текущей странице.
+    /// Current page report template.
     #[prop(optional, default = Prop::Static(Some("{currentPage} of {totalPages}".to_owned())), into)]
     current_page_report_template: OptProp<String>,
-    /// Показывать отчёт о текущей странице.
+    /// Show the current page report.
     #[prop(optional, into)]
     show_current_page_report: Prop<bool>,
-    /// Двусторонний сигнал ключей раскрытых строк.
+    /// Two-way signal of the expanded row keys.
     #[prop(optional)]
     expanded_keys: Option<RwSignal<Vec<String>>>,
-    /// Содержимое раскрытой строки.
+    /// Content of an expanded row.
     #[prop(optional, into)]
     row_expansion: Option<Callback<T, AnyView>>,
-    /// Раскрыта может быть только одна строка.
+    /// Only one row can be expanded.
     #[prop(optional, into)]
     row_expand_single: Prop<bool>,
-    /// Подсвечивать строку под курсором.
+    /// Highlight the row under the cursor.
     #[prop(optional, into)]
     row_hover: Prop<bool>,
-    /// Полосатые строки.
+    /// Striped rows.
     #[prop(optional, into)]
     striped_rows: Prop<bool>,
-    /// Линии сетки.
+    /// Grid lines.
     #[prop(optional, into)]
     show_gridlines: Prop<bool>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Прокручиваемое тело с закреплённым заголовком.
+    /// Scrollable body with a pinned header.
     #[prop(optional, into)]
     scrollable: Prop<bool>,
-    /// Высота области прокрутки (например `400px`).
+    /// Height of the scroll area (for example `400px`).
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-    /// Показывать индикатор загрузки.
+    /// Show the loading indicator.
     #[prop(optional, into)]
     loading: Prop<bool>,
-    /// Текст при отсутствии строк.
+    /// Text when there are no rows.
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-    /// Своё содержимое при отсутствии строк.
+    /// Custom content when there are no rows.
     #[prop(optional, into)]
     empty: Option<ViewFn>,
-    /// Заголовок над таблицей (`caption`).
+    /// Heading above the table (`caption`).
     #[prop(optional, into)]
     caption: Option<ViewFn>,
-    /// Подвал под таблицей (`summary`).
+    /// Footer under the table (`summary`).
     #[prop(optional, into)]
     summary: Option<ViewFn>,
-    /// Встроенный стиль таблицы (`table`).
+    /// Inline style of the table (`table`).
     #[prop(optional, into)]
     table_style: OptProp<String>,
-    /// Атрибут `aria-label` таблицы.
+    /// `aria-label` attribute of the table.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается после смены сортировки.
+    /// Called after the sort changes.
     #[prop(optional, into)]
     on_sort: Option<Callback<Vec<SortMeta>>>,
-    /// Вызывается при смене страницы.
+    /// Called when the page changes.
     #[prop(optional, into)]
     on_page: Option<Callback<PageEvent>>,
-    /// Вызывается при выборе строки.
+    /// Called when a row is selected.
     #[prop(optional, into)]
     on_row_select: Option<Callback<T>>,
-    /// Вызывается при снятии выбора строки.
+    /// Called when a row is unselected.
     #[prop(optional, into)]
     on_row_unselect: Option<Callback<T>>,
-    /// Вызывается при раскрытии строки.
+    /// Called when a row is expanded.
     #[prop(optional, into)]
     on_row_expand: Option<Callback<T>>,
-    /// Вызывается при сворачивании строки.
+    /// Called when a row is collapsed.
     #[prop(optional, into)]
     on_row_collapse: Option<Callback<T>>,
-    /// Вызывается при переключении флажка в заголовке.
+    /// Called when the header checkbox is toggled.
     #[prop(optional, into)]
     on_header_checkbox_toggle: Option<Callback<bool>>,
-    /// Двусторонний сигнал фильтров столбцов.
+    /// Two-way signal of the column filters.
     #[prop(optional)]
     filters: Option<RwSignal<Vec<FilterMeta>>>,
-    /// Значение глобального фильтра (режим «содержит» по полям `global_filter_fields`).
+    /// Global filter value ("contains" mode over the `global_filter_fields` fields).
     #[prop(optional, into)]
     global_filter: Prop<String>,
-    /// Поля глобального фильтра; по умолчанию — все столбцы с текстом для фильтра.
+    /// Global filter fields; by default all columns with filter text.
     #[prop(optional, into)]
     global_filter_fields: Prop<Vec<String>>,
-    /// Ленивая загрузка: сортировку, фильтры и страницы выполняет приложение по `on_lazy_load`.
+    /// Lazy loading: sorting, filters and pages are handled by the application via `on_lazy_load`.
     #[prop(optional, into)]
     lazy: Prop<bool>,
-    /// Общее число записей при `lazy`.
+    /// Total number of records when `lazy`.
     #[prop(optional, into)]
     total_records: OptProp<usize>,
-    /// Режим правки.
+    /// Edit mode.
     #[prop(optional, into)]
     edit_mode: Prop<Option<EditMode>>,
-    /// Двусторонний сигнал ключей строк в правке (режим строки).
+    /// Two-way signal of the keys of the rows being edited (row mode).
     #[prop(optional)]
     editing_keys: Option<RwSignal<Vec<String>>>,
-    /// Вызывается после изменения фильтров столбцов.
+    /// Called after the column filters change.
     #[prop(optional, into)]
     on_filter: Option<Callback<Vec<FilterMeta>>>,
-    /// Вызывается при `lazy` при монтировании и смене страницы, сортировки или фильтров.
+    /// Called when `lazy` on mount and on page, sort or filter change.
     #[prop(optional, into)]
     on_lazy_load: Option<Callback<LazyLoadEvent>>,
-    /// Вызывается при открытии редактора ячейки.
+    /// Called when a cell editor opens.
     #[prop(optional, into)]
     on_edit_init: Option<Callback<EditEvent<T>>>,
-    /// Вызывается при завершении правки ячейки.
+    /// Called when cell editing completes.
     #[prop(optional, into)]
     on_edit_complete: Option<Callback<EditEvent<T>>>,
-    /// Вызывается при отмене правки ячейки.
+    /// Called when cell editing is cancelled.
     #[prop(optional, into)]
     on_edit_cancel: Option<Callback<EditEvent<T>>>,
-    /// Вызывается при начале правки строки.
+    /// Called when row editing starts.
     #[prop(optional, into)]
     on_row_edit_init: Option<Callback<EditEvent<T>>>,
-    /// Вызывается при сохранении строки.
+    /// Called when a row is saved.
     #[prop(optional, into)]
     on_row_edit_save: Option<Callback<EditEvent<T>>>,
-    /// Вызывается при отмене правки строки.
+    /// Called when row editing is cancelled.
     #[prop(optional, into)]
     on_row_edit_cancel: Option<Callback<EditEvent<T>>>,
-    /// Pass-through частей.
+    /// Pass-through of the parts.
     #[prop(optional)]
     pt: Option<TablePt>,
 ) -> impl IntoView
@@ -796,7 +796,7 @@ where
         core.selection.with_untracked(|s| all_selected(&keys, s))
     });
 
-    // Согласование радиокнопок и флажка в заголовке с выбором, возврат `first` на допустимую страницу — только в браузере.
+    // Syncing the radio buttons and header checkbox with the selection, returning `first` to a valid page - browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let c = core.clone();
@@ -818,7 +818,7 @@ where
                 c.first.set(clamped);
             }
         });
-        // Новое значение глобального фильтра возвращает на первую страницу.
+        // A new global filter value returns to the first page.
         let c = core.clone();
         Effect::new(move |previous: Option<()>| {
             c.global_filter.get();
@@ -826,7 +826,7 @@ where
                 c.first.set(0);
             }
         });
-        // Ленивая загрузка: параметры собираются при монтировании и после каждого изменения.
+        // Lazy loading: parameters are collected on mount and after every change.
         let c = core.clone();
         Effect::new(move |_| {
             let event = LazyLoadEvent {
@@ -1004,7 +1004,7 @@ fn cell_attrs(column: &Column<impl Clone + Send + Sync + 'static>) -> (String, O
     (column.style_class.clone().unwrap_or_default(), column.style.clone())
 }
 
-/// Строка заголовков.
+/// Header row.
 fn head_view<T: Clone + Send + Sync + 'static>(
     core: &Arc<Core<T>>,
     _pt: &Arc<TablePt>,
@@ -1055,7 +1055,7 @@ fn head_view<T: Clone + Send + Sync + 'static>(
     }
 }
 
-/// Ячейка строки фильтров: поле ввода и кнопка очистки.
+/// Filter row cell: an input and a clear button.
 fn filter_cell<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, column: &Column<T>) -> AnyView {
     let (extra_class, style) = cell_attrs(column);
     if !column.filterable {
@@ -1168,7 +1168,7 @@ fn sortable_header<T: Clone + Send + Sync + 'static>(
     .into_any()
 }
 
-/// Тело: строки страницы, раскрытия и сообщение о пустой таблице.
+/// Body: page rows, expansions and the empty table message.
 fn body_view<T: Clone + Send + Sync + 'static>(
     core: &Arc<Core<T>>,
     _pt: &Arc<TablePt>,
@@ -1308,7 +1308,7 @@ fn body_cell<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, column: &Col
     view! { <td class={extra_class} style={style} role="cell">{content}</td> }.into_any()
 }
 
-/// Ячейка с редактором: показывает значение или редактор (правка ячейки или строки).
+/// Cell with an editor: shows the value or the editor (cell or row editing).
 fn editable_cell<T: Clone + Send + Sync + 'static>(
     core: &Arc<Core<T>>,
     column: &Column<T>,
@@ -1381,7 +1381,7 @@ fn editable_cell<T: Clone + Send + Sync + 'static>(
     .into_any()
 }
 
-/// Кнопки правки строки: «изменить» либо «сохранить» и «отменить».
+/// Row editing buttons: "edit" or "save" and "cancel".
 fn row_editor_buttons<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, row: &T, key: &str) -> AnyView {
     let (core, row, key) = (core.clone(), row.clone(), key.to_owned());
     let button = |class: &'static str, icon: ViewFn, label: &'static str, on_click: Callback<()>| {
@@ -1430,7 +1430,7 @@ fn row_editor_buttons<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, row
     .into_any()
 }
 
-/// Подвал: подписи столбцов.
+/// Footer: column labels.
 fn foot_view<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, pt: &Arc<TablePt>) -> impl IntoView + use<T> {
     let columns = core.columns.get();
     columns.iter().any(|c| c.footer.is_some()).then(|| {

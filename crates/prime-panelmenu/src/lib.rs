@@ -1,9 +1,9 @@
-//! PanelMenu — порт `p-panelmenu` из PrimeNG 21.1.10.
+//! PanelMenu — port of PrimeNG 21.1.10 `p-panelmenu`.
 //!
-//! Гибрид Accordion и Tree: вертикальный список панелей, каждая раскрывается на месте. Пункты — [`prime_menu::MenuItem`]:
-//! корневые пункты становятся заголовками панелей, поле `items` задаёт ветки внутри панели, `expanded` — начальное
-//! раскрытие. При `multiple = false` (по умолчанию) раскрыта одна корневая панель; вложенные ветки независимы.
-//! Раскрытием можно управлять через [`PanelMenuRef`].
+//! A hybrid of Accordion and Tree: a vertical list of panels, each expanding in place. Items are [`prime_menu::MenuItem`]:
+//! root items become panel headers, the `items` field defines branches inside a panel, `expanded` — the initial
+//! expansion. With `multiple = false` (default) one root panel is expanded; nested branches are independent.
+//! Expansion can be controlled through [`PanelMenuRef`].
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -38,62 +38,62 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Pass-through частей [`PanelMenu`].
+/// Pass-through parts of [`PanelMenu`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct PanelMenuPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Панель (`div.p-panelmenu-panel`).
+    /// Panel (`div.p-panelmenu-panel`).
     pub panel: Pt,
-    /// Заголовок панели.
+    /// Panel header.
     pub header: Pt,
-    /// Содержимое заголовка.
+    /// Header content.
     pub header_content: Pt,
-    /// Ссылка заголовка.
+    /// Header link.
     pub header_link: Pt,
-    /// Значок заголовка.
+    /// Header icon.
     pub header_icon: Pt,
-    /// Подпись заголовка.
+    /// Header label.
     pub header_label: Pt,
-    /// Область содержимого (контейнер раскрытия).
+    /// Content area (expansion container).
     pub content_container: Pt,
-    /// Обёртка содержимого.
+    /// Content wrapper.
     pub content_wrapper: Pt,
-    /// Содержимое панели.
+    /// Panel content.
     pub content: Pt,
-    /// Корневой список панели.
+    /// Root list of the panel.
     pub root_list: Pt,
-    /// Вложенный список.
+    /// Nested list.
     pub submenu: Pt,
-    /// Пункт `li`.
+    /// Item `li`.
     pub item: Pt,
-    /// Содержимое пункта.
+    /// Item content.
     pub item_content: Pt,
-    /// Ссылка пункта.
+    /// Item link.
     pub item_link: Pt,
-    /// Значок пункта.
+    /// Item icon.
     pub item_icon: Pt,
-    /// Подпись пункта.
+    /// Item label.
     pub item_label: Pt,
-    /// Шеврон группы.
+    /// Group chevron.
     pub submenu_icon: Pt,
-    /// Разделитель.
+    /// Separator.
     pub separator: Pt,
 }
 
-/// Контекст представления `item`.
+/// Context of the `item` view.
 #[derive(Clone)]
 pub struct PanelMenuItemContext {
-    /// Пункт.
+    /// Item.
     pub item: MenuItem,
-    /// Есть ли у пункта подпункты.
+    /// Whether the item has subitems.
     pub has_submenu: bool,
-    /// Пункт — заголовок панели.
+    /// The item is a panel header.
     pub root: bool,
 }
 
-/// Управление раскрытием: аналог `collapseAll` и демонстрации `controlled` PrimeNG. Создаётся заранее и передаётся
-/// в [`PanelMenu`] свойством `panel_ref`.
+/// Expansion control: the analog of `collapseAll` and of the PrimeNG `controlled` demo. Created in advance and passed
+/// to [`PanelMenu`] via the `panel_ref` prop.
 #[derive(Clone, Copy)]
 pub struct PanelMenuRef {
     expanded: RwSignal<HashSet<String>>,
@@ -107,7 +107,7 @@ impl Default for PanelMenuRef {
 }
 
 impl PanelMenuRef {
-    /// Создаёт управляющий объект. Вызывать внутри компонента (владелец сигналов).
+    /// Creates the control object. Call inside a component (the signals' owner).
     pub fn new() -> Self {
         Self { expanded: RwSignal::new(HashSet::new()), groups: StoredValue::new(None) }
     }
@@ -116,23 +116,23 @@ impl PanelMenuRef {
         self.groups.get_value().map(|m| m.get_untracked()).unwrap_or_default()
     }
 
-    /// Раскрывает все группы.
+    /// Expands all groups.
     pub fn expand_all(&self) {
         self.expanded.set(self.groups().into_iter().collect());
     }
 
-    /// Сворачивает все панели и ветки.
+    /// Collapses all panels and branches.
     pub fn collapse_all(&self) {
         self.expanded.set(HashSet::new());
     }
 
-    /// Раскрыты ли все группы (с подпиской).
+    /// Whether all groups are expanded (subscribing).
     pub fn all_expanded(&self) -> bool {
         let groups = self.groups.get_value().map(|m| m.get()).unwrap_or_default();
         self.expanded.with(|e| !groups.is_empty() && groups.iter().all(|g| e.contains(g)))
     }
 
-    /// Раскрывает все группы, а если все уже раскрыты — сворачивает.
+    /// Expands all groups, and if all are already expanded — collapses.
     pub fn toggle_all(&self) {
         if self.expanded.with_untracked(|e| {
             let groups = self.groups();
@@ -144,13 +144,13 @@ impl PanelMenuRef {
         }
     }
 
-    /// Раскрыт ли пункт с этим ключом (`"0"`, `"0_1"`, …; с подпиской).
+    /// Whether the item with this key is expanded (`"0"`, `"0_1"`, …; subscribing).
     pub fn is_expanded(&self, key: &str) -> bool {
         self.expanded.with(|e| e.contains(key))
     }
 }
 
-/// Состояние фокуса одного дерева панели.
+/// Focus state of a single panel tree.
 #[derive(Clone, Copy)]
 struct PanelFocus {
     focused: RwSignal<bool>,
@@ -178,7 +178,7 @@ impl PanelFocus {
     }
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: String,
@@ -189,7 +189,7 @@ struct Core {
     root_el: NodeRef<leptos::html::Div>,
 }
 
-/// Корневая панель: заголовок и его идентификаторы.
+/// Root panel: the header and its identifiers.
 struct Header {
     key: String,
     disabled: bool,
@@ -228,7 +228,7 @@ impl Core {
         }
     }
 
-    /// Видимые заголовки в порядке показа.
+    /// Visible headers in display order.
     fn headers(&self) -> Vec<Header> {
         self.tree(|nodes, items| {
             nodes
@@ -260,13 +260,13 @@ impl Core {
         self.tree(|nodes, items| panel_visible(nodes, items, &expanded, root_key).into_iter().map(|n| n.key.clone()).collect())
     }
 
-    /// Ходы внутри дерева панели.
+    /// Moves within the panel tree.
     fn with_visible<R>(&self, root_key: &str, f: impl FnOnce(&[&Node], &[MenuItem], &HashSet<String>) -> R) -> R {
         let expanded = self.expanded.get_untracked();
         self.tree(|nodes, items| f(&panel_visible(nodes, items, &expanded, root_key), items, &expanded))
     }
 
-    /// Фокус на элемент по `id` (только браузер).
+    /// Focus the element by `id` (browser only).
     fn focus_id(&self, id: &str) {
         #[cfg(target_arch = "wasm32")]
         if let Some(el) = web_sys::window()
@@ -280,7 +280,7 @@ impl Core {
         let _ = id;
     }
 
-    /// Фокус на заголовок соседней панели (`updateFocusedHeader`).
+    /// Focus the header of the adjacent panel (`updateFocusedHeader`).
     fn focus_header_from(&self, root_key: &str, forward: bool) {
         let headers = self.headers();
         let disabled: Vec<bool> = headers.iter().map(|h| h.disabled).collect();
@@ -323,7 +323,7 @@ impl Core {
         let _ = panel;
     }
 
-    /// `id` элемента `li` пункта под фокусом.
+    /// `id` of the item's `li` element under focus.
     fn focused_li_id(&self, panel: PanelFocus) -> Option<String> {
         let key = panel.key.get_untracked()?;
         self.tree(|nodes, items| {
@@ -332,7 +332,7 @@ impl Core {
         })
     }
 
-    /// Клик по заголовку панели.
+    /// Click on the panel header.
     fn header_click(&self, event: web_sys::MouseEvent, key: &str) {
         let Some(item) = self.item_of(key) else { return };
         if item.disabled {
@@ -355,7 +355,7 @@ impl Core {
         }
     }
 
-    /// Клавиши на заголовке.
+    /// Keys on the header.
     fn header_key_down(&self, e: &web_sys::KeyboardEvent, root_key: &str) {
         let headers = self.headers();
         let disabled: Vec<bool> = headers.iter().map(|h| h.disabled).collect();
@@ -403,7 +403,7 @@ impl Core {
         }
     }
 
-    /// Клик по содержимому пункта дерева.
+    /// Click on the content of a tree item.
     fn item_click(&self, panel: PanelFocus, event: web_sys::MouseEvent, key: &str) {
         let Some(item) = self.item_of(key) else { return };
         if item.disabled {
@@ -425,9 +425,9 @@ impl Core {
         panel.key.set(Some(key.to_owned()));
     }
 
-    /// Фокус вошёл в дерево панели (`onFocus`). Если он пришёл не из самого дерева, выбирается пункт: кликнутый или первый,
-    /// когда фокус пришёл из компонента (заголовок), и последний, когда снаружи. В PrimeNG выбор делается один раз за
-    /// вход в компонент, поэтому при возврате с заголовка остаётся прежний пункт; здесь он обновляется при каждом входе.
+    /// Focus entered the panel tree (`onFocus`). If it did not come from the tree itself, an item is selected: the clicked or the first one
+    /// when focus came from the component (header), and the last one when from outside. In PrimeNG the selection is made once per
+    /// entry into the component, so when returning from a header the previous item stays; here it is updated on every entry.
     fn list_focus(&self, panel: PanelFocus, root_key: &str, e: &web_sys::FocusEvent) {
         panel.focused.set(true);
         #[cfg(target_arch = "wasm32")]
@@ -460,7 +460,7 @@ impl Core {
         let _ = (e, root_key);
     }
 
-    /// Фокус ушёл из дерева (`onBlur`): если он покинул весь компонент — сброс.
+    /// Focus left the tree (`onBlur`): if it left the whole component — reset.
     fn list_blur(&self, panel: PanelFocus, e: &web_sys::FocusEvent) {
         #[cfg(target_arch = "wasm32")]
         {
@@ -477,7 +477,7 @@ impl Core {
         }
     }
 
-    /// `Enter`/`Space` на пункте: клик по его ссылке (или содержимому).
+    /// `Enter`/`Space` on an item: a click on its link (or content).
     fn enter(&self, panel: PanelFocus) {
         #[cfg(target_arch = "wasm32")]
         if let Some(id) = self.focused_li_id(panel)
@@ -493,7 +493,7 @@ impl Core {
         let _ = panel;
     }
 
-    /// Печатаемый символ: поиск по началу подписи; строка поиска сбрасывается через 500 мс.
+    /// Printable character: search by label prefix; the search string is reset after 500 ms.
     fn type_char(&self, panel: PanelFocus, root_key: &str, ch: &str) {
         panel.search.update_value(|s| s.push_str(ch));
         let text = panel.search.get_value();
@@ -514,7 +514,7 @@ impl Core {
         }
     }
 
-    /// Клавиши в дереве панели (`onKeyDown`).
+    /// Keys in the panel tree (`onKeyDown`).
     fn list_key_down(&self, panel: PanelFocus, root_key: &str, e: &web_sys::KeyboardEvent) {
         let meta = e.meta_key() || e.ctrl_key();
         let focus = panel.key.get_untracked();
@@ -584,7 +584,7 @@ impl Core {
     }
 }
 
-/// Всё, что нужно для вывода уровней.
+/// Everything needed to render the levels.
 #[derive(Clone)]
 struct Ctx {
     core: Arc<Core>,
@@ -594,7 +594,7 @@ struct Ctx {
     header_icon: Option<ViewFn>,
 }
 
-/// Анимирует область при смене состояния (только браузер); первый вызов ничего не делает.
+/// Animates the area on state change (browser only); the first call does nothing.
 #[cfg(target_arch = "wasm32")]
 fn bind_collapse(region: NodeRef<leptos::html::Div>, collapsed: impl Fn() -> bool + 'static) {
     Effect::new(move |prev: Option<bool>| {
@@ -616,39 +616,39 @@ fn join(base: &str, extra: Option<&str>) -> String {
     }
 }
 
-/// Вертикальное меню-аккордеон с вложенными ветками.
+/// A vertical accordion menu with nested branches.
 ///
-/// Свойства принимают значение или сигнал.
+/// Props accept a value or a signal.
 #[component]
 pub fn PanelMenu(
-    /// Пункты.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<MenuItem>>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Можно ли раскрыть несколько корневых панелей одновременно.
+    /// Whether several root panels can be expanded at once.
     #[prop(optional, into)]
     multiple: Prop<bool>,
-    /// Атрибут `id` (основа идентификаторов частей).
+    /// `id` attribute (the basis of part identifiers).
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Управление раскрытием.
+    /// Expansion control.
     #[prop(optional)]
     panel_ref: Option<PanelMenuRef>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<PanelMenuPt>,
-    /// Своё содержимое пункта (и заголовка) вместо ссылки.
+    /// Custom item (and header) content instead of the link.
     #[prop(optional)]
     item: Option<Callback<PanelMenuItemContext, AnyView>>,
-    /// Свой шеврон группы.
+    /// Custom group chevron.
     #[prop(optional, into)]
     submenu_icon: Option<ViewFn>,
-    /// Свой шеврон заголовка группы.
+    /// Custom chevron of the group header.
     #[prop(optional, into)]
     header_icon: Option<ViewFn>,
 ) -> impl IntoView {
@@ -698,7 +698,7 @@ pub fn PanelMenu(
     }
 }
 
-/// Панели корневых пунктов.
+/// Root item panels.
 fn panels_view(ctx: &Ctx) -> AnyView {
     let rows: Vec<(Node, MenuItem)> = ctx.core.tree(|nodes, items| {
         nodes.iter().filter(|n| n.level == 0).filter_map(|n| items.get(n.index).map(|i| (n.clone(), i.clone()))).collect()
@@ -805,7 +805,7 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
     .into_any()
 }
 
-/// Ссылка заголовка: шеврон, значок, подпись.
+/// Header link: chevron, icon, label.
 fn header_link_view(ctx: &Ctx, item: &MenuItem, group: bool, active: impl Fn() -> bool + Clone + Send + Sync + 'static) -> AnyView {
     let pt = &ctx.pt;
     let arrow = group.then(|| match ctx.header_icon.clone() {
@@ -834,7 +834,7 @@ fn header_link_view(ctx: &Ctx, item: &MenuItem, group: bool, active: impl Fn() -
     .into_any()
 }
 
-/// Шеврон: вниз у раскрытой группы, вправо у свёрнутой.
+/// Chevron: down for an expanded group, right for a collapsed one.
 fn chevron(class: String, active: impl Fn() -> bool + Send + Sync + 'static) -> AnyView {
     let down_class = class.clone();
     view! {
@@ -843,7 +843,7 @@ fn chevron(class: String, active: impl Fn() -> bool + Send + Sync + 'static) -> 
     .into_any()
 }
 
-/// Корневой список панели.
+/// Root list of the panel.
 fn tree_list_view(
     ctx: &Ctx,
     panel: PanelFocus,
@@ -889,7 +889,7 @@ fn tree_list_view(
     .into_any()
 }
 
-/// Пункты одного уровня внутри панели `root_key`.
+/// Items of one level inside panel `root_key`.
 fn items_view(ctx: &Ctx, panel: PanelFocus, root_key: &str, parent_key: &str) -> AnyView {
     let core = &ctx.core;
     let rows: Vec<(Node, MenuItem)> = core.tree(|nodes, items| {
@@ -1017,7 +1017,7 @@ fn item_view(ctx: &Ctx, panel: PanelFocus, root_key: &str, node: &Node, item: &M
     .into_any()
 }
 
-/// Стандартное содержимое пункта: ссылка с шевроном группы, значком и подписью.
+/// Default item content: a link with the group chevron, icon and label.
 fn link_view(
     ctx: &Ctx,
     item: &MenuItem,

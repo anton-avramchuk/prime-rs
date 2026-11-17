@@ -1,47 +1,47 @@
 # Tree
 
-Порт `p-tree` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10 `p-tree` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
-| `prime-tree::Tree`, `TreePt`, `TreeNode`, `TreeNodeEvent`, `TreeSelectionMode`, `TreeFilterMode`, `TreeLoadingMode` | `packages/primeng/src/tree/tree.ts` (`Tree` и `UITreeNode`), `tree/style/treestyle.ts` |
-| Модель (видимые, выбор, распространение, фильтр, переходы) | `prime-tree::state` — чистые функции с табличными тестами |
-| CSS | `@primeuix/styles/tree` и пресет Aura — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет) |
-| Демонстрации | `apps/showcase/doc/tree/*-doc.ts` (`basic`, `single`, `multiple`, `checkbox`, `controlled`, `event`, `filter`, `lazy`, `template`) |
+| `prime-tree::Tree`, `TreePt`, `TreeNode`, `TreeNodeEvent`, `TreeSelectionMode`, `TreeFilterMode`, `TreeLoadingMode` | `packages/primeng/src/tree/tree.ts` (`Tree` and `UITreeNode`), `tree/style/treestyle.ts` |
+| Model (visible nodes, selection, propagation, filter, moves) | `prime-tree::state` — pure functions with table-driven tests |
+| CSS | `@primeuix/styles/tree` and the Aura preset — `cargo xtask gen-theme` (there is no `/* For PrimeNG */` block) |
+| Demos | `apps/showcase/doc/tree/*-doc.ts` (`basic`, `single`, `multiple`, `checkbox`, `controlled`, `event`, `filter`, `lazy`, `template`) |
 
-Спека: `openspec/specs/tree`. Состояние хранится не в узлах, а в сигналах ключей: `expanded_keys: RwSignal<HashSet<String>>` и `selection: RwSignal<Vec<String>>` (в `Single` — 0 или 1 ключ); начальное раскрытие берётся из `TreeNode::expanded`.
+Spec: `openspec/specs/tree`. State is stored not in the nodes but in key signals: `expanded_keys: RwSignal<HashSet<String>>` and `selection: RwSignal<Vec<String>>` (in `Single` — 0 or 1 key); initial expansion is taken from `TreeNode::expanded`.
 
 ```rust
 let selection = RwSignal::new(Vec::<String>::new());
 view! { <Tree value=nodes selection_mode=TreeSelectionMode::Checkbox selection=selection /> }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-tree.p-component` (`p-tree-selectable`, `p-tree-loading`, `p-tree-flex-scrollable`) > маска, поле фильтра, `div.p-tree-root` > `ul.p-tree-root-children[role=tree]` > `li.p-tree-node[role=treeitem]` (`p-tree-node-leaf`, `aria-*`, `data-id`) > `div.p-tree-node-content` (`-selectable`, `-selected`, отступ `уровень × indentation` rem) > кнопка, флажок, значок, подпись + `ul.p-tree-node-children[role=group]`; `div.p-tree-empty-message`.
-- Выбор: `Single` (повторный клик снимает), `Multiple`, `Checkbox` с `propagate_selection_up/down` (предок выбран, когда выбраны все дети; частичное состояние — `data-p-partialchecked` и минус в флажке), `meta_key_selection`, `selectable = false`, `highlight_on_select`; клик по кнопке раскрытия выбор не меняет.
-- Фильтр: порт `_filter`/`isFilterMatched`/`findFilteredNodes` (режимы `Lenient` и `Strict`, поля `filter_by` через запятую), предки совпавших узлов раскрываются.
-- Клавиатура: roving `tabindex` (сфокусированный, иначе выбранный, иначе первый узел), ↓ ↑ по видимым узлам, → раскрывает свёрнутый узел и переходит к его первому ребёнку (у раскрытого ничего не делает), ← сворачивает раскрытый либо идёт к родителю, `Enter`/`Space` выбирают; клавиши принимаются только на самом `li`.
+- Markup and classes: `div.p-tree.p-component` (`p-tree-selectable`, `p-tree-loading`, `p-tree-flex-scrollable`) > mask, filter field, `div.p-tree-root` > `ul.p-tree-root-children[role=tree]` > `li.p-tree-node[role=treeitem]` (`p-tree-node-leaf`, `aria-*`, `data-id`) > `div.p-tree-node-content` (`-selectable`, `-selected`, indent `level × indentation` rem) > button, checkbox, icon, label + `ul.p-tree-node-children[role=group]`; `div.p-tree-empty-message`.
+- Selection: `Single` (a repeated click deselects), `Multiple`, `Checkbox` with `propagate_selection_up/down` (an ancestor is selected when all its children are selected; the partial state is `data-p-partialchecked` and a minus in the checkbox), `meta_key_selection`, `selectable = false`, `highlight_on_select`; a click on the toggle button does not change the selection.
+- Filter: a port of `_filter`/`isFilterMatched`/`findFilteredNodes` (`Lenient` and `Strict` modes, comma-separated `filter_by` fields), ancestors of matching nodes are expanded.
+- Keyboard: roving `tabindex` (focused, otherwise selected, otherwise the first node), ↓ ↑ over visible nodes, → expands a collapsed node and moves to its first child (does nothing on an expanded one), ← collapses an expanded node or goes to the parent, `Enter`/`Space` select; keys are accepted only on the `li` itself.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Раскрытие и выбор — в сигналах ключей; частичный выбор вычисляется из выбора | В PrimeNG они пишутся в узлы (`expanded`, `partialSelected`), у нас модель неизменяема. |
-| Фильтр не учитывает диакритику, только регистр | Нет зависимости для `removeAccents`. |
-| Выбор общий для полного и отфильтрованного дерева (по ключам) | В PrimeNG выбор ищется в копиях узлов. |
-| `Home`/`End` переходят к первому/последнему видимому узлу | В PrimeNG таких клавиш нет. |
-| Ленивая загрузка — на стороне пользователя: `on_node_expand` обновляет сигнал `value` (`loading`, `children`) | Нет `onLazyLoad` ленты; `TreeNode::leaf(false)` делает узел раскрываемым без детей. |
-| Значки узла — `ViewFn` (`icon`, `expanded_icon`, `collapsed_icon`) | Нет PrimeIcons. |
-| Нет перетаскивания, виртуальной прокрутки, `contextMenu`, `trackBy`, `filterOptions`, шаблонов `header`/`footer`/`loader`/`checkboxicon`/`loadingicon`/`filtericon`, `Ripple`, `Bind`, `pTemplate`; касание (`nodeTouched`) не учитывается | Вне объёма порта; контекстное меню подключается через `on:contextmenu` и `ContextMenu`. |
-| Шаблон узла один (`node`), вид выбирается по `TreeNode::type_` | У PrimeNG словарь шаблонов по типам. |
+| Expansion and selection live in key signals; partial selection is computed from the selection | PrimeNG writes them into the nodes (`expanded`, `partialSelected`), ours keeps the model immutable. |
+| The filter ignores diacritics, only case | No dependency for `removeAccents`. |
+| Selection is shared between the full and the filtered tree (by keys) | PrimeNG looks the selection up in node copies. |
+| `Home`/`End` move to the first/last visible node | PrimeNG has no such keys. |
+| Lazy loading is on the user's side: `on_node_expand` updates the `value` signal (`loading`, `children`) | No `onLazyLoad` feed; `TreeNode::leaf(false)` makes a node expandable without children. |
+| Node icons are a `ViewFn` (`icon`, `expanded_icon`, `collapsed_icon`) | No PrimeIcons. |
+| No drag and drop, virtual scroll, `contextMenu`, `trackBy`, `filterOptions`, `header`/`footer`/`loader`/`checkboxicon`/`loadingicon`/`filtericon` templates, `Ripple`, `Bind`, `pTemplate`; touch (`nodeTouched`) is not handled | Out of the port's scope; a context menu is attached via `on:contextmenu` and `ContextMenu`. |
+| One node template (`node`), the look is picked by `TreeNode::type_` | PrimeNG has a dictionary of templates by type. |
 
-## Что не проверялось
+## Not verified
 
-- Раскладка справа налево и сенсорный ввод.
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Большие деревья: вид перестраивается при смене `value` и фильтра, виртуальной прокрутки нет.
+- Right-to-left layout and touch input.
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behaviour was not.
+- Large trees: the view is rebuilt when `value` and the filter change, there is no virtual scroll.
 
-## Производительность
+## Performance
 
-См. `benches/` (`tree-1`, `tree-1000`, `case-tree`) и `benches/*budgets.toml`.
+See `benches/` (`tree-1`, `tree-1000`, `case-tree`) and `benches/*budgets.toml`.

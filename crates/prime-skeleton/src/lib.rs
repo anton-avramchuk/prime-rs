@@ -1,7 +1,7 @@
-//! Skeleton — порт `p-skeleton` из PrimeNG 21.1.10.
+//! Skeleton — port of `p-skeleton` from PrimeNG 21.1.10.
 //!
-//! Заглушка загрузки: `div.p-skeleton.p-component[aria-hidden=true]` (вместо хоста `<p-skeleton>`), форма, размеры и скругление задаются
-//! свойствами и попадают во встроенный стиль, как в PrimeNG.
+//! Loading placeholder: `div.p-skeleton.p-component[aria-hidden=true]` (instead of the `<p-skeleton>` host); shape, size and rounding are set
+//! by properties and end up in the inline style, as in PrimeNG.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -21,33 +21,33 @@ use std::sync::Arc;
 
 pub use state::{SkeletonAnimation, SkeletonShape, container_style, data_p, write_classes};
 
-/// Заглушка загрузки.
+/// Loading placeholder.
 ///
-/// Каждое свойство принимает значение или сигнал.
+/// Each property accepts a value or a signal.
 #[component]
 pub fn Skeleton(
-    /// Форма (по умолчанию прямоугольник).
+    /// Shape (rectangle by default).
     #[prop(optional, into)]
     shape: Prop<SkeletonShape>,
-    /// Анимация (по умолчанию волна).
+    /// Animation (wave by default).
     #[prop(optional, into)]
     animation: Prop<SkeletonAnimation>,
-    /// Скругление (CSS `border-radius`).
+    /// Rounding (CSS `border-radius`).
     #[prop(optional, into)]
     border_radius: OptProp<String>,
-    /// Размер: ширина и высота разом; приоритетнее `width` и `height`.
+    /// Size: width and height at once; takes priority over `width` and `height`.
     #[prop(optional, into)]
     size: OptProp<String>,
-    /// Ширина (по умолчанию `100%`).
+    /// Width (`100%` by default).
     #[prop(optional, into)]
     width: OptProp<String>,
-    /// Высота (по умолчанию `1rem`).
+    /// Height (`1rem` by default).
     #[prop(optional, into)]
     height: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through корня.
+    /// Pass-through of the root.
     #[prop(optional)]
     pt: Option<Pt>,
 ) -> impl IntoView {
@@ -74,7 +74,7 @@ pub fn Skeleton(
     }
 }
 
-/// Разметка Skeleton: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// Skeleton markup: one for the static and reactive branches (only the attribute expressions change).
 macro_rules! skeleton_markup {
     ($class:expr, $style:expr, $data:expr, $attrs:expr) => {
         view! { <div aria-hidden="true" class={$class} style={$style} data-p={$data} {..$attrs}></div> }
@@ -103,7 +103,7 @@ fn style_of(props: &Props, pt: &Pt) -> String {
     })
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     shape: Prop<SkeletonShape>,
     animation: Prop<SkeletonAnimation>,

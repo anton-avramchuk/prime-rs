@@ -2,23 +2,23 @@
 
 ## Why
 
-После `optimize-allocs` Button (19 аллокаций на экземпляр) и Chip (10, removable — 35) остались самыми дорогими: обработчики событий держали `Arc<Props>` и в статической ветви, `Arc<Pt>` создавался всегда, `NodeRef` — при SSR, а блоки собирались через `.into_any()`.
+After `optimize-allocs` Button (19 allocations per instance) and Chip (10, removable — 35) remained the most expensive: event handlers held `Arc<Props>` in the static branch too, `Arc<Pt>` was always created, `NodeRef` — during SSR, and blocks were assembled via `.into_any()`.
 
 ## What Changes
 
-- Button и Chip: `Props` и `Pt` — обычные значения; `Arc` создаётся только в реактивной ветви. Обработчик клика статической кнопки захватывает готовый `bool`.
-- Button: `NodeRef` и `node_ref` создаются только в браузере (`wasm32`); блоки индикатора, метки и бейджа — `EitherOf4`/`Option<impl IntoView>` вместо `AnyView`; `icon_classes` возвращает `Cow<'static, str>`.
-- Chip: блоки изображения, метки и удаления без `.into_any()`; стиль корня собирается одной строкой (`Pt::merge_style_parts`).
-- Бюджеты в `benches/alloc-budgets.toml` для `button-*` и `chip-*` снижаются по новым измерениям.
-- **Не входит:** публичный API и разметка (HTML не меняется).
+- Button and Chip: `Props` and `Pt` are plain values; `Arc` is created only in the reactive branch. The click handler of a static button captures a ready `bool`.
+- Button: `NodeRef` and `node_ref` are created only in the browser (`wasm32`); the indicator, label and badge blocks are `EitherOf4`/`Option<impl IntoView>` instead of `AnyView`; `icon_classes` returns `Cow<'static, str>`.
+- Chip: the image, label and remove blocks without `.into_any()`; the root style is assembled as one string (`Pt::merge_style_parts`).
+- The budgets in `benches/alloc-budgets.toml` for `button-*` and `chip-*` are lowered according to the new measurements.
+- **Out of scope:** public API and markup (HTML does not change).
 
 ## Capabilities
 
 ### New Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ### Modified Capabilities
-- `benchmarking`: добавляется требование об отсутствии `NodeRef` и `Arc` в статической ветви при SSR.
+- `benchmarking`: a requirement is added that there be no `NodeRef` and `Arc` in the static branch during SSR.
 
 ## Impact
 

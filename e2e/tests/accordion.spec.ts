@@ -3,14 +3,14 @@ import { expect, test } from '@playwright/test';
 test.describe('Accordion', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/accordion');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-accordion')).toBeVisible();
         await page.waitForFunction(() => document.querySelector('[data-demo=controlled] .p-accordionheader') !== null);
         await page.waitForTimeout(300);
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(6);
         const header = page.locator('[data-demo=basic] .p-accordionheader').first();
         const padding = await header.evaluate((el) => getComputedStyle(el).paddingTop);
@@ -18,7 +18,7 @@ test.describe('Accordion', () => {
         await expect(header.locator('.p-accordionheader-toggle-icon')).toBeVisible();
     });
 
-    test('basic: открыта первая панель, остальные скрыты', async ({ page }) => {
+    test('basic: the first panel is open, the rest are hidden', async ({ page }) => {
         const panels = page.locator('[data-demo=basic] .p-accordionpanel');
         await expect(panels).toHaveCount(4);
         await expect(panels.nth(0)).toHaveClass(/p-accordionpanel-active/);
@@ -27,7 +27,7 @@ test.describe('Accordion', () => {
         await expect(panels.nth(1).locator('.p-accordioncontent-content')).toBeHidden();
     });
 
-    test('basic: одиночный режим с анимацией и aria', async ({ page }) => {
+    test('basic: single mode with animation and aria', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         const headers = demo.locator('.p-accordionheader');
         const second = demo.locator('.p-motion').nth(1);
@@ -47,7 +47,7 @@ test.describe('Accordion', () => {
         await expect(demo.locator('.p-accordioncontent-content').nth(1)).toBeHidden();
     });
 
-    test('multiple: можно держать несколько панелей открытыми', async ({ page }) => {
+    test('multiple: several panels can be kept open', async ({ page }) => {
         const demo = page.locator('[data-demo=multiple]');
         const headers = demo.locator('.p-accordionheader');
         await headers.nth(1).click();
@@ -56,7 +56,7 @@ test.describe('Accordion', () => {
         await expect(demo.locator('.p-accordioncontent-content').nth(1)).toBeVisible();
     });
 
-    test('disabled: отключённая панель не открывается, стрелки её пропускают', async ({ page }) => {
+    test('disabled: a disabled panel does not open, arrows skip it', async ({ page }) => {
         const demo = page.locator('[data-demo=disabled]');
         const headers = demo.locator('.p-accordionheader');
         await expect(headers.nth(3)).toHaveAttribute('aria-disabled', 'true');
@@ -75,7 +75,7 @@ test.describe('Accordion', () => {
         await expect(headers.nth(2)).toBeFocused();
     });
 
-    test('keyboard: Enter и Space переключают панель', async ({ page }) => {
+    test('keyboard: Enter and Space toggle the panel', async ({ page }) => {
         const headers = page.locator('[data-demo=basic] .p-accordionheader');
         await headers.nth(1).focus();
         await page.keyboard.press('Enter');
@@ -84,7 +84,7 @@ test.describe('Accordion', () => {
         await expect(headers.nth(1)).toHaveAttribute('aria-expanded', 'false');
     });
 
-    test('controlled: кнопки управляют активной панелью', async ({ page }) => {
+    test('controlled: buttons control the active panel', async ({ page }) => {
         const demo = page.locator('[data-demo=controlled]');
         const headers = demo.locator('.p-accordionheader');
         await demo.getByRole('button', { name: '3', exact: true }).click();
@@ -95,14 +95,14 @@ test.describe('Accordion', () => {
         await expect(headers.nth(2)).toHaveAttribute('aria-expanded', 'false');
     });
 
-    test('dynamic: панели из списка', async ({ page }) => {
+    test('dynamic: panels from a list', async ({ page }) => {
         const demo = page.locator('[data-demo=dynamic]');
         await expect(demo.locator('.p-accordionpanel')).toHaveCount(3);
         await expect(demo.locator('.p-accordionheader').first()).toContainText('Title 1');
         await expect(demo.locator('.p-accordioncontent-content').first()).toHaveText('Content 1');
     });
 
-    test('template: слот иконки меняется вместе с состоянием', async ({ page }) => {
+    test('template: the icon slot changes with the state', async ({ page }) => {
         const demo = page.locator('[data-demo=template]');
         const headers = demo.locator('.p-accordionheader');
         await expect(headers.first()).toContainText('Amy Elsner');

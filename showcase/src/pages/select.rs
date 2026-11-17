@@ -1,6 +1,6 @@
-//! Страница Select: демонстрации `basic`, `checkmark`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`,
-//! `loadingstate`, `sizes`, `template`, `floatlabel`, `iftalabel` из showcase PrimeNG (`apps/showcase/doc/select`). Демонстрации
-//! с Angular Forms, виртуальной прокруткой, `editable` и `customfilter` не переносятся; в `template` вместо флагов с CDN — коды стран.
+//! Select page: demos `basic`, `checkmark`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`,
+//! `loadingstate`, `sizes`, `template`, `floatlabel`, `iftalabel` from the PrimeNG showcase (`apps/showcase/doc/select`). Demos
+//! with Angular Forms, virtual scrolling, `editable` and `customfilter` are not ported; in `template` country codes replace CDN flags.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -49,7 +49,7 @@ fn countries() -> Vec<SelectOption> {
     .collect()
 }
 
-/// Страница `/select`.
+/// The `/select` page.
 #[component]
 pub fn SelectPage() -> impl IntoView {
     let signal = || RwSignal::new(None::<String>);

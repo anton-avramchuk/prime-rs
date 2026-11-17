@@ -1,4 +1,4 @@
-//! Разметка Popover (SSR): скрыта по умолчанию, свойства корня не выводятся до показа.
+//! Popover markup (SSR): hidden by default, root properties are not rendered until shown.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

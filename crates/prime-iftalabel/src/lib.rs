@@ -1,14 +1,14 @@
-//! IftaLabel — порт `p-iftalabel` из PrimeNG 21.1.10.
+//! IftaLabel — port of `p-iftalabel` from PrimeNG 21.1.10.
 //!
-//! Рисует `<span class="p-iftalabel">` со вложенными полем и `<label>`; положение метки над значением и отступы
-//! поля задаёт CSS темы. Блок `/* For PrimeNG */` (`.ng-invalid.ng-dirty`) к этой разметке не применим: цвет
-//! недопустимого значения даёт базовое правило `:has(.p-invalid) label`.
+//! Renders `<span class="p-iftalabel">` with a nested field and `<label>`; the position of the label above the value and the paddings of the
+//! field are set by the theme CSS. The `/* For PrimeNG */` block (`.ng-invalid.ng-dirty`) does not apply to this markup: the color of an
+//! invalid value comes from the base rule `:has(.p-invalid) label`.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_iftalabel::IftaLabel;
 //!
-//! let html = view! { <IftaLabel><input class="p-inputtext" id="u" /><label for="u">"Имя"</label></IftaLabel> }.to_html();
+//! let html = view! { <IftaLabel><input class="p-inputtext" id="u" /><label for="u">"Name"</label></IftaLabel> }.to_html();
 //! assert!(html.contains(r#"class="p-iftalabel""#));
 //! ```
 
@@ -18,28 +18,28 @@ use prime_core::wrapper::{root_class, root_style};
 use prime_core::{OptProp, Pt, all_static};
 use std::sync::Arc;
 
-/// Pass-through IftaLabel.
+/// Pass-through for IftaLabel.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct IftaLabelPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
-/// Метка над значением внутри поля.
+/// Label above the value inside the field.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn IftaLabel(
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<IftaLabelPt>,
-    /// Содержимое.
+    /// Content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -61,7 +61,7 @@ pub fn IftaLabel(
     }
 }
 
-/// Разметка: одна для статической и реактивной ветвей (меняются только выражения атрибутов корня).
+/// Markup: one for the static and reactive branches (only the root attribute expressions differ).
 macro_rules! iftalabel_markup {
     ($class:expr, $style:expr, $attrs:expr, $content:expr) => {
         view! { <span class={$class} style={$style} {..$attrs}>{$content}</span> }

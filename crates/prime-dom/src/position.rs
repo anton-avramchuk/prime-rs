@@ -1,36 +1,36 @@
-//! Позиционирование оверлея относительно якоря (порт `DomHandler.absolutePosition` и `relativePosition`).
+//! Overlay positioning relative to an anchor (port of `DomHandler.absolutePosition` and `relativePosition`).
 //!
-//! Здесь только арифметика без обращения к DOM, поэтому она одинаково работает и тестируется на любой цели.
+//! Only arithmetic without DOM access, so it behaves the same and is testable on any target.
 
-/// Точка (отступы от верхнего левого угла).
+/// Point (offsets from the top-left corner).
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Point {
-    /// Вертикальный отступ.
+    /// Vertical offset.
     pub top: f64,
-    /// Горизонтальный отступ.
+    /// Horizontal offset.
     pub left: f64,
 }
 
-/// Размер элемента.
+/// Element size.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Size {
-    /// Ширина.
+    /// Width.
     pub width: f64,
-    /// Высота.
+    /// Height.
     pub height: f64,
 }
 
-/// Откуда «растёт» оверлей (`transform-origin`).
+/// Where the overlay "grows" from (`transform-origin`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Origin {
-    /// Оверлей расположен под якорем.
+    /// The overlay is placed below the anchor.
     Top,
-    /// Оверлей расположен над якорем.
+    /// The overlay is placed above the anchor.
     Bottom,
 }
 
 impl Origin {
-    /// Значение для `transform-origin`.
+    /// Value for `transform-origin`.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Top => "top",
@@ -39,33 +39,33 @@ impl Origin {
     }
 }
 
-/// Результат: координаты для `top`/`left` и сторона раскрытия.
+/// Result: coordinates for `top`/`left` and the opening side.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Placement {
-    /// Значение `top` в пикселях.
+    /// `top` value in pixels.
     pub top: f64,
-    /// Значение `left` в пикселях.
+    /// `left` value in pixels.
     pub left: f64,
-    /// Сторона раскрытия.
+    /// Opening side.
     pub origin: Origin,
 }
 
-/// Исходные данные для расчёта.
+/// Input data for the calculation.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Input {
-    /// `getBoundingClientRect()` якоря (`top`, `left` относительно окна).
+    /// `getBoundingClientRect()` of the anchor (`top`, `left` relative to the window).
     pub target_offset: Point,
-    /// Размер якоря.
+    /// Anchor size.
     pub target: Size,
-    /// Размер оверлея.
+    /// Overlay size.
     pub overlay: Size,
-    /// Размер видимой области окна.
+    /// Size of the visible window area.
     pub viewport: Size,
-    /// Прокрутка окна.
+    /// Window scroll.
     pub scroll: Point,
 }
 
-/// Позиция для оверлея, добавленного в `body` (координаты страницы).
+/// Position for an overlay appended to `body` (page coordinates).
 ///
 /// ```
 /// use prime_dom::position::{Input, Origin, Point, Size, absolute_position};
@@ -97,9 +97,9 @@ pub fn absolute_position(i: &Input) -> Placement {
     Placement { top, left, origin }
 }
 
-/// Позиция для оверлея внутри ближайшего предка с `position: relative`.
+/// Position for an overlay inside the nearest ancestor with `position: relative`.
 ///
-/// `relative_offset` — `getBoundingClientRect()` такого предка; если его нет, берётся `(-scroll.top, -scroll.left)`, как в PrimeNG.
+/// `relative_offset` — `getBoundingClientRect()` of such an ancestor; if there is none, `(-scroll.top, -scroll.left)` is used, as in PrimeNG.
 pub fn relative_position(i: &Input, relative_offset: Option<Point>) -> Placement {
     let t = i.target_offset;
     let rel = relative_offset.unwrap_or(Point { top: -i.scroll.top, left: -i.scroll.left });

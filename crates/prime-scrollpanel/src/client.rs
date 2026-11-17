@@ -1,7 +1,7 @@
-//! Браузерная часть ScrollPanel: пересчёт полос, перетаскивание, клавиатура, слушатели.
+//! Browser part of ScrollPanel: bar recalculation, dragging, keyboard, listeners.
 //!
-//! Состояние (`ratio`, последние координаты, ось) живёт в обычных `Cell`, а не в сигналах: пересчёт полос не должен
-//! вызывать перерисовку Leptos. `style` и служебные атрибуты полос пишутся прямо в DOM.
+//! State (`ratio`, last coordinates, axis) lives in plain `Cell`s rather than signals: bar recalculation must not
+//! trigger a Leptos re-render. The bars' `style` and service attributes are written straight to the DOM.
 
 use crate::{KeyAction, bar_len, bar_offset, bar_ratio, clamp_scroll, key_action};
 use leptos::html::Div;
@@ -11,10 +11,10 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use web_sys::{Event, EventTarget, HtmlElement, KeyboardEvent, MouseEvent};
 
-/// Задержка перед прокруткой клавишей, мс.
+/// Delay before scrolling by a key, ms.
 const KEY_DELAY_MS: i32 = 40;
 
-/// Набор подписок; при `Drop` все слушатели снимаются.
+/// Set of subscriptions; on `Drop` all listeners are removed.
 #[derive(Default)]
 struct Listeners(Vec<Subscription>);
 
@@ -37,7 +37,7 @@ impl Drop for Listeners {
     }
 }
 
-/// Живой экземпляр ScrollPanel в браузере.
+/// Live ScrollPanel instance in the browser.
 pub(crate) struct Client {
     root: HtmlElement,
     content: HtmlElement,
@@ -58,7 +58,7 @@ pub(crate) struct Client {
     document: RefCell<Option<Listeners>>,
 }
 
-/// Привязывает клиентскую часть после монтирования и снимает всё при размонтировании.
+/// Binds the client part after mounting and removes everything on unmount.
 pub(crate) fn mount(
     root: NodeRef<Div>,
     content: NodeRef<Div>,
@@ -93,7 +93,7 @@ fn window() -> Option<web_sys::Window> {
     web_sys::window()
 }
 
-/// Выполняет `f` в кадре анимации; без `requestAnimationFrame` — через `setTimeout(0)`.
+/// Runs `f` in an animation frame; without `requestAnimationFrame`, via `setTimeout(0)`.
 fn next_frame(f: impl FnOnce() + 'static) {
     let Some(win) = window() else { return };
     let cb = Closure::once_into_js(f);
@@ -102,7 +102,7 @@ fn next_frame(f: impl FnOnce() + 'static) {
     }
 }
 
-/// Значение CSS-свойства в пикселях, как `parseFloat` (нечисловое — 0).
+/// CSS property value in pixels, like `parseFloat` (non-numeric is 0).
 fn px(style: &web_sys::CssStyleDeclaration, name: &str) -> f64 {
     let value = style.get_property_value(name).unwrap_or_default();
     let end = value.find(|c: char| !(c.is_ascii_digit() || c == '.' || c == '-')).unwrap_or(value.len());
@@ -183,7 +183,7 @@ impl Client {
         this
     }
 
-    /// Снимает все слушатели и таймер (размонтирование). Разрывает цикл `Rc` между экземпляром и замыканиями.
+    /// Removes all listeners and the timer (unmount). Breaks the `Rc` cycle between the instance and the closures.
     pub(crate) fn dispose(&self) {
         self.clear_timer();
         *self.own.borrow_mut() = Listeners::default();
@@ -191,7 +191,7 @@ impl Client {
         self.release_grab();
     }
 
-    /// Высота корня при `max-height` без собственной высоты (как `calculateContainerHeight`).
+    /// Root height with `max-height` and no height of its own (like `calculateContainerHeight`).
     fn calculate_container_height(&self) {
         let Some(win) = window() else { return };
         let (Ok(Some(cs)), Ok(Some(bar_cs))) = (win.get_computed_style(&self.root), win.get_computed_style(&self.bar_x)) else { return };
@@ -211,7 +211,7 @@ impl Client {
         }
     }
 
-    /// Пересчитывает размер и положение полос (кадром анимации, как в PrimeNG).
+    /// Recalculates the size and position of the bars (in an animation frame, as in PrimeNG).
     pub(crate) fn move_bar(self: &Rc<Self>) {
         let (c, root) = (&self.content, &self.root);
         let (total_w, own_w) = (c.scroll_width() as f64, c.client_width() as f64);
@@ -357,7 +357,7 @@ impl Client {
         self.y_grabbed.set(false);
     }
 
-    /// Прокручивает содержимое к `value` пикселей сверху в пределах доступного хода.
+    /// Scrolls the content to `value` pixels from the top within the available travel.
     pub(crate) fn scroll_top(&self, value: f64) {
         let c = &self.content;
         c.set_scroll_top(clamp_scroll(value, c.scroll_height() as f64, c.client_height() as f64) as i32);

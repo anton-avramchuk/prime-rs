@@ -1,37 +1,37 @@
-//! Модель Tree и чистая логика: плоский список узлов, видимые, выбор, распространение флажков, фильтр и переходы клавиатуры
-//! (по `tree.ts` PrimeNG 21.1.10). Состояние (раскрытые и выбранные ключи) хранится вне узлов.
+//! Tree model and pure logic: flat node list, visible nodes, selection, checkbox propagation, filter and keyboard moves
+//! (after PrimeNG 21.1.10 `tree.ts`). State (expanded and selected keys) is stored outside the nodes.
 
 use leptos::prelude::ViewFn;
 use std::collections::HashSet;
 
-/// Узел дерева.
+/// Tree node.
 #[derive(Clone)]
 pub struct TreeNode {
-    /// Уникальный ключ (по нему хранятся раскрытие и выбор).
+    /// Unique key (expansion and selection are stored by it).
     pub key: String,
-    /// Подпись.
+    /// Label.
     pub label: Option<String>,
-    /// Значок узла.
+    /// Node icon.
     pub icon: Option<ViewFn>,
-    /// Значок раскрытого узла с детьми (если нет `icon`).
+    /// Icon of an expanded node with children (if no `icon`).
     pub expanded_icon: Option<ViewFn>,
-    /// Значок свёрнутого узла (если нет `icon`).
+    /// Icon of a collapsed node (if no `icon`).
     pub collapsed_icon: Option<ViewFn>,
-    /// Дети.
+    /// Children.
     pub children: Vec<TreeNode>,
-    /// Лист ли узел; `Some(false)` — узел раскрываем без детей (ленивая загрузка).
+    /// Whether the node is a leaf; `Some(false)` — the node is expandable without children (lazy loading).
     pub leaf: Option<bool>,
-    /// Начальное раскрытие.
+    /// Initial expansion.
     pub expanded: bool,
-    /// Можно ли выбрать узел (по умолчанию да).
+    /// Whether the node can be selected (yes by default).
     pub selectable: bool,
-    /// Идёт загрузка детей.
+    /// Children are loading.
     pub loading: bool,
-    /// Тип узла для выбора шаблона.
+    /// Node type for template selection.
     pub type_: Option<String>,
-    /// Дополнительный класс `li`.
+    /// Extra class of `li`.
     pub style_class: Option<String>,
-    /// Встроенный стиль `li`.
+    /// Inline style of `li`.
     pub style: Option<String>,
 }
 
@@ -56,123 +56,123 @@ impl Default for TreeNode {
 }
 
 impl TreeNode {
-    /// Узел с ключом.
+    /// Node with a key.
     pub fn new(key: impl Into<String>) -> Self {
         Self { key: key.into(), ..Self::default() }
     }
 
-    /// Подпись.
+    /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
     }
 
-    /// Значок.
+    /// Icon.
     pub fn icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.icon = Some(icon.into());
         self
     }
 
-    /// Значки раскрытого и свёрнутого узла.
+    /// Icons of the expanded and collapsed node.
     pub fn icons(mut self, expanded: impl Into<ViewFn>, collapsed: impl Into<ViewFn>) -> Self {
         self.expanded_icon = Some(expanded.into());
         self.collapsed_icon = Some(collapsed.into());
         self
     }
 
-    /// Дети.
+    /// Children.
     pub fn children(mut self, children: Vec<TreeNode>) -> Self {
         self.children = children;
         self
     }
 
-    /// Лист (`false` — раскрываемый без детей).
+    /// Leaf (`false` — expandable without children).
     pub fn leaf(mut self, leaf: bool) -> Self {
         self.leaf = Some(leaf);
         self
     }
 
-    /// Начальное раскрытие.
+    /// Initial expansion.
     pub fn expanded(mut self, expanded: bool) -> Self {
         self.expanded = expanded;
         self
     }
 
-    /// Можно ли выбрать.
+    /// Whether it can be selected.
     pub fn selectable(mut self, selectable: bool) -> Self {
         self.selectable = selectable;
         self
     }
 
-    /// Идёт загрузка.
+    /// Loading.
     pub fn loading(mut self, loading: bool) -> Self {
         self.loading = loading;
         self
     }
 
-    /// Тип узла.
+    /// Node type.
     pub fn type_(mut self, type_: impl Into<String>) -> Self {
         self.type_ = Some(type_.into());
         self
     }
 
-    /// Дополнительный класс.
+    /// Extra class.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 
-    /// Лист: без детей и не помечен `leaf = false`.
+    /// Leaf: without children and not marked `leaf = false`.
     pub fn is_leaf(&self) -> bool {
         self.leaf != Some(false) && self.children.is_empty()
     }
 }
 
-/// Режим выбора.
+/// Selection mode.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TreeSelectionMode {
-    /// Один узел.
+    /// One node.
     Single,
-    /// Несколько узлов.
+    /// Several nodes.
     Multiple,
-    /// Флажки с распространением по поддереву.
+    /// Checkboxes with propagation across the subtree.
     Checkbox,
 }
 
-/// Режим фильтра.
+/// Filter mode.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TreeFilterMode {
-    /// Совпавший узел остаётся со всеми детьми.
+    /// A matching node stays with all its children.
     #[default]
     Lenient,
-    /// Остаются только совпавшие.
+    /// Only matching nodes stay.
     Strict,
 }
 
-/// Узел в плоском списке (обход в глубину).
+/// Node in the flat list (depth-first traversal).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Flat {
-    /// Ключ.
+    /// Key.
     pub key: String,
-    /// Ключ родителя.
+    /// Parent key.
     pub parent: Option<String>,
-    /// Глубина (корневые — `0`).
+    /// Depth (roots are `0`).
     pub level: usize,
-    /// Индекс среди соседей.
+    /// Index among siblings.
     pub index: usize,
-    /// Число соседей.
+    /// Number of siblings.
     pub siblings: usize,
-    /// Ключи прямых детей.
+    /// Keys of direct children.
     pub children: Vec<String>,
-    /// Лист.
+    /// Leaf.
     pub leaf: bool,
-    /// Можно выбрать.
+    /// Can be selected.
     pub selectable: bool,
-    /// Подпись.
+    /// Label.
     pub label: String,
 }
 
-/// Разворачивает дерево в плоский список.
+/// Flattens the tree into a flat list.
 pub fn flatten(nodes: &[TreeNode]) -> Vec<Flat> {
     fn walk(nodes: &[TreeNode], parent: Option<&str>, level: usize, out: &mut Vec<Flat>) {
         for (index, n) in nodes.iter().enumerate() {
@@ -195,7 +195,7 @@ pub fn flatten(nodes: &[TreeNode]) -> Vec<Flat> {
     out
 }
 
-/// Ключи узлов с `expanded = true`.
+/// Keys of nodes with `expanded = true`.
 pub fn seed_expanded(nodes: &[TreeNode]) -> HashSet<String> {
     fn walk(nodes: &[TreeNode], out: &mut HashSet<String>) {
         for n in nodes {
@@ -210,7 +210,7 @@ pub fn seed_expanded(nodes: &[TreeNode]) -> HashSet<String> {
     out
 }
 
-/// Видимые узлы: корневые и дети раскрытых видимых узлов.
+/// Visible nodes: roots and children of expanded visible nodes.
 pub fn visible<'a>(flat: &'a [Flat], expanded: &HashSet<String>) -> Vec<&'a Flat> {
     let mut shown: HashSet<&str> = HashSet::new();
     let mut out = Vec::new();
@@ -241,7 +241,7 @@ fn add(sel: &mut Vec<String>, key: &str) {
     }
 }
 
-/// Распространение выбора вниз (`propagateDown`).
+/// Downward selection propagation (`propagateDown`).
 pub fn propagate_down(flat: &[Flat], sel: &mut Vec<String>, key: &str, select: bool) {
     if select {
         add(sel, key);
@@ -255,7 +255,7 @@ pub fn propagate_down(flat: &[Flat], sel: &mut Vec<String>, key: &str, select: b
     }
 }
 
-/// Распространение выбора вверх (`propagateUp`): предок выбран, когда выбраны все его дети.
+/// Upward selection propagation (`propagateUp`): an ancestor is selected when all its children are selected.
 pub fn propagate_up(flat: &[Flat], sel: &mut Vec<String>, key: &str, select: bool) {
     let mut cur = Some(key.to_owned());
     while let Some(k) = cur {
@@ -272,7 +272,7 @@ pub fn propagate_up(flat: &[Flat], sel: &mut Vec<String>, key: &str, select: boo
     }
 }
 
-/// Частично выбран: сам не выбран, но выбран хотя бы один потомок.
+/// Partially selected: not selected itself, but at least one descendant is selected.
 pub fn is_partial(flat: &[Flat], sel: &[String], key: &str) -> bool {
     fn any(flat: &[Flat], sel: &[String], key: &str) -> bool {
         find(flat, key).is_some_and(|n| n.children.iter().any(|c| sel.iter().any(|s| s == c) || any(flat, sel, c)))
@@ -280,22 +280,22 @@ pub fn is_partial(flat: &[Flat], sel: &[String], key: &str) -> bool {
     !sel.iter().any(|s| s == key) && any(flat, sel, key)
 }
 
-/// Параметры выбора.
+/// Selection parameters.
 #[derive(Clone, Copy, Debug)]
 pub struct SelectOpts {
-    /// Режим.
+    /// Mode.
     pub mode: TreeSelectionMode,
-    /// Выбор с Ctrl/Meta.
+    /// Selection with Ctrl/Meta.
     pub meta_selection: bool,
-    /// Ctrl или Meta нажаты.
+    /// Ctrl or Meta pressed.
     pub meta_key: bool,
-    /// Распространять вверх.
+    /// Propagate up.
     pub up: bool,
-    /// Распространять вниз.
+    /// Propagate down.
     pub down: bool,
 }
 
-/// Клик по узлу. Возвращает `Some(true)` при выборе, `Some(false)` при снятии, `None`, если выбор не изменился.
+/// Click on a node. Returns `Some(true)` on select, `Some(false)` on deselect, `None` if the selection did not change.
 pub fn select_click(flat: &[Flat], sel: &mut Vec<String>, key: &str, o: SelectOpts) -> Option<bool> {
     let node = find(flat, key)?;
     if !node.selectable {
@@ -355,11 +355,11 @@ pub fn select_click(flat: &[Flat], sel: &mut Vec<String>, key: &str, o: SelectOp
     }
 }
 
-/// Параметры фильтра.
+/// Filter parameters.
 pub struct FilterOpts<'a> {
-    /// Поля поиска: `label` и/или `key`.
+    /// Search fields: `label` and/or `key`.
     pub fields: &'a [&'a str],
-    /// Режим.
+    /// Mode.
     pub mode: TreeFilterMode,
 }
 
@@ -373,7 +373,7 @@ fn field_matches(node: &TreeNode, text: &str, fields: &[&str]) -> bool {
     })
 }
 
-/// `findFilteredNodes`: оставляет у узла только подходящих детей и раскрывает узел, если такие есть.
+/// `findFilteredNodes`: keeps only matching children of the node and expands the node if there are any.
 fn find_filtered(node: &mut TreeNode, text: &str, o: &FilterOpts) -> bool {
     let kept: Vec<TreeNode> =
         std::mem::take(&mut node.children).into_iter().filter_map(|mut c| is_matched(&mut c, text, o).then_some(c)).collect();
@@ -394,7 +394,7 @@ fn is_matched(node: &mut TreeNode, text: &str, o: &FilterOpts) -> bool {
     matched
 }
 
-/// Отфильтрованное дерево и ключи узлов, раскрытых фильтром. Пустой текст возвращает `None` (полное дерево).
+/// Filtered tree and keys of nodes expanded by the filter. Empty text returns `None` (the full tree).
 pub fn filter_tree(nodes: &[TreeNode], text: &str, o: &FilterOpts) -> Option<(Vec<TreeNode>, Vec<String>)> {
     if text.is_empty() {
         return None;
@@ -424,16 +424,16 @@ pub fn filter_tree(nodes: &[TreeNode], text: &str, o: &FilterOpts) -> Option<(Ve
     Some((out, keys))
 }
 
-/// Результат перехода.
+/// Move result.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Move {
-    /// Фокус на узел.
+    /// Focus a node.
     Focus(String),
-    /// Раскрыть узел и перейти к его первому ребёнку.
+    /// Expand the node and move to its first child.
     ExpandAndEnter(String),
-    /// Свернуть узел.
+    /// Collapse the node.
     Collapse(String),
-    /// Ничего.
+    /// Nothing.
     Stay,
 }
 
@@ -457,7 +457,7 @@ pub fn arrow_up(vis: &[&Flat], key: &str) -> Move {
     }
 }
 
-/// →: свёрнутый узел раскрывается и фокус уходит к первому ребёнку; раскрытый — без действия (как в PrimeNG).
+/// →: a collapsed node expands and focus moves to its first child; an expanded one — no action (as in PrimeNG).
 pub fn arrow_right(flat: &[Flat], expanded: &HashSet<String>, key: &str) -> Move {
     match find(flat, key) {
         Some(n) if !n.leaf && !expanded.contains(key) => Move::ExpandAndEnter(key.to_owned()),
@@ -465,7 +465,7 @@ pub fn arrow_right(flat: &[Flat], expanded: &HashSet<String>, key: &str) -> Move
     }
 }
 
-/// ←: раскрытый сворачивается, иначе фокус на родителя.
+/// ←: an expanded node collapses, otherwise focus goes to the parent.
 pub fn arrow_left(flat: &[Flat], expanded: &HashSet<String>, key: &str) -> Move {
     let Some(n) = find(flat, key) else { return Move::Stay };
     if expanded.contains(key) && !n.children.is_empty() {
@@ -484,7 +484,7 @@ pub fn end(vis: &[&Flat]) -> Move {
     vis.last().map_or(Move::Stay, |n| Move::Focus(n.key.clone()))
 }
 
-/// Узел с `tabindex="0"`: сфокусированный, иначе первый выбранный видимый, иначе первый видимый.
+/// Node with `tabindex="0"`: the focused one, else the first selected visible one, else the first visible one.
 pub fn tab_stop(vis: &[&Flat], sel: &[String], focus: Option<&str>) -> Option<String> {
     focus
         .filter(|f| pos(vis, f).is_some())
@@ -532,7 +532,7 @@ mod tests {
         assert_eq!(keys(&visible(&flat, &set(&[]))), ["a", "b", "c"]);
         assert_eq!(keys(&visible(&flat, &set(&["a"]))), ["a", "a1", "a2", "b", "c"]);
         assert_eq!(keys(&visible(&flat, &set(&["a", "a1"]))), ["a", "a1", "a11", "a12", "a2", "b", "c"]);
-        assert_eq!(keys(&visible(&flat, &set(&["a1"]))), ["a", "b", "c"], "дети свёрнутого предка скрыты");
+        assert_eq!(keys(&visible(&flat, &set(&["a1"]))), ["a", "b", "c"], "children of a collapsed ancestor are hidden");
     }
 
     #[test]
@@ -549,9 +549,9 @@ mod tests {
         let mut sel = vec![];
         assert_eq!(select_click(&flat, &mut sel, "b", opts(TreeSelectionMode::Single)), Some(true));
         assert_eq!(select_click(&flat, &mut sel, "a", opts(TreeSelectionMode::Single)), Some(true));
-        assert_eq!(sel, ["a"], "единичный выбор заменяет");
+        assert_eq!(sel, ["a"], "single selection replaces");
         assert_eq!(select_click(&flat, &mut sel, "a", opts(TreeSelectionMode::Single)), Some(false));
-        assert!(sel.is_empty(), "повторный клик снимает");
+        assert!(sel.is_empty(), "repeated click deselects");
         let mut sel = vec![];
         select_click(&flat, &mut sel, "a", opts(TreeSelectionMode::Multiple));
         select_click(&flat, &mut sel, "b", opts(TreeSelectionMode::Multiple));
@@ -560,13 +560,13 @@ mod tests {
         assert_eq!(sel, ["b"]);
         let meta = |k| SelectOpts { meta_selection: true, meta_key: k, ..opts(TreeSelectionMode::Multiple) };
         select_click(&flat, &mut sel, "c", meta(false));
-        assert_eq!(sel, ["c"], "без Ctrl выбор заменяется");
+        assert_eq!(sel, ["c"], "without Ctrl the selection is replaced");
         select_click(&flat, &mut sel, "b", meta(true));
-        assert_eq!(sel, ["c", "b"], "с Ctrl дополняется");
+        assert_eq!(sel, ["c", "b"], "with Ctrl it is extended");
         assert_eq!(select_click(&flat, &mut sel, "c", meta(true)), Some(false));
         assert_eq!(sel, ["b"]);
         let single_meta = |k| SelectOpts { meta_selection: true, meta_key: k, ..opts(TreeSelectionMode::Single) };
-        assert_eq!(select_click(&flat, &mut sel, "b", single_meta(false)), Some(true), "без Ctrl выбранный остаётся выбранным");
+        assert_eq!(select_click(&flat, &mut sel, "b", single_meta(false)), Some(true), "without Ctrl a selected node stays selected");
         assert_eq!(select_click(&flat, &mut sel, "b", single_meta(true)), Some(false));
     }
 
@@ -586,25 +586,25 @@ mod tests {
         let cb = opts(TreeSelectionMode::Checkbox);
         let mut sel = vec![];
         assert_eq!(select_click(&flat, &mut sel, "a1", cb), Some(true));
-        assert_eq!(sel, ["a1", "a11", "a12"], "вниз: сам узел и потомки");
-        assert!(is_partial(&flat, &sel, "a"), "предок частично выбран");
+        assert_eq!(sel, ["a1", "a11", "a12"], "down: the node itself and descendants");
+        assert!(is_partial(&flat, &sel, "a"), "ancestor is partially selected");
         assert_eq!(select_click(&flat, &mut sel, "a2", cb), Some(true));
-        assert!(sel.contains(&"a".to_owned()) && !is_partial(&flat, &sel, "a"), "выбраны все дети — выбран и предок");
+        assert!(sel.contains(&"a".to_owned()) && !is_partial(&flat, &sel, "a"), "all children selected — ancestor selected too");
         assert_eq!(select_click(&flat, &mut sel, "a11", cb), Some(false));
-        assert!(!sel.contains(&"a".to_owned()) && !sel.contains(&"a1".to_owned()), "снятие ребёнка снимает предков");
+        assert!(!sel.contains(&"a".to_owned()) && !sel.contains(&"a1".to_owned()), "deselecting a child deselects ancestors");
         assert!(is_partial(&flat, &sel, "a1") && is_partial(&flat, &sel, "a"));
         select_click(&flat, &mut sel, "a12", cb);
         assert!(!is_partial(&flat, &sel, "a1") && !sel.contains(&"a1".to_owned()));
         let mut sel = vec![];
         let no_prop = SelectOpts { up: false, down: false, ..cb };
         select_click(&flat, &mut sel, "a1", no_prop);
-        assert_eq!(sel, ["a1"], "без распространения только сам узел");
-        assert!(is_partial(&flat, &sel, "a"), "частичность выводится из выбора потомков");
+        assert_eq!(sel, ["a1"], "without propagation only the node itself");
+        assert!(is_partial(&flat, &sel, "a"), "partial state is derived from descendant selection");
         let mut sel = vec![];
         select_click(&flat, &mut sel, "a", SelectOpts { up: false, ..cb });
-        assert_eq!(sel.len(), 5, "вниз без вверх: всё поддерево");
+        assert_eq!(sel.len(), 5, "down without up: the whole subtree");
         select_click(&flat, &mut sel, "a11", SelectOpts { down: false, ..cb });
-        assert!(!sel.contains(&"a".to_owned()), "вверх без вниз: предки пересчитаны");
+        assert!(!sel.contains(&"a".to_owned()), "up without down: ancestors recomputed");
     }
 
     #[test]
@@ -616,23 +616,23 @@ mod tests {
         assert_eq!(
             (out[0].key.as_str(), out[0].children.len(), out[0].children[0].key.as_str()),
             ("a", 1, "a1"),
-            "предки остаются, лишнее отброшено"
+            "ancestors stay, the rest is dropped"
         );
         assert_eq!(out[0].children[0].children.len(), 1);
-        assert_eq!(exp, ["a", "a1"], "предки совпавшего раскрыты");
+        assert_eq!(exp, ["a", "a1"], "ancestors of the match are expanded");
         let (out, _) = filter_tree(&tree(), "apple", &by).unwrap();
-        assert_eq!(out[0].children[0].children.len(), 2, "lenient: совпавший узел сохраняет детей");
+        assert_eq!(out[0].children[0].children.len(), 2, "lenient: a matching node keeps its children");
         let strict = FilterOpts { fields: &["label"], mode: TreeFilterMode::Strict };
         let (out, _) = filter_tree(&tree(), "apple", &strict).unwrap();
         assert_eq!(
             (out[0].children[0].key.as_str(), out[0].children[0].children.len()),
             ("a1", 0),
-            "strict: совпавший узел остаётся без несовпавших детей"
+            "strict: a matching node stays without non-matching children"
         );
         let (out, _) = filter_tree(&tree(), "red", &strict).unwrap();
         assert_eq!(out[0].children[0].children[0].key, "a11");
         let (out, _) = filter_tree(&tree(), "BETA", &by).unwrap();
-        assert_eq!(out.len(), 1, "регистр не важен");
+        assert_eq!(out.len(), 1, "case does not matter");
         let by_key = FilterOpts { fields: &["label", "key"], mode: TreeFilterMode::Lenient };
         let (out, _) = filter_tree(&tree(), "c1", &by_key).unwrap();
         assert_eq!(out[0].key, "c");
@@ -648,10 +648,10 @@ mod tests {
         assert_eq!(arrow_down(&vis, "c"), Move::Stay);
         assert_eq!(arrow_up(&vis, "a1"), Move::Focus("a".into()));
         assert_eq!(arrow_up(&vis, "a"), Move::Stay);
-        assert_eq!(arrow_up(&vis, "b"), Move::Focus("a2".into()), "вверх с узла после раскрытой ветки — на её последний");
+        assert_eq!(arrow_up(&vis, "b"), Move::Focus("a2".into()), "up from a node after an expanded branch — to its last one");
         assert_eq!(arrow_right(&flat, &set(&["a"]), "a1"), Move::ExpandAndEnter("a1".into()));
         assert_eq!(arrow_right(&flat, &ex, "a1"), Move::Stay);
-        assert_eq!(arrow_right(&flat, &ex, "b"), Move::Stay, "у листа → ничего");
+        assert_eq!(arrow_right(&flat, &ex, "b"), Move::Stay, "a leaf → nothing");
         assert_eq!(arrow_left(&flat, &ex, "a1"), Move::Collapse("a1".into()));
         assert_eq!(arrow_left(&flat, &ex, "a11"), Move::Focus("a1".into()));
         assert_eq!(arrow_left(&flat, &set(&[]), "a"), Move::Stay);
@@ -667,7 +667,7 @@ mod tests {
         assert_eq!(tab_stop(&vis, &[], None).as_deref(), Some("a"));
         assert_eq!(tab_stop(&vis, &["b".to_owned()], None).as_deref(), Some("b"));
         assert_eq!(tab_stop(&vis, &["b".to_owned()], Some("a2")).as_deref(), Some("a2"));
-        assert_eq!(tab_stop(&vis, &["b".to_owned()], Some("a11")).as_deref(), Some("b"), "невидимый фокус не годится");
+        assert_eq!(tab_stop(&vis, &["b".to_owned()], Some("a11")).as_deref(), Some("b"), "an invisible focus is not valid");
         assert_eq!(tab_stop(&[], &[], None), None);
     }
 }

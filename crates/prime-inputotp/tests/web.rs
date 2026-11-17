@@ -1,5 +1,5 @@
-//! Поведение InputOtp в реальном браузере (wasm-bindgen-test): ввод и автопереход, клавиши, вставка, ограничения, события,
-//! внешний сигнал и шаблон `input`.
+//! InputOtp behavior in a real browser (wasm-bindgen-test): input and auto-advance, keys, paste, restrictions, events,
+//! external signal and the `input` template.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -24,16 +24,16 @@ fn host() -> HtmlElement {
     el
 }
 
-/// Ячейка с номером `n` (с 1).
+/// Cell number `n` (1-based).
 fn cell(host: &HtmlElement, n: u32) -> HtmlInputElement {
     host.query_selector(&format!(".p-inputotp > input:nth-child({n})"))
         .unwrap()
-        .unwrap_or_else(|| panic!("нет ячейки {n}"))
+        .unwrap_or_else(|| panic!("no cell {n}"))
         .dyn_into()
         .unwrap()
 }
 
-/// Значения ячеек подряд, пустая — `_`.
+/// Cell values in a row, empty one is `_`.
 fn cells(host: &HtmlElement) -> String {
     let list = host.query_selector_all(".p-inputotp > input").unwrap();
     (0..list.length())
@@ -44,7 +44,7 @@ fn cells(host: &HtmlElement) -> String {
         .collect()
 }
 
-/// Индекс (с 1) ячейки с фокусом, 0 — фокуса в компоненте нет.
+/// Index (1-based) of the focused cell, 0 means there is no focus in the component.
 fn focused(host: &HtmlElement) -> u32 {
     let active = doc().active_element();
     (1..=8)
@@ -54,7 +54,7 @@ fn focused(host: &HtmlElement) -> u32 {
         .unwrap_or(0)
 }
 
-/// Имитирует ввод символа: значение поля и событие `input`.
+/// Simulates typing a character: the field value and the `input` event.
 fn type_text(el: &HtmlInputElement, text: &str, input_type: &str) {
     el.set_value(text);
     let init = InputEventInit::new();
@@ -63,7 +63,7 @@ fn type_text(el: &HtmlInputElement, text: &str, input_type: &str) {
     el.dispatch_event(&InputEvent::new_with_event_init_dict("input", &init).unwrap()).unwrap();
 }
 
-/// Нажатие клавиши; `true`, если действие не отменено.
+/// Key press; `true` if the action is not cancelled.
 fn press(el: &HtmlInputElement, key: &str, ctrl: bool) -> bool {
     let init = KeyboardEventInit::new();
     init.set_bubbles(true);
@@ -100,7 +100,7 @@ async fn typing_fills_cells_and_moves_focus() {
     leptos::task::tick().await;
     cell(&host, 1).focus().unwrap();
     for (i, ch) in ["1", "2", "3", "4"].into_iter().enumerate() {
-        assert_eq!(focused(&host), i as u32 + 1, "перед вводом {ch}");
+        assert_eq!(focused(&host), i as u32 + 1, "before typing {ch}");
         type_text(&cell(&host, i as u32 + 1), ch, "insertText");
         leptos::task::tick().await;
     }
@@ -132,7 +132,7 @@ async fn backspace_and_arrows_move_focus() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <InputOtp value=value /> });
     leptos::task::tick().await;
     cell(&host, 2).focus().unwrap();
-    assert!(!press(&cell(&host, 2), "Backspace", false), "Backspace в пустой ячейке отменяется");
+    assert!(!press(&cell(&host, 2), "Backspace", false), "Backspace in an empty cell is cancelled");
     assert_eq!(focused(&host), 1);
     assert!(!press(&cell(&host, 1), "ArrowRight", false));
     assert_eq!(focused(&host), 2);
@@ -140,9 +140,9 @@ async fn backspace_and_arrows_move_focus() {
     assert_eq!(focused(&host), 1);
     assert!(!press(&cell(&host, 1), "ArrowUp", false) && !press(&cell(&host, 1), "ArrowDown", false));
     assert_eq!(focused(&host), 1);
-    // Backspace в заполненной ячейке — действие браузера
+    // Backspace in a filled cell is a browser action
     assert!(press(&cell(&host, 1), "Backspace", false));
-    // удаление назад из ячейки переводит фокус на предыдущую
+    // deleting backward from a cell moves focus to the previous one
     cell(&host, 3).focus().unwrap();
     type_text(&cell(&host, 3), "", "deleteContentBackward");
     leptos::task::tick().await;
@@ -161,7 +161,7 @@ async fn paste_spreads_code_and_truncates() {
     assert_eq!(value.get_untracked(), "1234");
     assert_eq!(cells(&host), "1234");
     assert_eq!(focused(&host), 4);
-    // автозаполнение: несколько символов в первую ячейку
+    // autofill: several characters into the first cell
     value.set(String::new());
     leptos::task::tick().await;
     type_text(&cell(&host, 1), "98", "insertReplacementText");
@@ -176,9 +176,9 @@ async fn integer_only_rejects_letters_and_paste() {
     let host = host();
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <InputOtp value=value integer_only=true /> });
     leptos::task::tick().await;
-    assert!(!press(&cell(&host, 3), "a", false), "буква отменяется");
-    assert!(press(&cell(&host, 3), "5", false), "цифра разрешена");
-    assert!(press(&cell(&host, 3), "Tab", false), "Tab разрешён");
+    assert!(!press(&cell(&host, 3), "a", false), "a letter is cancelled");
+    assert!(press(&cell(&host, 3), "5", false), "a digit is allowed");
+    assert!(press(&cell(&host, 3), "Tab", false), "Tab is allowed");
     paste(&cell(&host, 1), "12ab");
     leptos::task::tick().await;
     assert_eq!((value.get_untracked().as_str(), cells(&host).as_str()), ("12", "12__"));
@@ -193,11 +193,11 @@ async fn overflow_and_modifiers() {
     leptos::task::tick().await;
     let last = cell(&host, 4);
     last.set_selection_range(1, 1).unwrap();
-    assert!(!press(&last, "5", false), "при заполненных ячейках без выделения набор отменяется");
-    assert!(press(&last, "Delete", false), "Delete не отменяется");
-    assert!(press(&last, "a", true), "Ctrl+клавиша не обрабатывается");
+    assert!(!press(&last, "5", false), "with all cells filled and no selection typing is cancelled");
+    assert!(press(&last, "Delete", false), "Delete is not cancelled");
+    assert!(press(&last, "a", true), "Ctrl+key is not handled");
     last.focus().unwrap();
-    assert!(press(&last, "5", false), "при выделенном символе ввод разрешён");
+    assert!(press(&last, "5", false), "with a selected character input is allowed");
     host.remove();
 }
 
@@ -240,7 +240,7 @@ async fn external_value_updates_cells() {
     leptos::task::tick().await;
     assert_eq!(cells(&host), "12__");
     value.set("9876".to_owned());
-    // эффект переносит значение в токены, затем обновляются поля
+    // the effect copies the value into tokens, then the fields are updated
     leptos::task::tick().await;
     leptos::task::tick().await;
     assert_eq!(cells(&host), "9876");

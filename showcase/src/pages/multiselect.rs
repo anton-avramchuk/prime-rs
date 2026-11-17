@@ -1,7 +1,7 @@
-//! Страница MultiSelect: демонстрации `basic`, `chips`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`,
-//! `loadingstate`, `sizes`, `template`, `floatlabel`, `iftalabel` из showcase PrimeNG (`apps/showcase/doc/multiselect`).
-//! Демонстрации с Angular Forms и виртуальной прокруткой не переносятся; в `template` вместо флагов с CDN — коды стран, без
-//! шаблонов `header`/`footer`.
+//! MultiSelect page: demos `basic`, `chips`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`,
+//! `loadingstate`, `sizes`, `template`, `floatlabel`, `iftalabel` from the PrimeNG showcase (`apps/showcase/doc/multiselect`).
+//! Demos with Angular Forms and virtual scrolling are not ported; in `template`, country codes instead of CDN flags, without
+//! `header`/`footer` templates.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -46,7 +46,7 @@ fn countries() -> Vec<MultiSelectOption> {
     .collect()
 }
 
-/// Страница `/multiselect`.
+/// Page `/multiselect`.
 #[component]
 pub fn MultiSelectPage() -> impl IntoView {
     let signal = || RwSignal::new(Vec::<String>::new());

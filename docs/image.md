@@ -1,42 +1,42 @@
 # Image
 
-Порт `p-image` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-image` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-image::Image`, `ImagePt`, `ImageLoading`, `ImagePreviewContext` | `packages/primeng/src/image/image.ts`, `image/style/imagestyle.ts` |
-| CSS | `@primeuix/styles/image` и пресет Aura — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет) |
-| Демонстрации | `apps/showcase/doc/image/*-doc.ts` (`basic`, `preview`, `previewimagesource`, `template`) |
+| CSS | `@primeuix/styles/image` and the Aura preset: `cargo xtask gen-theme` (no `/* For PrimeNG */` block) |
+| Demos | `apps/showcase/doc/image/*-doc.ts` (`basic`, `preview`, `previewimagesource`, `template`) |
 
-Спека: `openspec/specs/image`.
+Spec: `openspec/specs/image`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-image.p-component` (`p-image-preview`) > `img` и `button.p-image-preview-mask` со значком глаза `p-image-preview-icon` (`aria-label` — перевод `aria.zoomImage`, размер — `width × height`). Просмотр: `div.p-image-mask.p-overlay-mask[role=dialog][aria-modal]` > `div.p-image-toolbar` с пятью кнопками `p-image-action …` (поворот вправо и влево, уменьшение, увеличение, закрытие) и `img.p-image-original`.
-- Поворот на ±90°, масштаб с шагом 0.1; картинка получает `transform: rotate(..deg) scale(..)`. Кнопки уменьшения и увеличения блокируются (`disabled` и `p-disabled`) по тому же условию, что в PrimeNG (`scale ± 0.1` не оставляет масштаб строго внутри 0.5–1.5), поэтому достижимы масштабы от 0.6 до 1.4.
-- Закрытие кнопкой, кликом по маске и `Escape` (фокус возвращается на кнопку просмотра). Клик по увеличенной картинке и по панели не закрывает просмотр. Прокрутка страницы блокируется, маска получает слой группы `Modal`, внутри — ловушка фокуса, после показа фокус на кнопке закрытия. При закрытии поворот и масштаб сбрасываются.
-- Свои представления: `indicator`, `image` (получает обратный вызов ошибки), `preview_content` (получает класс, стиль и обратный вызов клика по картинке) и значки панели; события `on_show`, `on_hide`, `on_image_error`.
+- Markup and classes: `div.p-image.p-component` (`p-image-preview`) > `img` and `button.p-image-preview-mask` with the eye icon `p-image-preview-icon` (`aria-label` is the `aria.zoomImage` translation, size is `width × height`). Preview: `div.p-image-mask.p-overlay-mask[role=dialog][aria-modal]` > `div.p-image-toolbar` with five `p-image-action ...` buttons (rotate right and left, zoom out, zoom in, close) and `img.p-image-original`.
+- Rotation by ±90°, zoom in steps of 0.1; the image gets `transform: rotate(..deg) scale(..)`. The zoom out and zoom in buttons are disabled (`disabled` and `p-disabled`) by the same condition as in PrimeNG (`scale ± 0.1` does not leave the zoom strictly within 0.5-1.5), so zooms from 0.6 to 1.4 are reachable.
+- Closing by the button, a click on the mask and `Escape` (focus returns to the preview button). A click on the enlarged image or the toolbar does not close the preview. Page scrolling is locked, the mask gets a layer of the `Modal` group, there is a focus trap inside, and after showing, focus is on the close button. On closing, rotation and zoom are reset.
+- Custom views: `indicator`, `image` (receives the error callback), `preview_content` (receives the class, style and the image click callback) and the toolbar icons; events `on_show`, `on_hide`, `on_image_error`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| После действия панели первый клик по маске закрывает просмотр. В PrimeNG флаг `previewClick`, выставленный кнопкой панели, остаётся (клик гасится в `handleToolbarClick`, до маски не доходит), и первый клик по маске после поворота или масштаба ничего не делает | Очевидная ошибка исходника: панель и так останавливает всплытие, флаг нужен только для клика по картинке. |
-| `Escape` обрабатывается одним слушателем на `window` и только у верхнего слоя (просмотр над диалогом не закроет диалог) | В PrimeNG два обработчика (на маске и на `document`); здесь общий порядок слоёв, как у `Dialog`. |
-| Нет `appendTo`: просмотр всегда в `Portal` у `body` | Остальные оверлеи проекта тоже без него. |
-| Нет `showTransitionOptions`, `hideTransitionOptions`, `modalEnterAnimation`, `modalLeaveAnimation`, `motionOptions`, `maskMotionOptions` | Анимация задана классами темы (`p-overlay-mask-*-active`, `p-image-original-*-active`); выход ждёт `animationend` маски с запасным таймером 400 мс. |
-| Значки — `ViewFn`, а не `ng-template`; представления вместо `pTemplate` | Нет `ng-template`. |
-| `width` и `height` числом получают `px` у кнопки просмотра; процент и `rem` берутся как есть | В PrimeNG всегда `height + 'px'` (для `50%` стиль был бы неверным). |
-| Нет `SafeUrl` | Адреса — строки. |
-| Просмотр не отдаётся сервером и появляется после гидратации | Маска нужна только после клика. |
-| В демонстрациях фотографии с CDN заменены встроенными SVG-картинками | Независимость от сети. |
+| After a toolbar action the first click on the mask closes the preview. In PrimeNG the `previewClick` flag set by a toolbar button stays (the click is swallowed in `handleToolbarClick` and does not reach the mask), and the first click on the mask after a rotation or zoom does nothing | An obvious source bug: the toolbar already stops propagation, and the flag is needed only for a click on the image. |
+| `Escape` is handled by a single listener on `window` and only for the topmost layer (a preview over a dialog will not close the dialog) | PrimeNG has two handlers (on the mask and on `document`); here there is a shared layer order, as in `Dialog`. |
+| No `appendTo`: the preview is always in a `Portal` at `body` | The project's other overlays have no such option either. |
+| No `showTransitionOptions`, `hideTransitionOptions`, `modalEnterAnimation`, `modalLeaveAnimation`, `motionOptions`, `maskMotionOptions` | Animation is set by theme classes (`p-overlay-mask-*-active`, `p-image-original-*-active`); the exit waits for the mask's `animationend` with a 400 ms fallback timer. |
+| Icons are `ViewFn`, not `ng-template`; views instead of `pTemplate` | There is no `ng-template`. |
+| `width` and `height` as numbers get `px` on the preview button; percentages and `rem` are taken as is | PrimeNG always uses `height + 'px'` (the style would be wrong for `50%`). |
+| No `SafeUrl` | Addresses are strings. |
+| The preview is not served by the server and appears after hydration | The mask is needed only after a click. |
+| In the demos CDN photos are replaced with built-in SVG images | Independence from the network. |
 
-## Что не проверялось
+## Not verified
 
-- Раскладка справа налево и сенсорный ввод (щипок для масштаба в PrimeNG тоже нет).
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Просмотр над другим модальным слоем проверен только на уровне порядка `z-index`.
+- Right-to-left layout and touch input (PrimeNG has no pinch zoom either).
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behavior was not.
+- A preview over another modal layer was verified only at the `z-index` order level.
 
-## Производительность
+## Performance
 
-См. `benches/` (`image-1`, `image-1000`, `case-image`) и `benches/*budgets.toml`.
+See `benches/` (`image-1`, `image-1000`, `case-image`) and `benches/*budgets.toml`.

@@ -1,12 +1,12 @@
 ## ADDED Requirements
 
-### Requirement: Привязка области к производному состоянию
-Логика сворачивания SHALL позволять привязать область к состоянию «свёрнуто», которое вычисляется из другого источника (например, из списка активных значений группы) и не является записываемым сигналом. При смене такого состояния в браузере поведение SHALL совпадать с привязкой к `CollapseState`: анимация классами `p-collapsible-enter-active`/`p-collapsible-leave-active`, итоговое скрытие, `tabindex="-1"` у фокусируемых потомков свёрнутой области, вызов обратного вызова завершения с новым значением. Первое вычисление ничего не анимирует.
+### Requirement: Binding a region to a derived state
+The collapse logic SHALL allow binding a region to a "collapsed" state that is computed from another source (for example, from the group's list of active values) and is not a writable signal. When such a state changes in the browser, the behaviour SHALL match binding to `CollapseState`: animation with the classes `p-collapsible-enter-active`/`p-collapsible-leave-active`, final hiding, `tabindex="-1"` on focusable descendants of the collapsed region, a call of the completion callback with the new value. The first computation animates nothing.
 
-#### Scenario: Производное состояние
-- **WHEN** состояние, из которого вычисляется «свёрнуто», меняется
-- **THEN** область анимируется и скрывается или показывается, а обратный вызов получает новое значение
+#### Scenario: Derived state
+- **WHEN** the state from which "collapsed" is computed changes
+- **THEN** the region animates and is hidden or shown, and the callback receives the new value
 
-#### Scenario: Первое значение
-- **WHEN** область привязана к производному состоянию, и оно уже «свёрнуто»
-- **THEN** анимации нет, потомки получают `tabindex="-1"`
+#### Scenario: First value
+- **WHEN** a region is bound to a derived state, and it is already "collapsed"
+- **THEN** there is no animation, descendants get `tabindex="-1"`

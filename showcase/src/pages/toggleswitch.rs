@@ -1,4 +1,4 @@
-//! Страница ToggleSwitch: демонстрации `basic`, `preselection`, `template`, `invalid`, `disabled` из showcase PrimeNG
+//! ToggleSwitch page: the `basic`, `preselection`, `template`, `invalid`, `disabled` demos from the PrimeNG showcase
 //! (`apps/showcase/doc/toggleswitch`).
 
 use super::Demo;
@@ -6,7 +6,7 @@ use leptos::prelude::*;
 use prime_icons::{CheckIcon, TimesIcon};
 use prime_toggleswitch::ToggleSwitch;
 
-/// Страница `/toggleswitch`.
+/// `/toggleswitch` page.
 #[component]
 pub fn ToggleSwitchPage() -> impl IntoView {
     let basic = RwSignal::new(false);

@@ -1,8 +1,8 @@
-//! Menu — порт `p-menu` из PrimeNG 21.1.10.
+//! Menu — port of `p-menu` from PrimeNG 21.1.10.
 //!
-//! Список команд и ссылок с группами и разделителями: статичный или всплывающий у элемента-цели. Всплывающим меню
-//! управляет [`MenuRef`] (аналог `menu.toggle($event)` из PrimeNG): его создают заранее, передают в [`Menu`]
-//! и вызывают из обработчиков.
+//! A list of commands and links with groups and separators: static or popping up at a target element. The popup menu
+//! is controlled by [`MenuRef`] (the analog of `menu.toggle($event)` from PrimeNG): it is created in advance, passed to [`Menu`]
+//! and called from handlers.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -36,34 +36,34 @@ use prime_dom::dom::{AlignMode, align_overlay};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
-/// Pass-through частей [`Menu`].
+/// Pass-through parts of [`Menu`].
 #[derive(Clone, Debug, Default)]
 pub struct MenuPt {
-    /// Корень.
+        /// Root.
     pub root: Pt,
-    /// Блок `start`.
+        /// `start` block.
     pub start: Pt,
-    /// Список `ul`.
+        /// `ul` list.
     pub list: Pt,
-    /// Заголовок группы.
+        /// Group header.
     pub submenu_label: Pt,
-    /// Разделитель.
+        /// Separator.
     pub separator: Pt,
-    /// Блок `end`.
+        /// `end` block.
     pub end: Pt,
-    /// Элемент `li` пункта.
+        /// Item `li` element.
     pub item: Pt,
-    /// Содержимое пункта.
+        /// Item content.
     pub item_content: Pt,
-    /// Ссылка пункта.
+        /// Item link.
     pub item_link: Pt,
-    /// Значок пункта.
+        /// Item icon.
     pub item_icon: Pt,
-    /// Подпись пункта.
+        /// Item label.
     pub item_label: Pt,
 }
 
-/// Управляющий объект всплывающего меню: `toggle`/`show`/`hide` от события.
+/// Control object of the popup menu: `toggle`/`show`/`hide` from an event.
 #[derive(Clone, Copy)]
 pub struct MenuRef {
     visible: RwSignal<bool>,
@@ -76,7 +76,7 @@ impl Default for MenuRef {
     }
 }
 
-/// Цель по умолчанию: `currentTarget` события, а если его нет — `target`.
+/// Default target: the event's `currentTarget`, or `target` if there is none.
 fn event_target(event: &web_sys::Event) -> Option<web_sys::HtmlElement> {
     event
         .current_target()
@@ -85,46 +85,46 @@ fn event_target(event: &web_sys::Event) -> Option<web_sys::HtmlElement> {
 }
 
 impl MenuRef {
-    /// Создаёт скрытое меню. Вызывать внутри компонента (владелец сигналов).
+        /// Creates a hidden menu. Call inside a component (the signal owner).
     pub fn new() -> Self {
         Self { visible: RwSignal::new(false), target: StoredValue::new_local(None) }
     }
 
-    /// Меню сейчас показано (с подпиской).
+        /// The menu is currently shown (with subscription).
     pub fn visible(&self) -> bool {
         self.visible.get()
     }
 
-    /// Меню сейчас показано (без подписки).
+        /// The menu is currently shown (without subscription).
     pub fn visible_untracked(&self) -> bool {
         self.visible.get_untracked()
     }
 
-    /// Показывает меню у `currentTarget` события.
+        /// Shows the menu at the event's `currentTarget`.
     pub fn show(&self, event: &web_sys::Event) {
         if let Some(target) = event_target(event) {
             self.show_at(&target);
         }
     }
 
-    /// Показывает меню у явной цели.
+        /// Shows the menu at an explicit target.
     pub fn show_at(&self, target: &web_sys::HtmlElement) {
         self.target.set_value(Some(target.clone()));
         self.visible.set(true);
     }
 
-    /// Переключает меню; цель — `currentTarget` события.
+        /// Toggles the menu; the target is the event's `currentTarget`.
     pub fn toggle(&self, event: &web_sys::Event) {
         if self.visible.get_untracked() { self.hide() } else { self.show(event) }
     }
 
-    /// Скрывает меню.
+        /// Hides the menu.
     pub fn hide(&self) {
         self.visible.try_set(false);
     }
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     r: MenuRef,
@@ -159,7 +159,7 @@ impl Core {
         enabled_ids(&self.rows_untracked())
     }
 
-    /// Снимает подписки на окно и освобождает z-index.
+        /// Removes window subscriptions and releases the z-index.
     fn release(&self) {
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
             cleanup();
@@ -285,7 +285,7 @@ impl Core {
         (inside_panel, inside_target)
     }
 
-    /// Меню только что показано: z-index, выравнивание, фокус, подписки, `on_show`.
+        /// The menu has just been shown: z-index, alignment, focus, subscriptions, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let (Some(panel), Some(target)) = (self.panel.get_untracked(), self.r.target.get_value()) else { return };
@@ -300,7 +300,7 @@ impl Core {
         if let Some(list) = self.list.get_untracked() {
             prime_dom::focus_no_scroll(&list);
         }
-        // Подписки — в следующем тике: клик, открывший меню, ещё всплывает к окну и закрыл бы его сам.
+        // Subscriptions go in the next tick: the click that opened the menu is still bubbling to the window and would close it itself.
         let this = self.clone();
         let handle = set_timeout_with_handle(
             move || {
@@ -319,7 +319,7 @@ impl Core {
         }
     }
 
-    /// Клик снаружи, изменение размера окна и прокрутка предка цели скрывают меню.
+        /// An outside click, window resize and scrolling of a target ancestor hide the menu.
     #[cfg(target_arch = "wasm32")]
     fn bind_window(self: &Arc<Self>) {
         let this = self.clone();
@@ -344,7 +344,7 @@ impl Core {
             c.push(Box::new(move || resize.remove()));
         });
 
-        // Прокрутка предка цели (или сдвинувшая цель прокрутка страницы) закрывает меню.
+        // Scrolling of a target ancestor (or page scroll that moved the target) closes the menu.
         let this = self.clone();
         if let Some(target) = self.r.target.get_value()
             && let Some(unwatch) = prime_dom::watch_scroll(target, move || this.r.hide())
@@ -353,7 +353,7 @@ impl Core {
         }
     }
 
-    /// Меню только что скрыто: подписки сняты, фокус и цель забыты, `on_hide`.
+        /// The menu has just been hidden: subscriptions removed, focus and target forgotten, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -373,7 +373,7 @@ fn join_class(base: &str, extra: &Option<String>) -> String {
     }
 }
 
-/// Всё, что нужно для вывода строк списка.
+/// Everything needed to render the list rows.
 #[derive(Clone)]
 struct Parts {
     pt: Arc<MenuPt>,
@@ -459,70 +459,70 @@ fn render_item(core: &Arc<Core>, parts: &Parts, id: String, item: MenuItem) -> A
     .into_any()
 }
 
-/// Список команд и ссылок, статичный или всплывающий.
+/// A list of commands and links, static or popup.
 ///
-/// Каждое свойство принимает значение или сигнал. Всплывающее меню выводится внутри собственного места в разметке
-/// (не в `body`), поэтому для выравнивания родитель должен быть `position: relative`, а не `overflow: hidden`.
+/// Each property accepts a value or a signal. The popup menu is rendered inside its own place in the markup
+/// (not in `body`), so for alignment the parent must be `position: relative`, not `overflow: hidden`.
 #[component]
 pub fn Menu(
-    /// Пункты меню; пункты с подпунктами становятся группами.
+        /// Menu items; items with subitems become groups.
     #[prop(optional, into)]
     model: Prop<Vec<MenuItem>>,
-    /// Всплывающий режим: меню показывается через [`MenuRef`].
+        /// Popup mode: the menu is shown via [`MenuRef`].
     #[prop(optional, into)]
     popup: Prop<bool>,
-    /// Управляющий объект всплывающего меню.
+        /// Control object of the popup menu.
     #[prop(optional)]
     menu_ref: Option<MenuRef>,
-    /// Автоматически назначать `z-index`.
+        /// Automatically assign `z-index`.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+        /// Base `z-index` on top of the config value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Атрибут `aria-label` списка.
+        /// `aria-label` attribute of the list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` списка.
+        /// `aria-labelledby` attribute of the list.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Атрибут `id` корня; по умолчанию создаётся уникальный.
+        /// `id` attribute of the root; a unique one is created by default.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// `tabindex` списка.
+        /// `tabindex` of the list.
     #[prop(optional, default = Prop::Static(0), into)]
     tabindex: Prop<i32>,
-    /// Встроенный стиль корня.
+        /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+        /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается после показа и выравнивания всплывающего меню.
+        /// Called after the popup menu is shown and aligned.
     #[prop(optional, into)]
     on_show: Option<Callback<()>>,
-    /// Вызывается после скрытия всплывающего меню.
+        /// Called after the popup menu is hidden.
     #[prop(optional, into)]
     on_hide: Option<Callback<()>>,
-    /// Вызывается, когда список получает фокус.
+        /// Called when the list receives focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<()>>,
-    /// Вызывается, когда список теряет фокус.
+        /// Called when the list loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<()>>,
-    /// Представление содержимого пункта вместо ссылки со значком и подписью.
+        /// View of the item content instead of a link with icon and label.
     #[prop(optional, into)]
     item: Option<Callback<MenuItem, AnyView>>,
-    /// Представление заголовка группы вместо подписи.
+        /// View of the group header instead of a label.
     #[prop(optional, into)]
     submenu_header: Option<Callback<MenuItem, AnyView>>,
-    /// Содержимое перед списком.
+        /// Content before the list.
     #[prop(optional, into)]
     start: Option<ViewFn>,
-    /// Содержимое после списка.
+        /// Content after the list.
     #[prop(optional, into)]
     end: Option<ViewFn>,
-    /// Pass-through частей.
+        /// Pass-through parts.
     #[prop(optional)]
     pt: Option<MenuPt>,
 ) -> impl IntoView {
@@ -552,13 +552,13 @@ pub fn Menu(
         let core = core.clone();
         on_cleanup(move || core.release());
     }
-    // Побочные эффекты показа и скрытия (положение, слушатели, фокус) — только в браузере.
+    // Side effects of showing and hiding (position, listeners, focus) — only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
         Effect::new(move |_| {
             let visible = core.r.visible.get() && core.popup.get();
-            // Панель попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
+            // The panel gets into the DOM after this effect, so we also watch the reference to it.
             let mounted = core.panel.get().is_some();
             let was = core.was_visible.get_value();
             if visible && mounted && !was {

@@ -1,8 +1,8 @@
-//! Поведение ConfirmPopup в реальном браузере (wasm-bindgen-test): показ по подтверждению, разметка, кнопки, фокус,
-//! закрытие (`Escape`, клик снаружи, `close`), ключи, перенацеливание, шаблоны и управляемый показ.
+//! ConfirmPopup behavior in a real browser (wasm-bindgen-test): show on confirmation, markup, buttons, focus,
+//! closing (`Escape`, outside click, `close`), keys, retargeting, templates and controlled show.
 //!
-//! Сценарии идут одним последовательным тестом: стек слоёв `z-index` и слушатели окна общие на страницу, поэтому
-//! параллельные тесты влияли бы друг на друга. Стили темы не подключены: анимаций нет.
+//! Scenarios run as one sequential test: the `z-index` layer stack and window listeners are shared across the page, so
+//! parallel tests would affect each other. Theme styles are not attached: no animations.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -29,7 +29,7 @@ fn find(sel: &str) -> Option<HtmlElement> {
 }
 
 fn must(sel: &str) -> HtmlElement {
-    find(sel).unwrap_or_else(|| panic!("нет {sel}"))
+    find(sel).unwrap_or_else(|| panic!("no {sel}"))
 }
 
 fn panel_shown() -> bool {
@@ -43,7 +43,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам и `Portal` вставить панель и повесить слушатели окна (они вешаются в следующем такте).
+/// Lets effects and `Portal` insert the panel and attach window listeners (they are attached on the next tick).
 async fn settle() {
     sleep(80).await;
 }
@@ -95,7 +95,7 @@ async fn markup_defaults_focus_and_answers() {
     let host = host();
     let (shared, handle) = mount(&host, || view! { <ConfirmPopup /> }.into_any());
     settle().await;
-    assert!(!panel_shown(), "без подтверждения панели нет");
+    assert!(!panel_shown(), "no panel without a confirmation");
     let t = target(40, 40);
     let log = Log::default();
     svc(&shared).confirm(
@@ -115,20 +115,20 @@ async fn markup_defaults_focus_and_answers() {
     assert!(find(".p-confirmpopup-content").is_some() && find(".p-confirmpopup-footer").is_some());
     let reject = must(".p-confirmpopup-reject-button");
     let accept = must(".p-confirmpopup-accept-button");
-    assert_eq!(reject.text_content().as_deref(), Some("No"), "перевод по умолчанию");
+    assert_eq!(reject.text_content().as_deref(), Some("No"), "default translation");
     assert_eq!(accept.text_content().as_deref(), Some("Yes"));
-    assert!(accept.class_name().contains("p-button-sm"), "размер small: {}", accept.class_name());
+    assert!(accept.class_name().contains("p-button-sm"), "small size: {}", accept.class_name());
     let z: i32 = panel.style().get_property_value("z-index").unwrap().parse().unwrap();
-    assert!(z >= 1000, "слой группы оверлеев: {z}");
-    assert_eq!(panel.parent_element().unwrap().parent_element().unwrap().tag_name(), "BODY", "панель в body");
+    assert!(z >= 1000, "overlay group layer: {z}");
+    assert_eq!(panel.parent_element().unwrap().parent_element().unwrap().tag_name(), "BODY", "panel in body");
     let top: f64 = panel.style().get_property_value("top").unwrap().trim_end_matches("px").parse().unwrap();
-    assert!(top >= 40.0 + 30.0, "панель под целью: {top}");
-    assert_eq!(doc().active_element().unwrap().class_name(), accept.class_name(), "фокус на кнопке согласия");
+    assert!(top >= 40.0 + 30.0, "panel below the target: {top}");
+    assert_eq!(doc().active_element().unwrap().class_name(), accept.class_name(), "focus on the accept button");
     accept.click();
     settle().await;
     assert!(!panel_shown());
     assert_eq!(*log.lock().unwrap(), ["accept"]);
-    assert!(doc().active_element().unwrap().is_same_node(Some(&t)), "фокус вернулся на цель");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&t)), "focus returned to the target");
 
     svc(&shared)
         .confirm(Confirmation::new().message("again").target(t.clone()).accept(log_cb(&log, "accept")).reject(log_cb(&log, "reject")));
@@ -154,7 +154,7 @@ async fn escape_and_outside_click() {
     escape();
     settle().await;
     assert!(!panel_shown());
-    assert_eq!(*log.lock().unwrap(), ["reject"], "Escape = отказ");
+    assert_eq!(*log.lock().unwrap(), ["reject"], "Escape = reject");
 
     confirm(Confirmation::new().message("b").close_on_escape(false));
     settle().await;
@@ -163,14 +163,14 @@ async fn escape_and_outside_click() {
     assert!(panel_shown() && log.lock().unwrap().len() == 1, "close_on_escape=false");
     must(".p-confirmpopup-message").click();
     settle().await;
-    assert!(panel_shown(), "клик внутри панели не закрывает");
+    assert!(panel_shown(), "click inside the panel does not close");
     t.click();
     settle().await;
-    assert!(panel_shown(), "клик по цели не закрывает");
+    assert!(panel_shown(), "click on the target does not close");
     doc().body().unwrap().click();
     settle().await;
-    assert!(!panel_shown(), "клик снаружи закрывает");
-    assert_eq!(*log.lock().unwrap(), ["reject"], "без accept и reject");
+    assert!(!panel_shown(), "outside click closes");
+    assert_eq!(*log.lock().unwrap(), ["reject"], "without accept and reject");
 
     confirm(Confirmation::new().message("c").dismissable_mask(false));
     settle().await;
@@ -179,7 +179,7 @@ async fn escape_and_outside_click() {
     assert!(panel_shown(), "dismissable_mask=false");
     svc(&shared).close();
     settle().await;
-    assert!(!panel_shown(), "close() скрывает");
+    assert!(!panel_shown(), "close() hides");
     t.remove();
     drop(handle);
     host.remove();
@@ -198,15 +198,15 @@ async fn keys_and_retarget() {
     let (t1, t2) = (target(40, 40), target(300, 200));
     svc(&shared).confirm(Confirmation::new().key("mine").message("one").target(t1.clone()));
     settle().await;
-    assert_eq!(doc().query_selector_all(".p-confirmpopup").unwrap().length(), 1, "чужой ключ игнорируется");
+    assert_eq!(doc().query_selector_all(".p-confirmpopup").unwrap().length(), 1, "foreign key is ignored");
     let left1: f64 = must(".p-confirmpopup").style().get_property_value("left").unwrap().trim_end_matches("px").parse().unwrap();
     svc(&shared).confirm(Confirmation::new().key("mine").message("two").target(t2.clone()));
     settle().await;
-    assert_eq!(must(".p-confirmpopup-message").text_content().as_deref(), Some("two"), "подтверждение заменено");
+    assert_eq!(must(".p-confirmpopup-message").text_content().as_deref(), Some("two"), "confirmation replaced");
     let panel = must(".p-confirmpopup");
     let left2: f64 = panel.style().get_property_value("left").unwrap().trim_end_matches("px").parse().unwrap();
     let top2: f64 = panel.style().get_property_value("top").unwrap().trim_end_matches("px").parse().unwrap();
-    assert!(left2 > left1 + 100.0 && top2 >= 230.0, "панель перенесена к новой цели: {left1} -> {left2}, {top2}");
+    assert!(left2 > left1 + 100.0 && top2 >= 230.0, "panel moved to the new target: {left1} -> {left2}, {top2}");
     svc(&shared).close();
     settle().await;
     assert!(!panel_shown());
@@ -236,16 +236,16 @@ async fn labels_buttons_focus_and_visibility() {
     assert_eq!(accept.text_content().as_deref(), Some("Save"));
     assert!(accept.class_name().contains("extra-a"));
     let reject = must(".p-confirmpopup-reject-button");
-    assert_eq!(reject.text_content().as_deref(), Some("Props label"), "props.label главнее reject_label");
+    assert_eq!(reject.text_content().as_deref(), Some("Props label"), "props.label takes precedence over reject_label");
     assert!(reject.class_name().contains("p-button-outlined"), "{}", reject.class_name());
-    assert_eq!(doc().active_element().unwrap().class_name(), reject.class_name(), "фокус по умолчанию на кнопке отказа");
+    assert_eq!(doc().active_element().unwrap().class_name(), reject.class_name(), "default focus on the reject button");
     svc(&shared).close();
     settle().await;
 
     svc(&shared).confirm(Confirmation::new().message("m").target(t.clone()).default_focus(ConfirmFocus::Accept).reject_visible_flag(false));
     settle().await;
     assert!(find(".p-confirmpopup-reject-button").is_none() && find(".p-confirmpopup-accept-button").is_some());
-    assert!(doc().active_element().unwrap().class_list().contains("p-confirmpopup-accept-button"), "default_focus подтверждения главнее");
+    assert!(doc().active_element().unwrap().class_list().contains("p-confirmpopup-accept-button"), "the confirmation default_focus takes precedence");
     svc(&shared).close();
     settle().await;
 
@@ -292,13 +292,13 @@ async fn content_and_headless_templates() {
     settle().await;
     assert_eq!(must(".p-confirmpopup-content .tpl").text_content().as_deref(), Some("custom text"));
     assert!(find(".p-confirmpopup-message").is_none() && find(".p-confirmpopup-footer").is_some());
-    assert!(must(".p-confirmpopup-accept-button").query_selector(".acc-ico").unwrap().is_some(), "значок кнопки");
+    assert!(must(".p-confirmpopup-accept-button").query_selector(".acc-ico").unwrap().is_some(), "button icon");
     svc(&shared).close();
     settle().await;
 
     svc(&shared).confirm(Confirmation::new().key("headless").message("headless text").target(t.clone()).accept(log_cb(&log, "accept")));
     settle().await;
-    assert!(find(".p-confirmpopup-content").is_none() && find(".p-confirmpopup-footer").is_none(), "headless заменяет всё");
+    assert!(find(".p-confirmpopup-content").is_none() && find(".p-confirmpopup-footer").is_none(), "headless replaces everything");
     assert_eq!(must(".hl span").text_content().as_deref(), Some("headless text"));
     must(".hl-ok").click();
     settle().await;
@@ -330,7 +330,7 @@ async fn events_and_controlled_visible() {
     assert!(!panel_shown());
     visible.set(true);
     settle().await;
-    assert!(panel_shown(), "управляемый показ без подтверждения");
+    assert!(panel_shown(), "controlled show without a confirmation");
     visible.set(false);
     settle().await;
     assert!(!panel_shown());
@@ -350,10 +350,10 @@ async fn unmount_while_shown_removes_listeners() {
     assert!(panel_shown());
     drop(handle);
     settle().await;
-    assert!(!panel_shown(), "панель убрана при размонтировании");
+    assert!(!panel_shown(), "panel removed on unmount");
     escape();
     settle().await;
-    assert!(log.lock().unwrap().is_empty(), "слушатель Escape снят");
+    assert!(log.lock().unwrap().is_empty(), "Escape listener removed");
     t.remove();
     host.remove();
 }

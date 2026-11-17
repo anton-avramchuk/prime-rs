@@ -1,7 +1,7 @@
-//! Inplace — порт `p-inplace` из PrimeNG 21.1.10.
+//! Inplace — port of `p-inplace` from PrimeNG 21.1.10.
 //!
-//! Область, которая по клику (или `Enter`) заменяет «вид» (`display`) на «содержимое» (`content`). Содержимому передаётся
-//! функция закрытия (аналог `closeCallback`). Состояние — необязательный двусторонний сигнал `active`.
+//! An area that replaces the "display" view with the "content" on click (or `Enter`). The content receives a close
+//! function (analogue of `closeCallback`). The state is an optional two-way signal `active`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -27,60 +27,60 @@ use std::sync::Arc;
 
 pub use state::{Action, display_classes, next_state};
 
-/// Pass-through частей [`Inplace`].
+/// Pass-through for the parts of [`Inplace`].
 #[derive(Clone, Debug, Default)]
 pub struct InplacePt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Вид.
+    /// Display view.
     pub display: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
-    /// Кнопка закрытия.
+    /// Close button.
     pub close_button: Pt,
 }
 
-/// Область, переключаемая между видом и содержимым.
+/// Area that switches between the view and the content.
 ///
-/// Каждое свойство принимает значение или сигнал; `active` — двусторонний сигнал.
+/// Each property accepts a value or a signal; `active` is a two-way signal.
 #[component]
 pub fn Inplace(
-    /// Двусторонний сигнал активности; без него состояние хранится внутри (по умолчанию неактивно).
+    /// Two-way activity signal; without it the state is stored internally (inactive by default).
     #[prop(optional)]
     active: Option<RwSignal<bool>>,
-    /// Показывать в содержимом кнопку закрытия.
+    /// Show a close button in the content.
     #[prop(optional, into)]
     closable: Prop<bool>,
-    /// Недоступно: не активируется и не закрывается.
+    /// Unavailable: cannot be activated or closed.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Отключить клик по виду и закрытие (остаётся `Enter`, как в PrimeNG).
+    /// Disable the click on the view and closing (`Enter` remains, as in PrimeNG).
     #[prop(optional, into)]
     prevent_click: Prop<bool>,
-    /// Значок кнопки закрытия вместо `TimesIcon`.
+    /// Icon of the close button instead of `TimesIcon`.
     #[prop(optional, into)]
     close_icon: Option<ViewFn>,
-    /// Атрибут `aria-label` кнопки закрытия.
+    /// `aria-label` attribute of the close button.
     #[prop(optional, into)]
     close_aria_label: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вид (неактивное состояние).
+    /// View (inactive state).
     #[prop(into)]
     display: ViewFn,
-    /// Содержимое (активное состояние); получает функцию закрытия.
+    /// Content (active state); receives the close function.
     content: Callback<Callback<()>, AnyView>,
-    /// Вызывается после активации.
+    /// Called after activation.
     #[prop(optional, into)]
     on_activate: Option<Callback<()>>,
-    /// Вызывается после возврата к виду.
+    /// Called after returning to the view.
     #[prop(optional, into)]
     on_deactivate: Option<Callback<()>>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<InplacePt>,
 ) -> impl IntoView {
@@ -157,7 +157,7 @@ pub fn Inplace(
                         role="button"
                         data-p-disabled={move || data_disabled.get().then_some("true")}
                         on:click=move |ev: web_sys::MouseEvent| {
-                            // Тот же клик, что закрыл содержимое, доходит и до нового вида: его цель уже вне документа.
+                            // The same click that closed the content also reaches the new view: its target is already outside the document.
                             if is_detached(&ev) {
                                 return;
                             }
@@ -186,7 +186,7 @@ pub fn Inplace(
     }
 }
 
-/// Цель события уже убрана из документа (клик, закрывший содержимое, продолжает всплывать).
+/// The event target has already been removed from the document (the click that closed the content keeps bubbling).
 fn is_detached(ev: &web_sys::MouseEvent) -> bool {
     use leptos::wasm_bindgen::JsCast;
     ev.target().is_some_and(|target| target.dyn_ref::<web_sys::Node>().is_some_and(|node| !node.is_connected()))

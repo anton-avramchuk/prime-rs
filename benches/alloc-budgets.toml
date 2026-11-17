@@ -1,7 +1,7 @@
-# Бюджеты аллокаций на экземпляр при SSR-рендере (`cargo bench -p render-bench --bench alloc`, затем `cargo xtask alloc-budget`).
-# Измерено после change `static-render-path`: badge 8, button 23, button-full 56 аллокаций на экземпляр (статическая ветвь считает значения
-# один раз, поэтому на 3–6 аллокаций больше, чем после `optimize-reactive-props`: 8, 20, 50); бюджет с запасом ≈ 20 %.
-# Новый компонент добавляет сюда сценарий вида `<имя>-1000`.
+# Allocation budgets per instance in SSR rendering (`cargo bench -p render-bench --bench alloc`, then `cargo xtask alloc-budget`).
+# Measured after change `static-render-path`: badge 8, button 23, button-full 56 allocations per instance (the static branch computes values
+# once, hence 3-6 more allocations than after `optimize-reactive-props`: 8, 20, 50); budget with a margin of about 20 %.
+# A new component adds a scenario of the form `<name>-1000` here.
 
 [[scenario]]
 name = "badge-1000"

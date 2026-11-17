@@ -1,6 +1,6 @@
-//! Страница Steps: демонстрации `basic`, `controlled` и `interactive`. В локальной копии PrimeNG каталога `apps/showcase/doc/steps`
-//! нет (демонстрации удалены апстримом), поэтому набор выведен из `pages/steps/index.ts` и кода компонента; `routing` не
-//! переносится (нет маршрутизатора Angular).
+//! Steps page: demos `basic`, `controlled` and `interactive`. The local PrimeNG copy has no `apps/showcase/doc/steps` directory
+//! (the demos were removed upstream), so the set is derived from `pages/steps/index.ts` and the component code; `routing` is not
+//! ported (no Angular router).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -50,7 +50,7 @@ fn InteractiveDemo() -> impl IntoView {
             }))
         })
         .collect::<Vec<_>>();
-    // Четвёртый шаг недоступен, пока не пройден третий.
+    // The fourth step is unavailable until the third is passed.
     let items = items.into_iter().enumerate().map(|(i, it)| if i == 3 { it.disabled(true) } else { it }).collect::<Vec<_>>();
     view! {
         <Toast />
@@ -58,7 +58,7 @@ fn InteractiveDemo() -> impl IntoView {
     }
 }
 
-/// Страница `/steps`.
+/// Page `/steps`.
 #[component]
 pub fn StepsPage() -> impl IntoView {
     view! {

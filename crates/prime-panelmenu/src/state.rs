@@ -1,8 +1,8 @@
-//! Чистая модель PanelMenu: набор раскрытых ключей, видимые пункты панели и переходы клавиатуры
-//! (по `panelmenu.ts` PrimeNG 21.1.10).
+//! Pure PanelMenu model: the set of expanded keys, visible panel items and keyboard transitions
+//! (after PrimeNG 21.1.10 `panelmenu.ts`).
 //!
-//! Ключ пункта — индексы предков и собственный через `_` (`"0"`, `"0_1"`, `"0_1_2"`), как у `prime_tieredmenu::Node`.
-//! Корневые пункты (уровень 0) — заголовки панелей; их потомки образуют дерево внутри панели.
+//! An item key is the ancestors' indices and its own joined by `_` (`"0"`, `"0_1"`, `"0_1_2"`), as in `prime_tieredmenu::Node`.
+//! Root items (level 0) are panel headers; their descendants form the tree inside the panel.
 
 use prime_menu::MenuItem;
 use prime_tieredmenu::{Node, is_ancestor_or_self, is_valid, item_at};
@@ -16,17 +16,17 @@ fn valid(items: &[MenuItem], node: &Node) -> bool {
     item(items, node).is_some_and(is_valid)
 }
 
-/// Ключи пунктов с `expanded = true` — начальное состояние.
+/// Keys of items with `expanded = true` — the initial state.
 pub fn seed_expanded(nodes: &[Node], items: &[MenuItem]) -> HashSet<String> {
     nodes.iter().filter(|n| item(items, n).is_some_and(|i| i.expanded && !i.items.is_empty())).map(|n| n.key.clone()).collect()
 }
 
-/// Ключи всех групп (пунктов с подпунктами).
+/// Keys of all groups (items with subitems).
 pub fn group_keys(nodes: &[Node], items: &[MenuItem]) -> Vec<String> {
     nodes.iter().filter(|n| item(items, n).is_some_and(|i| !i.items.is_empty())).map(|n| n.key.clone()).collect()
 }
 
-/// Переключает ключ и возвращает новое значение «раскрыт».
+/// Toggles the key and returns the new "expanded" value.
 pub fn toggle(set: &mut HashSet<String>, key: &str) -> bool {
     if set.remove(key) {
         false
@@ -36,7 +36,7 @@ pub fn toggle(set: &mut HashSet<String>, key: &str) -> bool {
     }
 }
 
-/// Клик по заголовку: при `multiple = false` остальные корневые панели сворачиваются, затем ключ переключается.
+/// Header click: with `multiple = false` the other root panels collapse, then the key is toggled.
 pub fn toggle_root(set: &mut HashSet<String>, key: &str, multiple: bool, root_keys: &[String]) -> bool {
     if !multiple {
         for other in root_keys.iter().filter(|k| k.as_str() != key) {
@@ -46,7 +46,7 @@ pub fn toggle_root(set: &mut HashSet<String>, key: &str, multiple: bool, root_ke
     toggle(set, key)
 }
 
-/// Раскрыты ли все предки ключа (`parentExpanded`): корневая панель и ветки между ней и пунктом.
+/// Whether all ancestors of the key are expanded (`parentExpanded`): the root panel and the branches between it and the item.
 pub fn ancestors_expanded(set: &HashSet<String>, key: &str) -> bool {
     let mut end = 0;
     while let Some(pos) = key[end..].find('_') {
@@ -59,7 +59,7 @@ pub fn ancestors_expanded(set: &HashSet<String>, key: &str) -> bool {
     true
 }
 
-/// Видимые пункты дерева панели `root_key` в порядке обхода (`flatItems`): потомки, у которых раскрыты все ветки до корня панели.
+/// Visible items of the tree of panel `root_key` in traversal order (`flatItems`): descendants whose branches up to the panel root are all expanded.
 pub fn panel_visible<'a>(nodes: &'a [Node], items: &[MenuItem], expanded: &HashSet<String>, root_key: &str) -> Vec<&'a Node> {
     let mut shown: HashSet<&str> = HashSet::new();
     let mut out = Vec::new();
@@ -79,16 +79,16 @@ pub fn panel_visible<'a>(nodes: &'a [Node], items: &[MenuItem], expanded: &HashS
     out
 }
 
-/// Результат перехода по клавише внутри дерева панели.
+/// Result of a key transition inside the panel tree.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Move {
-    /// Фокус на пункт с этим ключом.
+    /// Focus the item with this key.
     Item(String),
-    /// Дальше нет пунктов: фокус на следующий заголовок.
+    /// No more items further: focus the next header.
     HeaderNext,
-    /// Выше нет пунктов: фокус на заголовок этой же панели.
+    /// No items above: focus the header of the same panel.
     HeaderSelf,
-    /// Ничего не делать.
+    /// Do nothing.
     Stay,
 }
 
@@ -104,7 +104,7 @@ fn position(vis: &[&Node], key: &str) -> Option<usize> {
     vis.iter().position(|n| n.key == key)
 }
 
-/// ↓: следующий допустимый пункт; на последнем — следующий заголовок.
+/// ↓: the next allowed item; on the last one — the next header.
 pub fn arrow_down(vis: &[&Node], items: &[MenuItem], focus: Option<&str>) -> Move {
     let Some(cur) = focus.and_then(|f| position(vis, f)) else {
         return first(vis, items).map_or(Move::HeaderNext, Move::Item);
@@ -115,7 +115,7 @@ pub fn arrow_down(vis: &[&Node], items: &[MenuItem], focus: Option<&str>) -> Mov
     }
 }
 
-/// ↑: предыдущий допустимый пункт; на первом — заголовок этой панели.
+/// ↑: the previous allowed item; on the first one — the header of this panel.
 pub fn arrow_up(vis: &[&Node], items: &[MenuItem], focus: Option<&str>) -> Move {
     let Some(cur) = focus.and_then(|f| position(vis, f)) else {
         return last(vis, items).map_or(Move::HeaderSelf, Move::Item);
@@ -136,18 +136,18 @@ pub fn end(vis: &[&Node], items: &[MenuItem]) -> Move {
     last(vis, items).map_or(Move::Stay, Move::Item)
 }
 
-/// Результат ←.
+/// Result of ←.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Left {
-    /// Свернуть ветку с этим ключом.
+    /// Collapse the branch with this key.
     Collapse(String),
-    /// Фокус на родителя.
+    /// Focus the parent.
     Parent(String),
-    /// Ничего.
+    /// Nothing.
     Stay,
 }
 
-/// ←: раскрытая группа сворачивается, иначе фокус на родителя (если родитель — не заголовок панели).
+/// ←: an expanded group collapses, otherwise focus the parent (if the parent is not a panel header).
 pub fn arrow_left(nodes: &[Node], expanded: &HashSet<String>, panel_root: &str, focus: Option<&str>) -> Left {
     let Some(node) = focus.and_then(|f| nodes.iter().find(|n| n.key == f)) else { return Left::Stay };
     if expanded.contains(&node.key) {
@@ -156,18 +156,18 @@ pub fn arrow_left(nodes: &[Node], expanded: &HashSet<String>, panel_root: &str, 
     if !node.parent_key.is_empty() && node.parent_key != panel_root { Left::Parent(node.parent_key.clone()) } else { Left::Stay }
 }
 
-/// Результат →.
+/// Result of →.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Right {
-    /// Раскрыть ветку с этим ключом.
+    /// Expand the branch with this key.
     Expand(String),
-    /// Ветка уже раскрыта: ведёт себя как ↓.
+    /// The branch is already expanded: behaves like ↓.
     Down,
-    /// Ничего.
+    /// Nothing.
     Stay,
 }
 
-/// →: у группы — раскрытие, у раскрытой — переход вниз.
+/// →: for a group — expansion, for an expanded one — move down.
 pub fn arrow_right(nodes: &[Node], items: &[MenuItem], expanded: &HashSet<String>, focus: Option<&str>) -> Right {
     let Some(node) = focus.and_then(|f| nodes.iter().find(|n| n.key == f)) else { return Right::Stay };
     if !item(items, node).is_some_and(|i| !i.items.is_empty()) {
@@ -176,7 +176,7 @@ pub fn arrow_right(nodes: &[Node], items: &[MenuItem], expanded: &HashSet<String
     if expanded.contains(&node.key) { Right::Down } else { Right::Expand(node.key.clone()) }
 }
 
-/// Поиск по началу подписи: от текущего пункта (включая его) до конца, затем с начала. Без совпадения и без фокуса — первый допустимый.
+/// Search by label prefix: from the current item (inclusive) to the end, then from the start. Without a match and without focus — the first allowed one.
 pub fn search(vis: &[&Node], items: &[MenuItem], focus: Option<&str>, text: &str) -> Option<String> {
     let needle = text.to_lowercase();
     let matches = |n: &&&Node| {
@@ -194,7 +194,7 @@ pub fn search(vis: &[&Node], items: &[MenuItem], focus: Option<&str>, text: &str
     }
 }
 
-/// Шаг по заголовкам: следующий (или предыдущий) не отключённый; в конце — переход по кругу на первый (последний).
+/// Header step: the next (or previous) non-disabled one; at the end it wraps around to the first (last).
 pub fn header_step(disabled: &[bool], current: usize, forward: bool) -> Option<usize> {
     let ok = |i: &usize| !disabled[*i];
     if forward {
@@ -204,7 +204,7 @@ pub fn header_step(disabled: &[bool], current: usize, forward: bool) -> Option<u
     }
 }
 
-/// Первый и последний не отключённые заголовки.
+/// The first and last non-disabled headers.
 pub fn header_edge(disabled: &[bool], last: bool) -> Option<usize> {
     let ok = |i: &usize| !disabled[*i];
     if last { (0..disabled.len()).rev().find(ok) } else { (0..disabled.len()).find(ok) }
@@ -244,7 +244,7 @@ mod tests {
     fn seed_and_groups() {
         let mut m = model();
         m[0].expanded = true;
-        m[2].expanded = true; // лист не раскрывается
+        m[2].expanded = true; // a leaf does not expand
         let nodes = build(&m);
         assert_eq!(seed_expanded(&nodes, &m), set(&["0"]));
         assert_eq!(group_keys(&nodes, &m), vec!["0", "0_0", "1"]);
@@ -255,7 +255,7 @@ mod tests {
         let roots = vec!["0".to_owned(), "1".to_owned(), "2".to_owned()];
         let mut s = set(&["0", "0_0"]);
         assert!(toggle_root(&mut s, "1", false, &roots));
-        assert_eq!(s, set(&["1", "0_0"]), "одиночный режим снимает остальные корни, вложенные не трогает");
+        assert_eq!(s, set(&["1", "0_0"]), "single mode clears the other roots, leaves nested ones alone");
         assert!(toggle_root(&mut s, "0", true, &roots));
         assert_eq!(s, set(&["0", "1", "0_0"]));
         assert!(!toggle_root(&mut s, "1", true, &roots));
@@ -279,13 +279,13 @@ mod tests {
         assert_eq!(
             keys(&panel_visible(&nodes, &m, &set(&["0"]), "0")),
             vec!["0_0", "0_1", "0_2"],
-            "скрытый пункт пропущен, вложенное свёрнуто"
+            "hidden item skipped, nested one collapsed"
         );
         assert_eq!(keys(&panel_visible(&nodes, &m, &set(&["0", "0_0"]), "0")), vec!["0_0", "0_0_0", "0_0_1", "0_0_2", "0_1", "0_2"]);
         assert_eq!(
             keys(&panel_visible(&nodes, &m, &set(&["0_0"]), "0")),
             vec!["0_0", "0_0_0", "0_0_1", "0_0_2", "0_1", "0_2"],
-            "раскрытие самой панели не учитывается"
+            "expansion of the panel itself is not counted"
         );
         assert_eq!(keys(&panel_visible(&nodes, &m, &set(&["1"]), "1")), vec!["1_0"]);
         assert!(panel_visible(&nodes, &m, &set(&[]), "2").is_empty());
@@ -297,8 +297,8 @@ mod tests {
         let nodes = build(&m);
         let vis = panel_visible(&nodes, &m, &set(&["0", "0_0"]), "0");
         assert_eq!(arrow_down(&vis, &m, Some("0_0")), Move::Item("0_0_0".into()));
-        assert_eq!(arrow_down(&vis, &m, Some("0_0_0")), Move::Item("0_0_2".into()), "отключённый пропущен");
-        assert_eq!(arrow_down(&vis, &m, Some("0_0_2")), Move::Item("0_2".into()), "разделитель пропущен");
+        assert_eq!(arrow_down(&vis, &m, Some("0_0_0")), Move::Item("0_0_2".into()), "disabled one skipped");
+        assert_eq!(arrow_down(&vis, &m, Some("0_0_2")), Move::Item("0_2".into()), "separator skipped");
         assert_eq!(arrow_down(&vis, &m, Some("0_2")), Move::HeaderNext);
         assert_eq!(arrow_down(&vis, &m, None), Move::Item("0_0".into()));
         assert_eq!(arrow_up(&vis, &m, Some("0_2")), Move::Item("0_0_2".into()));
@@ -316,11 +316,11 @@ mod tests {
         let nodes = build(&m);
         assert_eq!(arrow_left(&nodes, &set(&["0", "0_0"]), "0", Some("0_0")), Left::Collapse("0_0".into()));
         assert_eq!(arrow_left(&nodes, &set(&["0"]), "0", Some("0_0_1")), Left::Parent("0_0".into()));
-        assert_eq!(arrow_left(&nodes, &set(&["0"]), "0", Some("0_2")), Left::Stay, "родитель верхнего уровня — заголовок");
+        assert_eq!(arrow_left(&nodes, &set(&["0"]), "0", Some("0_2")), Left::Stay, "the top-level parent is a header");
         assert_eq!(arrow_left(&nodes, &set(&[]), "0", None), Left::Stay);
         assert_eq!(arrow_right(&nodes, &m, &set(&["0"]), Some("0_0")), Right::Expand("0_0".into()));
         assert_eq!(arrow_right(&nodes, &m, &set(&["0", "0_0"]), Some("0_0")), Right::Down);
-        assert_eq!(arrow_right(&nodes, &m, &set(&["0"]), Some("0_2")), Right::Stay, "у листа → ничего");
+        assert_eq!(arrow_right(&nodes, &m, &set(&["0"]), Some("0_2")), Right::Stay, "on a leaf → nothing");
     }
 
     #[test]
@@ -329,9 +329,9 @@ mod tests {
         let nodes = build(&m);
         let vis = panel_visible(&nodes, &m, &set(&["0", "0_0"]), "0");
         assert_eq!(search(&vis, &m, Some("0_0"), "i"), Some("0_0_0".into()));
-        assert_eq!(search(&vis, &m, Some("0_2"), "d"), Some("0_0".into()), "переход по кругу, регистр не важен");
-        assert_eq!(search(&vis, &m, Some("0_0"), "cl"), None, "отключённый не находится");
-        assert_eq!(search(&vis, &m, None, "q"), Some("0_0".into()), "без фокуса и совпадения — первый");
+        assert_eq!(search(&vis, &m, Some("0_2"), "d"), Some("0_0".into()), "wraps around, case-insensitive");
+        assert_eq!(search(&vis, &m, Some("0_0"), "cl"), None, "a disabled one is not found");
+        assert_eq!(search(&vis, &m, None, "q"), Some("0_0".into()), "without focus and a match — the first one");
         assert_eq!(search(&vis, &m, Some("0_0"), "q"), None);
     }
 
@@ -339,7 +339,7 @@ mod tests {
     fn header_steps() {
         let d = [false, true, false, true];
         assert_eq!(header_step(&d, 0, true), Some(2));
-        assert_eq!(header_step(&d, 2, true), Some(0), "по кругу, отключённый в конце пропущен");
+        assert_eq!(header_step(&d, 2, true), Some(0), "wraps around, the disabled one at the end is skipped");
         assert_eq!(header_step(&d, 0, false), Some(2));
         assert_eq!(header_step(&d, 2, false), Some(0));
         assert_eq!(header_edge(&d, false), Some(0));

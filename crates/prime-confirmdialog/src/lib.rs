@@ -1,8 +1,8 @@
-//! ConfirmDialog — порт `p-confirmdialog` из PrimeNG 21.1.10.
+//! ConfirmDialog — port of PrimeNG 21.1.10 `p-confirmdialog`.
 //!
-//! Модальное окно подтверждения поверх [`Dialog`]. Приложение шлёт [`Confirmation`] общему [`ConfirmationService`] (он лежит в
-//! контексте), а компонент показывает те подтверждения, чей `key` совпадает с его собственным: заголовок, значок и текст вопроса и
-//! кнопки «Нет» и «Да». Крестик, `Escape` и клик по маске считаются отказом. Окно появляется только в браузере.
+//! A modal confirmation window on top of [`Dialog`]. The app sends a [`Confirmation`] to the shared [`ConfirmationService`] (it lives in
+//! the context), and the component shows the confirmations whose `key` matches its own: the header, icon and question text and
+//! the "No" and "Yes" buttons. The close icon, `Escape` and a click on the mask count as a rejection. The window appears only in the browser.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -12,7 +12,7 @@
 //! Owner::new().with(|| {
 //!     provide_confirmation_service();
 //!     let html = view! { <ConfirmDialog /> }.to_html();
-//!     // пока подтверждения нет, окна в разметке нет
+//!     // while there is no confirmation, there is no window in the markup
 //!     assert!(!html.contains("p-dialog"));
 //! });
 //! ```
@@ -28,45 +28,45 @@ use std::sync::Arc;
 
 pub use state::{button_class, button_label, pick, position_of, root_class};
 
-/// Pass-through частей [`ConfirmDialog`].
+/// Pass-through parts of [`ConfirmDialog`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ConfirmDialogPt {
-    /// Окно (`p-dialog`).
+    /// Window (`p-dialog`).
     pub root: Pt,
-    /// Маска.
+    /// Mask.
     pub mask: Pt,
-    /// Заголовок.
+    /// Header.
     pub header: Pt,
-    /// Содержимое окна.
+    /// Window content.
     pub content: Pt,
-    /// Подвал.
+    /// Footer.
     pub footer: Pt,
-    /// Значок.
+    /// Icon.
     pub icon: Pt,
-    /// Текст вопроса.
+    /// Question text.
     pub message: Pt,
 }
 
-/// Контекст представления `headless`.
+/// Context of the `headless` view.
 #[derive(Clone)]
 pub struct ConfirmDialogHeadless {
-    /// Показанное подтверждение.
+    /// The confirmation being shown.
     pub confirmation: Confirmation,
-    /// Согласие: вызывает `accept` и скрывает окно.
+    /// Accept: calls `accept` and hides the window.
     pub accept: Callback<()>,
-    /// Отказ: вызывает `reject` и скрывает окно.
+    /// Reject: calls `reject` and hides the window.
     pub reject: Callback<()>,
 }
 
-/// Состояние, общее для обработчиков окна.
+/// State shared by the window handlers.
 struct Core {
     key: OptProp<String>,
     visible: RwSignal<bool>,
-    /// Показанное подтверждение (содержимое строится по нему).
+    /// The confirmation being shown (the content is built from it).
     confirmation: StoredValue<Option<Confirmation>, LocalStorage>,
-    /// Растёт при каждой замене подтверждения: содержимое окна следит за ним.
+    /// Grows on every confirmation replacement: the window content follows it.
     generation: RwSignal<u32>,
-    /// Окно закрыто программно (кнопки, `Close`): отличает его от крестика, `Escape` и маски.
+    /// The window was closed programmatically (buttons, `Close`): distinguishes it from the close icon, `Escape` and the mask.
     answered: StoredValue<bool>,
     on_hide: Option<Callback<Option<ConfirmEventType>>>,
 }
@@ -76,7 +76,7 @@ impl Core {
         self.confirmation.get_value().unwrap_or_default()
     }
 
-    /// Событие сервиса.
+    /// Service event.
     fn on_event(&self, event: ConfirmEvent) {
         match event {
             ConfirmEvent::Close => self.hide(None),
@@ -91,7 +91,7 @@ impl Core {
         }
     }
 
-    /// Скрывает окно программно и сообщает тип закрытия.
+    /// Hides the window programmatically and reports the close type.
     fn hide(&self, kind: Option<ConfirmEventType>) {
         if !self.visible.get_untracked() {
             return;
@@ -103,7 +103,7 @@ impl Core {
         self.visible.set(false);
     }
 
-    /// Согласие или отказ кнопкой.
+    /// Accept or reject by a button.
     fn answer(&self, accept: bool) {
         let confirmation = self.current();
         if let Some(cb) = if accept { confirmation.accept } else { confirmation.reject } {
@@ -112,7 +112,7 @@ impl Core {
         self.hide(Some(if accept { ConfirmEventType::Accept } else { ConfirmEventType::Reject }));
     }
 
-    /// Окно закрыли крестиком, `Escape` или маской: отказ с типом `Cancel`.
+    /// The window was closed by the close icon, `Escape` or the mask: a rejection with the `Cancel` type.
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     fn cancelled(&self) {
         if self.answered.try_update_value(std::mem::take).unwrap_or(false) {
@@ -127,7 +127,7 @@ impl Core {
     }
 }
 
-/// Свойства-умолчания компонента, которые подтверждение может переопределить.
+/// Component default props that a confirmation can override.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Defaults {
     header: OptProp<String>,
@@ -146,7 +146,7 @@ struct Defaults {
     default_focus: Prop<ConfirmFocus>,
 }
 
-/// Представления, которые строятся при показе.
+/// Views that are built on show.
 struct Views {
     header_content: Option<ViewFn>,
     footer: Option<ViewFn>,
@@ -155,124 +155,124 @@ struct Views {
     headless: Option<Callback<ConfirmDialogHeadless, AnyView>>,
 }
 
-/// Выборка булева поля подтверждения.
+/// Pick of a boolean confirmation field.
 type BoolField = Arc<dyn Fn(&Confirmation) -> Option<bool> + Send + Sync>;
 
-/// Окно подтверждения поверх `Dialog`.
+/// A confirmation window on top of `Dialog`.
 ///
-/// Свойства принимают значение или сигнал; подтверждение переопределяет одноимённые значения компонента. Нужен
-/// `ConfirmationService` в контексте (`provide_confirmation_service`).
+/// Props accept a value or a signal; a confirmation overrides the same-named component values. Needs a
+/// `ConfirmationService` in the context (`provide_confirmation_service`).
 #[component]
 pub fn ConfirmDialog(
-    /// Ключ: окно показывает только подтверждения с таким же ключом.
+    /// Key: the window shows only confirmations with the same key.
     #[prop(optional, into)]
     key: OptProp<String>,
-    /// Заголовок по умолчанию.
+    /// Default header.
     #[prop(optional, into)]
     header: OptProp<String>,
-    /// Текст вопроса по умолчанию.
+    /// Default question text.
     #[prop(optional, into)]
     message: OptProp<String>,
-    /// Значок по умолчанию.
+    /// Default icon.
     #[prop(optional, into)]
     icon: Option<ViewFn>,
-    /// Подпись кнопки согласия.
+    /// Accept button label.
     #[prop(optional, into)]
     accept_label: OptProp<String>,
-    /// Подпись кнопки отказа.
+    /// Reject button label.
     #[prop(optional, into)]
     reject_label: OptProp<String>,
-    /// Значок кнопки согласия.
+    /// Accept button icon.
     #[prop(optional, into)]
     accept_icon: Option<ViewFn>,
-    /// Значок кнопки отказа.
+    /// Reject button icon.
     #[prop(optional, into)]
     reject_icon: Option<ViewFn>,
-    /// Показывать ли кнопку согласия.
+    /// Whether to show the accept button.
     #[prop(optional, default = Prop::Static(true), into)]
     accept_visible: Prop<bool>,
-    /// Показывать ли кнопку отказа.
+    /// Whether to show the reject button.
     #[prop(optional, default = Prop::Static(true), into)]
     reject_visible: Prop<bool>,
-    /// Дополнительный класс кнопки согласия.
+    /// Extra class of the accept button.
     #[prop(optional, into)]
     accept_button_style_class: OptProp<String>,
-    /// Дополнительный класс кнопки отказа.
+    /// Extra class of the reject button.
     #[prop(optional, into)]
     reject_button_style_class: OptProp<String>,
-    /// `aria-label` кнопки согласия.
+    /// `aria-label` of the accept button.
     #[prop(optional, into)]
     accept_aria_label: OptProp<String>,
-    /// `aria-label` кнопки отказа.
+    /// `aria-label` of the reject button.
     #[prop(optional, into)]
     reject_aria_label: OptProp<String>,
-    /// `aria-label` кнопки закрытия окна.
+    /// `aria-label` of the window close button.
     #[prop(optional, into)]
     close_aria_label: OptProp<String>,
-    /// Закрывать ли окно клавишей `Escape`.
+    /// Whether to close the window with the `Escape` key.
     #[prop(optional, default = Prop::Static(true), into)]
     close_on_escape: Prop<bool>,
-    /// Закрывать ли окно кликом по маске.
+    /// Whether to close the window with a click on the mask.
     #[prop(optional, into)]
     dismissable_mask: Prop<bool>,
-    /// Блокировать ли прокрутку страницы.
+    /// Whether to block page scrolling.
     #[prop(optional, default = Prop::Static(true), into)]
     block_scroll: Prop<bool>,
-    /// Есть ли кнопка закрытия.
+    /// Whether there is a close button.
     #[prop(optional, default = Prop::Static(true), into)]
     closable: Prop<bool>,
-    /// Модальное ли окно.
+    /// Whether the window is modal.
     #[prop(optional, default = Prop::Static(true), into)]
     modal: Prop<bool>,
-    /// Положение окна.
+    /// Window position.
     #[prop(optional, into)]
     position: Prop<DialogPosition>,
-    /// Что получает фокус при показе (`Accept` по умолчанию).
+    /// What gets focus on show (`Accept` by default).
     #[prop(optional, default = Prop::Static(ConfirmFocus::Accept), into)]
     default_focus: Prop<ConfirmFocus>,
-    /// Можно ли перетаскивать окно.
+    /// Whether the window can be dragged.
     #[prop(optional, default = Prop::Static(true), into)]
     draggable: Prop<bool>,
-    /// Держать ли фокус внутри окна.
+    /// Whether to keep focus inside the window.
     #[prop(optional, default = Prop::Static(true), into)]
     focus_trap: Prop<bool>,
-    /// Автоматически назначать `z-index`.
+    /// Automatically assign `z-index`.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the configuration value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Ширина окна на узких экранах: пары «предел → ширина».
+    /// Window width on narrow screens: "limit → width" pairs.
     #[prop(optional, into)]
     breakpoints: Vec<(String, String)>,
-    /// Встроенный стиль окна.
+    /// Inline style of the window.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс окна.
+    /// Extra class of the window.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Дополнительный класс маски.
+    /// Extra class of the mask.
     #[prop(optional, into)]
     mask_style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<ConfirmDialogPt>,
-    /// Своё содержимое заголовка.
+    /// Custom header content.
     #[prop(optional, into)]
     header_content: Option<ViewFn>,
-    /// Свой подвал вместо кнопок.
+    /// Custom footer instead of the buttons.
     #[prop(optional, into)]
     footer: Option<ViewFn>,
-    /// Своё содержимое вместо значка и текста вопроса.
+    /// Custom content instead of the icon and question text.
     #[prop(optional)]
     message_content: Option<Callback<Confirmation, AnyView>>,
-    /// Свой значок вместо стандартного.
+    /// Custom icon instead of the standard one.
     #[prop(optional, into)]
     icon_content: Option<ViewFn>,
-    /// Своё содержимое всего окна.
+    /// Custom content of the whole window.
     #[prop(optional)]
     headless: Option<Callback<ConfirmDialogHeadless, AnyView>>,
-    /// Окно скрыто; тип — как закрыто (`None` — сервисом).
+    /// The window is hidden; the type is how it was closed (`None` — by the service).
     #[prop(optional)]
     on_hide: Option<Callback<Option<ConfirmEventType>>>,
 ) -> impl IntoView {
@@ -297,7 +297,7 @@ pub fn ConfirmDialog(
             core.visible.try_set(false);
         });
     }
-    // Окно закрыто не нами (крестик, `Escape`, маска): это отказ. Эффекты нужны только в браузере.
+    // The window was closed not by us (close icon, `Escape`, mask): this is a rejection. Effects are needed only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
@@ -393,7 +393,7 @@ pub fn ConfirmDialog(
     let on_dialog_hide = {
         let core = core.clone();
         Callback::new(move |()| {
-            // Окно ушло из DOM: подтверждение забывается, если за это время не пришло новое.
+            // The window left the DOM: the confirmation is forgotten unless a new one arrived in the meantime.
             if !core.visible.get_untracked() {
                 core.confirmation.set_value(None);
             }
@@ -415,7 +415,7 @@ pub fn ConfirmDialog(
         }
     };
     let visible = core.visible;
-    // `header_content` и `headless` у `Dialog` — необязательные представления: передаём их только когда они заданы.
+    // `header_content` and `headless` of `Dialog` are optional views: we pass them only when they are set.
     macro_rules! dialog {
         ($($extra:tt)*) => {
             view! {
@@ -460,7 +460,7 @@ pub fn ConfirmDialog(
     }
 }
 
-/// Тело окна: значок и текст вопроса (или свои представления).
+/// Window body: the icon and question text (or custom views).
 fn message_body(core: &Arc<Core>, defaults: &Arc<Defaults>, views: &Arc<Views>, pt: &Arc<ConfirmDialogPt>) -> AnyView {
     core.generation.track();
     let confirmation = core.current();
@@ -483,7 +483,7 @@ fn message_body(core: &Arc<Core>, defaults: &Arc<Defaults>, views: &Arc<Views>, 
     .into_any()
 }
 
-/// Кнопки подвала: отказ, затем согласие.
+/// Footer buttons: reject, then accept.
 fn footer_buttons(core: &Arc<Core>, defaults: &Arc<Defaults>, _pt: &Arc<ConfirmDialogPt>) -> AnyView {
     core.generation.track();
     let confirmation = core.current();
@@ -494,7 +494,7 @@ fn footer_buttons(core: &Arc<Core>, defaults: &Arc<Defaults>, _pt: &Arc<ConfirmD
     view! { {reject}{accept} }.into_any()
 }
 
-/// Одна кнопка подвала с учётом подтверждения и свойств компонента.
+/// A single footer button taking the confirmation and component props into account.
 fn footer_button(core: &Arc<Core>, defaults: &Arc<Defaults>, confirmation: &Confirmation, accept: bool) -> AnyView {
     let props: ConfirmButtonProps =
         if accept { confirmation.accept_button_props.clone() } else { confirmation.reject_button_props.clone() }.unwrap_or_default();
@@ -548,7 +548,7 @@ fn footer_button(core: &Arc<Core>, defaults: &Arc<Defaults>, confirmation: &Conf
     }
 }
 
-/// Окно показано: фокус на нужную кнопку.
+/// The window is shown: focus the needed button.
 fn focus_default(core: &Arc<Core>, defaults: &Arc<Defaults>) {
     #[cfg(target_arch = "wasm32")]
     {
@@ -560,7 +560,7 @@ fn focus_default(core: &Arc<Core>, defaults: &Arc<Defaults>) {
             ConfirmFocus::Close => ".p-confirmdialog .p-dialog-close-button",
             ConfirmFocus::None => return,
         };
-        // Кнопки подвала и заголовка попадают в DOM чуть позже `on_show`: ищем их уже в следующем такте.
+        // The footer and header buttons get into the DOM a bit later than `on_show`: we look for them on the next tick.
         set_timeout(
             move || {
                 let target = web_sys::window()

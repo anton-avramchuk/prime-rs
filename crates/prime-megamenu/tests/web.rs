@@ -1,7 +1,7 @@
-//! Поведение MegaMenu в реальном браузере (wasm-bindgen-test): раскрытие кликом и наведением, наложение с колонками,
-//! листья и команды, клик вне, клавиатура обеих ориентаций, поиск, мобильная кнопка.
+//! MegaMenu behavior in a real browser (wasm-bindgen-test): expansion by click and hover, overlay with columns,
+//! leaves and commands, outside click, keyboard in both orientations, search, mobile button.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели окна общие на страницу. Стили темы не подключены.
+//! Scenarios run as one sequential test: window listeners are shared per page. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -28,7 +28,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}: {}", host.outer_html())).dyn_into().unwrap()
+        host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 fn count(host: &HtmlElement, sel: &str) -> u32 {
@@ -42,7 +42,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться и слушателю окна повеситься.
+/// Lets effects apply and the window listener attach.
 async fn settle() {
     sleep(60).await;
 }
@@ -69,7 +69,7 @@ fn mouse(el: &web_sys::EventTarget, name: &str, bubbles: bool) {
     el.dispatch_event(&MouseEvent::new_with_mouse_event_init_dict(name, &init).unwrap()).unwrap();
 }
 
-/// Нажатие клавиши и ожидание применения реактивных обновлений.
+/// Key press and waiting for reactive updates to apply.
 async fn key(el: &HtmlElement, code: &str, key: &str) {
     let init = KeyboardEventInit::new();
     init.set_code(code);
@@ -111,7 +111,7 @@ async fn click_opens_and_closes_the_overlay() {
     assert!(is_active(&host, "m", "0"));
     assert_eq!(li(&host, "m", "0").get_attribute("aria-expanded").as_deref(), Some("true"));
     assert_eq!(count(&host, ".p-megamenu-overlay"), 1);
-    assert_eq!(count(&host, ".p-megamenu-col-4"), 3, "три колонки — col-4");
+        assert_eq!(count(&host, ".p-megamenu-col-4"), 3, "three columns — col-4");
     assert_eq!(count(&host, "ul.p-megamenu-submenu"), 4);
     assert_eq!(count(&host, "li.p-megamenu-submenu-label"), 4);
     assert_eq!(li(&host, "m", "0_1_0_0").get_attribute("aria-level").as_deref(), Some("2"));
@@ -120,28 +120,28 @@ async fn click_opens_and_closes_the_overlay() {
 
     content(&host, "m", "0").click();
     settle().await;
-    assert!(!is_active(&host, "m", "0") && count(&host, ".p-megamenu-overlay") == 0, "повторный клик по корню закрывает");
+        assert!(!is_active(&host, "m", "0") && count(&host, ".p-megamenu-overlay") == 0, "repeated click on root closes");
 
     content(&host, "m", "0").click();
     settle().await;
     content(&host, "m", "0_0_0_1").click();
     settle().await;
-    assert_eq!(log.lock().unwrap().as_slice(), ["Bed"], "лист вызывает команду");
-    assert_eq!(count(&host, ".p-megamenu-overlay"), 0, "и закрывает наложение");
+        assert_eq!(log.lock().unwrap().as_slice(), ["Bed"], "leaf calls the command");
+        assert_eq!(count(&host, ".p-megamenu-overlay"), 0, "and closes the overlay");
 
     content(&host, "m", "0").click();
     settle().await;
     content(&host, "m", "0_1_0_1").click();
     settle().await;
-    assert_eq!(log.lock().unwrap().len(), 1, "отключённый не вызывает команду");
-    assert_eq!(count(&host, ".p-megamenu-overlay"), 1, "и не закрывает наложение");
+        assert_eq!(log.lock().unwrap().len(), 1, "disabled does not call the command");
+        assert_eq!(count(&host, ".p-megamenu-overlay"), 1, "and does not close the overlay");
 
     mouse(&doc().body().unwrap(), "click", true);
     settle().await;
-    assert_eq!(count(&host, ".p-megamenu-overlay"), 0, "клик вне закрывает");
+        assert_eq!(count(&host, ".p-megamenu-overlay"), 0, "outside click closes");
 
     content(&host, "m", "1").click();
-    assert_eq!(log.lock().unwrap().last().map(String::as_str), Some("Plain"), "корневой лист вызывает команду");
+        assert_eq!(log.lock().unwrap().last().map(String::as_str), Some("Plain"), "root leaf calls the command");
     host.remove();
 }
 
@@ -152,15 +152,15 @@ async fn hover_follows_after_a_click() {
     settle().await;
     mouse(&content(&host, "m", "2"), "mouseenter", false);
     settle().await;
-    assert_eq!(count(&host, ".p-megamenu-overlay"), 0, "без клика наведение не раскрывает");
+        assert_eq!(count(&host, ".p-megamenu-overlay"), 0, "without a click hover does not expand");
     content(&host, "m", "0").click();
     settle().await;
     mouse(&content(&host, "m", "2"), "mouseenter", false);
     settle().await;
-    assert!(is_active(&host, "m", "2") && !is_active(&host, "m", "0"), "после клика наведение переключает наложение");
+        assert!(is_active(&host, "m", "2") && !is_active(&host, "m", "0"), "after a click hover switches the overlay");
     mouse(&content(&host, "m", "1"), "mouseenter", false);
     settle().await;
-    assert_eq!(count(&host, ".p-megamenu-overlay"), 0, "наведение на обычный корень закрывает");
+        assert_eq!(count(&host, ".p-megamenu-overlay"), 0, "hover over a plain root closes");
     host.remove();
 }
 
@@ -172,38 +172,38 @@ async fn keyboard_horizontal() {
     let list = q(&host, "#m_list");
     list.focus().unwrap();
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("m_0"), "фокус снаружи — первый пункт");
+        assert_eq!(focused(&host).as_deref(), Some("m_0"), "focus from outside — first item");
     assert_eq!(list.get_attribute("aria-activedescendant").as_deref(), Some("m_0"));
     key(&list, "ArrowRight", "ArrowRight").await;
     assert_eq!(focused(&host).as_deref(), Some("m_1"));
     key(&list, "ArrowLeft", "ArrowLeft").await;
     key(&list, "ArrowDown", "ArrowDown").await;
     assert!(is_active(&host, "m", "0"));
-    assert_eq!(focused(&host).as_deref(), Some("m_0_0_0_0"), "↓ раскрывает и входит в первую колонку");
+        assert_eq!(focused(&host).as_deref(), Some("m_0_0_0_0"), "Down expands and enters the first column");
     key(&list, "ArrowDown", "ArrowDown").await;
     key(&list, "ArrowDown", "ArrowDown").await;
     assert_eq!(focused(&host).as_deref(), Some("m_0_1_0_0"));
     key(&list, "ArrowRight", "ArrowRight").await;
-    assert_eq!(focused(&host).as_deref(), Some("m_0_2_0_0"), "→ — следующая колонка");
+        assert_eq!(focused(&host).as_deref(), Some("m_0_2_0_0"), "Right — next column");
     key(&list, "ArrowLeft", "ArrowLeft").await;
     key(&list, "ArrowLeft", "ArrowLeft").await;
     assert_eq!(focused(&host).as_deref(), Some("m_0_0_0_0"));
     key(&list, "End", "End").await;
     assert_eq!(focused(&host).as_deref(), Some("m_0_2_0_0"));
     key(&list, "KeyS", "s").await;
-    assert_eq!(focused(&host).as_deref(), Some("m_0_1_1_0"), "поиск по началу подписи");
+        assert_eq!(focused(&host).as_deref(), Some("m_0_1_1_0"), "search by label prefix");
     key(&list, "Enter", "Enter").await;
-    assert_eq!(log.lock().unwrap().as_slice(), ["Soap"], "Enter выполняет команду");
+        assert_eq!(log.lock().unwrap().as_slice(), ["Soap"], "Enter runs the command");
     assert_eq!(count(&host, ".p-megamenu-overlay"), 0);
-    assert_eq!(focused(&host).as_deref(), Some("m_0"), "после листа фокус на первом корне");
+        assert_eq!(focused(&host).as_deref(), Some("m_0"), "after a leaf focus is on the first root");
 
     key(&list, "ArrowDown", "ArrowDown").await;
     assert!(is_active(&host, "m", "0"));
     key(&list, "Escape", "Escape").await;
     assert_eq!(count(&host, ".p-megamenu-overlay"), 0);
-    assert_eq!(focused(&host).as_deref(), Some("m_0"), "Escape — на корень");
+        assert_eq!(focused(&host).as_deref(), Some("m_0"), "Escape — to the root");
 
-    // Tab закрывает всё.
+        // Tab closes everything.
     key(&list, "ArrowRight", "ArrowRight").await;
     key(&list, "ArrowRight", "ArrowRight").await;
     key(&list, "ArrowDown", "ArrowDown").await;
@@ -225,14 +225,14 @@ async fn keyboard_vertical() {
     list.focus().unwrap();
     settle().await;
     key(&list, "ArrowDown", "ArrowDown").await;
-    assert_eq!(focused(&host).as_deref(), Some("m_1"), "↓ идёт по корню");
+        assert_eq!(focused(&host).as_deref(), Some("m_1"), "Down walks the roots");
     key(&list, "ArrowUp", "ArrowUp").await;
     key(&list, "ArrowRight", "ArrowRight").await;
     assert!(is_active(&host, "m", "0"));
-    assert_eq!(focused(&host).as_deref(), Some("m_0_0_0_0"), "→ раскрывает и входит");
+        assert_eq!(focused(&host).as_deref(), Some("m_0_0_0_0"), "Right expands and enters");
     key(&list, "ArrowLeft", "ArrowLeft").await;
     assert_eq!(count(&host, ".p-megamenu-overlay"), 0);
-    assert_eq!(focused(&host).as_deref(), Some("m_0"), "← из первой колонки — на корень");
+        assert_eq!(focused(&host).as_deref(), Some("m_0"), "Left from the first column — to the root");
     host.remove();
 }
 
@@ -248,20 +248,20 @@ async fn mobile_button() {
     settle().await;
     assert!(root.class_name().contains("p-megamenu-mobile-active"));
     assert_eq!(button.get_attribute("aria-expanded").as_deref(), Some("true"));
-    assert!(!q(&host, "#m_list").style().get_property_value("z-index").unwrap().is_empty(), "открытый список получает z-index");
+        assert!(!q(&host, "#m_list").style().get_property_value("z-index").unwrap().is_empty(), "open list gets z-index");
     content(&host, "m", "0").click();
     settle().await;
-    assert_eq!(count(&host, ".p-megamenu-col-12"), 3, "на узком окне колонки на всю ширину");
-    assert!(root.class_name().contains("p-megamenu-mobile-active"), "группа раскрылась внутри открытой панели");
+        assert_eq!(count(&host, ".p-megamenu-col-12"), 3, "on a narrow window columns span the full width");
+        assert!(root.class_name().contains("p-megamenu-mobile-active"), "the group expanded inside the open panel");
     mouse(&doc().body().unwrap(), "click", true);
     settle().await;
-    assert!(!root.class_name().contains("p-megamenu-mobile-active"), "клик вне закрывает панель");
+        assert!(!root.class_name().contains("p-megamenu-mobile-active"), "outside click closes the panel");
     button.click();
     settle().await;
     button.click();
     settle().await;
     assert_eq!(button.get_attribute("aria-expanded").as_deref(), Some("false"));
-    assert_eq!(q(&host, "#m_list").style().get_property_value("z-index").unwrap(), "", "z-index снят");
+        assert_eq!(q(&host, "#m_list").style().get_property_value("z-index").unwrap(), "", "z-index removed");
     host.remove();
 }
 

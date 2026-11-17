@@ -4,14 +4,14 @@ test.describe('TreeTable', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 2000 });
         await page.goto('/treetable');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_treetable')).toBeAttached();
     });
 
     const names = (page, id: string) => page.locator(`#${id} tbody > tr > td:nth-child(1)`).allTextContents().then((t) => t.map((s) => s.trim()));
 
-    test('стили темы: отступы ячеек, кнопка раскрытия, строки в таблице', async ({ page }) => {
+    test('theme styles: cell indents, expand button, rows in the table', async ({ page }) => {
         const th = page.locator('#basic_treetable thead th').first();
         expect(parseFloat(await th.evaluate((el) => getComputedStyle(el).paddingLeft))).toBeGreaterThan(8);
         const toggler = page.locator('#basic_treetable .p-treetable-toggler').first();
@@ -21,7 +21,7 @@ test.describe('TreeTable', () => {
         await expect(page.locator('#basic_treetable tbody tr')).toHaveCount(5);
     });
 
-    test('раскрытие и сворачивание узлов с отступом по уровню', async ({ page }) => {
+    test('expanding and collapsing nodes with an indent by level', async ({ page }) => {
         const view = page.locator('#basic_treetable');
         await view.locator('.p-treetable-toggler').nth(0).click();
         expect((await names(page, 'basic_treetable')).slice(0, 4)).toEqual(['Applications', 'React', 'editor.app', 'settings.app']);
@@ -35,7 +35,7 @@ test.describe('TreeTable', () => {
         expect(await names(page, 'basic_treetable')).toEqual(['Applications', 'Cloud', 'Desktop', 'Documents', 'Downloads']);
     });
 
-    test('управляемое раскрытие: все и свернуть все', async ({ page }) => {
+    test('controlled expansion: all and collapse all', async ({ page }) => {
         const view = page.locator('#controlled_treetable');
         await view.scrollIntoViewIfNeeded();
         expect(await names(page, 'controlled_treetable')).toHaveLength(8);
@@ -45,7 +45,7 @@ test.describe('TreeTable', () => {
         expect(await names(page, 'controlled_treetable')).toEqual(['Applications', 'Cloud', 'Desktop', 'Documents', 'Downloads']);
     });
 
-    test('сортировка действует на каждом уровне', async ({ page }) => {
+    test('sorting applies at every level', async ({ page }) => {
         const view = page.locator('#sort_treetable');
         await view.scrollIntoViewIfNeeded();
         await view.locator('thead th').nth(0).click();
@@ -57,7 +57,7 @@ test.describe('TreeTable', () => {
         expect((await names(page, 'sort_treetable')).slice(4)).toEqual(['Applications', 'settings.app', 'editor.app', 'React']);
     });
 
-    test('пагинатор считает корневые узлы', async ({ page }) => {
+    test('paginator counts root nodes', async ({ page }) => {
         const view = page.locator('#paginator_treetable');
         await view.scrollIntoViewIfNeeded();
         await expect(view.locator('tbody tr')).toHaveCount(2);
@@ -67,7 +67,7 @@ test.describe('TreeTable', () => {
         expect(await names(page, 'paginator_treetable')).toEqual(['Downloads']);
     });
 
-    test('выбор узла кликом и с Ctrl', async ({ page }) => {
+    test('node selection by click and with Ctrl', async ({ page }) => {
         const single = page.locator('#single_treetable');
         await single.scrollIntoViewIfNeeded();
         await single.locator('tbody tr').nth(1).click();
@@ -78,19 +78,19 @@ test.describe('TreeTable', () => {
         await multiple.locator('tbody tr').nth(0).click();
         await multiple.locator('tbody tr').nth(2).click({ modifiers: ['Control'] });
         await expect(page.getByTestId('multiple-selection')).toHaveText('0, 2');
-        // клик по кнопке раскрытия не выбирает
+        // a click on the expand button does not select
         await multiple.locator('.p-treetable-toggler').nth(1).click();
         await expect(page.getByTestId('multiple-selection')).toHaveText('0, 2');
     });
 
-    test('флажки: выбор распространяется на потомков и родителей', async ({ page }) => {
+    test('checkboxes: selection propagates to descendants and parents', async ({ page }) => {
         const view = page.locator('#checkbox_treetable');
         await view.scrollIntoViewIfNeeded();
         const boxes = view.locator('tbody .p-treetable-node-checkbox');
         await boxes.nth(2).click(); // react.app
         await expect(page.getByTestId('checkbox-selection')).toHaveText('0-0-0, 0-0');
-        await expect(boxes.nth(1)).toHaveClass(/p-checkbox-checked/); // React: единственный ребёнок выбран
-        await expect(boxes.nth(0)).not.toHaveClass(/p-checkbox-checked/); // Applications: частично
+        await expect(boxes.nth(1)).toHaveClass(/p-checkbox-checked/); // React: the only child is selected
+        await expect(boxes.nth(0)).not.toHaveClass(/p-checkbox-checked/); // Applications: partial
         await boxes.nth(0).click(); // Applications
         const text = await page.getByTestId('checkbox-selection').textContent();
         expect(text!.split(', ').sort()).toEqual(['0', '0-0', '0-0-0', '0-1', '0-2'].sort());
@@ -98,7 +98,7 @@ test.describe('TreeTable', () => {
         await expect(page.getByTestId('checkbox-selection')).toHaveText('');
     });
 
-    test('сетка, размеры и загрузка', async ({ page }) => {
+    test('grid lines, sizes and loading', async ({ page }) => {
         const looks = page.locator('#looks_treetable .p-treetable');
         await looks.first().scrollIntoViewIfNeeded();
         await expect(looks.nth(0)).toHaveClass(/p-treetable-gridlines/);

@@ -1,4 +1,4 @@
-//! Глобальная конфигурация (аналог `PrimeNG` config service), доставляемая через Leptos context.
+//! Global configuration (analogous to the `PrimeNG` config service), delivered via a Leptos context.
 
 use crate::props::Variant;
 use crate::translation_defaults::DEFAULTS;
@@ -6,16 +6,16 @@ use crate::zindex::ZGroup;
 use leptos::prelude::*;
 use std::collections::BTreeMap;
 
-/// Базовые z-index групп оверлеев (значения по умолчанию, как в PrimeNG).
+/// Base z-index of overlay groups (defaults as in PrimeNG).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ZIndexBases {
-    /// Модальные окна.
+    /// Modal windows.
     pub modal: i32,
-    /// Оверлеи.
+    /// Overlays.
     pub overlay: i32,
-    /// Меню.
+    /// Menus.
     pub menu: i32,
-    /// Подсказки.
+    /// Tooltips.
     pub tooltip: i32,
 }
 
@@ -26,7 +26,7 @@ impl Default for ZIndexBases {
 }
 
 impl ZIndexBases {
-    /// Базовое значение для группы.
+    /// Base value for the group.
     pub fn base(&self, group: ZGroup) -> i32 {
         match group {
             ZGroup::Modal => self.modal,
@@ -37,22 +37,22 @@ impl ZIndexBases {
     }
 }
 
-/// Локализация: переопределения поверх английских строк по умолчанию.
+/// Localization: overrides on top of the default English strings.
 ///
-/// Ключи совпадают с ключами `PrimeNG.translation` (`accept`, `aria.close`, …).
+/// Keys match the keys of `PrimeNG.translation` (`accept`, `aria.close`, …).
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Locale {
     overrides: BTreeMap<String, String>,
 }
 
 impl Locale {
-    /// Переопределяет строку.
+    /// Overrides a string.
     pub fn with(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.overrides.insert(key.into(), value.into());
         self
     }
 
-    /// Возвращает строку перевода или `None` для неизвестного ключа.
+    /// Returns the translation string or `None` for an unknown key.
     pub fn get(&self, key: &str) -> Option<&str> {
         if let Some(v) = self.overrides.get(key) {
             return Some(v);
@@ -60,24 +60,24 @@ impl Locale {
         DEFAULTS.binary_search_by_key(&key, |(k, _)| k).ok().map(|i| DEFAULTS[i].1)
     }
 
-    /// Строка перевода; для неизвестного ключа — пустая строка.
+    /// Translation string; for an unknown key an empty string.
     pub fn text(&self, key: &str) -> &str {
         self.get(key).unwrap_or("")
     }
 }
 
-/// Конфигурация библиотеки.
+/// Library configuration.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PrimeConfig {
-    /// Эффект ripple у кнопок и полей (по умолчанию выключен, как в PrimeNG).
+    /// Ripple effect on buttons and fields (off by default, as in PrimeNG).
     pub ripple: bool,
-    /// Вариант полей ввода по умолчанию (`None` — как задаёт тема, обычно outlined).
+    /// Default input field variant (`None` means as the theme sets, usually outlined).
     pub input_variant: Option<Variant>,
-    /// Базовые z-index оверлеев.
+    /// Base z-index of overlays.
     pub z_index: ZIndexBases,
-    /// Селектор тёмного режима (как `darkModeSelector` в PrimeNG).
+    /// Dark mode selector (as `darkModeSelector` in PrimeNG).
     pub dark_mode_selector: String,
-    /// Локализация.
+    /// Localization.
     pub locale: Locale,
 }
 
@@ -93,9 +93,9 @@ impl Default for PrimeConfig {
     }
 }
 
-/// Делает конфигурацию доступной всем компонентам ниже по дереву.
+/// Makes the configuration available to all components lower in the tree.
 ///
-/// Вызывается внутри компонента-провайдера; вне провайдера [`use_prime_config`] вернёт значения по умолчанию.
+/// Called inside a provider component; outside a provider [`use_prime_config`] returns the defaults.
 ///
 /// ```
 /// use leptos::prelude::*;
@@ -110,7 +110,7 @@ pub fn provide_prime_config(config: PrimeConfig) {
     provide_context(config);
 }
 
-/// Текущая конфигурация; вне провайдера — значения по умолчанию.
+/// Current configuration; outside a provider, the defaults.
 pub fn use_prime_config() -> PrimeConfig {
     use_context::<PrimeConfig>().unwrap_or_default()
 }
@@ -135,8 +135,8 @@ mod tests {
         assert_eq!(l.get("accept"), Some("Yes"));
         assert_eq!(l.get("aria.close"), Some("Close"));
         assert_eq!(l.get("nope"), None);
-        let l = l.with("accept", "Да");
-        assert_eq!(l.text("accept"), "Да");
+        let l = l.with("accept", "Agree");
+        assert_eq!(l.text("accept"), "Agree");
         assert_eq!(l.text("reject"), "No");
     }
 

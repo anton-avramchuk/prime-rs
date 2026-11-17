@@ -1,16 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-test('страница гидрируется, иконки и переключатель схемы работают', async ({ page }) => {
+test('the page hydrates, icons and the color scheme toggle work', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto('/');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
     await expect(page.locator('[data-testid=icons] svg')).toHaveCount(54);
 
     const bg = () => page.getByTestId('app').evaluate((el) => getComputedStyle(el).backgroundColor);
     const light = await bg();
-    // клик срабатывает только после гидрации: ждём, пока класс появится
+    // the click works only after hydration: wait until the class appears
     await expect(async () => {
         await page.getByTestId('toggle-dark').click();
         await expect(page.locator('html')).toHaveClass(/p-dark/, { timeout: 500 });

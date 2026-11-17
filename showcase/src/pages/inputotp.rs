@@ -1,14 +1,14 @@
-//! Страница InputOtp: демонстрации `basic`, `mask`, `integeronly`, `sizes`, `template` по `apps/showcase/doc/inputotp` PrimeNG.
+//! InputOtp page: demos `basic`, `mask`, `integeronly`, `sizes`, `template` after PrimeNG `apps/showcase/doc/inputotp`.
 //!
-//! Демонстрации `reactiveforms`, `templatedrivenforms` и `sample` не переносятся (Angular Forms). В `template` вместо
-//! значка `pi-minus` разделитель — тире.
+//! The `reactiveforms`, `templatedrivenforms` and `sample` demos are not ported (Angular Forms). In `template` the
+//! separator is a dash instead of the `pi-minus` icon.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_core::Size;
 use prime_inputotp::{InputOtp, InputOtpSlot};
 
-/// Страница `/inputotp`.
+/// Page `/inputotp`.
 #[component]
 pub fn InputOtpPage() -> impl IntoView {
     let basic = RwSignal::new(String::new());

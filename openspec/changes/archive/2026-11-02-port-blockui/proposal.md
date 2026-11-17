@@ -2,27 +2,27 @@
 
 ## Why
 
-BlockUI — второй компонент волны 4: полупрозрачная маска, блокирующая либо весь документ, либо выбранный элемент (панель, карточку), с произвольным содержимым по центру (например, индикатор загрузки). Он нужен как основа для состояний «идёт загрузка» и использует уже готовые общие части: слои `ZGroup::Modal`, счётчик блокировки прокрутки страницы и `Portal`.
+BlockUI is the second component of wave 4: a semi-transparent mask that blocks either the whole document or a chosen element (a panel, a card), with arbitrary content in the centre (for example, a loading indicator). It is needed as the basis for the "loading" states and uses the already finished shared parts: the layers `ZGroup::Modal`, the page scroll-lock counter and `Portal`.
 
 ## What Changes
 
-- Новый крейт `prime-blockui` (порт `p-blockui` из PrimeNG 21.1.10).
-- `BlockUI`: пока `blocked = false`, в DOM ничего нет; при `blocked = true` в целевой элемент (`target`) либо в `body` (документ) выводится маска `div.p-blockui.p-blockui-mask.p-overlay-mask.p-overlay-mask-enter-active` (в режиме документа ещё `p-blockui-mask-document`) с `display: flex`, `aria-busy="true"` и содержимым `children`; при снятии играет анимация выхода (`p-overlay-mask-leave-active`, `aria-busy="false"`), затем маска убирается.
-- Свойства: `blocked` (значение или сигнал), `target` (`BlockTarget` из `NodeRef` любого элемента; без него блокируется документ), `auto_z_index` (да), `base_z_index` (0), `style`, `style_class`, `pt`, `children`.
-- Поведение: в режиме цели целевому элементу временно ставится `position: relative` (прежнее значение возвращается после выхода маски); в режиме документа блокируется прокрутка страницы (`prime_dom::block_body_scroll`, счётчик с Dialog/Drawer); при `auto_z_index` маска получает слой группы `Modal` со сдвигом `base_z_index`; повторное включение во время выхода возвращает маску в состояние «заблокирован»; при размонтировании слой и прокрутка освобождаются.
-- Страница showcase `/blockui` с демонстрациями `basic` (маска над панелью) и `document` (маска над документом на три секунды); e2e; бенчмарки и бюджеты; `docs/blockui.md`.
-- Стили: `blockui` добавляется в `theme.components`.
-- **Не входит:** проверка `BlockableUI` (в Rust цель — любой `NodeRef`), выбор через шаблон `content` (содержимое — `children`), `Bind`, `pTemplate`.
+- A new crate `prime-blockui` (a port of `p-blockui` from PrimeNG 21.1.10).
+- `BlockUI`: while `blocked = false`, nothing is in the DOM; with `blocked = true` a mask `div.p-blockui.p-blockui-mask.p-overlay-mask.p-overlay-mask-enter-active` (in document mode also `p-blockui-mask-document`) with `display: flex`, `aria-busy="true"` and the content `children` is rendered into the target element (`target`) or into `body` (the document); on release the exit animation plays (`p-overlay-mask-leave-active`, `aria-busy="false"`), then the mask is removed.
+- Properties: `blocked` (a value or a signal), `target` (a `BlockTarget` from the `NodeRef` of any element; without it the document is blocked), `auto_z_index` (yes), `base_z_index` (0), `style`, `style_class`, `pt`, `children`.
+- Behaviour: in target mode the target element temporarily gets `position: relative` (the previous value is restored after the mask exits); in document mode the page scrolling is blocked (`prime_dom::block_body_scroll`, a counter shared with Dialog/Drawer); with `auto_z_index` the mask gets a layer of the `Modal` group shifted by `base_z_index`; re-enabling during the exit returns the mask to the "blocked" state; on unmount the layer and the scrolling are released.
+- The showcase page `/blockui` with the demos `basic` (a mask over a panel) and `document` (a mask over the document for three seconds); e2e; benchmarks and budgets; `docs/blockui.md`.
+- Styles: `blockui` is added to `theme.components`.
+- **Not included:** the `BlockableUI` check (in Rust the target is any `NodeRef`), the selection via the `content` template (the content is `children`), `Bind`, `pTemplate`.
 
 ## Capabilities
 
 ### New Capabilities
-- `blockui`: маска, блокирующая документ или выбранный элемент.
+- `blockui`: a mask that blocks the document or a chosen element.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-blockui` (`publish = false`); зависимости: `prime-core`, `prime-dom`, `web-sys`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (браузерный job, три места).
+- A new crate `crates/prime-blockui` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `web-sys`.
+- Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places).

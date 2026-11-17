@@ -1,11 +1,11 @@
-//! Slider — порт `p-slider` из PrimeNG 21.1.10.
+//! Slider — port of `p-slider` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-slider` (вместо хоста `<p-slider>`), внутри `span.p-slider-range` и одна
-//! (`role=slider`) или, при `range`, две ручки `span.p-slider-handle`.
+//! Markup and classes as in PrimeNG: root `div.p-slider` (instead of the `<p-slider>` host), inside it `span.p-slider-range` and one
+//! (`role=slider`) or, with `range`, two `span.p-slider-handle` handles.
 //!
-//! Значение — двусторонний сигнал `value: RwSignal<f64>`, в режиме диапазона — `values: RwSignal<[f64; 2]>` (меньшее первым).
-//! Без сигнала компонент ведёт внутреннее состояние (`default_value`, `default_values`). Ручку можно перетаскивать мышью и
-//! касанием, двигать клавишами (стрелки, `PageUp`/`PageDown`, `Home`/`End`), а клик по полосе переносит туда активную ручку.
+//! The value is a two-way signal `value: RwSignal<f64>`, in range mode — `values: RwSignal<[f64; 2]>` (smaller first).
+//! Without a signal the component keeps internal state (`default_value`, `default_values`). A handle can be dragged with the mouse and
+//! touch, moved with keys (arrows, `PageUp`/`PageDown`, `Home`/`End`), and a click on the track moves the active handle there.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -32,102 +32,102 @@ pub use state::{
     touch_percent, value_from_percent, write_classes,
 };
 
-/// Событие изменения значения: новое значение и исходное событие браузера.
+/// Value change event: the new value and the original browser event.
 #[derive(Clone, Debug)]
 pub struct SliderChange {
-    /// Новое значение (в диапазоне меньшее первым).
+    /// New value (in a range, the smaller first).
     pub value: SliderValue,
-    /// Исходное событие (клик, перемещение указателя, касание или `keydown`).
+    /// Original event (click, pointer move, touch or `keydown`).
     pub original_event: web_sys::Event,
 }
 
-/// Событие окончания перетаскивания или клика по полосе.
+/// Event of the end of dragging or of a click on the track.
 #[derive(Clone, Debug)]
 pub struct SliderSlideEnd {
-    /// Значение на момент окончания.
+    /// Value at the moment of the end.
     pub value: SliderValue,
-    /// Исходное событие (`mouseup`, `touchend` или `click`).
+    /// Original event (`mouseup`, `touchend` or `click`).
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей Slider.
+/// Pass-through parts of Slider.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct SliderPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Заполненная часть (`span.p-slider-range`).
+    /// Filled part (`span.p-slider-range`).
     pub range: Pt,
-    /// Ручка одиночного режима.
+    /// Handle of single mode.
     pub handle: Pt,
-    /// Первая ручка диапазона.
+    /// First handle of the range.
     pub start_handler: Pt,
-    /// Вторая ручка диапазона.
+    /// Second handle of the range.
     pub end_handler: Pt,
 }
 
-/// Ползунок выбора числа или диапазона.
+/// A slider for choosing a number or a range.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` и `values` — двусторонние сигналы.
+/// Each property accepts a value or a signal; `value` and `values` are two-way signals.
 #[component]
 pub fn Slider(
-    /// Двусторонний сигнал значения (одиночный режим).
+    /// Two-way value signal (single mode).
     #[prop(optional)]
     value: Option<RwSignal<f64>>,
-    /// Двусторонний сигнал значений (режим `range`).
+    /// Two-way values signal (`range` mode).
     #[prop(optional)]
     values: Option<RwSignal<[f64; 2]>>,
-    /// Начальное значение, если `value` не передан.
+    /// Initial value if `value` is not passed.
     #[prop(optional)]
     default_value: f64,
-    /// Начальные значения, если `values` не передан (по умолчанию `[0, 0]`).
+    /// Initial values if `values` is not passed (default `[0, 0]`).
     #[prop(optional)]
     default_values: Option<[f64; 2]>,
-    /// Режим диапазона: две ручки.
+    /// Range mode: two handles.
     #[prop(optional, into)]
     range: Prop<bool>,
-    /// Нижняя граница (по умолчанию 0).
+    /// Lower bound (default 0).
     #[prop(optional, into)]
     min: OptProp<f64>,
-    /// Верхняя граница (по умолчанию 100).
+    /// Upper bound (default 100).
     #[prop(optional, into)]
     max: OptProp<f64>,
-    /// Шаг изменения значения.
+    /// Value change step.
     #[prop(optional, into)]
     step: OptProp<f64>,
-    /// Ориентация.
+    /// Orientation.
     #[prop(optional, into)]
     orientation: Prop<SliderOrientation>,
-    /// Анимация положения при клике по полосе.
+    /// Position animation on a click on the track.
     #[prop(optional, into)]
     animate: Prop<bool>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Атрибут `tabindex` ручек (по умолчанию 0; при `disabled` атрибута нет).
+    /// `tabindex` attribute of the handles (default 0; absent when `disabled`).
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label` ручек.
+    /// `aria-label` attribute of the handles.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` ручек.
+    /// `aria-labelledby` attribute of the handles.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при каждом изменении значения пользователем.
+    /// Called on every user change of the value.
     #[prop(optional, into)]
     on_change: Option<Callback<SliderChange>>,
-    /// Вызывается по окончании перетаскивания или клика по полосе.
+    /// Called at the end of dragging or a click on the track.
     #[prop(optional, into)]
     on_slide_end: Option<Callback<SliderSlideEnd>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<SliderPt>,
 ) -> impl IntoView {
@@ -158,7 +158,7 @@ pub fn Slider(
         touch: StoredValue::new(Touch::default()),
         listeners: StoredValue::new_local(Vec::new()),
     });
-    // Слушатели `window` живут только во время перетаскивания; при размонтировании снимаются.
+    // `window` listeners live only during dragging; removed on unmount.
     {
         let props = props.clone();
         on_cleanup(move || props.unbind_window());
@@ -201,7 +201,7 @@ pub fn Slider(
         let props = props.clone();
         move |e: web_sys::MouseEvent| props.bar_click(e)
     };
-    // Структура зависит только от `range`; значения и границы читаются внутри ручек и заполнения.
+    // The structure depends only on `range`; values and bounds are read inside the handles and the fill.
     let parts = {
         let (props, pt) = (props.clone(), pt.clone());
         move || {
@@ -239,7 +239,7 @@ pub fn Slider(
     }
 }
 
-/// Заполненная часть полосы.
+/// Filled part of the track.
 fn range_view(props: &Arc<Props>, pt: &Arc<SliderPt>) -> impl IntoView + use<> {
     let class = pt.range.merge_class("p-slider-range");
     let style = {
@@ -258,7 +258,7 @@ fn range_view(props: &Arc<Props>, pt: &Arc<SliderPt>) -> impl IntoView + use<> {
     view! { <span class={class} data-pc-section="range" style={style} {..attrs}></span> }
 }
 
-/// Ручка с номером `index` (в одиночном режиме 0).
+/// Handle number `index` (0 in single mode).
 fn handle_view(props: &Arc<Props>, handle_pt: &Pt, index: usize, section: &'static str) -> impl IntoView + use<> {
     let ranged = section != "handle";
     let class = {
@@ -361,7 +361,7 @@ fn handle_view(props: &Arc<Props>, handle_pt: &Pt, index: usize, section: &'stat
     }
 }
 
-/// Начало касания: координата вдоль полосы, размер полосы и стартовая доля ручки.
+/// Touch start: the coordinate along the track, the track size and the handle's starting fraction.
 #[derive(Clone, Copy, Debug, Default)]
 struct Touch {
     start: f64,
@@ -369,7 +369,7 @@ struct Touch {
     percent: f64,
 }
 
-/// Свойства и состояние экземпляра.
+/// Instance properties and state.
 struct Props {
     value: RwSignal<f64>,
     values: RwSignal<[f64; 2]>,
@@ -388,11 +388,11 @@ struct Props {
     style_class: OptProp<String>,
     on_change: Option<Callback<SliderChange>>,
     on_slide_end: Option<Callback<SliderSlideEnd>>,
-    /// Индекс активной ручки (`handleIndex`).
+    /// Index of the active handle (`handleIndex`).
     active: RwSignal<usize>,
-    /// Идёт перетаскивание.
+    /// Dragging in progress.
     dragging: RwSignal<bool>,
-    /// Нажатие пришлось на ручку: следующий `click` не считается кликом по полосе (`sliderHandleClick`).
+    /// The press landed on a handle: the next `click` is not counted as a click on the track (`sliderHandleClick`).
     handle_pressed: AtomicBool,
     root_ref: NodeRef<html::Div>,
     handle_refs: [NodeRef<html::Span>; 2],
@@ -413,17 +413,17 @@ impl Props {
         (self.min.get_untracked().unwrap_or(0.0), self.max.get_untracked().unwrap_or(100.0))
     }
 
-    /// Значение ручки (с подпиской): в одиночном режиме одно, в диапазоне по индексу.
+    /// Handle value (subscribed): in single mode one, in a range by index.
     fn value_at(&self, index: usize) -> f64 {
         if self.range.get() { self.values.get()[index] } else { self.value.get() }
     }
 
-    /// Положение ручки, % (с подпиской).
+    /// Handle position, % (subscribed).
     fn handle_percent(&self, index: usize) -> f64 {
         percent(self.value_at(index), self.min_t(), self.max_t())
     }
 
-    /// Начало и длина заполненной части, % (с подпиской): в диапазоне — между ручками независимо от порядка.
+    /// Start and length of the filled part, % (subscribed): in a range — between the handles regardless of order.
     fn fill(&self) -> (f64, f64) {
         if self.range.get() {
             let (a, b) = (self.handle_percent(0), self.handle_percent(1));
@@ -459,8 +459,8 @@ impl Props {
         }
     }
 
-    /// `updateValue`: ограничение, нормализация, запись, событие и фокус активной ручки.
-    /// В диапазоне значение пишется в `index`; пара остаётся упорядоченной, при пересечении активной становится вторая ручка.
+    /// `updateValue`: clamping, normalization, writing, event and focus of the active handle.
+    /// In a range the value is written to `index`; the pair stays ordered, on crossing the second handle becomes active.
     fn update_value(&self, raw: f64, event: web_sys::Event, index: usize) {
         let (min, max) = self.bounds();
         let v = normalize(clamp(raw, min, max), self.step.get_untracked());
@@ -480,12 +480,12 @@ impl Props {
         self.focus_active();
     }
 
-    /// Значение активной ручки (без подписки).
+    /// Value of the active handle (not subscribed).
     fn active_value(&self) -> f64 {
         if self.range.get_untracked() { self.values.get_untracked()[self.active.get_untracked()] } else { self.value.get_untracked() }
     }
 
-    /// `setValueFromHandle`: значение по доле полосы, с шагом — через `handleStepChange`.
+    /// `setValueFromHandle`: value by the track fraction, with a step — via `handleStepChange`.
     fn set_from_percent(&self, percent: f64, event: web_sys::Event) {
         let (min, max) = self.bounds();
         let new = value_from_percent(percent, min, max);
@@ -496,7 +496,7 @@ impl Props {
         self.update_value(target, event, self.active.get_untracked());
     }
 
-    /// Геометрия полосы: начало и размер вдоль оси, RTL.
+    /// Track geometry: start and size along the axis, RTL.
     fn geometry(&self) -> Option<(f64, f64, bool)> {
         let root: web_sys::HtmlElement = self.root_ref.get_untracked()?.unchecked_into();
         let rect = root.get_bounding_client_rect();
@@ -511,7 +511,7 @@ impl Props {
         })
     }
 
-    /// Доля полосы под указателем с клиентскими координатами `(x, y)`.
+    /// Track fraction under the pointer with client coordinates `(x, y)`.
     fn pointer_percent(&self, x: f64, y: f64) -> Option<f64> {
         let vertical = self.orientation.get_untracked().is_vertical();
         let (start, size, rtl) = self.geometry()?;
@@ -530,7 +530,7 @@ impl Props {
         }
     }
 
-    /// Ручка нажата: выбирается ручка, фокус, подписка на перемещение и отпускание на `window`.
+    /// Handle pressed: the handle is selected, focus, subscription to move and release on `window`.
     fn mouse_down(self: &Arc<Self>, e: web_sys::MouseEvent, index: usize) {
         if self.disabled.get_untracked() {
             return;
@@ -561,7 +561,7 @@ impl Props {
                 on_up.dragging.set(false);
                 on_up.unbind_window();
                 on_up.emit_slide_end(e.into());
-                // `click` после отпускания приходит синхронно, а если отпустили вне полосы, флаг нужно сбросить
+                // `click` after release arrives synchronously, and if released outside the track, the flag must be reset
                 let reset = on_up.clone();
                 set_timeout(move || reset.handle_pressed.store(false, Ordering::Relaxed), std::time::Duration::ZERO);
             }

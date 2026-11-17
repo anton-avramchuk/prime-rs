@@ -2,24 +2,24 @@
 
 ## Why
 
-ProgressBar — последний компонент волны 1: индикатор выполнения (определённый и неопределённый). Он без поведения на стороне клиента, поэтому проверяет, что шаблон компонента (две ветви отрисовки, `pt`, `data-p`) хорошо ложится и на чисто отображающие компоненты со значением-числом.
+ProgressBar is the last component of wave 1: a progress indicator (determinate and indeterminate). It has no client-side behavior, so it checks that the component template (two render branches, `pt`, `data-p`) also fits purely presentational components with a numeric value.
 
 ## What Changes
 
-- Новый крейт `prime-progressbar` с компонентом `ProgressBar`: `value` (число, 0–100), `mode` (`determinate` по умолчанию, `indeterminate`), `show_value` (по умолчанию `true`), `unit` (по умолчанию `%`), `color`, `style`, `style_class`, `value_style_class`, слот `content_template` (получает значение), `pt` (`root`, `value`, `label`).
-- Разметка и классы как в PrimeNG 21.1.10: корень `role="progressbar"` с `aria-valuemin="0"`, `aria-valuemax="100"`, `aria-valuenow`, `aria-level` и классами `p-progressbar p-component p-progressbar-determinate|indeterminate`; в режиме `determinate` — `div.p-progressbar-value` (`width: <value>%; display: flex`, при `color` — `background`) с `div.p-progressbar-label`; в режиме `indeterminate` — только `div.p-progressbar-value`; `data-p` на корне и частях.
-- Страница `/progressbar` (`basic`, `dynamic`, `indeterminate`, `template`), e2e, бенчмарки, бюджеты.
-- **Не входит:** анимации обновления (CSS темы), интеграция с формами.
+- New crate `prime-progressbar` with the `ProgressBar` component: `value` (a number, 0-100), `mode` (`determinate` by default, `indeterminate`), `show_value` (`true` by default), `unit` (`%` by default), `color`, `style`, `style_class`, `value_style_class`, the `content_template` slot (receives the value), `pt` (`root`, `value`, `label`).
+- Markup and classes as in PrimeNG 21.1.10: root `role="progressbar"` with `aria-valuemin="0"`, `aria-valuemax="100"`, `aria-valuenow`, `aria-level` and classes `p-progressbar p-component p-progressbar-determinate|indeterminate`; in `determinate` mode - `div.p-progressbar-value` (`width: <value>%; display: flex`, with `color` - `background`) with `div.p-progressbar-label`; in `indeterminate` mode - only `div.p-progressbar-value`; `data-p` on the root and parts.
+- The `/progressbar` page (`basic`, `dynamic`, `indeterminate`, `template`), e2e, benchmarks, budgets.
+- **Not included:** update animations (theme CSS), form integration.
 
 ## Capabilities
 
 ### New Capabilities
-- `progressbar`: компонент ProgressBar — режимы, значение, подпись, классы, `pt`, производительность.
+- `progressbar`: the ProgressBar component - modes, value, label, classes, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-progressbar` (`publish = false`); зависимость только `prime-core`.
-- Изменяются `showcase`, `benches/render`, `benches/wasm-size`, бюджеты, `e2e/tests`.
+- New crate `crates/prime-progressbar` (`publish = false`); the only dependency is `prime-core`.
+- Changed: `showcase`, `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`.

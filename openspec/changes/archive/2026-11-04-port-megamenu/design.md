@@ -2,51 +2,51 @@
 
 ## Context
 
-Требования — в `specs/megamenu`. Исходники PrimeNG 21.1.10: `megamenu/megamenu.ts` (`MegaMenuSub` — уровень, `MegaMenu` — состояние, мобильная кнопка), `megamenu/style/megamenustyle.ts`; демонстрации `apps/showcase/doc/megamenu/{basic,vertical,command,template}-doc.ts` (`router` и `accessibility` не переносятся). Образцы — `prime-menubar` (путь, фокус, поиск, слушатели окна, мобильная кнопка) и `prime-panelmenu` (собственная модель на `prime_tieredmenu::Node`).
+Requirements are in `specs/megamenu`. PrimeNG 21.1.10 sources: `megamenu/megamenu.ts` (`MegaMenuSub` — a level, `MegaMenu` — state, mobile button), `megamenu/style/megamenustyle.ts`; demos `apps/showcase/doc/megamenu/{basic,vertical,command,template}-doc.ts` (`router` and `accessibility` are not ported). Models: `prime-menubar` (path, focus, search, window listeners, mobile button) and `prime-panelmenu` (own model on `prime_tieredmenu::Node`).
 
-Отличия от Menubar по исходнику:
-- Дерево «обработанных пунктов» трёхуровневое: корневой пункт (`level 0`) → подменю в колонке (`level 1`, ключ `<корень>_<колонка>_<индекс>`) → пункты подменю (`level 2`, ключ `<подменю>_<индекс>`). `visibleItems` при активном корне — плоский список пунктов всех подменю его колонок.
-- Две ориентации: стрелки корня зависят от `orientation`; стрелка группы — вниз (горизонтально, мобильный) или вправо.
-- Нет `auto_hide`; `scroll_height` ограничивает корневой список.
-- Подменю в колонках — не вложенные всплывающие уровни, а часть одного наложения, поэтому `level` ARIA считается как в исходнике (`level + 1`).
+Differences from Menubar per the source:
+- The tree of "processed items" has three levels: root item (`level 0`) → submenu in a column (`level 1`, key `<root>_<column>_<index>`) → submenu items (`level 2`, key `<submenu>_<index>`). `visibleItems` with an active root is a flat list of items of all submenus of its columns.
+- Two orientations: root arrows depend on `orientation`; the group arrow is down (horizontal, mobile) or right.
+- No `auto_hide`; `scroll_height` limits the root list.
+- Submenus in columns are not nested popup levels but part of one overlay, so ARIA `level` is computed as in the source (`level + 1`).
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы, `aria-*`, клавиши и поведение.
+**Goals:** the same DOM, classes, `aria-*`, keys and behavior.
 
-**Non-Goals:** `routerLink`, `Tooltip`/`Badge`, HTML-метки, `Ripple`, `Bind`, `pTemplate`, замена кнопки целиком (`#button`), `accessibility`-демо.
+**Non-Goals:** `routerLink`, `Tooltip`/`Badge`, HTML labels, `Ripple`, `Bind`, `pTemplate`, replacing the whole button (`#button`), the `accessibility` demo.
 
 ## Decisions
 
-### D1. Модель и чистая логика
-`MegaMenuItem`/`MegaMenuSubmenu` (поля выше) и собственные `state.rs`: построение узлов с ключами по схеме исходника, `visible(active)`, переходы `arrow_down/up/left/right`, `home`/`end`, `escape`, `tab`, поиск, `click`/`hover` с `dirty`/`mobile`. Сначала сверить `onArrow*Key`, `onItemChange`, `findNextItemIndex`, `findPrevItemIndex` исходника; переиспользовать `prime_tieredmenu::{is_printable, aria_pos_inset, aria_set_size}` и `Focus`/`State`, если подходят без правок, иначе завести свои типы. Все функции — чистые, с табличными тестами.
+### D1. Model and pure logic
+`MegaMenuItem`/`MegaMenuSubmenu` (fields above) and our own `state.rs`: building nodes with keys per the source scheme, `visible(active)`, transitions `arrow_down/up/left/right`, `home`/`end`, `escape`, `tab`, search, `click`/`hover` with `dirty`/`mobile`. First check `onArrow*Key`, `onItemChange`, `findNextItemIndex`, `findPrevItemIndex` of the source; reuse `prime_tieredmenu::{is_printable, aria_pos_inset, aria_set_size}` and `Focus`/`State` if they fit without changes, otherwise introduce our own types. All functions are pure, with table-driven tests.
 
-### D2. Разметка и состояние
-`Core` по образцу Menubar: `state`, `focus`, `mobile`, `mobile_active`, поиск, `cleanups` слушателей окна. Уровни — рекурсивные функции: корневой список, пункт, наложение (`columns_view`), подменю, пункты подменю. Класс колонки считает чистая функция `column_class(columns: usize, mobile: bool)` с тестом. Наложение выводится только у активной группы.
+### D2. Markup and state
+`Core` modeled on Menubar: `state`, `focus`, `mobile`, `mobile_active`, search, `cleanups` of window listeners. Levels are recursive functions: root list, item, overlay (`columns_view`), submenu, submenu items. The column class is computed by the pure function `column_class(columns: usize, mobile: bool)` with a test. The overlay is rendered only for the active group.
 
-### D3. Ориентация и стрелки
-`MegaMenuOrientation { Horizontal, Vertical }`; от неё зависят класс корня, `aria-orientation`, стрелка группы и выбор функций модели для корня.
+### D3. Orientation and arrows
+`MegaMenuOrientation { Horizontal, Vertical }`; the root class, `aria-orientation`, the group arrow and the choice of model functions for the root depend on it.
 
-### D4. Мобильный режим и слушатели
-Как в Menubar: `matchMedia`, кнопка, слой `Menu`, слушатели клика вне и `resize` висят, пока путь не пуст или открыта панель; возврат фокуса на кнопку. `matchMedia` — общий помощник; если он нужен второй раз, оставляем копию (вынос — после следующего потребителя).
+### D4. Mobile mode and listeners
+As in Menubar: `matchMedia`, button, `Menu` layer, outside-click and `resize` listeners stay attached while the path is non-empty or the panel is open; focus returns to the button. `matchMedia` is a shared helper; if it is needed a second time, we keep a copy (extraction after the next consumer).
 
-### D5. Тесты
-SSR: разметка, ориентации, колонки и их классы, заголовки подменю, разделители, отключённые, скрытые, слоты, шаблоны, `pt`. Браузерные `tests/web.rs` одним последовательным тестом: клик/повторный клик, лист и команда, наведение, клик вне, клавиатура (обе ориентации, колонки, Escape), поиск, мобильная кнопка, размонтирование; после `dispatch` клавиши ждать `sleep(10)` (DOM обновляют эффекты). e2e: раскладка колонок темой, вертикальная ориентация, клавиатура, мобильная кнопка.
+### D5. Tests
+SSR: markup, orientations, columns and their classes, submenu headers, separators, disabled, hidden, slots, templates, `pt`. Browser `tests/web.rs` as one sequential test: click/repeated click, leaf and command, hover, outside click, keyboard (both orientations, columns, Escape), search, mobile button, unmounting; after a key `dispatch` wait `sleep(10)` (effects update the DOM). e2e: column layout by the theme, vertical orientation, keyboard, mobile button.
 
-### D6. Демонстрации и бенчмарки
-`basic`, `vertical`, `command` (Toast), `template`. Бенч `megamenu-1`/`-1000`, `case-megamenu`.
+### D6. Demos and benchmarks
+`basic`, `vertical`, `command` (Toast), `template`. Bench `megamenu-1`/`-1000`, `case-megamenu`.
 
 ## Risks / Trade-offs
 
-- [Своя модель] Расхождение с `TieredMenu` в навигации по колонкам → отдельный `state.rs` с таблицей тестов на каждую стрелку и обе ориентации.
-- [Читать сигналы при построении вида] Чтение сигнала внутри замыкания, строящего вид, пересоздаёт всё и теряет фокус → в построении только `*_untracked` / `with_untracked`.
-- [Мобильный режим] Зависит от стилей темы и `matchMedia`; проверяется e2e при узком окне.
+- [Own model] Divergence from `TieredMenu` in column navigation → a separate `state.rs` with a table of tests for each arrow and both orientations.
+- [Reading signals while building the view] Reading a signal inside the closure that builds the view recreates everything and loses focus → while building use only `*_untracked` / `with_untracked`.
+- [Mobile mode] Depends on theme styles and `matchMedia`; verified by e2e on a narrow window.
 
 ## Open Questions
 
-- Как `onItemChange`/`hide` ведут себя при клике по заголовку подменю (`submenuLabel`) — сверить при apply.
-- Нужен ли `focusedItemInfo.columnIndex` при ↑↓ в колонках или хватает индекса в плоском списке — решить по `findNextItemIndex`.
+- How `onItemChange`/`hide` behave on a click on a submenu header (`submenuLabel`) — check during apply.
+- Whether `focusedItemInfo.columnIndex` is needed for Up/Down within columns or the index in the flat list suffices — decide by `findNextItemIndex`.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

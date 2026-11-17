@@ -1,6 +1,6 @@
-//! Страница ButtonGroup: демонстрации `basic` и `icons` по `apps/showcase/doc/buttongroup` PrimeNG.
+//! ButtonGroup page: the `basic` and `icons` demos from `apps/showcase/doc/buttongroup` in PrimeNG.
 //!
-//! Нет иконок `bookmark`, `heart`, `time` в `prime-icons`, поэтому во втором примере взяты `plus`, `pencil`, `trash`.
+//! There are no `bookmark`, `heart`, `time` icons in `prime-icons`, so the second example uses `plus`, `pencil`, `trash`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -8,7 +8,7 @@ use prime_button::Button;
 use prime_buttongroup::ButtonGroup;
 use prime_icons::{CheckIcon, PencilIcon, PlusIcon, TimesIcon, TrashIcon};
 
-/// Страница `/buttongroup`.
+/// `/buttongroup` page.
 #[component]
 pub fn ButtonGroupPage() -> impl IntoView {
     view! {

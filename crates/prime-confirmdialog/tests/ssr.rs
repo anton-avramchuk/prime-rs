@@ -1,4 +1,4 @@
-//! ConfirmDialog на сервере: панели нет, пока нет подтверждения; подписка на сервис снимается при размонтировании.
+//! ConfirmDialog on the server: no panel while there is no confirmation; the service subscription is dropped on unmount.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -26,7 +26,7 @@ fn confirmation_on_the_server_does_not_render_a_panel() {
 }
 
 #[test]
-#[should_panic(expected = "ConfirmationService не найден")]
+#[should_panic(expected = "ConfirmationService not found")]
 fn component_requires_the_service() {
     Owner::new().with(|| {
         let _ = view! { <ConfirmDialog /> }.to_html();
@@ -43,6 +43,6 @@ fn unmounting_unsubscribes_from_the_service() {
         let _ = view! { <ConfirmDialog key="k" /> }.to_html();
     });
     drop(child);
-    // после размонтирования рассылка никого не будит и не падает
+    // after unmount a broadcast wakes nobody and does not fail
     owner.with(|| service.confirm(Confirmation::new().key("k").message("late")));
 }

@@ -1,7 +1,7 @@
-//! AvatarGroup — порт `p-avatar-group` из PrimeNG 21.1.10.
+//! AvatarGroup — port of `p-avatar-group` from PrimeNG 21.1.10.
 //!
-//! Контейнер для нескольких Avatar: корень `div.p-avatar-group.p-component` (вместо хоста `<p-avatar-group>`) с дочерним содержимым
-//! без обёрток. Расположение и перекрытие аватаров задаёт CSS темы.
+//! A container for several Avatars: root `div.p-avatar-group.p-component` (instead of the host `<p-avatar-group>`) with child content
+//! without wrappers. The placement and overlap of the avatars are set by the theme CSS.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -17,21 +17,21 @@ use prime_core::{ClassNames, OptProp, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
-/// Группа аватаров.
+/// Group of avatars.
 ///
-/// Каждое свойство принимает значение или сигнал.
+/// Each property accepts a value or a signal.
 #[component]
 pub fn AvatarGroup(
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through корня.
+    /// Pass-through of the root.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Аватары группы.
+    /// Avatars of the group.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -57,7 +57,7 @@ pub fn AvatarGroup(
     }
 }
 
-/// Разметка AvatarGroup: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// AvatarGroup markup: one for the static and reactive branches (only the attribute expressions differ).
 macro_rules! group_markup {
     ($class:expr, $style:expr, $attrs:expr, $kids:expr) => {
         view! { <div class={$class} style={$style} {..$attrs}>{$kids}</div> }

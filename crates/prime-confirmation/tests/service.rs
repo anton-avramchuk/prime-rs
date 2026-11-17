@@ -1,4 +1,4 @@
-//! Сервис подтверждений: рассылка, порядок, отписка, контекст и строитель `Confirmation`.
+//! Confirmation service: broadcasting, order, unsubscribing, context and the `Confirmation` builder.
 #![cfg(not(target_arch = "wasm32"))]
 
 use leptos::prelude::*;
@@ -26,7 +26,7 @@ fn builder_sets_fields_and_defaults_stay_none() {
     assert_eq!(c.message.as_deref(), Some("Sure?"));
     assert_eq!(c.key.as_deref(), Some("a"));
     assert!(c.accept.is_some() && c.reject.is_none() && c.target.is_none() && c.default_focus.is_none());
-    assert!(c.accept_visible() && c.reject_visible(), "кнопки видимы по умолчанию");
+    assert!(c.accept_visible() && c.reject_visible(), "the buttons are visible by default");
     let c = c.accept_visible_flag(false).reject_visible_flag(true).default_focus(ConfirmFocus::Reject).close_on_escape(false);
     assert!(!c.accept_visible() && c.reject_visible());
     assert_eq!((c.default_focus, c.close_on_escape), (Some(ConfirmFocus::Reject), Some(false)));
@@ -96,7 +96,7 @@ fn service_is_found_in_context() {
 }
 
 #[test]
-#[should_panic(expected = "ConfirmationService не найден")]
+#[should_panic(expected = "ConfirmationService not found")]
 fn missing_service_panics_with_a_hint() {
     Owner::new().with(|| {
         let _ = prime_confirmation::use_confirmation_service();

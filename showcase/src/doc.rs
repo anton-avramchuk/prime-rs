@@ -1,11 +1,11 @@
-//! Оболочка сайта документации: меню по разделам с поиском, страница компонента (описание, импорт, примеры с кодом,
-//! справочник API, оформление, заметки) и оглавление страницы. Данные — `crate::generated` (`cargo xtask gen-docs`).
+//! Docs site shell: a menu by section with search, a component page (description, import, examples with code,
+//! API reference, styling, notes) and the page table of contents. Data comes from `crate::generated` (`cargo xtask gen-docs`).
 
 use crate::generated::{CompDoc, DemoDoc, PAGES, PageDoc, ParamDoc};
 use leptos::prelude::*;
 use leptos_router::components::A;
 
-/// Разделы меню: название и компоненты (путь, подпись).
+/// Menu sections: name and components (path, label).
 pub const MENU: &[(&str, &[(&str, &str)])] = &[
     (
         "Form",
@@ -115,16 +115,16 @@ pub const MENU: &[(&str, &[(&str, &str)])] = &[
     ),
 ];
 
-/// Имя страницы компонента: `Demo` по нему находит код своего примера.
+/// Component page name: `Demo` uses it to find the code of its example.
 #[derive(Clone, Copy)]
 pub struct PageName(pub &'static str);
 
-/// Данные страницы по имени.
+/// Page data by name.
 pub fn page_doc(name: &str) -> Option<&'static PageDoc> {
     PAGES.iter().find(|p| p.name == name)
 }
 
-/// Код примера страницы.
+/// Page example code.
 pub fn demo_doc(page: &str, demo: &str) -> Option<&'static DemoDoc> {
     page_doc(page)?.demos.iter().find(|d| d.name == demo)
 }
@@ -135,14 +135,14 @@ fn label_of(name: &str) -> &'static str {
 
 type Link = (&'static str, &'static str);
 
-/// Предыдущий и следующий компонент в порядке меню.
+/// Previous and next component in menu order.
 pub fn neighbours(name: &str) -> (Option<Link>, Option<Link>) {
     let flat: Vec<Link> = MENU.iter().flat_map(|(_, items)| items.iter().copied()).collect();
     let Some(at) = flat.iter().position(|(path, _)| *path == name) else { return (None, None) };
     (at.checked_sub(1).map(|i| flat[i]), flat.get(at + 1).copied())
 }
 
-/// Стили оболочки документации.
+/// Docs shell styles.
 pub const DOC_CSS: &str = "\
 .doc-shell{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2rem;align-items:start;margin-top:1rem}\
 .doc-nav{position:sticky;top:1rem;max-height:calc(100vh - 2rem);overflow:auto;font-size:.9rem;padding-right:.5rem}\
@@ -176,7 +176,7 @@ pub const DOC_CSS: &str = "\
 @media (max-width:1100px){.doc-page{grid-template-columns:minmax(0,1fr)}.doc-toc{display:none}}\
 @media (max-width:800px){.doc-shell{grid-template-columns:minmax(0,1fr)}.doc-nav{position:static;max-height:14rem}}";
 
-/// Меню по разделам с поиском по подстроке.
+/// Menu by section with substring search.
 #[component]
 pub fn DocNav() -> impl IntoView {
     let query = RwSignal::new(String::new());
@@ -252,7 +252,7 @@ fn params_table(comp: &'static CompDoc, kind: &'static str) -> Option<impl IntoV
     })
 }
 
-/// Секция со свойствами или событиями: по заголовку на компонент крейта.
+/// Section with properties or events: one heading per crate component.
 fn api_section(page: &'static PageDoc, id: &'static str, title: &'static str, kind: &'static str) -> Option<impl IntoView + use<>> {
     let tables: Vec<_> = page.comps.iter().filter_map(|c| params_table(c, kind).map(|t| view! { <h4>{c.name}</h4> {t} })).collect();
     (!tables.is_empty()).then(|| view! { <section><h3 id=id>{title}</h3>{tables}</section> })
@@ -318,10 +318,10 @@ fn toc_entries(page: Option<&'static PageDoc>) -> Vec<Link> {
     toc
 }
 
-/// Страница компонента: оболочка вокруг демонстраций (`children`).
+/// Component page: a shell around the demos (`children`).
 #[component]
 pub fn DocPage(
-    /// Имя страницы (как в маршруте).
+    /// Page name (as in the route).
     name: &'static str,
     children: Children,
 ) -> impl IntoView {
@@ -376,10 +376,10 @@ pub fn DocPage(
     }
 }
 
-/// Блок «Code» под примером; страницу берёт из контекста `DocPage`.
+/// The "Code" block under an example; takes the page from the `DocPage` context.
 #[component]
 pub fn DemoCode(
-    /// Имя примера.
+    /// Example name.
     demo: &'static str,
 ) -> impl IntoView {
     let page = use_context::<PageName>()?.0;

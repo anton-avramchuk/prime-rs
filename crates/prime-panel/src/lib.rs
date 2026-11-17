@@ -1,24 +1,24 @@
-//! Panel — порт `p-panel` из PrimeNG 21.1.10.
+//! Panel — port of `p-panel` from PrimeNG 21.1.10.
 //!
-//! Структура и классы совпадают с PrimeNG: шапка `p-panel-header` (заголовок `p-panel-title`, блок действий
-//! `p-panel-header-actions` с кнопкой `p-panel-toggle-button`), контейнер содержимого `p-panel-content-container`
-//! с обёрткой `p-panel-content-wrapper`, содержимым `p-panel-content` и подвалом `p-panel-footer`. Вместо хоста `<p-panel>`
-//! отрисовывается `<div class="p-panel …">`.
+//! Structure and classes match PrimeNG: header `p-panel-header` (title `p-panel-title`, actions block
+//! `p-panel-header-actions` with the toggle button `p-panel-toggle-button`), content container `p-panel-content-container`
+//! with wrapper `p-panel-content-wrapper`, content `p-panel-content` and footer `p-panel-footer`. Instead of the host `<p-panel>`
+//! a `<div class="p-panel …">` is rendered.
 //!
-//! Сворачивание (`toggleable`) построено на [`prime_core::collapsible`]: состояние — двусторонний сигнал `collapsed`
-//! (без него — собственное, начальное значение `default_collapsed`), кнопка получает `aria-controls` и `aria-expanded`,
-//! область — `role="region"`, `aria-labelledby`, `aria-hidden`; раскрытие и сворачивание анимируют классы
-//! `p-collapsible-enter-active`/`p-collapsible-leave-active`, а `on_after_toggle` вызывается по окончании анимации.
+//! Collapsing (`toggleable`) is built on [`prime_core::collapsible`]: the state is a two-way `collapsed` signal
+//! (without it, an own state with the initial value `default_collapsed`), the button gets `aria-controls` and `aria-expanded`,
+//! the region gets `role="region"`, `aria-labelledby`, `aria-hidden`; expanding and collapsing animate the classes
+//! `p-collapsible-enter-active`/`p-collapsible-leave-active`, and `on_after_toggle` is called when the animation ends.
 //!
-//! Слоты — `ViewFn` (аналоги шаблонов `#header`, `#icons`, `#footer`), `header_icons_template` получает `collapsed`.
+//! Slots are `ViewFn` (analogues of the `#header`, `#icons`, `#footer` templates), `header_icons_template` receives `collapsed`.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_panel::Panel;
 //!
 //! let collapsed = RwSignal::new(true);
-//! let html = view! { <Panel header="Заголовок" toggleable=true collapsed=collapsed><p>"Содержимое"</p></Panel> }.to_html();
-//! assert!(html.contains("p-panel-collapsed") && html.contains(r#"aria-expanded="false""#) && html.contains("Заголовок"));
+//! let html = view! { <Panel header="Header" toggleable=true collapsed=collapsed><p>"Content"</p></Panel> }.to_html();
+//! assert!(html.contains("p-panel-collapsed") && html.contains(r#"aria-expanded="false""#) && html.contains("Header"));
 //! ```
 
 mod state;
@@ -33,102 +33,102 @@ use std::sync::Arc;
 
 pub use state::{IconPos, Toggler, actions_class, data_p, write_root_classes};
 
-/// Событие `on_before_toggle`: исходное событие и состояние до переключения.
+/// `on_before_toggle` event: the original event and the state before toggling.
 #[derive(Clone, Debug)]
 pub struct PanelBeforeToggle {
-    /// Исходное событие `click`.
+    /// Original `click` event.
     pub original_event: web_sys::MouseEvent,
-    /// Значение `collapsed` до переключения.
+    /// Value of `collapsed` before toggling.
     pub collapsed: bool,
 }
 
-/// Событие `on_after_toggle`: новое состояние после окончания анимации.
+/// `on_after_toggle` event: the new state after the animation ends.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct PanelAfterToggle {
-    /// Значение `collapsed` после переключения.
+    /// Value of `collapsed` after toggling.
     pub collapsed: bool,
 }
 
-/// Pass-through частей Panel.
+/// Pass-through for the parts of Panel.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct PanelPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Шапка (`div.p-panel-header`).
+    /// Header (`div.p-panel-header`).
     pub header: Pt,
-    /// Заголовок (`span.p-panel-title`).
+    /// Title (`span.p-panel-title`).
     pub title: Pt,
-    /// Блок действий (`div.p-panel-header-actions`).
+    /// Actions block (`div.p-panel-header-actions`).
     pub header_actions: Pt,
-    /// Кнопка-переключатель (`button.p-panel-toggle-button`).
+    /// Toggle button (`button.p-panel-toggle-button`).
     pub toggle_button: Pt,
-    /// Контейнер содержимого (`div.p-panel-content-container`).
+    /// Content container (`div.p-panel-content-container`).
     pub content_container: Pt,
-    /// Обёртка содержимого (`div.p-panel-content-wrapper`).
+    /// Content wrapper (`div.p-panel-content-wrapper`).
     pub content_wrapper: Pt,
-    /// Содержимое (`div.p-panel-content`).
+    /// Content (`div.p-panel-content`).
     pub content: Pt,
-    /// Подвал (`div.p-panel-footer`).
+    /// Footer (`div.p-panel-footer`).
     pub footer: Pt,
 }
 
-/// Контейнер с шапкой, необязательным сворачиванием и подвалом.
+/// Container with a header, optional collapsing and a footer.
 ///
-/// Текстовые и логические свойства принимают значение или сигнал; `collapsed` — двусторонний сигнал.
+/// Text and boolean properties accept a value or a signal; `collapsed` is a two-way signal.
 #[component]
 pub fn Panel(
-    /// Атрибут `id` корня; от него образуются идентификаторы заголовка и содержимого. По умолчанию уникальный.
+    /// `id` attribute of the root; the header and content identifiers are built from it. Unique by default.
     #[prop(optional, into)]
     id: Option<String>,
-    /// Текст заголовка (`p-panel-title`).
+    /// Header text (`p-panel-title`).
     #[prop(optional, into)]
     header: OptProp<String>,
-    /// Можно ли сворачивать содержимое.
+    /// Whether the content can be collapsed.
     #[prop(optional, into)]
     toggleable: Prop<bool>,
-    /// Двусторонний сигнал «свёрнуто».
+    /// Two-way "collapsed" signal.
     #[prop(optional)]
     collapsed: Option<RwSignal<bool>>,
-    /// Начальное состояние, когда `collapsed` не передан.
+    /// Initial state when `collapsed` is not passed.
     #[prop(optional)]
     default_collapsed: bool,
-    /// Положение иконок в шапке.
+    /// Position of the icons in the header.
     #[prop(optional, into)]
     icon_pos: Prop<IconPos>,
-    /// Показывать ли шапку.
+    /// Whether to show the header.
     #[prop(default = Prop::Static(true), into)]
     show_header: Prop<bool>,
-    /// Чем переключается панель.
+    /// What toggles the panel.
     #[prop(optional, into)]
     toggler: Prop<Toggler>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Слот шапки: выводится после заголовка.
+    /// Header slot: rendered after the title.
     #[prop(optional, into)]
     header_template: Option<ViewFn>,
-    /// Слот действий: выводится в блоке действий перед переключателем.
+    /// Actions slot: rendered in the actions block before the toggle.
     #[prop(optional, into)]
     icons_template: Option<ViewFn>,
-    /// Слот значка переключателя; получает `collapsed` и заменяет «минус»/«плюс».
+    /// Toggle icon slot; receives `collapsed` and replaces the minus/plus icon.
     #[prop(optional, into)]
     header_icons_template: Option<Callback<bool, AnyView>>,
-    /// Слот подвала (`p-panel-footer`).
+    /// Footer slot (`p-panel-footer`).
     #[prop(optional, into)]
     footer_template: Option<ViewFn>,
-    /// Вызывается до переключения.
+    /// Called before toggling.
     #[prop(optional, into)]
     on_before_toggle: Option<Callback<PanelBeforeToggle>>,
-    /// Вызывается после окончания анимации переключения.
+    /// Called after the toggle animation ends.
     #[prop(optional, into)]
     on_after_toggle: Option<Callback<PanelAfterToggle>>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<PanelPt>,
-    /// Содержимое (`p-panel-content`).
+    /// Content (`p-panel-content`).
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -153,7 +153,7 @@ pub fn Panel(
         footer_template,
     });
 
-    // `NodeRef` нужен только клиенту (анимация и `tabindex`): при SSR его нет, а `()` — пустой атрибут вместо `node_ref`.
+    // `NodeRef` is needed only by the client (animation and `tabindex`): there is none during SSR, and `()` is an empty attribute instead of `node_ref`.
     #[cfg(target_arch = "wasm32")]
     let region = {
         let region = NodeRef::<leptos::html::Div>::new();
@@ -236,7 +236,7 @@ pub fn Panel(
     }
 }
 
-/// Разметка Panel: одна для статической и реактивной ветвей (меняются только выражения атрибутов и шапки).
+/// Panel markup: one for the static and reactive branches (only the attribute and header expressions differ).
 macro_rules! panel_markup {
     (
         $root_id:expr, $class:expr, $style:expr, $data:expr, $root_attrs:expr, $header:expr, $region:expr, $container_class:expr,
@@ -270,7 +270,7 @@ macro_rules! panel_markup {
 }
 use panel_markup;
 
-/// Замыкание над свойствами экземпляра: клоны `Arc` и указатель на функцию без захвата.
+/// Closure over the instance properties: `Arc` clones and a function pointer without capture.
 fn rx<T>(
     props: &Arc<Props>,
     pt: &Arc<PanelPt>,
@@ -301,13 +301,13 @@ fn style_of(props: &Arc<Props>, pt: &PanelPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Стиль контейнера содержимого: свёрнутая при первом рендере панель скрыта сразу; дальше им управляет анимация.
+/// Style of the content container: a panel collapsed at the first render is hidden right away; after that the animation controls it.
 fn container_style_of(props: &Props, pt: &PanelPt) -> Option<String> {
     let hidden = if props.toggleable.get_untracked() { props.state.initial_style() } else { None };
     (hidden.is_some() || pt.content_container.has_style()).then(|| pt.content_container.merge_style(hidden.unwrap_or("")))
 }
 
-/// Подвал: только при заданном слоте.
+/// Footer: only when the slot is set.
 fn footer_of(props: &Props, pt: &PanelPt) -> Option<AnyView> {
     props
         .footer_template
@@ -315,7 +315,7 @@ fn footer_of(props: &Props, pt: &PanelPt) -> Option<AnyView> {
         .map(|slot| view! { <div class=pt.footer.merge_class("p-panel-footer") {..pt.footer.attrs()}>{slot.run()}</div> }.into_any())
 }
 
-/// Шапка: заголовок, слот и блок действий с переключателем; читает `collapsed` только внутри вложенных замыканий.
+/// Header: title, slot and the actions block with the toggle; reads `collapsed` only inside nested closures.
 fn header_of(props: &Arc<Props>, pt: &PanelPt) -> Option<AnyView> {
     if !props.show_header.get() {
         return None;
@@ -355,7 +355,7 @@ fn header_of(props: &Arc<Props>, pt: &PanelPt) -> Option<AnyView> {
     )
 }
 
-/// Кнопка-переключатель с `aria-controls` и `aria-expanded`; без заголовка берёт его идентификатор.
+/// Toggle button with `aria-controls` and `aria-expanded`; without a title it takes the header identifier.
 fn toggle_button(props: &Arc<Props>, pt: &PanelPt, label: Option<String>) -> impl IntoView + use<> {
     let state = props.state;
     let template = props.header_icons_template;
@@ -397,7 +397,7 @@ fn toggle_button(props: &Arc<Props>, pt: &PanelPt, label: Option<String>) -> imp
     }
 }
 
-/// Переключает панель: `on_before_toggle` с прежним состоянием, затем смена `collapsed`.
+/// Toggles the panel: `on_before_toggle` with the previous state, then changes `collapsed`.
 fn toggle(props: &Props, e: web_sys::MouseEvent) {
     if !props.toggleable.get_untracked() {
         return;
@@ -409,7 +409,7 @@ fn toggle(props: &Props, e: web_sys::MouseEvent) {
     props.state.toggle();
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     ids: CollapseIds,
     state: CollapseState,

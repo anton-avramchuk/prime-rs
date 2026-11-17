@@ -1,11 +1,11 @@
-//! RadioButton — порт `p-radiobutton` из PrimeNG 21.1.10.
+//! RadioButton — port of `p-radiobutton` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-radiobutton` (вместо хоста `<p-radiobutton>`), внутри `input.p-radiobutton-input`
-//! и `div.p-radiobutton-box` с `div.p-radiobutton-icon`.
+//! Markup and classes as in PrimeNG: root `div.p-radiobutton` (instead of the host `<p-radiobutton>`), inside `input.p-radiobutton-input`
+//! and `div.p-radiobutton-box` with `div.p-radiobutton-icon`.
 //!
-//! Группа — это общий сигнал `model: RwSignal<Option<String>>`: кнопка отмечена, когда в нём лежит её `value`. Без `model` кнопка
-//! неконтролируемая: начальное состояние из `default_checked`, дальше его хранит DOM (нативная группировка по `name`), а классы корня
-//! не отслеживаются.
+//! A group is a shared signal `model: RwSignal<Option<String>>`: the button is checked when its `value` is stored in it. Without `model` the button
+//! is uncontrolled: the initial state comes from `default_checked`, after that the DOM keeps it (native grouping by `name`), and the root classes
+//! are not tracked.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -26,88 +26,88 @@ use std::sync::Arc;
 
 pub use state::{RadioButtonState, data_p, write_classes};
 
-/// Событие выбора: значение кнопки и исходное событие браузера.
+/// Selection event: the button value and the original browser event.
 #[derive(Clone, Debug)]
 pub struct RadioButtonClick {
-    /// Значение выбранной кнопки.
+    /// Value of the selected button.
     pub value: Option<String>,
-    /// Исходное событие `change`.
+    /// Original `change` event.
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей RadioButton.
+/// Pass-through for the parts of RadioButton.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RadioButtonPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Нативный `<input>`.
+    /// Native `<input>`.
     pub input: Pt,
-    /// Рамка (`div.p-radiobutton-box`).
+    /// Box (`div.p-radiobutton-box`).
     pub box_: Pt,
-    /// Точка (`div.p-radiobutton-icon`).
+    /// Dot (`div.p-radiobutton-icon`).
     pub icon: Pt,
 }
 
-/// Переключатель выбора одного значения из группы.
+/// Radio button for choosing one value from a group.
 ///
-/// Каждое свойство принимает значение или сигнал; `model` — двусторонний сигнал группы.
+/// Each property accepts a value or a signal; `model` is the two-way signal of the group.
 #[component]
 pub fn RadioButton(
-    /// Значение этой кнопки (и атрибут `value` у `<input>`).
+    /// Value of this button (and the `value` attribute of `<input>`).
     #[prop(optional, into)]
     value: OptProp<String>,
-    /// Двусторонний сигнал выбранного значения группы.
+    /// Two-way signal of the group's selected value.
     #[prop(optional)]
     model: Option<RwSignal<Option<String>>>,
-    /// Начальное состояние неконтролируемой кнопки.
+    /// Initial state of an uncontrolled button.
     #[prop(optional)]
     default_checked: bool,
-    /// Атрибут `id` у `<input>`.
+    /// `id` attribute of `<input>`.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Атрибут `name`.
+    /// `name` attribute.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Атрибут `tabindex`.
+    /// `tabindex` attribute.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Недоступна.
+    /// Unavailable.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Обязательна.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Вариант; если не задан, берётся `PrimeConfig.input_variant`.
+    /// Variant; if not set, `PrimeConfig.input_variant` is used.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается после выбора пользователем.
+    /// Called after the user selects it.
     #[prop(optional, into)]
     on_click: Option<Callback<RadioButtonClick>>,
-    /// Вызывается при получении фокуса.
+    /// Called when focus is received.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса.
+    /// Called when focus is lost.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<RadioButtonPt>,
 ) -> impl IntoView {
@@ -260,7 +260,7 @@ pub fn RadioButton(
     }
 }
 
-/// Разметка RadioButton: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// RadioButton markup: one for the static and reactive branches (only the attribute expressions differ).
 macro_rules! radio_markup {
     (
         $root_class:expr, $root_style:expr, $checked_attr:expr, $disabled_attr:expr, $data:expr, $id:expr, $value:expr, $name:expr,
@@ -300,7 +300,7 @@ macro_rules! radio_markup {
 }
 use radio_markup;
 
-/// Замыкание над свойствами экземпляра: клоны `Arc` и указатель на функцию без захвата.
+/// Closure over the instance properties: `Arc` clones and a function pointer without capture.
 fn rx<T>(
     props: &Arc<Props>,
     pt: &Arc<RadioButtonPt>,
@@ -350,7 +350,7 @@ fn root_style(props: &Props, pt: &RadioButtonPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     value: OptProp<String>,
     model: Option<RwSignal<Option<String>>>,

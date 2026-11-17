@@ -1,12 +1,12 @@
-//! Чистая логика Divider: классы, inline-стиль выравнивания и `data-p` (по `dividerstyle.ts` и `Divider.dataP` PrimeNG).
+//! Pure Divider logic: classes, the inline alignment style and `data-p` (after PrimeNG `dividerstyle.ts` and `Divider.dataP`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Направление разделителя.
+/// Divider direction.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum DividerLayout {
-    /// `horizontal` (по умолчанию).
+    /// `horizontal` (default).
     #[default]
     Horizontal,
     /// `vertical`.
@@ -14,7 +14,7 @@ pub enum DividerLayout {
 }
 
 impl DividerLayout {
-    /// Значение, как в PrimeNG.
+    /// Value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Horizontal => "horizontal",
@@ -23,10 +23,10 @@ impl DividerLayout {
     }
 }
 
-/// Тип линии.
+/// Line type.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum DividerType {
-    /// `solid` (по умолчанию).
+    /// `solid` (default).
     #[default]
     Solid,
     /// `dashed`.
@@ -36,7 +36,7 @@ pub enum DividerType {
 }
 
 impl DividerType {
-    /// Значение, как в PrimeNG.
+    /// Value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Solid => "solid",
@@ -46,23 +46,23 @@ impl DividerType {
     }
 }
 
-/// Выравнивание содержимого.
+/// Content alignment.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DividerAlign {
-    /// `left` (для горизонтального).
+    /// `left` (for horizontal).
     Left,
     /// `center`.
     Center,
-    /// `right` (для горизонтального).
+    /// `right` (for horizontal).
     Right,
-    /// `top` (для вертикального).
+    /// `top` (for vertical).
     Top,
-    /// `bottom` (для вертикального).
+    /// `bottom` (for vertical).
     Bottom,
 }
 
 impl DividerAlign {
-    /// Значение, как в PrimeNG.
+    /// Value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Left => "left",
@@ -74,18 +74,18 @@ impl DividerAlign {
     }
 }
 
-/// Снимок свойств, влияющих на классы, стиль и `data-p`.
+/// Snapshot of the properties affecting classes, style and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct DividerState {
-    /// Направление.
+    /// Direction.
     pub layout: DividerLayout,
-    /// Тип линии.
+    /// Line type.
     pub divider_type: DividerType,
-    /// Выравнивание (`None` — не задано).
+    /// Alignment (`None` - not set).
     pub align: Option<DividerAlign>,
 }
 
-/// Класс выравнивания: допустимы только сочетания горизонтального с `left`/`center`/`right` и вертикального с `top`/`center`/`bottom`.
+/// Alignment class: only horizontal with `left`/`center`/`right` and vertical with `top`/`center`/`bottom` combinations are valid.
 fn align_class(s: &DividerState) -> Option<&'static str> {
     use DividerAlign::*;
     use DividerLayout::*;
@@ -100,7 +100,7 @@ fn align_class(s: &DividerState) -> Option<&'static str> {
     }
 }
 
-/// Добавляет классы корня в порядке `dividerstyle.ts`.
+/// Adds root classes in the order of `dividerstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &DividerState) {
     cn.add("p-divider p-component");
     cn.add(match s.layout {
@@ -115,7 +115,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &DividerState) {
     cn.add_opt(align_class(s));
 }
 
-/// Inline-стиль выравнивания: свойство и значение (`justify-content` для горизонтального, `align-items` для вертикального).
+/// Inline alignment style: property and value (`justify-content` for horizontal, `align-items` for vertical).
 pub fn align_style(s: &DividerState) -> Option<(&'static str, &'static str)> {
     use DividerAlign::*;
     use DividerLayout::*;
@@ -130,7 +130,7 @@ pub fn align_style(s: &DividerState) -> Option<(&'static str, &'static str)> {
     }
 }
 
-/// Значение `data-p`: выравнивание (если задано), направление, тип.
+/// `data-p` value: alignment (if set), direction, type.
 pub fn data_p(s: &DividerState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_opt(s.align.map(DividerAlign::as_str)).add(s.layout.as_str()).add(s.divider_type.as_str());
@@ -162,7 +162,7 @@ mod tests {
         assert_eq!(align_style(&s), Some(("justify-content", "center")));
     }
 
-    /// Все сочетания направления и выравнивания: (layout, align, класс выравнивания, стиль).
+    /// All combinations of direction and alignment: (layout, align, alignment class, style).
     #[test]
     fn layout_by_align_table() {
         type Row = (DividerLayout, Option<DividerAlign>, Option<&'static str>, Option<(&'static str, &'static str)>);

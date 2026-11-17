@@ -2,61 +2,61 @@
 
 ## Context
 
-Требования — в `specs/speeddial`. Исходники PrimeNG 21.1.10: `speeddial/speeddial.ts` (около 580 строк), `speeddial/style/speeddialstyle.ts`; стили `@primeuix/styles/speeddial`; демонстрации `apps/showcase/doc/speeddial/{linear,circle,semicircle,quartercircle,mask,tooltip,template}-doc.ts`. Образцы в проекте: `prime-dock` (собственная модель пунктов, фокус по `aria-activedescendant`, чистая логика клавиш), `prime-button`, `prime-tooltip` (директива), `prime-popover` (слушатели окна).
+Requirements are in `specs/speeddial`. PrimeNG 21.1.10 sources: `speeddial/speeddial.ts` (about 580 lines), `speeddial/style/speeddialstyle.ts`; styles `@primeuix/styles/speeddial`; demos `apps/showcase/doc/speeddial/{linear,circle,semicircle,quartercircle,mask,tooltip,template}-doc.ts`. Reference implementations in the project: `prime-dock` (own item model, focus via `aria-activedescendant`, pure key logic), `prime-button`, `prime-tooltip` (directive), `prime-popover` (window listeners).
 
-Наблюдения по исходнику:
-- Раскладка по `type`: `linear` — только `flex-direction`; `circle` — точки на окружности радиусом `radius || length*20` с шагом `2π/length`; `semi-circle` — шаг `π/(length-1)`, смещения по сторонам зависят от `direction`; `quarter-circle` — шаг `π/(2(length-1))` и диагональные направления. Каждая точка — `left/right/top/bottom: calc(<px> + var(--item-diff-x|y, 0px))`; `--item-diff-*` — полуразница размеров кнопки и первого пункта (считается после показа в браузере).
-- `transition-delay`: при показе `index * transitionDelay`, при скрытии `(length - index - 1) * transitionDelay`.
-- Направление клавиш: `ArrowUp`/`ArrowDown` зависят от `up`/`down`, `ArrowLeft`/`ArrowRight` — от `left`, `up-right`, `down-left` и `right`, `up-left`, `down-right`; для остальных значений есть запасной смысл.
-- Фокус пункта хранится по идентификатору `<id>_<индекс>` среди пунктов без `p-disabled` ссылки; `Home`/`End` сбрасывают индекс и ведут к первому/последнему; `Enter`/`Space` кликают пункт, затем фокус возвращается на кнопку.
-- Клик вне: слушатель `click` на документе только пока показано; игнорируется, если клик внутри контейнера или только что был клик по кнопке/пункту (`isItemClicked`).
-- В PrimeNG есть опечатки логики: `findNextOptionIndex(-1)` при пустом списке падает; индекс по `id` ищется после фильтра отключённых. В порте индексы считаются по списку доступных пунктов, без исключений.
+Observations on the source:
+- Layout by `type`: `linear` — only `flex-direction`; `circle` — points on a circle of radius `radius || length*20` with step `2π/length`; `semi-circle` — step `π/(length-1)`, side offsets depend on `direction`; `quarter-circle` — step `π/(2(length-1))` and diagonal directions. Each point is `left/right/top/bottom: calc(<px> + var(--item-diff-x|y, 0px))`; `--item-diff-*` is half the difference between the button and first item sizes (computed after showing, in the browser).
+- `transition-delay`: `index * transitionDelay` when showing, `(length - index - 1) * transitionDelay` when hiding.
+- Key direction: `ArrowUp`/`ArrowDown` depend on `up`/`down`, `ArrowLeft`/`ArrowRight` — on `left`, `up-right`, `down-left` and `right`, `up-left`, `down-right`; the other values have a fallback meaning.
+- Item focus is stored by the identifier `<id>_<index>` among items without a `p-disabled` link; `Home`/`End` reset the index and go to the first/last; `Enter`/`Space` click the item, then focus returns to the button.
+- Outside click: a `click` listener on the document only while shown; ignored if the click is inside the container or there was just a click on a button/item (`isItemClicked`).
+- PrimeNG has logic quirks: `findNextOptionIndex(-1)` crashes on an empty list; the index by `id` is looked up after filtering out disabled ones. In the port, indices are counted over the list of available items, without exceptions.
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы, раскладка, клавиши и закрытие.
+**Goals:** the same DOM, classes, layout, keys and closing.
 
-**Non-Goals:** `routerLink`, `buttonProps` целиком, `Ripple`, `Bind`, `pTemplate`, `unstyled`.
+**Non-Goals:** `routerLink`, `buttonProps` as a whole, `Ripple`, `Bind`, `pTemplate`, `unstyled`.
 
 ## Decisions
 
-### D1. Крейт и модель
-`prime-speeddial` с `SpeedDial`, `SpeedDialItem` (строитель, как `DockItem`), `SpeedDialCommand { event, item }`, `SpeedDialType`, `SpeedDialDirection`, `SpeedDialPt`, `SpeedDialItemContext { item, index, toggle }`. Своя модель, а не `MenuItem`: без зависимости от `prime-menu`.
+### D1. Crate and model
+`prime-speeddial` with `SpeedDial`, `SpeedDialItem` (builder, like `DockItem`), `SpeedDialCommand { event, item }`, `SpeedDialType`, `SpeedDialDirection`, `SpeedDialPt`, `SpeedDialItemContext { item, index, toggle }`. Own model rather than `MenuItem`: no dependency on `prime-menu`.
 
-### D2. Чистая логика (`state.rs`)
-`root_classes(type, direction, open, disabled, extra)`, `root_flex_style(direction)`, `list_flex_style(direction)`, `item_classes(hidden, focused)`, `point_style(type, direction, index, length, radius) -> Vec<(&str, String)>`, `transition_delay(visible, index, length, step)`, `arrow_step(direction, key) -> Step {Next, Prev}`, `step_index(count, current, step)`, `button_icon_choice(visible, has_show, has_hide)`, `button_classes(rotate_with_hide_icon...)`. Табличные тесты, включая все типы и направления.
+### D2. Pure logic (`state.rs`)
+`root_classes(type, direction, open, disabled, extra)`, `root_flex_style(direction)`, `list_flex_style(direction)`, `item_classes(hidden, focused)`, `point_style(type, direction, index, length, radius) -> Vec<(&str, String)>`, `transition_delay(visible, index, length, step)`, `arrow_step(direction, key) -> Step {Next, Prev}`, `step_index(count, current, step)`, `button_icon_choice(visible, has_show, has_hide)`, `button_classes(rotate_with_hide_icon...)`. Table-driven tests, including all types and directions.
 
-### D3. Состояние
-`visible`: `RwSignal<bool>` (если задано свойство `visible: Option<RwSignal<bool>>` — оно же), `focused_index: RwSignal<Option<usize>>` (позиция среди доступных пунктов), `focused: RwSignal<bool>` (`aria-activedescendant` только пока список в фокусе), `item_clicked: StoredValue<bool>`. `show`/`hide` вызывают `on_visible_change`, `on_show`/`on_hide`.
+### D3. State
+`visible`: `RwSignal<bool>` (if the `visible: Option<RwSignal<bool>>` property is set — that one), `focused_index: RwSignal<Option<usize>>` (position among available items), `focused: RwSignal<bool>` (`aria-activedescendant` only while the list has focus), `item_clicked: StoredValue<bool>`. `show`/`hide` call `on_visible_change`, `on_show`/`on_hide`.
 
-### D4. Разметка
-Один раз при монтировании строятся все пункты (скрытые остаются в DOM с классом `p-hidden` у `visible=false`; скрытие всего списка делает тема). Состояния пункта (`p-focus`, `data-p-active`, `tabindex` действия: нет при `disabled` или скрытом списке, иначе `tabindex` пункта или `0`) — реактивные атрибуты. `--item-diff-x/y` ставятся после монтирования в браузере для всех типов, кроме `linear`.
+### D4. Markup
+All items are built once on mount (hidden ones stay in the DOM with class `p-hidden` when `visible=false`; hiding the whole list is done by the theme). Item states (`p-focus`, `data-p-active`, action `tabindex`: none when `disabled` or the list is hidden, otherwise the item's `tabindex` or `0`) are reactive attributes. `--item-diff-x/y` are set after mount in the browser for all types except `linear`.
 
-### D5. Кнопка
-Кнопка переключателя — `Button` из `prime-button` с классами `p-speeddial-button p-button-rounded` (и `p-speeddial-rotate`, если нет `hide_icon`), `button_icon_only`; `aria-*` реактивные. Так как `Button` не принимает реактивные `aria-expanded`/`aria-controls`, при необходимости кнопка рисуется самим `SpeedDial` по образцу `SplitButton` (классы и `data-p` — из функций `prime-button`). Решение — по факту сборки в приложении задач.
+### D5. Button
+The toggle button is a `Button` from `prime-button` with classes `p-speeddial-button p-button-rounded` (and `p-speeddial-rotate` if there is no `hide_icon`), `button_icon_only`; `aria-*` are reactive. Since `Button` does not accept reactive `aria-expanded`/`aria-controls`, if needed the button is rendered by `SpeedDial` itself, following `SplitButton` (classes and `data-p` from `prime-button` functions). The decision is made once it is built in the task application.
 
-### D6. Клик вне и `Escape`
-Слушатель `click` на окне вешается на время показа в следующем тике (клик, открывший список, ещё всплывает); клик внутри контейнера, по кнопке или пункту (`item_clicked`) не скрывает. `Escape` на кнопке и в списке скрывает и возвращает фокус на кнопку.
+### D6. Outside click and `Escape`
+The `click` listener on the window is attached for the time it is shown, on the next tick (the click that opened the list is still bubbling); a click inside the container, on the button or an item (`item_clicked`) does not hide it. `Escape` on the button and in the list hides it and returns focus to the button.
 
-### D7. Подсказки
-`tooltip_options: Option<TooltipOptions>` — шаблон: для каждого пункта директива `tooltip` получает клон с текстом `label` (`disabled`, пока параметры не заданы); позиция берётся из шаблона.
+### D7. Tooltips
+`tooltip_options: Option<TooltipOptions>` — a template: for each item the `tooltip` directive gets a clone with the `label` text (`disabled` until the options are set); the position is taken from the template.
 
-### D8. Тесты
-SSR: разметка корня и классы по типам/направлениям, пункты, `p-hidden`, кнопка (`aria-*`), `pt`, маска не выводится на сервере. Браузерные `tests/web.rs` одним последовательным тестом (общие слушатели окна): переключение кнопкой, события, команда пункта и скрытие, отключённый пункт, `hide_on_click_outside`, `Escape`, клавиши кнопки и списка по направлениям (все восемь), `Home`/`End`/`Enter`/`Space`, пропуск отключённых, `mask`, управляемый `visible`, `disabled`, раскладка (проверка `left/top/bottom/right` у пунктов круга), `transition-delay`. e2e: стили темы, раскрытие по направлениям, круг и полукруг, маска, подсказка, шаблоны.
+### D8. Tests
+SSR: root markup and classes by types/directions, items, `p-hidden`, button (`aria-*`), `pt`, the mask is not rendered on the server. Browser `tests/web.rs` as one sequential test (shared window listeners): toggling with the button, events, item command and hiding, a disabled item, `hide_on_click_outside`, `Escape`, button and list keys by direction (all eight), `Home`/`End`/`Enter`/`Space`, skipping disabled items, `mask`, controlled `visible`, `disabled`, layout (checking `left/top/bottom/right` of circle items), `transition-delay`. e2e: theme styles, expansion by direction, circle and semicircle, mask, tooltip, templates.
 
-### D9. Демонстрации и бенчмарки
-Все семь демонстраций; значки — `prime-icons` (PlusIcon, PencilIcon?, RefreshIcon, TrashIcon?, UploadIcon?, ExternalLinkIcon? — выбрать существующие). Бенч `speeddial-1`/`-1000` и `case-speeddial`.
+### D9. Demos and benchmarks
+All seven demos; icons — `prime-icons` (PlusIcon, PencilIcon?, RefreshIcon, TrashIcon?, UploadIcon?, ExternalLinkIcon? — pick existing ones). Benchmarks `speeddial-1`/`-1000` and `case-speeddial`.
 
 ## Risks / Trade-offs
 
-- [Геометрия раскладки] Без CSS темы положение пунктов не проверить в wasm-тестах; проверяем строки стилей и позиции в e2e.
-- [Набор значков] Не все значки PrimeIcons есть в `prime-icons`; недостающие заменяются близкими.
-- [Опечатки в исходнике] Индексы фокуса считаются по доступным пунктам; отличие документируется.
+- [Layout geometry] Without the theme CSS the item positions cannot be checked in wasm tests; we check style strings and positions in e2e.
+- [Icon set] Not all PrimeIcons icons exist in `prime-icons`; missing ones are replaced by close ones.
+- [Source quirks] Focus indices are counted over available items; the difference is documented.
 
 ## Open Questions
 
-- Нужна ли кнопка переключателя из `Button` или собственная — решается при реализации (D5).
+- Whether the toggle button should be a `Button` or a custom one is decided during implementation (D5).
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

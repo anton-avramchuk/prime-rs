@@ -1,4 +1,4 @@
-//! Поведение Checkbox в реальном браузере (wasm-bindgen-test): режимы значения, `indeterminate`, `readonly`, `disabled`, события.
+//! Checkbox behaviour in a real browser (wasm-bindgen-test): value modes, `indeterminate`, `readonly`, `disabled`, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;

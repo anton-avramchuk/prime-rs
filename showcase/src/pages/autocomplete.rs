@@ -1,5 +1,5 @@
-//! Страница AutoComplete: демонстрации `basic`, `dropdown`, `multiple`, `forceselection`, `group`, `clearicon`, `disabled`,
-//! `invalid` и `template` из showcase PrimeNG (`apps/showcase/doc/autocomplete`; формы Angular и виртуальная прокрутка не переносятся).
+//! AutoComplete page: demos `basic`, `dropdown`, `multiple`, `forceselection`, `group`, `clearicon`, `disabled`,
+//! `invalid` and `template` from the PrimeNG showcase (`apps/showcase/doc/autocomplete`; Angular forms and virtual scrolling are not ported).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -121,7 +121,7 @@ fn Template() -> impl IntoView {
     view! { <AutoComplete id="template_ac" suggestions=suggestions value=value delay=100 on_complete=completer(suggestions) item=item style=WIDTH /> }
 }
 
-/// Страница `/autocomplete`.
+/// The `/autocomplete` page.
 #[component]
 pub fn AutoCompletePage() -> impl IntoView {
     view! {

@@ -1,14 +1,14 @@
 # ConfirmPopup
 
-Порт `p-confirmpopup` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`). Общий сервис и описание подтверждения — в `docs/confirmation.md`.
+A port of `p-confirmpopup` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`). The shared service and the confirmation description are in `docs/confirmation.md`.
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-confirmpopup::ConfirmPopup`, `ConfirmPopupPt`, `ConfirmPopupHeadless` | `packages/primeng/src/confirmpopup/confirmpopup.ts`, `confirmpopup/style/confirmpopupstyle.ts` |
-| CSS | `@primeuix/styles/confirmpopup` и пресет Aura — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет); кнопки берут стили `button` |
-| Демонстрации | `apps/showcase/doc/confirmpopup/*-doc.ts` (`basic`, `template`, `headless`) |
+| CSS | `@primeuix/styles/confirmpopup` and the Aura preset: `cargo xtask gen-theme` (there is no `/* For PrimeNG */` block); the buttons take the `button` styles |
+| Demos | `apps/showcase/doc/confirmpopup/*-doc.ts` (`basic`, `template`, `headless`) |
 
-Спека: `openspec/specs/confirmpopup`.
+Spec: `openspec/specs/confirmpopup`.
 
 ```rust
 let confirm = provide_confirmation_service();
@@ -20,32 +20,32 @@ view! {
 }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-confirmpopup.p-component[role=alertdialog]` > `div.p-confirmpopup-content` (значок `p-confirmpopup-icon`, текст `p-confirmpopup-message`) и `div.p-confirmpopup-footer` с кнопками `p-confirmpopup-reject-button` и `p-confirmpopup-accept-button`, оба размера `small`; подписи по умолчанию — переводы `reject` и `accept`.
-- Показ только для подтверждений со своим `key`; панель выравнивается по `target` в `body` (`AlignMode::Absolute`), слой группы оверлеев, стрелка `--p-confirmpopup-arrow-left`, переворот над целью (`data-p-confirmpopup-flipped`, `p-confirm-popup-flipped`).
-- Фокус при показе: `default_focus` подтверждения, иначе свойства компонента (`Accept`); `accept` и `reject` вызывают колбэк, скрывают панель и возвращают фокус на цель. `Escape` = отказ (если `close_on_escape` не `false`); клик вне панели и цели, `resize` окна (не на сенсорных) и прокрутка предка цели скрывают панель (клик — если `dismissable_mask` не `false`). Слушатели вешаются только на время показа, клик — в следующем такте.
-- `content` заменяет блок содержимого, `headless` — всю панель, `accept_icon`/`reject_icon` — значки кнопок; `visible` управляет показом извне.
+- Markup and classes: `div.p-confirmpopup.p-component[role=alertdialog]` > `div.p-confirmpopup-content` (icon `p-confirmpopup-icon`, text `p-confirmpopup-message`) and `div.p-confirmpopup-footer` with the `p-confirmpopup-reject-button` and `p-confirmpopup-accept-button` buttons, both of size `small`; default labels are the `reject` and `accept` translations.
+- Shown only for confirmations with its own `key`; the panel is aligned to `target` in `body` (`AlignMode::Absolute`), overlay group layer, the `--p-confirmpopup-arrow-left` arrow, flip above the target (`data-p-confirmpopup-flipped`, `p-confirm-popup-flipped`).
+- Focus on show: the confirmation `default_focus`, otherwise the component property (`Accept`); `accept` and `reject` call the callback, hide the panel and return focus to the target. `Escape` = reject (unless `close_on_escape` is `false`); a click outside the panel and target, window `resize` (not on touch devices) and scrolling of a target ancestor hide the panel (the click only if `dismissable_mask` is not `false`). Listeners are attached only while shown, the click on the next tick.
+- `content` replaces the content block, `headless` the whole panel, `accept_icon`/`reject_icon` the button icons; `visible` controls the show from outside.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| К классу переворота добавлен ещё `p-confirmpopup-flipped` | В PrimeNG класс называется `p-confirm-popup-flipped`, а правила темы — `.p-confirmpopup-flipped`, поэтому в PrimeNG перевёрнутая стрелка и отступ не оформляются. Мы оставили оба имени: исходное и то, на которое есть правила. |
-| Нет `appendTo`: панель всегда в `body` (через `Portal`) | Так выводятся остальные оверлеи проекта. Контейнер `Portal` — служебный `div` в `body`. |
-| Нет `showTransitionOptions`, `hideTransitionOptions`, `motionOptions` и выходной анимации: панель убирается сразу при скрытии | Тема не задаёт отдельных классов выхода; вход — без анимации (правило `p-anchored-overlay-*` не подключено). |
-| `Confirmation` — строитель с `Callback` вместо эмиттеров `acceptEvent`/`rejectEvent`; значки — `ViewFn`, а не классы `pi pi-…` | Нет `EventEmitter` и PrimeIcons. |
-| Повторное `confirm`, пока панель видна, скрывает её и показывает заново у новой цели, поэтому вызываются `on_hide` и `on_show` | В Angular панель перевыравнивается на месте; в Leptos пересоздать содержимое проще и надёжнее. |
-| Нет `pt` кнопок (`pcAcceptButton`, `pcRejectButton`) и `Bind`; стилевые классы кнопок — через `accept_button_style_class`/`reject_button_style_class` | `pt` — простые добавки классов, стиля и атрибутов. |
-| `#cp` с вызовами `cp.onAccept()`/`cp.onReject()` в `headless` заменён контекстом с обратными вызовами `accept` и `reject` | В Leptos нет шаблонных ссылок на компонент. |
-| Значки PrimeIcons (`pi-exclamation-triangle`, `pi-info-circle`) в демонстрациях заменены значками `prime-icons` | Нет PrimeIcons. |
+| The `p-confirmpopup-flipped` class is added to the flip class as well | In PrimeNG the class is called `p-confirm-popup-flipped`, while the theme rules are `.p-confirmpopup-flipped`, so in PrimeNG the flipped arrow and offset are not styled. We kept both names: the original and the one that has rules. |
+| No `appendTo`: the panel is always in `body` (via `Portal`) | This is how the project other overlays are rendered. The `Portal` container is a service `div` in `body`. |
+| No `showTransitionOptions`, `hideTransitionOptions`, `motionOptions` and leave animation: the panel is removed immediately on hide | The theme defines no separate leave classes; enter has no animation (the `p-anchored-overlay-*` rule is not attached). |
+| `Confirmation` is a builder with `Callback` instead of the `acceptEvent`/`rejectEvent` emitters; icons are `ViewFn`, not `pi pi-…` classes | No `EventEmitter` and PrimeIcons. |
+| A repeated `confirm` while the panel is visible hides it and shows it again at the new target, so `on_hide` and `on_show` are called | In Angular the panel is realigned in place; in Leptos recreating the content is simpler and more reliable. |
+| No button `pt` (`pcAcceptButton`, `pcRejectButton`) and `Bind`; button style classes go through `accept_button_style_class`/`reject_button_style_class` | `pt` is simple additions of classes, style and attributes. |
+| `#cp` with `cp.onAccept()`/`cp.onReject()` calls in `headless` is replaced with a context with the `accept` and `reject` callbacks | Leptos has no template references to the component. |
+| PrimeIcons icons (`pi-exclamation-triangle`, `pi-info-circle`) in the demos are replaced with `prime-icons` icons | No PrimeIcons. |
 
-## Что не проверялось
+## Not verified
 
-- Раскладка справа налево и сенсорный ввод.
-- Чтение с экрана: `aria-*` сверены с PrimeNG (`role=alertdialog`), поведение скринридеров — нет.
-- Положение при нескольких панелях с разными ключами одновременно — проверено только, что чужой ключ игнорируется.
+- Right-to-left layout and touch input.
+- Screen reading: `aria-*` were checked against PrimeNG (`role=alertdialog`), screen reader behavior was not.
+- Position with several panels with different keys at the same time: only verified that a foreign key is ignored.
 
-## Производительность
+## Performance
 
-См. `benches/` (`confirmpopup-1`, `confirmpopup-1000`, `case-confirmpopup`) и `benches/*budgets.toml`. На сервере панели нет, замер — стоимость подписки на сервис.
+See `benches/` (`confirmpopup-1`, `confirmpopup-1000`, `case-confirmpopup`) and `benches/*budgets.toml`. There is no panel on the server; the measurement is the cost of the service subscription.

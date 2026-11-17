@@ -1,36 +1,36 @@
 ## ADDED Requirements
 
-### Requirement: Бенчмарки SSR-рендера
-Система SHALL содержать бенчмарки, измеряющие время рендера каждого портированного компонента в HTML-строку на типичных наборах пропсов и на большом числе экземпляров.
+### Requirement: SSR render benchmarks
+The system SHALL contain benchmarks that measure the time to render each ported component to an HTML string on typical prop sets and on a large number of instances.
 
-#### Scenario: Запуск бенчмарка компонента
-- **WHEN** запускается бенчмарк
-- **THEN** выводится время рендера одного экземпляра и 1000 экземпляров
+#### Scenario: Running a component benchmark
+- **WHEN** a benchmark is run
+- **THEN** the render time of one instance and of 1000 instances is printed
 
-### Requirement: Измерение аллокаций
-Система SHALL измерять число и суммарный объём аллокаций при рендере компонента и выводить их в отчёте бенчмарка.
+### Requirement: Allocation measurement
+The system SHALL measure the count and total size of allocations when rendering a component and print them in the benchmark report.
 
-#### Scenario: Отчёт об аллокациях
-- **WHEN** бенчмарк завершается
-- **THEN** отчёт содержит число аллокаций и пиковый объём памяти на рендер
+#### Scenario: Allocation report
+- **WHEN** a benchmark finishes
+- **THEN** the report contains the allocation count and the peak memory per render
 
-### Requirement: Бюджет размера wasm
-Для каждого компонента SHALL быть задан бюджет вклада в размер wasm-бинарника, и CI SHALL сообщать о превышении бюджета.
+### Requirement: wasm size budget
+A budget for the contribution to the wasm binary size SHALL be set for each component, and CI SHALL report budget overruns.
 
-#### Scenario: Превышение бюджета
-- **WHEN** PR увеличивает вклад компонента выше бюджета
-- **THEN** проверка CI падает с указанием компонента, размера и бюджета
+#### Scenario: Budget exceeded
+- **WHEN** a PR raises a component's contribution above the budget
+- **THEN** the CI check fails, naming the component, the size and the budget
 
-### Requirement: Контроль регрессий
-Система SHALL сравнивать результаты бенчмарков с базовой линией основной ветки. Регрессия более 10 % по времени или по аллокациям SHALL выводиться комментарием в PR; блокировать слияние она SHALL только после явного включения блокировки.
+### Requirement: Regression control
+The system SHALL compare benchmark results with the baseline of the main branch. A regression of more than 10 % in time or allocations SHALL be reported as a PR comment; it SHALL block the merge only after blocking is explicitly enabled.
 
-#### Scenario: Регрессия 15 %
-- **WHEN** PR замедляет рендер компонента на 15 %
-- **THEN** в PR появляется комментарий с результатом, слияние не блокируется
+#### Scenario: 15 % regression
+- **WHEN** a PR slows a component's render by 15 %
+- **THEN** a comment with the result appears on the PR, the merge is not blocked
 
-### Requirement: Браузерные бенчмарки памяти
-По расписанию SHALL выполняться браузерные замеры времени создания N компонентов и использования памяти кучи, а результаты сохраняться как артефакты.
+### Requirement: Browser memory benchmarks
+On a schedule, browser measurements of the time to create N components and of heap memory usage SHALL be run, and the results saved as artifacts.
 
-#### Scenario: Еженедельный замер
-- **WHEN** выполняется еженедельный job
-- **THEN** формируется отчёт о времени и памяти для сценариев «1000 компонентов» и «создание и удаление в цикле»
+#### Scenario: Weekly measurement
+- **WHEN** the weekly job runs
+- **THEN** a report of time and memory is produced for the "1000 components" and "create and remove in a loop" scenarios

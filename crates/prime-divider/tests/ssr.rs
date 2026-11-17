@@ -1,4 +1,4 @@
-//! Структура DOM, классы, стиль, `pt` и паритет ветвей Divider (SSR).
+//! DOM structure, classes, style, `pt` and branch parity of Divider (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

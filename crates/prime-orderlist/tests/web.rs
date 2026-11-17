@@ -1,5 +1,5 @@
-//! Поведение OrderList в реальном браузере (wasm-bindgen-test): выбор в списке, четыре кнопки, `on_reorder`,
-//! сохранение выбора, `disabled`. Сценарии идут одним последовательным тестом.
+//! OrderList behavior in a real browser (wasm-bindgen-test): selection in the list, four buttons, `on_reorder`,
+//! selection preservation, `disabled`. Scenarios run as one sequential test.
 #![cfg(target_arch = "wasm32")]
 #![recursion_limit = "512"]
 
@@ -47,7 +47,7 @@ fn labels(host: &HtmlElement) -> String {
 }
 
 fn button(host: &HtmlElement, class: &str) -> HtmlElement {
-    host.query_selector(class).unwrap().unwrap_or_else(|| panic!("нет {class}: {}", host.outer_html())).dyn_into().unwrap()
+    host.query_selector(class).unwrap().unwrap_or_else(|| panic!("no {class}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 fn items(names: &[&str]) -> RwSignal<Vec<ListboxOption>> {
@@ -70,15 +70,15 @@ async fn buttons_reorder_selected() {
     settle().await;
     assert_eq!(labels(&host), "A B C D E");
     let up = button(&host, ".p-orderlist-move-up-button");
-    assert!(up.has_attribute("disabled"), "без выбора кнопки недоступны");
+    assert!(up.has_attribute("disabled"), "without a selection the buttons are unavailable");
 
     all(&host, ".p-listbox-option")[2].click();
     settle().await;
-    assert!(!up.has_attribute("disabled"), "после выбора кнопки доступны");
+    assert!(!up.has_attribute("disabled"), "after selecting the buttons are available");
     up.click();
     settle().await;
-    assert_eq!(labels(&host), "A C B D E", "C поднялся");
-    assert!(all(&host, ".p-listbox-option")[1].class_name().contains("p-listbox-option-selected"), "выбор следует за элементом");
+    assert_eq!(labels(&host), "A C B D E", "C moved up");
+    assert!(all(&host, ".p-listbox-option")[1].class_name().contains("p-listbox-option-selected"), "selection follows the item");
     button(&host, ".p-orderlist-move-top-button").click();
     settle().await;
     assert_eq!(labels(&host), "C A B D E");
@@ -106,11 +106,11 @@ async fn several_selected_keep_their_order() {
     assert_eq!(labels(&host), "B A D C E");
     button(&host, ".p-orderlist-move-up-button").click();
     settle().await;
-    assert_eq!(labels(&host), "B D A C E", "блок у края остаётся на месте, второй подтягивается");
+    assert_eq!(labels(&host), "B D A C E", "the block at the edge stays in place, the second one moves up");
     button(&host, ".p-orderlist-move-bottom-button").click();
     settle().await;
     assert_eq!(labels(&host), "A C E B D");
-    assert_eq!(selection.get_untracked(), ["b", "d"], "выбор сохранён");
+    assert_eq!(selection.get_untracked(), ["b", "d"], "selection preserved");
     host.remove();
 }
 
@@ -121,7 +121,7 @@ async fn disabled_and_filter() {
     let _h =
         leptos::mount::mount_to(host.clone(), move || view! { <OrderList value=value selection=selection filter=true disabled=true /> });
     settle().await;
-    assert!(button(&host, ".p-orderlist-move-up-button").has_attribute("disabled"), "disabled блокирует кнопки");
+    assert!(button(&host, ".p-orderlist-move-up-button").has_attribute("disabled"), "disabled blocks the buttons");
     host.remove();
 
     let host = host_again();
@@ -131,7 +131,7 @@ async fn disabled_and_filter() {
     settle().await;
     button(&host, ".p-orderlist-move-top-button").click();
     settle().await;
-    assert_eq!(labels(&host), "Cherry Apple Banana", "перестановка идёт по полному списку");
+    assert_eq!(labels(&host), "Cherry Apple Banana", "reordering works on the full list");
     host.remove();
 }
 

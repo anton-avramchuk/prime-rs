@@ -1,14 +1,14 @@
 # ConfirmDialog
 
-Порт `p-confirmdialog` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`). Общий сервис и описание подтверждения — в `docs/confirmation.md`, окно — `docs/dialog.md`.
+Port of PrimeNG 21.1.10 `p-confirmdialog` (commit `fe82b291d6`, see `upstream.toml`). The shared service and the confirmation description are in `docs/confirmation.md`, the window — `docs/dialog.md`.
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-confirmdialog::ConfirmDialog`, `ConfirmDialogPt`, `ConfirmDialogHeadless` | `packages/primeng/src/confirmdialog/confirmdialog.ts`, `confirmdialog/style/confirmdialogstyle.ts` |
-| CSS | `@primeuix/styles/confirmdialog` и пресет Aura — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет); окно и кнопки берут стили `dialog` и `button` |
-| Демонстрации | `apps/showcase/doc/confirmdialog/*-doc.ts` (`basic`, `position`, `template`, `headless`) |
+| CSS | `@primeuix/styles/confirmdialog` and the Aura preset — `cargo xtask gen-theme` (there is no `/* For PrimeNG */` block); the window and buttons take the `dialog` and `button` styles |
+| Demos | `apps/showcase/doc/confirmdialog/*-doc.ts` (`basic`, `position`, `template`, `headless`) |
 
-Спека: `openspec/specs/confirmdialog`.
+Spec: `openspec/specs/confirmdialog`.
 
 ```rust
 let confirm = provide_confirmation_service();
@@ -20,33 +20,33 @@ view! {
 }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- `ConfirmDialog` — обёртка над `Dialog` с ролью `alertdialog` и классом `p-confirmdialog` на окне. Тело: значок `p-confirmdialog-icon` и текст `p-confirmdialog-message`; подвал: кнопки `p-confirmdialog-reject-button` и `p-confirmdialog-accept-button` (сначала отказ). Подписи: `*_label`, затем `*_button_props.label`, затем переводы `reject` и `accept`.
-- Каждое значение сначала берётся из `Confirmation`, затем из свойства компонента (`option()` в PrimeNG): заголовок, текст, значок, подписи и значки кнопок, видимость кнопок, классы кнопок, `modal`, `position`, `closable`, `block_scroll`, `close_on_escape`, `dismissable_mask`, `default_focus`. Подтверждение, пришедшее при открытом окне, заменяет показанное на месте.
-- Закрытие: кнопки вызывают `accept` / `reject`; крестик, `Escape` и клик по маске — `reject` (в `on_hide` приходит `ConfirmEventType::Cancel`); `Close` сервиса скрывает окно без колбэков. `on_hide` получает тип закрытия.
-- `header_content`, `footer`, `message_content`, `icon_content`, `headless`, `accept_icon_content`-значки через `accept_icon`/`reject_icon`; `breakpoints`, `draggable`, `focus_trap`, `auto_z_index`, `base_z_index`, `style`, `style_class`, `mask_style_class`.
+- `ConfirmDialog` is a wrapper over `Dialog` with the `alertdialog` role and the `p-confirmdialog` class on the window. Body: the `p-confirmdialog-icon` icon and the `p-confirmdialog-message` text; footer: the `p-confirmdialog-reject-button` and `p-confirmdialog-accept-button` buttons (reject first). Labels: `*_label`, then `*_button_props.label`, then the `reject` and `accept` translations.
+- Every value is taken from `Confirmation` first, then from the component prop (`option()` in PrimeNG): header, text, icon, button labels and icons, button visibility, button classes, `modal`, `position`, `closable`, `block_scroll`, `close_on_escape`, `dismissable_mask`, `default_focus`. A confirmation that arrives while the window is open replaces the shown one in place.
+- Closing: the buttons call `accept` / `reject`; the close icon, `Escape` and a click on the mask — `reject` (`ConfirmEventType::Cancel` arrives in `on_hide`); service `Close` hides the window without callbacks. `on_hide` receives the close type.
+- `header_content`, `footer`, `message_content`, `icon_content`, `headless`, `accept_icon_content` icons via `accept_icon`/`reject_icon`; `breakpoints`, `draggable`, `focus_trap`, `auto_z_index`, `base_z_index`, `style`, `style_class`, `mask_style_class`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Фокус при показе работает по `default_focus` (`Accept` по умолчанию), включая `Close`; кнопки ищутся по настоящим классам `p-confirmdialog-*-button` и `p-dialog-close-button` | В PrimeNG селекторы `.p-confirm-dialog-accept`/`-reject` не совпадают с классами кнопок, поэтому там фокус решает сам `Dialog`. |
-| `message` выводится как текст, а не HTML | PrimeNG вставляет его через `innerHTML`; текст безопаснее и не требует `inner_html`. |
-| `reject` не получает тип события; тип — только в `on_hide` | `Callback<()>` общий для ConfirmPopup и ConfirmDialog; `ConfirmEventType` нужен только окну. |
-| `resizable` и `maximizable` выключены явно | В PrimeNG окно не изменяется по размеру; у нашего `Dialog` `resizable` по умолчанию включён. |
-| Нет `appendTo`: окно всегда в `body` (как у `Dialog`) | Остальные оверлеи проекта тоже без него. |
-| Нет `transitionOptions` и `rtl` | Анимация задана классами темы; раскладка справа налево не проверялась. |
-| Положение подтверждения — строка (`"topleft"`, …), неизвестное значение даёт `center` | `Confirmation` не зависит от крейта `Dialog`. |
-| Значки PrimeIcons в демонстрациях заменены значками `prime-icons`; `closeButtonProps` и `ConfirmationService.onAccept` не перенесены | Нет PrimeIcons; эти поля не используются демонстрациями. |
-| Заголовок `Dialog` стал реактивным (`prime-dialog`) | Чтобы замена подтверждения на месте обновляла заголовок. |
+| Focus on show works by `default_focus` (`Accept` by default), including `Close`; buttons are found by the real `p-confirmdialog-*-button` and `p-dialog-close-button` classes | In PrimeNG the `.p-confirm-dialog-accept`/`-reject` selectors do not match the button classes, so there `Dialog` itself decides the focus. |
+| `message` is rendered as text, not HTML | PrimeNG inserts it via `innerHTML`; text is safer and does not require `inner_html`. |
+| `reject` does not receive the event type; the type is only in `on_hide` | `Callback<()>` is shared by ConfirmPopup and ConfirmDialog; `ConfirmEventType` is needed only by the window. |
+| `resizable` and `maximizable` are explicitly off | In PrimeNG the window is not resizable; our `Dialog` has `resizable` on by default. |
+| No `appendTo`: the window is always in `body` (like `Dialog`) | The other overlays of the project have none either. |
+| No `transitionOptions` and `rtl` | The animation is set by theme classes; right-to-left layout was not verified. |
+| The confirmation position is a string (`"topleft"`, …), an unknown value gives `center` | `Confirmation` does not depend on the `Dialog` crate. |
+| PrimeIcons icons in the demos are replaced with `prime-icons` icons; `closeButtonProps` and `ConfirmationService.onAccept` are not ported | No PrimeIcons; these fields are not used by the demos. |
+| The `Dialog` header became reactive (`prime-dialog`) | So that replacing a confirmation in place updates the header. |
 
-## Что не проверялось
+## Not verified
 
-- Раскладка справа налево и сенсорный ввод.
-- Чтение с экрана: `aria-*` и роль сверены с PrimeNG, поведение скринридеров — нет.
-- Несколько `ConfirmDialog` с разными ключами одновременно открытыми — проверено только, что чужой ключ игнорируется.
+- Right-to-left layout and touch input.
+- Screen reading: `aria-*` and the role were checked against PrimeNG, screen reader behavior was not.
+- Several `ConfirmDialog`s with different keys open at once — only checked that a foreign key is ignored.
 
-## Производительность
+## Performance
 
-См. `benches/` (`confirmdialog-1`, `confirmdialog-1000`, `case-confirmdialog`) и `benches/*budgets.toml`. На сервере окна нет, замер — стоимость подписки на сервис.
+See `benches/` (`confirmdialog-1`, `confirmdialog-1000`, `case-confirmdialog`) and `benches/*budgets.toml`. There is no window on the server, the measurement is the cost of the service subscription.

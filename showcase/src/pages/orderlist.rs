@@ -1,5 +1,5 @@
-//! Страница OrderList: демонстрации `basic`, `filter` и `controls` (кнопки справа) по showcase PrimeNG
-//! (`apps/showcase/doc/orderlist`; перетаскивание и шаблоны не переносятся).
+//! OrderList page: the `basic`, `filter` and `controls` (buttons on the right) demos from the PrimeNG showcase
+//! (`apps/showcase/doc/orderlist`; drag and drop and templates are not ported).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -47,7 +47,7 @@ fn Controls() -> impl IntoView {
     }
 }
 
-/// Страница `/orderlist`.
+/// `/orderlist` page.
 #[component]
 pub fn OrderListPage() -> impl IntoView {
     view! {

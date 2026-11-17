@@ -1,36 +1,36 @@
 # Message
 
-Порт `p-message` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10 `p-message` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-message::Message` | `packages/primeng/src/message/message.ts`, `message/style/messagestyle.ts` |
-| CSS | `@primeuix/styles/message` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/message/*-doc.ts` (`basic`, `closable`, `severity`, `outlined`, `simple`, `sizes`, `life`) |
+| CSS | `@primeuix/styles/message` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/message/*-doc.ts` (`basic`, `closable`, `severity`, `outlined`, `simple`, `sizes`, `life`) |
 
-Спека: `openspec/specs/message`.
+Spec: `openspec/specs/message`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Корень с `role="alert"` и `aria-live="polite"`, классы `p-message p-component p-message-<severity>`, `p-message-<variant>`, `p-message-sm`/`-lg`.
-- Структура `p-message-content-wrapper` > `p-message-content` с иконкой, текстом и кнопкой закрытия; `data-p` (`outlined`, `simple`, severity, size) на корне и всех частях.
-- При заданном `text` выводится `span.p-message-text` с текстом, а следом всегда второй `span.p-message-text` с дочерним содержимым.
-- Кнопка закрытия `p-message-close-button` с `aria-label` из локали (`aria.close`) и иконкой `p-message-close-icon`; `on_close` с исходным событием; `life` в миллисекундах.
-- Слоты `icon_template`, `close_icon_template`, `container_template` (получает колбэк закрытия).
+- Root with `role="alert"` and `aria-live="polite"`, classes `p-message p-component p-message-<severity>`, `p-message-<variant>`, `p-message-sm`/`-lg`.
+- Structure `p-message-content-wrapper` > `p-message-content` with an icon, text and close button; `data-p` (`outlined`, `simple`, severity, size) on the root and all parts.
+- When `text` is set, a `span.p-message-text` with the text is rendered, followed by a second `span.p-message-text` with the child content.
+- Close button `p-message-close-button` with an `aria-label` from the locale (`aria.close`) and a `p-message-close-icon` icon; `on_close` with the original event; `life` in milliseconds.
+- Slots `icon_template`, `close_icon_template`, `container_template` (receives the close callback).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-message>` | Хост в Angular — деталь фреймворка. |
-| Закрытое сообщение остаётся в DOM с `p-message-leave-active` и `display: none`, без анимации | Анимации `@primeuix/motion` не портированы; PrimeNG убирает элемент после анимации. |
-| Нет `escape=false`, `showTransitionOptions`, `hideTransitionOptions`, `motionOptions` | HTML в тексте и анимации вне объёма change; для HTML используйте дочерние элементы. |
-| Нет ripple на кнопке закрытия | Кнопка не использует директиву `pRipple`. |
-| `icon`/`close_icon` — CSS-классы, как в PrimeNG, но шрифт PrimeIcons не поставляется | Используйте `icon_template` с SVG-иконками `prime-icons`. |
-| Статическая ветвь только для неинтерактивных сообщений | При `closable` или `life` нужен сигнал видимости, поэтому выбирается реактивная ветвь. |
-| `pt.close_icon` для встроенной иконки задаёт только класс | Иконка — отдельный компонент `prime-icons`. |
+| The root is a `<div>`, not a `<p-message>` host | The host in Angular is a framework detail. |
+| A closed message stays in the DOM with `p-message-leave-active` and `display: none`, without animation | `@primeuix/motion` animations are not ported; PrimeNG removes the element after the animation. |
+| No `escape=false`, `showTransitionOptions`, `hideTransitionOptions`, `motionOptions` | HTML in text and animations are outside the change scope; use child elements for HTML. |
+| No ripple on the close button | The button does not use the `pRipple` directive. |
+| `icon`/`close_icon` are CSS classes, as in PrimeNG, but the PrimeIcons font is not shipped | Use `icon_template` with `prime-icons` SVG icons. |
+| The static branch is only for non-interactive messages | With `closable` or `life` a visibility signal is needed, so the reactive branch is chosen. |
+| `pt.close_icon` for the built-in icon sets only the class | The icon is a separate `prime-icons` component. |
 
-## Производительность
+## Performance
 
-SSR: 36 аллокаций на экземпляр с текстом (бюджет 44); вклад в сырой wasm +218 КБ (бюджет 270 КБ).
-Шаблон — как у ToggleSwitch (`docs/toggleswitch.md`).
+SSR: 36 allocations per instance with text (budget 44); contribution to raw wasm +218 KB (budget 270 KB).
+The template is the same as for ToggleSwitch (`docs/toggleswitch.md`).

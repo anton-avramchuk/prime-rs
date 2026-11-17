@@ -1,6 +1,6 @@
-//! Страница TieredMenu: демонстрации `basic`, `popup`, `command` и `template` из showcase PrimeNG
-//! (`apps/showcase/doc/tieredmenu`; `router` не переносится). Значки PrimeIcons заменены значками `prime-icons` там, где аналог есть
-//! (`pi-plus`, `pi-search`, `pi-trash`, `pi-upload`, `pi-pencil`, `pi-refresh`), остальные пункты — без значков.
+//! TieredMenu page: the `basic`, `popup`, `command` and `template` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/tieredmenu`; `router` is not ported). PrimeIcons icons are replaced with `prime-icons` icons where an equivalent exists
+//! (`pi-plus`, `pi-search`, `pi-trash`, `pi-upload`, `pi-pencil`, `pi-refresh`), the remaining items have no icons.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -104,7 +104,7 @@ fn template_item(ctx: TieredMenuItemContext) -> AnyView {
     .into_any()
 }
 
-/// Страница `/tieredmenu`.
+/// The `/tieredmenu` page.
 #[component]
 pub fn TieredMenuPage() -> impl IntoView {
     view! {

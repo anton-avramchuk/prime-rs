@@ -1,92 +1,92 @@
 # toast Specification
 
 ## Purpose
-Toast показывает кратковременные уведомления в углу экрана; сообщения поступают от общего сервиса из любого места приложения, исчезают сами или закрываются пользователем.
+Toast shows short-lived notifications in a screen corner; messages come from a shared service from anywhere in the app, disappear on their own or are closed by the user.
 
 ## Requirements
 
-### Requirement: Разметка контейнера
-`Toast` крейта `prime-toast` SHALL выводить `div.p-toast.p-component` с классом `p-toast-<position>`, инлайн-стилем `position: fixed` и сдвигами по положению (`top`/`right`/`bottom`/`left` 20px у соответствующих краёв, 50% у центра) и `data-p` с положением. Без сообщений контейнер SHALL оставаться пустым. `style_class` и `pt` SHALL применяться к контейнеру.
+### Requirement: Container markup
+The `Toast` of crate `prime-toast` SHALL render `div.p-toast.p-component` with class `p-toast-<position>`, inline style `position: fixed` and offsets by position (`top`/`right`/`bottom`/`left` 20px at the corresponding edges, 50% at the center) and `data-p` with the position. Without messages the container SHALL stay empty. `style_class` and `pt` SHALL apply to the container.
 
-#### Scenario: Пустой контейнер
-- **WHEN** отрисован `Toast` без сообщений
-- **THEN** выведен `.p-toast.p-toast-top-right` без `.p-toast-message`
+#### Scenario: Empty container
+- **WHEN** a `Toast` without messages is rendered
+- **THEN** `.p-toast.p-toast-top-right` is rendered without `.p-toast-message`
 
-#### Scenario: Положение
+#### Scenario: Position
 - **WHEN** `position=BottomCenter`
-- **THEN** контейнер имеет `p-toast-bottom-center`, `bottom: 20px` и `left: 50%`
+- **THEN** the container has `p-toast-bottom-center`, `bottom: 20px` and `left: 50%`
 
-### Requirement: Разметка сообщения
-Каждое сообщение SHALL быть `div.p-toast-message` с классом `p-toast-message-<severity>` (`info` без явной серьёзности), `role="alert"`, `aria-live="assertive"`, `aria-atomic="true"` и `data-p` с серьёзностью, содержащим `div.p-toast-message-content` со значком (`Check`, `InfoCircle`, `TimesCircle`, `ExclamationTriangle` по серьёзности либо `span.p-toast-message-icon` с классом из `icon`), `div.p-toast-message-text` (`div.p-toast-summary`, `div.p-toast-detail`) и, если `closable` не ложно, `button.p-toast-close-button` с `aria-label` из локали. `style_class` и `content_style_class` сообщения SHALL добавляться к соответствующим элементам.
+### Requirement: Message markup
+Each message SHALL be a `div.p-toast-message` with class `p-toast-message-<severity>` (`info` without an explicit severity), `role="alert"`, `aria-live="assertive"`, `aria-atomic="true"` and `data-p` with the severity, containing `div.p-toast-message-content` with an icon (`Check`, `InfoCircle`, `TimesCircle`, `ExclamationTriangle` by severity or `span.p-toast-message-icon` with the class from `icon`), `div.p-toast-message-text` (`div.p-toast-summary`, `div.p-toast-detail`) and, if `closable` is not false, `button.p-toast-close-button` with `aria-label` from the locale. The message `style_class` and `content_style_class` SHALL be added to the corresponding elements.
 
-#### Scenario: Серьёзность и тексты
-- **WHEN** добавлено сообщение `Success` с `summary="Done"` и `detail="Saved"`
-- **THEN** выведено `.p-toast-message-success` с «Done» в `.p-toast-summary` и «Saved» в `.p-toast-detail`
+#### Scenario: Severity and texts
+- **WHEN** a `Success` message with `summary="Done"` and `detail="Saved"` is added
+- **THEN** `.p-toast-message-success` is rendered with "Done" in `.p-toast-summary` and "Saved" in `.p-toast-detail`
 
-#### Scenario: Без кнопки закрытия
-- **WHEN** сообщение добавлено с `closable=false`
-- **THEN** кнопки закрытия нет
+#### Scenario: No close button
+- **WHEN** a message is added with `closable=false`
+- **THEN** there is no close button
 
-### Requirement: Сервис сообщений
-`MessageService` SHALL предоставляться через контекст и принимать `add`, `add_all`, `clear` и `clear_key`. Каждый `Toast` SHALL принимать только сообщения со своим `key` (оба без ключа — совпадение); `clear()` SHALL убирать сообщения всех `Toast`, `clear_key(k)` — только `Toast` с ключом `k`. После размонтирования `Toast` сервис SHALL не вызывать его.
+### Requirement: Message service
+`MessageService` SHALL be provided via context and accept `add`, `add_all`, `clear` and `clear_key`. Each `Toast` SHALL accept only messages with its own `key` (both key-less is a match); `clear()` SHALL remove messages of all `Toast`s, `clear_key(k)` only of `Toast`s with key `k`. After a `Toast` unmounts the service SHALL NOT call it.
 
-#### Scenario: Ключи
-- **WHEN** есть два `Toast` с ключами «a» и «b» и добавлено сообщение с ключом «a»
-- **THEN** оно показано только в первом
+#### Scenario: Keys
+- **WHEN** there are two `Toast`s with keys "a" and "b" and a message with key "a" is added
+- **THEN** it is shown only in the first
 
-#### Scenario: Очистка по ключу
-- **WHEN** в обоих `Toast` есть сообщения и вызван `clear_key("a")`
-- **THEN** сообщения первого закрываются, второго — остаются
+#### Scenario: Clear by key
+- **WHEN** both `Toast`s have messages and `clear_key("a")` is called
+- **THEN** the messages of the first close, those of the second remain
 
-### Requirement: Время жизни
-Сообщение SHALL закрываться само через `life` сообщения, а при его отсутствии — через `life` `Toast` (по умолчанию 3000 мс); `sticky` SHALL отключать закрытие по времени. Наведение мыши на сообщение SHALL останавливать таймер, уход курсора — запускать заново (если сообщение не закрывается).
+### Requirement: Lifetime
+A message SHALL close on its own after the message `life`, and if absent, after the `Toast` `life` (3000 ms by default); `sticky` SHALL disable time-based closing. Hovering over a message SHALL stop the timer, the cursor leaving SHALL restart it (unless the message is closing).
 
-#### Scenario: Закрытие по времени
-- **WHEN** сообщение добавлено с `life=200`
-- **THEN** через 200 мс начинается анимация выхода, затем сообщение убирается
+#### Scenario: Closing on time
+- **WHEN** a message is added with `life=200`
+- **THEN** after 200 ms the exit animation starts, then the message is removed
 
-#### Scenario: Наведение
-- **WHEN** курсор находится над сообщением после истечения времени жизни
-- **THEN** сообщение остаётся, пока курсор не уйдёт
+#### Scenario: Hover
+- **WHEN** the cursor is over the message after the lifetime has elapsed
+- **THEN** the message stays until the cursor leaves
 
-### Requirement: Закрытие и анимация
-Кнопка закрытия и `clear` SHALL запускать анимацию выхода сообщения (`p-toast-message-leave-active`); вход SHALL сопровождаться `p-toast-message-enter-active`. После окончания анимации (`animationend` либо запасное время, если анимации нет) сообщение SHALL убираться из DOM, а `on_close` — вызываться с этим сообщением.
+### Requirement: Closing and animation
+The close button and `clear` SHALL start the message exit animation (`p-toast-message-leave-active`); entering SHALL be accompanied by `p-toast-message-enter-active`. After the animation ends (`animationend` or the fallback time if there is no animation) the message SHALL be removed from the DOM and `on_close` SHALL be called with that message.
 
-#### Scenario: Закрытие кнопкой
-- **WHEN** пользователь нажимает кнопку закрытия
-- **THEN** сообщение получает `p-toast-message-leave-active`, затем убирается, `on_close` вызван один раз
+#### Scenario: Closing via the button
+- **WHEN** the user presses the close button
+- **THEN** the message gets `p-toast-message-leave-active`, then is removed, `on_close` is called once
 
-### Requirement: Дубликаты
-При `prevent_open_duplicates` сообщение с теми же `summary`, `detail` и серьёзностью, что у уже показанного, SHALL не добавляться. При `prevent_duplicates` сообщение, совпадающее с любым ранее добавленным в этот `Toast`, SHALL не добавляться.
+### Requirement: Duplicates
+With `prevent_open_duplicates` a message with the same `summary`, `detail` and severity as an already shown one SHALL NOT be added. With `prevent_duplicates` a message matching any previously added to this `Toast` SHALL NOT be added.
 
-#### Scenario: Дубликат показанного
-- **WHEN** `prevent_open_duplicates` включён и то же сообщение добавлено дважды подряд
-- **THEN** показано одно
+#### Scenario: Duplicate of a shown one
+- **WHEN** `prevent_open_duplicates` is on and the same message is added twice in a row
+- **THEN** one is shown
 
-### Requirement: Слой
-Пока есть сообщения, при `auto_z_index` контейнер SHALL иметь `z-index` группы модальных окон со смещением `base_z_index`; после ухода последнего сообщения индекс SHALL освобождаться.
+### Requirement: Layer
+While there are messages, with `auto_z_index` the container SHALL have a modal group `z-index` with offset `base_z_index`; after the last message leaves the index SHALL be released.
 
-#### Scenario: Слой
-- **WHEN** сообщение показано, затем закрыто
-- **THEN** `z-index` контейнера был задан и после закрытия освобождён
+#### Scenario: Layer
+- **WHEN** a message is shown, then closed
+- **THEN** the container `z-index` was set and is released after closing
 
-### Requirement: Свои представления
-`message` SHALL заменять значок и тексты внутри содержимого сообщения (кнопка закрытия остаётся); `headless` SHALL заменять всё внутри `div.p-toast-message` и получать функцию закрытия сообщения.
+### Requirement: Custom views
+`message` SHALL replace the icon and texts inside the message content (the close button stays); `headless` SHALL replace everything inside `div.p-toast-message` and receive the message close function.
 
 #### Scenario: Headless
-- **WHEN** задан `headless` и добавлено сообщение
-- **THEN** внутри `.p-toast-message` только переданное представление, а его функция закрытия закрывает сообщение
+- **WHEN** `headless` is set and a message is added
+- **THEN** inside `.p-toast-message` there is only the supplied view, and its close function closes the message
 
-### Requirement: Адаптивность
-При `breakpoints` в `head` SHALL добавляться `style` с правилами `@media screen and (max-width: <ширина>)` для контейнера; при размонтировании он SHALL удаляться.
+### Requirement: Responsiveness
+With `breakpoints` a `style` with rules `@media screen and (max-width: <width>)` for the container SHALL be added to `head`; on unmount it SHALL be removed.
 
-#### Scenario: Правило
-- **WHEN** `breakpoints` содержит `920px` со стилем `width: 50%`
-- **THEN** в `head` есть правило с `max-width: 920px` и `width: 50% !important`
+#### Scenario: Rule
+- **WHEN** `breakpoints` contains `920px` with style `width: 50%`
+- **THEN** `head` has a rule with `max-width: 920px` and `width: 50% !important`
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) `Toast` SHALL отрисовываться пустым контейнером и не обращаться к `window` и `document`; сервис SHALL работать без браузера (сообщения на сервере не показываются).
+### Requirement: Rendering without a browser
+Outside the browser (SSR) `Toast` SHALL render as an empty container and SHALL NOT touch `window` and `document`; the service SHALL work without a browser (messages are not shown on the server).
 
 #### Scenario: SSR
-- **WHEN** страница с `Toast` отрисована на сервере
-- **THEN** в разметке есть пустой `.p-toast`
+- **WHEN** a page with `Toast` is rendered on the server
+- **THEN** there is an empty `.p-toast` in the markup

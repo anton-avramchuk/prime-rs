@@ -1,18 +1,18 @@
-//! Чистая логика Password: оценка надёжности, шкала и фазы панели (по `password.ts` и `passwordstyle.ts` PrimeNG).
+//! Pure Password logic: strength estimate, meter and panel phases (after PrimeNG `password.ts` and `passwordstyle.ts`).
 
-/// Уровень надёжности пароля.
+/// Password strength level.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PasswordStrength {
-    /// Слабый.
+        /// Weak.
     Weak,
-    /// Средний.
+        /// Medium.
     Medium,
-    /// Сильный.
+        /// Strong.
     Strong,
 }
 
 impl PasswordStrength {
-    /// Имя уровня: часть класса `p-password-meter-<имя>` и значение `data-p`.
+        /// Level name: part of the class `p-password-meter-<name>` and the `data-p` value.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Weak => "weak",
@@ -21,7 +21,7 @@ impl PasswordStrength {
         }
     }
 
-    /// Класс метки шкалы.
+        /// Meter label class.
     pub fn meter_class(self) -> &'static str {
         match self {
             Self::Weak => "p-password-meter-label p-password-meter-weak",
@@ -30,7 +30,7 @@ impl PasswordStrength {
         }
     }
 
-    /// Ширина метки шкалы.
+        /// Meter label width.
     pub fn width(self) -> &'static str {
         match self {
             Self::Weak => "33.33%",
@@ -40,8 +40,8 @@ impl PasswordStrength {
     }
 }
 
-/// Оценка по умолчанию, равная регулярным выражениям PrimeNG `mediumRegex` и `strongRegex`:
-/// пусто — `None`; от 8 символов и строчные, прописные, цифры — сильный; от 6 символов и два вида — средний; иначе слабый.
+/// Default estimate, equal to the PrimeNG regular expressions `mediumRegex` and `strongRegex`:
+/// empty — `None`; 8+ characters with lowercase, uppercase, digits — strong; 6+ characters and two kinds — medium; otherwise weak.
 pub fn strength(value: &str) -> Option<PasswordStrength> {
     if value.is_empty() {
         return None;
@@ -60,21 +60,21 @@ pub fn strength(value: &str) -> Option<PasswordStrength> {
     })
 }
 
-/// Фаза показа панели.
+/// Panel show phase.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Phase {
-    /// Не показана.
+        /// Not shown.
     Hidden,
-    /// Появляется (анимация входа).
+        /// Appearing (enter animation).
     Entering,
-    /// Показана.
+        /// Shown.
     Shown,
-    /// Исчезает (анимация выхода).
+        /// Disappearing (leave animation).
     Leaving,
 }
 
 impl Phase {
-    /// Класс анимации (блок `/* For PrimeNG */` темы).
+        /// Animation class (the theme's `/* For PrimeNG */` block).
     pub fn animation_class(self) -> &'static str {
         match self {
             Self::Entering => "p-password-enter",
@@ -83,26 +83,26 @@ impl Phase {
         }
     }
 
-    /// Панель есть в DOM.
+        /// The panel is in the DOM.
     pub fn is_visible(self) -> bool {
         matches!(self, Self::Entering | Self::Shown)
     }
 }
 
-/// Снимок свойств, влияющих на классы корня.
+/// Snapshot of properties affecting the root classes.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct RootState {
-    /// Значение не пусто.
+        /// The value is non-empty.
     pub filled: bool,
-    /// Поле в фокусе.
+        /// The field is focused.
     pub focused: bool,
-    /// Вариант `filled`.
+        /// The `filled` variant.
     pub variant_filled: bool,
-    /// На всю ширину.
+        /// Full width.
     pub fluid: bool,
 }
 
-/// Классы корня в порядке `passwordstyle.ts`.
+/// Root classes in the order of `passwordstyle.ts`.
 pub fn root_classes(s: RootState) -> String {
     let mut out = String::from("p-password p-component p-inputwrapper");
     for (on, class) in [
@@ -142,7 +142,7 @@ mod tests {
             ("abcDEFG1", Some(Strong)),
             ("abcDEF12", Some(Strong)),
             ("abcdef12345", Some(Medium)),
-            ("пароль12", Some(Weak)),
+            ("éééééé12", Some(Weak)),
             ("abcDEF1!", Some(Strong)),
         ];
         for (value, expected) in cases {
@@ -152,8 +152,8 @@ mod tests {
 
     #[test]
     fn strength_counts_characters_not_bytes() {
-        // «яяя» — 3 символа (6 байт): длина считается в символах, как у регулярного выражения.
-        assert_eq!(strength("яяяaB1"), Some(Medium));
+        // "ééé" is 3 characters (6 bytes): length is counted in characters, like the regular expression.
+        assert_eq!(strength("éééaB1"), Some(Medium));
     }
 
     #[test]

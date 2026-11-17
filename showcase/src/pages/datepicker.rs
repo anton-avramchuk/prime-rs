@@ -1,7 +1,7 @@
-//! Страница DatePicker (этап 1): демонстрации `basic`, `format`, `inline`, `multiple`, `range`, `minmax`, `buttonbar`,
-//! `month`, `year`, `icon`, `weeks`, `multiplemonths`, `disabled` и `invalid` из showcase PrimeNG
-//! (`apps/showcase/doc/datepicker`; время, шаблоны и формы Angular не переносятся).
-//! «Сегодня» зафиксировано на 5 ноября 2026, чтобы страница и e2e не зависели от системной даты.
+//! DatePicker page (stage 1): demos `basic`, `format`, `inline`, `multiple`, `range`, `minmax`, `buttonbar`,
+//! `month`, `year`, `icon`, `weeks`, `multiplemonths`, `disabled` and `invalid` from the PrimeNG showcase
+//! (`apps/showcase/doc/datepicker`; time, templates and Angular forms are not ported).
+//! "Today" is pinned to November 5, 2026 so the page and e2e do not depend on the system date.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -116,7 +116,7 @@ fn MultipleMonths() -> impl IntoView {
     view! { <DatePicker input_id="months_dp" value=value today=TODAY number_of_months=2usize style=WIDTH /> }
 }
 
-/// Страница `/datepicker`.
+/// Page `/datepicker`.
 #[component]
 pub fn DatePickerPage() -> impl IntoView {
     view! {

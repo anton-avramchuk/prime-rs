@@ -1,6 +1,6 @@
 [package]
 name = "prime-fileupload"
-description = "prime-rs: компонент FileUpload (порт PrimeNG)"
+description = "prime-rs: FileUpload component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -23,7 +23,7 @@ prime-icons = { workspace = true, features = ["plus", "upload", "times"] }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "DragEvent", "DataTransfer", "File", "FileList", "Blob", "FormData", "HtmlElement", "HtmlInputElement", "Element", "Node", "Window", "Document", "Url", "XmlHttpRequest", "XmlHttpRequestUpload", "ProgressEvent"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

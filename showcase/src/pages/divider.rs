@@ -1,6 +1,6 @@
-//! Страница Divider: демонстрации `basic`, `content`, `type`, `vertical`, `login` из showcase PrimeNG (`apps/showcase/doc/divider`).
+//! Divider page: demos `basic`, `content`, `type`, `vertical`, `login` from the PrimeNG showcase (`apps/showcase/doc/divider`).
 //!
-//! Тексты-заполнители сокращены.
+//! Placeholder texts are shortened.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -11,7 +11,7 @@ use prime_inputtext::InputText;
 const LOREM: &str =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
-/// Страница `/divider`.
+/// Page `/divider`.
 #[component]
 pub fn DividerPage() -> impl IntoView {
     view! {

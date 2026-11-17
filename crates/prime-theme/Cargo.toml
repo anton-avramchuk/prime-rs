@@ -1,6 +1,6 @@
 [package]
 name = "prime-theme"
-description = "prime-rs: статический CSS темы Aura"
+description = "prime-rs: static CSS of the Aura theme"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,7 +9,7 @@ rust-version.workspace = true
 
 [features]
 default = []
-# CSS компонентов: по feature на компонент, `all-components` включает все.
+# Component CSS: one feature per component, `all-components` enables all.
 # BEGIN GENERATED FEATURES
 accordion = []
 autocomplete = []

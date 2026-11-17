@@ -2,52 +2,52 @@
 
 ## Context
 
-Требования — в `specs/imagecompare`. Исходники PrimeNG 21.1.10: `imagecompare/imagecompare.ts` (около 150 строк), `imagecompare/style/imagecomparestyle.ts`; стили `@primeuix/styles/imagecompare`; демонстрации `apps/showcase/doc/imagecompare/{basic,responsive}-doc.ts`. Образец в проекте: `prime-slider`/`prime-knob` (обработчики `input` и `cfg(wasm32)` под DOM-вызовы), `prime-divider` (простая разметка).
+The requirements are in `specs/imagecompare`. PrimeNG 21.1.10 sources: `imagecompare/imagecompare.ts` (about 150 lines), `imagecompare/style/imagecomparestyle.ts`; styles `@primeuix/styles/imagecompare`; demos `apps/showcase/doc/imagecompare/{basic,responsive}-doc.ts`. Template in the project: `prime-slider`/`prime-knob` (the `input` handlers and `cfg(wasm32)` for DOM calls), `prime-divider` (simple markup).
 
-Наблюдения по исходнику:
-- Шаблон: `left`, `right`, `input[type=range][min=0][max=100][value=50]`; обработчик `onSlide` читает `event.target.value`, находит `previousElementSibling` ползунка и задаёт ему `style.clipPath`.
-- Тема: `.p-imagecompare img + img { clip-path: polygon(0 0, X 0, X 100%, 0 100%) }` с `X = 50%` по умолчанию; значит, правое изображение должно быть вторым `img` подряд после левого. Поэтому представления выводятся без обёрток.
-- Направление определяется при создании и наблюдателем `MutationObserver` за `dir` на `<html>`: `isRTL = !!el.closest('[dir=rtl]')`; применяется только в `onSlide`, так что вычисление в момент ввода даёт тот же результат.
-- `tabindex`, `aria-labelledby`, `aria-label` — на хосте (корне).
+Observations on the source:
+- Template: `left`, `right`, `input[type=range][min=0][max=100][value=50]`; the `onSlide` handler reads `event.target.value`, finds the `previousElementSibling` of the slider and sets its `style.clipPath`.
+- Theme: `.p-imagecompare img + img { clip-path: polygon(0 0, X 0, X 100%, 0 100%) }` with `X = 50%` by default; so the right image must be the second `img` right after the left one. Therefore the views are rendered without wrappers.
+- The direction is determined at creation and by a `MutationObserver` watching `dir` on `<html>`: `isRTL = !!el.closest('[dir=rtl]')`; it is applied only in `onSlide`, so computing it at the moment of input gives the same result.
+- `tabindex`, `aria-labelledby`, `aria-label` — on the host (the root).
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM и классы; тот же `clip-path` при вводе, включая `rtl`.
+**Goals:** the same DOM and classes; the same `clip-path` on input, including `rtl`.
 
 **Non-Goals:** `MutationObserver`, `Bind`, `pTemplate`.
 
 ## Decisions
 
-### D1. Крейт и API
-`prime-imagecompare` с `ImageCompare`, `ImageComparePt { root, slider }`. Свойства: `left: ViewFn`, `right: ViewFn` (обязательные), `tabindex: OptProp<i32>`, `aria_label`, `aria_labelledby`, `style`, `style_class`, `pt`.
+### D1. Crate and API
+`prime-imagecompare` with `ImageCompare`, `ImageComparePt { root, slider }`. Properties: `left: ViewFn`, `right: ViewFn` (required), `tabindex: OptProp<i32>`, `aria_label`, `aria_labelledby`, `style`, `style_class`, `pt`.
 
-### D2. Чистая логика (`state.rs`)
-`clip_path(value: f64, rtl: bool) -> String` — строка `polygon(...)` с форматированием процентов без хвостовых нулей (целые — без десятичной части; `30` → `30%`, `33.5` → `33.5%`); значения вне 0–100 прижимаются. Табличные тесты, включая `rtl`.
+### D2. Pure logic (`state.rs`)
+`clip_path(value: f64, rtl: bool) -> String` — a `polygon(...)` string with percentages formatted without trailing zeros (integers without a decimal part; `30` → `30%`, `33.5` → `33.5%`); values outside 0–100 are clamped. Table tests, including `rtl`.
 
-### D3. Обработчик ввода
-`on:input` ползунка (только браузер; в SSR обработчик не вызывается): читает `HtmlInputElement::value`, находит `previous_element_sibling`, определяет `rtl` по `closest("[dir=rtl]")` ползунка, задаёт `style.clip-path` через `HtmlElement::style().set_property`. Отсутствие соседа или нечисловое значение — тихий выход.
+### D3. Input handler
+The `on:input` of the slider (browser only; in SSR the handler is not called): reads `HtmlInputElement::value`, finds `previous_element_sibling`, determines `rtl` by `closest("[dir=rtl]")` of the slider, sets `style.clip-path` via `HtmlElement::style().set_property`. The absence of a sibling or a non-numeric value — a silent exit.
 
 ### D4. CSS
-`imagecompare` добавляется в `theme.components`. Проверить `p-imagecompare`, `p-imagecompare-slider`, переменные ручки; блок `For PrimeNG` в `imagecomparestyle.ts` нет.
+`imagecompare` is added to `theme.components`. Check `p-imagecompare`, `p-imagecompare-slider`, the handle variables; there is no `For PrimeNG` block in `imagecomparestyle.ts`.
 
-### D5. Тесты
-SSR: порядок и состав, атрибуты ползунка, `tabindex`/`aria-*`, `style`/`style_class`/`pt`, представления без обёрток. Браузерные `tests/web.rs`: ввод 30 → `clip-path` на предыдущем элементе, `rtl` в предке, повторный ввод, ввод без соседа. e2e: настоящее перетаскивание ручки (мышь по диапазону), `clip-path` от значения, скриншотная пара.
+### D5. Tests
+SSR: order and composition, the slider attributes, `tabindex`/`aria-*`, `style`/`style_class`/`pt`, the views without wrappers. Browser `tests/web.rs`: input 30 → `clip-path` on the previous element, `rtl` in an ancestor, repeated input, input without a sibling. e2e: a real drag of the handle (a mouse over the range), `clip-path` from the value, a screenshot pair.
 
-### D6. Демонстрации
-Изображения с CDN заменяются двумя встроенными SVG (`data:` URI) разных цветов с подписью — независимость от сети. `responsive` — контейнер фиксированной ширины.
+### D6. Demos
+The images from the CDN are replaced by two built-in SVGs (`data:` URIs) of different colours with a caption — independence from the network. `responsive` — a container of fixed width.
 
-### D7. Бенчмарки
-Сценарии `imagecompare-1`/`-1000` (две `<img>`), `case-imagecompare`; сначала `cargo bench -p render-bench --bench alloc`; для wasm — отдельный файл бюджетов `--budgets`.
+### D7. Benchmarks
+Scenarios `imagecompare-1`/`-1000` (two `<img>`), `case-imagecompare`; first `cargo bench -p render-bench --bench alloc`; for wasm — a separate budgets file `--budgets`.
 
 ## Risks / Trade-offs
 
-- [Структура `img + img`] Если пользователь передаст не `img` — правило темы не сработает; как в PrimeNG, фиксируется в docs.
-- [Ввод до гидратации] Обработчик подключается при гидратации; ранний ввод теряется, как у остальных компонентов.
+- [The `img + img` structure] If a user passes something other than `img`, the theme rule will not apply; as in PrimeNG, recorded in the docs.
+- [Input before hydration] The handler is attached on hydration; early input is lost, as for the other components.
 
 ## Open Questions
 
-- Нужно ли двустороннее значение (`value` как сигнал): в PrimeNG нет, не добавляем.
+- Whether a two-way value (`value` as a signal) is needed: PrimeNG has none, so we do not add it.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

@@ -2,47 +2,47 @@
 
 ## Context
 
-Требования — в `specs/colorpicker`. Исходники PrimeNG 21.1.10: `colorpicker/colorpicker.ts` (`pickColor`, `pickHue`, `updateUI`, `HSBtoRGB`, `RGBtoHSB`, `writeControlValue`), `style/colorpickerstyle.ts`, `@primeuix/styles/colorpicker`. Образцы в проекте: `prime-popover` (панель внутри корня, `align_overlay`, клик снаружи, `watch_scroll`), `prime-slider`/`prime-knob` (жест через слушатели окна, `StoredValue<_, LocalStorage>`, снятие в `on_cleanup`), `prime-select` (образец + панель).
+Requirements are in `specs/colorpicker`. PrimeNG 21.1.10 sources: `colorpicker/colorpicker.ts` (`pickColor`, `pickHue`, `updateUI`, `HSBtoRGB`, `RGBtoHSB`, `writeControlValue`), `style/colorpickerstyle.ts`, `@primeuix/styles/colorpicker`. Reference implementations in the project: `prime-popover` (panel inside the root, `align_overlay`, outside click, `watch_scroll`), `prime-slider`/`prime-knob` (gesture via window listeners, `StoredValue<_, LocalStorage>`, removal in `on_cleanup`), `prime-select` (swatch + panel).
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, те же формулы и значения, что в PrimeNG.
+**Goals:** the same DOM, the same formulas and values as in PrimeNG.
 
-**Non-Goals:** формы Angular, `appendTo`, `overlayOptions`, `motionOptions`, `Bind`.
+**Non-Goals:** Angular forms, `appendTo`, `overlayOptions`, `motionOptions`, `Bind`.
 
 ## Decisions
 
-### D1. Чистый модуль цветов (`color.rs`)
-`Hsb {h,s,b: f64}`, `Rgb {r,g,b: u8-подобные f64/i32}`; функции `hsb_to_rgb`, `rgb_to_hsb`, `hex_to_rgb` (строка с `#` или без; мусор → чёрный), `rgb_to_hex`, `hsb_to_hex`, `validate_hsb`, `pick_field(x, y) -> (s, b)`, `pick_hue(y) -> h`. Всё без DOM, табличные тесты на формулах TS (в том числе `h == 360`, серые, граничные).
+### D1. Pure color module (`color.rs`)
+`Hsb {h,s,b: f64}`, `Rgb {r,g,b: u8-like f64/i32}`; functions `hsb_to_rgb`, `rgb_to_hsb`, `hex_to_rgb` (string with or without `#`; garbage → black), `rgb_to_hex`, `hsb_to_hex`, `validate_hsb`, `pick_field(x, y) -> (s, b)`, `pick_hue(y) -> h`. All without the DOM, table-driven tests on the TS formulas (including `h == 360`, grays, boundary cases).
 
-### D2. Значение
-`enum ColorValue { Hex(String), Rgb(Rgb), Hsb(Hsb) }` и `value: RwSignal<Option<ColorValue>>`; внутренний сигнал `hsb` — источник истины для отображения. Эффект (под `cfg(wasm32)`) переводит внешнее значение в `hsb` по `format`; `None` — `default_color`. Запись из жеста обновляет `hsb` и `value` одним действием, без петли эффекта (сравнение с последним записанным).
+### D2. Value
+`enum ColorValue { Hex(String), Rgb(Rgb), Hsb(Hsb) }` and `value: RwSignal<Option<ColorValue>>`; the internal `hsb` signal is the source of truth for display. An effect (under `cfg(wasm32)`) converts the external value to `hsb` by `format`; `None` — `default_color`. A write from a gesture updates `hsb` and `value` in one action, without an effect loop (comparison with the last written value).
 
-### D3. Оверлей
-Панель — внутри корня, как у Select/Popover: `prime_dom::align_overlay(Relative)`, `ZGroup::Overlay`, клик снаружи и resize на `window` (слушатели вешаются в `set_timeout(0)` после показа), `prime_dom::watch_scroll` вместо своего слушателя прокрутки. Панель скрыта до расчёта положения. `inline` — без образца и оверлея.
+### D3. Overlay
+The panel is inside the root, like Select/Popover: `prime_dom::align_overlay(Relative)`, `ZGroup::Overlay`, outside click and resize on `window` (listeners are attached in `set_timeout(0)` after showing), `prime_dom::watch_scroll` instead of its own scroll listener. The panel is hidden until the position is computed. `inline` — without a swatch and overlay.
 
-### D4. Жесты
-Размер области — константа 150. Координаты: `clientX/Y` минус `getBoundingClientRect` области (как у Slider/Knob, а не `pageX/Y` — результат тот же, но не зависит от прокрутки). Мышь: `mousedown` на области → слушатели `mousemove`/`mouseup` окна на время жеста, `StoredValue<_, LocalStorage>`, снятие в `on_cleanup`. Касание: `touchstart` на области, `touchmove`/`touchend` на ней же с `preventDefault`. Касание НЕ проверяется на реальном устройстве — честно записать в docs.
+### D4. Gestures
+The area size is the constant 150. Coordinates: `clientX/Y` minus the area's `getBoundingClientRect` (as in Slider/Knob, not `pageX/Y` — the result is the same but does not depend on scroll). Mouse: `mousedown` on the area → window `mousemove`/`mouseup` listeners for the duration of the gesture, `StoredValue<_, LocalStorage>`, removal in `on_cleanup`. Touch: `touchstart` on the area, `touchmove`/`touchend` on it with `preventDefault`. Touch is NOT verified on a real device — record this honestly in the docs.
 
-### D5. Положение указателей
-Стили указателей и фона поля вычисляются из `hsb` реактивно (не императивно, как в TS): `style:left/top`, `background-color`. Образец: `style:background-color`.
+### D5. Pointer positions
+The pointer and field background styles are computed from `hsb` reactively (not imperatively as in TS): `style:left/top`, `background-color`. Swatch: `style:background-color`.
 
 ### D6. SSR
-Начальный `hsb` из `value`/`default_color` без DOM; образец с фоном и закрытая панель (либо встроенная) — в разметке.
+The initial `hsb` from `value`/`default_color` without the DOM; the swatch with a background and the closed panel (or the embedded one) are in the markup.
 
-### D7. Тесты
-Цвета — таблицы. SSR: разметка закрытого/встроенного, классы, формат, блокировка. Браузерные `tests/web.rs` одним последовательным тестом: открытие `Space`/клик, `Escape`, клик снаружи, клик по полю и шкале (значения), перетаскивание до выхода за границы, `format` rgb/hsb, внешнее значение, `disabled`. e2e: реальные клики по полю и шкале, перетаскивание, `Space`.
+### D7. Tests
+Colors — tables. SSR: markup of closed/embedded, classes, format, disabled state. Browser `tests/web.rs` as one sequential test: opening with `Space`/click, `Escape`, outside click, click on the field and scale (values), dragging until leaving the bounds, `format` rgb/hsb, external value, `disabled`. e2e: real clicks on the field and scale, dragging, `Space`.
 
 ## Risks / Trade-offs
 
-- [Округление] `floor` и `round` из TS воспроизводятся точно; сравнение с эталонными значениями PrimeNG в таблицах.
-- [Касание] Только эмуляция событий.
-- [Позиция панели] Образец — `input`, панель позиционируется относительно корня.
+- [Rounding] `floor` and `round` from TS are reproduced exactly; comparison with PrimeNG reference values in the tables.
+- [Touch] Event emulation only.
+- [Panel position] The swatch is an `input`, the panel is positioned relative to the root.
 
 ## Open Questions
 
-- Нет.
+- None.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

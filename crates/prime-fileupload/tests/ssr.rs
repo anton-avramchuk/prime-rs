@@ -1,4 +1,4 @@
-//! Разметка FileUpload (SSR): режимы, кнопки и их состояния, поле выбора, подписи, `pt`.
+//! FileUpload markup (SSR): modes, buttons and their states, the file input, labels, `pt`.
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 
@@ -10,9 +10,9 @@ fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)
 }
 
-/// Открывающий тег элемента, в котором встречается класс.
+/// Opening tag of the element that contains the class.
 fn tag_of<'a>(html: &'a str, class: &str) -> &'a str {
-    let at = html.find(class).unwrap_or_else(|| panic!("нет {class}: {html}"));
+    let at = html.find(class).unwrap_or_else(|| panic!("no {class}: {html}"));
     let start = html[..at].rfind('<').unwrap();
     let end = at + html[at..].find('>').unwrap();
     &html[start..=end]
@@ -26,12 +26,12 @@ fn advanced_markup() {
     assert!(html.contains("aria-label=\"Browse Files\""), "{html}");
     assert!(html.contains("p-fileupload-header") && html.contains("p-fileupload-content"), "{html}");
     for button in ["p-fileupload-choose-button", "p-fileupload-upload-button", "p-fileupload-cancel-button"] {
-        assert!(html.contains(button), "нет {button}: {html}");
+        assert!(html.contains(button), "no {button}: {html}");
     }
     for label in ["Choose", "Upload", "Cancel"] {
-        assert!(html.contains(label), "нет метки {label}: {html}");
+        assert!(html.contains(label), "no label {label}: {html}");
     }
-    assert!(!html.contains("p-fileupload-file-list") && !html.contains("p-progressbar"), "пустой: {html}");
+    assert!(!html.contains("p-fileupload-file-list") && !html.contains("p-progressbar"), "empty: {html}");
 }
 
 #[test]
@@ -39,7 +39,7 @@ fn upload_and_cancel_are_disabled_without_files() {
     let html = render(|| view! { <FileUpload url="/upload" /> }.to_html());
     assert!(tag_of(&html, "p-fileupload-upload-button").contains("disabled"), "{html}");
     assert!(tag_of(&html, "p-fileupload-cancel-button").contains("disabled"), "{html}");
-    assert!(!tag_of(&html, "p-fileupload-choose-button").contains("disabled"), "выбор доступен: {html}");
+    assert!(!tag_of(&html, "p-fileupload-choose-button").contains("disabled"), "choosing is available: {html}");
 }
 
 #[test]
@@ -72,7 +72,7 @@ fn basic_markup_and_label() {
     assert!(html.contains("p-fileupload-choose-button") && html.contains("No file chosen"), "{html}");
     assert!(!html.contains("p-fileupload-header") && !html.contains("p-fileupload-upload-button"), "{html}");
     let html = render(|| view! { <FileUpload mode=FileUploadMode::Basic auto=true /> }.to_html());
-    assert!(!html.contains("No file chosen"), "при auto подписи нет: {html}");
+    assert!(!html.contains("No file chosen"), "in auto mode there is no label: {html}");
 }
 
 #[test]

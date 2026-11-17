@@ -1,4 +1,4 @@
-//! Разметка Tree (SSR): корень, список, узлы, ARIA, раскрытие из модели, режимы выбора, флажки, фильтр, пусто, шаблоны, `pt`.
+//! Tree markup (SSR): root, list, nodes, ARIA, expansion from the model, selection modes, checkboxes, filter, empty, templates, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -31,14 +31,14 @@ fn markup_has_root_list_and_nodes() {
         html.contains("class=\"p-tree-root\"") && html.contains("class=\"p-tree-root-children\"") && html.contains("role=\"tree\""),
         "{html}"
     );
-    assert_eq!(html.matches("role=\"treeitem\"").count(), 3, "дети свёрнутого узла не выводятся: {html}");
+    assert_eq!(html.matches("role=\"treeitem\"").count(), 3, "children of a collapsed node are not rendered: {html}");
     assert!(html.contains("data-id=\"0\"") && html.contains("data-id=\"1\"") && !html.contains("data-id=\"0-0\""), "{html}");
     assert!(
         html.contains("p-tree-node-content") && html.contains("p-tree-node-toggle-button") && html.contains("p-tree-node-label"),
         "{html}"
     );
-    assert!(html.contains("p-tree-node p-tree-node-leaf"), "лист помечен: {html}");
-    assert_eq!(html.matches("p-tree-node-leaf").count(), 1, "узел с leaf=false не лист: {html}");
+    assert!(html.contains("p-tree-node p-tree-node-leaf"), "leaf is marked: {html}");
+    assert_eq!(html.matches("p-tree-node-leaf").count(), 1, "a node with leaf=false is not a leaf: {html}");
     assert!(html.contains("aria-level=\"1\"") && html.contains("aria-posinset=\"3\"") && html.contains("aria-setsize=\"2\""), "{html}");
     assert!(html.contains("padding-left: 0rem"), "{html}");
 }
@@ -88,14 +88,14 @@ fn checkbox_markup_and_partial_state() {
         let html = view! { <Tree id="t" value=m selection_mode=TreeSelectionMode::Checkbox selection=sel /> }.to_html();
         assert!(html.contains("aria-checked=\"true\"") && !html.contains("aria-selected"), "{html}");
         assert!(html.contains("p-checkbox") && html.contains("p-tree-node-checkbox") && html.contains("type=\"checkbox\""), "{html}");
-        assert!(html.contains("data-p-partialchecked=\"true\""), "родитель выбранного ребёнка частично выбран: {html}");
+        assert!(html.contains("data-p-partialchecked=\"true\""), "parent of a selected child is partially selected: {html}");
         assert!(html.contains("p-checkbox-checked"), "{html}");
-        assert!(!html.contains("p-tree-node-selected"), "без highlight_on_select подсветки нет: {html}");
+        assert!(!html.contains("p-tree-node-selected"), "no highlight without highlight_on_select: {html}");
         let sel = RwSignal::new(vec!["1".to_owned()]);
         let html =
             view! { <Tree id="t" value=model() selection_mode=TreeSelectionMode::Checkbox selection=sel highlight_on_select=true /> }
                 .to_html();
-        assert_eq!(html.matches("p-tree-node-selected").count(), 1, "с highlight_on_select выбранный узел подсвечен: {html}");
+        assert_eq!(html.matches("p-tree-node-selected").count(), 1, "with highlight_on_select the selected node is highlighted: {html}");
     });
 }
 
@@ -110,12 +110,12 @@ fn not_selectable_node_has_no_selectable_class() {
 fn tab_stop_is_first_node_then_selected() {
     let html = render(|| view! { <Tree id="t" value=model() /> }.to_html());
     assert_eq!(html.matches("tabindex=\"0\"").count(), 1, "{html}");
-    assert!(html.find("tabindex=\"0\"").unwrap() < html.find("data-id=\"1\"").unwrap(), "первый узел: {html}");
+    assert!(html.find("tabindex=\"0\"").unwrap() < html.find("data-id=\"1\"").unwrap(), "first node: {html}");
     Owner::new().with(|| {
         let sel = RwSignal::new(vec!["1".to_owned()]);
         let html = view! { <Tree id="t" value=model() selection_mode=TreeSelectionMode::Single selection=sel /> }.to_html();
         assert_eq!(html.matches("tabindex=\"0\"").count(), 1, "{html}");
-        assert!(html.find("tabindex=\"0\"").unwrap() > html.find("data-id=\"0\"").unwrap(), "выбранный узел: {html}");
+        assert!(html.find("tabindex=\"0\"").unwrap() > html.find("data-id=\"0\"").unwrap(), "selected node: {html}");
     });
 }
 

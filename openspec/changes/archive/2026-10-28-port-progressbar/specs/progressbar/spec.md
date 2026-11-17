@@ -1,52 +1,52 @@
 ## ADDED Requirements
 
-### Requirement: Разметка и ARIA ProgressBar
-Компонент `ProgressBar` крейта `prime-progressbar` SHALL отрисовывать корень `<div role="progressbar">` с `aria-valuemin="0"`, `aria-valuemax="100"`, классами `p-progressbar p-component p-progressbar-determinate` (по умолчанию) или `p-progressbar-indeterminate` и `data-p` (`determinate` или `indeterminate`). При заданном `value` корень SHALL иметь `aria-valuenow` со значением и `aria-level` со значением и единицей; без значения эти атрибуты SHALL отсутствовать.
+### Requirement: ProgressBar markup and ARIA
+The `ProgressBar` component of the `prime-progressbar` crate SHALL render a root `<div role="progressbar">` with `aria-valuemin="0"`, `aria-valuemax="100"`, the classes `p-progressbar p-component p-progressbar-determinate` (default) or `p-progressbar-indeterminate` and `data-p` (`determinate` or `indeterminate`). When `value` is set the root SHALL have `aria-valuenow` with the value and `aria-level` with the value and unit; without a value these attributes SHALL be absent.
 
-#### Scenario: Определённый режим
+#### Scenario: Determinate mode
 - **WHEN** `value = 50`
-- **THEN** корень имеет классы `p-progressbar p-component p-progressbar-determinate`, `aria-valuenow="50"`, `aria-level="50%"`, `data-p="determinate"`
+- **THEN** the root has the classes `p-progressbar p-component p-progressbar-determinate`, `aria-valuenow="50"`, `aria-level="50%"`, `data-p="determinate"`
 
-#### Scenario: Без значения
-- **WHEN** `value` не задан
-- **THEN** у корня нет `aria-valuenow` и `aria-level`
+#### Scenario: Without a value
+- **WHEN** `value` is not set
+- **THEN** the root has no `aria-valuenow` and `aria-level`
 
-### Requirement: Определённый режим ProgressBar
-В режиме `determinate` ProgressBar SHALL выводить `div.p-progressbar-value` со стилем `width: <value>%; display: flex` (и `background: <color>` при `color`) и `value_style_class`, а внутри — `div.p-progressbar-label` с `div` значения и единицы (`unit`, по умолчанию `%`), который скрыт (`display: none`) при отсутствии значения или нуле. При `show_value = false` значение не выводится; при `content_template` вместо значения выводится шаблон, получающий значение.
+### Requirement: ProgressBar determinate mode
+In `determinate` mode ProgressBar SHALL render `div.p-progressbar-value` with the style `width: <value>%; display: flex` (and `background: <color>` with `color`) and `value_style_class`, and inside it a `div.p-progressbar-label` with a `div` of the value and unit (`unit`, `%` by default), which is hidden (`display: none`) when there is no value or it is zero. With `show_value = false` the value is not rendered; with `content_template` the template receiving the value is rendered instead of the value.
 
-#### Scenario: Ширина и подпись
+#### Scenario: Width and label
 - **WHEN** `value = 40`
-- **THEN** у `p-progressbar-value` стиль содержит `width: 40%`, а подпись содержит `40%`
+- **THEN** the style of `p-progressbar-value` contains `width: 40%`, and the label contains `40%`
 
-#### Scenario: Нулевое значение
+#### Scenario: Zero value
 - **WHEN** `value = 0`
-- **THEN** подпись присутствует, но её `div` имеет `display: none`
+- **THEN** the label is present, but its `div` has `display: none`
 
-#### Scenario: Шаблон
-- **WHEN** задан `content_template`
-- **THEN** вместо значения выводится результат шаблона, получившего значение
+#### Scenario: Template
+- **WHEN** `content_template` is set
+- **THEN** the result of the template that received the value is rendered instead of the value
 
-### Requirement: Неопределённый режим ProgressBar
-В режиме `indeterminate` ProgressBar SHALL выводить только `div.p-progressbar-value` (с `background: <color>` при `color` и `value_style_class`), без ширины и подписи.
+### Requirement: ProgressBar indeterminate mode
+In `indeterminate` mode ProgressBar SHALL render only `div.p-progressbar-value` (with `background: <color>` with `color` and `value_style_class`), without width and label.
 
 #### Scenario: Indeterminate
 - **WHEN** `mode = indeterminate`
-- **THEN** есть `p-progressbar-indeterminate`, `p-progressbar-value` без `width` и нет `p-progressbar-label`
+- **THEN** there is `p-progressbar-indeterminate`, `p-progressbar-value` without `width` and no `p-progressbar-label`
 
 ### Requirement: Pass-through ProgressBar
-`pt` SHALL принимать `root`, `value`, `label`, добавляя классы и атрибуты без замены собственных.
+`pt` SHALL accept `root`, `value`, `label`, adding classes and attributes without replacing the own ones.
 
-#### Scenario: Класс через pt
-- **WHEN** в `pt.value` передан класс `custom`
-- **THEN** у `p-progressbar-value` есть и `custom`, и собственный класс
+#### Scenario: Class via pt
+- **WHEN** the class `custom` is passed in `pt.value`
+- **THEN** `p-progressbar-value` has both `custom` and its own class
 
-### Requirement: Стоимость отрисовки ProgressBar
-ProgressBar со статическими свойствами SHALL использовать статическую ветвь; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `progressbar` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `progressbar` в `benches/budgets.toml`.
+### Requirement: ProgressBar rendering cost
+A ProgressBar with static properties SHALL use the static branch; both branches SHALL produce the same markup. The number of allocations per instance in SSR SHALL fit the `progressbar` budget in `benches/alloc-budgets.toml`, the contribution to wasm - the `progressbar` budget in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** one set of values is passed statically and as signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения ProgressBar не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are applied
+- **THEN** the ProgressBar values do not exceed the budgets

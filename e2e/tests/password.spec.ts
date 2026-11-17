@@ -7,15 +7,15 @@ test.describe('Password', () => {
         await expect(page.locator('[data-demo=meter] .p-password')).toBeVisible();
     });
 
-    test('структура: тринадцать демонстраций, поле скрывает ввод', async ({ page }) => {
+    test('structure: thirteen demos, the field hides input', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(13);
         await expect(page.locator('[data-demo=meter] input.p-password-input')).toHaveAttribute('type', 'password');
         await expect(page.locator('[data-demo=meter] .p-password-overlay')).toHaveCount(0);
     });
 
-    test('фокус открывает панель с подсказкой, потеря фокуса закрывает', async ({ page }) => {
+    test('focus opens the panel with a hint, focus loss closes it', async ({ page }) => {
         const demo = page.locator('[data-demo=meter]');
-        // у нижнего края окна панель открылась бы сверху: ставим поле у верха окна
+        // near the bottom edge of the window the panel would open upward: put the field at the top of the window
         await demo.evaluate((el) => el.scrollIntoView({ block: 'start' }));
         await demo.locator('input').click();
         const panel = demo.locator('.p-password-overlay');
@@ -28,7 +28,7 @@ test.describe('Password', () => {
         await expect(panel).toHaveCount(0);
     });
 
-    test('уровни: слабый, средний, сильный', async ({ page }) => {
+    test('levels: weak, medium, strong', async ({ page }) => {
         const demo = page.locator('[data-demo=meter]');
         const input = demo.locator('input');
         await input.click();
@@ -41,14 +41,14 @@ test.describe('Password', () => {
             const meter = demo.locator('.p-password-meter-label');
             await expect(meter).toHaveClass(new RegExp(`p-password-meter-${level}`));
             await expect(demo.locator('.p-password-meter-text')).toHaveText(label);
-            // ширина меняется плавным переходом темы, поэтому ждём установившегося значения
+            // width changes with a smooth theme transition, so wait for the settled value
             await expect
                 .poll(() => meter.evaluate((el) => (el.getBoundingClientRect().width / el.parentElement!.getBoundingClientRect().width) * 100))
                 .toBeCloseTo(width, 0);
         }
     });
 
-    test('Escape закрывает панель, ввод открывает снова', async ({ page }) => {
+    test('Escape closes the panel, input opens it again', async ({ page }) => {
         const demo = page.locator('[data-demo=meter]');
         const input = demo.locator('input');
         await input.click();
@@ -59,7 +59,7 @@ test.describe('Password', () => {
         await expect(demo.locator('.p-password-overlay')).toBeVisible();
     });
 
-    test('подписи locale', async ({ page }) => {
+    test('locale labels', async ({ page }) => {
         const demo = page.locator('[data-demo=locale]');
         await demo.locator('input').click();
         await expect(demo.locator('.p-password-meter-text')).toHaveText('Choose a password');
@@ -67,7 +67,7 @@ test.describe('Password', () => {
         await expect(demo.locator('.p-password-meter-text')).toHaveText('Too simple');
     });
 
-    test('template: заголовок и подвал внутри панели', async ({ page }) => {
+    test('template: header and footer inside the panel', async ({ page }) => {
         const demo = page.locator('[data-demo=template]');
         await demo.locator('input').click();
         const panel = demo.locator('.p-password-overlay');
@@ -75,7 +75,7 @@ test.describe('Password', () => {
         await expect(panel.getByText('Minimum 8 characters')).toBeVisible();
     });
 
-    test('togglemask: значок переключает тип и не отнимает фокус', async ({ page }) => {
+    test('togglemask: the icon switches the type and does not take focus', async ({ page }) => {
         const demo = page.locator('[data-demo=togglemask]');
         const input = demo.locator('input');
         await input.fill('secret');
@@ -87,7 +87,7 @@ test.describe('Password', () => {
         await expect(input).toHaveAttribute('type', 'password');
     });
 
-    test('clearicon: очищает значение и пропадает', async ({ page }) => {
+    test('clearicon: clears the value and disappears', async ({ page }) => {
         const demo = page.locator('[data-demo=clearicon]');
         await expect(demo.locator('input')).toHaveValue('secret');
         await demo.locator('.p-password-clear-icon').click();
@@ -95,7 +95,7 @@ test.describe('Password', () => {
         await expect(demo.locator('.p-password-clear-icon')).toHaveCount(0);
     });
 
-    test('disabled и feedback=false: панели нет', async ({ page }) => {
+    test('disabled and feedback=false: no panel', async ({ page }) => {
         await expect(page.locator('[data-demo=disabled] input')).toBeDisabled();
         const basic = page.locator('[data-demo=basic]');
         await basic.locator('input').click();

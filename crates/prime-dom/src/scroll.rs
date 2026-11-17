@@ -1,24 +1,23 @@
-//! Закрытие всплывающих панелей по прокрутке.
+//! Closing popup panels on scroll.
 //!
-//! `scroll` не всплывает, поэтому панель слушает его в фазе захвата на окне. Прокрутка предка цели закрывает панель всегда, а
-//! прокрутка самого документа — только если цель действительно сдвинулась в окне: иначе ложное срабатывание давали бы сдвиги
-//! страницы, которых пользователь не делал (вставка панели в поток, прокрутка к сфокусированному элементу).
+//! `scroll` does not bubble, so the panel listens to it in the capture phase on the window. Scrolling an ancestor of the target always closes the panel, and
+//! scrolling the document itself only if the target has actually moved in the window: otherwise page shifts the user did not make (inserting the panel into the flow,
+//! scrolling to a focused element) would cause false triggers.
 
-/// Допуск сдвига цели, px.
+/// Movement tolerance of the target, px.
 pub const MOVE_TOLERANCE: f64 = 1.0;
 
-/// Сдвинулась ли цель относительно положения `origin` (верх, лево) при открытии.
+/// Whether the target has moved relative to the `origin` position (top, left) at opening.
 pub fn target_moved(origin: (f64, f64), now: (f64, f64)) -> bool {
     (now.0 - origin.0).abs() > MOVE_TOLERANCE || (now.1 - origin.1).abs() > MOVE_TOLERANCE
 }
 
-/// Нужно ли скрыть панель: прокручен документ (скрывать, только если цель сдвинулась) или другой элемент (скрывать, если он
-/// содержит цель).
+/// Whether to hide the panel: the document is scrolled (hide only if the target has moved) or another element (hide if it contains the target).
 pub fn scroll_hides(scrolled_is_document: bool, scrolled_contains_target: bool, target_moved: bool) -> bool {
     if scrolled_is_document { target_moved } else { scrolled_contains_target }
 }
 
-/// Фокус без прокрутки страницы: браузер иначе прокручивает к элементу и сдвигает цель, а всплывающая панель закрылась бы.
+/// Focus without scrolling the page: otherwise the browser scrolls to the element and shifts the target, and the popup panel would close.
 #[cfg(target_arch = "wasm32")]
 pub fn focus_no_scroll(el: &web_sys::HtmlElement) {
     let options = web_sys::FocusOptions::new();
@@ -26,12 +25,12 @@ pub fn focus_no_scroll(el: &web_sys::HtmlElement) {
     let _ = el.focus_with_options(&options);
 }
 
-/// Фокус без прокрутки (вне браузера ничего не делает).
+/// Focus without scrolling (does nothing outside the browser).
 #[cfg(not(target_arch = "wasm32"))]
 pub fn focus_no_scroll(_el: &()) {}
 
-/// Подписка на прокрутку: вызывает `on_hide`, когда панель у `target` должна закрыться. Возвращает функцию отписки; вне
-/// браузера ничего не делает и возвращает `None`.
+/// Scroll subscription: calls `on_hide` when the panel at `target` should close. Returns an unsubscribe function; outside the
+/// browser it does nothing and returns `None`.
 #[cfg(target_arch = "wasm32")]
 pub fn watch_scroll(target: web_sys::HtmlElement, on_hide: impl Fn() + 'static) -> Option<Box<dyn FnOnce()>> {
     use wasm_bindgen::JsCast;
@@ -53,7 +52,7 @@ pub fn watch_scroll(target: web_sys::HtmlElement, on_hide: impl Fn() + 'static) 
     }))
 }
 
-/// Подписка на прокрутку (вне браузера недоступна).
+/// Scroll subscription (not available outside the browser).
 #[cfg(not(target_arch = "wasm32"))]
 pub fn watch_scroll(_target: (), _on_hide: impl Fn() + 'static) -> Option<Box<dyn FnOnce()>> {
     None
@@ -73,7 +72,7 @@ mod tests {
 
     #[test]
     fn scroll_hides_table() {
-        // (документ, содержит цель, цель сдвинулась) → скрыть
+        // (document, contains the target, the target moved) → hide
         let table = [
             (true, false, false, false),
             (true, false, true, true),

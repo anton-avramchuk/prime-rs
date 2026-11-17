@@ -1,4 +1,4 @@
-//! Директива `tooltip` в SSR: не вызывается и не меняет разметку элемента.
+//! The `tooltip` directive in SSR: it is not invoked and does not change the element markup.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

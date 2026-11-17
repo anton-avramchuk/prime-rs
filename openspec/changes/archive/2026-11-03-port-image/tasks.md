@@ -1,32 +1,32 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `image` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился и что есть классы `p-image*`
-- [x] 1.2 Проверить ключи `aria.*` в `translation_defaults.rs` (`rotateLeft`, `zoomOut`), недостающие добавить
+- [x] 1.1 Add `image` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of the other components did not change and that the classes `p-image*` are present
+- [x] 1.2 Check the `aria.*` keys in `translation_defaults.rs` (`rotateLeft`, `zoomOut`), add the missing ones
 
-## 2. Крейт
+## 2. Crate
 
-- [x] 2.1 `crates/prime-image`: `state.rs` (`root_classes`, границы и шаги масштаба, `transform`, классы кнопок, `mask_should_close`) с табличными тестами
-- [x] 2.2 Компонент `Image`, `ImageLoading`, `ImagePt`: корень, `img`, кнопка просмотра, представления `image`/`indicator`, `on_image_error`, SSR-тесты, rustdoc
-- [x] 2.3 Просмотр: `Portal`, маска, панель, поворот и масштаб, `preview`-шаблон, закрытие кнопкой/маской/`Escape`, слой, блокировка прокрутки, ловушка и возврат фокуса, `on_show`/`on_hide`, сброс при закрытии
-- [x] 2.4 Браузерные `tests/web.rs` (один последовательный тест просмотра)
+- [x] 2.1 `crates/prime-image`: `state.rs` (`root_classes`, the zoom limits and steps, `transform`, the button classes, `mask_should_close`) with table tests
+- [x] 2.2 The `Image`, `ImageLoading`, `ImagePt` component: the root, `img`, the preview button, the views `image`/`indicator`, `on_image_error`, SSR tests, rustdoc
+- [x] 2.3 The preview: `Portal`, the mask, the panel, rotation and zoom, the `preview` template, closing by the button/mask/`Escape`, the layer, scroll blocking, the trap and the return of focus, `on_show`/`on_hide`, reset on closing
+- [x] 2.4 Browser `tests/web.rs` (one sequential preview test)
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/image` (`basic`, `preview`, `previewimagesource`, `template`), локальные картинки, меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `image.spec.ts` (стили, открытие и закрытие просмотра, поворот и масштаб, клавиша `Escape`); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test image`
+- [x] 3.1 The `/image` page (`basic`, `preview`, `previewimagesource`, `template`), local pictures, the menu, the route, `stylesheet(&[..])`, the crate in the workspace and the showcase
+- [x] 3.2 `e2e/tests/pages.json` and `image.spec.ts` (styles, opening and closing the preview, rotation and zoom, the `Escape` key); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test image`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-image` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`; замер wasm — в фоне, с отдельным файлом бюджетов)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-image` and the budgets (first `cargo bench -p render-bench --bench alloc`; the wasm measurement — in the background, with a separate budgets file)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/image.md` (отличия от PrimeNG, что не проверялось); `prime-image` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с исключениями CI и `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-image`; CI `dev` зелёный
+- [x] 5.1 `docs/image.md` (differences from PrimeNG, what was not verified); `prime-image` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with the CI exceptions and `--all-features` (and for the wasm target), tests, deny, machete, `openspec validate port-image`; CI `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: ConfirmPopup.
+- Archive after CI.
+- Next: ConfirmPopup.

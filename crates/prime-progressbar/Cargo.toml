@@ -1,6 +1,6 @@
 [package]
 name = "prime-progressbar"
-description = "prime-rs: компонент ProgressBar (порт PrimeNG)"
+description = "prime-rs: ProgressBar component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -1,10 +1,10 @@
-//! Страница Badge: демонстрации `basic`, `size`, `severity` из showcase PrimeNG (`apps/showcase/doc/badge`).
+//! Badge page: demos `basic`, `size`, `severity` from the PrimeNG showcase (`apps/showcase/doc/badge`).
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgeSeverity, BadgeSize};
 
-/// Страница `/badge`.
+/// Page `/badge`.
 #[component]
 pub fn BadgePage() -> impl IntoView {
     view! {

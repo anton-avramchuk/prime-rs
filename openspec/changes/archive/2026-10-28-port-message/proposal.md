@@ -2,25 +2,25 @@
 
 ## Why
 
-Message — компонент вывода сообщений (информация, успех, предупреждение, ошибка) с закрытием и автоскрытием. После полей ввода это первый компонент волны 1 с таймером жизни и слотами содержимого.
+Message is a component for displaying messages (information, success, warning, error) with closing and auto-hide. After the input fields this is the first wave 1 component with a lifetime timer and content slots.
 
 ## What Changes
 
-- Новый крейт `prime-message` с компонентом `Message`: `severity` (`success`, `info` по умолчанию, `warn`, `error`, `secondary`, `contrast`), `variant` (`outlined`, `text`, `simple`), `size` (`small`, `large`), `text`, дочернее содержимое, `icon` (CSS-класс), слоты `icon_template`, `close_icon_template`, `container_template` (получает колбэк закрытия), `closable`, `close_icon` (CSS-класс), `life` (мс), `style`, `style_class`, `pt` (`root`, `content_wrapper`, `content`, `icon`, `text`, `close_button`, `close_icon`), событие `on_close`.
-- Разметка и классы как в PrimeNG 21.1.10: корень `role="alert" aria-live="polite"` с классами `p-message p-component p-message-<severity>`, `p-message-<variant>`, `p-message-sm`/`-lg`; внутри `p-message-content-wrapper` > `p-message-content` с иконкой, текстом (`p-message-text`), кнопкой закрытия (`p-message-close-button` с `p-message-close-icon`, `aria-label` из локали); `data-p` на корне и всех частях.
-- Закрытый Message скрывается (класс `p-message-leave-active` и `display: none`).
-- Страница `/message` (`basic`, `closable`, `severity`, `outlined`, `simple`, `sizes`, `icon`, `life`), e2e, бенчмарки, бюджеты.
-- **Не входит:** `escape=false` (HTML в `text`), анимации `@primeuix/motion` (`showTransitionOptions`, `hideTransitionOptions`, `motionOptions`), ripple на кнопке закрытия, интеграция с `MessageService`/`Toast`.
+- New crate `prime-message` with the `Message` component: `severity` (`success`, `info` by default, `warn`, `error`, `secondary`, `contrast`), `variant` (`outlined`, `text`, `simple`), `size` (`small`, `large`), `text`, child content, `icon` (CSS class), slots `icon_template`, `close_icon_template`, `container_template` (receives the close callback), `closable`, `close_icon` (CSS class), `life` (ms), `style`, `style_class`, `pt` (`root`, `content_wrapper`, `content`, `icon`, `text`, `close_button`, `close_icon`), the `on_close` event.
+- Markup and classes as in PrimeNG 21.1.10: root `role="alert" aria-live="polite"` with classes `p-message p-component p-message-<severity>`, `p-message-<variant>`, `p-message-sm`/`-lg`; inside `p-message-content-wrapper` > `p-message-content` with an icon, text (`p-message-text`), a close button (`p-message-close-button` with `p-message-close-icon`, `aria-label` from the locale); `data-p` on the root and all parts.
+- A closed Message is hidden (the `p-message-leave-active` class and `display: none`).
+- The `/message` page (`basic`, `closable`, `severity`, `outlined`, `simple`, `sizes`, `icon`, `life`), e2e, benchmarks, budgets.
+- **Out of scope:** `escape=false` (HTML in `text`), `@primeuix/motion` animations (`showTransitionOptions`, `hideTransitionOptions`, `motionOptions`), ripple on the close button, integration with `MessageService`/`Toast`.
 
 ## Capabilities
 
 ### New Capabilities
-- `message`: компонент Message — разметка, классы, закрытие, `life`, слоты, `pt`, производительность.
+- `message`: the Message component: markup, classes, closing, `life`, slots, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-message` (`publish = false`); зависимости `prime-core`, `prime-icons` (`times`), `web-sys`.
-- Изменяются `showcase`, `benches/render`, `benches/wasm-size`, бюджеты, `e2e/tests`, браузерный job CI не меняется (браузерные тесты — для `life` и закрытия добавляются в него).
+- New crate `crates/prime-message` (`publish = false`); dependencies `prime-core`, `prime-icons` (`times`), `web-sys`.
+- Changed: `showcase`, `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`; the CI browser job is unchanged (browser tests for `life` and closing are added to it).

@@ -1,81 +1,81 @@
-# Сборка
+# Build
 
-Тулчейн закреплён в `rust-toolchain.toml` (Rust 1.98.0, таргет `wasm32-unknown-unknown`, rustfmt и clippy): rustup установит всё сам при первой сборке.
+The toolchain is pinned in `rust-toolchain.toml` (Rust 1.98.0, target `wasm32-unknown-unknown`, rustfmt and clippy): rustup installs everything itself on the first build.
 
 ```sh
 cargo check --workspace
-cargo check -p prime-core --target wasm32-unknown-unknown --features hydrate   # клиент
-cargo check -p prime-core --features ssr                                       # сервер
+cargo check -p prime-core --target wasm32-unknown-unknown --features hydrate   # client
+cargo check -p prime-core --features ssr                                       # server
 cargo deny check
 cargo xtask --help
 ```
 
-Режимы Leptos включаются features `ssr` и `hydrate` в каждом крейте; по умолчанию — CSR.
+Leptos modes are enabled by the `ssr` and `hydrate` features in each crate; the default is CSR.
 
-## Линкер
+## Linker
 
-`.cargo/config.toml` использует `rust-lld` для `x86_64-pc-windows-msvc` и `lld` для Linux (пакет `lld` должен быть установлен).
+`.cargo/config.toml` uses `rust-lld` for `x86_64-pc-windows-msvc` and `lld` for Linux (the `lld` package must be installed).
 
-## Размер `target/`
+## Size of `target/`
 
-Профили (см. корневой `Cargo.toml`): в dev `debug = "line-tables-only"`, для зависимостей `debug = false`; в release `lto = "thin"`, `strip`, без инкрементальной сборки. В CI выставляйте `CARGO_INCREMENTAL=0`.
+Profiles (see the root `Cargo.toml`): in dev `debug = "line-tables-only"`, for dependencies `debug = false`; in release `lto = "thin"`, `strip`, no incremental build. In CI set `CARGO_INCREMENTAL=0`.
 
-Чтобы несколько клонов и проектов не плодили свои `target/`, вынесите каталог сборки в общее место:
+So that several clones and projects do not each create their own `target/`, move the build directory to a shared location:
 
-PowerShell (постоянно для пользователя):
+PowerShell (permanently for the user):
 ```powershell
 [Environment]::SetEnvironmentVariable("CARGO_TARGET_DIR", "D:\cargo-target", "User")
 ```
 
-Linux и macOS (`~/.profile`):
+Linux and macOS (`~/.profile`):
 ```sh
 export CARGO_TARGET_DIR="$HOME/.cache/cargo-target"
 ```
 
-Размер `target/` из чистого клона (Windows, dev-профиль, измерено при завершении `bootstrap-workspace`):
+Size of `target/` from a clean clone (Windows, dev profile, measured at the end of `bootstrap-workspace`):
 
-| Шаг | `target/` |
+| Step | `target/` |
 |---|---:|
-| `cargo build --workspace` (2 мин) | 664 МБ |
-| + `cargo test --workspace --all-features` | 1 002 МБ |
-| + `cargo leptos build` (showcase) | 2 489 МБ |
+| `cargo build --workspace` (2 min) | 664 MB |
+| + `cargo test --workspace --all-features` | 1 002 MB |
+| + `cargo leptos build` (showcase) | 2 489 MB |
 
-Заметно растят `target/` разные наборы features одних и тех же крейтов (`ssr`, `hydrate`, CSR, wasm: у `tachys` до пяти копий) и release-сборки
-бенчмарков. Рабочая копия, в которой выполнялись все команды подряд, дошла до 4,5 ГБ: периодически запускайте `cargo xtask clean`
-и используйте общий `CARGO_TARGET_DIR`. Предел размера cargo не поддерживает; держать `target/` в рамках (например, 5 ГБ) можно
-`cargo xtask clean --max-size 5` (cargo-sweep не удаляет артефакты, нужные текущей сборке, поэтому вплотную к лимиту он гарантий не даёт).
-Отладочная информация уже урезана (`debug = "line-tables-only"` для своих крейтов, `debug = false` для зависимостей, см. `[profile.dev]`).
+Different feature sets of the same crates (`ssr`, `hydrate`, CSR, wasm: `tachys` has up to five copies) and the release builds
+of the benchmarks grow `target/` noticeably. A working copy in which all commands were run one after another reached 4.5 GB: run `cargo xtask clean`
+periodically and use a shared `CARGO_TARGET_DIR`. Cargo has no size limit; to keep `target/` within bounds (for example 5 GB) you can use
+`cargo xtask clean --max-size 5` (cargo-sweep does not remove artifacts needed by the current build, so it gives no guarantee when close to the limit).
+Debug information is already trimmed (`debug = "line-tables-only"` for our crates, `debug = false` for dependencies, see `[profile.dev]`).
 
-## Команды xtask
+## xtask commands
 
 ```sh
-cargo xtask upstream-diff [--to <rev>]   # какие портированные компоненты изменились в PrimeNG
-cargo xtask gen-spec <имя> [--out файл]  # заготовка спеки из исходников PrimeNG
-cargo xtask clean [--days N]             # cargo-sweep: удалить артефакты target/ старше N дней (по умолчанию 7)
-cargo xtask clean --max-size 5           # удалить самые старые артефакты, пока target/ больше 5 ГБ (можно вместе с --days)
+cargo xtask upstream-diff [--to <rev>]   # which ported components changed in PrimeNG
+cargo xtask gen-spec <name> [--out file] # a spec skeleton from the PrimeNG sources
+cargo xtask clean [--days N]             # cargo-sweep: remove target/ artifacts older than N days (default 7)
+cargo xtask clean --max-size 5           # remove the oldest artifacts while target/ is larger than 5 GB (can be combined with --days)
 ```
 
-`upstream-diff` и `gen-spec` читают `upstream.toml`; путь к клону PrimeNG можно переопределить `PRIMENG_PATH`.
-Для `clean` нужен `cargo install cargo-sweep`. Список «портированных» компонентов — это `crates/prime-<имя>` без `core`, `dom`, `theme`, `icons`.
+`upstream-diff` and `gen-spec` read `upstream.toml`; the path to the PrimeNG clone can be overridden with `PRIMENG_PATH`.
+`clean` requires `cargo install cargo-sweep`. The list of "ported" components is `crates/prime-<name>` without `core`, `dom`, `theme`, `icons`.
 
-## Браузерные тесты (wasm-bindgen-test)
+## Browser tests (wasm-bindgen-test)
 
 ```sh
-cargo install wasm-bindgen-cli --version 0.2.129 --locked   # версия должна совпадать с wasm-bindgen в Cargo.lock
-# chromedriver под установленный Chrome (https://googlechromelabs.github.io/chrome-for-testing/)
-export CHROMEDRIVER=/путь/к/chromedriver
+cargo install wasm-bindgen-cli --version 0.2.129 --locked   # the version must match wasm-bindgen in Cargo.lock
+# chromedriver matching the installed Chrome (https://googlechromelabs.github.io/chrome-for-testing/)
+export CHROMEDRIVER=/path/to/chromedriver
 cargo test -p prime-dom --target wasm32-unknown-unknown --test web
 ```
 
-Раннер `wasm-bindgen-test-runner` прописан в `.cargo/config.toml`. Без `CHROMEDRIVER` раннер ищет `chromedriver` в `PATH`.
-Тесты помечены `#![cfg(target_arch = "wasm32")]`, поэтому обычный `cargo test` на хосте их пропускает.
+The runner `wasm-bindgen-test-runner` is set in `.cargo/config.toml`. Without `CHROMEDRIVER` the runner looks for `chromedriver` in `PATH`.
+The tests are marked `#![cfg(target_arch = "wasm32")]`, so a plain `cargo test` on the host skips them.
 
 ## Showcase
 
 ```sh
 cd showcase
-cargo leptos serve    # http://127.0.0.1:3000, SSR + гидрация; cargo leptos build — только сборка
+cargo leptos serve    # http://127.0.0.1:3000, SSR + hydration; cargo leptos build — build only
 ```
 
-Страница подключает тему встроенным `<style>` (`prime_theme::stylesheet`), показывает все иконки и переключатель светлой и тёмной схемы (класс `p-dark` на `<html>`).
-`cargo-leptos` собирает клиентскую часть в отдельный каталог `target/front`, поэтому `target/` примерно вдвое больше, чем у обычной сборки: чистите его `cargo xtask clean`.
+The page includes the theme with an inline `<style>` (`prime_theme::stylesheet`), shows all icons and the light and dark scheme switch (the class `p-dark` on `<html>`).
+`cargo-leptos` builds the client part into a separate directory `target/front`, so `target/` is about twice the size of a regular build: clean it with `cargo xtask clean`.

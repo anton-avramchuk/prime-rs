@@ -1,106 +1,106 @@
 # breadcrumb Specification
 
 ## Purpose
-Breadcrumb показывает путь по иерархии страниц: необязательный пункт «домой», пункты модели и разделители между ними.
+Breadcrumb shows the path through the page hierarchy: an optional "home" item, model items and separators between them.
 
 ## Requirements
 
-### Requirement: Разметка Breadcrumb
-Компонент `Breadcrumb` крейта `prime-breadcrumb` SHALL выводить `<nav class="p-breadcrumb p-component">` с одним `<ol class="p-breadcrumb-list">`. `style_class` SHALL добавляться после собственных классов, `style` — задавать встроенный стиль, `pt.root` и `pt.list` — добавлять классы, стиль и атрибуты соответствующим элементам без замены собственных.
+### Requirement: Breadcrumb markup
+The `Breadcrumb` component of the `prime-breadcrumb` crate SHALL render `<nav class="p-breadcrumb p-component">` with a single `<ol class="p-breadcrumb-list">`. `style_class` SHALL be appended after the own classes, `style` SHALL set the inline style, `pt.root` and `pt.list` SHALL add classes, style and attributes to the corresponding elements without replacing the own ones.
 
-#### Scenario: Корень
-- **WHEN** отрисован `Breadcrumb` без свойств
-- **THEN** выводится `nav.p-breadcrumb.p-component` с пустым `ol.p-breadcrumb-list`
+#### Scenario: Root
+- **WHEN** `Breadcrumb` is rendered without properties
+- **THEN** `nav.p-breadcrumb.p-component` is rendered with an empty `ol.p-breadcrumb-list`
 
-#### Scenario: Классы и стиль
-- **WHEN** заданы `style_class = "mine"` и `style = "width: 20rem"`
-- **THEN** класс корня `p-breadcrumb p-component mine`, стиль `width: 20rem;`
+#### Scenario: Classes and style
+- **WHEN** `style_class = "mine"` and `style = "width: 20rem"` are set
+- **THEN** the root class is `p-breadcrumb p-component mine`, the style is `width: 20rem;`
 
 #### Scenario: pt
-- **WHEN** `pt.root` содержит атрибут `data-x="1"`, а `pt.list` — класс `custom`
-- **THEN** `nav` имеет `data-x="1"`, а `ol` — `p-breadcrumb-list custom`
+- **WHEN** `pt.root` contains the attribute `data-x="1"` and `pt.list` the class `custom`
+- **THEN** `nav` has `data-x="1"` and `ol` has `p-breadcrumb-list custom`
 
-### Requirement: Пункты Breadcrumb
-Для каждого пункта модели с `visible` не равным `false` SHALL выводиться `li.p-breadcrumb-item` (с `p-disabled` у отключённых, `id`, `style_class` и `style` пункта) со ссылкой `a.p-breadcrumb-item-link`. Пункты SHALL идти в порядке модели.
+### Requirement: Breadcrumb items
+For each model item with `visible` not equal to `false`, an `li.p-breadcrumb-item` SHALL be rendered (with `p-disabled` on disabled ones, the item's `id`, `style_class` and `style`) with an `a.p-breadcrumb-item-link` link. Items SHALL follow the model order.
 
-#### Scenario: Подписи
-- **WHEN** модель содержит пункты `Electronics` и `Computer`
-- **THEN** выводятся два `li.p-breadcrumb-item` с подписями в этом порядке
+#### Scenario: Labels
+- **WHEN** the model contains the items `Electronics` and `Computer`
+- **THEN** two `li.p-breadcrumb-item` are rendered with the labels in that order
 
-#### Scenario: Скрытый пункт
-- **WHEN** у пункта `visible = false`
-- **THEN** он не выводится, и разделитель после него тоже
+#### Scenario: Hidden item
+- **WHEN** an item has `visible = false`
+- **THEN** it is not rendered, and neither is the separator after it
 
-#### Scenario: Отключённый пункт
-- **WHEN** у пункта `disabled = true`
-- **THEN** у `li` есть класс `p-disabled`, а у ссылки нет `tabindex`
+#### Scenario: Disabled item
+- **WHEN** an item has `disabled = true`
+- **THEN** the `li` has the class `p-disabled` and the link has no `tabindex`
 
-### Requirement: Ссылка пункта Breadcrumb
-Ссылка SHALL иметь `href` из `url` (без `url` — без `href`), `target`, `title`, `tabindex` пункта (по умолчанию `0`, у отключённых — без `tabindex`) и класс `link_class`. Внутри SHALL идти значок `span.p-breadcrumb-item-icon` при наличии, подпись `span.p-breadcrumb-item-label` при непустой `label` и `Badge` при заданном `badge`.
+### Requirement: Breadcrumb item link
+The link SHALL have `href` from `url` (no `href` without `url`), `target`, `title`, the item's `tabindex` (`0` by default, no `tabindex` on disabled ones) and the class `link_class`. Inside it SHALL come the `span.p-breadcrumb-item-icon` icon if present, the `span.p-breadcrumb-item-label` label if `label` is non-empty and a `Badge` if `badge` is set.
 
-#### Scenario: Ссылка
-- **WHEN** у пункта `url = "/a"`, `target = "_blank"`, `title = "T"`
-- **THEN** ссылка имеет `href="/a"`, `target="_blank"`, `title="T"`, `tabindex="0"`
+#### Scenario: Link
+- **WHEN** an item has `url = "/a"`, `target = "_blank"`, `title = "T"`
+- **THEN** the link has `href="/a"`, `target="_blank"`, `title="T"`, `tabindex="0"`
 
-#### Scenario: Пункт без url
-- **WHEN** у пункта нет `url`
-- **THEN** ссылка выводится без атрибута `href`
+#### Scenario: Item without url
+- **WHEN** an item has no `url`
+- **THEN** the link is rendered without the `href` attribute
 
-#### Scenario: Значок и бейдж
-- **WHEN** у пункта заданы значок и `badge = "3"`
-- **THEN** внутри ссылки сначала значок, затем подпись, затем `span.p-badge` со значением `3`
+#### Scenario: Icon and badge
+- **WHEN** an item has an icon and `badge = "3"`
+- **THEN** inside the link first comes the icon, then the label, then `span.p-badge` with the value `3`
 
-### Requirement: Пункт «домой» Breadcrumb
-При заданном `home` с `visible` не равным `false` SHALL выводиться первым `li.p-breadcrumb-home-item` со ссылкой тех же свойств, что у обычного пункта, и классом `p-breadcrumb-item-link`. Без своего значка SHALL выводиться `HomeIcon` с классом `p-breadcrumb-item-icon`. Ссылка SHALL иметь `aria-label` из `home_aria_label`, если он задан.
+### Requirement: Breadcrumb "home" item
+When `home` is set with `visible` not equal to `false`, an `li.p-breadcrumb-home-item` SHALL be rendered first, with a link having the same properties as a regular item and the class `p-breadcrumb-item-link`. Without its own icon a `HomeIcon` with the class `p-breadcrumb-item-icon` SHALL be rendered. The link SHALL have `aria-label` from `home_aria_label` if it is set.
 
-#### Scenario: Значок по умолчанию
-- **WHEN** задан `home` без значка и подписи
-- **THEN** первый `li` — `p-breadcrumb-home-item` со значком `home`
+#### Scenario: Default icon
+- **WHEN** `home` is set without an icon and a label
+- **THEN** the first `li` is `p-breadcrumb-home-item` with the `home` icon
 
 #### Scenario: aria-label
 - **WHEN** `home_aria_label = "Home"`
-- **THEN** ссылка пункта «домой» имеет `aria-label="Home"`
+- **THEN** the "home" item link has `aria-label="Home"`
 
-### Requirement: Разделители Breadcrumb
-Между соседними пунктами SHALL выводиться `li.p-breadcrumb-separator` со значком `chevron-right` (`pt.separator_icon`); после пункта «домой» разделитель SHALL выводиться, если есть хотя бы один пункт модели; после последнего пункта — нет. Шаблон `separator` SHALL заменять стандартный значок.
+### Requirement: Breadcrumb separators
+Between adjacent items a `li.p-breadcrumb-separator` with a `chevron-right` icon (`pt.separator_icon`) SHALL be rendered; after the "home" item the separator SHALL be rendered if there is at least one model item; not after the last item. The `separator` template SHALL replace the standard icon.
 
-#### Scenario: Количество
-- **WHEN** есть `home` и три пункта модели
-- **THEN** выводятся три разделителя
+#### Scenario: Count
+- **WHEN** there are `home` and three model items
+- **THEN** three separators are rendered
 
-#### Scenario: Без домой
-- **WHEN** `home` не задан и в модели три пункта
-- **THEN** выводятся два разделителя
+#### Scenario: Without home
+- **WHEN** `home` is not set and the model has three items
+- **THEN** two separators are rendered
 
-#### Scenario: Свой разделитель
-- **WHEN** задан шаблон `separator`, выводящий `/`
-- **THEN** внутри каждого разделителя находится `/`, значка `chevron-right` нет
+#### Scenario: Custom separator
+- **WHEN** a `separator` template rendering `/` is set
+- **THEN** each separator contains `/`, there is no `chevron-right` icon
 
-### Requirement: Шаблон пункта Breadcrumb
-Шаблон `item` SHALL заменять содержимое `li` пункта (включая «домой»), получая пункт; стандартная ссылка при этом не выводится, а обёртка `li` с классами остаётся.
+### Requirement: Breadcrumb item template
+The `item` template SHALL replace the content of the item's `li` (including "home"), receiving the item; the standard link is not rendered, while the `li` wrapper with its classes remains.
 
-#### Scenario: Свой пункт
-- **WHEN** задан шаблон `item`, выводящий `<b>` с подписью
-- **THEN** внутри каждого `li.p-breadcrumb-item` находится `<b>`, ссылки `p-breadcrumb-item-link` нет
+#### Scenario: Custom item
+- **WHEN** an `item` template rendering `<b>` with the label is set
+- **THEN** each `li.p-breadcrumb-item` contains `<b>`, there is no `p-breadcrumb-item-link` link
 
-### Requirement: Нажатие на пункт Breadcrumb
-При нажатии на ссылку пункта SHALL отменяться действие по умолчанию, если пункт отключён или у него нет `url`. У неотключённого пункта SHALL вызываться его `command`, затем `on_item_click` компонента, оба с событием и пунктом; у отключённого — ни один.
+### Requirement: Pressing a Breadcrumb item
+When an item's link is pressed the default action SHALL be cancelled if the item is disabled or has no `url`. For a non-disabled item its `command` SHALL be called, then the component's `on_item_click`, both with the event and the item; for a disabled one - neither.
 
-#### Scenario: Команда
-- **WHEN** пользователь нажимает на пункт без `url` с `command`
-- **THEN** вызываются `command` и `on_item_click`, переход не происходит
+#### Scenario: Command
+- **WHEN** the user presses an item without `url` with a `command`
+- **THEN** `command` and `on_item_click` are called, no navigation happens
 
-#### Scenario: Отключённый
-- **WHEN** пользователь нажимает на отключённый пункт
-- **THEN** ни `command`, ни `on_item_click` не вызываются
+#### Scenario: Disabled
+- **WHEN** the user presses a disabled item
+- **THEN** neither `command` nor `on_item_click` is called
 
-#### Scenario: Ссылка с url
-- **WHEN** пользователь нажимает на пункт с `url`
-- **THEN** действие по умолчанию не отменяется
+#### Scenario: Link with url
+- **WHEN** the user presses an item with `url`
+- **THEN** the default action is not cancelled
 
-### Requirement: Стоимость отрисовки Breadcrumb
-Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `breadcrumb-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `breadcrumb` в `benches/budgets.toml`.
+### Requirement: Breadcrumb rendering cost
+The number of allocations per instance in SSR SHALL fit the `breadcrumb-1000` budget in `benches/alloc-budgets.toml`, the contribution to wasm - the `breadcrumb` budget in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Breadcrumb не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are applied
+- **THEN** the Breadcrumb values do not exceed the budgets

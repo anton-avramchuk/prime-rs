@@ -1,7 +1,7 @@
-//! Tooltip — порт директивы `pTooltip` из PrimeNG 21.1.10.
+//! Tooltip: a port of the `pTooltip` directive from PrimeNG 21.1.10.
 //!
-//! Подсказка у любого элемента, подключаемая `use:`-директивой Leptos; разметка элемента не меняется. Подсказка показывается по
-//! наведению мыши, касанию или фокусу, выбирает сторону и при нехватке места переносится на другую.
+//! A tooltip for any element, attached with the Leptos `use:` directive; the element markup is not changed. The tooltip is shown on
+//! mouse hover, touch or focus, picks a side and moves to another one when there is not enough room.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -11,7 +11,7 @@
 //!     <input use:tooltip=TooltipOptions::text("Enter your username").position(TooltipPosition::Top) placeholder="Top" />
 //! }
 //! .to_html();
-//! // директива работает только в браузере: серверная разметка не меняется
+//! // the directive works only in the browser: the server markup is not changed
 //! assert!(!html.contains("tooltip") && html.contains("placeholder"));
 //! ```
 
@@ -25,14 +25,14 @@ pub use state::{
     priority, root_classes,
 };
 
-/// Содержимое подсказки.
+/// Tooltip content.
 #[derive(Clone)]
 pub enum TooltipContent {
-    /// Текст (без разбора разметки); может быть сигналом.
+    /// Text (markup is not parsed); can be a signal.
     Text(Prop<String>),
-    /// Разметка (аналог `[escape]="false"`): выводится как HTML.
+    /// Markup (like `[escape]="false"`): rendered as HTML.
     Html(String),
-    /// Готовое представление (аналог шаблона `TemplateRef`).
+    /// Ready-made view (like a `TemplateRef` template).
     View(ViewFn),
 }
 
@@ -42,47 +42,47 @@ impl Default for TooltipContent {
     }
 }
 
-/// Параметры директивы [`tooltip`] (аналог входов `pTooltip`, `tooltipPosition` и т. д.).
+/// Parameters of the [`tooltip`] directive (like the `pTooltip`, `tooltipPosition`, etc. inputs).
 #[derive(Clone)]
 pub struct TooltipOptions {
-    /// Содержимое.
+    /// Content.
     pub content: TooltipContent,
-    /// Сторона элемента, с которой показывается подсказка.
+    /// The side of the element on which the tooltip is shown.
     pub position: TooltipPosition,
-    /// События показа.
+    /// Show events.
     pub event: TooltipEvent,
-    /// Задержка показа, мс.
+    /// Show delay, ms.
     pub show_delay: Option<u32>,
-    /// Задержка скрытия, мс.
+    /// Hide delay, ms.
     pub hide_delay: Option<u32>,
-    /// Через сколько скрыть показанную подсказку, мс (после задержки показа).
+    /// After how long to hide a shown tooltip, ms (after the show delay).
     pub life: Option<u32>,
-    /// Дополнительный сдвиг по вертикали, px.
+    /// Additional vertical offset, px.
     pub position_top: i32,
-    /// Дополнительный сдвиг по горизонтали, px.
+    /// Additional horizontal offset, px.
     pub position_left: i32,
-    /// Скрывать подсказку, когда курсор уходит с элемента (иначе её можно навести мышью).
+    /// Hide the tooltip when the cursor leaves the element (otherwise the mouse can be moved onto it).
     pub auto_hide: bool,
-    /// Ширина подсказки по содержимому (`width: fit-content`).
+    /// Tooltip width fits its content (`width: fit-content`).
     pub fit_content: bool,
-    /// Скрывать подсказку по `Escape`.
+    /// Hide the tooltip on `Escape`.
     pub hide_on_escape: bool,
-    /// Показывать только если содержимое элемента не помещается в него.
+    /// Show only if the element content does not fit in it.
     pub show_on_ellipsis: bool,
-    /// Отключить подсказку.
+    /// Disable the tooltip.
     pub disabled: Prop<bool>,
-    /// Значение CSS `position` подсказки вместо заданного темой.
+    /// CSS `position` value of the tooltip instead of the one set by the theme.
     pub position_style: Option<String>,
-    /// Дополнительный класс подсказки.
+    /// Additional tooltip class.
     pub style_class: Option<String>,
-    /// Фиксированный `z-index`; `None` — автоматически по группе подсказок.
+    /// Fixed `z-index`; `None` means automatic, by tooltip group.
     pub z_index: Option<i32>,
-    /// Атрибут `id` подсказки.
+    /// `id` attribute of the tooltip.
     pub id: Option<String>,
 }
 
 impl TooltipOptions {
-    /// Параметры с содержимым.
+    /// Parameters with content.
     pub fn new(content: TooltipContent) -> Self {
         Self {
             content,
@@ -105,123 +105,123 @@ impl TooltipOptions {
         }
     }
 
-    /// Текстовая подсказка.
+    /// Text tooltip.
     pub fn text(text: impl Into<String>) -> Self {
         Self::new(TooltipContent::Text(Prop::Static(text.into())))
     }
 
-    /// Текстовая подсказка, зависящая от сигнала.
+    /// Text tooltip that depends on a signal.
     pub fn text_signal(text: impl Into<Signal<String>>) -> Self {
         Self::new(TooltipContent::Text(Prop::Reactive(text.into())))
     }
 
-    /// Подсказка с разметкой.
+    /// Tooltip with markup.
     pub fn html(html: impl Into<String>) -> Self {
         Self::new(TooltipContent::Html(html.into()))
     }
 
-    /// Подсказка с представлением.
+    /// Tooltip with a view.
     pub fn view(view: impl Into<ViewFn>) -> Self {
         Self::new(TooltipContent::View(view.into()))
     }
 
-    /// Сторона элемента.
+    /// Side of the element.
     pub fn position(mut self, position: TooltipPosition) -> Self {
         self.position = position;
         self
     }
 
-    /// События показа.
+    /// Show events.
     pub fn event(mut self, event: TooltipEvent) -> Self {
         self.event = event;
         self
     }
 
-    /// Задержка показа, мс.
+    /// Show delay, ms.
     pub fn show_delay(mut self, ms: u32) -> Self {
         self.show_delay = Some(ms);
         self
     }
 
-    /// Задержка скрытия, мс.
+    /// Hide delay, ms.
     pub fn hide_delay(mut self, ms: u32) -> Self {
         self.hide_delay = Some(ms);
         self
     }
 
-    /// Время жизни показанной подсказки, мс.
+    /// Lifetime of a shown tooltip, ms.
     pub fn life(mut self, ms: u32) -> Self {
         self.life = Some(ms);
         self
     }
 
-    /// Дополнительные сдвиги `(по вертикали, по горизонтали)`, px.
+    /// Additional offsets `(vertical, horizontal)`, px.
     pub fn offset(mut self, top: i32, left: i32) -> Self {
         self.position_top = top;
         self.position_left = left;
         self
     }
 
-    /// Скрывать ли подсказку при уходе курсора с элемента.
+    /// Whether to hide the tooltip when the cursor leaves the element.
     pub fn auto_hide(mut self, auto_hide: bool) -> Self {
         self.auto_hide = auto_hide;
         self
     }
 
-    /// Ширина подсказки по содержимому.
+    /// Tooltip width fits its content.
     pub fn fit_content(mut self, fit: bool) -> Self {
         self.fit_content = fit;
         self
     }
 
-    /// Скрывать ли подсказку по `Escape`.
+    /// Whether to hide the tooltip on `Escape`.
     pub fn hide_on_escape(mut self, hide: bool) -> Self {
         self.hide_on_escape = hide;
         self
     }
 
-    /// Показывать только для обрезанного содержимого.
+    /// Show only for clipped content.
     pub fn show_on_ellipsis(mut self, only: bool) -> Self {
         self.show_on_ellipsis = only;
         self
     }
 
-    /// Отключить подсказку (значение или сигнал).
+    /// Disable the tooltip (a value or a signal).
     pub fn disabled(mut self, disabled: impl Into<Prop<bool>>) -> Self {
         self.disabled = disabled.into();
         self
     }
 
-    /// Значение CSS `position`.
+    /// CSS `position` value.
     pub fn position_style(mut self, position: impl Into<String>) -> Self {
         self.position_style = Some(position.into());
         self
     }
 
-    /// Дополнительный класс.
+    /// Additional class.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 
-    /// Фиксированный `z-index`.
+    /// Fixed `z-index`.
     pub fn z_index(mut self, z: i32) -> Self {
         self.z_index = Some(z);
         self
     }
 
-    /// Атрибут `id` подсказки.
+    /// `id` attribute of the tooltip.
     pub fn id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self
     }
 }
 
-/// Директива подсказки: `<input use:tooltip=TooltipOptions::text("…") />`.
+/// Tooltip directive: `<input use:tooltip=TooltipOptions::text("…") />`.
 ///
-/// Вызывается Leptos в браузере при построении и гидратации элемента (и при повторном построении атрибутов — тогда параметры
-/// обновляются, а слушатели не дублируются); на сервере не вызывается. При размонтировании элемента слушатели и показанная
-/// подсказка убираются.
+/// Called by Leptos in the browser when the element is built and hydrated (and when attributes are rebuilt, in which case the parameters
+/// are updated and listeners are not duplicated); not called on the server. When the element is unmounted, the listeners and the shown
+/// tooltip are removed.
 pub fn tooltip(el: web_sys::Element, options: TooltipOptions) {
     #[cfg(target_arch = "wasm32")]
     imp::attach(el, options);
@@ -243,7 +243,7 @@ mod imp {
     use wasm_bindgen::closure::Closure;
     use web_sys::{Event, EventTarget, HtmlElement, MouseEvent};
 
-    /// Свойство элемента с номером его состояния (без DOM-атрибута).
+    /// Element property holding its state number (no DOM attribute).
     const KEY: &str = "__primeTooltip";
 
     type Undo = Box<dyn FnOnce()>;
@@ -253,7 +253,7 @@ mod imp {
         static NEXT: Cell<usize> = const { Cell::new(1) };
     }
 
-    /// Подписка на событие; результат снимает её.
+    /// Event subscription; the result removes it.
     fn listen(target: &EventTarget, name: &'static str, mut f: impl FnMut(Event) + 'static) -> Undo {
         let cb = Closure::<dyn FnMut(Event)>::new(move |e: Event| f(e));
         let _ = target.add_event_listener_with_callback(name, cb.as_ref().unchecked_ref());
@@ -263,7 +263,7 @@ mod imp {
         })
     }
 
-    /// Подписка в фазе захвата (для `scroll`, который не всплывает).
+    /// Capture-phase subscription (for `scroll`, which does not bubble).
     fn listen_capture(target: &EventTarget, name: &'static str, mut f: impl FnMut(Event) + 'static) -> Undo {
         let cb = Closure::<dyn FnMut(Event)>::new(move |e: Event| f(e));
         let _ = target.add_event_listener_with_callback_and_bool(name, cb.as_ref().unchecked_ref(), true);
@@ -279,14 +279,14 @@ mod imp {
         }
     }
 
-    /// Показанная подсказка в DOM.
+    /// The tooltip shown in the DOM.
     struct Container {
         root: HtmlElement,
         text: HtmlElement,
         arrow: HtmlElement,
-        /// Смонтированное представление (`TooltipContent::View`).
+        /// Mounted view (`TooltipContent::View`).
         mount: Option<Box<dyn Any>>,
-        /// Снятие слушателя `mouseleave` подсказки.
+        /// Removal of the tooltip `mouseleave` listener.
         leave: Option<Undo>,
     }
 
@@ -306,7 +306,7 @@ mod imp {
         z: Cell<Option<i32>>,
     }
 
-    /// Подключает директиву к элементу или обновляет уже подключённую.
+    /// Attaches the directive to an element or updates one that is already attached.
     pub(super) fn attach(el: web_sys::Element, options: TooltipOptions) {
         let existing = js_sys::Reflect::get(&el, &KEY.into())
             .ok()
@@ -341,7 +341,7 @@ mod imp {
         TIPS.with_borrow_mut(|m| m.insert(id, tip.clone()));
         tip.bind_host();
         {
-            // Смена текста или `disabled` во время показа обновляет подсказку.
+            // Changing the text or `disabled` while shown updates the tooltip.
             let tip = tip.clone();
             Effect::new(move |_| {
                 tip.track();
@@ -360,7 +360,7 @@ mod imp {
             self.options.borrow().clone()
         }
 
-        /// Читает реактивные части параметров, чтобы эффект следил за ними.
+        /// Reads the reactive parts of the parameters so the effect tracks them.
         fn track(&self) {
             let options = self.options.borrow();
             if let TooltipContent::Text(text) = &options.content {
@@ -383,7 +383,7 @@ mod imp {
             self.refresh();
         }
 
-        /// Слушатели элемента по выбранным событиям.
+        /// Element listeners for the selected events.
         fn bind_host(self: &Rc<Self>) {
             run(self.host_listeners.take());
             let event = self.options.borrow().event;
@@ -435,7 +435,7 @@ mod imp {
             *self.host_listeners.borrow_mut() = undos;
         }
 
-        /// Элемент, на котором слушается фокус: компонент внутри, поле в обёртке `p-inputwrapper` или сам элемент.
+        /// Element on which focus is listened for: the component inside, the field in a `p-inputwrapper` wrapper, or the element itself.
         fn focus_target(&self) -> HtmlElement {
             let inner = |sel: &str| self.host.query_selector(sel).ok().flatten().and_then(|e| e.dyn_into::<HtmlElement>().ok());
             inner(".p-component")
@@ -552,7 +552,7 @@ mod imp {
             self.unbind_escape();
         }
 
-        /// Создаёт подсказку в `body`, выравнивает, показывает и подписывается на события окна.
+        /// Creates the tooltip in `body`, aligns it, shows it and subscribes to window events.
         fn show(self: &Rc<Self>) {
             let o = self.opts();
             if self.label().is_empty() || o.disabled.get_untracked() {
@@ -564,7 +564,7 @@ mod imp {
             }
             self.align();
             if let Some(c) = self.container.borrow().as_ref() {
-                // Появление: прозрачность 0 → 1 переходом 250 мс (аналог `fadeIn` PrimeNG).
+                // Appearance: opacity 0 → 1 with a 250 ms transition (like PrimeNG `fadeIn`).
                 let style = c.root.style();
                 let _ = style.set_property("opacity", "0");
                 let _ = style.set_property("transition", "opacity 250ms");
@@ -628,7 +628,7 @@ mod imp {
             self.update_text();
         }
 
-        /// Записывает содержимое в `p-tooltip-text`.
+        /// Writes the content into `p-tooltip-text`.
         fn update_text(&self) {
             let content = self.options.borrow().content.clone();
             let mut slot = self.container.borrow_mut();
@@ -645,7 +645,7 @@ mod imp {
             }
         }
 
-        /// Выбирает сторону: основную, а при выходе за окно — запасные по приоритету.
+        /// Picks a side: the primary one, and when it goes outside the window, the fallbacks by priority.
         fn align(&self) {
             let o = self.opts();
             for (index, position) in priority(o.position).into_iter().enumerate() {
@@ -702,7 +702,7 @@ mod imp {
             }
         }
 
-        /// События окна на время показа: изменение размера и прокрутка предка элемента скрывают подсказку.
+        /// Window events while shown: resizing and scrolling of an ancestor of the element hide the tooltip.
         fn bind_shown(self: &Rc<Self>) {
             run(self.shown_listeners.take());
             let win: EventTarget = web_sys::window().expect("window").into();
@@ -714,7 +714,7 @@ mod imp {
                 let scrolled = e.target().and_then(|t| t.dyn_into::<web_sys::Node>().ok());
                 let is_document = scrolled.as_ref().is_some_and(|n| n.node_type() == web_sys::Node::DOCUMENT_NODE);
                 let ancestor = scrolled.as_ref().is_some_and(|s| s.contains(Some(&tip.host)));
-                // прокрутка самой страницы подсказку не трогает: она позиционирована в координатах страницы и едет вместе с ней
+                // scrolling the page itself does not affect the tooltip: it is positioned in page coordinates and moves with the page
                 if ancestor && !is_document && tip.container.borrow().is_some() {
                     tip.hide();
                 }
@@ -729,7 +729,7 @@ mod imp {
             self.remove();
         }
 
-        /// Убирает подсказку из DOM, снимает события окна и таймеры.
+        /// Removes the tooltip from the DOM, removes window events and timers.
         fn remove(&self) {
             let container = self.container.borrow_mut().take();
             if let Some(c) = container {
@@ -744,7 +744,7 @@ mod imp {
             self.clear_hide();
         }
 
-        /// Изменение текста или `disabled` во время показа.
+        /// Text or `disabled` change while shown.
         fn refresh(self: &Rc<Self>) {
             if !self.active.get() {
                 return;

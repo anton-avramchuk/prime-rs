@@ -1,4 +1,4 @@
-//! Поведение ToggleButton в реальном браузере (wasm-bindgen-test): клик, Enter и Space, `disabled`, `allow_empty`, события.
+//! ToggleButton behavior in a real browser (wasm-bindgen-test): click, Enter and Space, `disabled`, `allow_empty`, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,10 +22,10 @@ fn host() -> HtmlElement {
 }
 
 fn q<T: JsCast>(host: &HtmlElement, sel: &str) -> T {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
-/// `on_change` считает: включение — `+1`, выключение — `+10`.
+/// `on_change` counts: switching on is `+1`, switching off is `+10`.
 fn counter() -> (Arc<AtomicUsize>, Callback<ToggleButtonChange>) {
     let n = Arc::new(AtomicUsize::new(0));
     let n2 = n.clone();
@@ -37,7 +37,7 @@ fn counter() -> (Arc<AtomicUsize>, Callback<ToggleButtonChange>) {
     )
 }
 
-/// Нажатие клавиши; возвращает, не отменено ли действие браузера по умолчанию.
+/// Key press; returns whether the default browser action was not canceled.
 fn press(el: &HtmlElement, code: &str) -> bool {
     let init = KeyboardEventInit::new();
     init.set_code(code);
@@ -93,14 +93,14 @@ async fn enter_and_space_toggle_and_prevent_default() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <ToggleButton checked=checked on_change=cb /> });
     leptos::task::tick().await;
     let root = q::<HtmlElement>(&host, ".p-togglebutton");
-    assert!(!press(&root, "Enter"), "действие по умолчанию для Enter не отменено");
+    assert!(!press(&root, "Enter"), "default action for Enter was not canceled");
     leptos::task::tick().await;
     assert!(checked.get_untracked());
-    assert!(!press(&root, "Space"), "прокрутка по Space не отменена");
+    assert!(!press(&root, "Space"), "scrolling on Space was not canceled");
     leptos::task::tick().await;
     assert!(!checked.get_untracked());
     assert_eq!(n.load(Ordering::SeqCst), 11);
-    // другие клавиши игнорируются и не отменяются
+    // other keys are ignored and not canceled
     assert!(press(&root, "KeyA"));
     assert!(!checked.get_untracked());
     assert_eq!(n.load(Ordering::SeqCst), 11);
@@ -137,7 +137,7 @@ async fn allow_empty_false_blocks_turning_off() {
     leptos::task::tick().await;
     assert!(checked.get_untracked());
     assert_eq!(n.load(Ordering::SeqCst), 0);
-    // выключенную включить можно
+    // an unchecked button can be switched on
     checked.set(false);
     root.click();
     leptos::task::tick().await;

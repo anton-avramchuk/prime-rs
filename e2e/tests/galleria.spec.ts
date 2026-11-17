@@ -4,12 +4,12 @@ test.describe('Galleria', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1000 });
         await page.goto('/galleria');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_galleria')).toBeAttached();
     });
 
-    test('стили темы: кадр, миниатюры в ряд', async ({ page }) => {
+    test('theme styles: frame, thumbnails in a row', async ({ page }) => {
         const root = page.locator('#basic_galleria');
         await expect(root).toHaveClass(/p-galleria-thumbnails-bottom/);
         expect(await root.evaluate((el) => getComputedStyle(el).overflow)).toBe('hidden');
@@ -22,7 +22,7 @@ test.describe('Galleria', () => {
         await expect(root.locator('.p-galleria-item img')).toHaveCount(1);
     });
 
-    test('клик по миниатюре показывает кадр и сдвигает ленту', async ({ page }) => {
+    test('clicking a thumbnail shows the frame and shifts the strip', async ({ page }) => {
         const root = page.locator('#basic_galleria');
         const before = await root.locator('.p-galleria-item img').getAttribute('src');
         await root.locator('.p-galleria-thumbnail').nth(4).click();
@@ -32,7 +32,7 @@ test.describe('Galleria', () => {
         expect(ribbon).toContain('translate3d(-');
     });
 
-    test('кнопки страниц и клавиши миниатюр', async ({ page }) => {
+    test('page buttons and thumbnail keys', async ({ page }) => {
         const root = page.locator('#basic_galleria');
         const next = root.locator('.p-galleria-thumbnail-next-button');
         await next.click();
@@ -48,7 +48,7 @@ test.describe('Galleria', () => {
         await expect(next).toHaveClass(/p-disabled/);
     });
 
-    test('автосмена идёт и останавливается кликом', async ({ page }) => {
+    test('auto-advance runs and stops on click', async ({ page }) => {
         const root = page.locator('#autoplay_galleria');
         await root.scrollIntoViewIfNeeded();
         const current = root.locator('.p-galleria-thumbnail-item-current');
@@ -61,7 +61,7 @@ test.describe('Galleria', () => {
         expect(await root.locator('.p-galleria-item img').getAttribute('src')).toBe(stopped);
     });
 
-    test('подпись, кнопки кадра и индикаторы', async ({ page }) => {
+    test('caption, frame buttons and indicators', async ({ page }) => {
         const root = page.locator('#caption_galleria');
         await root.scrollIntoViewIfNeeded();
         await expect(root.locator('.p-galleria-caption')).toContainText('Title 1');
@@ -73,7 +73,7 @@ test.describe('Galleria', () => {
         await expect(root.locator('.p-galleria-thumbnails')).toHaveCount(0);
     });
 
-    test('вертикальные миниатюры', async ({ page }) => {
+    test('vertical thumbnails', async ({ page }) => {
         const root = page.locator('#thumbnail_galleria');
         await root.scrollIntoViewIfNeeded();
         await page.getByRole('button', { name: 'Left' }).click();
@@ -83,20 +83,20 @@ test.describe('Galleria', () => {
         await expect(root.locator('.p-galleria-thumbnail-items')).toHaveAttribute('style', /translate3d\(0, /);
     });
 
-    test('полноэкранный режим: открытие, закрытие по маске и кнопке', async ({ page }) => {
+    test('fullscreen mode: opening, closing by mask and button', async ({ page }) => {
         await page.locator('.fs-thumb').nth(2).scrollIntoViewIfNeeded();
         await page.locator('.fs-thumb').nth(2).click();
         const mask = page.locator('.p-galleria-mask');
         await expect(mask).toBeVisible();
         await expect(mask.locator('.p-galleria')).toHaveClass(/p-galleria-fullscreen/);
         await expect(mask.locator('.p-galleria-thumbnail-item').nth(2)).toHaveClass(/p-galleria-thumbnail-item-current/);
-        // клик по кадру не закрывает
+        // click on the frame does not close
         await mask.locator('.p-galleria-item').click();
         await expect(mask).toBeVisible();
-        // клик по маске закрывает
+        // click on the mask closes
         await page.mouse.click(5, 5);
         await expect(mask).toHaveCount(0);
-        // кнопка закрытия
+        // close button
         await page.locator('.fs-thumb').nth(0).click();
         await expect(mask).toBeVisible();
         await page.locator('.p-galleria-close-button').click();

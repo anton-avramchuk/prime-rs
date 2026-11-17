@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('Slider', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/slider');
-        // клики и перетаскивание до гидратации (загрузка wasm) теряются
+        // clicks and dragging before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-slider')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(6);
         const root = page.locator('[data-demo=basic] .p-slider');
         await expect(root).toHaveAttribute('data-p', 'horizontal');
@@ -19,7 +19,7 @@ test.describe('Slider', () => {
         await expect(handle).toHaveAttribute('aria-label', 'Basic');
     });
 
-    test('клавиши двигают ручку', async ({ page }) => {
+    test('keys move the handle', async ({ page }) => {
         const handle = page.locator('[data-demo=basic] .p-slider-handle');
         await handle.focus();
         await page.keyboard.press('ArrowRight');
@@ -34,7 +34,7 @@ test.describe('Slider', () => {
         await expect(page.getByTestId('echo')).toHaveText('0');
     });
 
-    test('клик по полосе и перетаскивание мышью', async ({ page }) => {
+    test('click on the track and dragging with the mouse', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-slider');
         const box = (await root.boundingBox())!;
         await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
@@ -52,12 +52,12 @@ test.describe('Slider', () => {
         const dragged = Number(await page.getByTestId('echo').textContent());
         expect(dragged).toBeGreaterThanOrEqual(73);
         expect(dragged).toBeLessThanOrEqual(76);
-        // после отпускания перемещение мыши ничего не меняет
+        // after release mouse movement changes nothing
         await page.mouse.move(box.x + 5, hb.y + hb.height / 2, { steps: 3 });
         await expect(page.getByTestId('echo')).toHaveText(String(dragged));
     });
 
-    test('диапазон, шаг и вертикальная ориентация', async ({ page }) => {
+    test('range, step and vertical orientation', async ({ page }) => {
         const handles = page.locator('[data-demo=range] .p-slider-handle');
         await expect(handles).toHaveCount(2);
         await handles.nth(1).focus();
@@ -81,7 +81,7 @@ test.describe('Slider', () => {
         await expect(vertical).toHaveAttribute('aria-orientation', 'vertical');
     });
 
-    test('фильтр и связь с полем ввода', async ({ page }) => {
+    test('filter and link with the input field', async ({ page }) => {
         const target = page.getByTestId('filter-target');
         await expect(target).toHaveCSS('filter', /contrast\(1\)/);
         await page.locator('[data-demo=filter] .p-togglebutton').nth(1).click();

@@ -1,4 +1,4 @@
-//! Разметка Paginator (SSR): кнопки, ссылки, отчёт, списки, поле, скрытие, пустой список, шаблоны, `pt`.
+//! Paginator markup (SSR): buttons, links, report, lists, field, hiding, empty list, templates, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -9,12 +9,12 @@ fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)
 }
 
-/// Число ссылок на страницы (без контейнера `p-paginator-pages`).
+/// Number of page links (without the `p-paginator-pages` container).
 fn link_count(html: &str) -> usize {
     html.matches("class=\"p-paginator-page\"").count() + html.matches("class=\"p-paginator-page p-").count()
 }
 
-/// Есть ли у открывающего тега атрибут `disabled` (а не только класс `p-disabled`).
+/// Whether the opening tag has a `disabled` attribute (not just the `p-disabled` class).
 fn has_disabled_attr(tag: &str) -> bool {
     tag.split_whitespace().any(|t| t == "disabled" || t.starts_with("disabled="))
 }
@@ -24,7 +24,7 @@ fn default_markup_has_four_buttons_and_five_links() {
     let html = render(|| view! { <Paginator total_records=120 /> }.to_html());
     assert!(html.contains("p-paginator p-component"), "{html}");
     for class in ["p-paginator-first", "p-paginator-prev", "p-paginator-next", "p-paginator-last"] {
-        assert!(html.contains(class), "нет {class}: {html}");
+        assert!(html.contains(class), "no {class}: {html}");
     }
     assert_eq!(link_count(&html), 5, "{html}");
     assert!(
@@ -42,7 +42,7 @@ fn first_page_is_selected_and_back_buttons_are_disabled() {
     assert!(html.contains("aria-current=\"page\""), "{html}");
     assert!(html.contains("p-paginator-first p-disabled") && html.contains("p-paginator-prev p-disabled"), "{html}");
     assert!(!html.contains("p-paginator-next p-disabled") && !html.contains("p-paginator-last p-disabled"), "{html}");
-    // «первая» без атрибута disabled, как в PrimeNG; «предыдущая» с ним
+    // "first" without the disabled attribute, as in PrimeNG; "previous" with it
     let first_btn = html.split("<button").find(|b| b.contains("p-paginator-first")).unwrap();
     let prev_btn = html.split("<button").find(|b| b.contains("p-paginator-prev")).unwrap();
     assert!(!has_disabled_attr(first_btn.split('>').next().unwrap()), "{first_btn}");
@@ -63,7 +63,7 @@ fn link_window_follows_the_current_page() {
     let first = RwSignal::new(50);
     let html = render(|| view! { <Paginator first=first rows=RwSignal::new(10) total_records=120 /> }.to_html());
     for n in 4..=8 {
-        assert!(html.contains(&format!("aria-label=\"{n}\"")), "нет страницы {n}: {html}");
+        assert!(html.contains(&format!("aria-label=\"{n}\"")), "no page {n}: {html}");
     }
     assert!(!html.contains("aria-label=\"3\"") && !html.contains("aria-label=\"9\""), "{html}");
     let narrow = render(|| view! { <Paginator first=first rows=RwSignal::new(10) total_records=120 page_link_size=3 /> }.to_html());
@@ -116,7 +116,7 @@ fn rows_per_page_dropdown_with_show_all() {
     });
     assert!(html.contains("p-select") && html.contains("p-paginator-rpp-dropdown"), "{html}");
     assert!(html.contains("aria-label=\"Rows per page\"") || html.contains("Rows per page"), "{html}");
-    assert!(html.contains(">10<") || html.contains("10</span>"), "выбранное число строк на метке: {html}");
+    assert!(html.contains(">10<") || html.contains("10</span>"), "selected number of rows on the label: {html}");
 }
 
 #[test]
@@ -154,7 +154,7 @@ fn element_order_matches_primeng() {
         }
         .to_html()
     });
-    let pos = |needle: &str| html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"));
+    let pos = |needle: &str| html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"));
     let order = [
         pos("p-paginator-content-start"),
         pos("p-paginator-current"),
@@ -168,7 +168,7 @@ fn element_order_matches_primeng() {
         pos("p-paginator-rpp-dropdown"),
         pos("p-paginator-content-end"),
     ];
-    assert!(order.windows(2).all(|w| w[0] < w[1]), "порядок элементов: {order:?}");
+    assert!(order.windows(2).all(|w| w[0] < w[1]), "element order: {order:?}");
 }
 
 #[test]
@@ -206,7 +206,7 @@ fn empty_and_zero_rows_have_no_links_and_disabled_buttons() {
     for class in
         ["p-paginator-first p-disabled", "p-paginator-prev p-disabled", "p-paginator-next p-disabled", "p-paginator-last p-disabled"]
     {
-        assert!(empty.contains(class), "нет {class}: {empty}");
+        assert!(empty.contains(class), "no {class}: {empty}");
     }
     let zero = render(|| view! { <Paginator total_records=50 rows=RwSignal::new(0) /> }.to_html());
     assert_eq!(link_count(&zero), 0, "{zero}");
@@ -225,7 +225,7 @@ fn custom_icons_replace_defaults() {
         .to_html()
     });
     assert!(html.contains("class=\"fi\"") && html.contains("class=\"ni\""), "{html}");
-    assert_eq!(html.matches("<svg").count(), 2, "остальные два значка стандартные: {html}");
+    assert_eq!(html.matches("<svg").count(), 2, "the other two icons are the standard ones: {html}");
 }
 
 #[test]

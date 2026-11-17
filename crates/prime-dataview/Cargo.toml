@@ -1,6 +1,6 @@
 [package]
 name = "prime-dataview"
-description = "prime-rs: компонент DataView (порт PrimeNG)"
+description = "prime-rs: DataView component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -18,7 +18,7 @@ prime-core = { workspace = true }
 prime-paginator = { workspace = true }
 prime-icons = { workspace = true, features = ["spinner"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr is for native tests only: on wasm it breaks client-side event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

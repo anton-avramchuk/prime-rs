@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('Dock', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/dock');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-dock')).toBeAttached();
     });
 
-    test('демонстрация отрисована со стилями темы', async ({ page }) => {
+    test('demo renders with the theme styles', async ({ page }) => {
         const dock = page.locator('[data-demo=basic] .p-dock');
         await expect(dock).toHaveClass(/p-dock-bottom/);
         await expect(dock.locator('.p-dock-item')).toHaveCount(6);
@@ -16,7 +16,7 @@ test.describe('Dock', () => {
         const window = page.getByTestId('window');
         const w = (await window.boundingBox())!;
         const d = (await dock.boundingBox())!;
-        // нижний док прижат к низу контейнера и растянут на его ширину
+        // the bottom dock is pinned to the bottom of the container and stretched to its width
         expect(Math.abs(d.y + d.height - (w.y + w.height))).toBeLessThan(2);
         expect(Math.abs(d.width - w.width)).toBeLessThan(2);
         const container = dock.locator('.p-dock-list-container');
@@ -25,7 +25,7 @@ test.describe('Dock', () => {
         expect(size.width).toBeGreaterThan(40);
     });
 
-    test('выбор положения переносит док и меняет ориентацию', async ({ page }) => {
+    test('choosing a position moves the dock and changes the orientation', async ({ page }) => {
         const dock = page.locator('[data-demo=basic] .p-dock');
         const window = page.getByTestId('window');
         const w = (await window.boundingBox())!;
@@ -46,7 +46,7 @@ test.describe('Dock', () => {
         await expect(dock).toHaveClass(/p-dock-right/);
     });
 
-    test('клавиатура: фокус на списке, стрелки, Home и End', async ({ page }) => {
+    test('keyboard: focus on the list, arrows, Home and End', async ({ page }) => {
         const dock = page.locator('[data-demo=basic] .p-dock');
         const list = dock.locator('.p-dock-list');
         await list.focus();
@@ -65,7 +65,7 @@ test.describe('Dock', () => {
         expect(ring).not.toBe('none');
     });
 
-    test('подсказка появляется у значка при наведении', async ({ page }) => {
+    test('the hint appears next to the icon on hover', async ({ page }) => {
         const dock = page.locator('[data-demo=basic] .p-dock');
         await dock.locator('.p-dock-item').first().hover();
         await expect(page.locator('.p-tooltip')).toBeVisible();

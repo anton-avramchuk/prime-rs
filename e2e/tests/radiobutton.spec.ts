@@ -3,18 +3,18 @@ import { expect, test } from '@playwright/test';
 test.describe('RadioButton', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/radiobutton');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=group] .p-radiobutton').first()).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(5);
         const size = await page.locator('[data-demo=group] .p-radiobutton-box').first().evaluate((el) => getComputedStyle(el).width);
         expect(size).toBe('20px');
     });
 
-    test('выбор в группе снимает остальные', async ({ page }) => {
+    test('selecting in a group clears the others', async ({ page }) => {
         const roots = page.locator('[data-demo=group] .p-radiobutton');
         await page.locator('label[for=ingredient2]').click();
         await expect(roots.nth(1)).toHaveClass(/p-radiobutton-checked/);
@@ -26,7 +26,7 @@ test.describe('RadioButton', () => {
         await expect(page.getByTestId('selected')).toHaveText('Onion');
     });
 
-    test('классы размера, варианта, invalid и disabled', async ({ page }) => {
+    test('classes for size, variant, invalid and disabled', async ({ page }) => {
         await expect(page.locator('[data-demo=sizes] .p-radiobutton-sm')).toHaveCount(1);
         await expect(page.locator('[data-demo=sizes] .p-radiobutton-lg')).toHaveCount(1);
         await expect(page.locator('[data-demo=sizes] .p-radiobutton-checked')).toHaveCount(1);

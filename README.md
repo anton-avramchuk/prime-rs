@@ -1,26 +1,26 @@
 # prime-rs
 
-Порт компонентов [PrimeNG](https://github.com/primefaces/primeng) на Rust и [Leptos](https://leptos.dev) 0.8.
-Один компонент — один крейт (`crates/prime-<name>`). Порт синхронизирован с PrimeNG 21.1.10 (см. `upstream.toml`, `NOTICE`).
+A port of [PrimeNG](https://github.com/primefaces/primeng) components to Rust and [Leptos](https://leptos.dev) 0.8.
+One component, one crate (`crates/prime-<name>`). The port is synced with PrimeNG 21.1.10 (see `upstream.toml`, `NOTICE`).
 
-## Структура
+## Structure
 
 ```
-crates/prime-core    конфиг, ClassNames, z-index, pass-through
-crates/prime-dom     позиционирование, focus trap, портал, ripple
-crates/prime-theme   статический CSS темы (Aura)
-crates/prime-icons   SVG-иконки PrimeNG
-crates/prime-<name>  компоненты
-xtask/               генераторы и служебные команды (cargo xtask)
-openspec/            спецификации и изменения
+crates/prime-core    config, ClassNames, z-index, pass-through
+crates/prime-dom     positioning, focus trap, portal, ripple
+crates/prime-theme   static theme CSS (Aura)
+crates/prime-icons   PrimeNG SVG icons
+crates/prime-<name>  components
+xtask/               generators and utility commands (cargo xtask)
+openspec/            specs and changes
 ```
 
-Сборка, диск и команды: [docs/build.md](docs/build.md).
+Build, disk and commands: [docs/build.md](docs/build.md).
 
-## Процесс
+## Process
 
-Работа ведётся через [OpenSpec](https://github.com/Fission-AI/OpenSpec): один change на компонент, заготовка спеки создаётся командой `cargo xtask gen-spec <name>`.
+Work is done through [OpenSpec](https://github.com/Fission-AI/OpenSpec): one change per component, a spec skeleton is created with `cargo xtask gen-spec <name>`.
 
-## Лицензия
+## License
 
-MIT, см. `LICENSE` и `NOTICE`.
+MIT, see `LICENSE` and `NOTICE`.

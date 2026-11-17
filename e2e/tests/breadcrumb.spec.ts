@@ -7,7 +7,7 @@ test.describe('Breadcrumb', () => {
         await expect(page.locator('[data-demo=basic] .p-breadcrumb')).toBeVisible();
     });
 
-    test('basic: домой, пять пунктов и пять разделителей', async ({ page }) => {
+    test('basic: home, five items and five separators', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(2);
         const crumb = page.locator('[data-demo=basic] .p-breadcrumb');
         await expect(crumb.locator('li.p-breadcrumb-home-item')).toHaveCount(1);
@@ -17,7 +17,7 @@ test.describe('Breadcrumb', () => {
         await expect(crumb.locator('li.p-breadcrumb-home-item svg')).toBeVisible();
     });
 
-    test('пункты стоят в одну строку слева направо', async ({ page }) => {
+    test('items sit in one row from left to right', async ({ page }) => {
         const items = page.locator('[data-demo=basic] .p-breadcrumb li');
         const a = (await items.nth(0).boundingBox())!;
         const b = (await items.nth(1).boundingBox())!;
@@ -25,13 +25,13 @@ test.describe('Breadcrumb', () => {
         expect(Math.abs(b.y - a.y)).toBeLessThan(6);
     });
 
-    test('пункт без url: клик не меняет адрес страницы', async ({ page }) => {
+    test('item without url: a click does not change the page address', async ({ page }) => {
         const before = page.url();
         await page.locator('[data-demo=basic] .p-breadcrumb-item-link').first().click();
         expect(page.url()).toBe(before);
     });
 
-    test('template: свой разделитель и пункты-ссылки со значками', async ({ page }) => {
+    test('template: a custom separator and link items with icons', async ({ page }) => {
         const crumb = page.locator('[data-demo=template] .p-breadcrumb');
         await expect(crumb.locator('li.p-breadcrumb-separator').first()).toHaveText('/');
         await expect(crumb.locator('li.p-breadcrumb-separator svg')).toHaveCount(0);

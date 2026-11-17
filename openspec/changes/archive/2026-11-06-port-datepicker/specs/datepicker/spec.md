@@ -1,57 +1,57 @@
 # datepicker Specification
 
 ## Purpose
-DatePicker — выбор даты, нескольких дат и диапазона в календаре.
+DatePicker - selecting a date, several dates and a range in a calendar.
 
 ## ADDED Requirements
 
-### Requirement: Календарная сетка
-Сетка месяца SHALL содержать недели по семь ячеек, начиная с `first_day_of_week` (0 — воскресенье); первая неделя дополняется днями предыдущего месяца, последняя — следующего; ячейка помечена `other_month`, `today`, `selectable`. Дни соседних месяцев SHALL быть недоступны, пока не включён `select_other_months`.
+### Requirement: Calendar grid
+The month grid SHALL contain weeks of seven cells, starting with `first_day_of_week` (0 is Sunday); the first week is padded with days of the previous month, the last with days of the next; a cell is marked `other_month`, `today`, `selectable`. Days of adjacent months SHALL be unavailable unless `select_other_months` is enabled.
 
-#### Scenario: Ноябрь 2026
+#### Scenario: November 2026
 - **WHEN** `first_day_of_week = 0`
-- **THEN** первая ячейка — 1 ноября (воскресенье), всего пять недель, последняя ячейка — 5 декабря с `other_month`
+- **THEN** the first cell is November 1 (Sunday), there are five weeks in total, the last cell is December 5 with `other_month`
 
-#### Scenario: Неделя с понедельника
+#### Scenario: Week starting on Monday
 - **WHEN** `first_day_of_week = 1`
-- **THEN** первая ячейка — 26 октября с `other_month`
+- **THEN** the first cell is October 26 with `other_month`
 
-### Requirement: Ограничения
-Дата SHALL быть недоступна, если она раньше `min_date`, позже `max_date`, входит в `disabled_dates` или её день недели входит в `disabled_days`. Месяц и год SHALL быть недоступны, если в них нет ни одной доступной даты.
+### Requirement: Constraints
+A date SHALL be unavailable if it is earlier than `min_date`, later than `max_date`, is in `disabled_dates`, or its weekday is in `disabled_days`. A month and a year SHALL be unavailable if they contain no available dates.
 
-#### Scenario: Границы
-- **WHEN** `min_date = 10`, `max_date = 20` числа месяца
-- **THEN** 9 и 21 недоступны, 10 и 20 доступны
+#### Scenario: Bounds
+- **WHEN** `min_date = 10`, `max_date = 20` of the month
+- **THEN** 9 and 21 are unavailable, 10 and 20 are available
 
-### Requirement: Выбор
-Режим `single` SHALL заменять значение выбранной датой; `multiple` — добавлять дату или снимать, если уже выбрана (не больше `max_date_count`); `range` — первый выбор задаёт начало, второй (не раньше начала) — конец, иначе выбор начинается заново. Выбранные дни SHALL получать `p-datepicker-day-selected` (в диапазоне — края `-selected`, середина `-selected-range`). Недоступный день не выбирается.
+### Requirement: Selection
+`single` mode SHALL replace the value with the selected date; `multiple` - add the date or remove it if already selected (at most `max_date_count`); `range` - the first selection sets the start, the second (not earlier than the start) sets the end, otherwise the selection starts over. Selected days SHALL get `p-datepicker-day-selected` (in a range - the edges `-selected`, the middle `-selected-range`). An unavailable day is not selected.
 
-#### Scenario: Диапазон
-- **WHEN** выбраны 5 и затем 9 число
-- **THEN** значение `[5, 9]`, дни 5 и 9 — `p-datepicker-day-selected`, 6–8 — `p-datepicker-day-selected-range`
+#### Scenario: Range
+- **WHEN** the 5th and then the 9th are selected
+- **THEN** the value is `[5, 9]`, days 5 and 9 are `p-datepicker-day-selected`, 6-8 are `p-datepicker-day-selected-range`
 
-#### Scenario: Снятие
-- **WHEN** режим `multiple`, повторный клик по выбранному дню
-- **THEN** дата убрана из значения
+#### Scenario: Deselection
+- **WHEN** mode `multiple`, repeated click on a selected day
+- **THEN** the date is removed from the value
 
-### Requirement: Формат и ввод
-Значение в поле SHALL форматироваться по `date_format` (по умолчанию `mm/dd/yy`; `multiple` — через «, », `range` — «начало - конец»). Ввод текста SHALL разбираться по тому же формату; корректные доступные даты обновляют значение и месяц календаря; при потере фокуса текст возвращается к форматированному значению.
+### Requirement: Format and input
+The field value SHALL be formatted by `date_format` (default `mm/dd/yy`; `multiple` joined with ", ", `range` as "start - end"). Typed text SHALL be parsed by the same format; valid available dates update the value and the calendar month; on blur the text reverts to the formatted value.
 
-#### Scenario: Формат
-- **WHEN** дата 5 ноября 2026, формат `dd.mm.yy`
-- **THEN** в поле `05.11.2026`
+#### Scenario: Format
+- **WHEN** the date is November 5, 2026, format `dd.mm.yy`
+- **THEN** the field shows `05.11.2026`
 
-#### Scenario: Ввод
-- **WHEN** пользователь вводит `11/05/2026`
-- **THEN** значение — 5 ноября 2026
+#### Scenario: Input
+- **WHEN** the user types `11/05/2026`
+- **THEN** the value is November 5, 2026
 
-### Requirement: Панель и навигация
-Панель SHALL открываться по фокусу/клику (`show_on_focus`) и кнопке, закрываться по клику снаружи, `Escape`, `Tab` и после завершения выбора (`hide_on_date_time_select`); при `inline` — присутствует всегда. Кнопки «назад» и «вперёд» SHALL листать месяц (вид «дни»), год (вид «месяцы»), десятилетие (вид «годы»); заголовок SHALL переключать виды; выбор месяца и года возвращает к более мелкому виду либо выбирает дату, если `view` задан как `month` или `year`. Кнопки «Сегодня» и «Очистить» SHALL выбирать сегодняшнюю дату и очищать значение.
+### Requirement: Panel and navigation
+The panel SHALL open on focus/click (`show_on_focus`) and by the button, close on outside click, `Escape`, `Tab` and after the selection is complete (`hide_on_date_time_select`); with `inline` it is always present. The "previous" and "next" buttons SHALL page the month ("days" view), year ("months" view), decade ("years" view); the header SHALL switch views; choosing a month and a year returns to the finer view or selects the date if `view` is set to `month` or `year`. The "Today" and "Clear" buttons SHALL select today's date and clear the value.
 
-#### Scenario: Листание
-- **WHEN** открыт ноябрь 2026, клик «вперёд»
-- **THEN** показан декабрь 2026, вызван `on_month_change`
+#### Scenario: Paging
+- **WHEN** November 2026 is open, click "next"
+- **THEN** December 2026 is shown, `on_month_change` is called
 
-#### Scenario: Год
-- **WHEN** клик по заголовку-году, затем по 2030
-- **THEN** показаны месяцы 2030 года
+#### Scenario: Year
+- **WHEN** click on the year title, then on 2030
+- **THEN** the months of 2030 are shown

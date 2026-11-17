@@ -1,13 +1,13 @@
-//! Свойство компонента: значение или сигнал.
+//! Component property: a value or a signal.
 //!
-//! `Signal<T>` и `MaybeProp<T>` Leptos кладут даже константу в арену реактивной системы (несколько аллокаций на каждое
-//! свойство каждого экземпляра). [`Prop`] хранит константу как есть, а сигнал — только когда его действительно передали.
+//! Leptos `Signal<T>` and `MaybeProp<T>` put even a constant into the reactive system's arena (several allocations for each
+//! property of each instance). [`Prop`] stores a constant as is, and a signal only when one was actually passed.
 
 use leptos::prelude::*;
 
-/// Значение свойства: готовое (`Static`) или сигнал (`Reactive`).
+/// Property value: ready-made (`Static`) or a signal (`Reactive`).
 ///
-/// Вызов остаётся прежним: значение, `RwSignal`, `ReadSignal`, `Memo` или `Signal` приводятся через `Into`.
+/// The call stays the same: a value, `RwSignal`, `ReadSignal`, `Memo` or `Signal` are converted via `Into`.
 ///
 /// ```
 /// use leptos::prelude::*;
@@ -23,28 +23,28 @@ use leptos::prelude::*;
 ///     flag.set(true);
 ///     assert!(live.get());
 ///
-///     // не переданное свойство — статическое значение по умолчанию
+///     // a property that is not passed is a static default value
 ///     assert!(Prop::<bool>::default().is_static());
 /// });
 /// ```
 #[derive(Clone)]
 pub enum Prop<T: Send + Sync + 'static> {
-    /// Готовое значение: реактивных примитивов нет.
+    /// Ready-made value: no reactive primitives.
     Static(T),
-    /// Сигнал: чтение подписывает читающее замыкание.
+    /// Signal: reading subscribes the reading closure.
     Reactive(Signal<T>),
 }
 
-/// Необязательное свойство: `None` — «не задано».
+/// Optional property: `None` means "not set".
 pub type OptProp<T> = Prop<Option<T>>;
 
 impl<T: Send + Sync + 'static> Prop<T> {
-    /// Значение статическое (сигнала нет).
+    /// The value is static (no signal).
     pub fn is_static(&self) -> bool {
         matches!(self, Self::Static(_))
     }
 
-    /// Читает значение; для сигнала — с подпиской.
+    /// Reads the value; for a signal, with subscription.
     pub fn get(&self) -> T
     where
         T: Clone,
@@ -55,7 +55,7 @@ impl<T: Send + Sync + 'static> Prop<T> {
         }
     }
 
-    /// Читает значение без подписки.
+    /// Reads the value without subscription.
     pub fn get_untracked(&self) -> T
     where
         T: Clone,
@@ -66,7 +66,7 @@ impl<T: Send + Sync + 'static> Prop<T> {
         }
     }
 
-    /// Применяет функцию к значению без клонирования; для сигнала — с подпиской.
+    /// Applies a function to the value without cloning; for a signal, with subscription.
     pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
         match self {
             Self::Static(v) => f(v),
@@ -117,7 +117,7 @@ impl From<&str> for Prop<String> {
     }
 }
 
-/// `OptProp<T>` из значения: `Some(value)`.
+/// `OptProp<T>` from a value: `Some(value)`.
 impl<U: Send + Sync + 'static> From<U> for Prop<Option<U>> {
     fn from(value: U) -> Self {
         Self::Static(Some(value))
@@ -130,17 +130,17 @@ impl From<&str> for Prop<Option<String>> {
     }
 }
 
-/// Истинно, если все перечисленные свойства (`Prop`/`OptProp`) статические.
+/// True if all listed properties (`Prop`/`OptProp`) are static.
 ///
-/// Проверка без аллокаций и подписок; компонент вызывает её один раз при создании экземпляра, чтобы выбрать
-/// путь отрисовки без реактивных замыканий.
+/// The check has no allocations or subscriptions; a component calls it once when creating an instance to choose
+/// the render path without reactive closures.
 ///
 /// ```
 /// use leptos::prelude::*;
 /// use prime_core::{OptProp, Prop, all_static};
 ///
 /// Owner::new().with(|| {
-///     let label: OptProp<String> = "Сохранить".into();
+///     let label: OptProp<String> = "Save".into();
 ///     let loading: Prop<bool> = Prop::default();
 ///     assert!(all_static!(label, loading));
 ///

@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('Toolbar', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/toolbar');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-toolbar')).toBeVisible();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(2);
         const toolbar = page.locator('[data-demo=basic] .p-toolbar');
         const display = await toolbar.evaluate((el) => getComputedStyle(el).display);
@@ -17,7 +17,7 @@ test.describe('Toolbar', () => {
         expect(radius).not.toBe('0px');
     });
 
-    test('basic: роль и три области по порядку', async ({ page }) => {
+    test('basic: role and three areas in order', async ({ page }) => {
         const toolbar = page.locator('[data-demo=basic] .p-toolbar');
         await expect(toolbar).toHaveAttribute('role', 'toolbar');
         const areas = await toolbar.evaluate((el) => [...el.children].map((c) => c.className.split(' ')[0]));
@@ -27,7 +27,7 @@ test.describe('Toolbar', () => {
         await expect(toolbar.locator('.p-toolbar-end')).toContainText('Save');
     });
 
-    test('basic: область начала слева, конца справа', async ({ page }) => {
+    test('basic: the start area on the left, the end area on the right', async ({ page }) => {
         const toolbar = page.locator('[data-demo=basic] .p-toolbar');
         const box = await toolbar.boundingBox();
         const start = await toolbar.locator('.p-toolbar-start').boundingBox();
@@ -36,7 +36,7 @@ test.describe('Toolbar', () => {
         expect(end!.x + end!.width).toBeGreaterThan(box!.x + (box!.width * 2) / 3);
     });
 
-    test('custom: стиль корня и пустой центр', async ({ page }) => {
+    test('custom: root style and an empty center', async ({ page }) => {
         const toolbar = page.locator('[data-demo=custom] .p-toolbar');
         const radius = await toolbar.evaluate((el) => getComputedStyle(el).borderTopLeftRadius);
         expect(radius).toBe('48px');

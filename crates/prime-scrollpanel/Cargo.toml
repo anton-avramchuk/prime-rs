@@ -1,6 +1,6 @@
 [package]
 name = "prime-scrollpanel"
-description = "prime-rs: компонент ScrollPanel (порт PrimeNG)"
+description = "prime-rs: ScrollPanel component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -19,7 +19,7 @@ prime-core = { workspace = true }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 web-sys = { workspace = true, features = ["Window", "Document", "Element", "HtmlElement", "CssStyleDeclaration", "DomTokenList", "EventTarget", "Event", "MouseEvent", "KeyboardEvent", "FocusEvent"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

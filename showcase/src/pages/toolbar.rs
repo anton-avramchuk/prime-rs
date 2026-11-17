@@ -1,7 +1,7 @@
-//! Страница Toolbar: демонстрации `basic` и `custom` из showcase PrimeNG (`apps/showcase/doc/toolbar`).
+//! Toolbar page: the `basic` and `custom` demos from the PrimeNG showcase (`apps/showcase/doc/toolbar`).
 //!
-//! В `basic` вместо SplitButton и IconField (их ещё нет в порте) — обычная кнопка «Save» и поле InputText с иконкой поиска;
-//! иконки — SVG из `prime-icons` вместо шрифта PrimeIcons.
+//! In `basic`, instead of SplitButton and IconField (not yet in the port) there is a plain "Save" button and an InputText field with a search icon;
+//! the icons are SVG from `prime-icons` instead of the PrimeIcons font.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -12,7 +12,7 @@ use prime_icons::{PlusIcon, SearchIcon, TrashIcon, UploadIcon};
 use prime_inputtext::InputText;
 use prime_toolbar::Toolbar;
 
-/// Страница `/toolbar`.
+/// `/toolbar` page.
 #[component]
 pub fn ToolbarPage() -> impl IntoView {
     view! {

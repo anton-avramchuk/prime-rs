@@ -1,9 +1,9 @@
-//! SpeedDial — порт `p-speeddial` из PrimeNG 21.1.10.
+//! SpeedDial — port of `p-speeddial` from PrimeNG 21.1.10.
 //!
-//! Плавающая кнопка, которая по нажатию раскрывает набор быстрых действий: по прямой (`Linear`) или по дуге вокруг кнопки
-//! (`Circle`, `SemiCircle`, `QuarterCircle`) в одном из восьми направлений. Пункты — кнопки `p-speeddial-action`; список
-//! управляется мышью и клавиатурой (стрелки по направлению раскладки, `Home`, `End`, `Enter`, `Space`, `Escape`). Корень в теме
-//! обычно позиционируют вручную (`position: absolute` у `style`).
+//! A floating button that reveals a set of quick actions on press: in a straight line (`Linear`) or along an arc around the button
+//! (`Circle`, `SemiCircle`, `QuarterCircle`) in one of eight directions. Items are `p-speeddial-action` buttons; the list is
+//! controlled by mouse and keyboard (arrows along the layout direction, `Home`, `End`, `Enter`, `Space`, `Escape`). In a theme the root is
+//! usually positioned manually (`position: absolute` in `style`).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -36,33 +36,33 @@ pub use state::{
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Событие команды пункта.
+/// Item command event.
 #[derive(Clone)]
 pub struct SpeedDialCommand {
-    /// Исходное событие.
+    /// Original event.
     pub event: web_sys::Event,
-    /// Пункт.
+    /// Item.
     pub item: SpeedDialItem,
 }
 
-/// Пункт SpeedDial (вместо `MenuItem` PrimeNG, без полей маршрутизатора).
+/// SpeedDial item (instead of PrimeNG's `MenuItem`, without router fields).
 #[derive(Clone)]
 pub struct SpeedDialItem {
-    /// Идентификатор (по умолчанию `<id списка>_<индекс>`).
+    /// Identifier (defaults to `<list id>_<index>`).
     pub id: Option<String>,
-    /// Подпись (`aria-label` и текст подсказки).
+    /// Label (`aria-label` and tooltip text).
     pub label: Option<String>,
-    /// Значок.
+    /// Icon.
     pub icon: Option<ViewFn>,
-    /// Отключён.
+    /// Disabled.
     pub disabled: bool,
-    /// Показан ли пункт (`false` — класс `p-hidden`).
+    /// Whether the item is shown (`false` — class `p-hidden`).
     pub visible: bool,
-    /// Свой `tabindex` кнопки пункта.
+    /// Custom `tabindex` of the item button.
     pub tabindex: Option<i32>,
-    /// Команда при активации.
+    /// Command on activation.
     pub command: Option<Callback<SpeedDialCommand>>,
-    /// Дополнительный класс `li`.
+    /// Extra `li` class.
     pub style_class: Option<String>,
 }
 
@@ -73,89 +73,89 @@ impl Default for SpeedDialItem {
 }
 
 impl SpeedDialItem {
-    /// Пустой пункт.
+    /// Empty item.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Идентификатор.
+    /// Identifier.
     pub fn id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self
     }
 
-    /// Подпись.
+    /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
     }
 
-    /// Значок.
+    /// Icon.
     pub fn icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.icon = Some(icon.into());
         self
     }
 
-    /// Отключён ли пункт.
+    /// Whether the item is disabled.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 
-    /// Показан ли пункт.
+    /// Whether the item is shown.
     pub fn visible(mut self, visible: bool) -> Self {
         self.visible = visible;
         self
     }
 
-    /// `tabindex` кнопки пункта.
+    /// `tabindex` of the item button.
     pub fn tabindex(mut self, tabindex: i32) -> Self {
         self.tabindex = Some(tabindex);
         self
     }
 
-    /// Команда.
+    /// Command.
     pub fn command(mut self, command: impl Into<Callback<SpeedDialCommand>>) -> Self {
         self.command = Some(command.into());
         self
     }
 
-    /// Дополнительный класс.
+    /// Extra class.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 }
 
-/// Контекст представления `item_content`.
+/// Context of the `item_content` view.
 #[derive(Clone)]
 pub struct SpeedDialItemContext {
-    /// Пункт.
+    /// Item.
     pub item: SpeedDialItem,
-    /// Индекс пункта.
+    /// Item index.
     pub index: usize,
-    /// Активирует пункт: вызывает команду и скрывает список (аналог `toggleCallback($event, item)`).
+    /// Activates the item: runs the command and hides the list (like `toggleCallback($event, item)`).
     pub click: Callback<web_sys::Event>,
 }
 
-/// Pass-through частей [`SpeedDial`].
+/// Pass-through of [`SpeedDial`] parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct SpeedDialPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Кнопка переключателя.
+    /// Toggle button.
     pub button: Pt,
-    /// Список.
+    /// List.
     pub list: Pt,
-    /// Пункт.
+    /// Item.
     pub item: Pt,
-    /// Кнопка пункта.
+    /// Item button.
     pub action: Pt,
-    /// Маска.
+    /// Mask.
     pub mask: Pt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: String,
@@ -164,7 +164,7 @@ struct Core {
     hide_on_click_outside: Prop<bool>,
     disabled: Prop<bool>,
     visible: RwSignal<bool>,
-    /// Позиция фокуса среди доступных пунктов.
+    /// Focus position among the available items.
     focused: RwSignal<Option<usize>>,
     has_focus: RwSignal<bool>,
     container: NodeRef<leptos::html::Div>,
@@ -182,7 +182,7 @@ impl Core {
         own.filter(|id| !id.is_empty()).unwrap_or_else(|| format!("{}_{index}", self.id))
     }
 
-    /// Индексы доступных пунктов (видимых и не отключённых).
+    /// Indices of available items (visible and not disabled).
     fn enabled(&self) -> Vec<usize> {
         self.model.get_untracked().iter().enumerate().filter(|(_, it)| it.visible && !it.disabled).map(|(i, _)| i).collect()
     }
@@ -219,7 +219,7 @@ impl Core {
         }
     }
 
-    /// Клик по пункту: команда (если не отключён) и скрытие.
+    /// Item click: command (if not disabled) and hide.
     fn item_click(&self, event: web_sys::Event, index: usize) {
         let Some(item) = self.model.get_untracked().get(index).cloned() else { return };
         if let (Some(cb), false) = (item.command, item.disabled) {
@@ -242,12 +242,12 @@ impl Core {
         }
     }
 
-    /// Клавиша в списке.
+    /// Key in the list.
     fn list_key(&self, e: &web_sys::KeyboardEvent) {
         let Some(action) = list_action(self.direction.get_untracked(), &e.code()) else { return };
         match action {
             Action::Activate => {
-                // Нажатие на самой кнопке пункта обработает она сама (нативный клик).
+                // A press on the item button itself is handled by the button (native click).
                 let on_list = e.target().zip(e.current_target()).is_some_and(|(t, c)| t == c);
                 if !on_list {
                     return;
@@ -269,7 +269,7 @@ impl Core {
         e.prevent_default();
     }
 
-    /// Клавиша на кнопке переключателя.
+    /// Key on the toggle button.
     fn toggler_key(self: &Arc<Self>, e: &web_sys::KeyboardEvent) {
         let Some(action) = toggler_action(&e.code()) else { return };
         match action {
@@ -282,7 +282,7 @@ impl Core {
                 self.show();
                 let nav = if action == TogglerAction::OpenNext { Action::Next } else { Action::Prev };
                 self.focused.set(step(self.enabled().len(), self.focused.get_untracked(), nav));
-                // Список становится доступным для фокуса после применения классов показа.
+                // The list becomes focusable after the show classes are applied.
                 let this = self.clone();
                 set_timeout(move || this.focus_list(), std::time::Duration::ZERO);
                 e.prevent_default();
@@ -290,7 +290,7 @@ impl Core {
         }
     }
 
-    /// Клик вне компонента при показе.
+    /// Click outside the component while shown.
     #[cfg(target_arch = "wasm32")]
     fn bind_outside_click(self: &Arc<Self>) {
         let this = self.clone();
@@ -308,102 +308,102 @@ impl Core {
     }
 }
 
-/// Плавающая кнопка с раскрывающимся набором действий.
+/// Floating button with an expanding set of actions.
 ///
-/// Свойства принимают значение или сигнал. Пункты и представления строятся при монтировании и при смене модели.
+/// Properties accept a value or a signal. Items and views are built on mount and when the model changes.
 #[component]
 pub fn SpeedDial(
-    /// Пункты.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<SpeedDialItem>>,
-    /// Показан ли список; двусторонний сигнал.
+    /// Whether the list is shown; two-way signal.
     #[prop(optional)]
     visible: Option<RwSignal<bool>>,
-    /// Атрибут `id` (по нему строятся идентификаторы списка и пунктов).
+    /// `id` attribute (list and item identifiers are built from it).
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra root class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Направление раскрытия.
+    /// Expansion direction.
     #[prop(optional, into)]
     direction: Prop<SpeedDialDirection>,
-    /// Шаг задержки перехода пунктов, мс.
+    /// Transition delay step of the items, ms.
     #[prop(optional, default = Prop::Static(30), into)]
     transition_delay: Prop<u32>,
-    /// Тип раскладки.
+    /// Layout type.
     #[prop(optional, into)]
     r#type: Prop<SpeedDialType>,
-    /// Радиус раскладки по дуге; `0` — `20 × число пунктов`.
+    /// Radius of the arc layout; `0` — `20 × item count`.
     #[prop(optional, into)]
     radius: Prop<f64>,
-    /// Выводить маску под списком.
+    /// Render a mask under the list.
     #[prop(optional, into)]
     mask: Prop<bool>,
-    /// Отключить компонент.
+    /// Disable the component.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Скрывать список кликом вне компонента.
+    /// Hide the list on click outside the component.
     #[prop(optional, default = Prop::Static(true), into)]
     hide_on_click_outside: Prop<bool>,
-    /// Встроенный стиль кнопки.
+    /// Inline style of the button.
     #[prop(optional, into)]
     button_style: OptProp<String>,
-    /// Дополнительный класс кнопки.
+    /// Extra button class.
     #[prop(optional, into)]
     button_class: OptProp<String>,
-    /// Цвет кнопки.
+    /// Button color.
     #[prop(optional, into)]
     button_severity: OptProp<ButtonSeverity>,
-    /// Встроенный стиль маски.
+    /// Inline style of the mask.
     #[prop(optional, into)]
     mask_style: OptProp<String>,
-    /// Дополнительный класс маски.
+    /// Extra mask class.
     #[prop(optional, into)]
     mask_class: OptProp<String>,
-    /// Значок кнопки в закрытом состоянии.
+    /// Button icon in the closed state.
     #[prop(optional, into)]
     show_icon: Option<ViewFn>,
-    /// Значок кнопки в открытом состоянии.
+    /// Button icon in the open state.
     #[prop(optional, into)]
     hide_icon: Option<ViewFn>,
-    /// Вращать значок кнопки при открытии.
+    /// Rotate the button icon on open.
     #[prop(optional, default = Prop::Static(true), into)]
     rotate_animation: Prop<bool>,
-    /// Атрибут `aria-label` кнопки.
+    /// `aria-label` attribute of the button.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` кнопки.
+    /// `aria-labelledby` attribute of the button.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Шаблон подсказки пунктов (текст берётся из подписи пункта).
+    /// Item tooltip template (the text comes from the item label).
     #[prop(optional)]
     tooltip_options: Option<TooltipOptions>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<SpeedDialPt>,
-    /// Своя кнопка вместо стандартной; получает обратный вызов переключения.
+    /// Custom button instead of the default one; receives the toggle callback.
     #[prop(optional)]
     button_content: Option<Callback<Callback<web_sys::MouseEvent>, AnyView>>,
-    /// Свой пункт вместо кнопки действия.
+    /// Custom item instead of the action button.
     #[prop(optional)]
     item_content: Option<Callback<SpeedDialItemContext, AnyView>>,
-    /// Свой значок кнопки вместо «плюса».
+    /// Custom button icon instead of the "plus".
     #[prop(optional, into)]
     icon_content: Option<ViewFn>,
-    /// Список показан или скрыт.
+    /// The list is shown or hidden.
     #[prop(optional)]
     on_visible_change: Option<Callback<bool>>,
-    /// Клик по кнопке.
+    /// Button click.
     #[prop(optional)]
     on_click: Option<Callback<web_sys::MouseEvent>>,
-    /// Список показан.
+    /// The list is shown.
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-    /// Список скрыт.
+    /// The list is hidden.
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
 ) -> impl IntoView {
@@ -430,7 +430,7 @@ pub fn SpeedDial(
         let core = core.clone();
         on_cleanup(move || core.release());
     }
-    // Слушатель клика вне вешается на время показа; смещения раскладки считаются после монтирования — только в браузере.
+    // The outside-click listener is attached only while shown; layout offsets are computed after mount, in the browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let core2 = core.clone();
@@ -679,7 +679,7 @@ pub fn SpeedDial(
     }
 }
 
-/// Параметры раскладки пункта.
+/// Item layout parameters.
 struct Layout {
     kind: Prop<SpeedDialType>,
     direction: Prop<SpeedDialDirection>,
@@ -688,7 +688,7 @@ struct Layout {
     length: usize,
 }
 
-/// Пункт: `li` с кнопкой действия (или своим представлением) и необязательной подсказкой.
+/// Item: `li` with an action button (or a custom view) and an optional tooltip.
 #[allow(clippy::too_many_arguments)]
 fn item_view(
     core: &Arc<Core>,
@@ -762,7 +762,7 @@ fn item_view(
     }
 }
 
-/// Кнопка действия пункта: вторичная, круглая, малая.
+/// Item action button: secondary, round, small.
 fn action_button(pt: &Arc<SpeedDialPt>, entry: &SpeedDialItem, click: Callback<web_sys::Event>, list_visible: RwSignal<bool>) -> AnyView {
     let state = ButtonState {
         has_icon: entry.icon.is_some(),

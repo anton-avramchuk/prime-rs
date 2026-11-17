@@ -1,57 +1,57 @@
 # textarea Specification
 
 ## Purpose
-TBD - created by archiving change port-textarea. Update Purpose after archive.
+TBD - created by archiving change port-textarea. Update Purpose after archiving.
 
 ## Requirements
 
-### Requirement: Значение и события Textarea
-Компонент `Textarea` крейта `prime-textarea` SHALL отрисовывать нативный `<textarea>` и принимать необязательное двустороннее `value` (`RwSignal<String>`): значение сигнала выводится в поле (при SSR — дочерним текстом), ввод пользователя записывается обратно. Он SHALL вызывать `on_input`, `on_change`, `on_focus`, `on_blur` с исходным событием.
+### Requirement: Value and events of Textarea
+The `Textarea` component of the `prime-textarea` crate SHALL render a native `<textarea>` and accept an optional two-way `value` (`RwSignal<String>`): the signal's value is rendered in the field (during SSR as child text), and the user's input is written back. It SHALL call `on_input`, `on_change`, `on_focus`, `on_blur` with the original event.
 
-#### Scenario: Сигнал в поле
-- **WHEN** `value` содержит `abc`
-- **THEN** HTML содержит `<textarea …>abc</textarea>`, а изменение сигнала на клиенте обновляет поле
+#### Scenario: Signal in the field
+- **WHEN** `value` contains `abc`
+- **THEN** the HTML contains `<textarea …>abc</textarea>`, and a change of the signal on the client updates the field
 
-#### Scenario: Ввод в сигнал
-- **WHEN** пользователь вводит текст
-- **THEN** сигнал получает текст и вызывается `on_input`
+#### Scenario: Input into the signal
+- **WHEN** the user types text
+- **THEN** the signal receives the text and `on_input` is called
 
-### Requirement: Атрибуты и классы Textarea
-`<textarea>` SHALL получать `id`, `name`, `placeholder`, `rows`, `cols`, `disabled`, `readonly`, `required`, `maxlength`, `aria-label`, `aria-describedby`; незаданные атрибуты SHALL отсутствовать. Классы SHALL быть `p-textarea p-component` и модификаторы в порядке: `p-filled` (значение не пусто), `p-textarea-resizable` (`auto_resize`), `p-variant-filled` (`variant = filled` или `PrimeConfig.input_variant = filled`), `p-textarea-fluid`, `p-inputfield-sm p-textarea-sm` (small), `p-textarea-lg p-inputfield-lg` (large), `p-invalid`. `style_class` и `style` SHALL добавляться без потери собственных классов.
+### Requirement: Attributes and classes of Textarea
+`<textarea>` SHALL get `id`, `name`, `placeholder`, `rows`, `cols`, `disabled`, `readonly`, `required`, `maxlength`, `aria-label`, `aria-describedby`; unset attributes SHALL be absent. The classes SHALL be `p-textarea p-component` and the modifiers in this order: `p-filled` (the value is not empty), `p-textarea-resizable` (`auto_resize`), `p-variant-filled` (`variant = filled` or `PrimeConfig.input_variant = filled`), `p-textarea-fluid`, `p-inputfield-sm p-textarea-sm` (small), `p-textarea-lg p-inputfield-lg` (large), `p-invalid`. `style_class` and `style` SHALL be added without losing the own classes.
 
-#### Scenario: Модификаторы
-- **WHEN** заданы `size = small`, `variant = filled`, `invalid`, `fluid`, `auto_resize`
-- **THEN** есть классы `p-textarea-resizable`, `p-variant-filled`, `p-textarea-fluid`, `p-inputfield-sm p-textarea-sm`, `p-invalid`
+#### Scenario: Modifiers
+- **WHEN** `size = small`, `variant = filled`, `invalid`, `fluid`, `auto_resize` are set
+- **THEN** the classes `p-textarea-resizable`, `p-variant-filled`, `p-textarea-fluid`, `p-inputfield-sm p-textarea-sm`, `p-invalid` are present
 
-#### Scenario: Атрибуты
-- **WHEN** заданы `rows = 5`, `cols = 30`, `placeholder = "Hi"`
-- **THEN** у `<textarea>` есть `rows="5"`, `cols="30"`, `placeholder="Hi"`, а `disabled` и `readonly` нет
+#### Scenario: Attributes
+- **WHEN** `rows = 5`, `cols = 30`, `placeholder = "Hi"` are set
+- **THEN** `<textarea>` has `rows="5"`, `cols="30"`, `placeholder="Hi"`, and there is no `disabled` or `readonly`
 
-### Requirement: Автоподгонка высоты Textarea
-При `auto_resize` Textarea SHALL в браузере при монтировании и при каждом изменении значения устанавливать высоту по `scrollHeight`; при достижении `max-height` SHALL включать `overflow-y: scroll` и ограничивать высоту, иначе `overflow: hidden`; после каждой подгонки SHALL вызывать `on_resize`.
+### Requirement: Height auto-resize of Textarea
+With `auto_resize` the Textarea SHALL, in the browser, on mounting and on each change of the value, set the height from `scrollHeight`; when `max-height` is reached it SHALL enable `overflow-y: scroll` and limit the height, otherwise `overflow: hidden`; after each adjustment it SHALL call `on_resize`.
 
-#### Scenario: Рост текста
-- **WHEN** в поле с `auto_resize` вводится многострочный текст
-- **THEN** высота поля увеличивается и вызывается `on_resize`
+#### Scenario: Text growth
+- **WHEN** multi-line text is typed into a field with `auto_resize`
+- **THEN** the height of the field increases and `on_resize` is called
 
-#### Scenario: Предел высоты
-- **WHEN** содержимое выше `max-height`
-- **THEN** высота равна `max-height` и включена вертикальная прокрутка
+#### Scenario: Height limit
+- **WHEN** the content is above `max-height`
+- **THEN** the height equals `max-height` and vertical scrolling is enabled
 
-### Requirement: Pass-through Textarea
-`pt` SHALL принимать корень `<textarea>`, добавляя классы, стиль и атрибуты без замены собственных.
+### Requirement: Pass-through of Textarea
+`pt` SHALL accept the root `<textarea>`, adding classes, style and attributes without replacing the own ones.
 
-#### Scenario: Класс через pt
-- **WHEN** передан `pt` с классом `custom`
-- **THEN** у `<textarea>` есть и `custom`, и собственные классы
+#### Scenario: Class through pt
+- **WHEN** `pt` with the class `custom` is passed
+- **THEN** `<textarea>` has both `custom` and the own classes
 
-### Requirement: Стоимость отрисовки Textarea
-Textarea без `value` и со статическими свойствами SHALL использовать статическую ветвь; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `textarea` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `textarea` в `benches/budgets.toml`.
+### Requirement: Rendering cost of Textarea
+A Textarea without `value` and with static properties SHALL use the static branch; both branches SHALL produce the same markup. The number of allocations per instance during SSR SHALL fit the budget `textarea` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `textarea` in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** the same set of values is passed statically and through signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Textarea не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of Textarea do not exceed the budgets

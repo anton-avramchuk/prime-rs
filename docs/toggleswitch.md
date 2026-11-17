@@ -1,35 +1,35 @@
 # ToggleSwitch
 
-Порт `p-toggleswitch` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-toggleswitch` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-toggleswitch::ToggleSwitch` | `packages/primeng/src/toggleswitch/toggleswitch.ts`, `toggleswitch/style/toggleswitchstyle.ts` |
-| CSS | `@primeuix/styles/toggleswitch` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/toggleswitch/*-doc.ts` (`basic`, `preselection`, `template`, `invalid`, `disabled`) |
+| CSS | `@primeuix/styles/toggleswitch` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/toggleswitch/*-doc.ts` (`basic`, `preselection`, `template`, `invalid`, `disabled`) |
 
-Спека: `openspec/specs/toggleswitch`.
+Spec: `openspec/specs/toggleswitch`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Структура: корень со `style="position: relative"`, внутри `input.p-toggleswitch-input[role=switch]` (`aria-checked`), затем `div.p-toggleswitch-slider` с `div.p-toggleswitch-handle`.
-- Классы корня и их порядок: `p-toggleswitch p-component`, `p-toggleswitch-checked`, `p-disabled`, `p-invalid`.
-- Атрибуты `data-p-checked`, `data-p-disabled` на корне и `data-p` на корне, дорожке и ручке.
-- Клик обрабатывается на корне (как `@HostListener('click')`), затем фокус возвращается на `<input>`; `readonly` и `disabled` блокируют переключение.
-- Слот ручки получает текущее `checked`.
+- Structure: root with `style="position: relative"`, inside it `input.p-toggleswitch-input[role=switch]` (`aria-checked`), then `div.p-toggleswitch-slider` with `div.p-toggleswitch-handle`.
+- Root classes and their order: `p-toggleswitch p-component`, `p-toggleswitch-checked`, `p-disabled`, `p-invalid`.
+- Attributes `data-p-checked`, `data-p-disabled` on the root and `data-p` on the root, the track and the handle.
+- The click is handled on the root (like `@HostListener('click')`), then the focus returns to `<input>`; `readonly` and `disabled` block toggling.
+- The handle slot receives the current `checked`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-toggleswitch>` | Хост в Angular — деталь фреймворка. |
-| `checked: RwSignal<bool>` вместо `ngModel` | Двусторонняя привязка без форм-инфраструктуры. |
-| Нет `trueValue`/`falseValue`, `autofocus`, `size`, интеграции с формами | В PrimeNG `size` не влияет на классы; остальное вне объёма change. |
-| `handle_template: Callback<bool, AnyView>` вместо шаблона `#handle` | Слоты Leptos. |
-| Без `checked` переключатель неконтролируемый (`default_checked`), классы корня не отслеживаются | Статическая ветвь не создаёт сигналов. |
-| Нативное состояние `<input>` выравнивается после клика явно | Клик по дорожке не переключает `<input>` нативно, клик по `<input>` переключает до обработчика корня. |
+| The root is a `<div>`, not the host `<p-toggleswitch>` | The Angular host is a framework detail. |
+| `checked: RwSignal<bool>` instead of `ngModel` | Two-way binding without form infrastructure. |
+| No `trueValue`/`falseValue`, `autofocus`, `size`, form integration | In PrimeNG `size` does not affect the classes; the rest is outside the scope of the change. |
+| `handle_template: Callback<bool, AnyView>` instead of the `#handle` template | Leptos slots. |
+| Without `checked` the switch is uncontrolled (`default_checked`), root classes are not tracked | The static branch creates no signals. |
+| The native state of `<input>` is explicitly aligned after a click | A click on the track does not toggle `<input>` natively; a click on `<input>` toggles it before the root handler. |
 
-## Производительность
+## Performance
 
-SSR: 33 аллокации на экземпляр (бюджет 40); вклад в сырой wasm +167 КБ (бюджет 210 КБ).
-Шаблон — как у Checkbox (`docs/checkbox.md`).
+SSR: 33 allocations per instance (budget 40); contribution to raw wasm +167 KB (budget 210 KB).
+Template — as for Checkbox (`docs/checkbox.md`).

@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `data-p*`, режимы значения, `pt` и паритет ветвей Checkbox (SSR).
+//! DOM structure, classes, `data-p*`, value modes, `pt` and static/reactive parity of Checkbox (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

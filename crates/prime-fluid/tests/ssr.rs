@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `style`, `pt`, паритет ветвей Fluid и наследование `fluid` потомками (SSR).
+//! DOM structure, classes, `style`, `pt`, static/reactive parity of Fluid and inheritance of `fluid` by descendants (SSR).
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 fn norm(s: &str) -> String {

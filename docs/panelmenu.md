@@ -1,15 +1,15 @@
 # PanelMenu
 
-Порт `p-panelmenu` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10 `p-panelmenu` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-panelmenu::PanelMenu`, `PanelMenuPt`, `PanelMenuItemContext`, `PanelMenuRef` | `packages/primeng/src/panelmenu/panelmenu.ts` (`PanelMenu`, `PanelMenuList`, `PanelMenuSub`), `panelmenu/style/panelmenustyle.ts` |
-| Модель (раскрытые ключи, видимые пункты, переходы, поиск) | `prime-panelmenu::state` — своя, на `prime_tieredmenu::{Node, build, item_at}` |
-| CSS | `@primeuix/styles/panelmenu`, пресет Aura и блок `/*For PrimeNG*/` — `cargo xtask gen-theme` (`panelmenu` в `primeng_extra`) |
-| Демонстрации | `apps/showcase/doc/panelmenu/*-doc.ts` (`basic`, `multiple`, `controlled`, `command`, `template`) |
+| Model (expanded keys, visible items, transitions, search) | `prime-panelmenu::state` — our own, on `prime_tieredmenu::{Node, build, item_at}` |
+| CSS | `@primeuix/styles/panelmenu`, the Aura preset and the `/*For PrimeNG*/` block — `cargo xtask gen-theme` (`panelmenu` in `primeng_extra`) |
+| Demos | `apps/showcase/doc/panelmenu/*-doc.ts` (`basic`, `multiple`, `controlled`, `command`, `template`) |
 
-Спека: `openspec/specs/panelmenu`. Модель пунктов — `prime_menu::MenuItem`: поле `items` задаёт ветки, `expanded` — начальное раскрытие, `command` — действие. Ключ пункта — индексы предков через `_` (`"0"`, `"0_1"`), он же в `PanelMenuRef::is_expanded` и в `id` элементов `li` (`<id меню>_<ключ>`).
+Spec: `openspec/specs/panelmenu`. Item model — `prime_menu::MenuItem`: the `items` field defines branches, `expanded` — initial expansion, `command` — the action. An item key is the ancestors' indices joined by `_` (`"0"`, `"0_1"`), the same in `PanelMenuRef::is_expanded` and in the `id` of `li` elements (`<menu id>_<key>`).
 
 ```rust
 let panel_ref = PanelMenuRef::new();
@@ -19,36 +19,36 @@ view! {
 }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-panelmenu` > `div.p-panelmenu-panel` > `div.p-panelmenu-header[role=button]` (`-header-active`, `p-disabled`, `aria-expanded`, `aria-controls`, `data-p-highlight`) > `-header-content` > `a.p-panelmenu-header-link` (шеврон, значок, подпись) и `div.p-panelmenu-content-container[role=region]` > `-content-wrapper` > `-content` > `ul.p-panelmenu-root-list.p-panelmenu-submenu[role=tree]` > `li.p-panelmenu-item[role=treeitem]` (`aria-level`, `aria-setsize`, `aria-posinset`, `p-focus`, `data-p-focused`) > `-item-content` > `a.p-panelmenu-item-link`; вложенные ветки — контейнер раскрытия с `ul.p-panelmenu-submenu`.
-- Одиночный режим: клик по заголовку сворачивает остальные корневые панели (в том числе по листу-заголовку); вложенные ветки независимы. `multiple` снимает ограничение.
-- Клавиатура заголовка: ↓ на раскрытом — в дерево, иначе на следующий заголовок (по кругу, отключённые пропускаются); ↑ — на предыдущий (в его дерево, если раскрыт); `Home` `End`; `Enter` `Space` — клик по ссылке заголовка. Клавиатура дерева: ↓ ↑ по видимым пунктам (на краях — на соседний заголовок / свой заголовок), → раскрывает ветку, а на раскрытой идёт вниз, ← сворачивает или идёт к родителю, `Home` `End`, `Enter` `Space`, поиск по началу подписи с буфером 500 мс.
-- Корневые списки получают `tabindex="-1"` (как итоговый DOM PrimeNG, где host-привязка перекрывает свойство `tabindex`); ссылки пунктов — `tabindex="0"`, пока раскрыты все предки, иначе `-1`.
-- Раскрытие и сворачивание — анимация `p-collapsible-enter-active` / `-leave-active` из `prime_core::collapsible`.
+- Markup and classes: `div.p-panelmenu` > `div.p-panelmenu-panel` > `div.p-panelmenu-header[role=button]` (`-header-active`, `p-disabled`, `aria-expanded`, `aria-controls`, `data-p-highlight`) > `-header-content` > `a.p-panelmenu-header-link` (chevron, icon, label) and `div.p-panelmenu-content-container[role=region]` > `-content-wrapper` > `-content` > `ul.p-panelmenu-root-list.p-panelmenu-submenu[role=tree]` > `li.p-panelmenu-item[role=treeitem]` (`aria-level`, `aria-setsize`, `aria-posinset`, `p-focus`, `data-p-focused`) > `-item-content` > `a.p-panelmenu-item-link`; nested branches — an expansion container with `ul.p-panelmenu-submenu`.
+- Single mode: a click on a header collapses the other root panels (including via a leaf header); nested branches are independent. `multiple` lifts the restriction.
+- Header keyboard: ↓ on an expanded one — into the tree, otherwise to the next header (wraps around, disabled ones are skipped); ↑ — to the previous one (into its tree if expanded); `Home` `End`; `Enter` `Space` — a click on the header link. Tree keyboard: ↓ ↑ over visible items (at the edges — to the adjacent header / its own header), → expands a branch, and on an expanded one goes down, ← collapses or goes to the parent, `Home` `End`, `Enter` `Space`, search by label prefix with a 500 ms buffer.
+- Root lists get `tabindex="-1"` (like the resulting PrimeNG DOM, where a host binding overrides the `tabindex` property); item links get `tabindex="0"` while all ancestors are expanded, otherwise `-1`.
+- Expanding and collapsing use the `p-collapsible-enter-active` / `-leave-active` animation from `prime_core::collapsible`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| ← на раскрытой ветке всегда сворачивает её | В PrimeNG ветка, раскрытая кликом, остаётся раскрытой из-за флага `expanded`, оставшегося на модели (← убирает её только из пути активных). |
-| Вход фокуса в дерево с заголовка заново выбирает пункт (первый или кликнутый), снаружи — последний | В PrimeNG пункт выбирается один раз, при возврате остаётся прежний. |
-| Лист не получает контейнера раскрытия и пустого `ul` | В PrimeNG они выводятся и у листьев, но пусты и скрыты. |
-| Раскрытие хранится в сигнале набора ключей, а не в полях модели; начальное состояние берётся из `MenuItem::expanded` один раз | `MenuItem` у нас неизменяемая модель. `PanelMenuRef` заменяет `collapseAll` и ручную правку `expanded` из демонстрации `controlled`. |
-| Нет `key` пункта: `PanelMenuRef` адресует пункты позицией (`"0_1"`) | У `MenuItem` нет поля `key`. |
-| Нет свойств `tabindex` и `transitionOptions` | Первое не влияет на итоговый DOM, второе заменено общей анимацией. |
-| Нет `routerLink`, `Tooltip`/`Badge`, `escape = false`, `Ripple`, `Bind`, `pTemplate`; значки — `ViewFn` | Нет маршрутизатора, `innerHTML` и PrimeIcons. |
-| Шаблон `item` применяется и к заголовкам (`PanelMenuItemContext::root`), `header_icon` — шеврон заголовка | Как `#item` и `#headericon` PrimeNG. |
-| Демонстрации `router` и `accessibility` не перенесены; значки без аналога в `prime-icons` заменены близкими | Нет маршрутизатора и PrimeIcons. |
+| ← on an expanded branch always collapses it | In PrimeNG a branch expanded by a click stays expanded because of the `expanded` flag left on the model (← removes it only from the active path). |
+| Focus entering the tree from a header re-selects an item (the first or the clicked one), from outside — the last one | In PrimeNG an item is selected once, the previous one stays on return. |
+| A leaf gets no expansion container and no empty `ul` | In PrimeNG they are rendered for leaves too, but are empty and hidden. |
+| Expansion is stored in a key-set signal rather than in model fields; the initial state is taken from `MenuItem::expanded` once | Our `MenuItem` is an immutable model. `PanelMenuRef` replaces `collapseAll` and the manual editing of `expanded` from the `controlled` demo. |
+| No item `key`: `PanelMenuRef` addresses items by position (`"0_1"`) | `MenuItem` has no `key` field. |
+| No `tabindex` and `transitionOptions` props | The first does not affect the resulting DOM, the second is replaced by the shared animation. |
+| No `routerLink`, `Tooltip`/`Badge`, `escape = false`, `Ripple`, `Bind`, `pTemplate`; icons are `ViewFn` | No router, `innerHTML` or PrimeIcons. |
+| The `item` template applies to headers too (`PanelMenuItemContext::root`), `header_icon` is the header chevron | Like PrimeNG `#item` and `#headericon`. |
+| The `router` and `accessibility` demos are not ported; icons without an analog in `prime-icons` are replaced with similar ones | No router or PrimeIcons. |
 
-Попутно `prime_core::collapsible::animate` получил защиту от гонки: запоздавшее завершение прежней анимации (запасной таймер 400 мс) больше не скрывает уже раскрытую область при быстром повторном переключении; затрагивает Panel, Fieldset, Accordion.
+Along the way `prime_core::collapsible::animate` got a race guard: a late completion of the previous animation (the 400 ms fallback timer) no longer hides an already expanded area on a quick re-toggle; this affects Panel, Fieldset, Accordion.
 
-## Что не проверялось
+## Not verified
 
-- Раскладка справа налево и сенсорный ввод.
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Посимвольное сравнение DOM с PrimeNG (только сверка вручную и скриншот `panelmenu-basic` в `e2e/tests/pages.json`).
+- Right-to-left layout and touch input.
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behavior was not.
+- Character-by-character DOM comparison with PrimeNG (only a manual check and the `panelmenu-basic` screenshot in `e2e/tests/pages.json`).
 
-## Производительность
+## Performance
 
-См. `benches/` (`panelmenu-1`, `panelmenu-1000`, `case-panelmenu`) и `benches/*budgets.toml`.
+See `benches/` (`panelmenu-1`, `panelmenu-1000`, `case-panelmenu`) and `benches/*budgets.toml`.

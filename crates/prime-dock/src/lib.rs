@@ -1,9 +1,9 @@
-//! Dock — порт `p-dock` из PrimeNG 21.1.10.
+//! Dock — port of `p-dock` from PrimeNG 21.1.10.
 //!
-//! Панель значков у края контейнера: корень `div.p-dock` (положение `p-dock-bottom|top|left|right`, на узком окне
-//! `p-dock-mobile`), список `ul.p-dock-list[role=menu]` и пункты `li.p-dock-item` со ссылкой, значком и необязательным бейджем.
-//! Список фокусируется целиком; стрелки по ориентации, `Home`, `End`, `Enter` и `Space` управляют пунктами. Увеличения пунктов
-//! при наведении в PrimeNG 21 нет, здесь тоже. Корень в теме — `position: absolute`: контейнеру нужен `position: relative`.
+//! An icon bar at the edge of a container: root `div.p-dock` (position `p-dock-bottom|top|left|right`, on a narrow window
+//! `p-dock-mobile`), list `ul.p-dock-list[role=menu]` and items `li.p-dock-item` with a link, an icon and an optional badge.
+//! The list gets focus as a whole; arrow keys (depending on orientation), `Home`, `End`, `Enter` and `Space` control the items.
+//! PrimeNG 21 has no item magnification on hover, and neither does this port. The root in the theme is `position: absolute`: the container needs `position: relative`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -25,189 +25,189 @@ use std::sync::Arc;
 
 pub use state::{Action, DockPosition, item_classes, item_id, key_action, orientation, root_classes, step};
 
-/// Событие команды пункта.
+/// Item command event.
 #[derive(Clone)]
 pub struct DockCommand {
-    /// Исходное событие клика.
+    /// Original click event.
     pub event: web_sys::MouseEvent,
-    /// Пункт.
+    /// The item.
     pub item: DockItem,
 }
 
-/// Пункт дока (вместо `MenuItem` PrimeNG, без полей маршрутизатора).
+/// Dock item (instead of PrimeNG `MenuItem`, without router fields).
 #[derive(Clone, Default)]
 pub struct DockItem {
-    /// Идентификатор (по умолчанию `<id дока>_<индекс>`).
+    /// Identifier (default `<dock id>_<index>`).
     pub id: Option<String>,
-    /// Подпись (`aria-label`).
+    /// Label (`aria-label`).
     pub label: Option<String>,
-    /// Значок.
+    /// Icon.
     pub icon: Option<ViewFn>,
-    /// Адрес ссылки.
+    /// Link address.
     pub url: Option<String>,
-    /// `target` ссылки.
+    /// Link `target`.
     pub target: Option<String>,
-    /// `title` ссылки.
+    /// Link `title`.
     pub title: Option<String>,
-    /// Отключён.
+    /// Disabled.
     pub disabled: bool,
-    /// Значение бейджа.
+    /// Badge value.
     pub badge: Option<String>,
-    /// Команда при клике.
+    /// Command on click.
     pub command: Option<Callback<DockCommand>>,
-    /// Дополнительный класс `li`.
+    /// Extra class of the `li`.
     pub style_class: Option<String>,
-    /// Встроенный стиль `li`.
+    /// Inline style of the `li`.
     pub style: Option<String>,
-    /// Дополнительный класс ссылки.
+    /// Extra class of the link.
     pub link_class: Option<String>,
-    /// Дополнительный класс значка.
+    /// Extra class of the icon.
     pub icon_class: Option<String>,
 }
 
 impl DockItem {
-    /// Пустой пункт.
+    /// Empty item.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Идентификатор.
+    /// Identifier.
     pub fn id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self
     }
 
-    /// Подпись.
+    /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
     }
 
-    /// Значок.
+    /// Icon.
     pub fn icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.icon = Some(icon.into());
         self
     }
 
-    /// Адрес ссылки.
+    /// Link address.
     pub fn url(mut self, url: impl Into<String>) -> Self {
         self.url = Some(url.into());
         self
     }
 
-    /// `target` ссылки.
+    /// Link `target`.
     pub fn target(mut self, target: impl Into<String>) -> Self {
         self.target = Some(target.into());
         self
     }
 
-    /// `title` ссылки.
+    /// Link `title`.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = Some(title.into());
         self
     }
 
-    /// Отключает пункт.
+    /// Disables the item.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 
-    /// Значение бейджа.
+    /// Badge value.
     pub fn badge(mut self, badge: impl Into<String>) -> Self {
         self.badge = Some(badge.into());
         self
     }
 
-    /// Команда при клике.
+    /// Command on click.
     pub fn command(mut self, command: impl Into<Callback<DockCommand>>) -> Self {
         self.command = Some(command.into());
         self
     }
 
-    /// Дополнительный класс `li`.
+    /// Extra class of the `li`.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 
-    /// Встроенный стиль `li`.
+    /// Inline style of the `li`.
     pub fn style(mut self, style: impl Into<String>) -> Self {
         self.style = Some(style.into());
         self
     }
 
-    /// Дополнительный класс ссылки.
+    /// Extra class of the link.
     pub fn link_class(mut self, class: impl Into<String>) -> Self {
         self.link_class = Some(class.into());
         self
     }
 
-    /// Дополнительный класс значка.
+    /// Extra class of the icon.
     pub fn icon_class(mut self, class: impl Into<String>) -> Self {
         self.icon_class = Some(class.into());
         self
     }
 }
 
-/// Pass-through частей Dock.
+/// Pass-through for the parts of Dock.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct DockPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Контейнер списка.
+    /// List container.
     pub list_container: Pt,
-    /// Список.
+    /// List.
     pub list: Pt,
-    /// Пункт.
+    /// Item.
     pub item: Pt,
-    /// Содержимое пункта.
+    /// Item content.
     pub item_content: Pt,
-    /// Ссылка пункта.
+    /// Item link.
     pub item_link: Pt,
-    /// Значок пункта.
+    /// Item icon.
     pub item_icon: Pt,
 }
 
-/// Панель значков у края контейнера.
+/// Icon bar at the edge of a container.
 ///
-/// Каждое свойство принимает значение или сигнал.
+/// Each property accepts a value or a signal.
 #[component]
 pub fn Dock(
-    /// Пункты.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<DockItem>>,
-    /// Положение (по умолчанию внизу).
+    /// Position (default: bottom).
     #[prop(optional, into)]
     position: Prop<DockPosition>,
-    /// Ширина окна, до которой включён режим `p-dock-mobile` (по умолчанию `960px`).
+    /// Window width up to which the `p-dock-mobile` mode is enabled (default `960px`).
     #[prop(optional, into)]
     breakpoint: OptProp<String>,
-    /// Атрибут `id` списка; по нему строятся идентификаторы пунктов.
+    /// `id` attribute of the list; item identifiers are built from it.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `aria-label` списка.
+    /// `aria-label` attribute of the list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` списка.
+    /// `aria-labelledby` attribute of the list.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Содержимое пункта вместо значка; получает пункт.
+    /// Item content instead of the icon; receives the item.
     #[prop(optional, into)]
     item: Option<Callback<DockItem, AnyView>>,
-    /// Список получил фокус.
+    /// The list received focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Список потерял фокус.
+    /// The list lost focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<DockPt>,
 ) -> impl IntoView {
@@ -219,7 +219,7 @@ pub fn Dock(
     #[cfg(not(target_arch = "wasm32"))]
     let _ = breakpoint;
 
-    // Позиция фокуса среди доступных (не отключённых) пунктов.
+    // Position of the focus among the available (not disabled) items.
     let focused = RwSignal::new(None::<usize>);
     let has_focus = RwSignal::new(false);
     let focused_id = {
@@ -321,12 +321,12 @@ pub fn Dock(
     }
 }
 
-/// Индексы доступных пунктов модели (без подписки).
+/// Indices of the available items of the model (without subscription).
 fn enabled_of(model: &Prop<Vec<DockItem>>) -> Vec<usize> {
     model.get_untracked().iter().enumerate().filter(|(_, it)| !it.disabled).map(|(i, _)| i).collect()
 }
 
-/// `Enter`/`Space`: клик по ссылке пункта под фокусом (иначе по самому пункту), как `onSpaceKey` PrimeNG.
+/// `Enter`/`Space`: click on the link of the focused item (otherwise on the item itself), like `onSpaceKey` in PrimeNG.
 fn click_focused(model: &Prop<Vec<DockItem>>, list_id: &str, position: Option<usize>) {
     use leptos::wasm_bindgen::JsCast;
     let Some(index) = position.and_then(|p| enabled_of(model).get(p).copied()) else { return };
@@ -341,7 +341,7 @@ fn click_focused(model: &Prop<Vec<DockItem>>, list_id: &str, position: Option<us
     }
 }
 
-/// Пункт: `li` с содержимым, ссылкой, значком (или представлением) и бейджем.
+/// Item: `li` with content, link, icon (or view) and badge.
 fn item_view(
     entry: &DockItem,
     index: usize,
@@ -416,12 +416,12 @@ fn item_view(
 
 #[cfg(target_arch = "wasm32")]
 mod client {
-    //! Мобильный режим: `matchMedia("(max-width: <breakpoint>)")`.
+    //! Mobile mode: `matchMedia("(max-width: <breakpoint>)")`.
 
     use leptos::prelude::*;
     use leptos::wasm_bindgen::{JsCast, closure::Closure};
 
-    /// Ведёт `mobile` по медиазапросу и снимает слушатель при размонтировании.
+    /// Drives `mobile` from the media query and removes the listener on unmount.
     pub fn bind_media(breakpoint: String, mobile: RwSignal<bool>) {
         let Some(window) = web_sys::window() else { return };
         let Some(query) = window.match_media(&format!("(max-width: {breakpoint})")).ok().flatten() else { return };

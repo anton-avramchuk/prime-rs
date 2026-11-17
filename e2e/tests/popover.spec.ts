@@ -7,12 +7,12 @@ test.describe('Popover', () => {
         await expect(page.locator('[data-demo=basic] button')).toBeVisible();
     });
 
-    test('панель скрыта, пока её не показали', async ({ page }) => {
+    test('the panel is hidden until it is shown', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(4);
         await expect(page.locator('.p-popover')).toHaveCount(0);
     });
 
-    test('клик по кнопке показывает и скрывает панель', async ({ page }) => {
+    test('a click on the button shows and hides the panel', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         const button = demo.getByRole('button', { name: 'Share' });
         await button.click();
@@ -24,7 +24,7 @@ test.describe('Popover', () => {
         await expect(panel).toHaveCount(0);
     });
 
-    test('панель расположена под кнопкой', async ({ page }) => {
+    test('the panel is placed below the button', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         const button = demo.getByRole('button', { name: 'Share' });
         await button.click();
@@ -32,7 +32,7 @@ test.describe('Popover', () => {
         expect(p.y).toBeGreaterThanOrEqual(b.y + b.height - 1);
     });
 
-    test('клик вне панели закрывает, клик внутри нет', async ({ page }) => {
+    test('a click outside the panel closes it, a click inside does not', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         await demo.getByRole('button', { name: 'Share' }).click();
         const panel = demo.locator('.p-popover');
@@ -42,7 +42,7 @@ test.describe('Popover', () => {
         await expect(panel).toHaveCount(0);
     });
 
-    test('Escape закрывает панель', async ({ page }) => {
+    test('Escape closes the panel', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         await demo.getByRole('button', { name: 'Share' }).click();
         await expect(demo.locator('.p-popover')).toBeVisible();
@@ -50,7 +50,7 @@ test.describe('Popover', () => {
         await expect(demo.locator('.p-popover')).toHaveCount(0);
     });
 
-    test('target: панель выровнена по блоку, а не по кнопке', async ({ page }) => {
+    test('target: the panel is aligned to the block, not to the button', async ({ page }) => {
         const demo = page.locator('[data-demo=target]');
         await demo.getByRole('button', { name: 'Show' }).click();
         const panel = demo.locator('.p-popover');
@@ -59,7 +59,7 @@ test.describe('Popover', () => {
         expect(p.y).toBeGreaterThanOrEqual(t.y + t.height - 1);
     });
 
-    test('selectdata: выбор участника меняет подпись и закрывает панель', async ({ page }) => {
+    test('selectdata: selecting a member changes the label and closes the panel', async ({ page }) => {
         const demo = page.locator('[data-demo=selectdata]');
         await demo.getByRole('button', { name: 'Select Member' }).click();
         await demo.locator('.p-popover li', { hasText: 'Ioni Bowcher' }).click();
@@ -67,7 +67,7 @@ test.describe('Popover', () => {
         await expect(demo.getByRole('button', { name: 'Ioni Bowcher' })).toBeVisible();
     });
 
-    test('панель одной демонстрации не мешает другой', async ({ page }) => {
+    test('the panel of one demo does not interfere with another', async ({ page }) => {
         await page.locator('[data-demo=template]').getByRole('button', { name: 'Show' }).click();
         await expect(page.locator('[data-demo=template] .p-popover')).toContainText('Custom Content');
         await page.locator('[data-demo=basic]').getByRole('button', { name: 'Share' }).click();

@@ -1,50 +1,50 @@
-# DatePicker (этап 1)
+# DatePicker (stage 1)
 
-Порт `p-datepicker` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`). Это **этап 1**: время, клавиатурная
-навигация по ячейкам и ряд редких свойств перенесены не будут в этом изменении (список — ниже).
+Port of `p-datepicker` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`). This is **stage 1**: time, keyboard
+navigation across cells and a number of rare properties will not be ported in this change (list below).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-datepicker::DatePicker`, `DatePickerPt`, `DatePickerView`, `IconDisplay`, `MonthYear` | `packages/primeng/src/datepicker/datepicker.ts`, `datepicker/style/datepickerstyle.ts` |
-| Календарь, ограничения, выбор, формат и разбор | `prime-datepicker::calendar` — чистый порт `createMonth`, `isSelectable`, `selectDate`, `getWeekNumber`, `formatDate`, `parseDate`, табличные тесты; свои даты `CalDate` без внешних библиотек |
-| CSS | `@primeuix/styles/datepicker` (`datepicker` в `theme.components`) |
-| Демонстрации | `apps/showcase/doc/datepicker/*-doc.ts` (`basic`, `format`, `inline`, `multiple`, `range`, `minmax`, `buttonbar`, `month`, `year`, `icon`, `weeks`, `multiplemonths`, `disabled`, `invalid`) |
+| Calendar, constraints, selection, formatting and parsing | `prime-datepicker::calendar` - a pure port of `createMonth`, `isSelectable`, `selectDate`, `getWeekNumber`, `formatDate`, `parseDate`, table-driven tests; own `CalDate` dates without external libraries |
+| CSS | `@primeuix/styles/datepicker` (`datepicker` in `theme.components`) |
+| Demos | `apps/showcase/doc/datepicker/*-doc.ts` (`basic`, `format`, `inline`, `multiple`, `range`, `minmax`, `buttonbar`, `month`, `year`, `icon`, `weeks`, `multiplemonths`, `disabled`, `invalid`) |
 
-Спека: `openspec/specs/datepicker`. Значение — `RwSignal<Vec<CalDate>>`: пусто, одна дата, несколько или `[начало, конец]` (диапазон без конца — `[начало]`); режим — `selection_mode`.
+Spec: `openspec/specs/datepicker`. The value is `RwSignal<Vec<CalDate>>`: empty, one date, several, or `[start, end]` (a range without an end is `[start]`); the mode is `selection_mode`.
 
 ```rust
 let value = RwSignal::new(Vec::new());
 view! { <DatePicker value=value selection_mode=SelectionMode::Range date_format="dd.mm.yy" show_button_bar=true /> }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: поле `p-datepicker-input` (классы InputText), `p-datepicker-dropdown`, `p-datepicker-input-icon-container`, `p-datepicker-clear-icon`, панель `p-datepicker-panel` (`-inline`), `calendar-container`, `calendar`, `header`, `title`, `select-month`, `select-year`, `decade`, `day-view`, `weekday-cell`, `weeknumber`, `day-cell` (`other-month`, `today`), `day` (`selected`, `selected-range`), `month-view`, `year-view`, `buttonbar`.
-- Формулы: сетка месяца и первый день недели, номера недель (ISO или от первого дня года), десятилетие, доступность месяцев и годов, выбор одной даты, нескольких (с `max_date_count`) и диапазона.
-- Формат `d dd o oo D DD m mm M MM y yy 'литерал'` для вывода и разбора ввода; разбор двузначного года с порогом «текущий год % 100 + 10».
-- Панель открывается по фокусу/клику/кнопке, закрывается после завершённого выбора (через 150 мс), по клику снаружи, `Escape`, `Tab`, `resize`; кнопки «Сегодня» и «Очистить»; виды «дни/месяцы/годы» и выбор месяца или года целиком (`view`).
+- Markup and classes: field `p-datepicker-input` (InputText classes), `p-datepicker-dropdown`, `p-datepicker-input-icon-container`, `p-datepicker-clear-icon`, panel `p-datepicker-panel` (`-inline`), `calendar-container`, `calendar`, `header`, `title`, `select-month`, `select-year`, `decade`, `day-view`, `weekday-cell`, `weeknumber`, `day-cell` (`other-month`, `today`), `day` (`selected`, `selected-range`), `month-view`, `year-view`, `buttonbar`.
+- Formulas: month grid and first day of the week, week numbers (ISO or from the first day of the year), decade, month and year availability, selecting one date, several (with `max_date_count`) and a range.
+- Format `d dd o oo D DD m mm M MM y yy 'literal'` for output and input parsing; two-digit year parsing with the threshold "current year % 100 + 10".
+- The panel opens on focus/click/button, closes after a completed selection (after 150 ms), on outside click, `Escape`, `Tab`, `resize`; "Today" and "Clear" buttons; "days/months/years" views and selecting a whole month or year (`view`).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Значение — `Vec<CalDate>` (дата без времени и часового пояса), а не `Date`/`Date[]`/`null` | Типизированная модель; время — этап 2. |
-| Панель выводится внутри корня (`align_overlay(Relative)`), нет `appendTo`, `motionOptions`, `touchUI` | Тот же подход, что у Select и ColorPicker. |
-| Названия месяцев и дней — английские, замена через `Locale` (`monthNames`, `monthNamesShort`, `dayNames`, `dayNamesShort`, `dayNamesMin` — списки через запятую) | В `Locale` значения — строки. |
-| Нет формата `@` и `!` (метки времени) | Нужны время и часовой пояс. |
-| «Сегодня» можно задать свойством `today` | Детерминированные тесты и демо. |
-| Недоступность дня по `min`/`max` считается по дате, а не по времени внутри дня | Времени нет (этап 1). |
+| The value is `Vec<CalDate>` (a date without time or time zone), not `Date`/`Date[]`/`null` | Typed model; time is stage 2. |
+| The panel is rendered inside the root (`align_overlay(Relative)`), no `appendTo`, `motionOptions`, `touchUI` | Same approach as Select and ColorPicker. |
+| Month and day names are English, overridable via `Locale` (`monthNames`, `monthNamesShort`, `dayNames`, `dayNamesShort`, `dayNamesMin` - comma-separated lists) | In `Locale` values are strings. |
+| No `@` and `!` formats (timestamps) | They need time and time zone. |
+| "Today" can be set with the `today` property | Deterministic tests and demos. |
+| Day unavailability by `min`/`max` is computed by date, not by time within the day | There is no time (stage 1). |
 
-## Не вошло в этап 1
+## Not included in stage 1
 
-- Время: `show_time`, `time_only`, `hour_format`, `show_seconds`, шаги, выбор AM/PM.
-- Клавиатурная навигация по ячейкам (`ArrowKeys`, `Home`/`End`, `PageUp`/`PageDown`) и фокус-ловушка панели; из клавиатуры поле открывает панель (`ArrowDown`), закрывает `Escape`/`Tab`/`Enter`.
-- `keep_invalid`, `data_type`, `maskable`, `responsive_options`, шаблоны (`date`, `disabled-date`, `header`, `footer`, `decade`…), `float_label` внутри компонента (работает обёртка `FloatLabel`), `selection_mode` в формах Angular.
+- Time: `show_time`, `time_only`, `hour_format`, `show_seconds`, steps, AM/PM selection.
+- Keyboard navigation across cells (`ArrowKeys`, `Home`/`End`, `PageUp`/`PageDown`) and the panel focus trap; from the keyboard the field opens the panel (`ArrowDown`) and `Escape`/`Tab`/`Enter` close it.
+- `keep_invalid`, `data_type`, `maskable`, `responsive_options`, templates (`date`, `disabled-date`, `header`, `footer`, `decade`...), `float_label` inside the component (the `FloatLabel` wrapper works), `selection_mode` in Angular forms.
 
-## Что не проверялось
+## Not verified
 
-- Касание на устройствах; чтение с экрана (`aria-*` сверены с PrimeNG, поведение скринридеров — нет); раскладка справа налево.
+- Touch on devices; screen reader support (`aria-*` checked against PrimeNG, screen reader behaviour not); right-to-left layout.
 
-## Производительность
+## Performance
 
-См. `benches/` (`datepicker-1`, `datepicker-1000`, `case-datepicker`) и `benches/*budgets.toml`.
+See `benches/` (`datepicker-1`, `datepicker-1000`, `case-datepicker`) and `benches/*budgets.toml`.

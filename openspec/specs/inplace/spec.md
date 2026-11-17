@@ -1,47 +1,47 @@
 # inplace Specification
 
 ## Purpose
-Inplace переключает область между «видом» и «содержимым» по действию пользователя.
+Inplace switches an area between a "view" and "content" according to the user's action.
 
 ## Requirements
 
-### Requirement: Разметка Inplace
-Компонент `Inplace` крейта `prime-inplace` SHALL выводить корень `div.p-inplace.p-component` с `aria-live="polite"`. В неактивном состоянии корень SHALL содержать `div.p-inplace-display` с `tabindex="0"`, `role="button"` и содержимым `display`; при `disabled` — класс `p-disabled` и атрибут `data-p-disabled`. В активном состоянии корень SHALL содержать `div.p-inplace-content` с содержимым `content`. `style`, `style_class` и `pt` SHALL применяться к корню.
+### Requirement: Markup of Inplace
+The `Inplace` component of the `prime-inplace` crate SHALL render the root `div.p-inplace.p-component` with `aria-live="polite"`. In the inactive state the root SHALL contain `div.p-inplace-display` with `tabindex="0"`, `role="button"` and the content `display`; with `disabled` — the class `p-disabled` and the attribute `data-p-disabled`. In the active state the root SHALL contain `div.p-inplace-content` with the content `content`. `style`, `style_class` and `pt` SHALL be applied to the root.
 
-#### Scenario: Вид по умолчанию
-- **WHEN** компонент отрисован без свойств
-- **THEN** есть `.p-inplace-display[role=button][tabindex="0"]`, `.p-inplace-content` нет
+#### Scenario: Default view
+- **WHEN** the component is rendered without properties
+- **THEN** `.p-inplace-display[role=button][tabindex="0"]` is present, and `.p-inplace-content` is absent
 
-#### Scenario: Активное состояние
-- **WHEN** `active` равно `true`
-- **THEN** есть `.p-inplace-content`, `.p-inplace-display` нет
+#### Scenario: Active state
+- **WHEN** `active` equals `true`
+- **THEN** `.p-inplace-content` is present, and `.p-inplace-display` is absent
 
-#### Scenario: Недоступен
+#### Scenario: Unavailable
 - **WHEN** `disabled`
-- **THEN** вид имеет класс `p-disabled` и `data-p-disabled`
+- **THEN** the view has the class `p-disabled` and `data-p-disabled`
 
-### Requirement: Активация
-Клик по виду и клавиша `Enter` на нём SHALL делать компонент активным и вызывать `on_activate`; `Enter` SHALL отменять действие по умолчанию. Клик SHALL игнорироваться при `prevent_click`. При `disabled` активация SHALL не выполняться. Двусторонний сигнал `active` SHALL отражать состояние и позволять менять его снаружи.
+### Requirement: Activation
+A click on the view and the `Enter` key on it SHALL make the component active and call `on_activate`; `Enter` SHALL cancel the default action. A click SHALL be ignored with `prevent_click`. With `disabled` activation SHALL not take place. The two-way `active` signal SHALL reflect the state and allow changing it from outside.
 
-#### Scenario: Клик
-- **WHEN** пользователь нажимает на вид
-- **THEN** показывается содержимое, `on_activate` вызван, сигнал `active` равен `true`
+#### Scenario: Click
+- **WHEN** the user clicks the view
+- **THEN** the content is shown, `on_activate` is called, and the `active` signal equals `true`
 
-#### Scenario: Клавиша
-- **WHEN** на виде нажат `Enter`
-- **THEN** содержимое показано
+#### Scenario: Key
+- **WHEN** `Enter` is pressed on the view
+- **THEN** the content is shown
 
 #### Scenario: prevent_click
-- **WHEN** `prevent_click` и нажат вид
-- **THEN** состояние не меняется
+- **WHEN** `prevent_click` is set and the view is clicked
+- **THEN** the state does not change
 
-### Requirement: Закрытие
-При `closable` в содержимом SHALL выводиться кнопка `Button` (`type=button`, значок `TimesIcon` или `close_icon`, `aria-label` из `close_aria_label`), по клику на которую компонент SHALL возвращаться к виду и вызывать `on_deactivate`. Функция закрытия, переданная в `content`, SHALL делать то же. При `prevent_click` кнопка закрытия SHALL ничего не делать. При `disabled` закрытие SHALL не выполняться.
+### Requirement: Closing
+With `closable` a `Button` (`type=button`, the `TimesIcon` or `close_icon` icon, `aria-label` from `close_aria_label`) SHALL be rendered in the content; a click on it SHALL return the component to the view and call `on_deactivate`. The close function passed to `content` SHALL do the same. With `prevent_click` the close button SHALL do nothing. With `disabled` closing SHALL not take place.
 
-#### Scenario: Кнопка закрытия
-- **WHEN** `closable` и активное состояние, нажата кнопка
-- **THEN** показан вид, `on_deactivate` вызван
+#### Scenario: Close button
+- **WHEN** `closable` and the active state are set, and the button is pressed
+- **THEN** the view is shown, and `on_deactivate` is called
 
-#### Scenario: Колбэк в содержимом
-- **WHEN** содержимое вызывает переданную функцию закрытия
-- **THEN** показан вид
+#### Scenario: Callback in the content
+- **WHEN** the content calls the passed close function
+- **THEN** the view is shown

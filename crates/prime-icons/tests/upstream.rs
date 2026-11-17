@@ -1,5 +1,5 @@
-//! Сверка с исходниками PrimeNG: каждый `d` встречается в отрисованной иконке.
-//! Тест пропускается, если клон PrimeNG недоступен (`PRIMENG_PATH` или `C:/Projects/primeng`).
+//! Comparison with the PrimeNG sources: every `d` occurs in the rendered icon.
+//! The test is skipped if the PrimeNG clone is unavailable (`PRIMENG_PATH` or `C:/Projects/primeng`).
 #![cfg(all(feature = "ssr", feature = "all-icons"))]
 
 use leptos::prelude::*;
@@ -29,7 +29,7 @@ fn source_paths(src: &str) -> Vec<String> {
 #[test]
 fn every_icon_has_the_same_paths_as_primeng() {
     let Some(dir) = primeng_icons() else {
-        eprintln!("PrimeNG не найден, тест пропущен");
+        eprintln!("PrimeNG not found, test skipped");
         return;
     };
     let mut checked = 0;
@@ -50,9 +50,9 @@ fn every_icon_has_the_same_paths_as_primeng() {
         let expected = source_paths(&src);
         assert!(!expected.is_empty(), "{name}");
         for d in &expected {
-            assert!(html.contains(&format!(r#"d="{d}""#)), "{name}: нет контура {d}");
+            assert!(html.contains(&format!(r#"d="{d}""#)), "{name}: missing path {d}");
         }
-        assert_eq!(html.matches("<path").count(), expected.len(), "{name}: число контуров");
+        assert_eq!(html.matches("<path").count(), expected.len(), "{name}: path count");
         assert!(html.contains(r#"viewBox="0 0 14 14""#), "{name}");
         checked += 1;
     }
@@ -63,7 +63,7 @@ macro_rules! render_match {
     ($class:expr, $($name:ident),+ $(,)?) => {
         match $class {
             $(stringify!($name) => view! { <prime_icons::$name /> }.to_html(),)+
-            other => panic!("нет иконки {other}"),
+            other => panic!("no icon {other}"),
         }
     };
 }

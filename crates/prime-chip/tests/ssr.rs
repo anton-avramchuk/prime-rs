@@ -1,4 +1,4 @@
-//! Структура DOM, классы, подпись из локали, `pt` и паритет ветвей Chip (SSR).
+//! DOM structure, classes, locale label, `pt` and static/reactive parity of Chip (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -10,7 +10,7 @@ fn icon() -> ViewFn {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет `{needle}` в {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no `{needle}` in {html}"))
 }
 
 #[test]
@@ -41,9 +41,9 @@ fn style_class_and_style_keep_own_classes() {
 
 #[test]
 fn image_replaces_icon() {
-    let html = view! { <Chip label="x" image="/a.png" alt="Аватар" icon=icon() /> }.to_html();
+    let html = view! { <Chip label="x" image="/a.png" alt="Avatar" icon=icon() /> }.to_html();
     assert!(
-        html.contains("<img") && html.contains("p-chip-image") && html.contains(r#"src="/a.png""#) && html.contains(r#"alt="Аватар""#),
+        html.contains("<img") && html.contains("p-chip-image") && html.contains(r#"src="/a.png""#) && html.contains(r#"alt="Avatar""#),
         "{html}"
     );
     assert!(!html.contains("p-chip-icon"), "{html}");
@@ -59,11 +59,11 @@ fn icon_is_rendered_without_image() {
 fn content_order_children_media_label_remove() {
     let html = view! {
         <Chip label="L" icon=icon() removable=true>
-            <i>"перед"</i>
+            <i>"before"</i>
         </Chip>
     }
     .to_html();
-    assert!(pos(&html, "<i>перед</i>") < pos(&html, "p-chip-icon"), "{html}");
+    assert!(pos(&html, "<i>before</i>") < pos(&html, "p-chip-icon"), "{html}");
     assert!(pos(&html, "p-chip-icon") < pos(&html, "p-chip-label"), "{html}");
     assert!(pos(&html, "p-chip-label") < pos(&html, "p-chip-remove-icon"), "{html}");
 }
@@ -72,7 +72,7 @@ fn content_order_children_media_label_remove() {
 fn remove_element_has_role_tabindex_and_default_label() {
     let html = view! { <Chip label="x" removable=true /> }.to_html();
     assert!(html.contains(r#"role="button""#) && html.contains(r#"tabindex="0""#) && html.contains(r#"aria-label="Remove""#), "{html}");
-    assert!(html.contains("<svg"), "иконка по умолчанию: {html}");
+    assert!(html.contains("<svg"), "the default icon: {html}");
 }
 
 #[test]
@@ -85,9 +85,9 @@ fn disabled_remove_element_is_not_focusable() {
 fn aria_label_comes_from_the_locale() {
     let owner = Owner::new();
     owner.with(|| {
-        provide_prime_config(PrimeConfig { locale: Locale::default().with("aria.removeLabel", "Удалить"), ..Default::default() });
+        provide_prime_config(PrimeConfig { locale: Locale::default().with("aria.removeLabel", "Delete"), ..Default::default() });
         let html = view! { <Chip label="x" removable=true /> }.to_html();
-        assert!(html.contains(r#"aria-label="Удалить""#), "{html}");
+        assert!(html.contains(r#"aria-label="Delete""#), "{html}");
     });
 }
 
@@ -129,9 +129,9 @@ fn parity_table_static_vs_reactive() {
     let cases: Vec<Case> = vec![
         (None, None, None, false, None, None),
         (Some("Amy"), None, None, false, None, None),
-        (Some("Amy"), Some("/a.png"), Some("Фото"), false, Some("margin: 1px"), Some("a b")),
+        (Some("Amy"), Some("/a.png"), Some("Photo"), false, Some("margin: 1px"), Some("a b")),
         (Some("x"), None, None, true, None, Some("custom")),
-        (Some("я"), None, None, false, Some("color: red;"), None),
+        (Some("i"), None, None, false, Some("color: red;"), None),
     ];
     let owner = Owner::new();
     owner.with(|| {

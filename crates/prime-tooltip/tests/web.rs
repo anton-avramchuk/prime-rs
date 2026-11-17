@@ -1,5 +1,5 @@
-//! Поведение директивы `tooltip` в реальном браузере (wasm-bindgen-test): показ по hover/focus/both, стороны и перенос, задержки,
-//! автоскрытие, содержимое, Escape/resize/scroll, реактивные текст и `disabled`, слой, очистка, повторное подключение.
+//! Behavior of the `tooltip` directive in a real browser (wasm-bindgen-test): show on hover/focus/both, sides and fallback, delays,
+//! auto-hide, content, Escape/resize/scroll, reactive text and `disabled`, layer, cleanup, re-attachment.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -17,7 +17,7 @@ fn doc() -> web_sys::Document {
     web_sys::window().unwrap().document().unwrap()
 }
 
-/// Минимум стилей темы: подсказка позиционируется абсолютно (остальное тесту не нужно).
+/// Minimal theme styles: the tooltip is positioned absolutely (the test needs nothing else).
 fn install_css() {
     if doc().get_element_by_id("tip-test-css").is_none() {
         let style = doc().create_element("style").unwrap();
@@ -40,7 +40,7 @@ fn find(sel: &str) -> Option<HtmlElement> {
 }
 
 fn q(sel: &str) -> HtmlElement {
-    find(sel).unwrap_or_else(|| panic!("нет {sel}"))
+    find(sel).unwrap_or_else(|| panic!("no {sel}"))
 }
 
 fn count(sel: &str) -> u32 {
@@ -87,7 +87,7 @@ fn window() -> EventTarget {
     web_sys::window().unwrap().into()
 }
 
-/// Элемент `.host` с директивой; возвращает владельца-размонтирование и сам элемент.
+/// A `.host` element with the directive; returns the unmount owner and the element itself.
 fn mount(options: TooltipOptions) -> (Box<dyn std::any::Any>, HtmlElement, HtmlElement) {
     install_css();
     let c = container();
@@ -109,10 +109,10 @@ fn rect(el: &Element) -> (f64, f64, f64, f64) {
 
 async fn hover_shows_and_leave_or_click_hide() {
     let (handle, host, c) = mount(TooltipOptions::text("Enter your username"));
-    assert!(tip().is_none(), "до наведения подсказки нет");
+    assert!(tip().is_none(), "no tooltip before hover");
     fire(&host, "mouseenter");
     settle().await;
-    let t = tip().expect("подсказка показана");
+    let t = tip().expect("tooltip shown");
     for class in ["p-tooltip", "p-component", "p-tooltip-right"] {
         assert!(t.class_name().contains(class), "{class}: {}", t.class_name());
     }
@@ -121,17 +121,17 @@ async fn hover_shows_and_leave_or_click_hide() {
     assert_eq!(t.parent_element().unwrap().tag_name(), "BODY");
     assert!(t.query_selector(".p-tooltip-arrow").unwrap().is_some());
     assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Enter your username"));
-    assert_eq!(t.style().get_property_value("pointer-events").unwrap(), "none", "auto_hide: подсказка не ловит указатель");
+    assert_eq!(t.style().get_property_value("pointer-events").unwrap(), "none", "auto_hide: the tooltip does not catch the pointer");
     fire(&host, "mouseleave");
     settle().await;
-    assert!(tip().is_none(), "mouseleave скрывает");
+    assert!(tip().is_none(), "mouseleave hides");
     fire(&host, "mouseenter");
     settle().await;
     assert!(tip().is_some());
     host.click();
     settle().await;
-    assert!(tip().is_none(), "click скрывает");
-    assert_eq!(host.get_attribute("class").as_deref(), Some("host"), "атрибуты элемента не тронуты");
+    assert!(tip().is_none(), "click hides");
+    assert_eq!(host.get_attribute("class").as_deref(), Some("host"), "element attributes untouched");
     end(handle, c).await;
 }
 
@@ -140,7 +140,7 @@ async fn content_text_html_and_view() {
     fire(&host, "mouseenter");
     settle().await;
     assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("<b>x</b>"));
-    assert_eq!(count(".p-tooltip-text b"), 0, "текст не разбирается как разметка");
+    assert_eq!(count(".p-tooltip-text b"), 0, "text is not parsed as markup");
     end(handle, c).await;
 
     let (handle, host, c) = mount(TooltipOptions::html("<b id=\"bold\">x</b>"));
@@ -161,7 +161,7 @@ async fn content_text_html_and_view() {
     let (handle, host, c) = mount(TooltipOptions::text(""));
     fire(&host, "mouseenter");
     settle().await;
-    assert!(tip().is_none(), "пустое содержимое не показывает подсказку");
+    assert!(tip().is_none(), "empty content does not show a tooltip");
     end(handle, c).await;
 }
 
@@ -180,10 +180,10 @@ async fn each_side_is_placed_next_to_the_host() {
         assert!(t.class_name().contains(class), "{class}: {}", t.class_name());
         let (h, p) = (rect(&host), rect(&t));
         match position {
-            TooltipPosition::Right => assert!(p.0 >= h.2 - 1.0 && (p.1 + p.3 - h.1 - h.3).abs() < 2.0, "справа и по центру: {h:?} {p:?}"),
-            TooltipPosition::Left => assert!(p.2 <= h.0 + 1.0, "слева: {h:?} {p:?}"),
-            TooltipPosition::Top => assert!(p.3 <= h.1 + 1.0 && (p.0 + p.2 - h.0 - h.2).abs() < 2.0, "сверху и по центру: {h:?} {p:?}"),
-            TooltipPosition::Bottom => assert!(p.1 >= h.3 - 1.0, "снизу: {h:?} {p:?}"),
+            TooltipPosition::Right => assert!(p.0 >= h.2 - 1.0 && (p.1 + p.3 - h.1 - h.3).abs() < 2.0, "right and centered: {h:?} {p:?}"),
+            TooltipPosition::Left => assert!(p.2 <= h.0 + 1.0, "left: {h:?} {p:?}"),
+            TooltipPosition::Top => assert!(p.3 <= h.1 + 1.0 && (p.0 + p.2 - h.0 - h.2).abs() < 2.0, "top and centered: {h:?} {p:?}"),
+            TooltipPosition::Bottom => assert!(p.1 >= h.3 - 1.0, "bottom: {h:?} {p:?}"),
         }
         let arrow = q(".p-tooltip-arrow").style();
         match position {
@@ -209,7 +209,7 @@ async fn moves_to_another_side_when_there_is_no_room() {
     let host: HtmlElement = c.query_selector("#edge").unwrap().unwrap().dyn_into().unwrap();
     fire(&host, "mouseenter");
     settle().await;
-    assert!(tip().unwrap().class_name().contains("p-tooltip-left"), "нет места справа: {}", tip().unwrap().class_name());
+    assert!(tip().unwrap().class_name().contains("p-tooltip-left"), "no room on the right: {}", tip().unwrap().class_name());
     end(handle, c).await;
 
     let c = container();
@@ -220,7 +220,7 @@ async fn moves_to_another_side_when_there_is_no_room() {
     let host: HtmlElement = c.query_selector("#ceil").unwrap().unwrap().dyn_into().unwrap();
     fire(&host, "mouseenter");
     settle().await;
-    assert!(tip().unwrap().class_name().contains("p-tooltip-bottom"), "нет места сверху: {}", tip().unwrap().class_name());
+    assert!(tip().unwrap().class_name().contains("p-tooltip-bottom"), "no room on top: {}", tip().unwrap().class_name());
     end(handle, c).await;
 }
 
@@ -250,7 +250,7 @@ async fn offsets_and_style_options_apply() {
     let t = tip().unwrap();
     assert_eq!(t.style().get_property_value("width").unwrap(), "");
     assert_eq!(t.style().get_property_value("position").unwrap(), "fixed");
-    assert!(t.style().get_property_value("z-index").unwrap().parse::<i32>().unwrap() > 0, "автоматический z-index");
+    assert!(t.style().get_property_value("z-index").unwrap().parse::<i32>().unwrap() > 0, "automatic z-index");
     end(handle, c).await;
 }
 
@@ -260,12 +260,12 @@ async fn delays_and_life() {
     sleep(40).await;
     fire(&host, "mouseleave");
     sleep(250).await;
-    assert!(tip().is_none(), "уход курсора до show_delay отменяет показ");
+    assert!(tip().is_none(), "leaving before show_delay cancels the show");
     fire(&host, "mouseenter");
     sleep(60).await;
-    assert!(tip().is_none(), "ещё не показана");
+    assert!(tip().is_none(), "not shown yet");
     sleep(200).await;
-    assert!(tip().is_some(), "показана после show_delay");
+    assert!(tip().is_some(), "shown after show_delay");
     end(handle, c).await;
 
     let (handle, host, c) = mount(TooltipOptions::text("Tip").hide_delay(150));
@@ -273,9 +273,9 @@ async fn delays_and_life() {
     settle().await;
     fire(&host, "mouseleave");
     sleep(40).await;
-    assert!(tip().is_some(), "ещё видна до hide_delay");
+    assert!(tip().is_some(), "still visible before hide_delay");
     sleep(250).await;
-    assert!(tip().is_none(), "скрыта после hide_delay");
+    assert!(tip().is_none(), "hidden after hide_delay");
     end(handle, c).await;
 
     let (handle, host, c) = mount(TooltipOptions::text("Tip").life(150));
@@ -283,7 +283,7 @@ async fn delays_and_life() {
     sleep(40).await;
     assert!(tip().is_some());
     sleep(250).await;
-    assert!(tip().is_none(), "life скрывает показанную подсказку");
+    assert!(tip().is_none(), "life hides the shown tooltip");
     end(handle, c).await;
 }
 
@@ -295,13 +295,13 @@ async fn focus_event_and_both() {
     let input: HtmlElement = c.query_selector("#field").unwrap().unwrap().dyn_into().unwrap();
     fire(&input, "mouseenter");
     settle().await;
-    assert!(tip().is_none(), "Focus: наведение не показывает");
+    assert!(tip().is_none(), "Focus: hover does not show");
     input.focus().unwrap();
     settle().await;
-    assert!(tip().is_some(), "Focus: фокус показывает");
+    assert!(tip().is_some(), "Focus: focus shows");
     input.blur().unwrap();
     settle().await;
-    assert!(tip().is_none(), "blur скрывает");
+    assert!(tip().is_none(), "blur hides");
     end(handle, c).await;
 
     let c = container();
@@ -310,13 +310,13 @@ async fn focus_event_and_both() {
     let input: HtmlElement = c.query_selector("#field").unwrap().unwrap().dyn_into().unwrap();
     fire(&input, "mouseenter");
     settle().await;
-    assert!(tip().is_some(), "Both: наведение");
+    assert!(tip().is_some(), "Both: hover");
     fire(&input, "mouseleave");
     settle().await;
     assert!(tip().is_none());
     input.focus().unwrap();
     settle().await;
-    assert!(tip().is_some(), "Both: фокус");
+    assert!(tip().is_some(), "Both: focus");
     input.blur().unwrap();
     settle().await;
     end(handle, c).await;
@@ -330,16 +330,16 @@ async fn auto_hide_false_lets_the_pointer_reach_the_tooltip() {
     assert_eq!(t.style().get_property_value("pointer-events").unwrap(), "unset");
     leave_to(&host, Some(&t.clone().into()));
     settle().await;
-    assert!(tip().is_some(), "курсор перешёл на подсказку — она остаётся");
+    assert!(tip().is_some(), "cursor moved onto the tooltip: it stays");
     fire(&t, "mouseleave");
     settle().await;
-    assert!(tip().is_none(), "уход с подсказки скрывает её");
+    assert!(tip().is_none(), "leaving the tooltip hides it");
 
     fire(&host, "mouseenter");
     settle().await;
     leave_to(&host, None);
     settle().await;
-    assert!(tip().is_none(), "курсор ушёл не на подсказку — скрыта");
+    assert!(tip().is_none(), "cursor left not onto the tooltip: hidden");
     end(handle, c).await;
 }
 
@@ -349,14 +349,14 @@ async fn escape_resize_and_scroll_hide() {
     settle().await;
     escape();
     settle().await;
-    assert!(tip().is_none(), "Escape скрывает");
+    assert!(tip().is_none(), "Escape hides");
     fire(&host, "mouseleave");
     settle().await;
     fire(&host, "mouseenter");
     settle().await;
     window().dispatch_event(&web_sys::Event::new("resize").unwrap()).unwrap();
     settle().await;
-    assert!(tip().is_none(), "resize скрывает");
+    assert!(tip().is_none(), "resize hides");
     end(handle, c).await;
 
     let (handle, host, c) = mount(TooltipOptions::text("Tip").hide_on_escape(false));
@@ -367,15 +367,15 @@ async fn escape_resize_and_scroll_hide() {
     assert!(tip().is_some(), "hide_on_escape=false");
     doc().dispatch_event(&web_sys::Event::new("scroll").unwrap()).unwrap();
     settle().await;
-    assert!(tip().is_some(), "прокрутка самой страницы не скрывает: подсказка едет вместе со страницей");
+    assert!(tip().is_some(), "scrolling the page itself does not hide: the tooltip moves with the page");
     let other = container();
     other.dispatch_event(&web_sys::Event::new("scroll").unwrap()).unwrap();
     settle().await;
-    assert!(tip().is_some(), "прокрутка постороннего элемента не скрывает");
+    assert!(tip().is_some(), "scrolling an unrelated element does not hide");
     other.remove();
     host.parent_element().unwrap().dispatch_event(&web_sys::Event::new("scroll").unwrap()).unwrap();
     settle().await;
-    assert!(tip().is_none(), "прокрутка предка скрывает");
+    assert!(tip().is_none(), "scrolling an ancestor hides");
     end(handle, c).await;
 }
 
@@ -394,20 +394,20 @@ async fn reactive_text_and_disabled() {
     assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("First"));
     text.set("Second".to_owned());
     settle().await;
-    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Second"), "текст обновился");
+    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Second"), "text updated");
     text.set(String::new());
     settle().await;
-    assert!(tip().is_none(), "пустой текст скрывает подсказку");
+    assert!(tip().is_none(), "empty text hides the tooltip");
     text.set("Third".to_owned());
     settle().await;
-    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Third"), "новый текст показывается снова");
+    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Third"), "new text is shown again");
     disabled.set(true);
     settle().await;
-    assert!(tip().is_none(), "disabled скрывает показанную");
+    assert!(tip().is_none(), "disabled hides the shown tooltip");
     fire(&host, "mouseleave");
     fire(&host, "mouseenter");
     settle().await;
-    assert!(tip().is_none(), "disabled не показывает");
+    assert!(tip().is_none(), "disabled does not show");
     disabled.set(false);
     fire(&host, "mouseleave");
     fire(&host, "mouseenter");
@@ -446,15 +446,15 @@ async fn component_roots_and_cleanup() {
     let input: HtmlElement = c.query_selector("input").unwrap().unwrap().dyn_into().unwrap();
     fire(&button, "mouseenter");
     settle().await;
-    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Confirm to proceed"), "директива на корне Button");
+    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Confirm to proceed"), "directive on the Button root");
     fire(&button, "mouseleave");
     input.focus().unwrap();
     settle().await;
-    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Enter your username"), "директива на корне InputText");
-    // размонтирование убирает показанную подсказку
+    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Enter your username"), "directive on the InputText root");
+    // unmounting removes the shown tooltip
     drop(handle);
     settle().await;
-    assert!(tip().is_none(), "после размонтирования подсказки нет");
+    assert!(tip().is_none(), "no tooltip after unmount");
     c.remove();
 }
 
@@ -472,8 +472,8 @@ async fn applying_twice_does_not_duplicate_listeners() {
     });
     fire(&host, "mouseenter");
     settle().await;
-    assert_eq!(count(".p-tooltip"), 1, "одна подсказка");
-    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Two"), "параметры обновились");
+    assert_eq!(count(".p-tooltip"), 1, "one tooltip");
+    assert_eq!(q(".p-tooltip-text").text_content().as_deref(), Some("Two"), "parameters updated");
     fire(&host, "mouseleave");
     settle().await;
     assert_eq!(count(".p-tooltip"), 0);
@@ -481,7 +481,7 @@ async fn applying_twice_does_not_duplicate_listeners() {
     c.remove();
 }
 
-/// Сценарии идут по очереди: подсказки выводятся в общий `body`, а слушатели окна общие.
+/// Scenarios run one after another: tooltips are rendered into the shared `body`, and window listeners are shared.
 #[wasm_bindgen_test]
 async fn tooltip_behaviour() {
     hover_shows_and_leave_or_click_hide().await;

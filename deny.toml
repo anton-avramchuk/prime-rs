@@ -4,7 +4,7 @@ targets = ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu", "wasm32-unknown
 [advisories]
 version = 2
 ignore = [
-    { id = "RUSTSEC-2024-0436", reason = "paste: транзитивная зависимость leptos, замены нет" },
+    { id = "RUSTSEC-2024-0436", reason = "paste: transitive dependency of leptos, no replacement" },
 ]
 
 [licenses]
@@ -14,7 +14,7 @@ allow = ["MIT", "Apache-2.0", "Unicode-3.0", "BSL-1.0", "CC0-1.0", "Zlib"]
 [bans]
 multiple-versions = "warn"
 wildcards = "deny"
-# Внутренние крейты подключаются по path без версии (не публикуются).
+# Internal crates are referenced by path without a version (not published).
 allow-wildcard-paths = true
 
 [sources]

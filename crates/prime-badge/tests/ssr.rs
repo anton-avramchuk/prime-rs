@@ -1,4 +1,4 @@
-//! Структура DOM, `display: none`, `pt` (SSR).
+//! DOM structure, `display: none`, `pt` (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -87,7 +87,7 @@ fn parity_table_static_vs_reactive() {
         (Some("New"), Some(BadgeSeverity::Success), None, false, None),
         (Some(""), None, Some(BadgeSize::Small), false, None),
         (Some("12"), Some(BadgeSeverity::Danger), Some(BadgeSize::XLarge), true, Some("custom")),
-        (Some("я"), Some(BadgeSeverity::Contrast), Some(BadgeSize::Large), false, Some("a b")),
+        (Some("é"), Some(BadgeSeverity::Contrast), Some(BadgeSize::Large), false, Some("a b")),
     ];
     let owner = Owner::new();
     owner.with(|| {

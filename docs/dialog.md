@@ -1,16 +1,16 @@
 # Dialog
 
-Порт `p-dialog` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-dialog` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-dialog::Dialog`, `DialogPosition`, `DialogPt` | `dialog/dialog.ts`, `dialog/style/*` |
-| CSS | `@primeuix/styles/dialog` — `cargo xtask gen-theme` (блока `For PrimeNG` у `dialogstyle.ts` нет; позиция и выравнивание — инлайн-стили, они записываются самим компонентом) |
-| Демонстрации | `apps/showcase/doc/dialog/{basic,position,modal,withoutmodal,maximizable,responsive,longcontent,template,headless}-doc.ts` |
+| CSS | `@primeuix/styles/dialog` — `cargo xtask gen-theme` (`dialogstyle.ts` has no `For PrimeNG` block; position and alignment are inline styles written by the component itself) |
+| Demos | `apps/showcase/doc/dialog/{basic,position,modal,withoutmodal,maximizable,responsive,longcontent,template,headless}-doc.ts` |
 
-Спека: `openspec/specs/dialog`.
+Spec: `openspec/specs/dialog`.
 
-## Как пользоваться
+## Usage
 
 ```rust
 let visible = RwSignal::new(false);
@@ -22,35 +22,35 @@ view! {
 }
 ```
 
-`visible` — двусторонний сигнал: диалог закрывается кнопкой, `Escape` или (при `dismissable_mask`) нажатием на маску, и в сигнал записывается `false`. Заголовок и подвал задаются `header_content` и `footer` (`ViewFn`), `headless` заменяет всё содержимое окна. Ширина по ширине экрана — `breakpoints=vec![("575px".into(), "90vw".into())]`.
+`visible` is a two-way signal: the dialog is closed by the button, `Escape` or (with `dismissable_mask`) a click on the mask, and `false` is written to the signal. The header and footer are set via `header_content` and `footer` (`ViewFn`), `headless` replaces the entire window content. Width by screen width — `breakpoints=vec![("575px".into(), "90vw".into())]`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-dialog-mask` (`p-overlay-mask` при `modal`, `p-dialog-<положение>`) > `div.p-dialog.p-component[role=dialog][aria-modal=true]` > `p-resizable-handle`, `p-dialog-header` (`p-dialog-title`, `p-dialog-header-actions` с `p-dialog-maximize-button` и `p-dialog-close-button`), `p-dialog-content`, `p-dialog-footer`; `data-p`. Маска есть и у немодального диалога (с `pointer-events: none`), окно — её потомок.
-- Девять положений на экране (инлайн-стили маски те же, что в `dialogstyle.ts`).
-- Анимации — классы `p-dialog-enter-active` / `p-dialog-leave-active` и `p-overlay-mask-*-active`; окно убирается из DOM по окончании анимации выхода.
-- Перетаскивание за заголовок (кроме блока кнопок), `keep_in_viewport`, `min_x`, `min_y`; изменение размера за правый нижний угол (пока не перетаскивали, смещение удваивается, как в PrimeNG); максимизация с блокировкой прокрутки для немодального диалога без `block_scroll`; `breakpoints` через `<style>` в `head`.
-- `Escape` закрывает верхний по `z-index` диалог; нажатие на саму маску закрывает при `dismissable_mask`; `z-index` группы модальных окон, маска на единицу ниже окна; `FocusTrap`; фокус при показе на первый фокусируемый элемент содержимого, затем подвала и заголовка.
+- Markup and classes: `div.p-dialog-mask` (`p-overlay-mask` when `modal`, `p-dialog-<position>`) > `div.p-dialog.p-component[role=dialog][aria-modal=true]` > `p-resizable-handle`, `p-dialog-header` (`p-dialog-title`, `p-dialog-header-actions` with `p-dialog-maximize-button` and `p-dialog-close-button`), `p-dialog-content`, `p-dialog-footer`; `data-p`. A non-modal dialog also has a mask (with `pointer-events: none`), and the window is its descendant.
+- Nine screen positions (mask inline styles are the same as in `dialogstyle.ts`).
+- Animations — `p-dialog-enter-active` / `p-dialog-leave-active` and `p-overlay-mask-*-active` classes; the window is removed from the DOM when the leave animation ends.
+- Dragging by the header (except the buttons block), `keep_in_viewport`, `min_x`, `min_y`; resizing by the bottom right corner (until dragged, the offset is doubled, as in PrimeNG); maximizing with scroll locking for a non-modal dialog without `block_scroll`; `breakpoints` via `<style>` in `head`.
+- `Escape` closes the topmost dialog by `z-index`; a click on the mask itself closes when `dismissable_mask`; `z-index` of the modal window group, mask one below the window; `FocusTrap`; on show, focus goes to the first focusable element of the content, then the footer and header.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Маска и окно всегда в `body` (через `Portal`), `appendTo` нет | Так проще обойти `transform` у предков; `Portal` уже есть в `prime-dom`. |
-| Нет `@primeuix/motion`, `motionOptions`, `maskMotionOptions`, `transitionOptions` | Анимации — CSS-классы PrimeNG; запасной таймер (700 мс) убирает окно, если `animationend` не придёт. |
-| `on_show` вызывается сразу после попадания окна в DOM, а не после анимации входа | Так же у `Drawer`; для логики приложения разницы нет. |
-| `on_hide` вызывается в начале закрытия, при любом способе закрытия | В PrimeNG — после анимации выхода. |
-| Перетаскивание и размер — слушатели `mousemove`/`mouseup` окна, подписанные на время жеста; частота обновлений — как у браузера | В PrimeNG слушатели висят всё время показа; результат тот же. |
-| Нет `closeButtonProps`, `maximizeButtonProps`, `rtl`, `closeTabindex`, шаблона `content`; значки — `ViewFn` | Кнопки — `Button` с теми же свойствами по умолчанию (вторичная, текстовая, круглая), настройка через `pt` и значки. |
-| Нет `OverlayService.emitParentDrag` | Нужен только для оверлеев, привязанных к окну. |
-| Демо `overlaysinside` не перенесена | У `Select` нет `appendTo`: его панель обрежется границами окна. |
-| Демо `headless` упрощена (без логотипа и градиента); в `position` у кнопок нет значков со стрелками | Нет значков в `prime-icons`; `backdrop-blur` заменён `backdrop-filter` в `mask_style`. |
-| Нет `Bind`/`pt` с контекстом | `pt` — простые добавки классов, стиля и атрибутов. |
+| The mask and window are always in `body` (via `Portal`), no `appendTo` | Easier to work around ancestors' `transform`; `Portal` already exists in `prime-dom`. |
+| No `@primeuix/motion`, `motionOptions`, `maskMotionOptions`, `transitionOptions` | Animations are PrimeNG CSS classes; a fallback timer (700 ms) removes the window if `animationend` does not arrive. |
+| `on_show` is called right after the window enters the DOM, not after the enter animation | Same for `Drawer`; makes no difference for application logic. |
+| `on_hide` is called at the start of closing, for any way of closing | In PrimeNG — after the leave animation. |
+| Dragging and resizing use window `mousemove`/`mouseup` listeners attached for the duration of the gesture; update rate is the browser's | In PrimeNG the listeners stay for the whole time the dialog is shown; same result. |
+| No `closeButtonProps`, `maximizeButtonProps`, `rtl`, `closeTabindex`, `content` template; icons are `ViewFn` | Buttons are `Button` with the same defaults (secondary, text, round), customized via `pt` and icons. |
+| No `OverlayService.emitParentDrag` | Needed only for overlays attached to the window. |
+| The `overlaysinside` demo is not ported | `Select` has no `appendTo`: its panel would be clipped by the window bounds. |
+| The `headless` demo is simplified (no logo and gradient); in `position` the buttons have no arrow icons | No icons in `prime-icons`; `backdrop-blur` replaced by `backdrop-filter` in `mask_style`. |
+| No `Bind`/`pt` with context | `pt` is plain additions of classes, style and attributes. |
 
-## Стоимость
+## Cost
 
-66 аллокаций на экземпляр при SSR (скрытый диалог); вклад в wasm ≈ 684 КБ (бюджет 765 КБ в `benches/budgets.toml`), из них ≈ 358 КБ — `Button`.
+66 allocations per instance in SSR (hidden dialog); contribution to wasm ≈ 684 KB (budget 765 KB in `benches/budgets.toml`), of which ≈ 358 KB is `Button`.
 
-## Не проверено
+## Not verified
 
-Касание (перетаскивание и размер — только мышь, как в PrimeNG), `rtl`, экранные считыватели. Проверены в Chrome (браузерные тесты и e2e с настоящей мышью и клавиатурой): показ в `body`, кнопки, закрытие кнопкой, Escape и маской, модальность и блокировка прокрутки, положения, перетаскивание и граница экрана, изменение размера, максимизация, `breakpoints`, фокус и ловушка фокуса, два диалога друг над другом и повторный показ во время выхода. Сравнение скриншотов с PrimeNG (`pages.json`) не запускалось. Открытый до гидратации диалог не поддерживается (сервер его не отдаёт).
+Touch (dragging and resizing are mouse-only, as in PrimeNG), `rtl`, screen readers. Verified in Chrome (browser tests and e2e with a real mouse and keyboard): showing in `body`, buttons, closing via button, Escape and mask, modality and scroll locking, positions, dragging and screen boundary, resizing, maximizing, `breakpoints`, focus and focus trap, two dialogs stacked and re-showing during leave. Screenshot comparison with PrimeNG (`pages.json`) was not run. A dialog opened before hydration is not supported (the server does not send it).

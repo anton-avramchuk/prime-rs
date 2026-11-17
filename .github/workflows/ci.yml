@@ -15,13 +15,13 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: 0
-  # Лимит размера target/ перед сохранением кэша (МБ).
+  # Size limit of target/ before saving the cache (MB).
   CACHE_LIMIT_MB: 6000
   WASM_BINDGEN_VERSION: 0.2.129
 
 jobs:
   changes:
-    name: Затронутые крейты
+    name: Affected crates
     runs-on: ubuntu-latest
     outputs:
       all: ${{ steps.affected.outputs.all }}
@@ -40,7 +40,7 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          # Первый push ветки (before = 000…) и неизвестная база — полный прогон.
+          # First push of a branch (before = 000...) or unknown base: full run.
           if [ -z "$BASE" ] || echo "$BASE" | grep -qE '^0+$'; then
             printf 'all=true\nany=true\nargs=--workspace --exclude showcase --exclude wasm-size --exclude render-bench --exclude xtask\napps=true\n' | tee -a "$GITHUB_OUTPUT"
           else
@@ -48,12 +48,12 @@ jobs:
           fi
 
   fmt:
-    name: Форматирование
+    name: Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt --all --check
-      - name: Данные сайта документации актуальны
+      - name: Docs site data is up to date
         run: cargo xtask gen-docs --check
 
   deny:
@@ -67,7 +67,7 @@ jobs:
       - run: cargo deny check
 
   libs:
-    name: Библиотеки (clippy, тесты)
+    name: Libraries (clippy, tests)
     needs: changes
     if: needs.changes.outputs.any == 'true'
     runs-on: ubuntu-latest
@@ -81,28 +81,28 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest,cargo-sweep
-      - name: Метка для cargo-sweep
+      - name: Stamp for cargo-sweep
         run: cargo sweep --stamp
       - name: clippy
         run: cargo clippy ${{ needs.changes.outputs.args }} --all-targets --all-features -- -D warnings
-      - name: Тесты (nextest)
+      - name: Tests (nextest)
         run: cargo nextest run ${{ needs.changes.outputs.args }} --all-features --no-tests=pass
-      - name: Doc-тесты
+      - name: Doc tests
         run: cargo test ${{ needs.changes.outputs.args }} --all-features --doc
-      - name: Очистка устаревших артефактов и проверка размера кэша
+      - name: Clean stale artifacts and check cache size
         run: |
           cargo sweep --file
           size=$(du -sm target | cut -f1)
-          echo "target/: ${size} МБ (лимит ${CACHE_LIMIT_MB} МБ)"
+          echo "target/: ${size} MB (limit ${CACHE_LIMIT_MB} MB)"
           if [ "$size" -gt "$CACHE_LIMIT_MB" ]; then
-            echo "::error::target/ (${size} МБ) больше лимита кэша ${CACHE_LIMIT_MB} МБ"
+            echo "::error::target/ (${size} MB) exceeds the cache limit of ${CACHE_LIMIT_MB} MB"
             exit 1
           fi
 
   wasm:
-    name: Браузерные тесты (wasm-bindgen-test)
+    name: Browser tests (wasm-bindgen-test)
     needs: changes
-    # Браузерные тесты нужны при полном прогоне или если затронут крейт с тестами `web` (prime-dom, prime-button, prime-chip, prime-avatar, prime-inputtext, prime-checkbox, prime-radiobutton, prime-togglebutton, prime-selectbutton, prime-rating, prime-slider, prime-knob, prime-inputnumber, prime-select, prime-toggleswitch, prime-message, prime-textarea, prime-panel, prime-fieldset, prime-accordion, prime-scrollpanel, prime-inputotp, prime-scrolltop, prime-password, prime-inplace, prime-splitter, prime-tabs, prime-popover, prime-drawer, prime-dialog, prime-tooltip, prime-toast, prime-menu, prime-listbox, prime-multiselect, prime-paginator, prime-stepper, prime-imagecompare, prime-blockui, prime-splitbutton, prime-dock, prime-image, prime-confirmpopup, prime-confirmdialog, prime-speeddial, prime-carousel, prime-tieredmenu, prime-steps, prime-contextmenu, prime-menubar, prime-panelmenu, prime-megamenu, prime-tree, prime-treeselect, prime-cascadeselect, prime-autocomplete, prime-inputmask, prime-colorpicker, prime-galleria, prime-fileupload, prime-orderlist, prime-picklist, prime-datepicker, prime-dataview, prime-table, prime-treetable).
+    # Browser tests are needed on a full run or if a crate with `web` tests is affected (prime-dom, prime-button, prime-chip, prime-avatar, prime-inputtext, prime-checkbox, prime-radiobutton, prime-togglebutton, prime-selectbutton, prime-rating, prime-slider, prime-knob, prime-inputnumber, prime-select, prime-toggleswitch, prime-message, prime-textarea, prime-panel, prime-fieldset, prime-accordion, prime-scrollpanel, prime-inputotp, prime-scrolltop, prime-password, prime-inplace, prime-splitter, prime-tabs, prime-popover, prime-drawer, prime-dialog, prime-tooltip, prime-toast, prime-menu, prime-listbox, prime-multiselect, prime-paginator, prime-stepper, prime-imagecompare, prime-blockui, prime-splitbutton, prime-dock, prime-image, prime-confirmpopup, prime-confirmdialog, prime-speeddial, prime-carousel, prime-tieredmenu, prime-steps, prime-contextmenu, prime-menubar, prime-panelmenu, prime-megamenu, prime-tree, prime-treeselect, prime-cascadeselect, prime-autocomplete, prime-inputmask, prime-colorpicker, prime-galleria, prime-fileupload, prime-orderlist, prime-picklist, prime-datepicker, prime-dataview, prime-table, prime-treetable).
     if: needs.changes.outputs.all == 'true' || contains(needs.changes.outputs.args, 'prime-dom') || contains(needs.changes.outputs.args, 'prime-button') || contains(needs.changes.outputs.args, 'prime-chip') || contains(needs.changes.outputs.args, 'prime-avatar') || contains(needs.changes.outputs.args, 'prime-inputtext') || contains(needs.changes.outputs.args, 'prime-checkbox') || contains(needs.changes.outputs.args, 'prime-radiobutton') || contains(needs.changes.outputs.args, 'prime-togglebutton') || contains(needs.changes.outputs.args, 'prime-selectbutton') || contains(needs.changes.outputs.args, 'prime-rating') || contains(needs.changes.outputs.args, 'prime-slider') || contains(needs.changes.outputs.args, 'prime-knob') || contains(needs.changes.outputs.args, 'prime-inputnumber') || contains(needs.changes.outputs.args, 'prime-select') || contains(needs.changes.outputs.args, 'prime-toggleswitch') || contains(needs.changes.outputs.args, 'prime-message') || contains(needs.changes.outputs.args, 'prime-textarea') || contains(needs.changes.outputs.args, 'prime-panel') || contains(needs.changes.outputs.args, 'prime-fieldset') || contains(needs.changes.outputs.args, 'prime-accordion') || contains(needs.changes.outputs.args, 'prime-scrollpanel') || contains(needs.changes.outputs.args, 'prime-inputotp') || contains(needs.changes.outputs.args, 'prime-scrolltop') || contains(needs.changes.outputs.args, 'prime-password') || contains(needs.changes.outputs.args, 'prime-inplace') || contains(needs.changes.outputs.args, 'prime-splitter') || contains(needs.changes.outputs.args, 'prime-tabs') || contains(needs.changes.outputs.args, 'prime-popover') || contains(needs.changes.outputs.args, 'prime-drawer') || contains(needs.changes.outputs.args, 'prime-dialog') || contains(needs.changes.outputs.args, 'prime-tooltip') || contains(needs.changes.outputs.args, 'prime-toast') || contains(needs.changes.outputs.args, 'prime-menu') || contains(needs.changes.outputs.args, 'prime-listbox') || contains(needs.changes.outputs.args, 'prime-multiselect') || contains(needs.changes.outputs.args, 'prime-paginator') || contains(needs.changes.outputs.args, 'prime-stepper') || contains(needs.changes.outputs.args, 'prime-imagecompare') || contains(needs.changes.outputs.args, 'prime-blockui') || contains(needs.changes.outputs.args, 'prime-splitbutton') || contains(needs.changes.outputs.args, 'prime-dock') || contains(needs.changes.outputs.args, 'prime-image') || contains(needs.changes.outputs.args, 'prime-confirmpopup') || contains(needs.changes.outputs.args, 'prime-confirmdialog') || contains(needs.changes.outputs.args, 'prime-speeddial') || contains(needs.changes.outputs.args, 'prime-carousel') || contains(needs.changes.outputs.args, 'prime-tieredmenu') || contains(needs.changes.outputs.args, 'prime-steps') || contains(needs.changes.outputs.args, 'prime-contextmenu') || contains(needs.changes.outputs.args, 'prime-menubar') || contains(needs.changes.outputs.args, 'prime-panelmenu') || contains(needs.changes.outputs.args, 'prime-megamenu') || contains(needs.changes.outputs.args, 'prime-tree') || contains(needs.changes.outputs.args, 'prime-treeselect') || contains(needs.changes.outputs.args, 'prime-cascadeselect') || contains(needs.changes.outputs.args, 'prime-autocomplete') || contains(needs.changes.outputs.args, 'prime-inputmask') || contains(needs.changes.outputs.args, 'prime-colorpicker') || contains(needs.changes.outputs.args, 'prime-galleria') || contains(needs.changes.outputs.args, 'prime-fileupload') || contains(needs.changes.outputs.args, 'prime-orderlist') || contains(needs.changes.outputs.args, 'prime-picklist') || contains(needs.changes.outputs.args, 'prime-datepicker') || contains(needs.changes.outputs.args, 'prime-dataview') || contains(needs.changes.outputs.args, 'prime-table') || contains(needs.changes.outputs.args, 'prime-treetable')
     runs-on: ubuntu-latest
     steps:
@@ -112,7 +112,7 @@ jobs:
           shared-key: wasm
           save-if: ${{ github.ref == 'refs/heads/dev' }}
           cache-on-failure: false
-      - name: wasm-bindgen-cli (версия должна совпадать с Cargo.lock)
+      - name: wasm-bindgen-cli (version must match Cargo.lock)
         uses: actions/cache@v4
         id: wbg
         with:
@@ -120,7 +120,7 @@ jobs:
           key: wasm-bindgen-cli-${{ env.WASM_BINDGEN_VERSION }}
       - if: steps.wbg.outputs.cache-hit != 'true'
         run: cargo install wasm-bindgen-cli --version "$WASM_BINDGEN_VERSION" --locked
-      - name: wasm-bindgen-test в headless Chrome
+      - name: wasm-bindgen-test in headless Chrome
         run: |
           export CHROMEDRIVER="$CHROMEWEBDRIVER/chromedriver"
           pkgs=""
@@ -130,7 +130,7 @@ jobs:
           cargo test $pkgs --target wasm32-unknown-unknown --test web
 
   apps:
-    name: Приложения (showcase, размер wasm, бенчмарки)
+    name: Apps (showcase, wasm size, benchmarks)
     needs: changes
     if: needs.changes.outputs.apps == 'true'
     runs-on: ubuntu-latest
@@ -152,47 +152,47 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-leptos,cargo-sweep
-      - name: Метка для cargo-sweep
+      - name: Stamp for cargo-sweep
         run: cargo sweep --stamp
-      - name: Showcase (SSR и гидрация)
+      - name: Showcase (SSR and hydration)
         run: |
           cargo clippy -p showcase --features ssr -- -D warnings
           cargo clippy -p showcase --target wasm32-unknown-unknown --no-default-features --features hydrate -- -D warnings
-      - name: Бюджет размера wasm
+      - name: wasm size budget
         run: cargo xtask wasm-size
-      - name: Бенчмарки (время и аллокации)
+      - name: Benchmarks (time and allocations)
         run: |
           cargo bench -p render-bench --bench time
           cargo bench -p render-bench --bench alloc
-      - name: Бюджет аллокаций (на экземпляр, SSR)
+      - name: Allocation budget (per instance, SSR)
         run: cargo xtask alloc-budget
-      - name: Базовая линия (отчёты последнего успешного прогона dev)
+      - name: Baseline (reports of the last successful dev run)
         id: baseline
         continue-on-error: true
         run: |
-          # Берём прогон, в котором артефакт реально есть: «пустые» прогоны (только документация) его не создают.
+          # Take a run that actually has the artifact: "empty" runs (docs only) do not create it.
           id=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=bench-baseline&per_page=30"             --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "dev")][0].workflow_run.id')
           [ -n "$id" ] && [ "$id" != "null" ] && gh run download "$id" --name bench-baseline --dir baseline
-      - name: Сравнение с базовой линией
+      - name: Comparison with the baseline
         if: steps.baseline.outcome == 'success'
         run: cargo xtask bench-compare baseline target/bench | tee bench-comment.md
-      - name: Комментарий в PR (регрессия > 10 % только сообщается, слияние не блокируется)
+      - name: PR comment (a regression > 10 % is only reported, merging is not blocked)
         if: github.event_name == 'pull_request' && steps.baseline.outcome == 'success'
         continue-on-error: true
         run: gh pr comment "${{ github.event.pull_request.number }}" --body-file bench-comment.md --edit-last --create-if-none
-      - name: Отчёты как базовая линия
+      - name: Reports as baseline
         if: github.ref == 'refs/heads/dev'
         uses: actions/upload-artifact@v4
         with:
           name: bench-baseline
           path: target/bench/*.json
           retention-days: 30
-      - name: Очистка устаревших артефактов и проверка размера кэша
+      - name: Clean stale artifacts and check cache size
         run: |
           cargo sweep --file
           size=$(du -sm target | cut -f1)
-          echo "target/: ${size} МБ (лимит ${CACHE_LIMIT_MB} МБ)"
+          echo "target/: ${size} MB (limit ${CACHE_LIMIT_MB} MB)"
           if [ "$size" -gt "$CACHE_LIMIT_MB" ]; then
-            echo "::error::target/ (${size} МБ) больше лимита кэша ${CACHE_LIMIT_MB} МБ"
+            echo "::error::target/ (${size} MB) exceeds the cache limit of ${CACHE_LIMIT_MB} MB"
             exit 1
           fi

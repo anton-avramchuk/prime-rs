@@ -1,43 +1,43 @@
 # overlaybadge Specification
 
 ## Purpose
-OverlayBadge накладывает бейдж на правый верхний угол произвольного содержимого (значок, аватар, кнопка), не меняя раскладку содержимого.
+OverlayBadge overlays a badge on the top-right corner of arbitrary content (an icon, an avatar, a button) without changing the layout of the content.
 
 ## Requirements
 
-### Requirement: Разметка OverlayBadge
-Компонент `OverlayBadge` крейта `prime-overlaybadge` SHALL выводить `<div class="p-overlaybadge">`, внутри которого сначала дочернее содержимое, затем `Badge`. `style_class` и `style` SHALL передаваться вложенному `Badge`, а не корню, как в PrimeNG. `pt.root` SHALL добавлять классы, стиль и атрибуты корню, `pt.pc_badge` — вложенному `Badge`.
+### Requirement: Markup of OverlayBadge
+The `OverlayBadge` component of the `prime-overlaybadge` crate SHALL render `<div class="p-overlaybadge">`, inside which the child content comes first, then the `Badge`. `style_class` and `style` SHALL be passed to the nested `Badge`, not to the root, as in PrimeNG. `pt.root` SHALL add classes, style and attributes to the root, `pt.pc_badge` — to the nested `Badge`.
 
-#### Scenario: Порядок
-- **WHEN** внутри `OverlayBadge` с `value = "2"` вложен значок
-- **THEN** внутри `div.p-overlaybadge` сначала значок, затем `span.p-badge`
+#### Scenario: Order
+- **WHEN** an icon is nested inside `OverlayBadge` with `value = "2"`
+- **THEN** inside `div.p-overlaybadge` the icon comes first, then `span.p-badge`
 
-#### Scenario: Свойства бейджа
-- **WHEN** заданы `severity = Danger`, `badge_size = Large`, `style_class = "mine"`
-- **THEN** вложенный бейдж имеет классы `p-badge-danger`, `p-badge-lg` и `mine`, а корень `p-overlaybadge` — нет
+#### Scenario: Badge properties
+- **WHEN** `severity = Danger`, `badge_size = Large`, `style_class = "mine"` are set
+- **THEN** the nested badge has the classes `p-badge-danger`, `p-badge-lg` and `mine`, and the root `p-overlaybadge` does not
 
-#### Scenario: Без значения
-- **WHEN** `value` не задан
-- **THEN** вложенный бейдж отрисован точкой (`p-badge-dot`)
+#### Scenario: Without a value
+- **WHEN** `value` is not set
+- **THEN** the nested badge is rendered as a dot (`p-badge-dot`)
 
-#### Scenario: Скрытие
+#### Scenario: Hiding
 - **WHEN** `badge_disabled = true`
-- **THEN** вложенный бейдж скрыт, содержимое остаётся
+- **THEN** the nested badge is hidden, and the content remains
 
 #### Scenario: pt
-- **WHEN** `pt.root` содержит атрибут `data-x="1"`, а `pt.pc_badge` — класс `custom`
-- **THEN** корень имеет `data-x="1"`, а вложенный бейдж — класс `custom`
+- **WHEN** `pt.root` contains the attribute `data-x="1"`, and `pt.pc_badge` the class `custom`
+- **THEN** the root has `data-x="1"`, and the nested badge has the class `custom`
 
-### Requirement: Положение бейджа
-Положение бейджа SHALL задаваться CSS темы `overlaybadge`: корень позиционирован относительно, бейдж прижат к правому верхнему углу и смещён на половину своего размера наружу.
+### Requirement: Position of the badge
+The position of the badge SHALL be set by the CSS of the theme `overlaybadge`: the root is positioned relatively, the badge is pinned to the top-right corner and shifted outward by half of its size.
 
-#### Scenario: Угол
-- **WHEN** страница с подключённым CSS темы показывает значок с бейджем
-- **THEN** центр бейджа совпадает с правым верхним углом корня
+#### Scenario: Corner
+- **WHEN** a page with the theme CSS connected shows an icon with a badge
+- **THEN** the center of the badge coincides with the top-right corner of the root
 
-### Requirement: Стоимость отрисовки OverlayBadge
-Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `overlaybadge-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `overlaybadge` в `benches/budgets.toml`.
+### Requirement: Rendering cost of OverlayBadge
+The number of allocations per instance during SSR SHALL fit the budget `overlaybadge-1000` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `overlaybadge` in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения OverlayBadge не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of OverlayBadge do not exceed the budgets

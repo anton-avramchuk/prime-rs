@@ -1,73 +1,73 @@
 # scrolltop Specification
 
 ## Purpose
-ScrollTop показывает кнопку возврата к началу страницы или прокручиваемого родителя после того, как прокрутка превысила порог.
+ScrollTop shows a button that returns to the top of the page or of a scrollable parent once the scroll has exceeded a threshold.
 
 ## Requirements
 
-### Requirement: Разметка ScrollTop
-Компонент `ScrollTop` крейта `prime-scrolltop` SHALL, пока он виден, выводить `<button type="button">` компонента `Button` с классом `p-scrolltop`, скруглением (`rounded`, по умолчанию включено), значком в `.p-scrolltop-icon` (по умолчанию `ChevronUpIcon`) и `aria-label` из локали `aria.scrollTop`, если не задан `aria_label`. При `target = Parent` кнопка SHALL получать класс `p-scrolltop-sticky`. `style_class` SHALL добавляться к классам, `style` — задавать стиль, `pt` — добавлять классы, стиль и атрибуты кнопке. Пока прокрутка не превысила порог, при `target = Window` компонент SHALL не выводить ничего.
+### Requirement: ScrollTop markup
+The `ScrollTop` component of the `prime-scrolltop` crate SHALL, while it is visible, render a `<button type="button">` of the `Button` component with the class `p-scrolltop`, rounded corners (`rounded`, enabled by default), an icon in `.p-scrolltop-icon` (default `ChevronUpIcon`) and an `aria-label` from the locale `aria.scrollTop`, if `aria_label` is not set. With `target = Parent` the button SHALL get the class `p-scrolltop-sticky`. `style_class` SHALL be added to the classes, `style` — sets the style, `pt` — adds classes, style and attributes to the button. While the scroll has not exceeded the threshold, with `target = Window` the component SHALL render nothing.
 
-#### Scenario: Скрыт по умолчанию
-- **WHEN** компонент с `target = Window` отрисован на сервере
-- **THEN** разметка кнопки отсутствует
+#### Scenario: Hidden by default
+- **WHEN** a component with `target = Window` is rendered on the server
+- **THEN** the markup of the button is absent
 
-#### Scenario: Родитель
+#### Scenario: Parent
 - **WHEN** `target = Parent`
-- **THEN** кнопка имеет класс `p-scrolltop-sticky`
+- **THEN** the button has the class `p-scrolltop-sticky`
 
-#### Scenario: Значок и подпись
-- **WHEN** кнопка показана без `icon` и `aria_label`
-- **THEN** внутри `.p-scrolltop-icon` лежит `ChevronUpIcon`, `aria-label` равен «Scroll Top»
+#### Scenario: Icon and label
+- **WHEN** the button is shown without `icon` and `aria_label`
+- **THEN** `.p-scrolltop-icon` contains `ChevronUpIcon`, and `aria-label` equals "Scroll Top"
 
-### Requirement: Видимость ScrollTop
-При `target = Window` компонент SHALL подписываться на `scroll` окна, при `Parent` — на `scroll` родительского элемента. Если прокрутка (`scrollY` окна или `scrollTop` родителя) строго больше `threshold` (по умолчанию 400), кнопка SHALL показываться; иначе скрываться. Прокрутка SHALL проверяться и сразу после подписки. Подписка SHALL сниматься при уничтожении компонента.
+### Requirement: Visibility of ScrollTop
+With `target = Window` the component SHALL subscribe to the `scroll` of the window, with `Parent` — to the `scroll` of the parent element. If the scroll (`scrollY` of the window or `scrollTop` of the parent) is strictly greater than `threshold` (default 400), the button SHALL be shown; otherwise hidden. The scroll SHALL be checked right after the subscription as well. The subscription SHALL be removed when the component is destroyed.
 
-#### Scenario: Ниже порога
-- **WHEN** окно прокручено на 400 или меньше
-- **THEN** кнопки нет
+#### Scenario: Below the threshold
+- **WHEN** the window is scrolled by 400 or less
+- **THEN** there is no button
 
-#### Scenario: Выше порога
-- **WHEN** окно прокручено на 401 или больше
-- **THEN** кнопка показана
+#### Scenario: Above the threshold
+- **WHEN** the window is scrolled by 401 or more
+- **THEN** the button is shown
 
-#### Scenario: Возврат
-- **WHEN** кнопка показана и прокрутка вернулась к порогу или ниже
-- **THEN** кнопка скрывается
+#### Scenario: Return
+- **WHEN** the button is shown and the scroll has returned to the threshold or below
+- **THEN** the button is hidden
 
-#### Scenario: Родитель
-- **WHEN** `target = Parent`, `threshold = 100`, родитель прокручен на 150
-- **THEN** кнопка показана
+#### Scenario: Parent
+- **WHEN** `target = Parent`, `threshold = 100`, and the parent is scrolled by 150
+- **THEN** the button is shown
 
-#### Scenario: Страница уже прокручена
-- **WHEN** компонент монтируется при окне, прокрученном на 800
-- **THEN** кнопка показана без нового события `scroll`
+#### Scenario: Page already scrolled
+- **WHEN** the component is mounted while the window is scrolled by 800
+- **THEN** the button is shown without a new `scroll` event
 
-### Requirement: Действие ScrollTop
-Клик по кнопке SHALL прокручивать цель (окно или родителя) к началу (`top: 0`) с поведением `behavior` (`Smooth` по умолчанию).
+### Requirement: Action of ScrollTop
+A click on the button SHALL scroll the target (the window or the parent) to the top (`top: 0`) with the `behavior` (`Smooth` by default).
 
-#### Scenario: Прокрутка окна
-- **WHEN** окно прокручено на 800 и пользователь нажимает кнопку
-- **THEN** окно прокручивается к началу, после чего кнопка скрывается
+#### Scenario: Window scroll
+- **WHEN** the window is scrolled by 800 and the user presses the button
+- **THEN** the window scrolls to the top, after which the button is hidden
 
-#### Scenario: Клавиатура
-- **WHEN** кнопка в фокусе и пользователь нажимает `Enter` или `Space`
-- **THEN** выполняется то же действие, что и при клике
+#### Scenario: Keyboard
+- **WHEN** the button has focus and the user presses `Enter` or `Space`
+- **THEN** the same action is performed as on a click
 
-### Requirement: Положение и анимация ScrollTop
-При `target = Window` кнопка SHALL иметь `position: fixed`, при `Parent` — `position: sticky`; z-index SHALL выдаваться из группы `Overlay` при показе и возвращаться при скрытии. Появление и исчезновение SHALL анимироваться классами `p-scrolltop-enter-from`/`-active`/`-to` и `p-scrolltop-leave-from`/`-active`/`-to`; после окончания исчезновения кнопка SHALL скрываться.
+### Requirement: Position and animation of ScrollTop
+With `target = Window` the button SHALL have `position: fixed`, with `Parent` — `position: sticky`; the z-index SHALL be issued from the `Overlay` group when shown and returned when hidden. Appearance and disappearance SHALL be animated with the classes `p-scrolltop-enter-from`/`-active`/`-to` and `p-scrolltop-leave-from`/`-active`/`-to`; after the disappearance animation ends, the button SHALL be hidden.
 
-#### Scenario: Окно
-- **WHEN** кнопка показана при `target = Window`
-- **THEN** её `position` равен `fixed`, а z-index больше базы группы `Overlay`
+#### Scenario: Window
+- **WHEN** the button is shown with `target = Window`
+- **THEN** its `position` equals `fixed`, and the z-index is greater than the base of the `Overlay` group
 
-#### Scenario: Освобождение z-index
-- **WHEN** кнопка скрыта
-- **THEN** выданный z-index возвращён менеджеру
+#### Scenario: Releasing the z-index
+- **WHEN** the button is hidden
+- **THEN** the issued z-index is returned to the manager
 
-### Requirement: Стоимость отрисовки ScrollTop
-Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `scrolltop-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `scrolltop` в `benches/budgets.toml`.
+### Requirement: Rendering cost of ScrollTop
+The number of allocations per instance during SSR SHALL fit the budget `scrolltop-1000` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `scrolltop` in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения ScrollTop не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of ScrollTop do not exceed the budgets

@@ -2,36 +2,36 @@
 
 ## Context
 
-Эталон вида — primeng.dev/components/<имя>. У PrimeNG страница собирается вручную из `apps/showcase/doc/<имя>/*-doc.ts`; у нас 80+ страниц с живыми демо, для которых нужны код и справочник без ручной работы.
+The look reference is primeng.dev/components/<name>. In PrimeNG the page is assembled by hand from `apps/showcase/doc/<name>/*-doc.ts`; we have 80+ pages with live demos, which need the code and the reference without manual work.
 
 ## Decisions
 
-### D1. Оболочка `DocPage` и данные страницы
-`showcase/src/doc.rs`: `DocPage { name, title, description, import }` + `children` (список `<Demo>`). Данные страницы (код демо, свойства, CSS-классы, заметки) берутся из `generated::PAGES: &[PageDoc]` по имени, поэтому страницы почти не меняются: заголовок `<h2>` заменяется на `<DocPage …>`.
+### D1. The `DocPage` shell and the page data
+`showcase/src/doc.rs`: `DocPage { name, title, description, import }` + `children` (the list of `<Demo>`). The page data (the code of the demos, the properties, the CSS classes, the notes) is taken from `generated::PAGES: &[PageDoc]` by name, so the pages barely change: the `<h2>` heading is replaced by `<DocPage …>`.
 
-### D2. Код демо из исходников
-`gen-docs` читает `showcase/src/pages/<имя>.rs`, находит `<Demo name="x" …><Component /></Demo>` и берёт текст `#[component] fn Component` целиком (с константами не связывается: вспомогательные `const`/`fn` в код не входят, список их имён показывается комментарием «uses: …»). Текст хранится как `&'static str` в `generated`.
+### D2. Demo code from the sources
+`gen-docs` reads `showcase/src/pages/<name>.rs`, finds `<Demo name="x" …><Component /></Demo>` and takes the text of `#[component] fn Component` in full (it is not linked to constants: auxiliary `const`/`fn` are not part of the code, their names are shown in a comment "uses: …"). The text is stored as `&'static str` in `generated`.
 
-### D3. Справочник из крейта
-Для `crates/prime-<имя>/src/lib.rs` берутся все `#[component] pub fn X(…)`: у каждого параметра `///`-описание, `#[prop(…)]` (optional/into/default) и тип. События — параметры с префиксом `on_`; части Pass Through — поля `*Pt` структуры; CSS-классы — из `crates/prime-theme` (`p-<имя>*`), присутствующие в стилях компонента. Нестандартные случаи (крейты с несколькими компонентами) собираются по префиксу имени.
+### D3. Reference from the crate
+For `crates/prime-<name>/src/lib.rs` all `#[component] pub fn X(…)` are taken: each parameter has a `///` description, `#[prop(…)]` (optional/into/default) and the type. The events are the parameters with the prefix `on_`; the Pass Through parts are the fields of the `*Pt` struct; the CSS classes are from `crates/prime-theme` (`p-<name>*`), present in the styles of the component. Non-standard cases (crates with several components) are collected by the name prefix.
 
 ### D4. Markdown
-`docs/<имя>.md` превращается в HTML на этапе генерации (`pulldown-cmark`) и показывается разделом «Notes».
+`docs/<name>.md` is turned into HTML at generation time (`pulldown-cmark`) and shown in the "Notes" section.
 
-### D5. Оформление
-Новые стили оболочки — небольшой блок CSS в `shell` (карточка примера, шапка с кнопкой Code, таблицы API, оглавление справа); тема — токены `--p-*`. Раскрытие кода — клиентское (`RwSignal`), без JS-библиотек; подсветка Rust — простая разметка ключевых слов на этапе генерации.
+### D5. Styling
+New shell styles — a small block of CSS in `shell` (the example card, the header with the Code button, the API tables, the table of contents on the right); the theme — `--p-*` tokens. The code expansion is client-side (`RwSignal`), without JS libraries; the Rust highlighting is simple keyword markup at generation time.
 
-### D6. Меню
-Список компонентов — один массив `(раздел, имя, путь)` в `doc.rs`; разметка меню и поиск берут его оттуда.
+### D6. Menu
+The list of components — one array `(section, name, path)` in `doc.rs`; the menu markup and the search take it from there.
 
-### D7. Тесты
-Модульные: разбор свойств и демо на фикстурах. SSR: `DocPage` рендерит все разделы. e2e: `docs.spec.ts` (Code раскрывает исходник, оглавление, поиск в меню, переход к следующему компоненту).
+### D7. Tests
+Unit: parsing of properties and demos on fixtures. SSR: `DocPage` renders all sections. e2e: `docs.spec.ts` (Code expands the source, the table of contents, the search in the menu, the transition to the next component).
 
 ## Risks / Trade-offs
 
-- [Разбор текстом, не `syn`] Формат сигнатур единообразен; на нестандартных случаях раздел API пуст, а `--check` в CI покажет расхождения.
-- [Размер showcase] Строки кода и HTML попадают в бинарник сервера, но не в wasm страницы (генерируемые данные читает только SSR; клиенту передаётся лишь нужный код при раскрытии).
+- [Parsing by text, not `syn`] The format of the signatures is uniform; for non-standard cases the API section is empty, and `--check` in CI will show the discrepancies.
+- [The size of showcase] The code and HTML strings end up in the server binary, but not in the wasm of the page (the generated data is read only by SSR; the client receives only the needed code when it is expanded).
 
 ## Migration Plan
 
-Страницы переводятся на `DocPage` пакетами по разделам; старые страницы продолжают работать, e2e не меняется. Откат — `git revert`.
+The pages are moved to `DocPage` in packages by section; the old pages keep working, the e2e does not change. Rollback — `git revert`.

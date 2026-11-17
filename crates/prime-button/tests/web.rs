@@ -1,7 +1,7 @@
-//! Поведение Button в реальном браузере (wasm-bindgen-test).
+//! Behaviour of Button in a real browser (wasm-bindgen-test).
 //!
-//! Каждый сценарий выполняется в обеих ветвях отрисовки: статической (все свойства — значения) и реактивной
-//! (одно свойство передано сигналом, чего достаточно для выбора реактивного пути).
+//! Each scenario runs in both render branches: static (all properties are values) and reactive
+//! (one property is passed as a signal, which is enough to select the reactive path).
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -23,7 +23,7 @@ enum Mode {
 
 const MODES: [Mode; 2] = [Mode::Static, Mode::Live];
 
-/// Свойство-«переключатель»: значение по умолчанию (статика) или сигнал (реактивная ветвь).
+/// "Switch" property: the default value (static) or a signal (reactive branch).
 fn path(mode: Mode) -> OptProp<String> {
     match mode {
         Mode::Static => Prop::default(),
@@ -42,7 +42,7 @@ fn host() -> HtmlElement {
 }
 
 fn button_in(host: &HtmlElement) -> HtmlElement {
-    host.query_selector("button").unwrap().expect("button в host").dyn_into().unwrap()
+    host.query_selector("button").unwrap().expect("button in host").dyn_into().unwrap()
 }
 
 fn counter() -> (Arc<AtomicUsize>, Callback<MouseEvent>) {
@@ -86,7 +86,7 @@ async fn disabled_and_loading_buttons_do_not_call_on_click() {
         for i in 0..2 {
             let b = list.item(i).unwrap().dyn_into::<HtmlElement>().unwrap();
             b.click();
-            // нативный click() на disabled не срабатывает; синтетическое событие тоже не должно вызывать колбэк
+            // a native click() on a disabled button does not fire; a synthetic event must not call the callback either
             let ev = MouseEvent::new_with_mouse_event_init_dict("click", &MouseEventInit::new()).unwrap();
             b.dispatch_event(&ev).unwrap();
         }
@@ -132,7 +132,7 @@ async fn autofocus_focuses_the_button_after_mount() {
         let host = host();
         let _h = leptos::mount::mount_to(host.clone(), move || view! { <Button label="x" autofocus=true aria_label=path(mode) /> });
         leptos::task::tick().await;
-        let active = doc().active_element().expect("есть активный элемент");
+        let active = doc().active_element().expect("there is an active element");
         assert!(active.is_same_node(Some(&button_in(&host))), "{mode:?}");
         host.remove();
     }
@@ -201,18 +201,18 @@ async fn class_is_rewritten_only_when_class_inputs_change() {
     leptos::task::tick().await;
     let btn = button_in(&host);
 
-    // «Метка»: если атрибут class перезапишут, она исчезнет.
+    // "Sentinel": if the class attribute is overwritten, it disappears.
     btn.set_attribute("class", &format!("{} sentinel", btn.class_name())).unwrap();
 
-    aria.set(Some("b".into())); // не влияет на классы
+    aria.set(Some("b".into())); // does not affect the classes
     leptos::task::tick().await;
     assert_eq!(btn.get_attribute("aria-label").as_deref(), Some("b"));
-    assert!(btn.class_name().contains("sentinel"), "class перезаписан без причины: {}", btn.class_name());
+    assert!(btn.class_name().contains("sentinel"), "class was overwritten without a reason: {}", btn.class_name());
 
-    loading.set(true); // влияет на классы
+    loading.set(true); // affects the classes
     leptos::task::tick().await;
     assert!(btn.class_name().contains("p-button-loading"));
-    assert!(!btn.class_name().contains("sentinel"), "class должен быть пересчитан: {}", btn.class_name());
+    assert!(!btn.class_name().contains("sentinel"), "class must be recalculated: {}", btn.class_name());
     host.remove();
 }
 

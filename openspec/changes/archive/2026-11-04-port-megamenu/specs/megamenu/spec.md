@@ -1,60 +1,60 @@
 # megamenu Specification
 
 ## Purpose
-MegaMenu показывает панель пунктов, у каждого из которых раскрывается широкое наложение с колонками подменю.
+MegaMenu shows a bar of items, each of which expands a wide overlay with submenu columns.
 
 ## ADDED Requirements
 
-### Requirement: Модель
-`prime-megamenu` SHALL принимать `Vec<MegaMenuItem>`: корневой пункт имеет общие поля пункта меню и `columns: Vec<Vec<MegaMenuSubmenu>>` (колонка — список подменю); `MegaMenuSubmenu` имеет `label`, `visible`, классы и `items: Vec<prime_menu::MenuItem>`. Пункт с непустыми колонками SHALL считаться группой.
+### Requirement: Model
+`prime-megamenu` SHALL accept `Vec<MegaMenuItem>`: a root item has the common menu item fields and `columns: Vec<Vec<MegaMenuSubmenu>>` (a column is a list of submenus); `MegaMenuSubmenu` has `label`, `visible`, classes and `items: Vec<prime_menu::MenuItem>`. An item with non-empty columns SHALL be considered a group.
 
-#### Scenario: Группа
-- **WHEN** у корневого пункта есть хотя бы одна колонка с подменю
-- **THEN** у него выводятся стрелка и наложение
+#### Scenario: Group
+- **WHEN** a root item has at least one column with a submenu
+- **THEN** an arrow and an overlay are rendered for it
 
-### Requirement: Разметка
-`MegaMenu` SHALL выводить `div.p-megamenu.p-component` (`p-megamenu-horizontal` либо `p-megamenu-vertical`; `p-megamenu-mobile`, пока окно не шире `breakpoint`; `p-megamenu-mobile-active` при открытой кнопке; `id`, `style`, `style_class`), слоты `div.p-megamenu-start` и `div.p-megamenu-end`, кнопку `a.p-megamenu-button[role=button]` (только при непустой модели; `aria-haspopup`, `aria-expanded`, `aria-controls`, `aria-label`) и корневой список `ul.p-megamenu-root-list[role=menubar]` (`aria-orientation`, `tabindex`, `aria-activedescendant`). Корневой пункт SHALL быть `li.p-megamenu-item[role=menuitem]` (`data-p-active|focused|disabled`, `aria-level`, `aria-setsize`, `aria-posinset`, `aria-haspopup`, `aria-expanded`, `p-megamenu-item-active`, `p-focus`, `p-disabled`) с `div.p-megamenu-item-content` > `a.p-megamenu-item-link` (значок, подпись, стрелка: вниз в горизонтальной ориентации и на мобильном, вправо в вертикальной) и, у группы, наложением `div.p-megamenu-overlay` > `div.p-megamenu-grid` > колонки `div.p-megamenu-col-N`. Подменю SHALL быть `ul.p-megamenu-submenu[role=menu]` с заголовком `li.p-megamenu-submenu-label[role=presentation]` и пунктами; разделитель — `li.p-megamenu-separator[role=separator]`. Класс колонки SHALL зависеть от числа колонок пункта: 2 → `col-6`, 3 → `col-4`, 4 → `col-3`, 6 → `col-2`, иначе и на мобильном — `col-12`.
+### Requirement: Markup
+`MegaMenu` SHALL render `div.p-megamenu.p-component` (`p-megamenu-horizontal` or `p-megamenu-vertical`; `p-megamenu-mobile` while the window is no wider than `breakpoint`; `p-megamenu-mobile-active` when the button is open; `id`, `style`, `style_class`), the slots `div.p-megamenu-start` and `div.p-megamenu-end`, the button `a.p-megamenu-button[role=button]` (only with a non-empty model; `aria-haspopup`, `aria-expanded`, `aria-controls`, `aria-label`) and the root list `ul.p-megamenu-root-list[role=menubar]` (`aria-orientation`, `tabindex`, `aria-activedescendant`). A root item SHALL be `li.p-megamenu-item[role=menuitem]` (`data-p-active|focused|disabled`, `aria-level`, `aria-setsize`, `aria-posinset`, `aria-haspopup`, `aria-expanded`, `p-megamenu-item-active`, `p-focus`, `p-disabled`) with `div.p-megamenu-item-content` > `a.p-megamenu-item-link` (icon, label, arrow: down in horizontal orientation and on mobile, right in vertical) and, for a group, the overlay `div.p-megamenu-overlay` > `div.p-megamenu-grid` > columns `div.p-megamenu-col-N`. A submenu SHALL be `ul.p-megamenu-submenu[role=menu]` with a header `li.p-megamenu-submenu-label[role=presentation]` and items; a separator is `li.p-megamenu-separator[role=separator]`. The column class SHALL depend on the number of item columns: 2 → `col-6`, 3 → `col-4`, 4 → `col-3`, 6 → `col-2`, otherwise and on mobile — `col-12`.
 
-#### Scenario: Колонки
-- **WHEN** у пункта три колонки
-- **THEN** каждая колонка получает класс `p-megamenu-col-4`
+#### Scenario: Columns
+- **WHEN** an item has three columns
+- **THEN** each column gets the class `p-megamenu-col-4`
 
-#### Scenario: Ориентация
+#### Scenario: Orientation
 - **WHEN** `orientation = Vertical`
-- **THEN** у корня `p-megamenu-vertical`, у списка `aria-orientation="vertical"`, у группы стрелка вправо
+- **THEN** the root has `p-megamenu-vertical`, the list has `aria-orientation="vertical"`, the group arrow points right
 
-### Requirement: Раскрытие мышью
-Клик по корневой группе SHALL раскрывать её наложение, повторный клик — закрывать; клик по листу SHALL вызывать `command` (если пункт не отключён) и закрывать наложение. Наведение SHALL раскрывать группу после первого клика/нажатия по меню; на узком окне путь не меняется. Клик вне меню SHALL закрывать наложение (и мобильную панель); `resize` SHALL закрывать его.
+### Requirement: Mouse expansion
+A click on a root group SHALL expand its overlay, a repeated click SHALL close it; a click on a leaf SHALL call `command` (if the item is not disabled) and close the overlay. Hover SHALL expand a group after the first click/press on the menu; on a narrow window the path does not change. A click outside the menu SHALL close the overlay (and the mobile panel); `resize` SHALL close it.
 
-#### Scenario: Клик
-- **WHEN** пользователь кликает по корневому пункту с колонками
-- **THEN** у пункта `p-megamenu-item-active` и `aria-expanded="true"`, наложение показано
+#### Scenario: Click
+- **WHEN** the user clicks a root item with columns
+- **THEN** the item has `p-megamenu-item-active` and `aria-expanded="true"`, the overlay is shown
 
-#### Scenario: Лист
-- **WHEN** пользователь кликает по листу внутри наложения
-- **THEN** `command` вызван, наложение закрыто
+#### Scenario: Leaf
+- **WHEN** the user clicks a leaf inside the overlay
+- **THEN** `command` is called, the overlay is closed
 
-### Requirement: Клавиатура
-Фокус SHALL принадлежать корневому списку (`aria-activedescendant`, `p-focus`). В горизонтальной ориентации ← → SHALL переходить между корневыми пунктами, ↓ — раскрывать группу и входить в первый пункт наложения; внутри наложения ↓ ↑ SHALL идти по пунктам, ← → — между колонками, ↑ на первом пункте — возвращать на родителя; в вертикальной ориентации направления корня меняются местами (↓ ↑ по корню, → раскрывает и входит, ← возвращает). `Home`/`End`, `Enter`/`Space` (клик по пункту), `Escape` (закрыть и вернуть фокус на родителя), `Tab` и поиск по началу подписи SHALL работать как в PrimeNG. Недоступные пункты SHALL пропускаться.
+### Requirement: Keyboard
+Focus SHALL belong to the root list (`aria-activedescendant`, `p-focus`). In horizontal orientation Left/Right SHALL move between root items, Down SHALL expand a group and enter the first item of the overlay; inside the overlay Down/Up SHALL walk the items, Left/Right — between columns, Up on the first item — return to the parent; in vertical orientation the root directions swap (Down/Up across the root, Right expands and enters, Left returns). `Home`/`End`, `Enter`/`Space` (click on the item), `Escape` (close and return focus to the parent), `Tab` and search by label prefix SHALL work as in PrimeNG. Unavailable items SHALL be skipped.
 
-#### Scenario: Вход в наложение
-- **WHEN** фокус на раскрываемом корневом пункте и нажата ↓
-- **THEN** наложение раскрыто, фокус на первом допустимом пункте первой колонки
+#### Scenario: Entering the overlay
+- **WHEN** focus is on an expandable root item and Down is pressed
+- **THEN** the overlay is expanded, focus on the first focusable item of the first column
 
 #### Scenario: Escape
-- **WHEN** фокус внутри наложения и нажата `Escape`
-- **THEN** наложение закрыто, фокус на корневом пункте
+- **WHEN** focus is inside the overlay and `Escape` is pressed
+- **THEN** the overlay is closed, focus on the root item
 
-### Requirement: Мобильный режим
-Пока окно не шире `breakpoint`, корневой список SHALL быть скрыт, а кнопка — показывать/скрывать его (`p-megamenu-mobile-active`, `aria-expanded`); открытый список получает слой группы `Menu` (`auto_z_index`, `base_z_index`), закрытие возвращает фокус на кнопку.
+### Requirement: Mobile mode
+While the window is no wider than `breakpoint`, the root list SHALL be hidden, and the button SHALL show/hide it (`p-megamenu-mobile-active`, `aria-expanded`); the open list gets the `Menu` group layer (`auto_z_index`, `base_z_index`), closing returns focus to the button.
 
-#### Scenario: Кнопка
-- **WHEN** на узком окне пользователь кликает по кнопке
-- **THEN** `p-megamenu-mobile-active` добавлен и `aria-expanded="true"`, повторный клик закрывает
+#### Scenario: Button
+- **WHEN** on a narrow window the user clicks the button
+- **THEN** `p-megamenu-mobile-active` is added and `aria-expanded="true"`, a repeated click closes it
 
-### Requirement: Шаблоны
-`start` и `end` SHALL выводиться в своих слотах; `item` SHALL заменять содержимое `div.p-megamenu-item-content`; `submenu_icon` — стрелку группы; `menu_icon` — значок кнопки.
+### Requirement: Templates
+`start` and `end` SHALL be rendered in their slots; `item` SHALL replace the content of `div.p-megamenu-item-content`; `submenu_icon` — the group arrow; `menu_icon` — the button icon.
 
-#### Scenario: Слоты
-- **WHEN** заданы `start` и `end`
-- **THEN** они выведены до кнопки и после списка
+#### Scenario: Slots
+- **WHEN** `start` and `end` are set
+- **THEN** they are rendered before the button and after the list

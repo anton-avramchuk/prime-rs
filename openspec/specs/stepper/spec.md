@@ -1,78 +1,78 @@
 # stepper Specification
 
 ## Purpose
-Stepper ведёт пользователя по нумерованным шагам: показывает список шагов с разделителями, активную панель содержимого, поддерживает свободный и линейный режимы и вертикальную раскладку.
+Stepper guides the user through numbered steps: it shows a list of steps with separators, the active content panel, supports free and linear modes and a vertical layout.
 
 ## Requirements
 
-### Requirement: Корень и значение
-`Stepper` крейта `prime-stepper` SHALL выводить `div.p-stepper.p-component[role=tablist]` с `id` (свойство `id` или `pn_id_<N>`), `style_class`, `style` и `pt`; при `linear` корень SHALL получать класс `p-readonly`. Активный шаг SHALL определяться двусторонним сигналом `value` (`RwSignal<Option<u32>>`); без него компонент ведёт собственное состояние, начинающееся с `default_value`. Внешнее изменение `value` SHALL переключать активные шаг и панель.
+### Requirement: Root and value
+The `Stepper` of the `prime-stepper` crate SHALL render `div.p-stepper.p-component[role=tablist]` with `id` (the `id` property or `pn_id_<N>`), `style_class`, `style` and `pt`; with `linear` the root SHALL get the class `p-readonly`. The active step SHALL be determined by the two-way signal `value` (`RwSignal<Option<u32>>`); without it the component keeps its own state starting at `default_value`. An external change of `value` SHALL switch the active step and panel.
 
-#### Scenario: Начальное значение
-- **WHEN** задан `default_value = 2`
-- **THEN** шаг и панель со значением 2 активны
+#### Scenario: Initial value
+- **WHEN** `default_value = 2` is set
+- **THEN** the step and panel with value 2 are active
 
-#### Scenario: Линейный режим
-- **WHEN** задан `linear`
-- **THEN** корень имеет класс `p-readonly`
+#### Scenario: Linear mode
+- **WHEN** `linear` is set
+- **THEN** the root has the class `p-readonly`
 
-### Requirement: Шаги
-`StepList` SHALL выводить `div.p-steplist`. `Step` со значением `value` SHALL выводить `div.p-step[role=presentation]` с классами `p-step-active` (активный) и `p-disabled` (недоступный), `aria-current="step"` у активного, `data-p-active`, `data-p-disabled` и кнопкой `button.p-step-header[role=tab][type=button]` с `id` `<id>_step_<value>`, `aria-controls` `<id>_steppanel_<value>`, номером `span.p-step-number` (значение шага) и заголовком `span.p-step-title` (содержимое шага). Шаг SHALL считаться недоступным, если он не активен и (`Stepper.linear` или `Step.disabled`); у недоступного шага кнопка SHALL иметь атрибут `disabled` и `tabindex="-1"`.
+### Requirement: Steps
+`StepList` SHALL render `div.p-steplist`. A `Step` with value `value` SHALL render `div.p-step[role=presentation]` with the classes `p-step-active` (active) and `p-disabled` (unavailable), `aria-current="step"` on the active one, `data-p-active`, `data-p-disabled` and a `button.p-step-header[role=tab][type=button]` button with `id` `<id>_step_<value>`, `aria-controls` `<id>_steppanel_<value>`, a `span.p-step-number` number (the step value) and a `span.p-step-title` title (the step content). A step SHALL be considered unavailable if it is not active and (`Stepper.linear` or `Step.disabled`); on an unavailable step the button SHALL have the `disabled` attribute and `tabindex="-1"`.
 
-#### Scenario: Разметка шага
-- **WHEN** отрисован `Step value=1` с заголовком «Header I» в активном состоянии
-- **THEN** есть `.p-step.p-step-active`, `button[role=tab]` с `.p-step-number` «1» и `.p-step-title` «Header I», у корня шага `aria-current="step"`
+#### Scenario: Step markup
+- **WHEN** `Step value=1` with the title "Header I" is rendered in the active state
+- **THEN** there is `.p-step.p-step-active`, a `button[role=tab]` with `.p-step-number` "1" and `.p-step-title` "Header I", the step root has `aria-current="step"`
 
-#### Scenario: Недоступный шаг
-- **WHEN** `Step disabled=true` неактивен
-- **THEN** кнопка имеет `disabled` и `tabindex="-1"`, корень шага — класс `p-disabled`
+#### Scenario: Unavailable step
+- **WHEN** an inactive `Step disabled=true`
+- **THEN** the button has `disabled` and `tabindex="-1"`, the step root has the class `p-disabled`
 
-### Requirement: Разделители
-После каждого шага списка, кроме последнего, SHALL выводиться `div.p-stepper-separator`. Для вертикальной раскладки разделитель SHALL выводиться в `StepPanel` (в `div.p-steppanel-content-wrapper` перед `div.p-steppanel-content`) для каждого `StepItem`, кроме последнего; `Step` внутри `StepItem` разделителя не выводит.
+### Requirement: Separators
+After each list step except the last, a `div.p-stepper-separator` SHALL be rendered. For the vertical layout the separator SHALL be rendered in the `StepPanel` (in `div.p-steppanel-content-wrapper` before `div.p-steppanel-content`) for each `StepItem` except the last; a `Step` inside a `StepItem` renders no separator.
 
-#### Scenario: Три шага
-- **WHEN** в `StepList` три шага
-- **THEN** выведено два разделителя
+#### Scenario: Three steps
+- **WHEN** `StepList` has three steps
+- **THEN** two separators are rendered
 
-### Requirement: Переключение шага
-Клик по доступному шагу SHALL записывать его значение в `value`. Клик по недоступному шагу (кнопка `disabled`) SHALL ничего не менять. `StepContext::activate(value)` SHALL записывать указанное значение в `value` независимо от `linear` (линейный режим блокирует только клики по шагам).
+### Requirement: Step switching
+A click on an available step SHALL write its value to `value`. A click on an unavailable step (button `disabled`) SHALL change nothing. `StepContext::activate(value)` SHALL write the given value to `value` regardless of `linear` (linear mode blocks only clicks on steps).
 
-#### Scenario: Клик по шагу
-- **WHEN** пользователь кликает по шагу 3 в свободном режиме
-- **THEN** `value` равно 3, шаг 3 активен
+#### Scenario: Step click
+- **WHEN** the user clicks step 3 in free mode
+- **THEN** `value` equals 3, step 3 is active
 
-#### Scenario: Линейный режим
-- **WHEN** `linear`, активен шаг 1 и пользователь кликает по шагу 3
-- **THEN** `value` остаётся равным 1
+#### Scenario: Linear mode
+- **WHEN** `linear`, step 1 is active and the user clicks step 3
+- **THEN** `value` stays 1
 
-#### Scenario: Программный переход
-- **WHEN** в линейном режиме вызван `activate(2)`
-- **THEN** `value` равно 2
+#### Scenario: Programmatic transition
+- **WHEN** `activate(2)` is called in linear mode
+- **THEN** `value` equals 2
 
-### Requirement: Панели
-`StepPanels` SHALL выводить `div.p-steppanels`. `StepPanel` со значением `value` SHALL выводить `div.p-steppanel[role=tabpanel]` с `id` `<id>_steppanel_<value>`, `aria-controls` `<id>_step_<value>`, `data-p-active`, `data-pc-name="steppanel"`. В горизонтальной раскладке содержимое (`div.p-steppanel-content-wrapper` > `div.p-steppanel-content`) SHALL выводиться только у активной панели. Содержимое SHALL задаваться дочерними элементами либо свойством `content`.
+### Requirement: Panels
+`StepPanels` SHALL render `div.p-steppanels`. A `StepPanel` with value `value` SHALL render `div.p-steppanel[role=tabpanel]` with `id` `<id>_steppanel_<value>`, `aria-controls` `<id>_step_<value>`, `data-p-active`, `data-pc-name="steppanel"`. In the horizontal layout the content (`div.p-steppanel-content-wrapper` > `div.p-steppanel-content`) SHALL be rendered only for the active panel. The content SHALL be set by child elements or by the `content` property.
 
-#### Scenario: Одна панель
-- **WHEN** активен шаг 2 в горизонтальной раскладке
-- **THEN** содержимое есть только у панели 2
+#### Scenario: One panel
+- **WHEN** step 2 is active in the horizontal layout
+- **THEN** only panel 2 has content
 
-### Requirement: Вертикальная раскладка
-`StepItem` со значением `value` SHALL выводить `div.p-stepitem` (`p-stepitem-active` у активного, `data-p-active`) и передавать своё значение вложенным `Step` и `StepPanel`, у которых собственное значение не задано. В вертикальной раскладке панель SHALL получать класс `p-steppanel-active` у активной; все панели SHALL оставаться в разметке, неактивные скрытыми, а раскрытие и сворачивание SHALL анимироваться классами темы `p-collapsible-enter-active` и `p-collapsible-leave-active`.
+### Requirement: Vertical layout
+A `StepItem` with value `value` SHALL render `div.p-stepitem` (`p-stepitem-active` on the active one, `data-p-active`) and pass its value to the nested `Step` and `StepPanel` that have no value of their own. In the vertical layout the panel SHALL get the class `p-steppanel-active` when active; all panels SHALL stay in the markup, inactive ones hidden, and expansion and collapse SHALL be animated by the theme classes `p-collapsible-enter-active` and `p-collapsible-leave-active`.
 
-#### Scenario: Вертикальный список
-- **WHEN** три `StepItem`, активен второй
-- **THEN** `.p-stepitem-active` только у второго, у его панели `p-steppanel-active`
+#### Scenario: Vertical list
+- **WHEN** three `StepItem`s, the second is active
+- **THEN** `.p-stepitem-active` only on the second, its panel has `p-steppanel-active`
 
-### Requirement: Свои представления
-`content` у `Step` SHALL заменять кнопку-заголовок (и получать `StepContext { value, active, activate }`), а `content` у `StepPanel` — содержимое `div.p-steppanel-content`. `activate` SHALL вызываться без привязки к клику по шагу, например из кнопок «Далее»/«Назад».
+### Requirement: Custom views
+`content` of a `Step` SHALL replace the header button (and receive `StepContext { value, active, activate }`), and `content` of a `StepPanel` SHALL replace the content of `div.p-steppanel-content`. `activate` SHALL be callable without tying it to a step click, for example from "Next"/"Back" buttons.
 
-#### Scenario: Свой шаг
-- **WHEN** задан `content` у `Step`
-- **THEN** внутри `.p-step` вместо `button.p-step-header` — переданное представление
+#### Scenario: Custom step
+- **WHEN** `content` is set on a `Step`
+- **THEN** inside `.p-step` instead of `button.p-step-header` is the passed view
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) `Stepper` SHALL отрисовываться полностью (шаги, разделители, активная панель); `window` и `document` SHALL не использоваться.
+### Requirement: Rendering without a browser
+Outside the browser (SSR) `Stepper` SHALL render fully (steps, separators, the active panel); `window` and `document` SHALL NOT be used.
 
 #### Scenario: SSR
-- **WHEN** страница со `Stepper` отрисована на сервере
-- **THEN** в разметке есть список шагов, разделители и содержимое активной панели
+- **WHEN** a page with a `Stepper` is rendered on the server
+- **THEN** the markup has the step list, separators and the content of the active panel

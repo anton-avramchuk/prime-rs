@@ -1,11 +1,11 @@
-//! Страница RadioButton: демонстрации `group`, `filled`, `sizes`, `invalid`, `disabled` из showcase PrimeNG (`apps/showcase/doc/radiobutton`).
+//! RadioButton page: the `group`, `filled`, `sizes`, `invalid`, `disabled` demos from the PrimeNG showcase (`apps/showcase/doc/radiobutton`).
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_core::{Size, Variant};
 use prime_radiobutton::RadioButton;
 
-/// Страница `/radiobutton`.
+/// `/radiobutton` page.
 #[component]
 pub fn RadioButtonPage() -> impl IntoView {
     let ingredient = RwSignal::new(None::<String>);

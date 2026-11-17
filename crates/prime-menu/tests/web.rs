@@ -1,5 +1,5 @@
-//! Поведение Menu в реальном браузере (wasm-bindgen-test): клик и команда, отключённые пункты, фокус и клавиши,
-//! всплывающий режим (показ, клик снаружи, Escape, клик по пункту, `resize`, `z-index`, события).
+//! Menu behavior in a real browser (wasm-bindgen-test): click and command, disabled items, focus and keys,
+//! popup mode (show, outside click, Escape, item click, `resize`, `z-index`, events).
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -26,7 +26,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+        host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -91,17 +91,17 @@ async fn static_menu() {
     assert_eq!(count(&host, "li.p-menu-separator"), 1);
     assert!(!has(&host, ".p-menu-overlay"));
 
-    // клик: команда, без url переход отменён
+    // click: command, without url navigation is cancelled
     q(&host, "#m_0 .p-menu-item-link").click();
     leptos::task::tick().await;
     assert_eq!(log.lock().unwrap().clone(), ["focus", "new:New"]);
     assert!(q(&host, "#m_0").class_name().contains("p-focus"));
-    // отключённый
+    // disabled
     q(&host, "#m_1 .p-menu-item-content").click();
     assert!(!log.lock().unwrap().contains(&"off".to_string()));
     assert!(q(&host, "#m_1").class_name().contains("p-disabled"));
 
-    // фокус списка: первый доступный пункт (сперва сбросим состояние клика)
+    // list focus: the first available item (first reset the click state)
     q(&host, "#other").focus().unwrap();
     leptos::task::tick().await;
     let list = q(&host, "ul.p-menu-list");
@@ -109,7 +109,7 @@ async fn static_menu() {
     leptos::task::tick().await;
     assert_eq!(list.get_attribute("aria-activedescendant").as_deref(), Some("m_0"));
     assert_eq!(q(&host, "#m_0").get_attribute("data-p-focused").as_deref(), Some("true"));
-    // ↓ пропускает отключённый пункт, дальше последний остаётся последним
+    // Down skips the disabled item, then the last stays last
     press(&list, "ArrowDown", false);
     leptos::task::tick().await;
     assert_eq!(list.get_attribute("aria-activedescendant").as_deref(), Some("m_3"));
@@ -125,13 +125,13 @@ async fn static_menu() {
     press(&list, "ArrowUp", false);
     leptos::task::tick().await;
     assert_eq!(list.get_attribute("aria-activedescendant").as_deref(), Some("m_0"));
-    // Enter запускает команду фокусного пункта
+    // Enter runs the command of the focused item
     log.lock().unwrap().clear();
     press(&list, "Enter", false);
     leptos::task::tick().await;
     assert_eq!(log.lock().unwrap().clone(), ["new:New"]);
 
-    // потеря фокуса снимает состояние
+    // losing focus clears the state
     q(&host, "#other").focus().unwrap();
     leptos::task::tick().await;
     assert!(log.lock().unwrap().contains(&"blur".to_string()));
@@ -188,13 +188,13 @@ async fn popup_toggle_outside_escape_and_item() {
     assert_eq!(active_id().as_deref(), Some("p_list"));
     assert_eq!(log.lock().unwrap().clone(), ["show"]);
 
-    // клик по кнопке переключает
+    // click on the button toggles
     q(&host, "#btn").click();
     leptos::task::tick().await;
     assert!(!has(&host, ".p-menu"));
     assert_eq!(log.lock().unwrap().clone(), ["show", "hide"]);
 
-    // клик по пункту закрывает и вызывает команду
+    // click on an item closes and calls the command
     q(&host, "#btn").click();
     leptos::task::tick().await;
     sleep(20).await;
@@ -203,7 +203,7 @@ async fn popup_toggle_outside_escape_and_item() {
     assert!(!has(&host, ".p-menu"));
     assert!(log.lock().unwrap().contains(&"new:New".to_string()));
 
-    // клик снаружи
+    // outside click
     log.lock().unwrap().clear();
     q(&host, "#btn").click();
     leptos::task::tick().await;
@@ -213,7 +213,7 @@ async fn popup_toggle_outside_escape_and_item() {
     assert!(!has(&host, ".p-menu"));
     assert_eq!(log.lock().unwrap().clone(), ["show", "hide"]);
 
-    // клик внутри панели вне пунктов не закрывает
+    // click inside the panel outside items does not close
     q(&host, "#btn").click();
     leptos::task::tick().await;
     sleep(20).await;
@@ -221,20 +221,20 @@ async fn popup_toggle_outside_escape_and_item() {
     leptos::task::tick().await;
     assert!(has(&host, ".p-menu"));
 
-    // Escape закрывает и возвращает фокус на кнопку
+    // Escape closes and returns focus to the button
     press(&q(&host, ".p-menu-list"), "Escape", false);
     leptos::task::tick().await;
     assert!(!has(&host, ".p-menu"));
     assert_eq!(active_id().as_deref(), Some("btn"));
 
-    // Alt+↑ — то же
+    // Alt+Up — the same
     q(&host, "#btn").click();
     leptos::task::tick().await;
     press(&q(&host, ".p-menu-list"), "ArrowUp", true);
     leptos::task::tick().await;
     assert!(!has(&host, ".p-menu"));
 
-    // resize закрывает (на настольном устройстве)
+    // resize closes (on a desktop device)
     q(&host, "#btn").click();
     leptos::task::tick().await;
     sleep(20).await;
@@ -251,7 +251,7 @@ async fn popup_keys_and_programmatic_hide() {
     q(&host, "#btn").click();
     leptos::task::tick().await;
     let list = q(&host, ".p-menu-list");
-    // popup: при фокусе пункт не выбирается сам, первая ↓ выбирает первый
+    // popup: on focus an item is not selected by itself, the first Down selects the first one
     assert!(list.get_attribute("aria-activedescendant").is_none());
     press(&list, "ArrowDown", false);
     leptos::task::tick().await;

@@ -2,41 +2,41 @@
 
 ## Context
 
-Требования — в `specs/progressbar`. Исходники PrimeNG 21.1.10: `packages/primeng/src/progressbar/progressbar.ts`, `progressbar/style/progressbarstyle.ts`, демонстрации `apps/showcase/doc/progressbar`. Шаблон компонента — `docs/toggleswitch.md`, `docs/message.md`.
+Requirements are in `specs/progressbar`. PrimeNG 21.1.10 sources: `packages/primeng/src/progressbar/progressbar.ts`, `progressbar/style/progressbarstyle.ts`, demos `apps/showcase/doc/progressbar`. The component template is `docs/toggleswitch.md`, `docs/message.md`.
 
 ## Goals / Non-Goals
 
-**Goals:** разметка, классы, ARIA и `data-p` как в PrimeNG; реактивное значение и режим; статическая ветвь для неизменного индикатора.
-**Non-Goals:** собственные анимации, интеграция с формами.
+**Goals:** markup, classes, ARIA and `data-p` as in PrimeNG; reactive value and mode; a static branch for an unchanging indicator.
+**Non-Goals:** own animations, form integration.
 
 ## Decisions
 
-### D1. Корень — `<div>`
-Вместо хоста `<p-progressbar>`; ARIA-атрибуты и `data-p` — на корне.
+### D1. The root is a `<div>`
+Instead of the `<p-progressbar>` host; ARIA attributes and `data-p` are on the root.
 
-### D2. Значение
-`value: OptProp<f64>`; число выводится через `Display` (`50` без дробной части). В режиме `determinate` ширина — `value%` (при отсутствии значения — `0%`, как нулевая ширина в PrimeNG: `undefined%` отбрасывается браузером). `aria-valuenow` и `aria-level` выводятся только при заданном значении (PrimeNG выводит `aria-level="undefined%"` — осознанное отличие).
+### D2. Value
+`value: OptProp<f64>`; the number is rendered via `Display` (`50` without a fractional part). In `determinate` mode the width is `value%` (with no value - `0%`, like zero width in PrimeNG: `undefined%` is discarded by the browser). `aria-valuenow` and `aria-level` are rendered only when a value is set (PrimeNG renders `aria-level="undefined%"` - a deliberate difference).
 
-### D3. Подпись
-`div.p-progressbar-label` содержит `div` со значением и единицей, скрытый (`display: none`) при отсутствии значения или нуле; при `show_value = false` или заданном `content_template` внутренний `div` не выводится, а шаблон получает значение.
+### D3. Label
+`div.p-progressbar-label` contains a `div` with the value and unit, hidden (`display: none`) when there is no value or it is zero; with `show_value = false` or a set `content_template` the inner `div` is not rendered, and the template receives the value.
 
-### D4. Режимы
-`mode` может быть сигналом; содержимое пересобирается при смене режима. `indeterminate` выводит только `div.p-progressbar-value` без ширины и подписи.
+### D4. Modes
+`mode` may be a signal; the content is rebuilt when the mode changes. `indeterminate` renders only `div.p-progressbar-value` without width and label.
 
-### D5. Ветви
-Статическая — при `all_static!`; иначе реактивная. Содержимое строится функцией над свойствами, обёртка — макросом.
+### D5. Branches
+Static - with `all_static!`; otherwise reactive. The content is built by a function over the properties, the wrapper by a macro.
 
-### D6. Тесты
-SSR: структура обоих режимов, ARIA, ширина, подпись, `color`, шаблон, `pt`, паритет ветвей. Браузерных тестов нет: у компонента нет клиентского поведения.
+### D6. Tests
+SSR: structure of both modes, ARIA, width, label, `color`, template, `pt`, branch parity. No browser tests: the component has no client-side behavior.
 
 ## Risks / Trade-offs
 
-- [Число без форматирования локали] → как в PrimeNG; форматирование — на стороне вызывающего (`content_template`).
+- [Number without locale formatting] -> as in PrimeNG; formatting is on the caller's side (`content_template`).
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback is `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

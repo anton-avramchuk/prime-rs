@@ -1,11 +1,11 @@
-//! Listbox — порт `p-listbox` из PrimeNG 21.1.10.
+//! Listbox — port of `p-listbox` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-listbox`, шапка `p-listbox-header` (флажок «выбрать все» и поле поиска в
-//! `p-iconfield`), контейнер `p-listbox-list-container` и список `ul.p-listbox-list[role=listbox]` с вариантами
-//! `li.p-listbox-option`, заголовками групп `li.p-listbox-option-group` и сообщением пустого списка.
+//! Markup and classes as in PrimeNG: root `div.p-listbox`, header `p-listbox-header` ("select all" checkbox and search field in
+//! `p-iconfield`), container `p-listbox-list-container` and list `ul.p-listbox-list[role=listbox]` with options
+//! `li.p-listbox-option`, group headers `li.p-listbox-option-group` and the empty list message.
 //!
-//! Значение — двусторонний сигнал: `value: RwSignal<Option<String>>` в одиночном режиме и
-//! `values: RwSignal<Vec<String>>` при `multiple`; без них компонент ведёт внутреннее состояние.
+//! The value is a two-way signal: `value: RwSignal<Option<String>>` in single mode and
+//! `values: RwSignal<Vec<String>>` with `multiple`; without them the component keeps internal state.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -39,207 +39,207 @@ pub use logic::{
     select_single, selected_index, set_size, visible_entries, write_option_classes, write_root_classes,
 };
 
-/// Сколько миллисекунд копятся символы поиска набором.
+/// How many milliseconds type-ahead search characters accumulate.
 const SEARCH_RESET_MS: u64 = 500;
 
-/// Событие изменения выбора: новое значение (одиночный режим) или значения (`multiple`) и исходное событие.
+/// Selection change event: the new value (single mode) or values (`multiple`) and the source event.
 #[derive(Clone, Debug)]
 pub struct ListboxChange {
-    /// Новое значение в одиночном режиме (`None` — сброшено или `multiple`).
+    /// New value in single mode (`None` means cleared or `multiple`).
     pub value: Option<String>,
-    /// Новые значения в режиме `multiple` (в одиночном — одно или ни одного).
+    /// New values in `multiple` mode (in single mode, one or none).
     pub values: Vec<String>,
-    /// Исходное событие.
+    /// Source event.
     pub original_event: web_sys::Event,
 }
 
-/// Событие клика или двойного клика по варианту.
+/// Option click or double-click event.
 #[derive(Clone, Debug)]
 pub struct ListboxEvent {
-    /// Вариант.
+    /// Option.
     pub option: ListboxOption,
-    /// Исходное событие.
+    /// Source event.
     pub original_event: web_sys::Event,
 }
 
-/// Событие поиска: строка и исходное событие.
+/// Search event: the string and the source event.
 #[derive(Clone, Debug)]
 pub struct ListboxFilter {
-    /// Строка поиска.
+    /// Search string.
     pub filter: String,
-    /// Исходное событие `input`.
+    /// Source `input` event.
     pub original_event: web_sys::Event,
 }
 
-/// Событие флажка «выбрать все».
+/// "Select all" checkbox event.
 #[derive(Clone, Debug)]
 pub struct ListboxSelectAll {
-    /// Будут ли выбраны все варианты после клика.
+    /// Whether all options will be selected after the click.
     pub checked: bool,
-    /// Исходное событие.
+    /// Source event.
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей Listbox.
+/// Pass-through of Listbox parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ListboxPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Шапка.
+    /// Header.
     pub header: Pt,
-    /// Поле поиска.
+    /// Search field.
     pub filter: Pt,
-    /// Контейнер списка.
+    /// List container.
     pub list_container: Pt,
-    /// Список.
+    /// List.
     pub list: Pt,
-    /// Заголовок группы.
+    /// Group header.
     pub option_group: Pt,
-    /// Вариант.
+    /// Option.
     pub option: Pt,
-    /// Галочка выбранного варианта.
+    /// Checkmark of the selected option.
     pub option_check_icon: Pt,
-    /// Пустой значок невыбранного варианта.
+    /// Empty icon of an unselected option.
     pub option_blank_icon: Pt,
-    /// Сообщение пустого списка.
+    /// Empty list message.
     pub empty_message: Pt,
 }
 
-/// Список вариантов с выбором одного или нескольких значений.
+/// List of options with selection of one or several values.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` и `values` — двусторонние сигналы.
+/// Each property accepts a value or a signal; `value` and `values` are two-way signals.
 #[component]
 pub fn Listbox(
-    /// Варианты (без групп).
+    /// Options (without groups).
     #[prop(optional, into)]
     options: Prop<Vec<ListboxOption>>,
-    /// Группы вариантов; если заданы, `options` не используется.
+    /// Option groups; if set, `options` is not used.
     #[prop(optional, into)]
     groups: Prop<Vec<ListboxGroup>>,
-    /// Двусторонний сигнал значения (одиночный режим).
+    /// Two-way value signal (single mode).
     #[prop(optional)]
     value: Option<RwSignal<Option<String>>>,
-    /// Начальное значение, если `value` не передан.
+    /// Initial value if `value` is not passed.
     #[prop(optional, into)]
     default_value: OptProp<String>,
-    /// Двусторонний сигнал значений (`multiple`).
+    /// Two-way values signal (`multiple`).
     #[prop(optional)]
     values: Option<RwSignal<Vec<String>>>,
-    /// Начальные значения, если `values` не передан.
+    /// Initial values if `values` is not passed.
     #[prop(optional)]
     default_values: Vec<String>,
-    /// Выбор нескольких значений.
+    /// Selection of several values.
     #[prop(optional, into)]
     multiple: Prop<bool>,
-    /// Флажки у вариантов и «выбрать все» (только с `multiple`).
+    /// Checkboxes on options and "select all" (only with `multiple`).
     #[prop(optional, into)]
     checkbox: Prop<bool>,
-    /// Поле поиска в шапке.
+    /// Search field in the header.
     #[prop(optional, into)]
     filter: Prop<bool>,
-    /// Подсказка поля поиска.
+    /// Search field placeholder.
     #[prop(optional, into)]
     filter_placeholder: OptProp<String>,
-    /// Галочка у выбранного варианта.
+    /// Checkmark on the selected option.
     #[prop(optional, into)]
     checkmark: Prop<bool>,
-    /// Чередующийся фон вариантов.
+    /// Striped option background.
     #[prop(optional, into)]
     striped: Prop<bool>,
-    /// Подсвечивать выбранные варианты (по умолчанию `true`).
+    /// Highlight selected options (default `true`).
     #[prop(optional, into)]
     highlight_on_select: OptProp<bool>,
-    /// Выбор как в списках ОС: без `Ctrl`/`⌘` клик заменяет выбор.
+    /// OS-style list selection: without `Ctrl`/`⌘` a click replaces the selection.
     #[prop(optional, into)]
     meta_key_selection: Prop<bool>,
-    /// Выбирать вариант при переносе на него фокуса стрелками.
+    /// Select an option when arrow keys move focus to it.
     #[prop(optional, into)]
     select_on_focus: Prop<bool>,
-    /// Фокусировать первый вариант при фокусе списка (по умолчанию `true`).
+    /// Focus the first option when the list receives focus (default `true`).
     #[prop(optional, into)]
     auto_option_focus: OptProp<bool>,
-    /// Переносить фокус на вариант под указателем (по умолчанию `true`).
+    /// Move focus to the option under the pointer (default `true`).
     #[prop(optional, into)]
     focus_on_hover: OptProp<bool>,
-    /// Флажок «выбрать все» в шапке (по умолчанию `true`).
+    /// "Select all" checkbox in the header (default `true`).
     #[prop(optional, into)]
     show_toggle_all: OptProp<bool>,
-    /// Только чтение.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// На всю ширину.
+    /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Высота списка, при превышении которой появляется прокрутка (по умолчанию `14rem`).
+    /// List height above which scrolling appears (default `14rem`).
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-    /// Атрибут `tabindex` списка (по умолчанию 0).
+    /// `tabindex` attribute of the list (default 0).
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `id` корня; по нему строятся идентификаторы вариантов.
+    /// `id` attribute of the root; option identifiers are built from it.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Встроенный стиль списка.
+    /// Inline style of the list.
     #[prop(optional, into)]
     list_style: OptProp<String>,
-    /// Дополнительный класс контейнера списка.
+    /// Extra class of the list container.
     #[prop(optional, into)]
     list_style_class: OptProp<String>,
-    /// Сообщение пустого списка.
+    /// Empty list message.
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-    /// Сообщение пустого результата поиска.
+    /// Empty search result message.
     #[prop(optional, into)]
     empty_filter_message: OptProp<String>,
-    /// Атрибут `aria-label` списка.
+    /// `aria-label` attribute of the list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-label` поля поиска.
+    /// `aria-label` attribute of the search field.
     #[prop(optional, into)]
     aria_filter_label: OptProp<String>,
-    /// Содержимое варианта; получает вариант и признак выбора.
+    /// Option content; receives the option and the selected flag.
     #[prop(optional, into)]
     option: Option<Callback<(ListboxOption, bool), AnyView>>,
-    /// Содержимое заголовка группы.
+    /// Group header content.
     #[prop(optional, into)]
     group: Option<Callback<ListboxGroup, AnyView>>,
-    /// Содержимое над шапкой списка (слот `header` PrimeNG: заголовок списка).
+    /// Content above the list header (PrimeNG `header` slot: list title).
     #[prop(optional, into)]
     header_content: Option<ViewFn>,
-    /// Вызывается после смены выбора пользователем.
+    /// Called after the user changes the selection.
     #[prop(optional, into)]
     on_change: Option<Callback<ListboxChange>>,
-    /// Вызывается при клике по доступному варианту.
+    /// Called on click of an enabled option.
     #[prop(optional, into)]
     on_click: Option<Callback<ListboxEvent>>,
-    /// Вызывается при двойном клике по доступному варианту.
+    /// Called on double click of an enabled option.
     #[prop(optional, into)]
     on_dbl_click: Option<Callback<ListboxEvent>>,
-    /// Вызывается при вводе в поле поиска.
+    /// Called on input in the search field.
     #[prop(optional, into)]
     on_filter: Option<Callback<ListboxFilter>>,
-    /// Вызывается при получении фокуса списком.
+    /// Called when the list receives focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса списком.
+    /// Called when the list loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при клике по флажку «выбрать все».
+    /// Called on click of the "select all" checkbox.
     #[prop(optional, into)]
     on_select_all_change: Option<Callback<ListboxSelectAll>>,
-    /// Pass-through частей.
+    /// Part pass-through.
     #[prop(optional)]
     pt: Option<ListboxPt>,
 ) -> impl IntoView {
@@ -366,17 +366,17 @@ pub fn Listbox(
     }
 }
 
-/// Булев атрибут `data-p-*`: `"true"` при истине, иначе атрибута нет.
+/// Boolean `data-p-*` attribute: `"true"` when true, otherwise no attribute.
 fn flag(f: impl Fn() -> bool + Send + Sync + 'static) -> impl Fn() -> Option<&'static str> + Send + Sync + 'static {
     move || f().then_some("true")
 }
 
-/// Реактивный атрибут с произвольным именем; `None` — атрибута нет.
+/// Reactive attribute with an arbitrary name; `None` means no attribute.
 fn reactive_attr(name: &'static str, f: impl Fn() -> Option<String> + Send + Sync + 'static) -> AnyAttribute {
     custom_attribute(name, f).into_any_attr()
 }
 
-/// Нажат ли `Ctrl`/`⌘` в событии.
+/// Whether `Ctrl`/`⌘` is pressed in the event.
 fn meta_key(event: &web_sys::Event) -> bool {
     if let Some(m) = event.dyn_ref::<web_sys::MouseEvent>() {
         m.meta_key() || m.ctrl_key()
@@ -387,7 +387,7 @@ fn meta_key(event: &web_sys::Event) -> bool {
     }
 }
 
-/// Шапка: флажок «выбрать все» и поле поиска.
+/// Header: "select all" checkbox and search field.
 fn header_view(props: &Arc<Props>, pt: &Arc<ListboxPt>) -> impl IntoView + use<> {
     let (class, attrs) = (pt.header.merge_class("p-listbox-header"), pt.header.attrs());
     let toggle = {
@@ -414,7 +414,7 @@ fn header_view(props: &Arc<Props>, pt: &Arc<ListboxPt>) -> impl IntoView + use<>
     view! { <div class={class} {..attrs}>{toggle}{search}</div> }
 }
 
-/// Поле поиска со значком.
+/// Search field with an icon.
 fn filter_view(props: &Arc<Props>, pt: &Arc<ListboxPt>) -> impl IntoView + use<> {
     let class = pt.filter.merge_class("p-inputtext p-component p-listbox-filter");
     let attrs = pt.filter.attrs();
@@ -479,7 +479,7 @@ fn filter_view(props: &Arc<Props>, pt: &Arc<ListboxPt>) -> impl IntoView + use<>
     }
 }
 
-/// Флажок как в `Checkbox`: разметка и классы те же, состояние берётся из замыканий. Клик по полю не меняет его сам.
+/// Checkbox as in `Checkbox`: same markup and classes, state comes from closures. A click on the field does not change it itself.
 fn checkbox_view(
     props: &Arc<Props>,
     checked: Arc<dyn Fn() -> bool + Send + Sync>,
@@ -567,7 +567,7 @@ fn checkbox_view(
     .into_any()
 }
 
-/// Содержимое контейнера: сообщение пустого списка или список. Читает только варианты, группы и строку поиска.
+/// Container content: the empty list message or the list. Reads only options, groups and the search string.
 fn content_view(props: &Arc<Props>, pt: &Arc<ListboxPt>) -> impl IntoView + use<> {
     let entries = props.entries();
     if entries.is_empty() {
@@ -587,7 +587,7 @@ fn content_view(props: &Arc<Props>, pt: &Arc<ListboxPt>) -> impl IntoView + use<
     Either::Right(list_view(props, pt, views))
 }
 
-/// Список `ul` с вариантами.
+/// `ul` list with options.
 fn list_view(props: &Arc<Props>, pt: &Arc<ListboxPt>, items: Vec<AnyView>) -> impl IntoView + use<> {
     let class = pt.list.merge_class("p-listbox-list");
     let attrs = pt.list.attrs();
@@ -640,7 +640,7 @@ fn list_view(props: &Arc<Props>, pt: &Arc<ListboxPt>, items: Vec<AnyView>) -> im
     }
 }
 
-/// Заголовок группы.
+/// Group header.
 fn group_view(props: &Arc<Props>, pt: &Arc<ListboxPt>, index: usize, group: usize, label: &str) -> AnyView {
     let id = format!("{}_{}", props.id, index);
     let (class, attrs) = (pt.option_group.merge_class("p-listbox-option-group"), pt.option_group.attrs());
@@ -651,7 +651,7 @@ fn group_view(props: &Arc<Props>, pt: &Arc<ListboxPt>, index: usize, group: usiz
     view! { <li id={id} class={class} role="option" {..attrs}>{content}</li> }.into_any()
 }
 
-/// Вариант.
+/// Option.
 fn option_view(props: &Arc<Props>, pt: &Arc<ListboxPt>, index: usize, option: &ListboxOption, size: usize, pos: usize) -> AnyView {
     let id = format!("{}_{}", props.id, index);
     let value = option.value.clone();
@@ -724,7 +724,7 @@ fn option_view(props: &Arc<Props>, pt: &Arc<ListboxPt>, index: usize, option: &L
     .into_any()
 }
 
-/// Содержимое варианта: флажок или отметка, затем метка или шаблон.
+/// Option content: checkbox or checkmark, then the label or template.
 fn option_content(props: &Arc<Props>, pt: &Arc<ListboxPt>, option: &ListboxOption, selected: bool) -> AnyView {
     let checkbox = (props.checkbox.get() && props.multiple.get()).then(|| {
         let (checked, disabled) = (props.clone(), props.clone());
@@ -755,19 +755,19 @@ fn option_content(props: &Arc<Props>, pt: &Arc<ListboxPt>, option: &ListboxOptio
     view! { {checkbox}{mark}{body} }.into_any()
 }
 
-/// Свойства и состояние экземпляра.
+/// Instance properties and state.
 struct Props {
     options: Prop<Vec<ListboxOption>>,
     groups: Prop<Vec<ListboxGroup>>,
     value: RwSignal<Option<String>>,
     values: RwSignal<Vec<String>>,
-    /// Строка поиска.
+    /// Search string.
     filter_text: RwSignal<String>,
-    /// Индекс элемента с фокусом в плоском списке.
+    /// Index of the focused item in the flat list.
     focused_index: RwSignal<Option<usize>>,
-    /// Опорный индекс диапазона (`startRangeIndex`).
+    /// Range anchor index (`startRangeIndex`).
     start_range: RwSignal<Option<usize>>,
-    /// Список в фокусе.
+    /// List is focused.
     focused: RwSignal<bool>,
     id: String,
     multiple: Prop<bool>,
@@ -813,15 +813,15 @@ struct Props {
     container_ref: NodeRef<html::Div>,
     list_ref: NodeRef<html::Ul>,
     filter_ref: NodeRef<html::Input>,
-    /// Накопленные символы поиска набором.
+    /// Accumulated type-ahead search characters.
     search: StoredValue<String>,
     search_timer: StoredValue<Option<TimeoutHandle>, LocalStorage>,
-    /// Последний выбор был после касания: мета-режим отключён (`optionTouched`).
+    /// The last selection came after a touch: meta mode is disabled (`optionTouched`).
     touched: StoredValue<bool>,
 }
 
 impl Props {
-    /// Плоский список видимых элементов (с подпиской).
+    /// Flat list of visible items (subscribing).
     fn entries(&self) -> Vec<Entry> {
         visible_entries(&self.options.get(), &self.groups.get(), &self.filter_text.get())
     }
@@ -830,7 +830,7 @@ impl Props {
         untrack(|| self.entries())
     }
 
-    /// Выбранные значения (с подпиской).
+    /// Selected values (subscribing).
     fn selected(&self) -> Vec<String> {
         if self.multiple.get() { self.values.get() } else { self.value.get().into_iter().collect() }
     }
@@ -839,7 +839,7 @@ impl Props {
         untrack(|| self.selected())
     }
 
-    /// Выбрано ли значение (с подпиской).
+    /// Whether the value is selected (subscribing).
     fn is_selected(&self, value: &str) -> bool {
         if self.multiple.get() {
             self.values.with(|vs| vs.iter().any(|v| v == value))
@@ -848,7 +848,7 @@ impl Props {
         }
     }
 
-    /// Выбраны ли все видимые варианты (с подпиской).
+    /// Whether all visible options are selected (subscribing).
     fn all_selected_now(&self) -> bool {
         all_selected(&self.entries(), &self.selected())
     }
@@ -857,7 +857,7 @@ impl Props {
         self.toggle_all_visible() || self.filter.get()
     }
 
-    /// Показывать ли флажок «выбрать все».
+    /// Whether to show the "select all" checkbox.
     fn toggle_all_visible(&self) -> bool {
         self.checkbox.get() && self.multiple.get() && self.show_toggle_all.get().unwrap_or(true)
     }
@@ -870,12 +870,12 @@ impl Props {
         }
     }
 
-    /// Подпись флажка «выбрать все» для чтения с экрана.
+    /// Label of the "select all" checkbox for screen readers.
     fn toggle_all_text(&self) -> String {
         if self.all_selected_now() { self.select_all_label.clone() } else { self.unselect_all_label.clone() }
     }
 
-    /// Снимает таймер поиска набором.
+    /// Clears the type-ahead search timer.
     fn release(&self) {
         if let Some(handle) = self.search_timer.try_update_value(Option::take).flatten() {
             handle.clear();
@@ -886,9 +886,9 @@ impl Props {
         format!("{}_{}", self.id, index)
     }
 
-    // ---- выбор ----
+    // ---- selection ----
 
-    /// `updateModel`: записывает значения в модель и вызывает `on_change`.
+    /// `updateModel`: writes values to the model and calls `on_change`.
     fn update_model(&self, values: Vec<String>, event: web_sys::Event) {
         let value = if self.multiple.get_untracked() {
             self.values.set(values.clone());
@@ -903,7 +903,7 @@ impl Props {
         }
     }
 
-    /// `onOptionSelect`: клик, Enter или Space по варианту.
+    /// `onOptionSelect`: click, Enter or Space on an option.
     fn select_option(&self, option: &ListboxOption, event: web_sys::Event, index: Option<usize>) {
         if self.disabled.get_untracked() || option.disabled || self.readonly.get_untracked() {
             return;
@@ -934,7 +934,7 @@ impl Props {
         }
     }
 
-    /// `onOptionSelectRange`: выбор диапазона между опорным индексом и фокусным.
+    /// `onOptionSelectRange`: selects the range between the anchor index and the focused one.
     fn select_range_event(&self, event: &web_sys::Event, start: Option<usize>, end: Option<usize>) {
         let entries = self.entries_untracked();
         let selected = self.selected_untracked();
@@ -947,7 +947,7 @@ impl Props {
         self.update_model(select_range(&entries, start, end), event.clone());
     }
 
-    /// `onToggleAll`: клик по флажку «выбрать все».
+    /// `onToggleAll`: click on the "select all" checkbox.
     fn toggle_all(&self, event: web_sys::Event) {
         if self.disabled.get_untracked() || self.readonly.get_untracked() {
             return;
@@ -960,7 +960,7 @@ impl Props {
         self.update_model(if all { Vec::new() } else { select_all(&entries) }, event);
     }
 
-    /// `onHeaderCheckboxKeyDown`: Enter переключает, Tab уводит фокус в список.
+    /// `onHeaderCheckboxKeyDown`: Enter toggles, Tab moves focus into the list.
     fn header_checkbox_key(&self, e: web_sys::KeyboardEvent) {
         if self.disabled.get_untracked() {
             e.prevent_default();
@@ -980,9 +980,9 @@ impl Props {
         }
     }
 
-    // ---- фокус ----
+    // ---- focus ----
 
-    /// Переносит подсветку на элемент без выбора и без прокрутки (мышь).
+    /// Moves the highlight to an item without selecting and without scrolling (mouse).
     fn set_focused(&self, index: Option<usize>) {
         if self.disabled.get_untracked() {
             return;
@@ -1005,7 +1005,7 @@ impl Props {
         }
     }
 
-    /// `changeFocusedOptionIndex`: перенос фокуса клавишами; при `select_on_focus` — с выбором.
+    /// `changeFocusedOptionIndex`: moves focus by keys; with `select_on_focus`, with selection.
     fn change_focused(&self, event: &web_sys::Event, index: Option<usize>, shift: bool) {
         if self.focused_index.get_untracked() == index {
             return;
@@ -1063,7 +1063,7 @@ impl Props {
         self.start_range.set(None);
     }
 
-    // ---- поиск ----
+    // ---- search ----
 
     fn filter_input(&self, e: web_sys::Event) {
         let Some(input) = self.filter_ref.get_untracked() else { return };
@@ -1076,7 +1076,7 @@ impl Props {
         }
     }
 
-    /// Поиск набором (`searchOptions`): символы копятся 500 мс.
+    /// Type-ahead search (`searchOptions`): characters accumulate for 500 ms.
     fn search_by_typing(self: &Arc<Self>, event: &web_sys::Event, key: &str) {
         let typed = {
             let mut typed = self.search.get_value();
@@ -1109,9 +1109,9 @@ impl Props {
         self.search_timer.set_value(handle);
     }
 
-    // ---- клавиатура ----
+    // ---- keyboard ----
 
-    /// `onListKeyDown` списка и `onFilterKeyDown` поля поиска (`in_filter`).
+    /// `onListKeyDown` of the list and `onFilterKeyDown` of the search field (`in_filter`).
     fn key_down(self: &Arc<Self>, e: web_sys::KeyboardEvent, in_filter: bool) {
         if self.disabled.get_untracked() {
             return;
@@ -1173,7 +1173,7 @@ impl Props {
         e.prevent_default();
     }
 
-    /// `Home` и `End`: в поле поиска двигают курсор, иначе фокус на первый или последний вариант.
+    /// `Home` and `End`: in the search field they move the cursor, otherwise focus goes to the first or last option.
     fn home_end(&self, e: &web_sys::KeyboardEvent, in_filter: bool, home: bool) {
         if in_filter {
             if let Some(input) = self.filter_ref.get_untracked() {
@@ -1198,7 +1198,7 @@ impl Props {
         e.prevent_default();
     }
 
-    /// `PageDown`/`PageUp`: прокрутка контейнера на высоту видимой области.
+    /// `PageDown`/`PageUp`: scrolls the container by the height of the visible area.
     fn page(&self, e: &web_sys::KeyboardEvent, down: bool) {
         if let Some(container) = self.container_ref.get_untracked() {
             let el: web_sys::Element = container.unchecked_into();

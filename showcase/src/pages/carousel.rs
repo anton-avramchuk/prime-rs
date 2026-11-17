@@ -1,6 +1,6 @@
-//! Страница Carousel: демонстрации `basic`, `responsive`, `circular` (автопрокрутка) и `vertical` из showcase PrimeNG
-//! (`apps/showcase/doc/carousel`). Товары — локальный список, фотографии заменены цветными плитками; значки PrimeIcons
-//! (`pi-heart`, `pi-shopping-cart`) заменены значками `prime-icons`.
+//! Carousel page: the `basic`, `responsive`, `circular` (autoplay) and `vertical` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/carousel`). Products are a local list, photos are replaced with colored tiles; PrimeIcons icons
+//! (`pi-heart`, `pi-shopping-cart`) are replaced with `prime-icons` icons.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -70,7 +70,7 @@ fn responsive() -> Vec<Responsive> {
     ]
 }
 
-/// Страница `/carousel`.
+/// Page `/carousel`.
 #[component]
 pub fn CarouselPage() -> impl IntoView {
     view! {

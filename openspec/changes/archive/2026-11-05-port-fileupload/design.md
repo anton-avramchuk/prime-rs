@@ -2,40 +2,40 @@
 
 ## Context
 
-Требования — в `specs/fileupload`. Исходники PrimeNG 21.1.10: `fileupload/fileupload.ts` (`FileUpload`, `FileContent`), `style/fileuploadstyle.ts`, `@primeuix/styles/fileupload`. Образцы: `prime-button`, `prime-message`, `prime-progressbar`, `prime-badge` (готовые части), `prime-drawer`/`prime-colorpicker` (структура крейта, тесты).
+Requirements are in `specs/fileupload`. PrimeNG 21.1.10 sources: `fileupload/fileupload.ts` (`FileUpload`, `FileContent`), `style/fileuploadstyle.ts`, `@primeuix/styles/fileupload`. Models: `prime-button`, `prime-message`, `prime-progressbar`, `prime-badge` (ready-made parts), `prime-drawer`/`prime-colorpicker` (crate structure, tests).
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, те же проверки и подписи, реальная отправка через XHR.
+**Goals:** the same DOM, the same checks and labels, real sending through XHR.
 
-**Non-Goals:** шаблоны Angular (`file`, `content`), IE11, `Bind`, `getBlockableElement`.
+**Non-Goals:** Angular templates (`file`, `content`), IE11, `Bind`, `getBlockableElement`.
 
 ## Decisions
 
-### D1. Чистая логика (`files.rs`)
-`FileInfo {name, mime, size}`; `format_size(bytes, units)`, `is_type_valid(info, accept)`, `validate(info, accept, max_size) -> Result<(), Rejection>`, `is_duplicate`, `limit_exceeded(auto, selected, uploaded, limit)`, `choose_disabled`, `basic_label`. Табличные тесты на формулах TS.
+### D1. Pure logic (`files.rs`)
+`FileInfo {name, mime, size}`; `format_size(bytes, units)`, `is_type_valid(info, accept)`, `validate(info, accept, max_size) -> Result<(), Rejection>`, `is_duplicate`, `limit_exceeded(auto, selected, uploaded, limit)`, `choose_disabled`, `basic_label`. Table tests on the TS formulas.
 
-### D2. Состояние
-`FileUploadRef` (Copy): `files`, `uploaded` — `RwSignal<Vec<Entry>, LocalStorage>` (`Entry {file: web_sys::File, info, object_url}`), `messages`, `progress`, `uploading`, `uploaded_count`, `highlight`, ссылка на `input`. Методы `clear`, `upload`, `choose`.
+### D2. State
+`FileUploadRef` (Copy): `files`, `uploaded` — `RwSignal<Vec<Entry>, LocalStorage>` (`Entry {file: web_sys::File, info, object_url}`), `messages`, `progress`, `uploading`, `uploaded_count`, `highlight`, a reference to `input`. Methods `clear`, `upload`, `choose`.
 
-### D3. Отправка
-`XmlHttpRequest` + `FormData`; замыкания `progress`/`load`/`error` — `Closure::forget` (одна утечка на загрузку). Ответ с кодом 2xx — `on_upload`, иначе `on_error`; после ответа `uploaded += files`, `files.clear`. Объекты URL изображений освобождаются при удалении/очистке и размонтировании.
+### D3. Sending
+`XmlHttpRequest` + `FormData`; `progress`/`load`/`error` closures — `Closure::forget` (one leak per upload). A 2xx response — `on_upload`, otherwise `on_error`; after the response `uploaded += files`, `files.clear`. Image URL objects are released on removal/clear and unmount.
 
-### D4. Выбор и перетаскивание
-`change` поля и `drop` содержимого читают `FileList`; значение поля сбрасывается после обработки. `dragover` ставит подсветку и `preventDefault`.
+### D4. Selection and drag and drop
+The field's `change` and the content's `drop` read the `FileList`; the field value is reset after handling. `dragover` sets the highlight and `preventDefault`.
 
-### D5. Тесты
-Логика — таблицы. SSR: разметка режимов, состояния кнопок, `auto`. Браузерные `tests/web.rs` одним последовательным тестом: файл подставляется в поле через `DataTransfer`; выбор, валидация, лимит, удаление, `clear`, `custom_upload`, отправка на несуществующий адрес (ошибка 404/сеть), drop. e2e: `setInputFiles`, мок ответа сервера `page.route`.
+### D5. Tests
+Logic — tables. SSR: mode markup, button states, `auto`. Browser `tests/web.rs` as one sequential test: a file is put into the input through `DataTransfer`; selection, validation, limit, removal, `clear`, `custom_upload`, sending to a non-existent address (404/network error), drop. e2e: `setInputFiles`, server response mock `page.route`.
 
 ## Risks / Trade-offs
 
-- [Перетаскивание] Событие `drop` в e2e эмулируется `DataTransfer`.
-- [Утечка замыканий XHR] Одно небольшое замыкание на загрузку.
+- [Drag and drop] The `drop` event is emulated in e2e with `DataTransfer`.
+- [XHR closure leak] One small closure per upload.
 
 ## Open Questions
 
-- Нет.
+- None.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

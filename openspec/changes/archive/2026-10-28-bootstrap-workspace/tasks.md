@@ -1,78 +1,78 @@
 # Tasks
 
-## 1. Каркас workspace и тулчейн
+## 1. Workspace skeleton and toolchain
 
-- [x] 1.1 Создать корневой `Cargo.toml` (workspace, `resolver = "3"`, `[workspace.dependencies]`, `[workspace.lints]`) и `rust-toolchain.toml` (stable 1.98, wasm32, rustfmt, clippy); проверить `cargo metadata` без ошибок
-- [x] 1.2 Добавить `.cargo/config.toml` (rust-lld для windows-msvc и linux-gnu) и профили из design D10; проверить `cargo build -p xtask` и размер `target/` после сборки
-- [x] 1.3 Создать пустые крейты `prime-core`, `prime-dom`, `prime-theme`, `prime-icons` с features `ssr`/`hydrate`; проверить `cargo check --workspace` и `cargo check -p prime-core --target wasm32-unknown-unknown --features hydrate`
-- [x] 1.4 Добавить `LICENSE` (MIT), `NOTICE` (PrimeNG 21.1.10), строку `nul` в `.gitignore`, `deny.toml`; проверить `cargo deny check`
-- [x] 1.5 Написать `README.md` и `docs/build.md` (структура, `CARGO_TARGET_DIR` для Windows и Linux, команды xtask); проверить, что описанные команды выполняются как написано
+- [x] 1.1 Create the root `Cargo.toml` (workspace, `resolver = "3"`, `[workspace.dependencies]`, `[workspace.lints]`) and `rust-toolchain.toml` (stable 1.98, wasm32, rustfmt, clippy); check that `cargo metadata` has no errors
+- [x] 1.2 Add `.cargo/config.toml` (rust-lld for windows-msvc and linux-gnu) and the profiles from design D10; check `cargo build -p xtask` and the size of `target/` after the build
+- [x] 1.3 Create empty crates `prime-core`, `prime-dom`, `prime-theme`, `prime-icons` with the `ssr`/`hydrate` features; check `cargo check --workspace` and `cargo check -p prime-core --target wasm32-unknown-unknown --features hydrate`
+- [x] 1.4 Add `LICENSE` (MIT), `NOTICE` (PrimeNG 21.1.10), a `nul` line in `.gitignore`, `deny.toml`; check `cargo deny check`
+- [x] 1.5 Write `README.md` and `docs/build.md` (structure, `CARGO_TARGET_DIR` for Windows and Linux, xtask commands); check that the described commands run as written
 
-## 2. xtask и upstream-tracking
+## 2. xtask and upstream-tracking
 
-- [x] 2.1 Создать `xtask` с подкомандами-заглушками и alias `cargo xtask` в `.cargo/config.toml`; проверить `cargo xtask --help`
-- [x] 2.2 Создать `upstream.toml` (версия, коммит, путь, версии `@primeuix/*`) и модуль чтения с переопределением `PRIMENG_PATH`; проверить юнит-тестом чтение и переопределение
-- [x] 2.3 Реализовать `xtask upstream-diff` и тесты на временном git-репозитории (сценарии «изменился» и «не изменился»)
-- [x] 2.4 Реализовать `xtask gen-spec <name>` с шаблоном разделов (props, события, DOM/классы, a11y, клавиатура, производительность, ссылка на исходник и коммит); проверить snapshot-тестом (`insta`) на `button` и ошибкой на несуществующем компоненте
-- [x] 2.5 Реализовать `xtask clean` (cargo-sweep + отчёт об освобождённом объёме) и документировать в `docs/build.md`; проверить запуском на реальном `target/`
+- [x] 2.1 Create `xtask` with stub subcommands and the `cargo xtask` alias in `.cargo/config.toml`; check `cargo xtask --help`
+- [x] 2.2 Create `upstream.toml` (version, commit, path, `@primeuix/*` versions) and a reading module with `PRIMENG_PATH` override; check reading and override with a unit test
+- [x] 2.3 Implement `xtask upstream-diff` and tests on a temporary git repository ("changed" and "unchanged" scenarios)
+- [x] 2.4 Implement `xtask gen-spec <name>` with a section template (props, events, DOM/classes, a11y, keyboard, performance, link to the source and commit); check with a snapshot test (`insta`) on `button` and with an error for a nonexistent component
+- [x] 2.5 Implement `xtask clean` (cargo-sweep + a report of the freed size) and document it in `docs/build.md`; check by running on a real `target/`
 
 ## 3. prime-core
 
-- [x] 3.1 Реализовать `PrimeConfig` и провайдер через Leptos context со значениями по умолчанию; проверить юнит-тестами сценарии «не задан» и «переопределён»
-- [x] 3.2 Реализовать `ClassNames` (одна аллокация, без пустых и повторяющихся классов) и `Memo`-обёртку; проверить юнит-тестами и ассертом числа аллокаций через `dhat`
-- [x] 3.3 Реализовать общие пропсы `disabled`, `invalid`, `variant`, `size` (значения как в PrimeNG) и тип `Pt` для корня; проверить тестом рендера корня с `pt`
-- [x] 3.4 Реализовать менеджер z-index по группам с освобождением; проверить юнит-тестом «два оверлея подряд» и освобождения
-- [x] 3.5 Задокументировать публичное API `prime-core` (rustdoc с примерами) и проверить `cargo test --doc -p prime-core`
+- [x] 3.1 Implement `PrimeConfig` and a provider via Leptos context with defaults; check the "not set" and "overridden" scenarios with unit tests
+- [x] 3.2 Implement `ClassNames` (one allocation, no empty or repeated classes) and a `Memo` wrapper; check with unit tests and an allocation count assertion via `dhat`
+- [x] 3.3 Implement the shared props `disabled`, `invalid`, `variant`, `size` (values as in PrimeNG) and the `Pt` type for the root; check with a root render test with `pt`
+- [x] 3.4 Implement a z-index manager by groups with release; check with a "two overlays in a row" unit test and a release test
+- [x] 3.5 Document the public `prime-core` API (rustdoc with examples) and check `cargo test --doc -p prime-core`
 
 ## 4. prime-dom
 
-- [x] 4.1 Реализовать порт позиционирования (`absolutePosition`, `relativePosition`) с правилами переворота как в PrimeNG; проверить `wasm-bindgen-test` на сценариях «достаточно места» и «не помещается снизу»
-- [x] 4.2 Реализовать focus trap (Tab и Shift+Tab по кругу); проверить `wasm-bindgen-test` на первом и последнем элементах
-- [x] 4.3 Реализовать портал в `body` и ripple как директиву; проверить `wasm-bindgen-test`, что содержимое попадает в `body` и удаляется при размонтировании
-- [x] 4.4 Убедиться, что весь публичный API безопасен для SSR; проверить тестами `cargo test -p prime-dom --features ssr` на нативной цели без паник
-- [x] 4.5 Задокументировать API `prime-dom` в rustdoc; проверить `cargo test --doc -p prime-dom`
+- [x] 4.1 Implement the positioning port (`absolutePosition`, `relativePosition`) with flip rules as in PrimeNG; check with `wasm-bindgen-test` on the "enough room" and "does not fit below" scenarios
+- [x] 4.2 Implement a focus trap (Tab and Shift+Tab cycling); check with `wasm-bindgen-test` on the first and last elements
+- [x] 4.3 Implement a portal into `body` and ripple as a directive; check with `wasm-bindgen-test` that the content ends up in `body` and is removed on unmount
+- [x] 4.4 Make sure the whole public API is SSR-safe; check with `cargo test -p prime-dom --features ssr` tests on the native target without panics
+- [x] 4.5 Document the `prime-dom` API in rustdoc; check `cargo test --doc -p prime-dom`
 
 ## 5. prime-icons
 
-- [x] 5.1 Реализовать общий компонент `Icon` (размер, `spin`, класс, a11y-атрибуты) в `prime-icons`; проверить тестами обоих a11y-сценариев
-- [x] 5.2 Реализовать `xtask gen-icons` (разбор `d` и `viewBox`, ошибка при несоответствии шаблону); проверить snapshot-тестом на `check`
-- [x] 5.3 Сгенерировать 53 иконки с feature-флагом на каждую и закоммитить; проверить сравнением `d` и `viewBox` со всеми исходниками PrimeNG и повторной генерацией с пустым `git diff`
-- [x] 5.4 Проверить, что отключённая иконка не попадает в wasm (размер минимального приложения с одной иконкой и со всеми) и записать цифры в `docs/icons.md`
+- [x] 5.1 Implement the shared `Icon` component (size, `spin`, class, a11y attributes) in `prime-icons`; check both a11y scenarios with tests
+- [x] 5.2 Implement `xtask gen-icons` (parsing `d` and `viewBox`, an error on a template mismatch); check with a snapshot test on `check`
+- [x] 5.3 Generate 53 icons with a feature flag on each and commit; check by comparing `d` and `viewBox` with all PrimeNG sources and regenerating with an empty `git diff`
+- [x] 5.4 Check that a disabled icon does not end up in wasm (size of a minimal app with one icon and with all) and record the numbers in `docs/icons.md`
 
 ## 6. prime-theme
 
-- [x] 6.1 Написать Node-скрипт извлечения токенов Aura и CSS компонентов из закреплённых `@primeuix/themes` и `@primeuix/styles` (через `npm pack` в кэш вне репозитория); проверить запуском и валидным JSON на выходе
-- [x] 6.2 Реализовать `xtask gen-theme`: JSON → `base.css` и `components/<name>.css`, селектор тёмного режима из конфигурации; проверить snapshot-тестом и побайтной повторяемостью двух запусков
-- [x] 6.3 Сгенерировать и закоммитить CSS для Aura; проверить сравнением значений `--p-*` с токенами PrimeNG для выборки (primary, surface, border-radius) и сборкой без Node
-- [x] 6.4 Реализовать в `prime-theme` подключение базового CSS отдельно от CSS компонентов и документировать в `docs/theme.md`; проверить тестом, что для Button в страницу попадают только базовый CSS и CSS Button
+- [x] 6.1 Write a Node script that extracts the Aura tokens and component CSS from the pinned `@primeuix/themes` and `@primeuix/styles` (via `npm pack` into a cache outside the repository); check by running it and getting valid JSON as output
+- [x] 6.2 Implement `xtask gen-theme`: JSON → `base.css` and `components/<name>.css`, dark mode selector from the configuration; check with a snapshot test and byte-for-byte repeatability of two runs
+- [x] 6.3 Generate and commit the CSS for Aura; check by comparing `--p-*` values with the PrimeNG tokens for a sample (primary, surface, border-radius) and by building without Node
+- [x] 6.4 Implement in `prime-theme` including the base CSS separately from component CSS and document it in `docs/theme.md`; check with a test that for Button only the base CSS and the Button CSS end up on the page
 
 ## 7. Showcase
 
-- [x] 7.1 Создать `showcase` на cargo-leptos (SSR + hydrate), страница-заглушка с подключённой темой; проверить `cargo leptos build` и открытие страницы
-- [x] 7.2 Добавить в showcase переключатель светлой и тёмной схемы; проверить в браузере (скриншот сохранить во временный каталог, не в репозиторий)
+- [x] 7.1 Create `showcase` on cargo-leptos (SSR + hydrate), a stub page with the theme included; check `cargo leptos build` and opening the page
+- [x] 7.2 Add a light/dark scheme switch to the showcase; check in the browser (save the screenshot to a temporary directory, not the repository)
 
-## 8. Бенчмарки
+## 8. Benchmarks
 
-- [x] 8.1 Создать крейт `benches` на `divan` с общей функцией SSR-рендера и бенчмарком-заглушкой на 1 и 1000 экземпляров; проверить `cargo bench -p benches`
-- [x] 8.2 Добавить измерение аллокаций через `dhat` с выводом JSON; проверить, что отчёт содержит число аллокаций и пиковый объём
-- [x] 8.3 Реализовать `xtask wasm-size` и `benches/budgets.toml`; проверить на минимальном приложении и искусственном превышении бюджета (ненулевой код выхода)
-- [x] 8.4 Реализовать `xtask bench-compare` (порог 10 %, только отчёт); проверить юнит-тестами на регрессии 5 % и 15 %
-- [x] 8.5 Задокументировать запуск бенчмарков в `docs/benchmarks.md`; проверить, что описанные команды выполняются как написано
+- [x] 8.1 Create the `benches` crate on `divan` with a shared SSR render function and a stub benchmark for 1 and 1000 instances; check `cargo bench -p benches`
+- [x] 8.2 Add allocation measurement via `dhat` with JSON output; check that the report contains the allocation count and peak size
+- [x] 8.3 Implement `xtask wasm-size` and `benches/budgets.toml`; check on a minimal app and an artificial budget excess (non-zero exit code)
+- [x] 8.4 Implement `xtask bench-compare` (10 % threshold, report only); check with unit tests on 5 % and 15 % regressions
+- [x] 8.5 Document running the benchmarks in `docs/benchmarks.md`; check that the described commands run as written
 
 ## 9. CI
 
-- [x] 9.1 Реализовать `xtask affected` (изменённые и зависимые крейты, полный прогон при изменении ядра, зависимостей, `xtask`, `.github/**`); проверить юнит-тестами на сценариях «один компонент» и «ядро»
-- [x] 9.2 Создать `.github/workflows/ci.yml` (fmt, clippy -D warnings, nextest, wasm-bindgen-test, deny, bench, сборка ssr и wasm), кэш с `cargo-sweep` и лимитом; проверить запуском на тестовом PR (без e2e-job) и падением на неотформатированном коде
-- [x] 9.3 Добавить в `ci.yml` комментарий в PR с результатами `bench-compare` и проверку бюджета wasm; проверить на тестовом PR с искусственной регрессией (слияние не блокируется)
-- [x] 9.4 Создать `.github/workflows/weekly.yml` (schedule, workflow_dispatch, метка `run-e2e`): клон PrimeNG на закреплённом коммите, сборка обоих showcase, Playwright (e2e, скриншоты, замеры памяти), артефакты на 7 дней, результат не блокирует PR; проверить ручным запуском и просмотром артефакта
-- [x] 9.5 Добавить расписание `cargo-machete` и описание политики CI в `docs/ci.md`; проверить, что документ соответствует содержимому workflow-файлов
+- [x] 9.1 Implement `xtask affected` (changed and dependent crates, full run when the core, dependencies, `xtask`, `.github/**` change); check with unit tests on the "one component" and "core" scenarios
+- [x] 9.2 Create `.github/workflows/ci.yml` (fmt, clippy -D warnings, nextest, wasm-bindgen-test, deny, bench, ssr and wasm builds), cache with `cargo-sweep` and a limit; check by running on a test PR (without the e2e job) and failing on unformatted code
+- [x] 9.3 Add to `ci.yml` a PR comment with the `bench-compare` results and the wasm budget check; check on a test PR with an artificial regression (merge is not blocked)
+- [x] 9.4 Create `.github/workflows/weekly.yml` (schedule, workflow_dispatch, `run-e2e` label): clone PrimeNG at the pinned commit, build both showcases, Playwright (e2e, screenshots, memory measurements), artifacts for 7 days, the result does not block PRs; check with a manual run and by viewing the artifact
+- [x] 9.5 Add the `cargo-machete` schedule and a description of the CI policy in `docs/ci.md`; check that the document matches the contents of the workflow files
 
-## 10. Интеграционная проверка
+## 10. Integration check
 
-- [x] 10.1 Выполнить с чистого клона `cargo build --workspace`, `cargo nextest run --workspace`, `cargo leptos build` и зафиксировать размер `target/` в `docs/build.md`
-- [x] 10.2 Выполнить `openspec validate bootstrap-workspace` и убедиться, что все сценарии спек покрыты задачами выше
+- [x] 10.1 Run from a clean clone `cargo build --workspace`, `cargo nextest run --workspace`, `cargo leptos build` and record the size of `target/` in `docs/build.md`
+- [x] 10.2 Run `openspec validate bootstrap-workspace` and make sure all spec scenarios are covered by the tasks above
 
 ## Workflow follow-up
 
-- Архивировать change после ревью и прохождения проверок CI.
-- Следующим change — порт Button (первый компонент волны 1), использующий `xtask gen-spec button`.
+- Archive the change after review and passing the CI checks.
+- Next change — the Button port (the first wave 1 component), using `xtask gen-spec button`.

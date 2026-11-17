@@ -4,7 +4,7 @@ test.describe('TreeSelect', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1000 });
         await page.goto('/treeselect');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm load) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_select')).toBeAttached();
     });
@@ -13,7 +13,7 @@ test.describe('TreeSelect', () => {
     const panel = (page) => field(page).locator('.p-treeselect-overlay');
     const node = (page, key: string) => panel(page).locator(`li[data-id="${key}"]`);
 
-    test('стили темы: поле с рамкой, подсказка, кнопка со стрелкой', async ({ page }) => {
+    test('theme styles: bordered field, placeholder, button with an arrow', async ({ page }) => {
         const root = field(page);
         expect(await root.evaluate((el) => getComputedStyle(el).display)).toBe('flex');
         expect(await root.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
@@ -23,7 +23,7 @@ test.describe('TreeSelect', () => {
         await expect(panel(page)).toHaveCount(0);
     });
 
-    test('клик открывает панель под полем, выбор закрывает и подставляет подпись', async ({ page }) => {
+    test('click opens the panel below the field, selection closes it and fills in the label', async ({ page }) => {
         await field(page).click();
         await expect(panel(page)).toBeVisible();
         const fb = (await field(page).boundingBox())!;
@@ -40,7 +40,7 @@ test.describe('TreeSelect', () => {
         await expect(panel(page)).toHaveCount(0);
     });
 
-    test('клавиатура: ↓ открывает и фокусирует узел, Escape закрывает', async ({ page }) => {
+    test('keyboard: Down opens and focuses a node, Escape closes', async ({ page }) => {
         const input = field(page).locator('input');
         await input.focus();
         await page.keyboard.press('ArrowDown');
@@ -53,7 +53,7 @@ test.describe('TreeSelect', () => {
         await expect(panel(page)).toHaveCount(0);
     });
 
-    test('множественный выбор с чипами и очисткой', async ({ page }) => {
+    test('multiple selection with chips and clearing', async ({ page }) => {
         const multi = page.locator('[data-demo="multiple"] .p-treeselect');
         await multi.scrollIntoViewIfNeeded();
         await multi.click();
@@ -64,7 +64,7 @@ test.describe('TreeSelect', () => {
         await expect(p).toBeVisible();
     });
 
-    test('флажки: отметка родителя отмечает поддерево', async ({ page }) => {
+    test('checkboxes: checking a parent checks the subtree', async ({ page }) => {
         const cb = page.locator('[data-demo="checkbox"] .p-treeselect');
         await cb.scrollIntoViewIfNeeded();
         await cb.click();
@@ -74,7 +74,7 @@ test.describe('TreeSelect', () => {
         await expect(cb.locator('.p-treeselect-label')).toContainText('barcelona.jpg');
     });
 
-    test('значок очистки сбрасывает значение', async ({ page }) => {
+    test('clear icon resets the value', async ({ page }) => {
         const clear = page.locator('[data-demo="clearicon"] .p-treeselect');
         await clear.scrollIntoViewIfNeeded();
         await expect(clear.locator('.p-treeselect-label')).toHaveText('Work');
@@ -83,7 +83,7 @@ test.describe('TreeSelect', () => {
         await expect(clear.locator('.p-treeselect-overlay')).toHaveCount(0);
     });
 
-    test('фильтр в панели сужает дерево', async ({ page }) => {
+    test('filter in the panel narrows the tree', async ({ page }) => {
         const f = page.locator('[data-demo="filter"] .p-treeselect');
         await f.scrollIntoViewIfNeeded();
         await f.click();
@@ -93,7 +93,7 @@ test.describe('TreeSelect', () => {
         await expect(f.locator('li[data-id="0"]')).toHaveCount(0);
     });
 
-    test('отключённое поле не открывается', async ({ page }) => {
+    test('a disabled field does not open', async ({ page }) => {
         const d = page.locator('[data-demo="disabled"] .p-treeselect');
         await d.scrollIntoViewIfNeeded();
         await expect(d).toHaveClass(/p-disabled/);
@@ -101,7 +101,7 @@ test.describe('TreeSelect', () => {
         await expect(d.locator('.p-treeselect-overlay')).toHaveCount(0);
     });
 
-    test('своё представление значения', async ({ page }) => {
+    test('custom value view', async ({ page }) => {
         await expect(page.locator('[data-testid="value-view"]')).toHaveText('1 selected');
     });
 });

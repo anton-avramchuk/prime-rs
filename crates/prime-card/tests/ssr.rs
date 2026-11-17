@@ -1,4 +1,4 @@
-//! Структура DOM, порядок блоков, приоритет слотов, `pt` и паритет ветвей Card (SSR).
+//! DOM structure, block order, slot priority, `pt` and branch parity of Card (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -10,7 +10,7 @@ fn slot(text: &'static str) -> ViewFn {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет `{needle}` в {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no `{needle}` in {html}"))
 }
 
 #[test]
@@ -27,12 +27,12 @@ fn empty_card_has_only_root_body_and_content() {
 fn simple_card_has_title_text_and_content() {
     let html = view! {
         <Card header="Simple Card">
-            <p>"Содержимое"</p>
+            <p>"Content"</p>
         </Card>
     }
     .to_html();
     assert!(html.contains("p-card-title") && html.contains(">Simple Card<"), "{html}");
-    assert!(html.contains("<p>Содержимое</p>"), "{html}");
+    assert!(html.contains("<p>Content</p>"), "{html}");
     assert!(pos(&html, "p-card-title") < pos(&html, "p-card-content"), "{html}");
 }
 
@@ -46,8 +46,8 @@ fn advanced_card_block_order() {
     .to_html();
     let order = ["p-card-header", "p-card-body", "p-card-title", "p-card-subtitle", "p-card-content", "p-card-footer"];
     let positions: Vec<usize> = order.iter().map(|n| pos(&html, n)).collect();
-    assert!(positions.windows(2).all(|w| w[0] < w[1]), "порядок блоков: {html}");
-    // шапка вне тела, подвал внутри тела
+    assert!(positions.windows(2).all(|w| w[0] < w[1]), "block order: {html}");
+    // header outside the body, footer inside the body
     let body_end = html.rfind("</div></div>").unwrap_or(html.len());
     assert!(pos(&html, "p-card-footer") < body_end, "{html}");
 }

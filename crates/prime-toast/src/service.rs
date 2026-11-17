@@ -1,18 +1,18 @@
-//! `MessageService` — общая шина сообщений между приложением и компонентами `Toast` (порт `MessageService` PrimeNG).
+//! `MessageService` — shared message bus between the app and `Toast` components (port of PrimeNG `MessageService`).
 
 use crate::message::ToastMessage;
 use leptos::prelude::*;
 
-/// Событие шины.
+/// Bus event.
 #[derive(Clone, Debug)]
 pub enum ServiceEvent {
-    /// Добавить сообщения.
+    /// Add messages.
     Add(Vec<ToastMessage>),
-    /// Закрыть сообщения: все (`None`) или только `Toast` с ключом.
+    /// Close messages: all (`None`) or only `Toast`s with the key.
     Clear(Option<String>),
 }
 
-/// Сервис сообщений: `Copy`-хэндл, который кладётся в контекст и доступен из любого обработчика.
+/// Message service: a `Copy` handle put into context and available from any handler.
 ///
 /// ```
 /// use leptos::prelude::*;
@@ -20,7 +20,7 @@ pub enum ServiceEvent {
 ///
 /// Owner::new().with(|| {
 ///     let service = provide_message_service();
-///     // подписчиков ещё нет — сообщение просто никому не доставляется
+///     // no subscribers yet — the message is simply delivered to nobody
 ///     service.add(ToastMessage::new(ToastSeverity::Success, "Saved", "Done"));
 ///     service.clear();
 /// });
@@ -32,34 +32,34 @@ pub struct MessageService {
 }
 
 impl MessageService {
-    /// Создаёт сервис без подписчиков. Вызывать внутри компонента (владелец хранилищ).
+    /// Creates a service with no subscribers. Call inside a component (storage owner).
     pub fn new() -> Self {
         Self { subscribers: StoredValue::new(Vec::new()), next: StoredValue::new(0) }
     }
 
-    /// Добавляет сообщение.
+    /// Adds a message.
     pub fn add(&self, message: ToastMessage) {
         self.emit(ServiceEvent::Add(vec![message]));
     }
 
-    /// Добавляет несколько сообщений.
+    /// Adds several messages.
     pub fn add_all(&self, messages: Vec<ToastMessage>) {
         if !messages.is_empty() {
             self.emit(ServiceEvent::Add(messages));
         }
     }
 
-    /// Закрывает сообщения во всех `Toast`.
+    /// Closes messages in all `Toast`s.
     pub fn clear(&self) {
         self.emit(ServiceEvent::Clear(None));
     }
 
-    /// Закрывает сообщения в `Toast` с этим ключом.
+    /// Closes messages in `Toast`s with this key.
     pub fn clear_key(&self, key: impl Into<String>) {
         self.emit(ServiceEvent::Clear(Some(key.into())));
     }
 
-    /// Подписывает обработчик; возвращает номер для [`MessageService::unsubscribe`].
+    /// Subscribes a handler; returns an id for [`MessageService::unsubscribe`].
     pub fn subscribe(&self, callback: Callback<ServiceEvent>) -> usize {
         let id = self.next.try_update_value(|n| {
             let id = *n;
@@ -71,13 +71,13 @@ impl MessageService {
         id
     }
 
-    /// Снимает подписку.
+    /// Removes a subscription.
     pub fn unsubscribe(&self, id: usize) {
         self.subscribers.try_update_value(|s| s.retain(|(i, _)| *i != id));
     }
 
     fn emit(&self, event: ServiceEvent) {
-        // Копия списка: обработчик может отписаться во время доставки.
+        // Copy of the list: a handler may unsubscribe during delivery.
         let subscribers = self.subscribers.try_get_value().unwrap_or_default();
         for (_, callback) in subscribers {
             callback.run(event.clone());
@@ -91,15 +91,15 @@ impl Default for MessageService {
     }
 }
 
-/// Создаёт сервис и кладёт его в контекст текущего владельца.
+/// Creates the service and puts it into the current owner context.
 pub fn provide_message_service() -> MessageService {
     let service = MessageService::new();
     provide_context(service);
     service
 }
 
-/// Берёт сервис из контекста; паникует с понятным сообщением, если `provide_message_service()` не вызывался.
+/// Takes the service from context; panics with a clear message if `provide_message_service()` was not called.
 pub fn use_message_service() -> MessageService {
     use_context::<MessageService>()
-        .expect("MessageService не найден: вызовите provide_message_service() в корне приложения (или выше компонента Toast)")
+        .expect("MessageService not found: call provide_message_service() at the app root (or above the Toast component)")
 }

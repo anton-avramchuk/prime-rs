@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('Stepper', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/stepper');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-stepper')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(5);
         const root = page.locator('[data-demo=basic] .p-stepper');
         await expect(root.locator('.p-step')).toHaveCount(3);
@@ -24,7 +24,7 @@ test.describe('Stepper', () => {
         expect(separator).not.toBe('0px');
     });
 
-    test('клик по шагу и кнопки «Далее»/«Назад» переключают панели', async ({ page }) => {
+    test('a click on a step and the "Next"/"Back" buttons switch panels', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-stepper');
         await expect(root.locator('.p-steppanel-content')).toContainText('Content I');
         await root.locator('.p-step-header', { hasText: 'Header III' }).click();
@@ -38,7 +38,7 @@ test.describe('Stepper', () => {
         await expect(root.locator('.p-step-active .p-step-number')).toHaveText('3');
     });
 
-    test('клавиатура: Tab и Enter по шагам', async ({ page }) => {
+    test('keyboard: Tab and Enter over steps', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-stepper');
         await root.locator('.p-step-header').first().focus();
         await page.keyboard.press('Tab');
@@ -49,7 +49,7 @@ test.describe('Stepper', () => {
         await expect(root.locator('.p-step').nth(1)).toHaveAttribute('aria-current', 'step');
     });
 
-    test('линейный режим блокирует клики по шагам, но не кнопки', async ({ page }) => {
+    test('linear mode blocks clicks on steps but not buttons', async ({ page }) => {
         const root = page.locator('[data-demo=linear] .p-stepper');
         await expect(root).toHaveClass(/p-readonly/);
         await expect(root.locator('.p-step-header').nth(2)).toBeDisabled();
@@ -60,7 +60,7 @@ test.describe('Stepper', () => {
         await expect(root.locator('.p-step-header').first()).toBeDisabled();
     });
 
-    test('вертикальная раскладка раскрывает панель активного элемента', async ({ page }) => {
+    test('vertical layout expands the panel of the active item', async ({ page }) => {
         const root = page.locator('[data-demo=vertical] .p-stepper');
         await expect(root.locator('.p-stepitem')).toHaveCount(3);
         await expect(root.locator('.p-stepitem-active')).toHaveCount(1);
@@ -74,7 +74,7 @@ test.describe('Stepper', () => {
         await expect(root.locator('.p-steppanel').first().locator('.p-motion')).toBeHidden();
     });
 
-    test('шаблон: круглые шаги закрашиваются по ходу', async ({ page }) => {
+    test('template: round steps are filled in as you go', async ({ page }) => {
         const root = page.locator('[data-demo=template] .p-stepper');
         const color = (n: number) => root.getByTestId(`round-${n}`).locator('span').evaluate((el) => getComputedStyle(el).backgroundColor);
         const first = await color(1);
@@ -89,7 +89,7 @@ test.describe('Stepper', () => {
         expect(await color(3)).toBe(first);
     });
 
-    test('только список шагов без панелей', async ({ page }) => {
+    test('only the step list without panels', async ({ page }) => {
         const root = page.locator('[data-demo=stepsonly] .p-stepper');
         await expect(root.locator('.p-step')).toHaveCount(3);
         await expect(root.locator('.p-steppanels')).toHaveCount(0);

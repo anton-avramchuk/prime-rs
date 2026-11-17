@@ -1,6 +1,6 @@
-//! Страница SelectButton: демонстрации `basic`, `disabled`, `fluid`, `invalid`, `multiple`, `sizes`, `template` из showcase PrimeNG
-//! (`apps/showcase/doc/selectbutton`). Демонстрации с Angular Forms не переносятся; в `template` вместо `pi-align-*` (таких иконок в
-//! `prime-icons` нет) шаблон выводит метку в `<strong>`.
+//! SelectButton page: the `basic`, `disabled`, `fluid`, `invalid`, `multiple`, `sizes`, `template` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/selectbutton`). Demos with Angular Forms are not ported; in `template`, instead of `pi-align-*` (there are no such icons in
+//! `prime-icons`) the template renders the label in `<strong>`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -15,7 +15,7 @@ fn level_options() -> Vec<SelectButtonOption> {
     ["Beginner", "Expert"].into_iter().map(|l| SelectButtonOption::new(l, l)).collect()
 }
 
-/// Страница `/selectbutton`.
+/// Page `/selectbutton`.
 #[component]
 pub fn SelectButtonPage() -> impl IntoView {
     let basic = RwSignal::new(Some("one-way".to_owned()));

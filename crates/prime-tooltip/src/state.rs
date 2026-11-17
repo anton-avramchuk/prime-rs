@@ -1,21 +1,21 @@
-//! Чистая логика Tooltip: стороны и порядок переноса, геометрия, стрелка, классы, задержки (по `tooltip.ts` PrimeNG).
+//! Pure Tooltip logic: sides and fallback order, geometry, arrow, classes, delays (per `tooltip.ts` of PrimeNG).
 
-/// Сторона элемента, с которой показывается подсказка.
+/// The side of the element on which the tooltip is shown.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TooltipPosition {
-    /// Справа (по умолчанию).
+    /// Right (default).
     #[default]
     Right,
-    /// Слева.
+    /// Left.
     Left,
-    /// Сверху.
+    /// Top.
     Top,
-    /// Снизу.
+    /// Bottom.
     Bottom,
 }
 
 impl TooltipPosition {
-    /// Суффикс класса `p-tooltip-<имя>`.
+    /// Class suffix `p-tooltip-<name>`.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Right => "right",
@@ -26,31 +26,31 @@ impl TooltipPosition {
     }
 }
 
-/// События, по которым показывается подсказка.
+/// Events that show the tooltip.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TooltipEvent {
-    /// Наведение мыши и касание (по умолчанию).
+    /// Mouse hover and touch (default).
     #[default]
     Hover,
-    /// Фокус и потеря фокуса.
+    /// Focus and blur.
     Focus,
-    /// И то и другое.
+    /// Both.
     Both,
 }
 
 impl TooltipEvent {
-    /// Слушать наведение и касание.
+    /// Listen for hover and touch.
     pub fn hover(self) -> bool {
         matches!(self, Self::Hover | Self::Both)
     }
 
-    /// Слушать фокус.
+    /// Listen for focus.
     pub fn focus(self) -> bool {
         matches!(self, Self::Focus | Self::Both)
     }
 }
 
-/// Порядок сторон: основная, затем запасные, пока подсказка выходит за границы окна.
+/// Side order: the primary one, then the fallbacks, while the tooltip goes beyond the window bounds.
 pub fn priority(position: TooltipPosition) -> [TooltipPosition; 4] {
     use TooltipPosition::{Bottom, Left, Right, Top};
     match position {
@@ -61,16 +61,16 @@ pub fn priority(position: TooltipPosition) -> [TooltipPosition; 4] {
     }
 }
 
-/// Размер в пикселях.
+/// Size in pixels.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Size {
-    /// Ширина.
+    /// Width.
     pub width: f64,
-    /// Высота.
+    /// Height.
     pub height: f64,
 }
 
-/// Смещение подсказки относительно левого верхнего угла элемента.
+/// Tooltip offset relative to the top-left corner of the element.
 pub fn place(position: TooltipPosition, host: Size, tip: Size) -> (f64, f64) {
     match position {
         TooltipPosition::Right => (host.width, (host.height - tip.height) / 2.0),
@@ -80,7 +80,7 @@ pub fn place(position: TooltipPosition, host: Size, tip: Size) -> (f64, f64) {
     }
 }
 
-/// Положение стрелки: `None` — свойство снимается.
+/// Arrow position: `None` means the property is removed.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ArrowStyle {
     /// `top`.
@@ -93,7 +93,7 @@ pub struct ArrowStyle {
     pub left: Option<String>,
 }
 
-/// Стрелка у края, обращённого к элементу; у `top`/`bottom` — по центру подсказки.
+/// Arrow at the edge facing the element; for `top`/`bottom`, at the center of the tooltip.
 pub fn arrow_style(position: TooltipPosition, tip_width: f64) -> ArrowStyle {
     let center = Some(format!("{}px", tip_width / 2.0));
     match position {
@@ -104,12 +104,12 @@ pub fn arrow_style(position: TooltipPosition, tip_width: f64) -> ArrowStyle {
     }
 }
 
-/// Подсказка (в координатах окна) выходит за границы окна.
+/// The tooltip (in window coordinates) goes beyond the window bounds.
 pub fn out_of_bounds(left: f64, top: f64, width: f64, height: f64, viewport_w: f64, viewport_h: f64) -> bool {
     left + width > viewport_w || left < 0.0 || top < 0.0 || top + height > viewport_h
 }
 
-/// Классы корня: `p-tooltip p-component`, сторона и пользовательский класс.
+/// Root classes: `p-tooltip p-component`, the side and the user class.
 pub fn root_classes(position: TooltipPosition, style_class: Option<&str>) -> String {
     let mut cn = format!("p-tooltip p-component p-tooltip-{}", position.as_str());
     if let Some(extra) = style_class.filter(|c| !c.is_empty()) {
@@ -119,21 +119,21 @@ pub fn root_classes(position: TooltipPosition, style_class: Option<&str>) -> Str
     cn
 }
 
-/// Через сколько показать подсказку и через сколько скрыть по `life` (мс): `(показ, скрытие)`.
+/// After how long to show the tooltip and after how long to hide it based on `life` (ms): `(show, hide)`.
 ///
-/// Нулевые значения считаются «не задано»; `life` отсчитывается после `show_delay`.
+/// Zero values are treated as "not set"; `life` is counted after `show_delay`.
 pub fn activation_delay(show_delay: Option<u32>, life: Option<u32>) -> (Option<u32>, Option<u32>) {
     let show = show_delay.filter(|d| *d > 0);
     let hide = life.filter(|l| *l > 0).map(|l| l + show.unwrap_or(0));
     (show, hide)
 }
 
-/// Содержимое элемента не помещается в него (`offsetWidth < scrollWidth || offsetHeight < scrollHeight`).
+/// The element content does not fit in it (`offsetWidth < scrollWidth || offsetHeight < scrollHeight`).
 pub fn has_ellipsis(offset_width: f64, scroll_width: f64, offset_height: f64, scroll_height: f64) -> bool {
     offset_width < scroll_width || offset_height < scroll_height
 }
 
-/// Уход курсора с элемента не скрывает подсказку: она не автоскрываемая, а курсор перешёл на неё.
+/// The cursor leaving the element does not hide the tooltip: it is not auto-hiding, and the cursor moved onto it.
 pub fn leave_keeps_open(auto_hide: bool, related_is_tooltip: bool) -> bool {
     !auto_hide && related_is_tooltip
 }
@@ -154,21 +154,21 @@ mod tests {
         assert_eq!(priority(Right), [Right, Left, Top, Bottom]);
         for p in [Top, Bottom, Left, Right] {
             let order = priority(p);
-            assert_eq!(order[0], p, "первой идёт основная сторона");
+            assert_eq!(order[0], p, "the primary side comes first");
             for q in [Top, Bottom, Left, Right] {
-                assert_eq!(order.iter().filter(|x| **x == q).count(), 1, "{p:?}: {q:?} ровно один раз");
+                assert_eq!(order.iter().filter(|x| **x == q).count(), 1, "{p:?}: {q:?} exactly once");
             }
         }
     }
 
     #[test]
     fn place_table() {
-        // (сторона, ожидаемое смещение)
+        // (side, expected offset)
         let cases = [(Right, (100.0, 10.0)), (Left, (-60.0, 10.0)), (Top, (20.0, -20.0)), (Bottom, (20.0, 40.0))];
         for (p, want) in cases {
             assert_eq!(place(p, HOST, TIP), want, "{p:?}");
         }
-        // подсказка шире элемента: центрируется с отрицательным сдвигом
+        // the tooltip is wider than the element: centered with a negative shift
         assert_eq!(place(Top, Size { width: 40.0, height: 10.0 }, TIP), (-10.0, -20.0));
     }
 
@@ -186,14 +186,14 @@ mod tests {
 
     #[test]
     fn out_of_bounds_table() {
-        // окно 1000x800, подсказка 100x50
+        // window 1000x800, tooltip 100x50
         let oob = |l, t| out_of_bounds(l, t, 100.0, 50.0, 1000.0, 800.0);
         assert!(!oob(10.0, 10.0));
-        assert!(!oob(900.0, 750.0), "касается правого и нижнего края — ещё помещается");
-        assert!(oob(901.0, 10.0), "вылезает вправо");
-        assert!(oob(10.0, 751.0), "вылезает вниз");
-        assert!(oob(-1.0, 10.0), "вылезает влево");
-        assert!(oob(10.0, -1.0), "вылезает вверх");
+        assert!(!oob(900.0, 750.0), "touching the right and bottom edge still fits");
+        assert!(oob(901.0, 10.0), "overflows to the right");
+        assert!(oob(10.0, 751.0), "overflows downward");
+        assert!(oob(-1.0, 10.0), "overflows to the left");
+        assert!(oob(10.0, -1.0), "overflows upward");
     }
 
     #[test]
@@ -205,7 +205,7 @@ mod tests {
 
     #[test]
     fn activation_delay_table() {
-        // (show_delay, life, ожидание)
+        // (show_delay, life, expectation)
         let cases = [
             (None, None, (None, None)),
             (Some(300), None, (Some(300), None)),
@@ -222,11 +222,11 @@ mod tests {
     #[test]
     fn ellipsis_and_leave() {
         assert!(!has_ellipsis(100.0, 100.0, 20.0, 20.0));
-        assert!(has_ellipsis(100.0, 140.0, 20.0, 20.0), "по ширине");
-        assert!(has_ellipsis(100.0, 100.0, 20.0, 35.0), "по высоте");
+        assert!(has_ellipsis(100.0, 140.0, 20.0, 20.0), "by width");
+        assert!(has_ellipsis(100.0, 100.0, 20.0, 35.0), "by height");
         assert!(leave_keeps_open(false, true));
         assert!(!leave_keeps_open(false, false));
-        assert!(!leave_keeps_open(true, true), "при auto_hide подсказка всегда скрывается");
+        assert!(!leave_keeps_open(true, true), "with auto_hide the tooltip is always hidden");
     }
 
     #[test]

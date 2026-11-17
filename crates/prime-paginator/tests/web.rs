@@ -1,5 +1,5 @@
-//! Поведение Paginator в реальном браузере (wasm-bindgen-test): кнопки и ссылки, события, границы, переход списком и полем,
-//! смена числа строк, внешние сигналы и отступ назад при уменьшении числа записей.
+//! Paginator behaviour in a real browser (wasm-bindgen-test): buttons and links, events, bounds, jump via list and field,
+//! rows count change, external signals and stepping back when the record count shrinks.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -43,7 +43,7 @@ fn link(host: &HtmlElement, number: &str) -> HtmlElement {
     (0..all.length())
         .map(|i| all.item(i).unwrap().dyn_into::<HtmlElement>().unwrap())
         .find(|b| b.text_content().unwrap_or_default().trim() == number)
-        .unwrap_or_else(|| panic!("нет ссылки {number}"))
+        .unwrap_or_else(|| panic!("no link {number}"))
 }
 
 fn is_disabled(el: &HtmlElement) -> bool {
@@ -111,7 +111,7 @@ async fn link_clicks_jump_and_the_window_slides() {
     link(&host, "7").click();
     leptos::task::tick().await;
     assert_eq!(links(&host), ["5", "6", "7", "8", "9"]);
-    assert_eq!(log.lock().unwrap().len(), 3, "клик по текущей ссылке тоже вызывает событие, как в PrimeNG");
+    assert_eq!(log.lock().unwrap().len(), 3, "a click on the current link also fires the event, as in PrimeNG");
     host.remove();
 }
 
@@ -133,7 +133,7 @@ async fn external_first_rows_and_total_update_the_view() {
     rows.set(20);
     leptos::task::tick().await;
     assert_eq!(links(&host).len(), 5);
-    // внешняя смена rows не переставляет first (как в PrimeNG): страница пересчитывается из first
+    // an external change of rows does not move first (as in PrimeNG): the page is recomputed from first
     assert_eq!(q(&host, ".p-paginator-current").text_content().as_deref(), Some("31-50 of 120"));
     total.set(0);
     leptos::task::tick().await;
@@ -155,7 +155,7 @@ async fn shrinking_total_records_retreats_to_a_valid_page() {
     total.set(50);
     leptos::task::tick().await;
     leptos::task::tick().await;
-    assert_eq!(first.get_untracked(), 40, "отступ до последней существующей страницы");
+    assert_eq!(first.get_untracked(), 40, "step back to the last existing page");
     assert_eq!(selected_link(&host), "5");
     assert!(!log.lock().unwrap().is_empty());
     host.remove();
@@ -188,10 +188,10 @@ async fn rows_per_page_dropdown_changes_rows_and_keeps_the_first_record() {
     option.click();
     leptos::task::tick().await;
     assert_eq!(rows.get_untracked(), 20);
-    assert_eq!(first.get_untracked(), 20, "страница 2 при 20 строках начинается с записи 20");
+    assert_eq!(first.get_untracked(), 20, "page 2 with 20 rows starts at record 20");
     assert_eq!(q(&host, ".p-paginator-rpp-dropdown .p-select-label").text_content().as_deref(), Some("20"));
     assert_eq!(log.lock().unwrap().last().map(|s| (s.page, s.rows)), Some((1, 20)));
-    // «показать все»: одна страница
+    // "show all": a single page
     dropdown.click();
     leptos::task::tick().await;
     let all = host.query_selector_all(".p-select-option").unwrap().item(2).unwrap().dyn_into::<HtmlElement>().unwrap();
@@ -248,7 +248,7 @@ async fn jump_to_page_input_navigates_and_follows_the_page() {
     q(&host, ".p-paginator-next").click();
     leptos::task::tick().await;
     leptos::task::tick().await;
-    assert_eq!(input.value(), "8", "поле следует за страницей");
+    assert_eq!(input.value(), "8", "the field follows the page");
     host.remove();
 }
 
@@ -278,7 +278,7 @@ async fn disabled_buttons_do_not_fire_events() {
     q(&host, ".p-paginator-prev").click();
     q(&host, ".p-paginator-first").click();
     leptos::task::tick().await;
-    assert!(log.lock().unwrap().is_empty(), "на первой странице «назад» ничего не делает");
+    assert!(log.lock().unwrap().is_empty(), "on the first page \"back\" does nothing");
     host.dispatch_event(&Event::new("noop").unwrap()).unwrap();
     host.remove();
 }

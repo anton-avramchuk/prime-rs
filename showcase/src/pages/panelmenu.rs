@@ -1,5 +1,5 @@
-//! Страница PanelMenu: демонстрации `basic`, `multiple`, `controlled`, `command` и `template` из showcase PrimeNG
-//! (`apps/showcase/doc/panelmenu`; `router` не переносится). Значки PrimeIcons заменены значками `prime-icons` там, где аналог есть.
+//! PanelMenu page: the `basic`, `multiple`, `controlled`, `command` and `template` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/panelmenu`; `router` is not ported). PrimeIcons icons are replaced with `prime-icons` icons where an analog exists.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -158,7 +158,7 @@ fn ControlledDemo() -> impl IntoView {
     }
 }
 
-/// Страница `/panelmenu`.
+/// Page `/panelmenu`.
 #[component]
 pub fn PanelMenuPage() -> impl IntoView {
     view! {

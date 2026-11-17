@@ -1,16 +1,16 @@
-//! MeterGroup — порт `p-metergroup` из PrimeNG 21.1.10.
+//! MeterGroup: a port of `p-metergroup` from PrimeNG 21.1.10.
 //!
-//! Корень `div.p-metergroup[role=meter]` (вместо хоста `<p-metergroup>`), отрезки в `div.p-metergroup-meters` и список
-//! подписей до или после них. Шаблоны `label`, `start`, `end`, `meter`, `icon` — колбэки. Значок элемента — `ViewFn`
-//! (например, иконка из `prime-icons`), а не имя класса шрифта.
+//! Root `div.p-metergroup[role=meter]` (instead of the host `<p-metergroup>`), segments in `div.p-metergroup-meters` and a list
+//! of labels before or after them. The `label`, `start`, `end`, `meter`, `icon` templates are callbacks. An item icon is a `ViewFn`
+//! (for example, an icon from `prime-icons`), not a font class name.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_metergroup::{MeterGroup, MeterItem};
 //!
-//! let items = vec![MeterItem::new("Приложения", "#34d399", 16.0)];
+//! let items = vec![MeterItem::new("Apps", "#34d399", 16.0)];
 //! let html = view! { <MeterGroup value=items /> }.to_html();
-//! assert!(html.contains("width: 16%") && html.contains("Приложения"));
+//! assert!(html.contains("width: 16%") && html.contains("Apps"));
 //! ```
 
 mod state;
@@ -21,106 +21,106 @@ use std::sync::Arc;
 
 pub use state::{LabelPosition, MeterOrientation, cumulative, label_list_classes, percent, total_percent, write_classes};
 
-/// Элемент шкалы.
+/// Meter item.
 #[derive(Clone)]
 pub struct MeterItem {
-    /// Подпись.
+    /// Label.
     pub label: String,
-    /// Цвет отрезка и маркера (любое значение CSS).
+    /// Segment and marker color (any CSS value).
     pub color: String,
-    /// Значение.
+    /// Value.
     pub value: f64,
-    /// Значок вместо маркера в подписи.
+    /// Icon instead of the marker in the label.
     pub icon: Option<ViewFn>,
 }
 
 impl MeterItem {
-    /// Элемент без значка.
+    /// Item without an icon.
     pub fn new(label: impl Into<String>, color: impl Into<String>, value: f64) -> Self {
         Self { label: label.into(), color: color.into(), value, icon: None }
     }
 
-    /// Задаёт значок подписи.
+    /// Sets the label icon.
     pub fn icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.icon = Some(icon.into());
         self
     }
 }
 
-/// Контекст шаблонов `label`, `start` и `end`.
+/// Context of the `label`, `start` and `end` templates.
 #[derive(Clone)]
 pub struct MeterGroupContext {
-    /// Элементы.
+    /// Items.
     pub items: Vec<MeterItem>,
-    /// Суммарный процент.
+    /// Total percentage.
     pub total_percent: u32,
-    /// Накопленные суммы значений.
+    /// Cumulative sums of the values.
     pub percentages: Vec<f64>,
 }
 
-/// Pass-through частей MeterGroup.
+/// Pass-through parts of MeterGroup.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct MeterGroupPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Контейнер отрезков.
+    /// Segments container.
     pub meters: Pt,
-    /// Отрезок.
+    /// Segment.
     pub meter: Pt,
-    /// Список подписей.
+    /// Labels list.
     pub label_list: Pt,
-    /// Подпись.
+    /// Label.
     pub label: Pt,
-    /// Значок подписи.
+    /// Label icon.
     pub label_icon: Pt,
-    /// Маркер подписи.
+    /// Label marker.
     pub label_marker: Pt,
-    /// Текст подписи.
+    /// Label text.
     pub label_text: Pt,
 }
 
-/// Составная шкала.
+/// Composite meter.
 ///
-/// Каждое свойство принимает значение или сигнал; сигнал `value` перестраивает отрезки и подписи.
+/// Every property accepts a value or a signal; the `value` signal rebuilds the segments and labels.
 #[component]
 pub fn MeterGroup(
-    /// Элементы.
+    /// Items.
     #[prop(optional, into)]
     value: Prop<Vec<MeterItem>>,
-    /// Нижняя граница диапазона.
+    /// Lower bound of the range.
     #[prop(default = Prop::Static(0.0), into)]
     min: Prop<f64>,
-    /// Верхняя граница диапазона.
+    /// Upper bound of the range.
     #[prop(default = Prop::Static(100.0), into)]
     max: Prop<f64>,
-    /// Ориентация шкалы.
+    /// Meter orientation.
     #[prop(optional, into)]
     orientation: Prop<MeterOrientation>,
-    /// Положение подписей.
+    /// Label position.
     #[prop(optional, into)]
     label_position: Prop<LabelPosition>,
-    /// Ориентация списка подписей.
+    /// Label list orientation.
     #[prop(optional, into)]
     label_orientation: Prop<MeterOrientation>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Шаблон всего списка подписей.
+    /// Template of the whole label list.
     #[prop(optional, into)]
     label: Option<Callback<MeterGroupContext, AnyView>>,
-    /// Шаблон отрезка (элемент и его индекс).
+    /// Segment template (item and its index).
     #[prop(optional, into)]
     meter: Option<Callback<(MeterItem, usize), AnyView>>,
-    /// Шаблон перед шкалой.
+    /// Template before the meter.
     #[prop(optional, into)]
     start: Option<Callback<MeterGroupContext, AnyView>>,
-    /// Шаблон после шкалы.
+    /// Template after the meter.
     #[prop(optional, into)]
     end: Option<Callback<MeterGroupContext, AnyView>>,
-    /// Шаблон маркера подписи.
+    /// Label marker template.
     #[prop(optional, into)]
     icon: Option<Callback<MeterItem, AnyView>>,
     /// Pass-through.
@@ -231,7 +231,7 @@ pub fn MeterGroup(
     }
 }
 
-/// Список подписей по умолчанию.
+/// Default label list.
 fn label_list(
     pt: &MeterGroupPt,
     items: &[MeterItem],

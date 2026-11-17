@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('SelectButton', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/selectbutton');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm load) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-selectbutton')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(7);
         const basic = page.locator('[data-demo=basic] .p-selectbutton');
         await expect(basic).toHaveAttribute('role', 'group');
@@ -17,7 +17,7 @@ test.describe('SelectButton', () => {
         expect(radius).not.toBe('0px');
     });
 
-    test('одиночный выбор переключается и снимается', async ({ page }) => {
+    test('single selection toggles and clears', async ({ page }) => {
         const buttons = page.locator('[data-demo=basic] .p-togglebutton');
         await expect(buttons.nth(0)).toHaveAttribute('aria-pressed', 'true');
         await expect(page.getByTestId('echo')).toHaveText('one-way');
@@ -30,7 +30,7 @@ test.describe('SelectButton', () => {
         await expect(page.getByTestId('echo')).toHaveText('');
     });
 
-    test('множественный выбор и клавиши', async ({ page }) => {
+    test('multiple selection and keys', async ({ page }) => {
         const buttons = page.locator('[data-demo=multiple] .p-togglebutton');
         await buttons.nth(2).click();
         await buttons.nth(0).focus();
@@ -41,7 +41,7 @@ test.describe('SelectButton', () => {
         await expect(buttons.nth(2)).toHaveAttribute('aria-pressed', 'true');
     });
 
-    test('шаблон, размеры, invalid, disabled и fluid', async ({ page }) => {
+    test('template, sizes, invalid, disabled and fluid', async ({ page }) => {
         await expect(page.locator('[data-demo=template] .p-togglebutton strong')).toHaveCount(4);
         await expect(page.locator('[data-demo=sizes] .p-togglebutton-sm')).toHaveCount(2);
         await expect(page.locator('[data-demo=sizes] .p-togglebutton-lg')).toHaveCount(2);

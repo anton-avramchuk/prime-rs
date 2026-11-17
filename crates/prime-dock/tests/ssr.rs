@@ -1,4 +1,4 @@
-//! Разметка Dock (SSR): состав, положения, пункты, значок, бейдж, представление `item`, ссылка, `aria-*`, `pt`.
+//! Dock markup (SSR): composition, positions, items, icon, badge, the `item` view, link, `aria-*`, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -59,7 +59,7 @@ fn items_carry_disabled_state_and_link_attributes() {
         html.contains("href=\"/terminal\"") && html.contains("target=\"_blank\"") && html.contains("title=\"Open terminal\""),
         "{html}"
     );
-    assert_eq!(html.matches("aria-hidden=\"true\"").count(), 3, "ссылки скрыты от чтения с экрана: {html}");
+    assert_eq!(html.matches("aria-hidden=\"true\"").count(), 3, "links are hidden from screen readers: {html}");
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn icon_is_wrapped_and_badge_rendered() {
     assert!(html.contains("p-badge") && html.contains(">5<"), "{html}");
     let plain = render(|| view! { <Dock model=items() /> }.to_html());
     assert!(!plain.contains("p-badge"), "{plain}");
-    assert_eq!(plain.matches("p-dock-item-icon").count(), 1, "значок только у пункта с иконкой: {plain}");
+    assert_eq!(plain.matches("p-dock-item-icon").count(), 1, "the icon is only on the item with an icon: {plain}");
 }
 
 #[test]

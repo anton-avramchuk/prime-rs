@@ -1,16 +1,16 @@
 ## ADDED Requirements
 
-### Requirement: Статический путь отрисовки Button
-Если все свойства `Button` статические, он SHALL отрисовываться с готовыми значениями атрибутов и блоков (иконка, метка, бейдж), без реактивных замыканий и `RenderEffect` на атрибуты и блоки; если хотя бы одно свойство передано сигналом, SHALL использоваться реактивный путь. Оба пути SHALL давать одинаковую разметку и поведение (события, `pt`, ripple, автофокус), а разметка SHALL быть описана один раз.
+### Requirement: Static render path of Button
+If all properties of `Button` are static, it SHALL be rendered with ready values of the attributes and blocks (icon, label, badge), without reactive closures and `RenderEffect` on the attributes and blocks; if at least one property is passed as a signal, the reactive path SHALL be used. Both paths SHALL produce the same markup and behaviour (events, `pt`, ripple, autofocus), and the markup SHALL be described once.
 
-#### Scenario: Одинаковая разметка и поведение
-- **WHEN** один и тот же набор значений передан статически и через сигналы
-- **THEN** HTML совпадает, а клик, блокировка и фокус работают одинаково
+#### Scenario: Identical markup and behaviour
+- **WHEN** the same set of values is passed statically and through signals
+- **THEN** the HTML matches, and the click, blocking and focus work in the same way
 
-#### Scenario: Память статической кнопки
-- **WHEN** 1000 статических кнопок с меткой и серьёзностью монтируются в браузере
-- **THEN** прирост линейной памяти wasm заметно ниже, чем у реактивного пути, и записан в `docs/benchmarks.md` (цель — не более 3 КБ на кнопку против 6,7 КБ)
+#### Scenario: Memory of a static button
+- **WHEN** 1000 static buttons with a label and a severity are mounted in the browser
+- **THEN** the growth of wasm linear memory is noticeably lower than on the reactive path, and it is recorded in `docs/benchmarks.md` (the goal is no more than 3 KB per button against 6.7 KB)
 
-#### Scenario: Реактивная кнопка
-- **WHEN** `loading` или другое свойство передано сигналом и меняется
-- **THEN** класс, атрибуты, блокировка и индикатор обновляются, как раньше
+#### Scenario: Reactive button
+- **WHEN** `loading` or another property is passed as a signal and changes
+- **THEN** the class, attributes, blocking and the indicator are updated, as before

@@ -1,26 +1,26 @@
-//! Чистая логика Timeline: из свойств в классы и `data-p` (по `timelinestyle.ts` и `Timeline.dataP` PrimeNG).
+//! Pure Timeline logic: from properties to classes and `data-p` (after PrimeNG `timelinestyle.ts` and `Timeline.dataP`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Положение линии относительно содержимого.
+/// Line position relative to the content.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum TimelineAlign {
-    /// `left` (вертикальная раскладка, по умолчанию).
+    /// `left` (vertical layout, default).
     #[default]
     Left,
     /// `right`.
     Right,
-    /// `top` (горизонтальная раскладка).
+    /// `top` (horizontal layout).
     Top,
     /// `bottom`.
     Bottom,
-    /// `alternate` (содержимое по обе стороны линии).
+    /// `alternate` (content on both sides of the line).
     Alternate,
 }
 
 impl TimelineAlign {
-    /// Значение, как в PrimeNG.
+    /// The value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Left => "left",
@@ -32,10 +32,10 @@ impl TimelineAlign {
     }
 }
 
-/// Ориентация таймлайна.
+/// Timeline orientation.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum TimelineLayout {
-    /// `vertical` (по умолчанию).
+    /// `vertical` (default).
     #[default]
     Vertical,
     /// `horizontal`.
@@ -43,7 +43,7 @@ pub enum TimelineLayout {
 }
 
 impl TimelineLayout {
-    /// Значение, как в PrimeNG.
+    /// The value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Vertical => "vertical",
@@ -52,7 +52,7 @@ impl TimelineLayout {
     }
 }
 
-/// Дописывает классы корня: `p-timeline p-component p-timeline-<align> p-timeline-<layout>`.
+/// Appends the root classes: `p-timeline p-component p-timeline-<align> p-timeline-<layout>`.
 pub fn write_classes(cn: &mut ClassNames, align: TimelineAlign, layout: TimelineLayout) {
     cn.add("p-timeline p-component");
     cn.add(match align {
@@ -68,7 +68,7 @@ pub fn write_classes(cn: &mut ClassNames, align: TimelineAlign, layout: Timeline
     });
 }
 
-/// Значение `data-p`: ориентация и положение.
+/// The `data-p` value: orientation and position.
 pub fn data_p(align: TimelineAlign, layout: TimelineLayout) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(layout.as_str()).add(align.as_str());

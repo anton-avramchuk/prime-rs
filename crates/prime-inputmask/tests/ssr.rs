@@ -1,4 +1,4 @@
-//! Разметка InputMask (SSR): корень, поле, начальное значение по маске, значок очистки, классы состояния, `pt`.
+//! InputMask markup (SSR): root, field, initial value by the mask, clear icon, state classes, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -29,12 +29,12 @@ fn initial_value_is_laid_out_by_the_mask() {
         let value = RwSignal::new("12".to_owned());
         view! { <InputMask mask="99-99" value=value /> }.to_html()
     });
-    assert!(html.contains("value=\"\""), "неполное значение с auto_clear очищается: {html}");
+    assert!(html.contains("value=\"\""), "an incomplete value with auto_clear is cleared: {html}");
     let html = render(|| {
         let value = RwSignal::new("12".to_owned());
         view! { <InputMask mask="99-99" value=value auto_clear=false slot_char="#" /> }.to_html()
     });
-    assert!(html.contains("value=\"12-##\""), "без auto_clear остаётся с заполнителями: {html}");
+    assert!(html.contains("value=\"12-##\""), "without auto_clear it stays with placeholders: {html}");
     let html = render(|| {
         let value = RwSignal::new("ab12".to_owned());
         view! { <InputMask mask="aa-99" value=value /> }.to_html()

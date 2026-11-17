@@ -1,37 +1,37 @@
-//! Чистая логика Popover: классы корня, стрелка, переворот, закрытие по клику и смена цели (по `popover.ts` PrimeNG).
+//! Pure Popover logic: root classes, arrow, flip, closing on click and target change (after PrimeNG `popover.ts`).
 
-/// Классы корня.
+/// Root classes.
 pub fn root_classes(flipped: bool) -> &'static str {
     if flipped { "p-popover p-component p-popover-flipped" } else { "p-popover p-component" }
 }
 
-/// Значение `--p-popover-arrow-left`: сдвиг стрелки, если левый край панели левее левого края цели.
+/// Value of `--p-popover-arrow-left`: the arrow shift if the panel's left edge is to the left of the target's left edge.
 pub fn arrow_left(container_left: f64, target_left: f64, border_radius: f64) -> f64 {
     if container_left < target_left { target_left - container_left - border_radius * 2.0 } else { 0.0 }
 }
 
-/// Панель расположена выше цели (то есть перевернута).
+/// The panel is above the target (i.e. flipped).
 pub fn is_flipped(container_top: f64, target_top: f64) -> bool {
     container_top < target_top
 }
 
-/// Клик снаружи: вне панели и вне цели.
+/// A click outside: outside the panel and outside the target.
 pub fn outside_click(inside_panel: bool, inside_target: bool) -> bool {
     !inside_panel && !inside_target
 }
 
-/// Что делать вызову `toggle`.
+/// What a `toggle` call should do.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Retarget {
-    /// Панель скрыта: показать.
+    /// The panel is hidden: show it.
     Show,
-    /// Панель видна у той же цели: скрыть.
+    /// The panel is visible at the same target: hide it.
     Hide,
-    /// Панель видна у другой цели: скрыть и показать у новой.
+    /// The panel is visible at a different target: hide it and show at the new one.
     Switch,
 }
 
-/// Решение для `toggle`: `visible` — панель видна, `same_target` — цель не изменилась.
+/// Decision for `toggle`: `visible` — the panel is visible, `same_target` — the target did not change.
 pub fn retarget(visible: bool, same_target: bool) -> Retarget {
     match (visible, same_target) {
         (false, _) => Retarget::Show,

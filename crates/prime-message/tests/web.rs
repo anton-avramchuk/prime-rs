@@ -1,4 +1,4 @@
-//! Поведение Message в реальном браузере (wasm-bindgen-test): закрытие кнопкой и колбэком контейнера, автоскрытие по `life`.
+//! Message behaviour in a real browser (wasm-bindgen-test): closing by the button and by the container callback, auto-hide by `life`.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn is_hidden(el: &HtmlElement) -> bool {

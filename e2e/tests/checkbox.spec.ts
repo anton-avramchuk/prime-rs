@@ -3,18 +3,18 @@ import { expect, test } from '@playwright/test';
 test.describe('Checkbox', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/checkbox');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-checkbox')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(7);
         const size = await page.locator('[data-demo=basic] .p-checkbox-box').evaluate((el) => getComputedStyle(el).width);
         expect(size).toBe('20px');
     });
 
-    test('клик переключает состояние и классы', async ({ page }) => {
+    test('click toggles the state and classes', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-checkbox');
         await expect(root).not.toHaveClass(/p-checkbox-checked/);
         await root.locator('input').click({ force: true });
@@ -26,7 +26,7 @@ test.describe('Checkbox', () => {
         await expect(page.getByTestId('echo')).toHaveText('false');
     });
 
-    test('набор значений', async ({ page }) => {
+    test('set of values', async ({ page }) => {
         await page.locator('label[for=ny1]').click();
         await page.locator('label[for=ny3]').click();
         await expect(page.getByTestId('selected')).toHaveText('Chicago,New York');
@@ -34,7 +34,7 @@ test.describe('Checkbox', () => {
         await expect(page.getByTestId('selected')).toHaveText('New York');
     });
 
-    test('классы размера, варианта, invalid, disabled и indeterminate', async ({ page }) => {
+    test('classes for size, variant, invalid, disabled and indeterminate', async ({ page }) => {
         await expect(page.locator('[data-demo=sizes] .p-checkbox-sm')).toHaveCount(1);
         await expect(page.locator('[data-demo=sizes] .p-checkbox-lg')).toHaveCount(1);
         await expect(page.locator('[data-demo=filled] .p-variant-filled')).toHaveCount(1);

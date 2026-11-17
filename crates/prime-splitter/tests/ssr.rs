@@ -1,4 +1,4 @@
-//! Разметка Splitter (SSR): корень, панели, разделители, размеры, раскладка, вложенность, `pt`.
+//! Splitter markup (SSR): root, panels, gutters, sizes, layout, nesting, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -19,7 +19,7 @@ fn two_panels_one_gutter() {
     assert!(html.contains("p-splitter p-component p-splitter-horizontal"), "{html}");
     assert!(html.contains("display: flex; flex-wrap: nowrap"), "{html}");
     assert_eq!(count(&html, r#"class="p-splitterpanel""#), 2, "{html}");
-    assert_eq!(count(&html, "p-splitter-gutter\""), 1, "разделитель только между панелями: {html}");
+    assert_eq!(count(&html, "p-splitter-gutter\""), 1, "a gutter only between panels: {html}");
     assert!(html.contains("Panel 1") && html.contains("Panel 2"), "{html}");
     assert!(html.contains(r#"role="separator""#) && html.contains(r#"data-p-gutter-resizing="false""#), "{html}");
     assert!(html.contains(r#"tabindex="0""#) && html.contains(r#"data-pc-section="panel""#), "{html}");

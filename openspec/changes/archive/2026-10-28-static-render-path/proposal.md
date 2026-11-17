@@ -2,31 +2,31 @@
 
 ## Why
 
-После `optimize-reactive-props` Button при SSR делает 20 аллокаций, но в браузере всё ещё занимает ≈ 6,7 КБ линейной памяти wasm на экземпляр (иконка — 0,33 КБ; замер: 1000 кнопок = +6,75 МБ). Причина — `RenderEffect` на каждое атрибутное замыкание в `view!`: у кнопки их около двенадцати (`class`, `style`, `type`, `aria-label`, `tabindex`, `disabled`, три `data-p*` и динамические блоки метки, иконки, бейджа), даже когда все свойства — константы и ничего измениться не может. Большинство кнопок на реальных страницах статические, так что платить за реактивность, которой нет, незачем. Цель проекта — «без лишнего потребления памяти»; это самая крупная оставшаяся статья.
+After `optimize-reactive-props` Button makes 20 allocations during SSR, but in the browser it still takes ≈ 6.7 KB of wasm linear memory per instance (an icon — 0.33 KB; the measurement: 1000 buttons = +6.75 MB). The reason is a `RenderEffect` for each attribute closure in `view!`: a button has about twelve of them (`class`, `style`, `type`, `aria-label`, `tabindex`, `disabled`, three `data-p*` and the dynamic label, icon and badge blocks), even when all the properties are constants and nothing can change. Most buttons on real pages are static, so there is no point paying for reactivity that is not needed. The goal of the project is "no unnecessary memory use"; this is the largest remaining item.
 
-Прототип в прошлом change показал, что выразить «строка или замыкание» одним значением атрибута нельзя (`Either` не реализует `AttributeValue`), поэтому статический путь делается на уровне всей разметки: компонент выбирает одну из двух ветвей `view!`.
+A prototype in the previous change showed that "a string or a closure" cannot be expressed as one attribute value (`Either` does not implement `AttributeValue`), so the static path is done at the level of the whole markup: the component chooses one of two `view!` branches.
 
 ## What Changes
 
-- `Badge` и `Button`: если все свойства статические (`Prop::is_static`), компонент рендерит разметку с готовыми значениями атрибутов и блоков (без замыканий и `RenderEffect`); иначе — текущий реактивный путь. Выбор делается один раз при создании экземпляра.
-- Разметка пишется один раз в `macro_rules!` и подставляется в две ветви, чтобы ветви не расходились; обе ветви покрываются одними и теми же тестами.
-- `prime-core`: помощник для проверки «все свойства статические» (`all_static!`/функция) и общая сборка статических значений атрибутов.
-- Бенчмарки: браузерный сценарий памяти разделяется на «статические кнопки» и «реактивные кнопки» (`loading` — сигнал); добавляется бюджет памяти wasm на 1000 статических кнопок (не блокирует PR, пишется еженедельным job).
-- Поведение компонентов не меняется: классы, атрибуты, события, `pt`, реактивность при передаче сигнала.
-- **Не входит:** оптимизация размера wasm-бинарника, остальные компоненты.
+- `Badge` and `Button`: if all properties are static (`Prop::is_static`), the component renders the markup with ready attribute and block values (without closures and `RenderEffect`); otherwise the current reactive path. The choice is made once, when the instance is created.
+- The markup is written once in a `macro_rules!` and substituted into both branches, so that the branches do not diverge; both branches are covered by the same tests.
+- `prime-core`: a helper for checking "all properties are static" (`all_static!`/a function) and the common building of the static attribute values.
+- Benchmarks: the browser memory scenario is split into "static buttons" and "reactive buttons" (`loading` is a signal); a wasm memory budget for 1000 static buttons is added (it does not block PRs, it is recorded by the weekly job).
+- The behaviour of the components does not change: classes, attributes, events, `pt`, reactivity when a signal is passed.
+- **Not included:** optimization of the wasm binary size, the other components.
 
 ## Capabilities
 
 ### New Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ### Modified Capabilities
-- `core-runtime`: требование к помощнику для статической проверки свойств.
-- `badge`: требование к статическому пути отрисовки.
-- `button`: то же для Button.
+- `core-runtime`: a requirement for the helper of the static checking of properties.
+- `badge`: a requirement for the static render path.
+- `button`: the same for Button.
 
 ## Impact
 
-- Изменяются `crates/prime-core` (помощник), `crates/prime-badge`, `crates/prime-button`, `showcase` (сценарий «реактивные кнопки»), `e2e/tests/memory.spec.ts`, `docs/benchmarks.md`, `docs/button.md`.
-- Рост размера wasm: код разметки существует в двух ветвях (ожидаемо +5–15 % к вкладу компонента); бюджет `benches/budgets.toml` пересматривается по замеру.
-- Риск: расхождение двух ветвей по поведению. Закрывается одним источником разметки (макрос) и параметризованными тестами, которые гоняют каждый сценарий в обеих ветвях.
+- Changes to `crates/prime-core` (the helper), `crates/prime-badge`, `crates/prime-button`, `showcase` (the "reactive buttons" scenario), `e2e/tests/memory.spec.ts`, `docs/benchmarks.md`, `docs/button.md`.
+- Growth of the wasm size: the markup code exists in two branches (expected +5–15 % to the component's contribution); the budget in `benches/budgets.toml` is revised by the measurement.
+- Risk: the two branches diverging in behaviour. It is covered by a single source of markup (a macro) and by parameterized tests that run each scenario in both branches.

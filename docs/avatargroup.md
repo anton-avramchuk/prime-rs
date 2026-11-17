@@ -1,28 +1,28 @@
 # AvatarGroup
 
-Порт `p-avatar-group` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-avatar-group` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-avatargroup::AvatarGroup` | `packages/primeng/src/avatargroup/avatargroup.ts`, `avatargroup/style/avatargroupstyle.ts` |
-| CSS | `.p-avatar-group` входит в `@primeuix/styles/avatar` (feature `avatar` в `prime-theme`) |
-| Демонстрации | `apps/showcase/doc/avatar/avatargroup-doc.ts` (на странице `/avatar`, демонстрация `avatargroup`) |
+| CSS | `.p-avatar-group` is part of `@primeuix/styles/avatar` (feature `avatar` in `prime-theme`) |
+| Demos | `apps/showcase/doc/avatar/avatargroup-doc.ts` (on the `/avatar` page, the `avatargroup` demo) |
 
-Спека: `openspec/specs/avatargroup`.
+Spec: `openspec/specs/avatargroup`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы корня `p-avatar-group p-component`, дочернее содержимое без обёрток, `style` и `style_class`.
-- Перекрытие и выравнивание аватаров целиком в CSS темы.
+- Root classes `p-avatar-group p-component`, child content without wrappers, `style` and `style_class`.
+- Overlap and alignment of the avatars are entirely in the theme CSS.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-avatar-group>` | Хост в Angular — деталь фреймворка. |
-| Нет зависимости от `prime-avatar` | Контейнер принимает любые дочерние элементы; в PrimeNG связь тоже только через CSS. |
+| The root is a `<div>`, not the host `<p-avatar-group>` | The Angular host is a framework detail. |
+| No dependency on `prime-avatar` | The container accepts any child elements; in PrimeNG the link is also only through CSS. |
 
-## Производительность
+## Performance
 
-SSR: 6 аллокаций на экземпляр (бюджет 8); вклад в сырой wasm +64 КБ (бюджет 80 КБ).
-Шаблон — как у Divider (`docs/divider.md`).
+SSR: 6 allocations per instance (budget 8); contribution to raw wasm +64 KB (budget 80 KB).
+Template — as for Divider (`docs/divider.md`).

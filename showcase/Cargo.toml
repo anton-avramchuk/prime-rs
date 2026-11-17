@@ -1,6 +1,6 @@
 [package]
 name = "showcase"
-description = "Демо-приложение prime-rs (SSR + hydrate), эталон для e2e и сравнения скриншотов"
+description = "prime-rs demo app (SSR + hydrate), the reference for e2e and screenshot comparison"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

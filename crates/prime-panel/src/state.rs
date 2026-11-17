@@ -1,31 +1,31 @@
-//! Чистая логика Panel: классы и `data-p` (по `panelstyle.ts` и `Panel.dataP` PrimeNG).
+//! Pure Panel logic: classes and `data-p` (based on `panelstyle.ts` and `Panel.dataP` in PrimeNG).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Положение иконок в шапке (`iconPos`).
+/// Icon position in the header (`iconPos`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum IconPos {
-    /// В начале шапки.
+    /// At the start of the header.
     Start,
-    /// В конце шапки.
+    /// At the end of the header.
     #[default]
     End,
-    /// По центру.
+    /// Centered.
     Center,
 }
 
-/// Чем переключается панель (`toggler`).
+/// What toggles the panel (`toggler`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Toggler {
-    /// Кнопкой в шапке.
+    /// By the button in the header.
     #[default]
     Icon,
-    /// Щелчком по всей шапке.
+    /// By clicking the whole header.
     Header,
 }
 
-/// Добавляет классы корня в порядке `panelstyle.ts`.
+/// Adds the root classes in the order of `panelstyle.ts`.
 pub fn write_root_classes(cn: &mut ClassNames, toggleable: bool, collapsed: bool) {
     cn.add("p-panel p-component")
         .add_if(toggleable, "p-panel-toggleable")
@@ -33,7 +33,7 @@ pub fn write_root_classes(cn: &mut ClassNames, toggleable: bool, collapsed: bool
         .add_if(toggleable && collapsed, "p-panel-collapsed");
 }
 
-/// Классы блока действий шапки.
+/// Classes of the header actions block.
 pub fn actions_class(pos: IconPos) -> &'static str {
     match pos {
         IconPos::Start => "p-panel-header-actions p-panel-icons-start",
@@ -42,7 +42,7 @@ pub fn actions_class(pos: IconPos) -> &'static str {
     }
 }
 
-/// Значение `data-p` корня и шапки: `toggleable`.
+/// `data-p` value of the root and header: `toggleable`.
 pub fn data_p(toggleable: bool) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(toggleable, "toggleable");

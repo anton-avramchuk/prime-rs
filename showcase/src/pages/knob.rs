@@ -1,5 +1,5 @@
-//! Страница Knob: демонстрации `basic`, `minmax`, `reactive`, `size`, `step`, `stroke`, `template`, `color`, `readonly`, `disabled`
-//! из showcase PrimeNG (`apps/showcase/doc/knob`). Демонстрации с Angular Forms не переносятся.
+//! Knob page: demos `basic`, `minmax`, `reactive`, `size`, `step`, `stroke`, `template`, `color`, `readonly`, `disabled`
+//! from the PrimeNG showcase (`apps/showcase/doc/knob`). Demos with Angular Forms are not ported.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -7,7 +7,7 @@ use prime_button::Button;
 use prime_icons::{MinusIcon, PlusIcon};
 use prime_knob::Knob;
 
-/// Страница `/knob`.
+/// Page `/knob`.
 #[component]
 pub fn KnobPage() -> impl IntoView {
     let basic = RwSignal::new(0.0);

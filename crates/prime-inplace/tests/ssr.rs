@@ -1,4 +1,4 @@
-//! Разметка Inplace (SSR): вид, содержимое, `disabled`, кнопка закрытия, `pt`.
+//! Inplace markup (SSR): view, content, `disabled`, close button, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -28,7 +28,7 @@ fn active_shows_content_only() {
     let html = view! { <Inplace active=active display=display() content=content() /> }.to_html();
     assert!(html.contains("p-inplace-content") && html.contains("Body"), "{html}");
     assert!(!html.contains("p-inplace-display") && !html.contains("View"), "{html}");
-    assert!(!html.contains("<button"), "кнопка закрытия только при closable: {html}");
+    assert!(!html.contains("<button"), "the close button only with closable: {html}");
 }
 
 #[test]

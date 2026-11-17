@@ -1,31 +1,31 @@
-//! Чистая логика Dialog: положение, классы, инлайн-стили, расчёт перетаскивания и размера (по `dialog.ts` и `dialogstyle.ts` PrimeNG).
+//! Pure Dialog logic: position, classes, inline styles, drag and resize calculations (after PrimeNG's `dialog.ts` and `dialogstyle.ts`).
 
-/// Положение окна на экране.
+/// Window position on the screen.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum DialogPosition {
-    /// По центру (по умолчанию).
+    /// Centered (default).
     #[default]
     Center,
-    /// Сверху по центру.
+    /// Top center.
     Top,
-    /// Снизу по центру.
+    /// Bottom center.
     Bottom,
-    /// Слева по центру.
+    /// Left center.
     Left,
-    /// Справа по центру.
+    /// Right center.
     Right,
-    /// Левый верхний угол.
+    /// Top left corner.
     TopLeft,
-    /// Правый верхний угол.
+    /// Top right corner.
     TopRight,
-    /// Левый нижний угол.
+    /// Bottom left corner.
     BottomLeft,
-    /// Правый нижний угол.
+    /// Bottom right corner.
     BottomRight,
 }
 
 impl DialogPosition {
-    /// Суффикс класса маски (`p-dialog-<имя>`); у центра класса нет.
+    /// Mask class suffix (`p-dialog-<name>`); the center has no class.
     pub fn class_suffix(self) -> Option<&'static str> {
         match self {
             Self::Center => None,
@@ -57,7 +57,7 @@ impl DialogPosition {
     }
 }
 
-/// Классы маски: `p-dialog-mask`, `p-overlay-mask` при `modal`, `p-dialog-<положение>`.
+/// Mask classes: `p-dialog-mask`, `p-overlay-mask` when `modal`, `p-dialog-<position>`.
 pub fn mask_classes(position: DialogPosition, modal: bool) -> String {
     let mut cn = String::from("p-dialog-mask");
     if modal {
@@ -70,7 +70,7 @@ pub fn mask_classes(position: DialogPosition, modal: bool) -> String {
     cn
 }
 
-/// Классы маски на время анимации: у модальной — `p-overlay-mask-enter-active` / `-leave-active`.
+/// Mask classes during the animation: for a modal one — `p-overlay-mask-enter-active` / `-leave-active`.
 pub fn mask_animation_class(modal: bool, leaving: bool) -> &'static str {
     match (modal, leaving) {
         (false, _) => "",
@@ -79,7 +79,7 @@ pub fn mask_animation_class(modal: bool, leaving: bool) -> &'static str {
     }
 }
 
-/// Классы окна: `p-dialog p-component`, `p-dialog-maximized` и класс анимации.
+/// Window classes: `p-dialog p-component`, `p-dialog-maximized` and the animation class.
 pub fn root_classes(maximized: bool, leaving: bool) -> String {
     let mut cn = String::from("p-dialog p-component");
     if maximized {
@@ -89,7 +89,7 @@ pub fn root_classes(maximized: bool, leaving: bool) -> String {
     cn
 }
 
-/// Инлайн-стиль маски: на весь экран, выравнивание окна по положению, клики только у модальной.
+/// Mask inline style: full screen, window alignment by position, clicks only for a modal one.
 pub fn mask_inline_style(position: DialogPosition, modal: bool) -> String {
     format!(
         "position: fixed; height: 100%; width: 100%; left: 0; top: 0; display: flex; justify-content: {}; align-items: {}; pointer-events: {}",
@@ -99,19 +99,19 @@ pub fn mask_inline_style(position: DialogPosition, modal: bool) -> String {
     )
 }
 
-/// Инлайн-стиль окна.
+/// Window inline style.
 pub fn root_inline_style() -> &'static str {
     "display: flex; flex-direction: column; pointer-events: auto"
 }
 
-/// Новые `left` и `top` окна при перетаскивании: прямоугольник окна плюс смещение указателя минус поля.
+/// New window `left` and `top` while dragging: window rect plus pointer offset minus margins.
 pub fn drag_position(rect_left: f64, rect_top: f64, margin_left: f64, margin_top: f64, dx: f64, dy: f64) -> (f64, f64) {
     (rect_left + dx - margin_left, rect_top + dy - margin_top)
 }
 
-/// Принимаются ли новые координаты по осям `(x, y)`.
+/// Whether the new coordinates are accepted per axis `(x, y)`.
 ///
-/// При `keep_in_viewport` ось принимается, только если окно остаётся в пределах `min_*` и экрана; оси независимы.
+/// With `keep_in_viewport` an axis is accepted only if the window stays within `min_*` and the screen; axes are independent.
 #[allow(clippy::too_many_arguments)]
 pub fn drag_accept(
     left: f64,
@@ -130,9 +130,9 @@ pub fn drag_accept(
     (left >= min_x && left + width < viewport_w, top >= min_y && top + height < viewport_h)
 }
 
-/// Новые размеры окна при изменении размера: `(ширина, высота)`, принятые по осям.
+/// New window size while resizing: `(width, height)`, accepted per axis.
 ///
-/// Пока окно не перетаскивали (`not_dragged`), оно центрировано и растёт в обе стороны, поэтому смещение удваивается.
+/// While the window has not been dragged (`not_dragged`), it is centered and grows in both directions, so the offset is doubled.
 #[allow(clippy::too_many_arguments)]
 pub fn resize_to(
     width: f64,
@@ -157,7 +157,7 @@ pub fn resize_to(
     (w, h)
 }
 
-/// Правила `@media` для адаптивной ширины окна; `attr` — имя атрибута, поставленного на окно.
+/// `@media` rules for adaptive window width; `attr` is the name of the attribute set on the window.
 pub fn breakpoints_css(attr: &str, breakpoints: &[(String, String)]) -> String {
     breakpoints
         .iter()
@@ -169,17 +169,17 @@ pub fn breakpoints_css(attr: &str, breakpoints: &[(String, String)]) -> String {
         .collect()
 }
 
-/// Эта панель — верхняя по `z-index` (только она закрывается по Escape).
+/// This panel is the topmost by `z-index` (only it is closed by Escape).
 pub fn is_topmost(own_z: i32, top_z: i32) -> bool {
     own_z >= top_z
 }
 
-/// `z-index` маски: на единицу ниже окна.
+/// Mask `z-index`: one below the window.
 pub fn mask_z(panel_z: i32) -> i32 {
     panel_z - 1
 }
 
-/// Значение `data-p`: признаки через пробел.
+/// `data-p` value: space-separated flags.
 pub fn data_p(maximized: bool, modal: bool) -> String {
     let mut parts = Vec::new();
     if maximized {
@@ -198,7 +198,7 @@ mod tests {
 
     #[test]
     fn mask_classes_table() {
-        // (положение, modal, ожидание)
+        // (position, modal, waiting)
         let cases = [
             (Center, false, "p-dialog-mask"),
             (Center, true, "p-dialog-mask p-overlay-mask"),
@@ -222,7 +222,7 @@ mod tests {
 
     #[test]
     fn mask_inline_style_table() {
-        // (положение, justify, align)
+        // (position, justify, align)
         let cases = [
             (Center, "center", "center"),
             (Top, "center", "flex-start"),
@@ -251,28 +251,28 @@ mod tests {
 
     #[test]
     fn drag_accept_table() {
-        // viewport 1000x800, окно 300x200, min 0/0
+        // viewport 1000x800, window 300x200, min 0/0
         let accept = |l, t, keep| drag_accept(l, t, 300.0, 200.0, 1000.0, 800.0, 0.0, 0.0, keep);
         assert_eq!(accept(100.0, 100.0, true), (true, true));
-        assert_eq!(accept(-5.0, 100.0, true), (false, true), "левее min_x");
-        assert_eq!(accept(100.0, -5.0, true), (true, false), "выше min_y");
-        assert_eq!(accept(700.0, 100.0, true), (false, true), "правый край в границе экрана не помещается");
+        assert_eq!(accept(-5.0, 100.0, true), (false, true), "left of min_x");
+        assert_eq!(accept(100.0, -5.0, true), (true, false), "above min_y");
+        assert_eq!(accept(700.0, 100.0, true), (false, true), "right edge does not fit within the screen bounds");
         assert_eq!(accept(699.0, 599.0, true), (true, true));
-        assert_eq!(accept(-500.0, 5000.0, false), (true, true), "без keep_in_viewport — всегда");
-        assert_eq!(drag_accept(5.0, 5.0, 100.0, 100.0, 1000.0, 800.0, 10.0, 20.0, true), (false, false), "min_x и min_y");
+        assert_eq!(accept(-500.0, 5000.0, false), (true, true), "without keep_in_viewport — always");
+        assert_eq!(drag_accept(5.0, 5.0, 100.0, 100.0, 1000.0, 800.0, 10.0, 20.0, true), (false, false), "min_x and min_y");
     }
 
     #[test]
     fn resize_to_table() {
-        // окно 400x300 в экране 1000x800, левый верх (100, 100)
+        // window 400x300 in a 1000x800 screen, top left (100, 100)
         let go =
             |dx, dy, not_dragged, min_w, min_h| resize_to(400.0, 300.0, dx, dy, not_dragged, min_w, min_h, 100.0, 100.0, 1000.0, 800.0);
         assert_eq!(go(40.0, 20.0, false, None, None), (Some(440.0), Some(320.0)));
-        assert_eq!(go(40.0, 20.0, true, None, None), (Some(480.0), Some(340.0)), "не перетаскивали: смещение удваивается");
-        assert_eq!(go(-100.0, 0.0, false, Some(350.0), None), (None, Some(300.0)), "уже минимальной ширины");
+        assert_eq!(go(40.0, 20.0, true, None, None), (Some(480.0), Some(340.0)), "not dragged: offset is doubled");
+        assert_eq!(go(-100.0, 0.0, false, Some(350.0), None), (None, Some(300.0)), "already at minimum width");
         assert_eq!(go(0.0, -100.0, false, None, Some(250.0)), (Some(400.0), None));
-        assert_eq!(go(600.0, 0.0, false, None, None), (None, Some(300.0)), "не помещается по ширине");
-        assert_eq!(go(0.0, 500.0, false, None, None), (Some(400.0), None), "не помещается по высоте");
+        assert_eq!(go(600.0, 0.0, false, None, None), (None, Some(300.0)), "does not fit in width");
+        assert_eq!(go(0.0, 500.0, false, None, None), (Some(400.0), None), "does not fit in height");
     }
 
     #[test]

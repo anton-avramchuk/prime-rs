@@ -1,52 +1,52 @@
 ## ADDED Requirements
 
-### Requirement: Свойства Badge
-Компонент `Badge` крейта `prime-badge` SHALL принимать значение (`value`: строка или число), серьёзность (`severity`: `secondary`, `info`, `success`, `warn`, `danger`, `contrast`), размер (`size`: `small`, `large`, `xlarge`), признак скрытия (`badge_disabled`) и дополнительный класс (`style_class`). Все свойства необязательны. Свойства, которые меняются во время работы, SHALL быть реактивными.
+### Requirement: Badge properties
+The `Badge` component of the `prime-badge` crate SHALL accept a value (`value`: a string or a number), a severity (`severity`: `secondary`, `info`, `success`, `warn`, `danger`, `contrast`), a size (`size`: `small`, `large`, `xlarge`), a hiding flag (`badge_disabled`) and an additional class (`style_class`). All properties are optional. Properties that change at runtime SHALL be reactive.
 
-#### Scenario: Значение выводится как текст
-- **WHEN** `Badge` отрисован со значением `5`
-- **THEN** корневой элемент содержит текст `5`
+#### Scenario: The value is rendered as text
+- **WHEN** `Badge` is rendered with the value `5`
+- **THEN** the root element contains the text `5`
 
-#### Scenario: Свойства по умолчанию
-- **WHEN** `Badge` отрисован без свойств
-- **THEN** он отрисован без текста, без классов серьёзности и размера
+#### Scenario: Default properties
+- **WHEN** `Badge` is rendered without properties
+- **THEN** it is rendered without text, without severity and size classes
 
-### Requirement: Классы и атрибуты Badge
-Корневой элемент SHALL иметь классы `p-badge p-component` и модификаторы, как в PrimeNG: `p-badge-circle` при значении из одного символа, `p-badge-dot` при пустом значении, `p-badge-sm`, `p-badge-lg`, `p-badge-xl` для размеров и `p-badge-<severity>` для серьёзности. Атрибут `data-p` SHALL содержать через пробел те же признаки, что и в PrimeNG (`circle`, `empty`, `disabled`, серьёзность, размер).
+### Requirement: Classes and attributes of Badge
+The root element SHALL have the classes `p-badge p-component` and the modifiers, as in PrimeNG: `p-badge-circle` for a value of one character, `p-badge-dot` for an empty value, `p-badge-sm`, `p-badge-lg`, `p-badge-xl` for the sizes and `p-badge-<severity>` for the severity. The `data-p` attribute SHALL contain, separated by spaces, the same flags as in PrimeNG (`circle`, `empty`, `disabled`, severity, size).
 
-#### Scenario: Одиночный символ — круг
-- **WHEN** значение равно `5`
-- **THEN** у корня есть класс `p-badge-circle`, а `p-badge-dot` нет
+#### Scenario: A single character — a circle
+- **WHEN** the value equals `5`
+- **THEN** the root has the class `p-badge-circle`, and there is no `p-badge-dot`
 
-#### Scenario: Пустое значение — точка
-- **WHEN** значение не задано
-- **THEN** у корня есть класс `p-badge-dot`, а в `data-p` есть `empty`
+#### Scenario: An empty value — a dot
+- **WHEN** the value is not set
+- **THEN** the root has the class `p-badge-dot`, and `data-p` contains `empty`
 
-#### Scenario: Серьёзность и размер
-- **WHEN** заданы `severity = danger` и `size = xlarge`
-- **THEN** у корня есть классы `p-badge-danger` и `p-badge-xl`
+#### Scenario: Severity and size
+- **WHEN** `severity = danger` and `size = xlarge` are set
+- **THEN** the root has the classes `p-badge-danger` and `p-badge-xl`
 
-#### Scenario: Дополнительный класс
-- **WHEN** задан `style_class = "custom"`
-- **THEN** у корня есть и `custom`, и собственные классы компонента
+#### Scenario: An additional class
+- **WHEN** `style_class = "custom"` is set
+- **THEN** the root has both `custom` and the component's own classes
 
-### Requirement: Скрытие Badge
-При `badge_disabled = true` компонент SHALL оставаться в DOM, но не отображаться (`display: none`); при `false` стиль `display` SHALL отсутствовать.
+### Requirement: Hiding Badge
+With `badge_disabled = true` the component SHALL stay in the DOM but not be displayed (`display: none`); with `false` the `display` style SHALL be absent.
 
-#### Scenario: Скрытый бейдж
+#### Scenario: A hidden badge
 - **WHEN** `badge_disabled = true`
-- **THEN** у корня стиль `display: none`, а в `data-p` есть `disabled`
+- **THEN** the root has the style `display: none`, and `data-p` contains `disabled`
 
 ### Requirement: Pass-through Badge
-`Badge` SHALL принимать `pt` для корневого элемента (дополнительные классы и атрибуты).
+`Badge` SHALL accept `pt` for the root element (additional classes and attributes).
 
-#### Scenario: Класс через pt
-- **WHEN** передан `pt` с классом `custom`
-- **THEN** корень содержит `custom` и собственные классы
+#### Scenario: Class through pt
+- **WHEN** `pt` with the class `custom` is passed
+- **THEN** the root contains `custom` and the own classes
 
-### Requirement: Производительность Badge
-Рендер `Badge` SHALL укладываться в бюджеты, заданные `benches/budgets.toml`, и иметь сценарии на 1 и 1000 экземпляров в `render-bench`.
+### Requirement: Performance of Badge
+The rendering of `Badge` SHALL fit within the budgets set by `benches/budgets.toml`, and it SHALL have scenarios for 1 and 1000 instances in `render-bench`.
 
-#### Scenario: Бюджет размера
-- **WHEN** выполняется `cargo xtask wasm-size`
-- **THEN** вклад `case-badge` не превышает бюджет
+#### Scenario: Size budget
+- **WHEN** `cargo xtask wasm-size` is run
+- **THEN** the contribution of `case-badge` does not exceed the budget

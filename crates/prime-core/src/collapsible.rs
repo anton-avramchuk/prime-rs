@@ -1,20 +1,20 @@
-//! Общая логика сворачиваемой области (Panel, Fieldset): состояние, идентификаторы, атрибуты ARIA и анимация раскрытия.
+//! Shared logic of a collapsible region (Panel, Fieldset): state, identifiers, ARIA attributes and the expand animation.
 //!
-//! Анимацию задают классы темы `p-collapsible-enter-active` и `p-collapsible-leave-active` (`grid-template-rows` `0fr` ↔ `1fr`).
-//! Итоговое скрытие — встроенный `display: none`, который ставит [`CollapseState::initial_style`] при первом рендере
-//! и затем (только в браузере) [`bind_region`].
+//! The animation is driven by the theme classes `p-collapsible-enter-active` and `p-collapsible-leave-active` (`grid-template-rows` `0fr` ↔ `1fr`).
+//! The final hiding is the inline `display: none` set by [`CollapseState::initial_style`] on the first render
+//! and then (only in the browser) by [`bind_region`].
 
 use crate::ids::next_unique;
 use leptos::prelude::*;
 
-/// Состояние «свёрнуто»: внешний двусторонний сигнал либо собственный.
+/// "Collapsed" state: an external two-way signal or its own.
 #[derive(Clone, Copy, Debug)]
 pub struct CollapseState {
     signal: RwSignal<bool>,
 }
 
 impl CollapseState {
-    /// Берёт внешний сигнал, а без него создаёт собственный с начальным значением `initial`.
+    /// Takes the external signal, and without it creates its own with the initial value `initial`.
     ///
     /// ```
     /// use leptos::prelude::*;
@@ -32,50 +32,50 @@ impl CollapseState {
         Self { signal: external.unwrap_or_else(|| RwSignal::new(initial)) }
     }
 
-    /// Текущее значение с подпиской.
+    /// Current value with subscription.
     pub fn get(&self) -> bool {
         self.signal.get()
     }
 
-    /// Текущее значение без подписки.
+    /// Current value without subscription.
     pub fn get_untracked(&self) -> bool {
         self.signal.get_untracked()
     }
 
-    /// Инвертирует состояние и возвращает новое значение `collapsed`.
+    /// Inverts the state and returns the new `collapsed` value.
     pub fn toggle(&self) -> bool {
         let now = !self.signal.get_untracked();
         self.signal.set(now);
         now
     }
 
-    /// Встроенный стиль области при первом рендере: свёрнутая область скрыта сразу, без анимации.
+    /// Inline style of the region on the first render: a collapsed region is hidden at once, without animation.
     pub fn initial_style(&self) -> Option<&'static str> {
         hidden_style(self.get_untracked())
     }
 }
 
-/// Стиль скрытой области.
+/// Style of a hidden region.
 pub fn hidden_style(collapsed: bool) -> Option<&'static str> {
     collapsed.then_some("display: none")
 }
 
-/// Идентификаторы частей: заголовок, область содержимого и строка заголовка.
+/// Identifiers of the parts: header, content region and header row.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CollapseIds {
-    /// Основа: `id` корня.
+    /// Base: the root `id`.
     pub root: String,
-    /// `{id}_header`: заголовок, на него указывает `aria-labelledby`.
+    /// `{id}_header`: the header, pointed to by `aria-labelledby`.
     pub header: String,
-    /// `{id}_content`: область содержимого, на неё указывает `aria-controls`.
+    /// `{id}_content`: the content region, pointed to by `aria-controls`.
     pub content: String,
-    /// `{id}-titlebar`: строка заголовка.
+    /// `{id}-titlebar`: the header row.
     pub titlebar: String,
 }
 
 impl CollapseIds {
-    /// Производные идентификаторы от `id`. Без `id` берётся номер из общего контекста гидратации (одинаковый на сервере и в браузере),
-    /// а вне его — из глобального счётчика.
+    /// Identifiers derived from `id`. Without `id` the number comes from the shared hydration context (the same on the server and in the browser),
+    /// and outside it from the global counter.
     ///
     /// ```
     /// use prime_core::collapsible::CollapseIds;
@@ -92,35 +92,35 @@ impl CollapseIds {
     }
 }
 
-/// `aria-expanded` переключателя.
+/// `aria-expanded` of the toggle.
 pub fn aria_expanded(collapsed: bool) -> &'static str {
     if collapsed { "false" } else { "true" }
 }
 
-/// `aria-hidden` области.
+/// `aria-hidden` of the region.
 pub fn aria_hidden(collapsed: bool) -> &'static str {
     if collapsed { "true" } else { "false" }
 }
 
-/// `tabindex` самой области: `-1` только когда она свёрнута.
+/// `tabindex` of the region itself: `-1` only when it is collapsed.
 pub fn region_tabindex(collapsed: bool) -> Option<&'static str> {
     collapsed.then_some("-1")
 }
 
-/// Класс анимации для раскрытия или сворачивания.
+/// Animation class for expanding or collapsing.
 pub fn animation_class(expanding: bool) -> &'static str {
     if expanding { "p-collapsible-enter-active" } else { "p-collapsible-leave-active" }
 }
 
-/// Привязывает область к состоянию (только браузер): `tabindex` фокусируемых потомков и анимация при смене состояния.
-/// Первый запуск ничего не анимирует. `on_done` вызывается с новым `collapsed` после окончания анимации.
+/// Binds the region to the state (browser only): `tabindex` of focusable descendants and animation on state change.
+/// The first run animates nothing. `on_done` is called with the new `collapsed` after the animation ends.
 #[cfg(target_arch = "wasm32")]
 pub fn bind_region(region: NodeRef<leptos::html::Div>, state: CollapseState, on_done: Option<Callback<bool>>) {
     bind_region_with(region, move || state.get(), on_done);
 }
 
-/// То же, что [`bind_region`], но состояние «свёрнуто» вычисляется функцией (например, из списка активных значений группы).
-/// Функция читает сигналы внутри `Effect`, поэтому смена любого из них перезапускает привязку.
+/// Same as [`bind_region`], but the "collapsed" state is computed by a function (for example, from the list of active values of a group).
+/// The function reads signals inside an `Effect`, so a change of any of them restarts the binding.
 #[cfg(target_arch = "wasm32")]
 pub fn bind_region_with(region: NodeRef<leptos::html::Div>, collapsed: impl Fn() -> bool + 'static, on_done: Option<Callback<bool>>) {
     Effect::new(move |prev: Option<bool>| {
@@ -147,7 +147,7 @@ pub fn bind_region_with(region: NodeRef<leptos::html::Div>, collapsed: impl Fn()
     });
 }
 
-/// Проставляет или снимает `tabindex="-1"` у фокусируемых потомков области.
+/// Sets or removes `tabindex="-1"` on focusable descendants of the region.
 #[cfg(target_arch = "wasm32")]
 fn set_descendants_tabindex(region: &web_sys::HtmlElement, collapsed: bool) {
     let Ok(list) = region.query_selector_all("input, button, select, a, textarea, [tabindex]") else { return };
@@ -158,8 +158,8 @@ fn set_descendants_tabindex(region: &web_sys::HtmlElement, collapsed: bool) {
     }
 }
 
-/// Запускает анимацию области и вызывает `done` один раз по `animationend`; если события нет (отключённые анимации,
-/// скрытый элемент), завершает по запасному таймеру.
+/// Starts the region animation and calls `done` once on `animationend`; if there is no event (disabled animations,
+/// hidden element), finishes via a fallback timer.
 #[cfg(target_arch = "wasm32")]
 pub fn animate(el: &web_sys::HtmlElement, expanding: bool, done: impl FnOnce() + 'static) {
     use leptos::wasm_bindgen::{JsCast, closure::Closure};
@@ -167,8 +167,8 @@ pub fn animate(el: &web_sys::HtmlElement, expanding: bool, done: impl FnOnce() +
     use std::rc::Rc;
     use std::time::Duration;
 
-    // Каждый запуск получает свой номер: устаревший запуск (быстрое повторное переключение) ничего не меняет по завершении,
-    // иначе его запасной таймер скрыл бы уже раскрытую область.
+    // Each run gets its own number: a stale run (fast repeated toggling) changes nothing on completion,
+    // otherwise its fallback timer would hide an already expanded region.
     thread_local! {
         static RUN: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
     }
@@ -240,7 +240,7 @@ mod tests {
             assert_eq!((own.get_untracked(), own.toggle(), own.get_untracked()), (true, false, false));
             let ext = RwSignal::new(false);
             let s = CollapseState::new(Some(ext), true);
-            assert!(!s.get_untracked(), "внешний сигнал важнее начального значения");
+            assert!(!s.get_untracked(), "the external signal takes precedence over the initial value");
             assert!(s.toggle() && ext.get_untracked());
             assert_eq!(s.initial_style(), Some("display: none"));
         });

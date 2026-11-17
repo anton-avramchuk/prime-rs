@@ -1,30 +1,30 @@
 # Skeleton
 
-Порт `p-skeleton` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-skeleton` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-skeleton::Skeleton` | `packages/primeng/src/skeleton/skeleton.ts`, `skeleton/style/skeletonstyle.ts` |
-| CSS | `@primeuix/styles/skeleton` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/skeleton/*-doc.ts` (`shapes`, `card`, `list`) |
+| CSS | `@primeuix/styles/skeleton` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/skeleton/*-doc.ts` (`shapes`, `card`, `list`) |
 
-Спека: `openspec/specs/skeleton`.
+Spec: `openspec/specs/skeleton`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Корень `aria-hidden="true"`, классы `p-skeleton p-component`, `p-skeleton-circle`, `p-skeleton-animation-none`, `data-p` — имя формы.
-- Встроенный стиль `position: relative`, `width` (`100%`), `height` (`1rem`), `border-radius`; `size` задаёт ширину и высоту разом.
+- Root `aria-hidden="true"`, classes `p-skeleton p-component`, `p-skeleton-circle`, `p-skeleton-animation-none`, `data-p` — the shape name.
+- Inline style `position: relative`, `width` (`100%`), `height` (`1rem`), `border-radius`; `size` sets the width and height at once.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-skeleton>` | Хост в Angular — деталь фреймворка. |
-| `shape` и `animation` — перечисления `SkeletonShape`, `SkeletonAnimation` | В PrimeNG это произвольные строки; допустимые значения те же. |
-| Демонстрация `datatable` не перенесена, утилиты Tailwind заменены инлайн-стилями | Нужна таблица; Tailwind не поставляется. |
-| Встроенный стиль пользователя только через `pt.root` | В PrimeNG у Skeleton нет входа `style`. |
+| The root is a `<div>`, not the `<p-skeleton>` host | The host in Angular is a framework detail. |
+| `shape` and `animation` are the enums `SkeletonShape`, `SkeletonAnimation` | In PrimeNG these are arbitrary strings; the allowed values are the same. |
+| The `datatable` demo is not ported, Tailwind utilities are replaced with inline styles | It needs a table; Tailwind is not shipped. |
+| The user's inline style only via `pt.root` | In PrimeNG Skeleton has no `style` input. |
 
-## Производительность
+## Performance
 
-SSR: 6 аллокаций на экземпляр (бюджет 8); вклад в сырой wasm +86 КБ (бюджет 105 КБ).
-Шаблон — как у AvatarGroup (`docs/avatargroup.md`).
+SSR: 6 allocations per instance (budget 8); contribution to raw wasm +86 KB (budget 105 KB).
+Template — as in AvatarGroup (`docs/avatargroup.md`).

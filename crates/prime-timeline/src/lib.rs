@@ -1,8 +1,8 @@
-//! Timeline — порт `p-timeline` из PrimeNG 21.1.10.
+//! Timeline — port of `p-timeline` from PrimeNG 21.1.10.
 //!
-//! Корень `div.p-timeline` (вместо хоста `<p-timeline>`); на каждое событие — `div.p-timeline-event` с тремя частями
-//! (подпись напротив, разделитель с маркером и соединителем, содержимое). Шаблоны `content`, `opposite` и `marker` —
-//! колбэки, получающие событие. `align` — перечисление из пяти значений, которые знает CSS темы.
+//! Root `div.p-timeline` (instead of the `<p-timeline>` host); for each event a `div.p-timeline-event` with three parts
+//! (an opposite label, a separator with a marker and a connector, the content). The `content`, `opposite` and `marker` templates are
+//! callbacks that receive the event. `align` is an enum of five values known to the theme CSS.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -21,55 +21,55 @@ use std::sync::Arc;
 
 pub use state::{TimelineAlign, TimelineLayout, data_p, write_classes};
 
-/// Pass-through частей Timeline.
+/// Pass-through of the Timeline parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TimelinePt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Событие.
+    /// Event.
     pub event: Pt,
-    /// Часть напротив линии.
+    /// Part opposite the line.
     pub event_opposite: Pt,
-    /// Разделитель (маркер и соединитель).
+    /// Separator (marker and connector).
     pub event_separator: Pt,
-    /// Стандартный маркер.
+    /// Standard marker.
     pub event_marker: Pt,
-    /// Соединитель.
+    /// Connector.
     pub event_connector: Pt,
-    /// Содержимое события.
+    /// Event content.
     pub event_content: Pt,
 }
 
-/// Шаблон части события: получает событие, возвращает разметку.
+/// Event part template: receives the event, returns markup.
 pub type TimelineSlot<T> = Callback<T, AnyView>;
 
-/// Цепочка событий.
+/// A chain of events.
 ///
-/// Каждое свойство принимает значение или сигнал; сигнал `value` перестраивает список событий.
+/// Every property accepts a value or a signal; the `value` signal rebuilds the event list.
 #[component]
 pub fn Timeline<T>(
-    /// События.
+    /// Events.
     #[prop(optional, into)]
     value: Prop<Vec<T>>,
-    /// Положение линии.
+    /// Line position.
     #[prop(optional, into)]
     align: Prop<TimelineAlign>,
-    /// Ориентация.
+    /// Orientation.
     #[prop(optional, into)]
     layout: Prop<TimelineLayout>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Шаблон содержимого события.
+    /// Event content template.
     #[prop(optional, into)]
     content: Option<TimelineSlot<T>>,
-    /// Шаблон части напротив линии.
+    /// Template of the part opposite the line.
     #[prop(optional, into)]
     opposite: Option<TimelineSlot<T>>,
-    /// Шаблон маркера (заменяет стандартный).
+    /// Marker template (replaces the standard one).
     #[prop(optional, into)]
     marker: Option<TimelineSlot<T>>,
     /// Pass-through.
@@ -115,7 +115,7 @@ where
     }
 }
 
-/// Разметка одного события.
+/// Markup of a single event.
 fn event_view<T: Clone + Send + Sync + 'static>(
     pt: &TimelinePt,
     data: &str,

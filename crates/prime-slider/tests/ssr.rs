@@ -1,4 +1,4 @@
-//! Структура DOM, положение ручек, `aria-*`, классы, `data-p*`, `disabled` и `pt` Slider (SSR).
+//! DOM structure, handle position, `aria-*`, classes, `data-p*`, `disabled` and `pt` of Slider (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -43,8 +43,8 @@ fn single_structure_and_defaults() {
 #[test]
 fn position_and_fill_follow_the_value() {
     let html = view! { <Slider value=RwSignal::new(50.0) max=200.0 /> }.to_html();
-    assert!(html.contains("inset-inline-start: 25%"), "ручка: {html}");
-    assert!(html.contains("width: 25%"), "заполнение: {html}");
+    assert!(html.contains("inset-inline-start: 25%"), "handle: {html}");
+    assert!(html.contains("width: 25%"), "fill: {html}");
     assert_eq!(count(&html, "position: absolute"), 2, "{html}");
     let html = view! { <Slider default_value=-10.0 /> }.to_html();
     assert!(html.contains("inset-inline-start: 0%") && html.contains("width: 0%"), "{html}");
@@ -73,13 +73,13 @@ fn range_has_two_handles_in_any_order() {
     assert!(html.contains(r#"data-pc-section="startHandler""#) && html.contains(r#"data-pc-section="endHandler""#), "{html}");
     assert!(html.contains(r#"aria-valuenow="20""#) && html.contains(r#"aria-valuenow="80""#), "{html}");
     assert!(html.contains("inset-inline-start: 20%; width: 60%"), "{html}");
-    assert_eq!(count(&html, "p-slider-handle-active"), 1, "активна первая ручка: {html}");
+    assert_eq!(count(&html, "p-slider-handle-active"), 1, "first handle is active: {html}");
     let first = html.find("p-slider-handle-active").unwrap();
     assert!(first < html.find(r#"data-pc-section="endHandler""#).unwrap(), "{html}");
-    // заполнение между ручками независимо от порядка значений
+    // fill between the handles regardless of the order of values
     let html = view! { <Slider range=true values=RwSignal::new([80.0, 20.0]) /> }.to_html();
     assert!(html.contains("inset-inline-start: 20%; width: 60%"), "{html}");
-    // `default_values` по умолчанию `[0, 0]`
+    // `default_values` defaults to `[0, 0]`
     let html = view! { <Slider range=true /> }.to_html();
     assert_eq!(count(&html, r#"aria-valuenow="0""#), 2, "{html}");
     assert!(view! { <Slider range=true default_values=[10.0, 30.0] /> }.to_html().contains(r#"aria-valuenow="30""#));
@@ -89,7 +89,7 @@ fn range_has_two_handles_in_any_order() {
 fn modifiers_and_data_p() {
     let html = view! { <Slider disabled=true invalid=true animate=true style_class="mine" /> }.to_html();
     assert!(html.contains("p-slider p-component p-disabled p-invalid p-slider-horizontal p-slider-animate mine"), "{html}");
-    assert!(!html.contains("tabindex"), "у недоступного ползунка нет tabindex: {html}");
+    assert!(!html.contains("tabindex"), "a disabled slider has no tabindex: {html}");
     assert!(view! { <Slider tabindex=3 /> }.to_html().contains(r#"tabindex="3""#));
 }
 

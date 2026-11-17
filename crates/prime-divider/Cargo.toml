@@ -1,6 +1,6 @@
 [package]
 name = "prime-divider"
-description = "prime-rs: компонент Divider (порт PrimeNG)"
+description = "prime-rs: Divider component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

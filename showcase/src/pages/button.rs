@@ -1,7 +1,7 @@
-//! Страница Button: те же демонстрации, что в showcase PrimeNG (`apps/showcase/doc/button`).
+//! Button page: the same demos as in the PrimeNG showcase (`apps/showcase/doc/button`).
 //!
-//! Иконки PrimeIcons (`pi pi-user`, `pi-bell`, …) заменены ближайшими из `prime-icons`: в иконках PrimeNG нет
-//! пользователя, закладки, колокольчика, сердца; соответствие описано в `docs/button.md`.
+//! PrimeIcons (`pi pi-user`, `pi-bell`, …) are replaced by the closest ones from `prime-icons`: PrimeNG has no
+//! user, bookmark, bell or heart icons; the mapping is described in `docs/button.md`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -17,7 +17,7 @@ fn icon<V: IntoView + 'static>(f: impl Fn() -> V + Send + Sync + 'static) -> Vie
     ViewFn::from(f)
 }
 
-/// Кнопки всех серьёзностей с общей настройкой.
+/// Buttons of all severities with a shared setup.
 macro_rules! severities {
     ($($extra:tt)*) => {
         view! {
@@ -33,14 +33,14 @@ macro_rules! severities {
     };
 }
 
-/// Кнопка с включённым ripple: конфигурация действует только внутри этого компонента.
+/// A button with ripple enabled: the configuration applies only inside this component.
 #[component]
 fn RippleDemo() -> impl IntoView {
     provide_prime_config(PrimeConfig { ripple: true, ..Default::default() });
     view! { <Button label="Ripple" /> }
 }
 
-/// Страница `/button`.
+/// `/button` page.
 #[component]
 pub fn ButtonPage() -> impl IntoView {
     let loading = RwSignal::new(false);
@@ -93,7 +93,7 @@ pub fn ButtonPage() -> impl IntoView {
         <Demo name="disabled" title="Disabled">
             <Button label="Submit" disabled=true />
         </Demo>
-        <Demo name="ripple" title="Ripple (нет в PrimeNG showcase)">
+        <Demo name="ripple" title="Ripple (not in the PrimeNG showcase)">
             <RippleDemo />
         </Demo>
         <Demo name="template" title="Template">

@@ -1,6 +1,6 @@
-//! Страница MeterGroup: демонстрации `basic`, `multiple`, `minmax`, `vertical`, `label`, `icon` по `apps/showcase/doc/metergroup` PrimeNG.
+//! MeterGroup page: demos of `basic`, `multiple`, `minmax`, `vertical`, `label`, `icon` from `apps/showcase/doc/metergroup` of PrimeNG.
 //!
-//! В `prime-icons` нет иконок `table`, `inbox`, `image`, `cog`, поэтому во `icon` взяты `th-large`, `info-circle`, `eye`, `refresh`.
+//! `prime-icons` has no `table`, `inbox`, `image`, `cog` icons, so `icon` uses `th-large`, `info-circle`, `eye`, `refresh`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -25,7 +25,7 @@ fn with_icons() -> Vec<MeterItem> {
     ]
 }
 
-/// Страница `/metergroup`.
+/// The `/metergroup` page.
 #[component]
 pub fn MeterGroupPage() -> impl IntoView {
     view! {

@@ -2,29 +2,29 @@
 
 ## Why
 
-Carousel — девятый компонент волны 4: прокручиваемый ряд элементов с кнопками «назад/вперёд», точками-индикаторами, автопрокруткой, бесконечным режимом и адаптацией по ширине окна. Это самый «арифметический» компонент волны: основная ценность порта — точная копия логики страниц, смещений и клонов, поэтому она выносится в чистую модель с табличными тестами.
+Carousel is the ninth component of wave 4: a scrollable row of items with "previous/next" buttons, dot indicators, autoplay, infinite mode and adaptation to window width. It is the most "arithmetic" component of the wave: the main value of the port is an exact copy of the page, offset and clone logic, so it is extracted into a pure model with table tests.
 
 ## What Changes
 
-- Новый крейт `prime-carousel` (порт `p-carousel` из PrimeNG 21.1.10).
-- `Carousel<T>`: корень `div.p-carousel.p-component.p-carousel-horizontal|vertical[role=region]` (`id`) > необязательный `div.p-carousel-header` > `div.p-carousel-content-container` (+ `content_class`) > `div.p-carousel-content[aria-live]` с кнопками `p-carousel-prev-button` / `p-carousel-next-button` (текстовые, круглые, `p-disabled`, `aria-label` из переводов) и окном `div.p-carousel-viewport` с `div.p-carousel-item-list` (`transform: translate3d(...)`, `transition`, класс `p-items-hidden` после перехода) > элементы `div.p-carousel-item[role=group]` (`p-carousel-item-active|start|end`, `aria-hidden`, `aria-label`, `aria-roledescription`, `data-p-carousel-item-*`) и клоны `p-carousel-item-clone` (при `circular`) > `ul.p-carousel-indicator-list` с `li.p-carousel-indicator` (`-active`) и кнопками `p-carousel-indicator-button` (`aria-label`, `aria-current`, `tabindex`) > необязательный `div.p-carousel-footer`.
-- Модель страниц (чистая логика, как в PrimeNG): `num_visible`, `num_scroll`, число точек `⌈(n − visible)/scroll⌉ + 1`, остаток `remaining_items`, смещение `total_shifted_items`, переходы вперёд/назад/на страницу, бесконечный режим с клонами (`circular` действует, пока элементов не меньше `num_visible`), выход за границы при уменьшении числа страниц.
-- Адаптивность: `responsive_options` (`breakpoint`, `num_visible`, `num_scroll`) пересчитываются при `resize` окна; ширина элемента задаётся инлайн-стилем `flex: 1 0 <100/visible>%`.
-- Поведение: кнопки и точки переключают страницы (`on_page`), `page` — двусторонний сигнал; автопрокрутка по `autoplay_interval` до первого ручного действия; свайп (порог 20 px) по touch-событиям; клавиши ←/→ на индикаторах перемещают фокус между точками (roving `tabindex`).
-- Свойства: `value`, `page`, `num_visible`, `num_scroll`, `responsive_options`, `orientation`, `vertical_view_port_height` (`300px`), `content_class`, `indicators_content_class`, `indicators_content_style`, `indicator_style_class`, `indicator_style`, `circular`, `show_indicators`, `show_navigators`, `autoplay_interval`, `id`, `style`, `style_class`, `prev_button_severity`/`next_button_severity`, `pt`; представления `item` (обязательное), `header`, `footer`, `previous_icon`, `next_icon`; событие `on_page`.
-- Страница showcase `/carousel` с демонстрациями `basic`, `responsive`, `circular` (автопрокрутка), `vertical` и товарами-карточками (локальные данные, без CDN); e2e; бенчмарки и бюджеты; `docs/carousel.md`.
-- Стили: `carousel` добавляется в `theme.components`.
-- **Не входит:** `Header`/`Footer` как фасеты (`p-header`/`p-footer`) — только представления `header`/`footer`, `Bind`, `pTemplate`, `unstyled`, `ButtonProps` целиком (оставлена серьёзность), динамический `<style>` с медиа-запросами (адаптивность пересчитывается на `resize`).
+- New crate `prime-carousel` (port of PrimeNG 21.1.10 `p-carousel`).
+- `Carousel<T>`: root `div.p-carousel.p-component.p-carousel-horizontal|vertical[role=region]` (`id`) > optional `div.p-carousel-header` > `div.p-carousel-content-container` (+ `content_class`) > `div.p-carousel-content[aria-live]` with the `p-carousel-prev-button` / `p-carousel-next-button` buttons (text, round, `p-disabled`, `aria-label` from translations) and the viewport `div.p-carousel-viewport` with `div.p-carousel-item-list` (`transform: translate3d(...)`, `transition`, the `p-items-hidden` class after the transition) > `div.p-carousel-item[role=group]` items (`p-carousel-item-active|start|end`, `aria-hidden`, `aria-label`, `aria-roledescription`, `data-p-carousel-item-*`) and `p-carousel-item-clone` clones (with `circular`) > `ul.p-carousel-indicator-list` with `li.p-carousel-indicator` (`-active`) and `p-carousel-indicator-button` buttons (`aria-label`, `aria-current`, `tabindex`) > optional `div.p-carousel-footer`.
+- Page model (pure logic, as in PrimeNG): `num_visible`, `num_scroll`, dot count `⌈(n − visible)/scroll⌉ + 1`, remainder `remaining_items`, offset `total_shifted_items`, forward/backward/to-page transitions, infinite mode with clones (`circular` applies while there are at least `num_visible` items), going out of bounds when the page count shrinks.
+- Responsiveness: `responsive_options` (`breakpoint`, `num_visible`, `num_scroll`) are recomputed on window `resize`; item width is set by the inline style `flex: 1 0 <100/visible>%`.
+- Behavior: buttons and dots switch pages (`on_page`), `page` is a two-way signal; autoplay by `autoplay_interval` until the first manual action; swipe (20 px threshold) via touch events; the ←/→ keys on indicators move focus between dots (roving `tabindex`).
+- Props: `value`, `page`, `num_visible`, `num_scroll`, `responsive_options`, `orientation`, `vertical_view_port_height` (`300px`), `content_class`, `indicators_content_class`, `indicators_content_style`, `indicator_style_class`, `indicator_style`, `circular`, `show_indicators`, `show_navigators`, `autoplay_interval`, `id`, `style`, `style_class`, `prev_button_severity`/`next_button_severity`, `pt`; views `item` (required), `header`, `footer`, `previous_icon`, `next_icon`; event `on_page`.
+- Showcase page `/carousel` with demos `basic`, `responsive`, `circular` (autoplay), `vertical` and product cards (local data, no CDN); e2e; benchmarks and budgets; `docs/carousel.md`.
+- Styles: `carousel` is added to `theme.components`.
+- **Out of scope:** `Header`/`Footer` as facets (`p-header`/`p-footer`) — only the `header`/`footer` views, `Bind`, `pTemplate`, `unstyled`, full `ButtonProps` (severity is kept), dynamic `<style>` with media queries (responsiveness is recomputed on `resize`).
 
 ## Capabilities
 
 ### New Capabilities
-- `carousel`: прокручиваемый ряд элементов со страницами, индикаторами, автопрокруткой и бесконечным режимом.
+- `carousel`: a scrollable row of items with pages, indicators, autoplay and infinite mode.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-carousel` (`publish = false`); зависимости: `prime-core`, `prime-button`, `prime-icons` (chevronleft/right/up/down), `web-sys`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (браузерный job, три места: `prime-carousel`).
+- New crate `crates/prime-carousel` (`publish = false`); dependencies: `prime-core`, `prime-button`, `prime-icons` (chevronleft/right/up/down), `web-sys`.
+- Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places: `prime-carousel`).

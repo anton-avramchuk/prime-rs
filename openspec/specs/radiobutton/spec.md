@@ -1,46 +1,46 @@
 # radiobutton Specification
 
 ## Purpose
-TBD - created by archiving change port-radiobutton. Update Purpose after archive.
+TBD - created by archiving change port-radiobutton. Update Purpose after archiving.
 
 ## Requirements
 
-### Requirement: Выбор и события RadioButton
-Компонент `RadioButton` крейта `prime-radiobutton` SHALL принимать `value` и двусторонний `model` (`RwSignal<Option<String>>`), считать себя отмеченным при `model == Some(value)`, при выборе пользователем записывать `Some(value)` в `model` и вызывать `on_click` со значением и исходным событием; вызывать `on_focus` и `on_blur`. При `disabled` выбор SHALL игнорироваться.
+### Requirement: Selection and events of RadioButton
+The `RadioButton` component of the `prime-radiobutton` crate SHALL accept `value` and a two-way `model` (`RwSignal<Option<String>>`), consider itself checked when `model == Some(value)`, on the user's selection write `Some(value)` to `model` and call `on_click` with the value and the original event; call `on_focus` and `on_blur`. With `disabled` the selection SHALL be ignored.
 
-#### Scenario: Выбор в группе
-- **WHEN** две кнопки делят один `model` и пользователь выбирает вторую
-- **THEN** `model` равен значению второй, первая перестаёт быть отмеченной, вызван `on_click`
+#### Scenario: Selection in a group
+- **WHEN** two buttons share one `model` and the user selects the second one
+- **THEN** `model` equals the value of the second, the first stops being checked, and `on_click` is called
 
 #### Scenario: Disabled
-- **WHEN** `disabled` включён и пользователь кликает
-- **THEN** `model` и `on_click` не затронуты
+- **WHEN** `disabled` is enabled and the user clicks
+- **THEN** `model` and `on_click` are not affected
 
-### Requirement: Разметка и классы RadioButton
-Корень SHALL быть `<div>` с классами `p-radiobutton p-component` и модификаторами `p-radiobutton-checked`, `p-disabled`, `p-invalid`, `p-variant-filled` (вариант `filled` или `PrimeConfig.input_variant = filled`), `p-radiobutton-sm p-inputfield-sm`, `p-radiobutton-lg p-inputfield-lg`; внутри SHALL идти `<input type="radio" class="p-radiobutton-input">` с `aria-checked`, затем `<div class="p-radiobutton-box">` с `<div class="p-radiobutton-icon">`. Корень SHALL иметь `data-p-checked`, `data-p-disabled` и `data-p` (через пробел `invalid`, `checked`, `disabled`, `filled`, размер).
+### Requirement: Markup and classes of RadioButton
+The root SHALL be a `<div>` with the classes `p-radiobutton p-component` and the modifiers `p-radiobutton-checked`, `p-disabled`, `p-invalid`, `p-variant-filled` (the `filled` variant or `PrimeConfig.input_variant = filled`), `p-radiobutton-sm p-inputfield-sm`, `p-radiobutton-lg p-inputfield-lg`; inside it SHALL come `<input type="radio" class="p-radiobutton-input">` with `aria-checked`, then `<div class="p-radiobutton-box">` with `<div class="p-radiobutton-icon">`. The root SHALL have `data-p-checked`, `data-p-disabled` and `data-p` (separated by spaces: `invalid`, `checked`, `disabled`, `filled`, the size).
 
-#### Scenario: Отмечена
+#### Scenario: Checked
 - **WHEN** `model == Some(value)`
-- **THEN** есть класс `p-radiobutton-checked`, `aria-checked="true"`, `data-p-checked="true"`, у `<input>` атрибут `checked`
+- **THEN** the class `p-radiobutton-checked`, `aria-checked="true"`, `data-p-checked="true"` are present, and `<input>` has the `checked` attribute
 
-#### Scenario: Модификаторы
-- **WHEN** заданы `disabled`, `invalid`, `size = small`, `variant = filled`
-- **THEN** есть соответствующие классы, а `data-p` равен `invalid disabled filled small`
+#### Scenario: Modifiers
+- **WHEN** `disabled`, `invalid`, `size = small`, `variant = filled` are set
+- **THEN** the corresponding classes are present, and `data-p` equals `invalid disabled filled small`
 
-### Requirement: Атрибуты и pass-through RadioButton
-`<input>` SHALL получать `id` (`input_id`), `name`, `value`, `tabindex`, `required`, `disabled`, `aria-label`, `aria-labelledby`; незаданные атрибуты SHALL отсутствовать. `pt` SHALL принимать `root`, `input`, `box`, `icon`, добавляя классы и атрибуты без замены собственных.
+### Requirement: Attributes and pass-through of RadioButton
+`<input>` SHALL get `id` (`input_id`), `name`, `value`, `tabindex`, `required`, `disabled`, `aria-label`, `aria-labelledby`; unset attributes SHALL be absent. `pt` SHALL accept `root`, `input`, `box`, `icon`, adding classes and attributes without replacing the own ones.
 
-#### Scenario: Атрибуты
-- **WHEN** заданы `input_id`, `name`, `value`
-- **THEN** у `<input>` есть `id`, `name`, `value`, а `required` и `tabindex` нет
+#### Scenario: Attributes
+- **WHEN** `input_id`, `name`, `value` are set
+- **THEN** `<input>` has `id`, `name`, `value`, and there is no `required` or `tabindex`
 
-### Requirement: Стоимость отрисовки RadioButton
-RadioButton со статическими свойствами и без `model` SHALL использовать статическую ветвь; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `radiobutton` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `radiobutton` в `benches/budgets.toml`.
+### Requirement: Rendering cost of RadioButton
+A RadioButton with static properties and without `model` SHALL use the static branch; both branches SHALL produce the same markup. The number of allocations per instance during SSR SHALL fit the budget `radiobutton` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `radiobutton` in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** the same set of values is passed statically and through signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения RadioButton не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of RadioButton do not exceed the budgets

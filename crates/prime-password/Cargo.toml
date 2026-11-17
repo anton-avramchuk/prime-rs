@@ -1,6 +1,6 @@
 [package]
 name = "prime-password"
-description = "prime-rs: компонент Password (порт PrimeNG)"
+description = "prime-rs: Password component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -23,7 +23,7 @@ web-sys = { workspace = true, features = ["Event", "FocusEvent", "KeyboardEvent"
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = { workspace = true }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

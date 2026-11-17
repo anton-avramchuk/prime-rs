@@ -1,5 +1,5 @@
-//! Страница Menubar: демонстрации `basic`, `command` и `template` из showcase PrimeNG (`apps/showcase/doc/menubar`;
-//! `router` не переносится). Значки PrimeIcons заменены значками `prime-icons` там, где аналог есть.
+//! Menubar page: demos `basic`, `command` and `template` from the PrimeNG showcase (`apps/showcase/doc/menubar`;
+//! `router` is not ported). PrimeIcons icons are replaced by `prime-icons` icons where an analog exists.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -82,7 +82,7 @@ fn template_item(ctx: MenubarItemContext) -> AnyView {
     .into_any()
 }
 
-/// Страница `/menubar`.
+/// The `/menubar` page.
 #[component]
 pub fn MenubarPage() -> impl IntoView {
     view! {

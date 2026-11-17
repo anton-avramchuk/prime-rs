@@ -1,6 +1,6 @@
-// Извлечение CSS темы Aura так же, как это делает PrimeNG (basecomponent.ts / basestyle.ts):
-// переменные пресета из `Theme.getCommon/getComponent`, стили компонентов из `@primeuix/styles` с разрешёнными `dt()`.
-// Запускается `cargo xtask gen-theme` из каталога с установленными зависимостями; печатает JSON в stdout.
+// Extraction of the Aura theme CSS the same way PrimeNG does it (basecomponent.ts / basestyle.ts):
+// preset variables from `Theme.getCommon/getComponent`, component styles from `@primeuix/styles` with resolved `dt()`.
+// Run by `cargo xtask gen-theme` from a directory with installed dependencies; prints JSON to stdout.
 import { css as Css, dt, Theme } from '@primeuix/styled';
 import { minifyCSS, resolve } from '@primeuix/utils';
 import Aura from '@primeuix/themes/aura';
@@ -11,7 +11,7 @@ const { darkModeSelector, components, extraBaseCss, extraComponentCss = {} } = J
 Theme.setTheme({ preset: Aura, options: { prefix: 'p', darkModeSelector, cssLayer: false } });
 
 const common = Theme.getCommon('base', undefined);
-// Как `BaseStyle.load` в PrimeNG: текст стиля проходит через `resolve`, а затем через тег `Css`, который подставляет значения `dt('…')`.
+// Like `BaseStyle.load` in PrimeNG: the style text goes through `resolve` and then through the `Css` tag, which substitutes the `dt('...')` values.
 const resolved = (style) => Css`${resolve(style, { dt })}`;
 const extra = resolved(extraBaseCss);
 const globalStyle = Theme.transformCSS('global-style', `${resolved(baseStyle)}${Css`${common.style ?? ''}`}`);
@@ -19,7 +19,7 @@ const base = minifyCSS([common.primitive?.css, common.semantic?.css, common.glob
 
 const out = { base, components: {} };
 for (const name of [...components].sort()) {
-    // У компонентов без модуля в `@primeuix/styles` (InputMask) есть только блок `For PrimeNG`.
+    // Components without a module in `@primeuix/styles` (InputMask) have only the `For PrimeNG` block.
     let style = '';
     try {
         ({ style } = await import(`@primeuix/styles/${name}`));

@@ -1,119 +1,119 @@
-# Бенчмарки
+# Benchmarks
 
-Бенчмарки лежат в `benches/`: крейт `render-bench` (SSR-рендер и аллокации) и `wasm-size` (приложение для замера размера wasm).
-Отчёты пишутся в `target/bench/*.json` в формате `{"metrics": {"<имя>": <число>}}`, меньше — лучше.
+Benchmarks live in `benches/`: the `render-bench` crate (SSR rendering and allocations) and `wasm-size` (an application for measuring the wasm size).
+Reports are written to `target/bench/*.json` in the format `{"metrics": {"<name>": <number>}}`; less is better.
 
-## Время рендера
-
-```sh
-cargo bench -p render-bench --bench render   # divan: подробная статистика по сценариям
-cargo bench -p render-bench --bench time     # медиана в target/bench/time.json (для сравнения с базой)
-```
-
-## Аллокации
+## Render time
 
 ```sh
-cargo bench -p render-bench --bench alloc    # dhat; каждый сценарий в отдельном процессе -> target/bench/alloc.json
+cargo bench -p render-bench --bench render   # divan: detailed statistics per scenario
+cargo bench -p render-bench --bench time     # median in target/bench/time.json (for comparison with the baseline)
 ```
 
-Для каждого сценария выводятся число аллокаций, суммарный объём, пиковая память и размер HTML.
-
-## Размер wasm
+## Allocations
 
 ```sh
-cargo xtask wasm-size                        # target/bench/wasm.json, ненулевой код выхода при превышении бюджета
-cargo xtask wasm-size --budgets файл.toml
+cargo bench -p render-bench --bench alloc    # dhat; each scenario in a separate process -> target/bench/alloc.json
 ```
 
-Вклад компонента — размер сырого `.wasm` (release, без `wasm-opt`) минус `case-baseline` приложения `benches/wasm-size`.
-Бюджеты — в `benches/budgets.toml`. Новый компонент добавляет `case-<имя>` в `benches/wasm-size` и строку в бюджеты.
+For each scenario the number of allocations, the total size, the peak memory and the HTML size are printed.
 
-## Бюджет аллокаций
+## wasm size
+
+```sh
+cargo xtask wasm-size                        # target/bench/wasm.json, non-zero exit code when the budget is exceeded
+cargo xtask wasm-size --budgets file.toml
+```
+
+A component's contribution is the size of the raw `.wasm` (release, without `wasm-opt`) minus `case-baseline` of the `benches/wasm-size` application.
+The budgets are in `benches/budgets.toml`. A new component adds `case-<name>` to `benches/wasm-size` and a line to the budgets.
+
+## Allocation budget
 
 ```sh
 cargo bench -p render-bench --bench alloc   # target/bench/alloc.json
-cargo xtask alloc-budget                    # ненулевой код выхода при превышении benches/alloc-budgets.toml
+cargo xtask alloc-budget                    # non-zero exit code when benches/alloc-budgets.toml is exceeded
 ```
 
-Для каждого сценария `<компонент>-1000` задан максимум аллокаций на экземпляр (число аллокаций сценария делится на число экземпляров).
-Новый компонент добавляет сценарий в `benches/render/src/lib.rs` и строку в `benches/alloc-budgets.toml`; проверка входит в job `apps` в `ci.yml`.
+For each `<component>-1000` scenario a maximum number of allocations per instance is set (the number of allocations of the scenario is divided by the number of instances).
+A new component adds a scenario to `benches/render/src/lib.rs` and a line to `benches/alloc-budgets.toml`; the check is part of the `apps` job in `ci.yml`.
 
-## Сравнение с базовой линией
+## Comparison with the baseline
 
 ```sh
-cargo xtask bench-compare <каталог базы> <каталог текущих отчётов> [--threshold 10] [--fail-over]
+cargo xtask bench-compare <baseline directory> <current reports directory> [--threshold 10] [--fail-over]
 ```
 
-Печатает Markdown-таблицу для комментария в PR. Регрессия — рост больше порога (по умолчанию 10 %). Код выхода 0, пока не указан `--fail-over`:
-блокировка включается после накопления базовой линии. Время на общих CI-раннерах шумит, поэтому ему доверяют меньше, чем аллокациям и размеру.
+Prints a Markdown table for the PR comment. A regression is growth above the threshold (10 % by default). The exit code is 0 until `--fail-over` is given:
+blocking is enabled after the baseline has accumulated. Time on shared CI runners is noisy, so it is trusted less than allocations and size.
 
-## Новый сценарий
+## A new scenario
 
-Добавьте запись в `SCENARIOS` (`benches/render/src/lib.rs`): имя `<компонент>-<число экземпляров>` и функцию рендера. Сценарий сразу попадёт во все три бенчмарка.
-Для каждого компонента нужны сценарии на один экземпляр и на 1000 экземпляров.
+Add an entry to `SCENARIOS` (`benches/render/src/lib.rs`): the name `<component>-<number of instances>` and the render function. The scenario immediately gets into all three benchmarks.
+Each component needs scenarios for one instance and for 1000 instances.
 
-## Текущие значения
+## Current values
 
-Измерено на Windows 11, release (одноразовый замер, не эталон):
+Measured on Windows 11, release (a one-off measurement, not a reference):
 
-| Сценарий | Медиана | Аллокаций | Пик памяти |
+| Scenario | Median | Allocations | Peak memory |
 |---|---:|---:|---:|
-| check-icon-1 | 1,6 мкс | 15 | 2,5 КБ |
-| check-icon-1000 | 1,64 мс | 5 020 | 2,3 МБ |
-| spinner-icon-1000 | 2,42 мс | 6 020 | 3,3 МБ |
-| all-icons-1 (54 иконки) | 183 мкс | 725 | 140 КБ |
-| all-icons-20 | 3,36 мс | 14 220 | 2,6 МБ |
+| check-icon-1 | 1.6 µs | 15 | 2.5 KB |
+| check-icon-1000 | 1.64 ms | 5 020 | 2.3 MB |
+| spinner-icon-1000 | 2.42 ms | 6 020 | 3.3 MB |
+| all-icons-1 (54 icons) | 183 µs | 725 | 140 KB |
+| all-icons-20 | 3.36 ms | 14 220 | 2.6 MB |
 
-Вклад в размер wasm: одна иконка +8 176 Б, все иконки +127 367 Б (см. `docs/icons.md`).
+Contribution to the wasm size: one icon +8 176 B, all icons +127 367 B (see `docs/icons.md`).
 
-## Badge и Button (`port-button`)
+## Badge and Button (`port-button`)
 
-Измерено на Windows 11, release (одноразовый замер).
+Measured on Windows 11, release (a one-off measurement).
 
-| Сценарий | Медиана | Аллокаций | Аллокаций на экземпляр | Пик памяти |
+| Scenario | Median | Allocations | Allocations per instance | Peak memory |
 |---|---:|---:|---:|---:|
-| badge-1 | 3,5 мкс | 51 | 51 | 2,3 КБ |
-| badge-1000 | 3,45 мс | 41 030 | 41 | 2,1 МБ |
-| button-1 | 4,9 мкс | 83 | 83 | 5,0 КБ |
-| button-1000 | 5,97 мс | 70 032 | 70 | 4,1 МБ |
-| button-full-1000 (иконка, метка, бейдж) | 12,9 мс | 131 059 | 131 | 8,0 МБ |
+| badge-1 | 3.5 µs | 51 | 51 | 2.3 KB |
+| badge-1000 | 3.45 ms | 41 030 | 41 | 2.1 MB |
+| button-1 | 4.9 µs | 83 | 83 | 5.0 KB |
+| button-1000 | 5.97 ms | 70 032 | 70 | 4.1 MB |
+| button-full-1000 (icon, label, badge) | 12.9 ms | 131 059 | 131 | 8.0 MB |
 
-Вклад в размер wasm (сырой `.wasm`, release, без `wasm-opt`) относительно `case-baseline` (пустой `div`):
+Contribution to the wasm size (raw `.wasm`, release, without `wasm-opt`) relative to `case-baseline` (an empty `div`):
 
-| Случай | Вклад, байт | Бюджет, байт |
+| Case | Contribution, bytes | Budget, bytes |
 |---|---:|---:|
 | `case-badge` | 113 015 | 170 000 |
 | `case-button` | 379 196 | 570 000 |
 
-Выводы:
-- Бюджеты — измеренный вклад с запасом ≈ 50 %. Вклад Badge включает реактивную среду Leptos, которой нет в `baseline`, а Button добавляет к Badge
-  события, `Effect`, `Ripple`, `SpinnerIcon` и `Callback` (≈ 266 КБ). Для следующих компонентов реальный прирост будет заметно меньше.
-- Около 41 аллокации на Badge и 70 на Button при SSR идут в основном на реактивные примитивы (`Memo`, замыкания, `Signal::derive`), которые
-  при рендере строки не нужны. Это кандидат на оптимизацию (статические свойства без `Signal`, один `Memo` на компонент) отдельным change;
-  в этом change цель — зафиксировать базовую линию.
-- Размер wasm в реальном приложении ниже: `wasm-opt -Oz` и `opt-level = "z"` сжимают бинарник сильнее, чем сырой release.
+Conclusions:
+- The budgets are the measured contribution with a margin of ≈ 50 %. The contribution of Badge includes the reactive environment of Leptos, which is absent in the `baseline`, and Button adds to Badge
+  the events, `Effect`, `Ripple`, `SpinnerIcon` and `Callback` (≈ 266 KB). For the next components the real increase will be noticeably smaller.
+- About 41 allocations per Badge and 70 per Button during SSR go mainly to reactive primitives (`Memo`, closures, `Signal::derive`), which
+  are not needed when rendering a string. This is a candidate for optimization (static properties without `Signal`, one `Memo` per component) as a separate change;
+  in this change the goal is to fix the baseline.
+- The wasm size in a real application is lower: `wasm-opt -Oz` and `opt-level = "z"` compress the binary more than the raw release build.
 
-## Оптимизация реактивных свойств (`optimize-reactive-props`)
+## Optimization of reactive properties (`optimize-reactive-props`)
 
-Свойства компонентов — `prime_core::Prop`/`OptProp` (значение не создаёт сигнала), без `Memo` и с одним `Arc<Props>` на экземпляр.
+Component properties are `prime_core::Prop`/`OptProp` (a value does not create a signal), without `Memo` and with one `Arc<Props>` per instance.
 
-SSR, release, аллокаций на экземпляр (1000 экземпляров), бюджеты — `benches/alloc-budgets.toml`:
+SSR, release, allocations per instance (1000 instances), budgets — `benches/alloc-budgets.toml`:
 
-| Сценарий | До | После | Изменение | Пик памяти до → после |
+| Scenario | Before | After | Change | Peak memory before → after |
 |---|---:|---:|---:|---:|
-| badge-1000 | 41 | 8 | −80 % | 2,2 МБ → 0,27 МБ |
-| button-1000 | 67 | 20 | −70 % | 4,3 МБ → 1,9 МБ |
-| button-full-1000 (иконка, метка, бейдж) | 128 | 50 | −61 % | 8,3 МБ → 3,3 МБ |
+| badge-1000 | 41 | 8 | −80 % | 2.2 MB → 0.27 MB |
+| button-1000 | 67 | 20 | −70 % | 4.3 MB → 1.9 MB |
+| button-full-1000 (icon, label, badge) | 128 | 50 | −61 % | 8.3 MB → 3.3 MB |
 
-### Второй проход: `optimize-allocs`
+### Second pass: `optimize-allocs`
 
-Строки `class` и `data-p` собираются на стеке и для константных комбинаций интернируются (`ClassNames::finish_cow`, `DataP::finish_cow`,
-`Pt::merge_class`): повторный рендер того же состояния не аллоцирует. Пользовательские классы (`style_class`, `pt`) помечаются
-`add_user` и не интернируются. Остальное: `Arc<Props>`/`Arc<Pt>` создаются только в реактивной ветви display-компонентов, иконки вставляют
-готовую разметку контуров (`inner_html`, без `collect_view`), `.into_any()` заменены на `Either`/`EitherOfN`, форматирование строк — через `write!`.
-Урок: каждый `.into_any()` — отдельная аллокация, а `format!` во временную строку — ещё одна.
+The `class` and `data-p` strings are assembled on the stack and interned for constant combinations (`ClassNames::finish_cow`, `DataP::finish_cow`,
+`Pt::merge_class`): a repeated render of the same state does not allocate. User classes (`style_class`, `pt`) are marked
+`add_user` and are not interned. The rest: `Arc<Props>`/`Arc<Pt>` are created only in the reactive branch of display components, icons insert
+the ready outline markup (`inner_html`, without `collect_view`), `.into_any()` is replaced by `Either`/`EitherOfN`, string formatting goes through `write!`.
+Lesson: each `.into_any()` is a separate allocation, and `format!` into a temporary string is one more.
 
-| Сценарий | До | После | Изменение |
+| Scenario | Before | After | Change |
 |---|---:|---:|---:|
 | badge-1000 | 8 | 5 | −38 % |
 | tag-1000 | 11 | 6 | −45 % |
@@ -129,60 +129,59 @@ SSR, release, аллокаций на экземпляр (1000 экземпля�
 | progressbar-1000 | 36 | 16 | −56 % |
 | avatargroup-1000 | 6 | 4 | −33 % |
 
-Третий проход (`optimize-allocs-button-chip`): `Arc<Props>`/`Arc<Pt>` только в реактивной ветви, `NodeRef` только на `wasm32`, блоки без `.into_any()`.
+Third pass (`optimize-allocs-button-chip`): `Arc<Props>`/`Arc<Pt>` only in the reactive branch, `NodeRef` only on `wasm32`, blocks without `.into_any()`.
 
-| Сценарий | До | После | Изменение |
+| Scenario | Before | After | Change |
 |---|---:|---:|---:|
 | button-1000 | 19 | 9 | −53 % |
 | button-full-1000 | 45 | 28 | −38 % |
 | chip-1000 | 10 | 6 | −40 % |
 | chip-removable-1000 | 35 | 22 | −37 % |
 
-Пол Leptos для `div` со `span` в цикле — 2 аллокации на экземпляр, `Children` стоит ещё 2 (бокс замыкания и `AnyView`), поэтому ниже примерно
-этих значений не опуститься без смены API. Button и Chip оптимизированы третьим проходом (ниже).
+The Leptos floor for a `div` with a `span` in a loop is 2 allocations per instance, `Children` costs another 2 (the closure box and `AnyView`), so these values cannot go much lower without changing the API. Button and Chip were optimized in the third pass (see below).
 
-Размер wasm (`cargo xtask wasm-size`, сырой release): вклад Badge 113 015 → 84 320 Б (−25 %), Button 379 196 → 326 754 Б (−14 %).
+Wasm size (`cargo xtask wasm-size`, raw release): the Badge contribution 113 015 → 84 320 B (−25 %), Button 379 196 → 326 754 B (−14 %).
 
-Что дало выигрыш (эксперимент на `render-bench`, аллокаций на экземпляр): «голый» `<span>` — 2, `Pt` — 2, одно `Memo` — +9, одно свойство-сигнал — +3.
-Атрибуты-замыкания при SSR стоят ≈ 1 аллокации сверх готовой строки (5 против 4), готовых `AnyAttribute` — 7; поэтому быстрый путь для статических атрибутов при SSR не нужен.
+What gave the gain (an experiment on `render-bench`, allocations per instance): a "bare" `<span>` — 2, `Pt` — 2, one `Memo` — +9, one signal property — +3.
+Attribute closures during SSR cost ≈ 1 allocation more than a ready string (5 against 4), ready `AnyAttribute`s cost 7; therefore a fast path for static attributes during SSR is not needed.
 
-Браузер (Chrome, release-сборка showcase, 1000 кнопок `Button label severity`, сценарий `e2e/tests/memory.spec.ts`; JS-куча не включает память Rust,
-поэтому читается размер линейной памяти wasm через `window.wasmMemoryBytes()`):
+Browser (Chrome, release build of the showcase, 1000 buttons `Button label severity`, scenario `e2e/tests/memory.spec.ts`; the JS heap does not include Rust memory,
+so the size of the wasm linear memory is read through `window.wasmMemoryBytes()`):
 
-| Метрика | До | После |
+| Metric | Before | After |
 |---|---:|---:|
-| Память wasm после монтирования 1000 кнопок | +9,44 МБ | +6,75 МБ (−28 %) |
-| Память wasm после монтирования 1000 иконок (без изменений) | — | +0,33 МБ |
-| Узлы DOM на 1000 кнопок | 7001 | 7001 |
-| JS-куча на 1000 кнопок | 0,96 МБ | 0,96 МБ |
-| Время монтирования 1000 кнопок | 35,7 мс | 38,8 мс (в пределах шума) |
+| wasm memory after mounting 1000 buttons | +9.44 MB | +6.75 MB (−28 %) |
+| wasm memory after mounting 1000 icons (unchanged) | — | +0.33 MB |
+| DOM nodes for 1000 buttons | 7001 | 7001 |
+| JS heap for 1000 buttons | 0.96 MB | 0.96 MB |
+| Mounting time for 1000 buttons | 35.7 ms | 38.8 ms (within noise) |
 
-Вывод по D2: в браузере кнопка всё ещё занимает ≈ 6,7 КБ линейной памяти, иконка — 0,33 КБ. Разница — `RenderEffect` на каждый атрибутный замыкание
-(у кнопки их около двенадцати: `class`, `style`, `type`, `aria-label`, `tabindex`, `disabled`, три `data-p*` и динамические блоки). Для статических кнопок
-эти эффекты не нужны. Это кандидат на отдельное изменение: статический путь с готовыми строками (выразить «строка или замыкание» одним значением
-в Leptos 0.8 нельзя, нужна отдельная ветка разметки).
+Conclusion for D2: in the browser a button still takes ≈ 6.7 KB of linear memory, an icon 0.33 KB. The difference is a `RenderEffect` for each attribute closure
+(a button has about twelve: `class`, `style`, `type`, `aria-label`, `tabindex`, `disabled`, three `data-p*` and the dynamic blocks). For static buttons
+these effects are not needed. This is a candidate for a separate change: a static path with ready strings (expressing "a string or a closure" as one value
+is not possible in Leptos 0.8, a separate markup branch is needed).
 
-## Статический путь отрисовки (`static-render-path`)
+## Static render path (`static-render-path`)
 
-Если все свойства компонента статические (`all_static!`), он рисует разметку с готовыми значениями, без замыканий и `RenderEffect`; иначе реактивный путь.
-Разметка пишется один раз в `macro_rules!` и подставляется в обе ветви (`Either`); тесты паритета сравнивают HTML обеих ветвей, браузерные тесты Button
-гоняются в обеих ветвях. `Effect` для автофокуса и ripple создаётся только когда он нужен.
+If all properties of a component are static (`all_static!`), it renders the markup with ready values, without closures and `RenderEffect`; otherwise the reactive path is used.
+The markup is written once in a `macro_rules!` and substituted into both branches (`Either`); the parity tests compare the HTML of both branches, and the browser tests of Button
+run in both branches. The `Effect` for autofocus and ripple is created only when it is needed.
 
-Линейная память wasm на экземпляр в браузере (Chrome, release, 1000 экземпляров, `e2e/tests/memory.spec.ts`):
+Wasm linear memory per instance in the browser (Chrome, release, 1000 instances, `e2e/tests/memory.spec.ts`):
 
-| Сценарий | До | После | Изменение |
+| Scenario | Before | After | Change |
 |---|---:|---:|---:|
-| Badge, статические свойства | 3 408 Б | **393 Б** | −88 % |
-| Badge, значение сигналом | 3 473 Б | 2 228 Б | −36 % |
-| **Button, статические свойства** | 9 437 Б | **1 966 Б** | **−79 %** |
-| Button, `loading` сигналом | — | 7 471 Б | — |
-| Иконка (для сравнения) | 328 Б | 328 Б | — |
+| Badge, static properties | 3 408 B | **393 B** | −88 % |
+| Badge, value as a signal | 3 473 B | 2 228 B | −36 % |
+| **Button, static properties** | 9 437 B | **1 966 B** | **−79 %** |
+| Button, `loading` as a signal | — | 7 471 B | — |
+| Icon (for comparison) | 328 B | 328 B | — |
 
-Время монтирования 1000 статических кнопок: 52,6 → 19,5 мс; Badge: 15 → 7 мс.
+Mounting time of 1000 static buttons: 52.6 → 19.5 ms; Badge: 15 → 7 ms.
 
-Цена: SSR-аллокаций на экземпляр Button 23 (было 20), на полную кнопку 56 (было 50), Badge без изменений (8); вклад в сырой wasm +14 %
-(Badge 84 320 → 96 303 Б, Button 326 754 → 373 874 Б). Бюджеты: `benches/alloc-budgets.toml` (28 и 68 на кнопку), `benches/budgets.toml` без изменений.
+Cost: SSR allocations per Button instance 23 (was 20), per full button 56 (was 50), Badge unchanged (8); contribution to raw wasm +14 %
+(Badge 84 320 → 96 303 B, Button 326 754 → 373 874 B). Budgets: `benches/alloc-budgets.toml` (28 and 68 per button), `benches/budgets.toml` unchanged.
 
-Наблюдение: рост памяти wasm после 20 циклов «смонтировать и убрать» 1000 реактивных кнопок (≈ 14 МБ; у статических — 1 МБ) идёт от общего внешнего сигнала
-`loading`: его список подписчиков пополняется при каждом монтировании и чистится лениво, при следующем уведомлении. Это поведение Leptos, а не утечка
-компонента; для страниц, где сигнал меняется, рост ограничивается этой чисткой.
+Observation: the growth of wasm memory after 20 cycles of "mount and remove" 1000 reactive buttons (≈ 14 MB; for static ones — 1 MB) comes from the shared external signal
+`loading`: its list of subscribers grows at each mount and is cleaned lazily, on the next notification. This is Leptos behaviour, not a leak of the
+component; for pages where the signal changes, the growth is limited by this cleaning.

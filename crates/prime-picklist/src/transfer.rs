@@ -1,4 +1,4 @@
-//! Перенос элементов между списками PickList (по `moveRight`, `moveAllRight`, `moveLeft`, `moveAllLeft` PrimeNG, без DOM).
+//! Item transfer between PickList lists (after PrimeNG `moveRight`, `moveAllRight`, `moveLeft`, `moveAllLeft`, no DOM).
 
 use prime_listbox::ListboxOption;
 
@@ -6,8 +6,8 @@ fn has(list: &[ListboxOption], value: &str) -> bool {
     list.iter().any(|o| o.value == value)
 }
 
-/// Переносит выбранные элементы в конец `to` в порядке выбора; элементы, значения которых уже есть в `to`, остаются.
-/// Возвращает перенесённые элементы.
+/// Moves the selected items to the end of `to` in selection order; items whose values are already in `to` stay.
+/// Returns the moved items.
 pub fn move_selected(from: &mut Vec<ListboxOption>, to: &mut Vec<ListboxOption>, selection: &[String]) -> Vec<ListboxOption> {
     let mut moved = Vec::new();
     for value in selection {
@@ -23,7 +23,7 @@ pub fn move_selected(from: &mut Vec<ListboxOption>, to: &mut Vec<ListboxOption>,
     moved
 }
 
-/// Переносит в конец `to` все элементы `from`, для которых `visible` истинно, сохраняя порядок. Возвращает перенесённые.
+/// Moves to the end of `to` all `from` items for which `visible` is true, keeping the order. Returns the moved ones.
 pub fn move_all(
     from: &mut Vec<ListboxOption>,
     to: &mut Vec<ListboxOption>,

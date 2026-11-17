@@ -1,46 +1,46 @@
-//! Модель пункта Breadcrumb и решение о клике (по `Breadcrumb.onClick` PrimeNG).
+//! Breadcrumb item model and the click decision (after PrimeNG `Breadcrumb.onClick`).
 
 use leptos::prelude::*;
 
-/// Нажатие на пункт: событие и пункт.
+/// Press on an item: the event and the item.
 #[derive(Clone)]
 pub struct BreadcrumbClick {
-    /// Исходное событие.
+    /// Original event.
     pub event: web_sys::MouseEvent,
-    /// Нажатый пункт.
+    /// Pressed item.
     pub item: BreadcrumbItem,
 }
 
-/// Пункт Breadcrumb (вместо `MenuItem` PrimeNG, без полей маршрутизатора Angular).
+/// Breadcrumb item (instead of PrimeNG `MenuItem`, without Angular router fields).
 #[derive(Clone)]
 pub struct BreadcrumbItem {
-    /// Идентификатор элемента `li`.
+    /// Identifier of the `li` element.
     pub id: Option<String>,
-    /// Подпись.
+    /// Label.
     pub label: Option<String>,
-    /// Значок (например, иконка из `prime-icons`).
+    /// Icon (for example, an icon from `prime-icons`).
     pub icon: Option<ViewFn>,
-    /// Адрес ссылки; без него переход по ссылке отменяется.
+    /// Link address; without it following the link is cancelled.
     pub url: Option<String>,
-    /// `target` ссылки.
+    /// Link `target`.
     pub target: Option<String>,
-    /// `title` ссылки.
+    /// Link `title`.
     pub title: Option<String>,
-    /// Отключён: нажатие ничего не вызывает.
+    /// Disabled: pressing triggers nothing.
     pub disabled: bool,
-    /// Виден (по умолчанию да).
+    /// Visible (yes by default).
     pub visible: bool,
-    /// `tabindex` ссылки (по умолчанию `0`).
+    /// Link `tabindex` (`0` by default).
     pub tabindex: Option<String>,
-    /// Дополнительный класс `li`.
+    /// Extra class of the `li`.
     pub style_class: Option<String>,
-    /// Встроенный стиль `li`.
+    /// Inline style of the `li`.
     pub style: Option<String>,
-    /// Дополнительный класс ссылки.
+    /// Extra class of the link.
     pub link_class: Option<String>,
-    /// Значение бейджа.
+    /// Badge value.
     pub badge: Option<String>,
-    /// Команда, вызываемая при нажатии.
+    /// Command called on press.
     pub command: Option<Callback<BreadcrumbClick>>,
 }
 
@@ -66,88 +66,88 @@ impl Default for BreadcrumbItem {
 }
 
 impl BreadcrumbItem {
-    /// Пункт без свойств.
+    /// Item without properties.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Подпись.
+    /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
     }
 
-    /// Значок.
+    /// Icon.
     pub fn icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.icon = Some(icon.into());
         self
     }
 
-    /// Адрес ссылки.
+    /// Link address.
     pub fn url(mut self, url: impl Into<String>) -> Self {
         self.url = Some(url.into());
         self
     }
 
-    /// `target` ссылки.
+    /// Link `target`.
     pub fn target(mut self, target: impl Into<String>) -> Self {
         self.target = Some(target.into());
         self
     }
 
-    /// `title` ссылки.
+    /// Link `title`.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = Some(title.into());
         self
     }
 
-    /// Отключает пункт.
+    /// Disables the item.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 
-    /// Показывает или скрывает пункт.
+    /// Shows or hides the item.
     pub fn visible(mut self, visible: bool) -> Self {
         self.visible = visible;
         self
     }
 
-    /// Значение бейджа.
+    /// Badge value.
     pub fn badge(mut self, badge: impl Into<String>) -> Self {
         self.badge = Some(badge.into());
         self
     }
 
-    /// Команда при нажатии.
+    /// Command on press.
     pub fn command(mut self, command: impl Into<Callback<BreadcrumbClick>>) -> Self {
         self.command = Some(command.into());
         self
     }
 
-    /// Дополнительный класс `li`.
+    /// Extra class of the `li`.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 
-    /// Дополнительный класс ссылки.
+    /// Extra class of the link.
     pub fn link_class(mut self, class: impl Into<String>) -> Self {
         self.link_class = Some(class.into());
         self
     }
 }
 
-/// Что делать при нажатии на пункт.
+/// What to do when an item is pressed.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ClickPlan {
-    /// Отменить действие по умолчанию (переход по ссылке).
+    /// Cancel the default action (following the link).
     pub prevent_default: bool,
-    /// Вызвать `command` пункта и `on_item_click`.
+    /// Call the item's `command` and `on_item_click`.
     pub run_commands: bool,
 }
 
-/// Решение о клике: отключённый — отмена без вызовов, без `url` — отмена с вызовами.
+/// Click decision: disabled - cancel without calls, without `url` - cancel with calls.
 pub fn click_plan(disabled: bool, has_url: bool) -> ClickPlan {
     if disabled {
         return ClickPlan { prevent_default: true, run_commands: false };

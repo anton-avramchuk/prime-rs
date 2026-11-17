@@ -1,46 +1,46 @@
 # treetable Specification
 
 ## Purpose
-TreeTable — иерархическая таблица с раскрытием, сортировкой, пагинатором и выбором.
+TreeTable is a hierarchical table with expansion, sorting, a paginator and selection.
 
 ## Requirements
 
-### Requirement: Строки дерева
-Видимые строки SHALL строиться обходом в глубину: корни и потомки раскрытых узлов (раскрытие хранится ключами). Строка SHALL иметь уровень, номер среди соседей и число соседей (`aria-level`, `aria-posinset`, `aria-setsize`), `aria-expanded` только у раскрываемых узлов (есть дети либо `leaf = false`). Кнопка `p-treetable-toggler` SHALL выводиться в столбце `toggler_column`, быть видимой только у раскрываемых узлов и иметь отступ `уровень × 16px`.
+### Requirement: Tree rows
+Visible rows SHALL be built by a depth-first traversal: roots and descendants of expanded nodes (expansion is stored by keys). A row SHALL have a level, a position among siblings and a sibling count (`aria-level`, `aria-posinset`, `aria-setsize`), `aria-expanded` only on expandable nodes (with children or `leaf = false`). The `p-treetable-toggler` button SHALL be rendered in the `toggler_column` column, be visible only on expandable nodes and have an indent `level × 16px`.
 
-#### Scenario: Раскрытие
-- **WHEN** клик по кнопке узла «Applications»
-- **THEN** сразу после него показаны его дети, `aria-expanded = true`
+#### Scenario: Expanding
+- **WHEN** the "Applications" node button is clicked
+- **THEN** its children are shown right after it, `aria-expanded = true`
 
-#### Scenario: Лист
-- **WHEN** узел без детей
-- **THEN** кнопка скрыта (`visibility: hidden`), `aria-expanded` отсутствует
+#### Scenario: Leaf
+- **WHEN** a node has no children
+- **THEN** the button is hidden (`visibility: hidden`), `aria-expanded` is absent
 
-### Requirement: Сортировка и страницы
-Сортировка SHALL применяться к соседям каждого уровня (устойчиво, одиночная и многоуровневая, как у Table) и возвращать на первую страницу. Пагинатор SHALL считать корневые узлы: страница `[first, first + rows)` корней вместе с видимыми потомками.
+### Requirement: Sorting and pages
+Sorting SHALL apply to siblings of every level (stable, single and multi-level, as in Table) and return to the first page. The paginator SHALL count root nodes: the page `[first, first + rows)` of roots together with their visible descendants.
 
-#### Scenario: По убыванию
-- **WHEN** сортировка по размеру по убыванию
-- **THEN** корни и дети каждого раскрытого узла идут по убыванию размера
+#### Scenario: Descending
+- **WHEN** sorting by size descending
+- **THEN** roots and the children of every expanded node go in descending size order
 
-#### Scenario: Страница корней
-- **WHEN** пять корней, `rows = 2`, переход на вторую страницу
-- **THEN** показаны третий и четвёртый корни с их раскрытыми потомками
+#### Scenario: Root page
+- **WHEN** five roots, `rows = 2`, going to the second page
+- **THEN** the third and fourth roots are shown with their expanded descendants
 
-### Requirement: Выбор
-Клик по строке SHALL выбирать узел в режимах `single` и `multiple` (`meta_key_selection` как у Table); клик по кнопке раскрытия или флажку SHALL не выбирать строку. В режиме `checkbox` флажок узла SHALL выбирать узел и всех потомков, а родителя — только когда выбраны все его дети; снятие SHALL снимать потомков и всех предков. Флажок узла SHALL быть отмечен у выбранного и показывать частичное состояние, если выбрана часть потомков.
+### Requirement: Selection
+A click on a row SHALL select the node in `single` and `multiple` modes (`meta_key_selection` as in Table); a click on the expand button or the checkbox SHALL NOT select the row. In `checkbox` mode the node checkbox SHALL select the node and all descendants, and the parent only when all its children are selected; unselecting SHALL unselect descendants and all ancestors. The node checkbox SHALL be checked for a selected node and show a partial state if some descendants are selected.
 
-#### Scenario: Распространение
-- **WHEN** выбран единственный ребёнок узла «React»
-- **THEN** выбраны ребёнок и «React», «Applications» показан частично выбранным
+#### Scenario: Propagation
+- **WHEN** the only child of the "React" node is selected
+- **THEN** the child and "React" are selected, "Applications" is shown as partially selected
 
-#### Scenario: Корень
-- **WHEN** выбран «Applications»
-- **THEN** выбрано всё его поддерево; повторный клик снимает всё
+#### Scenario: Root
+- **WHEN** "Applications" is selected
+- **THEN** its whole subtree is selected; a repeated click unselects everything
 
-### Requirement: Разметка
-`TreeTable` SHALL выводить `div.p-treetable.p-component` с блоками: маска загрузки, заголовок, пагинатор сверху, контейнер таблицы (`table.p-treetable-table`, `thead`, `tbody`, `tfoot` при подписях), пагинатор снизу, подвал. Заголовок сортируемого столбца SHALL иметь `p-sortable-column`, `aria-sort`, значок `p-treetable-sort-icon`; при отсутствии узлов SHALL показываться `p-treetable-empty-message` (если нет загрузки).
+### Requirement: Markup
+`TreeTable` SHALL render `div.p-treetable.p-component` with blocks: loading mask, header, top paginator, table container (`table.p-treetable-table`, `thead`, `tbody`, `tfoot` when there are labels), bottom paginator, footer. The header of a sortable column SHALL have `p-sortable-column`, `aria-sort`, the icon `p-treetable-sort-icon`; when there are no nodes `p-treetable-empty-message` SHALL be shown (if not loading).
 
-#### Scenario: Пусто
-- **WHEN** узлов нет
-- **THEN** выведено «No results found» на всю ширину
+#### Scenario: Empty
+- **WHEN** there are no nodes
+- **THEN** "No results found" is rendered across the full width

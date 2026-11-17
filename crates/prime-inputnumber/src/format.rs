@@ -1,49 +1,49 @@
-//! Форматирование и разбор чисел (`formatValue` и `parseValue` PrimeNG на таблице локалей вместо `Intl.NumberFormat`).
+//! Number formatting and parsing (PrimeNG's `formatValue` and `parseValue` on a locale table instead of `Intl.NumberFormat`).
 
 use crate::locale::{CURRENCY_GAP, Currency, DEFAULT_LOCALE, Grouping, LocaleData, RAW_LOCALE, resolve_locale};
 
-/// Режим форматирования.
+/// Formatting mode.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum InputNumberMode {
-    /// Десятичное число.
+    /// Decimal number.
     #[default]
     Decimal,
-    /// Валюта.
+    /// Currency.
     Currency,
 }
 
-/// Отображение валюты.
+/// Currency display.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum CurrencyDisplay {
-    /// Символ (`$`, `€`).
+    /// Symbol (`$`, `€`).
     #[default]
     Symbol,
-    /// Код (`USD`).
+    /// Code (`USD`).
     Code,
 }
 
-/// Параметры форматирования (свойства компонента, влияющие на текст).
+/// Formatting parameters (component properties that affect the text).
 #[derive(Clone, Debug, PartialEq)]
 pub struct FormatOptions {
-    /// Тег локали.
+    /// Locale tag.
     pub locale: String,
-    /// Режим.
+    /// Mode.
     pub mode: InputNumberMode,
-    /// Код валюты (режим `Currency`).
+    /// Currency code (`Currency` mode).
     pub currency: String,
-    /// Отображение валюты.
+    /// Currency display.
     pub currency_display: CurrencyDisplay,
-    /// Группировать разряды.
+    /// Group digits.
     pub use_grouping: bool,
-    /// Минимум знаков после запятой.
+    /// Minimum fraction digits.
     pub min_fraction_digits: Option<u32>,
-    /// Максимум знаков после запятой.
+    /// Maximum fraction digits.
     pub max_fraction_digits: Option<u32>,
-    /// Текст перед числом.
+    /// Text before the number.
     pub prefix: String,
-    /// Текст после числа.
+    /// Text after the number.
     pub suffix: String,
-    /// Форматировать (иначе число выводится как есть).
+    /// Format (otherwise the number is printed as is).
     pub format: bool,
 }
 
@@ -64,19 +64,19 @@ impl Default for FormatOptions {
     }
 }
 
-/// Результат разбора текста.
+/// Result of parsing text.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Parsed {
-    /// Нет числа.
+    /// No number.
     Empty,
-    /// Введён только минус.
+    /// Only a minus was entered.
     Minus,
-    /// Число.
+    /// A number.
     Number(f64),
 }
 
 impl Parsed {
-    /// Число, если оно есть.
+    /// The number, if there is one.
     pub fn value(self) -> Option<f64> {
         match self {
             Self::Number(v) => Some(v),
@@ -85,19 +85,19 @@ impl Parsed {
     }
 }
 
-/// Цифры числа, разобранного из текста: знак, целая и дробная части.
+/// Digits of a number parsed from text: sign, integer and fraction parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Parts {
-    /// Есть знак минуса.
+    /// Has a minus sign.
     pub neg: bool,
-    /// Цифры целой части без групп (может быть пустой).
+    /// Integer-part digits without groups (may be empty).
     pub int: String,
-    /// Цифры дробной части; `Some` — десятичный разделитель набран.
+    /// Fraction-part digits; `Some` means the decimal separator was typed.
     pub frac: Option<String>,
 }
 
 impl Parts {
-    /// Значение: пустая целая часть считается нулём; без цифр и разделителя числа нет.
+    /// Value: an empty integer part counts as zero; with no digits and no separator there is no number.
     pub fn parsed(&self) -> Parsed {
         let has_digits = !self.int.is_empty() || self.frac.as_ref().is_some_and(|f| !f.is_empty());
         if !has_digits {
@@ -115,7 +115,7 @@ impl Parts {
     }
 }
 
-/// Готовый форматтер для набора параметров.
+/// Ready-made formatter for a set of parameters.
 #[derive(Clone, Debug)]
 pub struct NumberFormat {
     locale: LocaleData,
@@ -132,13 +132,13 @@ pub struct NumberFormat {
     format: bool,
 }
 
-/// Ограничение числа знаков после запятой (как `validateFractionDigits` PrimeNG, но не более 20).
+/// Limit on fraction digits (like PrimeNG's `validateFractionDigits`, but at most 20).
 fn clamp_digits(v: Option<u32>) -> Option<u32> {
     v.map(|d| d.min(20))
 }
 
 impl NumberFormat {
-    /// Строит форматтер: выбирает локаль и валюту, определяет число знаков и обрамление.
+    /// Builds a formatter: picks the locale and currency, determines the digit count and the surrounding text.
     pub fn new(options: &FormatOptions) -> Self {
         let formatted = options.format;
         let locale = if formatted { *resolve_locale(&options.locale) } else { RAW_LOCALE };
@@ -149,7 +149,7 @@ impl NumberFormat {
             None => (0, 3),
         };
         let (min, max) = (clamp_digits(options.min_fraction_digits), clamp_digits(options.max_fraction_digits));
-        // правила Intl: заданная граница сдвигает вторую; при `min > max` минимум приравнивается к максимуму
+        // Intl rules: a given bound shifts the other; when `min > max` the minimum is set equal to the maximum
         let (min_frac, max_frac) = match (min, max) {
             (None, None) => (default_min, default_max),
             (Some(a), None) => (a, default_max.max(a)),
@@ -184,52 +184,52 @@ impl NumberFormat {
         }
     }
 
-    /// Десятичный разделитель.
+    /// Decimal separator.
     pub fn decimal(&self) -> char {
         self.locale.decimal
     }
 
-    /// Разделитель групп.
+    /// Group separator.
     pub fn group(&self) -> char {
         self.locale.group
     }
 
-    /// Знак минуса локали.
+    /// The locale's minus sign.
     pub fn minus(&self) -> char {
         self.locale.minus
     }
 
-    /// Минимум знаков после запятой.
+    /// Minimum fraction digits.
     pub fn min_frac(&self) -> usize {
         self.min_frac
     }
 
-    /// Максимум знаков после запятой.
+    /// Maximum fraction digits.
     pub fn max_frac(&self) -> usize {
         self.max_frac
     }
 
-    /// Можно ли набрать десятичный разделитель в числе без него: в PrimeNG — только при заданном свойстве `maxFractionDigits`.
+    /// Whether a decimal separator can be typed into a number without one: in PrimeNG only when the `maxFractionDigits` property is set.
     pub fn typing_decimal_allowed(&self) -> bool {
         self.explicit_max.is_some_and(|m| m > 0) && self.max_frac > 0
     }
 
-    /// Выводится ли символ валюты кодом.
+    /// Whether the currency symbol is shown as a code.
     pub fn shows_code(&self) -> bool {
         self.show_code && self.currency.is_some()
     }
 
-    /// Текст перед числом (пользовательский префикс и часть валюты), без знака.
+    /// Text before the number (custom prefix and part of the currency), without the sign.
     pub fn prefix(&self) -> String {
         format!("{}{}", self.user_prefix, self.cur_prefix)
     }
 
-    /// Текст после числа (часть валюты и пользовательский суффикс).
+    /// Text after the number (part of the currency and custom suffix).
     pub fn suffix(&self) -> String {
         format!("{}{}", self.cur_suffix, self.user_suffix)
     }
 
-    /// Собирает текст из знака, цифр целой части и (необязательной) дроби без округления и добавления нулей.
+    /// Assembles text from the sign, integer digits and an (optional) fraction without rounding or padding zeros.
     pub fn compose(&self, neg: bool, int: &str, frac: Option<&str>) -> String {
         if !self.format {
             let mut out = String::new();
@@ -259,7 +259,7 @@ impl NumberFormat {
         out
     }
 
-    /// Форматирует число: округление «от нуля» по кратчайшему десятичному представлению, число знаков по правилам формата.
+    /// Formats a number: rounds half away from zero on the shortest decimal representation, digit count per the format rules.
     pub fn format(&self, value: f64) -> String {
         if !value.is_finite() {
             return String::new();
@@ -280,7 +280,7 @@ impl NumberFormat {
         self.compose(value < 0.0 && !zero, &int, (!frac.is_empty()).then_some(frac.as_str()))
     }
 
-    /// Разбирает текст на знак и цифры; `None` — в тексте есть посторонние символы или лишний десятичный разделитель.
+    /// Parses text into a sign and digits; `None` means the text has stray characters or an extra decimal separator.
     pub fn decompose(&self, text: &str) -> Option<Parts> {
         let mut s = text.to_owned();
         for affix in [self.user_prefix.as_str(), self.cur_prefix.as_str(), self.cur_suffix.as_str(), self.user_suffix.as_str()] {
@@ -303,7 +303,7 @@ impl NumberFormat {
             } else if c == self.locale.minus || c == '-' {
                 parts.neg = true;
             } else if c == self.locale.group || c.is_whitespace() {
-                // группы и пробелы не несут значения
+                // groups and spaces carry no value
             } else {
                 return None;
             }
@@ -311,12 +311,12 @@ impl NumberFormat {
         Some(parts)
     }
 
-    /// Разбирает текст в число (`parseValue`): пусто, только минус или число; недопустимый текст — пусто.
+    /// Parses text into a number (`parseValue`): empty, only a minus, or a number; invalid text yields empty.
     pub fn parse(&self, text: &str) -> Parsed {
         self.decompose(text).map_or(Parsed::Empty, |p| p.parsed())
     }
 
-    /// Границы числовой части текста: от первой цифры или разделителя до конца последней.
+    /// Bounds of the numeric part of the text: from the first digit or separator to the end of the last.
     pub fn core_bounds(&self, text: &str) -> (usize, usize) {
         let chars: Vec<char> = text.chars().collect();
         let is_sig = |c: &char| c.is_ascii_digit() || *c == self.locale.decimal;
@@ -326,7 +326,7 @@ impl NumberFormat {
     }
 }
 
-/// Округляет дробь до `max` знаков «от нуля» (по десятичной записи); возвращает целую и дробную части.
+/// Rounds a fraction to `max` digits half away from zero (by decimal notation); returns the integer and fraction parts.
 fn round_digits(int: &str, frac: &str, max: usize) -> (String, String) {
     if frac.len() <= max {
         return (int.to_owned(), frac.to_owned());
@@ -354,7 +354,7 @@ fn round_digits(int: &str, frac: &str, max: usize) -> (String, String) {
     (text[..int_len].to_owned(), text[int_len..].to_owned())
 }
 
-/// Группирует цифры целой части.
+/// Groups the integer-part digits.
 fn group_int(int: &str, locale: &LocaleData, enabled: bool) -> String {
     if !enabled || int.len() <= 3 {
         return int.to_owned();
@@ -377,7 +377,7 @@ fn group_int(int: &str, locale: &LocaleData, enabled: bool) -> String {
     format!("{}{sep}{tail}", groups.join(&sep))
 }
 
-/// Форматтер для `en-US` без параметров (удобство для тестов и значений по умолчанию).
+/// `en-US` formatter with no parameters (convenient for tests and defaults).
 pub fn default_format() -> NumberFormat {
     NumberFormat::new(&FormatOptions { locale: DEFAULT_LOCALE.tag.to_owned(), ..FormatOptions::default() })
 }
@@ -425,11 +425,11 @@ mod tests {
     #[test]
     fn fraction_digit_rules_follow_intl() {
         let o = |min, max| FormatOptions { min_fraction_digits: min, max_fraction_digits: max, ..nf("en-US") };
-        // min > max: минимум приравнивается к максимуму
+        // min > max: the minimum is set equal to the maximum
         assert_eq!(fmt(&o(Some(4), Some(2)), 1.0), "1.00");
-        // заданный минимум сдвигает максимум по умолчанию (3)
+        // a given minimum shifts the default maximum (3)
         assert_eq!(fmt(&o(Some(5), None), 1.0), "1.00000");
-        // заданный максимум меньше минимума по умолчанию валюты — минимум уменьшается
+        // a given maximum is below the currency's default minimum, so the minimum is reduced
         let cur = FormatOptions { mode: InputNumberMode::Currency, currency: "USD".into(), max_fraction_digits: Some(0), ..nf("en-US") };
         assert_eq!(fmt(&cur, 1234.5), "$1,235");
         assert_eq!(fmt(&o(None, Some(25)), 0.5), "0.5");

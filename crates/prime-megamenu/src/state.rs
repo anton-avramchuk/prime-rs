@@ -1,33 +1,33 @@
-//! Модель MegaMenu и чистая логика переходов (по `megamenu.ts` PrimeNG 21.1.10).
+//! MegaMenu model and pure transition logic (after PrimeNG 21.1.10 `megamenu.ts`).
 //!
-//! Дерево трёхуровневое: корневой пункт (ключ `"0"`) → подменю в колонке (`"0_1_0"`: корень, колонка, индекс) → пункт
-//! подменю (`"0_1_0_2"`). Раскрыт может быть один корневой пункт ([`State::active`]); навигация внутри наложения идёт по
-//! плоскому списку пунктов всех его подменю, а корневая — по корневым пунктам.
+//! The tree has three levels: root item (key `"0"`) → submenu in a column (`"0_1_0"`: root, column, index) → submenu
+//! item (`"0_1_0_2"`). Only one root item can be expanded ([`State::active`]); navigation inside the overlay walks the
+//! flat list of items of all its submenus, while root navigation walks the root items.
 
 use prime_menu::MenuItem;
 
-/// Ориентация корневого списка.
+/// Orientation of the root list.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum MegaMenuOrientation {
-    /// Корневые пункты в строку, наложение под пунктом.
+        /// Root items in a row, overlay below the item.
     #[default]
     Horizontal,
-    /// Корневые пункты в столбец, наложение справа от пункта.
+        /// Root items in a column, overlay to the right of the item.
     Vertical,
 }
 
-/// Подменю в колонке: заголовок и плоский список пунктов.
+/// Submenu in a column: a header and a flat list of items.
 #[derive(Clone)]
 pub struct MegaMenuSubmenu {
-    /// Заголовок.
+        /// Header.
     pub label: Option<String>,
-    /// Виден (по умолчанию да).
+        /// Visible (default yes).
     pub visible: bool,
-    /// Дополнительный класс заголовка.
+        /// Additional class of the header.
     pub style_class: Option<String>,
-    /// Встроенный стиль заголовка.
+        /// Inline style of the header.
     pub style: Option<String>,
-    /// Пункты.
+        /// Items.
     pub items: Vec<MenuItem>,
 }
 
@@ -38,36 +38,36 @@ impl Default for MegaMenuSubmenu {
 }
 
 impl MegaMenuSubmenu {
-    /// Подменю с заголовком.
+        /// Submenu with a header.
     pub fn new(label: impl Into<String>) -> Self {
         Self { label: Some(label.into()), ..Self::default() }
     }
 
-    /// Пункты подменю.
+        /// Submenu items.
     pub fn items(mut self, items: Vec<MenuItem>) -> Self {
         self.items = items;
         self
     }
 
-    /// Показывает или скрывает подменю.
+        /// Shows or hides the submenu.
     pub fn visible(mut self, visible: bool) -> Self {
         self.visible = visible;
         self
     }
 
-    /// Дополнительный класс заголовка.
+        /// Additional class of the header.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 }
 
-/// Корневой пункт: обычный [`MenuItem`] (без `items`) и колонки подменю.
+/// Root item: a plain [`MenuItem`] (without `items`) and submenu columns.
 #[derive(Clone, Default)]
 pub struct MegaMenuItem {
-    /// Свойства пункта (`items` игнорируется).
+        /// Item properties (`items` is ignored).
     pub item: MenuItem,
-    /// Колонки: каждая — список подменю.
+        /// Columns: each is a list of submenus.
     pub columns: Vec<Vec<MegaMenuSubmenu>>,
 }
 
@@ -78,87 +78,87 @@ impl From<MenuItem> for MegaMenuItem {
 }
 
 impl MegaMenuItem {
-    /// Пункт без свойств.
+        /// Item without properties.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Подпись.
+        /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.item = self.item.label(label);
         self
     }
 
-    /// Значок.
+        /// Icon.
     pub fn icon(mut self, icon: impl Into<leptos::prelude::ViewFn>) -> Self {
         self.item = self.item.icon(icon);
         self
     }
 
-    /// Отключает пункт.
+        /// Disables the item.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.item = self.item.disabled(disabled);
         self
     }
 
-    /// Показывает или скрывает пункт.
+        /// Shows or hides the item.
     pub fn visible(mut self, visible: bool) -> Self {
         self.item = self.item.visible(visible);
         self
     }
 
-    /// Команда при нажатии.
+        /// Command on press.
     pub fn command(mut self, command: impl Into<leptos::prelude::Callback<prime_menu::MenuCommand>>) -> Self {
         self.item = self.item.command(command);
         self
     }
 
-    /// Колонки подменю.
+        /// Submenu columns.
     pub fn columns(mut self, columns: Vec<Vec<MegaMenuSubmenu>>) -> Self {
         self.columns = columns;
         self
     }
 }
 
-/// Вид узла дерева.
+/// Kind of tree node.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Kind {
-    /// Корневой пункт.
+        /// Root item.
     Root,
-    /// Подменю в колонке.
+        /// Submenu in a column.
     Submenu,
-    /// Пункт подменю.
+        /// Submenu item.
     Item,
 }
 
-/// Узел дерева «обработанных пунктов».
+/// Node of the tree of "processed items".
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Node {
-    /// Ключ.
+        /// Key.
     pub key: String,
-    /// Ключ родителя (пусто у корневых).
+        /// Parent key (empty for roots).
     pub parent_key: String,
-    /// Ключ корневого пункта.
+        /// Key of the root item.
     pub root_key: String,
-    /// Вид.
+        /// Kind.
     pub kind: Kind,
-    /// Индекс среди соседей.
+        /// Index among siblings.
     pub index: usize,
-    /// Номер колонки (у корневых — их индекс).
+        /// Column number (for roots, their index).
     pub column: usize,
-    /// Корневой пункт с подменю.
+        /// Root item with a submenu.
     pub group: bool,
-    /// Виден (сам пункт и его подменю).
+        /// Visible (the item itself and its submenu).
     pub shown: bool,
-    /// Допустим для фокуса: виден, не отключён, не разделитель, не заголовок.
+        /// Focusable: visible, not disabled, not a separator, not a header.
     pub valid: bool,
-    /// Подпись (для поиска).
+        /// Label (for search).
     pub label: String,
-    /// Номер колонки у пункта — число колонок корня (для класса `col-N`).
+        /// Column number of an item is the number of root columns (for the `col-N` class).
     pub columns: usize,
 }
 
-/// Строит узлы в порядке обхода в глубину.
+/// Builds nodes in depth-first order.
 pub fn build(model: &[MegaMenuItem]) -> Vec<Node> {
     let mut out = Vec::new();
     for (i, root) in model.iter().enumerate() {
@@ -214,7 +214,7 @@ pub fn build(model: &[MegaMenuItem]) -> Vec<Node> {
     out
 }
 
-/// Класс колонки по числу колонок пункта (`p-megamenu-col-N`).
+/// Column class by the number of item columns (`p-megamenu-col-N`).
 pub fn column_class(columns: usize, mobile: bool) -> &'static str {
     if mobile {
         return "p-megamenu-col-12";
@@ -228,53 +228,53 @@ pub fn column_class(columns: usize, mobile: bool) -> &'static str {
     }
 }
 
-/// Состояние переходов.
+/// Transition state.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct State {
-    /// Ключ раскрытого корневого пункта.
+        /// Key of the expanded root item.
     pub active: Option<String>,
-    /// Ключ пункта под фокусом.
+        /// Key of the focused item.
     pub focus: Option<String>,
-    /// После клика или нажатия мыши по меню наведение раскрывает группы.
+        /// After a click or mouse press on the menu, hover expands groups.
     pub dirty: bool,
 }
 
-/// Результат клика.
+/// Click result.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Click {
-    /// Раскрытый пункт свернулся.
+        /// The expanded item collapsed.
     Closed,
-    /// Группа раскрылась.
+        /// The group expanded.
     Opened,
-    /// Лист: меню нужно закрыть.
+        /// Leaf: the menu must be closed.
     Leaf,
 }
 
-/// Дерево с ориентацией: все переходы.
+/// Tree with orientation: all transitions.
 pub struct Menu<'a> {
-    /// Узлы.
+        /// Nodes.
     pub nodes: &'a [Node],
-    /// Вертикальная ориентация.
+        /// Vertical orientation.
     pub vertical: bool,
 }
 
 impl Menu<'_> {
-    /// Узел по ключу.
+        /// Node by key.
     pub fn node(&self, key: &str) -> Option<&Node> {
         self.nodes.iter().find(|n| n.key == key)
     }
 
-    /// Видимые корневые пункты.
+        /// Visible root items.
     pub fn roots(&self) -> Vec<&Node> {
         self.nodes.iter().filter(|n| n.kind == Kind::Root && n.shown).collect()
     }
 
-    /// Видимые пункты подменю корня (плоский список).
+        /// Visible submenu items of a root (flat list).
     pub fn items(&self, root: &str) -> Vec<&Node> {
         self.nodes.iter().filter(|n| n.kind == Kind::Item && n.shown && n.root_key == root).collect()
     }
 
-    /// Список, по которому ходит фокус.
+        /// List the focus walks over.
     pub fn list(&self, st: &State) -> Vec<&Node> {
         match st.focus.as_deref().and_then(|f| self.node(f)) {
             Some(n) if n.kind == Kind::Item => self.items(&n.root_key),
@@ -290,7 +290,7 @@ impl Menu<'_> {
         list.iter().rev().find(|n| n.valid).map(|n| n.key.clone())
     }
 
-    /// Первый пункт для фокуса: выбранный корень, иначе первый допустимый.
+        /// First item for focus: the selected root, otherwise the first focusable one.
     pub fn first_focused(&self, st: &State) -> Option<String> {
         let roots = self.roots();
         st.active
@@ -307,14 +307,14 @@ impl Menu<'_> {
         Some(found.map_or_else(|| list[pos].key.clone(), |n| n.key.clone()))
     }
 
-    /// Фокус вошёл снаружи и меню в покое: первый пункт.
+        /// Focus entered from outside and the menu is idle: first item.
     pub fn focus_in(&self, st: &mut State) {
         if st.focus.is_none() && st.active.is_none() && !st.dirty {
             st.focus = self.first_focused(st);
         }
     }
 
-    /// Закрывает всё.
+        /// Closes everything.
     pub fn hide(&self, st: &mut State) {
         *st = State::default();
     }
@@ -345,7 +345,7 @@ impl Menu<'_> {
         self.items(root).into_iter().find(|n| n.column == column && n.valid).map(|n| n.key.clone())
     }
 
-    /// Клик по пункту (после проверки отключённости и вызова команды).
+        /// Item click (after the disabled check and command call).
     pub fn click(&self, st: &mut State, key: &str) -> Click {
         let Some(node) = self.node(key) else { return Click::Leaf };
         if st.active.as_deref() == Some(key) {
@@ -363,7 +363,7 @@ impl Menu<'_> {
         }
     }
 
-    /// Наведение на пункт.
+        /// Hover over an item.
     pub fn hover(&self, st: &mut State, key: &str, mobile: bool) {
         if mobile || !st.dirty {
             return;
@@ -393,7 +393,7 @@ impl Menu<'_> {
         }
     }
 
-    /// ↑ (`alt` в горизонтальной ориентации возвращает из наложения на корневой пункт).
+        /// Up (`alt` in horizontal orientation returns from the overlay to the root item).
     pub fn arrow_up(&self, st: &mut State, alt: bool) {
         let Some(node) = st.focus.as_deref().and_then(|f| self.node(f)) else {
             st.focus = Self::last_valid(&self.roots());
@@ -457,26 +457,26 @@ impl Menu<'_> {
         }
     }
 
-    /// `Escape`: закрывает наложение, фокус на его корневом пункте.
+        /// `Escape`: closes the overlay, focus on its root item.
     pub fn escape(&self, st: &mut State) {
         if let Some(active) = st.active.take() {
             st.focus = Some(active);
         }
     }
 
-    /// `Tab`: закрывает всё.
+        /// `Tab`: closes everything.
     pub fn tab(&self, st: &mut State) {
         self.hide(st);
     }
 
-    /// После `Enter`/`Space` на листе фокус возвращается на первый корневой пункт.
+        /// After `Enter`/`Space` on a leaf, focus returns to the first root item.
     pub fn after_enter(&self, st: &mut State, was_group: bool) {
         if !was_group {
             st.focus = self.first_focused(st);
         }
     }
 
-    /// Поиск по началу подписи: от текущего пункта (включая его) по кругу.
+        /// Search by label prefix: from the current item (inclusive), circularly.
     pub fn search(&self, st: &mut State, text: &str) {
         let needle = text.to_lowercase();
         let list = self.list(st);
@@ -530,7 +530,7 @@ mod tests {
         let get = |k: &str| nodes.iter().find(|n| n.key == k).unwrap();
         assert!(get("0").group && !get("1").group && !get("2").valid && get("1").valid);
         assert_eq!((get("0_1_1_0").column, get("0_2_0_0").column, get("0").columns), (1, 2, 3));
-        assert!(!get("0_1_0_1").valid && !get("0_1_0").valid, "отключённый и заголовок недопустимы");
+                assert!(!get("0_1_0_1").valid && !get("0_1_0").valid, "disabled and header are not focusable");
         assert_eq!(get("0_1_0_0").root_key, "0");
     }
 
@@ -551,7 +551,7 @@ mod tests {
         assert_eq!(m.click(&mut s, "0"), Click::Opened);
         assert_eq!((s.active.as_deref(), s.focus.as_deref(), s.dirty), (Some("0"), Some("0"), true));
         assert_eq!(m.click(&mut s, "0"), Click::Closed);
-        assert_eq!((s.active.as_deref(), s.dirty), (None, false), "повторный клик по корню закрывает");
+                assert_eq!((s.active.as_deref(), s.dirty), (None, false), "repeated click on root closes");
         assert_eq!(m.click(&mut s, "1"), Click::Leaf);
         assert_eq!(m.click(&mut s, "0_0_0_0"), Click::Leaf);
     }
@@ -562,20 +562,20 @@ mod tests {
         let m = Menu { nodes: &nodes, vertical: false };
         let mut s = State::default();
         m.hover(&mut s, "0", false);
-        assert_eq!(s, State::default(), "без клика наведение ничего не делает");
+                assert_eq!(s, State::default(), "without a click hover does nothing");
         let mut s = State { dirty: true, ..State::default() };
         m.hover(&mut s, "0", true);
-        assert_eq!(s.active, None, "на узком окне путь не меняется");
+                assert_eq!(s.active, None, "on a narrow window the path does not change");
         m.hover(&mut s, "0", false);
         assert_eq!(s.active.as_deref(), Some("0"));
         m.hover(&mut s, "0_0_0_1", false);
         assert_eq!(
             (s.active.as_deref(), s.focus.as_deref()),
             (Some("0"), Some("0_0_0_1")),
-            "наведение на пункт наложения держит его открытым"
+                        "hover over an overlay item keeps it open"
         );
         m.hover(&mut s, "1", false);
-        assert_eq!((s.active, s.focus.as_deref()), (None, Some("1")), "наведение на обычный корень закрывает наложение");
+                assert_eq!((s.active, s.focus.as_deref()), (None, Some("1")), "hover over a plain root closes the overlay");
     }
 
     #[test]
@@ -586,30 +586,30 @@ mod tests {
         m.focus_in(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0"));
         m.arrow_down(&mut s);
-        assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_0")), "↓ раскрывает и входит в первую колонку");
+                assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_0")), "Down expands and enters the first column");
         m.arrow_down(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0_0_0_1"));
         m.arrow_down(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("0_1_0_0"), "плоский список идёт в следующую колонку");
+                assert_eq!(s.focus.as_deref(), Some("0_1_0_0"), "the flat list moves to the next column");
         m.arrow_down(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("0_1_1_0"), "отключённый пропущен");
+                assert_eq!(s.focus.as_deref(), Some("0_1_1_0"), "disabled is skipped");
         m.arrow_right(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "→ — первый пункт следующей колонки");
+                assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "Right goes to the first item of the next column");
         m.arrow_right(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "дальше колонок нет");
+                assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "no more columns beyond");
         m.arrow_left(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0_1_0_0"));
         m.arrow_left(&mut s);
         m.arrow_left(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "← у первой колонки остаётся");
+                assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Left stays at the first column");
         m.arrow_up(&mut s, false);
-        assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "↑ на первом пункте не выходит");
+                assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Up on the first item does not leave");
         m.end(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0_2_0_0"));
         m.home(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0_0_0_0"));
         m.arrow_up(&mut s, true);
-        assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")), "Alt+↑ возвращает на корень");
+                assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")), "Alt+Up returns to the root");
     }
 
     #[test]
@@ -618,9 +618,9 @@ mod tests {
         let m = Menu { nodes: &nodes, vertical: false };
         let mut s = st(Some("0"), Some("0"));
         m.arrow_right(&mut s);
-        assert_eq!((s.active.clone(), s.focus.as_deref()), (None, Some("1")), "→ на обычный корень закрывает наложение");
+                assert_eq!((s.active.clone(), s.focus.as_deref()), (None, Some("1")), "Right onto a plain root closes the overlay");
         m.arrow_right(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("3"), "отключённый корень пропущен");
+                assert_eq!(s.focus.as_deref(), Some("3"), "disabled root is skipped");
         m.arrow_left(&mut s);
         m.arrow_left(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0"));
@@ -631,10 +631,10 @@ mod tests {
         let mut s = st(Some("0"), Some("0"));
         m.arrow_down(&mut s);
         m.escape(&mut s);
-        assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")), "Escape возвращает на корень");
+                assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")), "Escape returns to the root");
         let mut s = st(None, Some("1"));
         m.arrow_down(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("3"), "↓ на обычном корне идёт к следующему (как в PrimeNG)");
+                assert_eq!(s.focus.as_deref(), Some("3"), "Down on a plain root goes to the next one (as in PrimeNG)");
     }
 
     #[test]
@@ -645,17 +645,17 @@ mod tests {
         m.arrow_down(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0"));
         m.arrow_down(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("1"), "в вертикальной ориентации ↓ идёт по корню");
+                assert_eq!(s.focus.as_deref(), Some("1"), "in vertical orientation Down walks the roots");
         m.arrow_up(&mut s, false);
         assert_eq!(s.focus.as_deref(), Some("0"));
         m.arrow_right(&mut s);
-        assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_0")), "→ раскрывает и входит");
+                assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_0")), "Right expands and enters");
         m.arrow_left(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("0"), "← из первой колонки — на корень");
+                assert_eq!(s.focus.as_deref(), Some("0"), "Left from the first column goes to the root");
         assert_eq!(s.active, None);
         let mut s = st(Some("0"), Some("0_1_0_0"));
         m.arrow_left(&mut s);
-        assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "← на колонку левее");
+                assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Left to the column on the left");
         m.arrow_left(&mut s);
         assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")));
         let mut s = st(None, Some("1"));
@@ -669,14 +669,14 @@ mod tests {
         let m = Menu { nodes: &nodes, vertical: false };
         let mut s = st(None, Some("0"));
         m.search(&mut s, "t");
-        assert_eq!(s.focus.as_deref(), Some("3"), "поиск по корню");
+                assert_eq!(s.focus.as_deref(), Some("3"), "search among roots");
         m.search(&mut s, "z");
-        assert_eq!(s.focus.as_deref(), Some("3"), "без совпадений фокус остаётся");
+                assert_eq!(s.focus.as_deref(), Some("3"), "without matches focus stays");
         let mut s = st(Some("0"), Some("0_0_0_0"));
         m.search(&mut s, "cu");
-        assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "поиск по пунктам наложения");
+                assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "search among overlay items");
         m.search(&mut s, "ar");
-        assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "по кругу");
+                assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "circularly");
         m.tab(&mut s);
         assert_eq!(s, State::default());
         let mut s = st(None, None);

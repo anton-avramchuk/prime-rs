@@ -1,52 +1,52 @@
 ## ADDED Requirements
 
-### Requirement: Разметка и классы Message
-Компонент `Message` крейта `prime-message` SHALL отрисовывать корень `<div role="alert" aria-live="polite">` с классами `p-message p-component p-message-<severity>` (по умолчанию `info`), `p-message-<variant>` (при `variant`), `p-message-sm` и `p-message-lg` (по `size`); внутри SHALL идти `div.p-message-content-wrapper` > `div.p-message-content`. Корень и все части SHALL иметь `data-p` (через пробел `outlined`, `simple`, severity, size).
+### Requirement: Message markup and classes
+The `Message` component of the `prime-message` crate SHALL render a root `<div role="alert" aria-live="polite">` with classes `p-message p-component p-message-<severity>` (default `info`), `p-message-<variant>` (with `variant`), `p-message-sm` and `p-message-lg` (by `size`); inside it SHALL come `div.p-message-content-wrapper` > `div.p-message-content`. The root and all parts SHALL have `data-p` (space-separated `outlined`, `simple`, severity, size).
 
-#### Scenario: Серьёзность по умолчанию
-- **WHEN** `severity` не задан
-- **THEN** корень имеет класс `p-message-info`, а `data-p` равен `info`
+#### Scenario: Default severity
+- **WHEN** `severity` is not set
+- **THEN** the root has the class `p-message-info` and `data-p` equals `info`
 
-#### Scenario: Вариант и размер
-- **WHEN** заданы `severity = success`, `variant = outlined`, `size = small`
-- **THEN** есть классы `p-message-success`, `p-message-outlined`, `p-message-sm`, а `data-p` равен `outlined success small`
+#### Scenario: Variant and size
+- **WHEN** `severity = success`, `variant = outlined`, `size = small` are set
+- **THEN** the classes `p-message-success`, `p-message-outlined`, `p-message-sm` are present and `data-p` equals `outlined success small`
 
-### Requirement: Содержимое Message
-При непустом `text` Message SHALL выводить `span.p-message-text` с текстом, затем всегда второй `span.p-message-text` с дочерним содержимым. `icon` (CSS-класс) SHALL давать `<i class="p-message-icon …">`, `icon_template` — свой элемент без обёртки; `container_template` SHALL заменять текст и содержимое и получать колбэк закрытия.
+### Requirement: Message content
+With a non-empty `text`, Message SHALL render a `span.p-message-text` with the text, then always a second `span.p-message-text` with the child content. `icon` (CSS class) SHALL produce `<i class="p-message-icon …">`, `icon_template` a custom element without a wrapper; `container_template` SHALL replace the text and content and receive the close callback.
 
-#### Scenario: Текст и дети
-- **WHEN** заданы `text = "Info"` и дочерний элемент
-- **THEN** внутри `p-message-content` два `p-message-text`: первый с `Info`, второй с дочерним элементом
+#### Scenario: Text and children
+- **WHEN** `text = "Info"` and a child element are set
+- **THEN** inside `p-message-content` there are two `p-message-text`: the first with `Info`, the second with the child element
 
-#### Scenario: Контейнер
-- **WHEN** задан `container_template`
-- **THEN** он выводится вместо текста и содержимого и закрывает сообщение через переданный колбэк
+#### Scenario: Container
+- **WHEN** `container_template` is set
+- **THEN** it is rendered instead of the text and content and closes the message through the passed callback
 
-### Requirement: Закрытие и время жизни Message
-При `closable` Message SHALL выводить `button.p-message-close-button` (`type="button"`, `aria-label` из локали) с иконкой `p-message-close-icon` (или `close_icon_template`/`close_icon`); клик SHALL скрывать сообщение (класс `p-message-leave-active`, `display: none`) и вызывать `on_close` с исходным событием. При `life` (мс) сообщение SHALL скрываться по таймеру в браузере.
+### Requirement: Message closing and lifetime
+With `closable`, Message SHALL render a `button.p-message-close-button` (`type="button"`, `aria-label` from the locale) with a `p-message-close-icon` icon (or `close_icon_template`/`close_icon`); a click SHALL hide the message (the `p-message-leave-active` class, `display: none`) and call `on_close` with the original event. With `life` (ms) the message SHALL be hidden by a timer in the browser.
 
-#### Scenario: Закрытие
-- **WHEN** пользователь нажимает кнопку закрытия
-- **THEN** сообщение скрывается и вызван `on_close`
+#### Scenario: Closing
+- **WHEN** the user presses the close button
+- **THEN** the message is hidden and `on_close` was called
 
-#### Scenario: Время жизни
-- **WHEN** задан `life = 3000`
-- **THEN** через 3000 мс сообщение скрыто
+#### Scenario: Lifetime
+- **WHEN** `life = 3000` is set
+- **THEN** after 3000 ms the message is hidden
 
 ### Requirement: Pass-through Message
-`pt` SHALL принимать `root`, `content_wrapper`, `content`, `icon`, `text`, `close_button`, `close_icon`, добавляя классы и атрибуты без замены собственных.
+`pt` SHALL accept `root`, `content_wrapper`, `content`, `icon`, `text`, `close_button`, `close_icon`, adding classes and attributes without replacing the component's own.
 
-#### Scenario: Класс через pt
-- **WHEN** в `pt.content` передан класс `custom`
-- **THEN** у `p-message-content` есть и `custom`, и собственный класс
+#### Scenario: Class via pt
+- **WHEN** the class `custom` is passed in `pt.content`
+- **THEN** `p-message-content` has both `custom` and its own class
 
-### Requirement: Стоимость отрисовки Message
-Message со статическими свойствами, без `closable` и `life` SHALL использовать статическую ветвь; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `message` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `message` в `benches/budgets.toml`.
+### Requirement: Message render cost
+Message with static properties, without `closable` and `life`, SHALL use the static branch; both branches SHALL produce the same markup. The number of allocations per instance in SSR SHALL fit the `message` budget in `benches/alloc-budgets.toml`, and the contribution to wasm the `message` budget in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** one set of values is passed statically and as signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Message не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** Message values do not exceed the budgets

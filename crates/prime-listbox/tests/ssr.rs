@@ -1,4 +1,4 @@
-//! Разметка Listbox (SSR): список, группы, выбор, флажки, отметка, поиск, пустые сообщения, свойства.
+//! Listbox markup (SSR): list, groups, selection, checkboxes, checkmark, search, empty messages, properties.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -105,7 +105,7 @@ fn checkbox_mode_has_toggle_all_and_option_checkboxes() {
     let html = render(|| view! { <Listbox options=cities() multiple=true checkbox=true values=values /> }.to_html());
     assert!(html.contains("p-listbox-header"), "{html}");
     assert_eq!(html.matches("p-checkbox p-component").count(), 1 + 3, "{html}");
-    assert_eq!(html.matches("p-checkbox-checked p-highlight").count(), 1, "только выбранный вариант: {html}");
+    assert_eq!(html.matches("p-checkbox-checked p-highlight").count(), 1, "only the selected option: {html}");
     assert!(html.contains("p-listbox-option-check-icon") && html.contains("p-checkbox-icon"), "{html}");
     let no_toggle = render(|| view! { <Listbox options=cities() multiple=true checkbox=true show_toggle_all=false /> }.to_html());
     assert_eq!(no_toggle.matches("p-checkbox p-component").count(), 3, "{no_toggle}");
@@ -116,7 +116,7 @@ fn checkbox_mode_has_toggle_all_and_option_checkboxes() {
 fn toggle_all_is_checked_when_everything_is_selected() {
     let values = RwSignal::new(vec!["NY".to_owned(), "LDN".to_owned()]);
     let html = render(|| view! { <Listbox options=cities() multiple=true checkbox=true values=values /> }.to_html());
-    assert_eq!(html.matches("p-checkbox-checked p-highlight").count(), 3, "отключённый Rome не мешает: {html}");
+    assert_eq!(html.matches("p-checkbox-checked p-highlight").count(), 3, "disabled Rome does not interfere: {html}");
 }
 
 #[test]

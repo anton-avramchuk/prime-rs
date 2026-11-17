@@ -1,48 +1,48 @@
 ## ADDED Requirements
 
-### Requirement: Проверки на каждый PR
-CI на GitHub Actions SHALL при каждом PR выполнять: проверку форматирования, `clippy` с запретом предупреждений, юнит-тесты, `wasm-bindgen-test` в headless-браузере, `cargo-deny`, бенчмарки по спеке `benchmarking` и сборку для SSR и wasm. Браузерные e2e-тесты SHALL NOT выполняться на PR по умолчанию.
+### Requirement: Checks on every PR
+CI on GitHub Actions SHALL on every PR run: a formatting check, `clippy` with warnings denied, unit tests, `wasm-bindgen-test` in a headless browser, `cargo-deny`, the benchmarks per the `benchmarking` spec, and builds for SSR and wasm. Browser e2e tests SHALL NOT run on PRs by default.
 
-#### Scenario: Обычный PR
-- **WHEN** открывается PR без особых меток
-- **THEN** выполняются перечисленные проверки, а e2e-job не запускается
+#### Scenario: Regular PR
+- **WHEN** a PR without special labels is opened
+- **THEN** the listed checks run, and the e2e job does not start
 
-#### Scenario: Ошибка форматирования
-- **WHEN** PR содержит неотформатированный код
-- **THEN** job форматирования падает и блокирует слияние
+#### Scenario: Formatting error
+- **WHEN** a PR contains unformatted code
+- **THEN** the formatting job fails and blocks the merge
 
-### Requirement: Проверка только затронутых крейтов
-CI SHALL определять изменённые крейты и зависящие от них крейты и запускать проверки компонентов только для них. При изменении общего ядра, зависимостей или конфигурации CI SHALL проверять весь workspace.
+### Requirement: Checking only affected crates
+CI SHALL determine the changed crates and the crates that depend on them and run component checks only for them. When the shared core, dependencies or configuration change, CI SHALL check the whole workspace.
 
-#### Scenario: Изменён один компонент
-- **WHEN** PR меняет только `crates/prime-button`
-- **THEN** тесты запускаются для `prime-button` и зависящих от него крейтов, остальные пропускаются
+#### Scenario: One component changed
+- **WHEN** a PR changes only `crates/prime-button`
+- **THEN** tests run for `prime-button` and the crates depending on it, the rest are skipped
 
-#### Scenario: Изменено ядро
-- **WHEN** PR меняет `crates/prime-core`
-- **THEN** проверяется весь workspace
+#### Scenario: Core changed
+- **WHEN** a PR changes `crates/prime-core`
+- **THEN** the whole workspace is checked
 
-### Requirement: Еженедельные и ручные проверки
-E2E-тесты, сравнение скриншотов с PrimeNG и браузерные бенчмарки памяти SHALL запускаться по расписанию раз в неделю и вручную через `workflow_dispatch`, а также на PR с меткой `run-e2e`.
+### Requirement: Weekly and manual checks
+E2E tests, screenshot comparison with PrimeNG and browser memory benchmarks SHALL run on a schedule once a week and manually via `workflow_dispatch`, and also on PRs with the `run-e2e` label.
 
-#### Scenario: Расписание
-- **WHEN** наступает время еженедельного запуска
-- **THEN** выполняются e2e, сравнение скриншотов и браузерные бенчмарки
+#### Scenario: Schedule
+- **WHEN** the weekly run time comes
+- **THEN** e2e, screenshot comparison and browser benchmarks run
 
-#### Scenario: Метка на PR
-- **WHEN** на PR добавлена метка `run-e2e`
-- **THEN** запускается e2e-job
+#### Scenario: Label on a PR
+- **WHEN** the `run-e2e` label is added to a PR
+- **THEN** the e2e job starts
 
-### Requirement: Эталон из PrimeNG без коммита бинарников
-Сравнение скриншотов SHALL строить эталон в самом CI: клонировать PrimeNG на закреплённом коммите, собирать его showcase и снимать скриншоты. Эталонные изображения SHALL NOT коммититься в репозиторий. Артефакты сравнения SHALL храниться не более 7 дней.
+### Requirement: PrimeNG baseline without committing binaries
+Screenshot comparison SHALL build the baseline in CI itself: clone PrimeNG at the pinned commit, build its showcase and take screenshots. Baseline images SHALL NOT be committed to the repository. Comparison artifacts SHALL be kept for at most 7 days.
 
-#### Scenario: Запуск сравнения
-- **WHEN** выполняется еженедельный job
-- **THEN** эталон создаётся заново из закреплённого коммита, а результат публикуется как артефакт со сроком хранения не более 7 дней
+#### Scenario: Running the comparison
+- **WHEN** the weekly job runs
+- **THEN** the baseline is created anew from the pinned commit, and the result is published as an artifact with a retention of at most 7 days
 
-### Requirement: Результаты сравнения не блокируют PR
-Расхождения в скриншотах и в еженедельных проверках SHALL сообщаться отчётом и не блокировать слияние PR.
+### Requirement: Comparison results do not block PRs
+Discrepancies in screenshots and in the weekly checks SHALL be reported in a report and SHALL NOT block PR merges.
 
-#### Scenario: Расхождение в скриншоте
-- **WHEN** скриншот отличается от эталона
-- **THEN** job публикует отчёт, но слияние не блокируется
+#### Scenario: Screenshot discrepancy
+- **WHEN** a screenshot differs from the baseline
+- **THEN** the job publishes a report, but the merge is not blocked

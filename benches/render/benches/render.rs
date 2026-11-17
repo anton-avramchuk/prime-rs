@@ -1,4 +1,4 @@
-//! Время SSR-рендера (divan): `cargo bench -p render-bench --bench render`.
+//! SSR render time (divan): `cargo bench -p render-bench --bench render`.
 
 use render_bench::SCENARIOS;
 

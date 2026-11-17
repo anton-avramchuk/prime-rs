@@ -1,39 +1,39 @@
 # iconfield Specification
 
 ## Purpose
-IconField размещает значок внутри поля ввода слева или справа; InputIcon — контейнер этого значка.
+IconField places an icon inside an input field on the left or on the right; InputIcon is the container of this icon.
 
 ## Requirements
 
-### Requirement: Разметка IconField и InputIcon
-Компонент `IconField` крейта `prime-iconfield` SHALL выводить `<span class="p-iconfield p-iconfield-left">` (при `icon_position = Right` — `p-iconfield-right`; по умолчанию `Left`) с дочерним содержимым. Компонент `InputIcon` SHALL выводить `<span class="p-inputicon">` с дочерним содержимым (значком). Оба SHALL принимать `style`, `style_class` (добавляется после собственных классов) и `pt` с частью `root`, добавляющий классы, стиль и атрибуты без замены собственных. Положение значка внутри поля SHALL обеспечиваться CSS темы `iconfield` по порядку дочерних элементов.
+### Requirement: Markup of IconField and InputIcon
+The `IconField` component of the `prime-iconfield` crate SHALL render `<span class="p-iconfield p-iconfield-left">` (with `icon_position = Right` — `p-iconfield-right`; default `Left`) with the child content. The `InputIcon` component SHALL render `<span class="p-inputicon">` with the child content (the icon). Both SHALL accept `style`, `style_class` (added after the own classes) and `pt` with the part `root`, adding classes, style and attributes without replacing the own ones. The position of the icon inside the field SHALL be provided by the CSS of the theme `iconfield` according to the order of the child elements.
 
-#### Scenario: Значок слева
-- **WHEN** в `IconField` вложены `InputIcon` и поле
-- **THEN** выводится `span.p-iconfield.p-iconfield-left`, внутри `span.p-inputicon` и поле в исходном порядке
+#### Scenario: Icon on the left
+- **WHEN** `InputIcon` and a field are nested inside `IconField`
+- **THEN** `span.p-iconfield.p-iconfield-left` is rendered, containing `span.p-inputicon` and the field in the original order
 
-#### Scenario: Значок справа
+#### Scenario: Icon on the right
 - **WHEN** `icon_position = Right`
-- **THEN** у корня есть `p-iconfield-right` и нет `p-iconfield-left`
+- **THEN** the root has `p-iconfield-right` and does not have `p-iconfield-left`
 
-#### Scenario: Свой значок
-- **WHEN** в `InputIcon` вложен `<svg>`
-- **THEN** `<svg>` выводится внутри `span.p-inputicon` без изменений
+#### Scenario: Custom icon
+- **WHEN** an `<svg>` is nested inside `InputIcon`
+- **THEN** the `<svg>` is rendered inside `span.p-inputicon` unchanged
 
-#### Scenario: Классы и pt
-- **WHEN** у `InputIcon` заданы `style_class = "pi"` и `pt.root` с классом `custom`
-- **THEN** класс `p-inputicon pi custom`
+#### Scenario: Classes and pt
+- **WHEN** `InputIcon` has `style_class = "pi"` and `pt.root` with the class `custom`
+- **THEN** the class is `p-inputicon pi custom`
 
-### Requirement: Позиция значка в теме
-CSS темы SHALL ставить `InputIcon`, идущий первым в `IconField`, у левого края поля, а идущий последним — у правого; поле, граничащее со значком слева или справа, SHALL получать внутренний отступ под значок.
+### Requirement: Position of the icon in the theme
+The theme CSS SHALL place the `InputIcon` that comes first in `IconField` at the left edge of the field, and the one that comes last — at the right edge; a field bordering the icon on the left or on the right SHALL get an inner padding for the icon.
 
-#### Scenario: Положение
-- **WHEN** страница показывает `IconField` со значком перед полем
-- **THEN** значок лежит внутри границ поля слева, а текст поля сдвинут вправо от него
+#### Scenario: Position
+- **WHEN** a page shows an `IconField` with the icon before the field
+- **THEN** the icon lies inside the left bounds of the field, and the text of the field is shifted to the right of it
 
-### Requirement: Стоимость отрисовки IconField
-Число аллокаций на экземпляр при SSR (`IconField` со значком и полем) SHALL укладываться в бюджет `iconfield-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `iconfield` в `benches/budgets.toml`.
+### Requirement: Rendering cost of IconField
+The number of allocations per instance during SSR (`IconField` with an icon and a field) SHALL fit the budget `iconfield-1000` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `iconfield` in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения IconField не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of IconField do not exceed the budgets

@@ -1,8 +1,8 @@
 import { test } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
-// Браузерные замеры: время создания 1000 компонентов и память. Результаты — results/memory.json (метрики «меньше — лучше»).
-// JS-куча (`JSHeapUsedSize`) не включает память Rust, поэтому для wasm дополнительно читается `window.wasmMemoryBytes()` (размер линейной памяти).
+// Browser measurements: creation time of 1000 components and memory. Results go to results/memory.json (metrics where "lower is better").
+// The JS heap (`JSHeapUsedSize`) does not include Rust memory, so for wasm `window.wasmMemoryBytes()` (the size of the linear memory) is read as well.
 const ITERATIONS = 20;
 const OUT = 'results/memory.json';
 
@@ -12,21 +12,21 @@ const save = (metrics: Record<string, number>) => {
     try {
         all = JSON.parse(readFileSync(OUT, 'utf8')).metrics ?? {};
     } catch {
-        /* первый сценарий */
+        /* the first scenario */
     }
     writeFileSync(OUT, JSON.stringify({ metrics: { ...all, ...metrics } }, null, 2));
 };
 
 for (const scenario of [
-    { name: 'icons', mount: 'bench-mount', clear: 'bench-clear', area: 'bench-area', selector: '[data-testid=bench-area] svg', label: '1000 иконок' },
-    { name: 'buttons-live', mount: 'bench-buttons-live-mount', clear: 'bench-buttons-live-clear', area: 'bench-buttons-live-area', selector: '[data-testid=bench-buttons-live-area] button', label: '1000 кнопок (сигнал)' },
-    { name: 'badges', mount: 'bench-badges-mount', clear: 'bench-badges-clear', area: 'bench-badges-area', selector: '[data-testid=bench-badges-area] .p-badge', label: '1000 бейджей' },
-    { name: 'badges-live', mount: 'bench-badges-live-mount', clear: 'bench-badges-live-clear', area: 'bench-badges-live-area', selector: '[data-testid=bench-badges-live-area] .p-badge', label: '1000 бейджей (сигнал)' },
-    { name: 'buttons', mount: 'bench-buttons-mount', clear: 'bench-buttons-clear', area: 'bench-buttons-area', selector: '[data-testid=bench-buttons-area] button', label: '1000 кнопок' }
+    { name: 'icons', mount: 'bench-mount', clear: 'bench-clear', area: 'bench-area', selector: '[data-testid=bench-area] svg', label: '1000 icons' },
+    { name: 'buttons-live', mount: 'bench-buttons-live-mount', clear: 'bench-buttons-live-clear', area: 'bench-buttons-live-area', selector: '[data-testid=bench-buttons-live-area] button', label: '1000 buttons (signal)' },
+    { name: 'badges', mount: 'bench-badges-mount', clear: 'bench-badges-clear', area: 'bench-badges-area', selector: '[data-testid=bench-badges-area] .p-badge', label: '1000 badges' },
+    { name: 'badges-live', mount: 'bench-badges-live-mount', clear: 'bench-badges-live-clear', area: 'bench-badges-live-area', selector: '[data-testid=bench-badges-live-area] .p-badge', label: '1000 badges (signal)' },
+    { name: 'buttons', mount: 'bench-buttons-mount', clear: 'bench-buttons-clear', area: 'bench-buttons-area', selector: '[data-testid=bench-buttons-area] button', label: '1000 buttons' }
 ]) {
-    test(`память и время: ${scenario.label}, создание и удаление в цикле`, async ({ page }) => {
+    test(`memory and time: ${scenario.label}, creation and removal in a loop`, async ({ page }) => {
         await page.goto('/');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         const cdp = await page.context().newCDPSession(page);
         await cdp.send('Performance.enable');
@@ -38,7 +38,7 @@ for (const scenario of [
             const wasm = await page.evaluate(() => (window as unknown as { wasmMemoryBytes?: () => number }).wasmMemoryBytes?.() ?? 0);
             return { heap: get('JSHeapUsedSize'), nodes: get('Nodes'), wasm };
         };
-        // ждём гидрацию
+        // wait for hydration
         await page.waitForFunction((id) => document.querySelector(`[data-testid=${id}]`) !== null, scenario.mount);
         await page.waitForFunction(() => typeof (window as unknown as { wasmMemoryBytes?: unknown }).wasmMemoryBytes === 'function');
         await page.waitForTimeout(500);
@@ -68,7 +68,7 @@ for (const scenario of [
             [key('mount-1000.heap_bytes')]: mounted.heap - before.heap,
             [key('mount-1000.wasm_bytes')]: mounted.wasm - before.wasm,
             [key('mount-1000.dom_nodes')]: mounted.nodes - before.nodes,
-            // утечка: рост после 20 циклов создания и удаления
+            // leak: growth after 20 cycles of creation and removal
             [key('loop.heap_growth_bytes')]: Math.max(0, after.heap - before.heap),
             [key('loop.wasm_growth_bytes')]: Math.max(0, after.wasm - mounted.wasm),
             [key('loop.dom_nodes_growth')]: after.nodes - before.nodes

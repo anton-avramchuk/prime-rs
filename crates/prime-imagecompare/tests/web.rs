@@ -1,4 +1,4 @@
-//! Поведение ImageCompare в реальном браузере (wasm-bindgen-test): обрезка по вводу в ползунок, `rtl`.
+//! ImageCompare behaviour in a real browser (wasm-bindgen-test): clipping on slider input, `rtl`.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -20,10 +20,10 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
-/// Монтирует сравнение двух `<img>` (`.l` и `.r`) в `host`.
+/// Mounts a comparison of two `<img>` (`.l` and `.r`) into `host`.
 macro_rules! mount {
     ($host:expr) => {
         leptos::mount::mount_to($host.clone(), || {
@@ -58,10 +58,10 @@ async fn input_clips_the_element_before_the_slider() {
     let host = host();
     let _h = mount!(host);
     leptos::task::tick().await;
-    assert_eq!(clip(&host), "", "до ввода инлайн-обрезки нет");
+    assert_eq!(clip(&host), "", "there is no inline clipping before input");
     slide(&host, "30");
     assert_eq!(clip(&host), "polygon(0px 0px, 30% 0px, 30% 100%, 0px 100%)");
-    assert_eq!(q(&host, ".l").style().get_property_value("clip-path").unwrap(), "", "левое изображение не обрезается");
+    assert_eq!(q(&host, ".l").style().get_property_value("clip-path").unwrap(), "", "the left image is not clipped");
     slide(&host, "80");
     assert_eq!(clip(&host), "polygon(0px 0px, 80% 0px, 80% 100%, 0px 100%)");
     host.remove();

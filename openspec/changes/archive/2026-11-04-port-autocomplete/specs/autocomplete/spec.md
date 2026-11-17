@@ -1,45 +1,45 @@
 # autocomplete Specification
 
 ## Purpose
-AutoComplete — поле ввода, предлагающее варианты по набранному тексту.
+AutoComplete is an input field that offers options for the typed text.
 
 ## ADDED Requirements
 
-### Requirement: Разметка
-`AutoComplete` крейта `prime-autocomplete` SHALL выводить `div.p-autocomplete.p-component.p-inputwrapper` (классы состояния `p-invalid`, `p-focus`, `p-inputwrapper-filled|focus`, `p-autocomplete-open|clearable|fluid`). В одиночном режиме SHALL быть `input.p-autocomplete-input.p-inputtext[role=combobox][aria-autocomplete=list]` (`aria-expanded`, `aria-controls`, `aria-activedescendant`, `placeholder`, `type`, `disabled`, `readonly`) со значением — подписью выбранного варианта либо набранным текстом; в множественном — `ul.p-autocomplete-input-multiple[role=listbox]` с чипами `li.p-autocomplete-chip-item` и `li.p-autocomplete-input-chip` > `input.p-autocomplete-input`. Кнопка `button.p-autocomplete-dropdown` SHALL выводиться при `dropdown`, значок очистки `p-autocomplete-clear-icon` — при `show_clear`, непустом значении и доступном поле, спиннер `p-autocomplete-loader` — пока идёт запрос. Панель `div.p-autocomplete-overlay` SHALL выводиться только в открытом состоянии.
+### Requirement: Markup
+The `AutoComplete` of the `prime-autocomplete` crate SHALL render `div.p-autocomplete.p-component.p-inputwrapper` (state classes `p-invalid`, `p-focus`, `p-inputwrapper-filled|focus`, `p-autocomplete-open|clearable|fluid`). In single mode there SHALL be `input.p-autocomplete-input.p-inputtext[role=combobox][aria-autocomplete=list]` (`aria-expanded`, `aria-controls`, `aria-activedescendant`, `placeholder`, `type`, `disabled`, `readonly`) with the value being the label of the selected option or the typed text; in multiple mode, `ul.p-autocomplete-input-multiple[role=listbox]` with chips `li.p-autocomplete-chip-item` and `li.p-autocomplete-input-chip` > `input.p-autocomplete-input`. The `button.p-autocomplete-dropdown` button SHALL be rendered with `dropdown`, the `p-autocomplete-clear-icon` clear icon with `show_clear`, a non-empty value and an enabled field, the `p-autocomplete-loader` spinner while a query is in progress. The `div.p-autocomplete-overlay` panel SHALL be rendered only in the open state.
 
-#### Scenario: Одиночный режим
-- **WHEN** значение «Apple»
-- **THEN** в поле «Apple», панели нет
+#### Scenario: Single mode
+- **WHEN** the value is "Apple"
+- **THEN** the field shows "Apple", there is no panel
 
-#### Scenario: Множественный режим
-- **WHEN** выбраны «A» и «B»
-- **THEN** выведены два чипа и поле ввода
+#### Scenario: Multiple mode
+- **WHEN** "A" and "B" are selected
+- **THEN** two chips and the input field are rendered
 
-### Requirement: Запрос вариантов
-Ввод текста длиной не менее `min_length` SHALL после `delay` вызывать `on_complete` с запросом (по умолчанию 1 символ и 300 мс); более короткий текст и очистка поля SHALL закрывать панель. До обновления `suggestions` SHALL показываться спиннер. Обновлённые варианты SHALL открывать панель (при пустом списке — сообщение `empty_message`, если `show_empty_message`). В одиночном режиме без `force_selection` набранный текст SHALL становиться значением. Кнопка-стрелка SHALL запрашивать варианты (`dropdown_mode`: пустой запрос либо текущий текст) или закрывать открытую панель; `complete_on_focus` SHALL запрашивать варианты при первом фокусе.
+### Requirement: Option query
+Entering text of at least `min_length` characters SHALL call `on_complete` with the query after `delay` (by default 1 character and 300 ms); shorter text and clearing the field SHALL close the panel. Until `suggestions` are updated, a spinner SHALL be shown. Updated options SHALL open the panel (with an empty list, the `empty_message` message if `show_empty_message`). In single mode without `force_selection`, the typed text SHALL become the value. The arrow button SHALL request options (`dropdown_mode`: an empty query or the current text) or close an open panel; `complete_on_focus` SHALL request options on first focus.
 
-#### Scenario: Запрос
-- **WHEN** пользователь вводит «ap» и ждёт `delay`
-- **THEN** вызван `on_complete` с запросом «ap»
+#### Scenario: Query
+- **WHEN** the user types "ap" and waits for `delay`
+- **THEN** `on_complete` is called with the query "ap"
 
-### Requirement: Выбор
-Клик по варианту либо `Enter` на сфокусированном SHALL записывать значение варианта (в `multiple` — добавлять чип, если `unique` и его ещё нет), вызывать `on_select` и закрывать панель. Недоступные варианты и заголовки групп SHALL не выбираться и пропускаться клавишами. Чип SHALL удаляться кнопкой, `Backspace` в пустом поле удаляет последний чип. `force_selection` SHALL очищать ввод, не совпавший ни с одним вариантом. Очистка SHALL сбрасывать значение и вызывать `on_clear`.
+### Requirement: Selection
+A click on an option or `Enter` on the focused one SHALL write the option value (in `multiple`, add a chip if `unique` and it is not there yet), call `on_select` and close the panel. Disabled options and group headers SHALL NOT be selectable and SHALL be skipped by keys. A chip SHALL be removed by its button, and `Backspace` in an empty field removes the last chip. `force_selection` SHALL clear input that matches no option. Clear SHALL reset the value and call `on_clear`.
 
-#### Scenario: Выбор
-- **WHEN** панель открыта и пользователь кликает по варианту «Apple»
-- **THEN** значение «Apple», панель закрыта, `on_select` вызван
+#### Scenario: Selection
+- **WHEN** the panel is open and the user clicks the option "Apple"
+- **THEN** the value is "Apple", the panel is closed, `on_select` was called
 
-### Requirement: Клавиатура
-↓ ↑ SHALL ходить по допустимым вариантам открытой панели, `Alt+↑` — выбирать сфокусированный и закрывать; `Escape` — закрывать с возвратом фокуса; `Tab` — выбирать сфокусированный вариант и закрывать. В `multiple` ← на пустом поле SHALL переводить на чипы, ← → ходят по чипам, `Backspace` удаляет сфокусированный. При `typeahead = false` в `multiple` набранное SHALL добавляться по `Enter`, `separator`, `Tab` (`add_on_tab`) и потере фокуса (`add_on_blur`); вставка со `separator` разбивается на чипы.
+### Requirement: Keyboard
+Down/Up SHALL walk over the eligible options of the open panel, `Alt+Up` SHALL select the focused one and close; `Escape` SHALL close and return focus; `Tab` SHALL select the focused option and close. In `multiple`, Left on an empty field SHALL move to the chips, Left/Right walk over the chips, `Backspace` removes the focused one. With `typeahead = false` in `multiple`, the typed text SHALL be added on `Enter`, `separator`, `Tab` (`add_on_tab`) and blur (`add_on_blur`); a paste containing `separator` is split into chips.
 
-#### Scenario: Стрелки
-- **WHEN** панель открыта и нажаты ↓ ↓
-- **THEN** сфокусирован второй допустимый вариант
+#### Scenario: Arrows
+- **WHEN** the panel is open and Down Down is pressed
+- **THEN** the second eligible option is focused
 
-### Requirement: Шаблоны и состояния
-`item` SHALL заменять содержимое варианта, `group_view` — заголовок группы, `selected_item` — содержимое чипа. При `disabled` поле SHALL не реагировать на ввод и клики; клик вне компонента SHALL закрывать панель.
+### Requirement: Templates and states
+`item` SHALL replace the option content, `group_view` the group header, `selected_item` the chip content. With `disabled`, the field SHALL NOT react to input and clicks; a click outside the component SHALL close the panel.
 
-#### Scenario: Свой вариант
-- **WHEN** задан `item`
-- **THEN** в `li.p-autocomplete-option` выведено его содержимое
+#### Scenario: Custom option
+- **WHEN** `item` is set
+- **THEN** the `li.p-autocomplete-option` contains its content

@@ -1,5 +1,5 @@
-//! Поведение Drawer в реальном браузере (wasm-bindgen-test): показ в `body`, закрытие кнопкой, маской и Escape,
-//! анимация выхода, позиции, блокировка прокрутки, ловушка фокуса, слои двух панелей, события.
+//! Drawer behaviour in a real browser (wasm-bindgen-test): showing in `body`, closing by button, mask and Escape,
+//! leave animation, positions, scroll blocking, focus trap, layers of two panels, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -29,7 +29,7 @@ fn find(sel: &str) -> Option<HtmlElement> {
 }
 
 fn q(sel: &str) -> HtmlElement {
-    find(sel).unwrap_or_else(|| panic!("нет {sel}"))
+    find(sel).unwrap_or_else(|| panic!("missing {sel}"))
 }
 
 fn count(sel: &str) -> u32 {
@@ -43,7 +43,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Реактивные обновления, `Portal` (монтирует содержимое в эффекте) и снятие эффектов.
+/// Reactive updates, `Portal` (mounts content in an effect) and effect cleanup.
 async fn settle() {
     leptos::task::tick().await;
     sleep(30).await;
@@ -69,11 +69,11 @@ async fn shows_in_body_with_header_content_and_close_button() {
         view! { <Drawer visible=visible header="Left Drawer"><p id="body">"Body"</p></Drawer> }
     });
     settle().await;
-    assert_eq!(count(".p-drawer"), 0, "скрыт, пока visible ложно");
+    assert_eq!(count(".p-drawer"), 0, "hidden while visible is false");
     visible.set(true);
     settle().await;
     let panel = q(".p-drawer");
-    assert!(!host.contains(Some(&panel)), "панель вынесена из места объявления");
+    assert!(!host.contains(Some(&panel)), "the panel is moved out of the place where it is declared");
     assert!(doc().body().unwrap().contains(Some(&panel)));
     assert_eq!(panel.get_attribute("role").as_deref(), Some("complementary"));
     for class in ["p-component", "p-drawer-left", "p-drawer-open", "p-drawer-enter-left"] {
@@ -83,11 +83,11 @@ async fn shows_in_body_with_header_content_and_close_button() {
     assert_eq!(q(".p-drawer-title").text_content().as_deref(), Some("Left Drawer"));
     assert_eq!(q(".p-drawer-content #body").text_content().as_deref(), Some("Body"));
     assert_eq!(q(".p-drawer-close-button").get_attribute("aria-label").as_deref(), Some("Close"));
-    assert_eq!(count(".p-drawer-footer"), 0, "подвала нет, пока он не задан");
+    assert_eq!(count(".p-drawer-footer"), 0, "no footer unless one is given");
     assert_eq!(count(".p-drawer-mask.p-overlay-mask"), 1);
     drop(handle);
     settle().await;
-    assert_eq!(count(".p-drawer") + count(".p-drawer-mask"), 0, "после размонтирования всё убрано");
+    assert_eq!(count(".p-drawer") + count(".p-drawer-mask"), 0, "everything is removed after unmounting");
     host.remove();
 }
 
@@ -100,14 +100,14 @@ async fn close_button_plays_the_leave_animation_then_removes_the_panel() {
     settle().await;
     q(".p-drawer-close-button").click();
     settle().await;
-    assert!(!visible.get_untracked(), "закрытие пишет ложь в visible");
+    assert!(!visible.get_untracked(), "closing writes false to visible");
     let panel = q(".p-drawer");
     assert!(panel.class_name().contains("p-drawer-leave-left"), "{}", panel.class_name());
     assert!(!panel.class_name().contains("p-drawer-open"));
     assert!(q(".p-drawer-mask").class_name().contains("p-overlay-mask-leave-active"));
     assert_eq!(*log.lock().unwrap(), ["show", "hide"]);
     sleep(800).await;
-    assert_eq!(count(".p-drawer") + count(".p-drawer-mask"), 0, "после выхода панель и маска убраны");
+    assert_eq!(count(".p-drawer") + count(".p-drawer-mask"), 0, "panel and mask are removed after the leave");
     drop(handle);
     host.remove();
 }
@@ -121,7 +121,7 @@ async fn mask_click_closes_only_when_dismissible() {
         settle().await;
         q(".p-drawer").click();
         settle().await;
-        assert!(visible.get_untracked(), "клик по самой панели не закрывает");
+        assert!(visible.get_untracked(), "clicking the panel itself does not close it");
         q(".p-drawer-mask").click();
         settle().await;
         assert_eq!(visible.get_untracked(), !dismissible, "dismissible={dismissible}");
@@ -157,7 +157,7 @@ async fn escape_closes_only_when_enabled_and_listener_is_removed_afterwards() {
             escape();
             escape();
             settle().await;
-            assert_eq!(*log.lock().unwrap(), ["hide"], "после закрытия слушатель снят");
+            assert_eq!(*log.lock().unwrap(), ["hide"], "the listener is removed after closing");
         }
         drop(handle);
         settle().await;
@@ -195,10 +195,10 @@ async fn block_scroll_marks_the_body_while_shown() {
     assert!(!locked());
     visible.set(true);
     settle().await;
-    assert!(locked(), "прокрутка заблокирована, пока панель показана");
+    assert!(locked(), "scrolling is blocked while the panel is shown");
     visible.set(false);
     sleep(800).await;
-    assert!(!locked(), "после закрытия блокировка снята");
+    assert!(!locked(), "the lock is released after closing");
     drop(handle);
     host.remove();
 }
@@ -213,7 +213,7 @@ async fn focus_trap_sentinels_exist_while_shown() {
     assert!(panel.query_selector("[data-pc-section=lastfocusableelement]").unwrap().is_some());
     visible.set(false);
     settle().await;
-    assert!(panel.query_selector("[data-pc-section=firstfocusableelement]").unwrap().is_none(), "ловушка снята при закрытии");
+    assert!(panel.query_selector("[data-pc-section=firstfocusableelement]").unwrap().is_none(), "the trap is removed on close");
     drop(handle);
     sleep(100).await;
     host.remove();
@@ -232,17 +232,17 @@ async fn two_drawers_stack_and_escape_closes_the_top_one() {
     settle().await;
     let z = |sel: &str| q(sel).style().get_property_value("z-index").unwrap().parse::<i32>().unwrap();
     let (z1, z2) = (z(".p-drawer-left"), z(".p-drawer-right"));
-    assert!(z2 > z1, "поздняя выше: {z1} {z2}");
+    assert!(z2 > z1, "the later one is higher: {z1} {z2}");
     let masks: Vec<i32> = (0..count(".p-drawer-mask"))
         .map(|i| {
             let m = doc().query_selector_all(".p-drawer-mask").unwrap().item(i).unwrap().dyn_into::<HtmlElement>().unwrap();
             m.style().get_property_value("z-index").unwrap().parse().unwrap()
         })
         .collect();
-    assert_eq!(masks, [z1 - 1, z2 - 1], "маска на единицу ниже своей панели");
+    assert_eq!(masks, [z1 - 1, z2 - 1], "the mask is one below its panel");
     escape();
     settle().await;
-    assert!(!second.get_untracked() && first.get_untracked(), "Escape закрыл только верхнюю");
+    assert!(!second.get_untracked() && first.get_untracked(), "Escape closed only the topmost");
     drop(handle);
     settle().await;
     host.remove();
@@ -298,13 +298,13 @@ async fn headless_and_footer_and_header_content() {
     settle().await;
     assert_eq!(q(".p-drawer-header #avatar").text_content().as_deref(), Some("A"));
     assert_eq!(q(".p-drawer-footer #foot").text_content().as_deref(), Some("F"));
-    assert_eq!(count(".p-drawer-close-button"), 0, "closable=false убирает кнопку");
+    assert_eq!(count(".p-drawer-close-button"), 0, "closable=false removes the button");
     drop(handle);
     settle().await;
     host.remove();
 }
 
-/// Сценарии идут по очереди: панели выводятся в общий `body`, а слушатели окна общие.
+/// Scenarios run in turn: panels are rendered into a shared `body`, and window listeners are shared.
 #[wasm_bindgen_test]
 async fn drawer_behaviour() {
     shows_in_body_with_header_content_and_close_button().await;

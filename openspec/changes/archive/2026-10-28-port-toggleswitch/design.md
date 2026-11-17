@@ -2,41 +2,41 @@
 
 ## Context
 
-Требования — в `specs/toggleswitch`. Исходники PrimeNG 21.1.10: `packages/primeng/src/toggleswitch/toggleswitch.ts`, `toggleswitch/style/toggleswitchstyle.ts`, демонстрации `apps/showcase/doc/toggleswitch`. В PrimeNG клик обрабатывается на хосте (`@HostListener('click')`): переключается `modelValue`, эмитится `onChange`, фокус возвращается на `<input>`. Шаблон компонента и модель значения — `docs/checkbox.md`.
+The requirements are in `specs/toggleswitch`. PrimeNG 21.1.10 sources: `packages/primeng/src/toggleswitch/toggleswitch.ts`, `toggleswitch/style/toggleswitchstyle.ts`, demos `apps/showcase/doc/toggleswitch`. In PrimeNG the click is handled on the host (`@HostListener('click')`): `modelValue` is toggled, `onChange` is emitted, the focus returns to `<input>`. The component template and the value model are in `docs/checkbox.md`.
 
 ## Goals / Non-Goals
 
-**Goals:** классы, `data-p*` и inline-стиль корня как в PrimeNG; клик по любой части корня; слот handle; статическая ветвь без сигнала.
-**Non-Goals:** формы, `trueValue`/`falseValue`, `autofocus`, `size`.
+**Goals:** the classes, `data-p*` and the inline style of the root as in PrimeNG; a click on any part of the root; the handle slot; a static branch without a signal.
+**Non-Goals:** forms, `trueValue`/`falseValue`, `autofocus`, `size`.
 
 ## Decisions
 
-### D1. Корень — `<div>`
-Вместо хоста `<p-toggleswitch>`; `style="position: relative"` — как `inlineStyles.root` PrimeNG, к нему присоединяются `style` и `pt.root`.
+### D1. Root — `<div>`
+Instead of the `<p-toggleswitch>` host; `style="position: relative"` — like `inlineStyles.root` in PrimeNG; `style` and `pt.root` are attached to it.
 
-### D2. Состояние
-`checked: Option<RwSignal<bool>>`; без него — `default_checked`, а дальше состояние живёт в DOM, классы корня не отслеживаются.
+### D2. State
+`checked: Option<RwSignal<bool>>`; without it — `default_checked`, and after that the state lives in the DOM, the root classes are not tracked.
 
-### D3. Клик
-Обработчик `on:click` на корне: при `!disabled && !readonly` переключает сигнал, вызывает `on_change(ToggleSwitchChange { checked, original_event })`, возвращает фокус на `<input>`. Нативное состояние `<input>` после обработки выравнивается по итоговому значению (при `readonly`/`disabled` возвращается к прежнему). Отдельный `change` на `<input>` не обрабатывается, чтобы не вызвать событие дважды.
+### D3. Click
+The `on:click` handler on the root: when `!disabled && !readonly` it toggles the signal, calls `on_change(ToggleSwitchChange { checked, original_event })`, and returns the focus to `<input>`. The native state of `<input>` is aligned with the final value after processing (with `readonly`/`disabled` it returns to the previous one). A separate `change` on `<input>` is not handled, so as not to fire the event twice.
 
-### D4. Слот
-`handle_template: Option<Callback<bool, AnyView>>` внутри `div.p-toggleswitch-handle`, получает `checked`.
+### D4. Slot
+`handle_template: Option<Callback<bool, AnyView>>` inside `div.p-toggleswitch-handle`, receives `checked`.
 
-### D5. Ветви
-Статическая — при `all_static!` и `checked.is_none()`; иначе реактивная. Разметка и помощник `rx(props, pt, fn)` — как у Checkbox.
+### D5. Branches
+Static — when `all_static!` and `checked.is_none()`; otherwise reactive. The markup and the helper `rx(props, pt, fn)` — as in Checkbox.
 
-### D6. Тесты
-SSR: структура, стиль корня, классы, `data-p*`, `aria-checked`, `pt`, слот, паритет. Браузер: клик по корню и по `<input>` переключает, `readonly`/`disabled`, события.
+### D6. Tests
+SSR: structure, the root style, classes, `data-p*`, `aria-checked`, `pt`, the slot, parity. Browser: a click on the root and on `<input>` toggles, `readonly`/`disabled`, events.
 
 ## Risks / Trade-offs
 
-- [Клик по `<input>` всплывает на корень и обрабатывается один раз] → проверяется браузерным тестом.
+- [A click on `<input>` bubbles to the root and is handled once] → checked by a browser test.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

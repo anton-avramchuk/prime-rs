@@ -1,7 +1,7 @@
-//! Поведение TreeSelect в реальном браузере (wasm-bindgen-test): открытие и закрытие панели, выбор в трёх режимах,
-//! раскрытие предков, очистка, клик вне, клавиатура, фильтр и события.
+//! TreeSelect behavior in a real browser (wasm-bindgen-test): opening and closing the panel, selection in three modes,
+//! expanding ancestors, clear, outside click, keyboard, filter and events.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели окна и фокус общие на страницу. Стили темы не подключены.
+//! Scenarios run as one sequential test: window listeners and focus are shared per page. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -28,7 +28,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}: {}", host.outer_html())).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -42,7 +42,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться и слушателям окна повеситься.
+/// Lets effects apply and window listeners attach.
 async fn settle() {
     sleep(60).await;
 }
@@ -65,7 +65,7 @@ fn mouse(el: &web_sys::Element, name: &str) {
     el.dispatch_event(&MouseEvent::new_with_mouse_event_init_dict(name, &init).unwrap()).unwrap();
 }
 
-/// Нажатие клавиши и ожидание реактивных обновлений.
+/// Key press and waiting for reactive updates.
 async fn key(el: &HtmlElement, code: &str, key: &str) {
     let init = KeyboardEventInit::new();
     init.set_code(code);
@@ -113,12 +113,12 @@ async fn open_select_close_in_single_mode() {
     assert!(has(&host, ".p-treeselect-overlay") && has(&host, ".p-treeselect-tree-container .p-tree"));
     assert!(q(&host, ".p-treeselect").class_name().contains("p-treeselect-open"));
     assert_eq!(q(&host, "input").get_attribute("aria-expanded").as_deref(), Some("true"));
-    assert!(!q(&host, ".p-treeselect-overlay").style().get_property_value("z-index").unwrap().is_empty(), "панель получила z-index");
+    assert!(!q(&host, ".p-treeselect-overlay").style().get_property_value("z-index").unwrap().is_empty(), "the panel got a z-index");
     assert_eq!(q(&host, ".p-treeselect-tree-container").style().get_property_value("max-height").unwrap(), "400px");
 
     q(&host, ".p-treeselect").click();
     settle().await;
-    assert!(!has(&host, ".p-treeselect-overlay"), "повторный клик по полю закрывает");
+    assert!(!has(&host, ".p-treeselect-overlay"), "repeated click on the field closes");
 
     q(&host, ".p-treeselect").click();
     settle().await;
@@ -127,17 +127,17 @@ async fn open_select_close_in_single_mode() {
     node_content(&host, "0-1").click();
     settle().await;
     assert_eq!(value.get_untracked(), ["0-1"]);
-    assert!(!has(&host, ".p-treeselect-overlay"), "единичный выбор закрывает панель");
+    assert!(!has(&host, ".p-treeselect-overlay"), "single selection closes the panel");
     assert_eq!(label(&host), "Home");
-    assert_eq!(doc().active_element().and_then(|e| e.get_attribute("role")).as_deref(), Some("combobox"), "фокус вернулся на поле");
+    assert_eq!(doc().active_element().and_then(|e| e.get_attribute("role")).as_deref(), Some("combobox"), "focus returned to the field");
     assert_eq!(log.lock().unwrap().as_slice(), ["show", "hide", "show", "select:0-1", "hide"]);
 
     q(&host, ".p-treeselect").click();
     settle().await;
-    assert!(has(&host, "li[data-id=\"0-1\"]"), "при открытии предки выбранного раскрыты");
+    assert!(has(&host, "li[data-id=\"0-1\"]"), "on open the ancestors of the selection are expanded");
     mouse(&doc().body().unwrap().into(), "click");
     settle().await;
-    assert!(!has(&host, ".p-treeselect-overlay"), "клик вне закрывает");
+    assert!(!has(&host, ".p-treeselect-overlay"), "outside click closes");
     host.remove();
 }
 
@@ -157,12 +157,12 @@ async fn multiple_and_checkbox_modes_keep_the_panel_open() {
     node_content(&host, "0-1").click();
     settle().await;
     assert_eq!(value.get_untracked(), ["1", "0-1"]);
-    assert!(has(&host, ".p-treeselect-overlay"), "в Multiple панель остаётся открытой");
+    assert!(has(&host, ".p-treeselect-overlay"), "in Multiple the panel stays open");
     assert_eq!(host.query_selector_all(".p-treeselect-chip-item").unwrap().length(), 2);
     mouse(&host.query_selector(".p-treeselect-clear-icon").unwrap().unwrap(), "click");
     settle().await;
-    assert!(value.get_untracked().is_empty(), "очистка сбрасывает значение");
-    assert!(has(&host, ".p-treeselect-overlay"), "очистка не закрывает и не переключает панель");
+    assert!(value.get_untracked().is_empty(), "clear resets the value");
+    assert!(has(&host, ".p-treeselect-overlay"), "clear neither closes nor toggles the panel");
     assert!(!has(&host, ".p-treeselect-clear-icon"));
     host.remove();
 
@@ -179,7 +179,7 @@ async fn multiple_and_checkbox_modes_keep_the_panel_open() {
     settle().await;
     let mut got = value.get_untracked();
     got.sort();
-    assert_eq!(got, ["0", "0-0", "0-0-0", "0-1"], "флажок родителя отмечает поддерево");
+    assert_eq!(got, ["0", "0-0", "0-0-0", "0-1"], "the parent checkbox checks the subtree");
     assert!(has(&host, ".p-treeselect-overlay"));
     assert_eq!(label(&host).matches(", ").count(), 3);
     host.remove();
@@ -197,21 +197,21 @@ async fn keyboard_opens_and_closes() {
     key(&input, "ArrowDown", "ArrowDown").await;
     settle().await;
     assert!(has(&host, ".p-treeselect-overlay"));
-    assert_eq!(active_id(), "0", "↓ открывает панель и фокусирует первый узел");
+    assert_eq!(active_id(), "0", "Down opens the panel and focuses the first node");
     key(&q(&host, "li[data-id=\"0\"]"), "ArrowRight", "ArrowRight").await;
     settle().await;
-    assert_eq!(active_id(), "0-0", "клавиши дерева работают внутри панели");
+    assert_eq!(active_id(), "0-0", "tree keys work inside the panel");
     input.focus().unwrap();
     key(&input, "Escape", "Escape").await;
     settle().await;
-    assert!(!has(&host, ".p-treeselect-overlay"), "Escape закрывает");
+    assert!(!has(&host, ".p-treeselect-overlay"), "Escape closes");
     assert_eq!(doc().active_element().and_then(|e| e.get_attribute("role")).as_deref(), Some("combobox"));
     key(&input, "Enter", "Enter").await;
     settle().await;
-    assert!(has(&host, ".p-treeselect-overlay"), "Enter открывает");
+    assert!(has(&host, ".p-treeselect-overlay"), "Enter opens");
     key(&input, "Tab", "Tab").await;
     settle().await;
-    assert!(!has(&host, ".p-treeselect-overlay"), "Tab закрывает");
+    assert!(!has(&host, ".p-treeselect-overlay"), "Tab closes");
     host.remove();
 }
 
@@ -221,7 +221,7 @@ async fn disabled_and_filter() {
     settle().await;
     q(&host, ".p-treeselect").click();
     settle().await;
-    assert!(!has(&host, ".p-treeselect-overlay"), "отключённое поле не открывается");
+    assert!(!has(&host, ".p-treeselect-overlay"), "a disabled field does not open");
     key(&q(&host, "input"), "ArrowDown", "ArrowDown").await;
     assert!(!has(&host, ".p-treeselect-overlay"));
     host.remove();
@@ -237,13 +237,13 @@ async fn disabled_and_filter() {
     input.set_value("expen");
     input.dispatch_event(&web_sys::Event::new("input").unwrap()).unwrap();
     settle().await;
-    assert!(has(&host, "li[data-id=\"0-0-0\"]") && !has(&host, "li[data-id=\"1\"]"), "фильтр сужает дерево в панели");
+    assert!(has(&host, "li[data-id=\"0-0-0\"]") && !has(&host, "li[data-id=\"1\"]"), "the filter narrows the tree in the panel");
     q(&host, ".p-treeselect").click();
     settle().await;
     q(&host, ".p-treeselect").click();
     settle().await;
     let input: web_sys::HtmlInputElement = q(&host, ".p-tree-filter-input").dyn_into().unwrap();
-    assert_eq!(input.value(), "", "фильтр сброшен при закрытии");
+    assert_eq!(input.value(), "", "filter reset on close");
     assert!(has(&host, "li[data-id=\"1\"]"));
     host.remove();
 }

@@ -1,5 +1,5 @@
-//! Разметка MegaMenu (SSR): корень, ориентации, слоты, кнопка, корневой список, пункты, группы, разделители, `aria-*`, шаблоны, `pt`.
-//! Наложение выводится только у раскрытого пункта, поэтому его разметка проверяется в браузерных тестах.
+//! MegaMenu markup (SSR): root, orientations, slots, button, root list, items, groups, separators, `aria-*`, templates, `pt`.
+//! The overlay is rendered only for an expanded item, so its markup is checked in browser tests.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -36,11 +36,11 @@ fn markup_has_button_root_list_and_items() {
     assert!(html.contains("aria-orientation=\"horizontal\"") && html.contains("tabindex=\"0\""), "{html}");
     assert!(html.contains("p-megamenu-button") && html.contains("role=\"button\"") && html.contains("aria-expanded=\"false\""), "{html}");
     assert!(html.contains("aria-controls=\"mm\"") && html.contains("aria-label=\"Navigation\""), "{html}");
-    assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "Furniture, Off, Quit: скрытый и разделитель не считаются: {html}");
+        assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "Furniture, Off, Quit: hidden and separator are not counted: {html}");
     assert_eq!(html.matches("role=\"separator\"").count(), 1, "{html}");
     assert!(html.contains("p-megamenu-separator") && !html.contains("Hidden"), "{html}");
     assert!(html.contains("id=\"mm_0\"") && html.contains("id=\"mm_3\"") && html.contains("id=\"mm_4\""), "{html}");
-    assert!(!html.contains("p-megamenu-overlay"), "наложение — только у раскрытого пункта: {html}");
+        assert!(!html.contains("p-megamenu-overlay"), "overlay only for an expanded item: {html}");
 }
 
 #[test]

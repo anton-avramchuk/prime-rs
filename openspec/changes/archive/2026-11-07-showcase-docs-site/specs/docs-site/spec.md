@@ -1,26 +1,26 @@
 ## ADDED Requirements
 
-### Requirement: Страница компонента
-Страница компонента SHALL содержать заголовок и описание, блок «Import» с `use`-строкой крейта, список примеров (каждый — заголовок-якорь, живое демо и сворачиваемый блок «Code» с исходником демо), разделы «Props», «Events», «Pass Through», «Theming» (CSS-классы), «Accessibility» и «Notes», а также оглавление страницы со ссылками на якоря и переход к предыдущему и следующему компоненту. Идентификаторы `h3#<имя>` и атрибут `data-demo` демонстраций SHALL сохраняться.
+### Requirement: Component page
+The component page SHALL contain a title and a description, an "Import" block with the `use` line of the crate, a list of examples (each — an anchor heading, a live demo and a collapsible "Code" block with the source of the demo), the sections "Props", "Events", "Pass Through", "Theming" (CSS classes), "Accessibility" and "Notes", as well as a table of contents of the page with links to the anchors and navigation to the previous and next component. The identifiers `h3#<name>` and the `data-demo` attribute of the demos SHALL be kept.
 
-#### Scenario: Код примера
-- **WHEN** на странице `/autocomplete` нажата кнопка «Code» у примера «Basic»
-- **THEN** раскрывается исходник демо `Basic`, совпадающий с кодом в `showcase/src/pages/autocomplete.rs`
+#### Scenario: Example code
+- **WHEN** on the page `/autocomplete` the "Code" button of the example "Basic" is pressed
+- **THEN** the source of the demo `Basic` expands, matching the code in `showcase/src/pages/autocomplete.rs`
 
-#### Scenario: Оглавление
-- **WHEN** нажата ссылка «Dropdown» в оглавлении страницы
-- **THEN** страница прокручивается к `#dropdown`
+#### Scenario: Table of contents
+- **WHEN** the "Dropdown" link in the table of contents of the page is clicked
+- **THEN** the page scrolls to `#dropdown`
 
-### Requirement: Меню
-Левое меню SHALL группировать компоненты по разделам, выделять текущую страницу и фильтроваться по подстроке имени без учёта регистра.
+### Requirement: Menu
+The left menu SHALL group the components by sections, highlight the current page and filter by a substring of the name, case-insensitively.
 
-#### Scenario: Поиск
-- **WHEN** в поле меню введено «tree»
-- **THEN** видны только Tree, TreeSelect, TreeTable
+#### Scenario: Search
+- **WHEN** "tree" is entered in the menu field
+- **THEN** only Tree, TreeSelect, TreeTable are visible
 
-### Requirement: Генерация
-`cargo xtask gen-docs` SHALL создавать `showcase/src/generated/*` из исходников демо, свойств `#[component]` и `docs/*.md` детерминированно; `--check` SHALL завершаться ошибкой, если файлы устарели. Таблица свойств SHALL содержать имя, тип, значение по умолчанию (если есть) и `///`-описание.
+### Requirement: Generation
+`cargo xtask gen-docs` SHALL create `showcase/src/generated/*` from the sources of the demos, the properties of `#[component]` and `docs/*.md` deterministically; `--check` SHALL fail if the files are outdated. The properties table SHALL contain the name, the type, the default value (if any) and the `///` description.
 
-#### Scenario: Актуальность
-- **WHEN** изменено демо и не запущена генерация
-- **THEN** `gen-docs --check` завершается с ошибкой и называет устаревший файл
+#### Scenario: Freshness
+- **WHEN** a demo is changed and the generation is not run
+- **THEN** `gen-docs --check` fails and names the outdated file

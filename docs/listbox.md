@@ -1,49 +1,49 @@
 # Listbox
 
-Порт `p-listbox` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-listbox` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-listbox::Listbox` | `packages/primeng/src/listbox/listbox.ts`, `listbox/style/listboxstyle.ts` |
-| CSS | `@primeuix/styles/listbox`, пресет Aura и блок `/* For PrimeNG */` (шапка, поле поиска, высота контейнера) — `cargo xtask gen-theme`, `primeng_extra` |
-| Демонстрации | `apps/showcase/doc/listbox/*-doc.ts` (`basic`, `multiple`, `group`, `filter`, `checkbox`, `checkmark`, `disabled`, `invalid`, `template`) |
+| CSS | `@primeuix/styles/listbox`, the Aura preset and the `/* For PrimeNG */` block (header, search field, container height) — `cargo xtask gen-theme`, `primeng_extra` |
+| Demos | `apps/showcase/doc/listbox/*-doc.ts` (`basic`, `multiple`, `group`, `filter`, `checkbox`, `checkmark`, `disabled`, `invalid`, `template`) |
 
-Спека: `openspec/specs/listbox`.
+Spec: `openspec/specs/listbox`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Структура: корень `div.p-listbox`, шапка `p-listbox-header` (флажок «выбрать все», поле поиска в `p-iconfield` со значком `p-inputicon`), контейнер `p-listbox-list-container` с `max-height` (по умолчанию `14rem`), список `ul.p-listbox-list[role=listbox]`, варианты `li.p-listbox-option[role=option]`, заголовки групп `li.p-listbox-option-group`, сообщение пустого списка `div.p-listbox-empty-message`.
-- Классы корня и их порядок (`striped`, `p-disabled`, `p-invalid`, `p-listbox-fluid`), `data-p` корня, `p-listbox-option-selected` (только при `highlight_on_select`), `p-focus`, `data-p-selected`/`-focused`/`-disabled` у вариантов.
-- `aria-*`: `aria-multiselectable`, `aria-disabled`, `aria-activedescendant` (у списка — пока он в фокусе, у поля поиска — всегда, когда есть подсвеченный вариант), `aria-selected`, `aria-setsize`/`aria-posinset` без учёта заголовков групп, идентификаторы вариантов `{id}_{индекс}` по списку вместе с заголовками.
-- Выбор: `onOptionSelectSingle`/`Multiple` с `meta_key_selection` (в одиночном режиме без `Ctrl` повторный клик оставляет выбор; в множественном без `Ctrl` клик заменяет выбор), мета-режим отключается после касания (`touchend`), `Shift`+стрелки и `Ctrl+Shift+Home/End` выбирают диапазон, `Ctrl+A` — все допустимые видимые варианты.
-- Клавиши списка: ↓ ↑ Home End Enter NumpadEnter Space Shift, поиск набором (накопление 500 мс), `Tab` не перехватывается. Клавиши поля поиска: ↓ ↑ ← → Home End Enter Shift.
-- Фокус: `auto_option_focus`, `focus_on_hover` (только пока список в фокусе), `select_on_focus`; блюр сбрасывает фокусный вариант, опору диапазона и накопленную строку поиска.
-- Флажок «выбрать все» работает с видимыми (отфильтрованными) допустимыми вариантами; `Enter` на нём переключает, `Tab` уводит фокус в список.
-- Флажки вариантов и «выбрать все» — та же разметка и классы, что у `Checkbox` (`p-checkbox`, `p-checkbox-input`, `p-checkbox-box`, `p-checkbox-icon`) с добавочным классом `p-listbox-option-check-icon`; сам флажок состояния не хранит — клик по нему отменяется и обрабатывается списком.
+- Structure: root `div.p-listbox`, header `p-listbox-header` ("select all" checkbox, search field in `p-iconfield` with a `p-inputicon` icon), container `p-listbox-list-container` with `max-height` (default `14rem`), list `ul.p-listbox-list[role=listbox]`, options `li.p-listbox-option[role=option]`, group headers `li.p-listbox-option-group`, empty list message `div.p-listbox-empty-message`.
+- Root classes and their order (`striped`, `p-disabled`, `p-invalid`, `p-listbox-fluid`), root `data-p`, `p-listbox-option-selected` (only with `highlight_on_select`), `p-focus`, `data-p-selected`/`-focused`/`-disabled` on options.
+- `aria-*`: `aria-multiselectable`, `aria-disabled`, `aria-activedescendant` (on the list while it is focused, on the search field always when there is a highlighted option), `aria-selected`, `aria-setsize`/`aria-posinset` ignoring group headers, option identifiers `{id}_{index}` over the list including headers.
+- Selection: `onOptionSelectSingle`/`Multiple` with `meta_key_selection` (in single mode without `Ctrl` a repeated click keeps the selection; in multiple mode without `Ctrl` a click replaces the selection), meta mode is disabled after a touch (`touchend`), `Shift`+arrows and `Ctrl+Shift+Home/End` select a range, `Ctrl+A` selects all eligible visible options.
+- List keys: ↓ ↑ Home End Enter NumpadEnter Space Shift, type-ahead search (500 ms accumulation), `Tab` is not intercepted. Search field keys: ↓ ↑ ← → Home End Enter Shift.
+- Focus: `auto_option_focus`, `focus_on_hover` (only while the list is focused), `select_on_focus`; blur clears the focused option, the range anchor and the accumulated search string.
+- The "select all" checkbox works on visible (filtered) eligible options; `Enter` on it toggles, `Tab` moves focus into the list.
+- Option and "select all" checkboxes use the same markup and classes as `Checkbox` (`p-checkbox`, `p-checkbox-input`, `p-checkbox-box`, `p-checkbox-icon`) with the extra class `p-listbox-option-check-icon`; the checkbox itself holds no state, a click on it is cancelled and handled by the list.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-listbox>` | Хост в Angular — деталь фреймворка. |
-| Значение — `value: RwSignal<Option<String>>` (одиночный режим) и `values: RwSignal<Vec<String>>` (`multiple`) вместо `ngModel`; без них внутреннее состояние (`default_value`, `default_values`) | Двусторонняя привязка без форм-инфраструктуры; два сигнала вместо одного значения произвольного типа. |
-| Варианты — `ListboxOption { label, value, disabled }` и `ListboxGroup { label, items }`, значения — строки; нет `optionLabel`, `optionValue`, `optionDisabled`, `optionGroupLabel`, `optionGroupChildren`, `dataKey` | Поля произвольного объекта заменены типизированными вариантами, как у Select. |
-| Поиск — подстрока метки без учёта регистра (пробелы по краям отбрасываются); нет `filterBy`, `filterFields`, `filterMatchMode`, `filterLocale`, `searchLocale` | PrimeNG по умолчанию делает то же самое. |
-| Нет виртуальной прокрутки и ленивой загрузки, `dragdrop` и `dropListData`, скрытых границ фокуса `p-hidden-focusable`, `aria-live`-сообщений (`searchMessage`, `selectionMessage`, `emptyMessage` для чтения с экрана), шаблонов `header`, `footer`, `filter`, `empty`, `loader`, внешнего `selectAll` | Вне объёма change. |
-| `PageUp`/`PageDown` прокручивают контейнер на высоту видимой области | В PrimeNG они вызывают `scrollInView(0)` — прокрутку к первому варианту, что на практике ведёт себя как `Home` без смены фокуса; у нас — обычная постраничная прокрутка. |
-| Фокусный вариант при `mousedown` и наведении переносится без прокрутки и без `select_on_focus` | Выбор в этот момент всё равно произойдёт кликом; иначе при `select_on_focus` клик выбрал бы вариант дважды. |
-| Подпись флажка «выбрать все» для чтения с экрана — `aria.selectAll`/`aria.unselectAll` перевода по состоянию | В PrimeNG `toggleAllAriaLabel` берётся так же, но из `config.translation`. |
-| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
-| Идентификатор `pn_id_<n>` берётся из общего хелпера `prime_core::ids::next_unique`, либо свойство `id` | Одинаков на сервере и в браузере. |
-| Нет демонстраций `reactiveforms`, `templatedrivenforms`, `virtualscroll`, `dragdrop`; в `template` вместо флагов с CDN коды стран | Объём change и независимость от CDN. |
+| The root is a `<div>`, not a `<p-listbox>` host | The host in Angular is a framework detail. |
+| The value is `value: RwSignal<Option<String>>` (single mode) and `values: RwSignal<Vec<String>>` (`multiple`) instead of `ngModel`; without them internal state (`default_value`, `default_values`) | Two-way binding without forms infrastructure; two signals instead of one value of arbitrary type. |
+| Options are `ListboxOption { label, value, disabled }` and `ListboxGroup { label, items }`, values are strings; no `optionLabel`, `optionValue`, `optionDisabled`, `optionGroupLabel`, `optionGroupChildren`, `dataKey` | Fields of an arbitrary object are replaced by typed options, as in Select. |
+| Search is a case-insensitive label substring (leading and trailing whitespace dropped); no `filterBy`, `filterFields`, `filterMatchMode`, `filterLocale`, `searchLocale` | PrimeNG does the same by default. |
+| No virtual scroll and lazy loading, `dragdrop` and `dropListData`, hidden focus boundaries `p-hidden-focusable`, `aria-live` messages (`searchMessage`, `selectionMessage`, `emptyMessage` for screen readers), `header`, `footer`, `filter`, `empty`, `loader` templates, external `selectAll` | Out of scope for the change. |
+| `PageUp`/`PageDown` scroll the container by the height of the visible area | In PrimeNG they call `scrollInView(0)`, scrolling to the first option, which in practice behaves like `Home` without changing focus; ours is ordinary page-wise scrolling. |
+| The focused option on `mousedown` and hover moves without scrolling and without `select_on_focus` | Selection happens at that moment anyway by the click; otherwise with `select_on_focus` the click would select the option twice. |
+| The "select all" checkbox label for screen readers is `aria.selectAll`/`aria.unselectAll` of the translation by state | In PrimeNG `toggleAllAriaLabel` is taken the same way, but from `config.translation`. |
+| The `fluid` property is `OptProp<bool>`: without a value it is taken from the `Fluid` context | Like `hasFluid = fluid() ?? !!pcFluid` in PrimeNG; see `docs/field-wrappers.md`. |
+| The identifier `pn_id_<n>` comes from the shared helper `prime_core::ids::next_unique`, or the `id` property | The same on the server and in the browser. |
+| No `reactiveforms`, `templatedrivenforms`, `virtualscroll`, `dragdrop` demos; in `template` country codes instead of CDN flags | Scope of the change and independence from the CDN. |
 
-Список (`ul` и варианты) перестраивается только при смене вариантов, групп или строки поиска; выбор, фокус и подсветка — отдельные реактивные атрибуты вариантов, поэтому элементы не пересоздаются при навигации и клике.
+The list (`ul` and options) is rebuilt only when options, groups or the search string change; selection, focus and highlight are separate reactive option attributes, so elements are not recreated on navigation and click.
 
-## Что не проверялось
+## What was not verified
 
-- Касание: мета-режим после `touchend` проверен только логикой, на настоящем сенсорном вводе — нет.
-- Чтение с экрана: атрибуты `aria-*` сверены с PrimeNG, поведение скринридеров не проверялось.
+- Touch: meta mode after `touchend` is verified only by logic, not on real touch input.
+- Screen readers: `aria-*` attributes are checked against PrimeNG, screen reader behavior was not verified.
 
-## Производительность
+## Performance
 
-См. `benches/` (`listbox-1`, `listbox-1000`, `case-listbox`) и `benches/*budgets.toml`.
+See `benches/` (`listbox-1`, `listbox-1000`, `case-listbox`) and `benches/*budgets.toml`.

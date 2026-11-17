@@ -6,16 +6,16 @@ test.describe('Textarea', () => {
         await expect(page.locator('[data-demo=basic] textarea.p-textarea')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(9);
         const border = await page.locator('[data-demo=basic] textarea').evaluate((el) => getComputedStyle(el).borderTopWidth);
         expect(border).not.toBe('0px');
     });
 
-    test('ввод попадает в сигнал и ставит p-filled', async ({ page }) => {
+    test('input reaches the signal and sets p-filled', async ({ page }) => {
         const area = page.locator('[data-demo=basic] textarea');
         await expect(area).not.toHaveClass(/p-filled/);
-        // до завершения гидратации событие может потеряться, поэтому ввод повторяется
+        // until hydration completes the event may be lost, so the input is repeated
         await expect(async () => {
             await area.fill(['hello', 'world'].join('\n'));
             await expect(page.getByTestId('echo')).toHaveText('11', { timeout: 500 });
@@ -23,7 +23,7 @@ test.describe('Textarea', () => {
         await expect(area).toHaveClass(/p-filled/);
     });
 
-    test('auto_resize увеличивает высоту при вводе', async ({ page }) => {
+    test('auto_resize grows the height on input', async ({ page }) => {
         const area = page.locator('[data-demo=autoresize] textarea');
         await expect(area).toHaveClass(/p-textarea-resizable/);
         const before = (await area.boundingBox())!.height;
@@ -33,7 +33,7 @@ test.describe('Textarea', () => {
         }).toPass({ timeout: 8000 });
     });
 
-    test('классы размера, варианта, invalid, fluid и disabled', async ({ page }) => {
+    test('classes for size, variant, invalid, fluid and disabled', async ({ page }) => {
         await expect(page.locator('[data-demo=sizes] .p-textarea-sm')).toHaveCount(1);
         await expect(page.locator('[data-demo=sizes] .p-textarea-lg')).toHaveCount(1);
         await expect(page.locator('[data-demo=filled] .p-variant-filled')).toHaveCount(1);
@@ -42,7 +42,7 @@ test.describe('Textarea', () => {
         await expect(page.locator('[data-demo=disabled] textarea')).toBeDisabled();
     });
 
-    test('floatlabel: метка в обёртке и поднимается при вводе', async ({ page }) => {
+    test('floatlabel: the label in the wrapper rises on input', async ({ page }) => {
         await page.waitForLoadState('networkidle');
         const demo = page.locator('[data-demo=floatlabel]');
         await expect(demo.locator('.p-floatlabel.p-floatlabel-over textarea.p-textarea')).toHaveCount(1);
@@ -53,7 +53,7 @@ test.describe('Textarea', () => {
         await expect.poll(async () => (await label.boundingBox())!.y).toBeLessThan(before);
     });
 
-    test('iftalabel: метка в обёртке над значением', async ({ page }) => {
+    test('iftalabel: the label in the wrapper above the value', async ({ page }) => {
         const demo = page.locator('[data-demo=iftalabel]');
         await expect(demo.locator('.p-iftalabel textarea.p-textarea')).toHaveCount(1);
         const label = demo.locator('.p-iftalabel > label');

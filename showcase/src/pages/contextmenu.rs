@@ -1,6 +1,6 @@
-//! Страница ContextMenu: демонстрации `basic`, `command` и `template` из showcase PrimeNG (`apps/showcase/doc/contextmenu`;
-//! `router` и `table` не переносятся). Картинка из `basic` заменена блоком (без сетевых запросов), значки PrimeIcons — значками
-//! `prime-icons` там, где аналог есть.
+//! ContextMenu page: the `basic`, `command` and `template` demos from the PrimeNG showcase (`apps/showcase/doc/contextmenu`;
+//! `router` and `table` are not ported). The picture from `basic` is replaced with a block (no network requests), PrimeIcons icons with
+//! `prime-icons` icons where there is an analogue.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -21,7 +21,7 @@ fn basic_items() -> Vec<MenuItem> {
     vec![MenuItem::new().label("Copy"), MenuItem::new().label("Rename").icon(icon(|| view! { <PencilIcon /> }))]
 }
 
-/// Вложенные пункты для демонстрации подменю и шаблона.
+/// Nested items for the submenu and template demos.
 fn nested_items() -> Vec<MenuItem> {
     vec![
         MenuItem::new().label("File").items(vec![
@@ -97,7 +97,7 @@ fn template_item(ctx: ContextMenuItemContext) -> AnyView {
     .into_any()
 }
 
-/// Страница `/contextmenu`.
+/// The `/contextmenu` page.
 #[component]
 pub fn ContextMenuPage() -> impl IntoView {
     view! {

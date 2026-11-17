@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-// Регрессия: всплывающие панели (Menu, Popover, ConfirmPopup, TieredMenu) закрывались «сами» по `scroll`, когда браузер
-// сдвигал страницу при вставке панели или при фокусе, хотя пользователь ничего не прокручивал. Теперь прокрутка документа
-// закрывает панель, только если цель действительно сдвинулась, а фокус при показе не прокручивает страницу.
+// Regression: popup panels (Menu, Popover, ConfirmPopup, TieredMenu) closed "by themselves" on `scroll` when the browser
+// shifted the page when the panel was inserted or on focus, although the user had not scrolled anything. Now document scrolling
+// closes the panel only if the target has actually moved, and focus on show does not scroll the page.
 
 const cases = [
     { name: 'Menu', url: '/menu', trigger: '[data-demo=popup] button', panel: '.p-menu-overlay' },
@@ -13,7 +13,7 @@ const cases = [
 
 for (const c of cases) {
     test.describe(c.name, () => {
-        test('панель, открытая в узком окне, остаётся открытой, прокрутка страницы цели её закрывает', async ({ page }) => {
+        test('a panel opened in a narrow window stays open, scrolling the target page closes it', async ({ page }) => {
             await page.setViewportSize({ width: 1280, height: 900 });
             await page.goto(c.url);
             await page.waitForLoadState('networkidle');
@@ -23,10 +23,10 @@ for (const c of cases) {
                 await page.locator(c.trigger).first().click();
                 const panel = page.locator(c.panel).first();
                 await expect(panel).toBeVisible();
-                // даём пройти поздним событиям `scroll` и `resize`
+                // let late `scroll` and `resize` events pass
                 await page.waitForTimeout(500);
                 await expect(panel).toBeVisible();
-                // настоящая прокрутка страницы сдвигает цель и закрывает панель
+                // real page scrolling moves the target and closes the panel
                 await page.evaluate(() => window.scrollBy(0, 40));
                 await page.waitForTimeout(200);
                 const moved = await page.evaluate(() => window.scrollY > 0);
@@ -34,7 +34,7 @@ for (const c of cases) {
                     await expect(panel).toHaveCount(0);
                     await page.evaluate(() => window.scrollTo(0, 0));
                 } else {
-                    // страница не прокручивается (нет высоты): панель остаётся
+                    // the page does not scroll (no height): the panel stays
                     await page.keyboard.press('Escape');
                     await expect(panel).toHaveCount(0);
                 }

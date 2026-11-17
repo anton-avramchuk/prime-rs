@@ -1,8 +1,8 @@
-//! FileUpload — порт `p-fileupload` из PrimeNG 21.1.10.
+//! FileUpload — port of `p-fileupload` from PrimeNG 21.1.10.
 //!
-//! Загрузка файлов: выбор кнопкой или перетаскиванием, проверка типа, размера и числа, список с превью и значками
-//! состояния, индикатор прогресса и отправка на сервер через `XMLHttpRequest` либо собственным обработчиком.
-//! Проверки и подписи — чистая логика в [`files`].
+//! File upload: choosing with a button or drag and drop, type, size and count checks, a list with previews and state
+//! icons, a progress indicator and sending to the server via `XMLHttpRequest` or a custom handler.
+//! Checks and labels are pure logic in [`files`].
 //!
 //! ```
 //! #![recursion_limit = "512"]
@@ -28,13 +28,13 @@ use prime_progressbar::ProgressBar;
 use std::sync::Arc;
 use wasm_bindgen::JsCast;
 
-/// Режим отображения.
+/// Display mode.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum FileUploadMode {
-    /// Панель со списком файлов (по умолчанию).
+    /// Panel with a file list (default).
     #[default]
     Advanced,
-    /// Одна кнопка и подпись.
+    /// A single button and a label.
     Basic,
 }
 
@@ -47,14 +47,14 @@ impl FileUploadMode {
     }
 }
 
-/// Выбранный файл.
+/// A selected file.
 #[derive(Clone)]
 pub struct Entry {
-    /// Файл браузера.
+    /// Browser file.
     pub file: web_sys::File,
-    /// Сведения для проверок.
+    /// Information for the checks.
     pub info: FileInfo,
-    /// Адрес превью (для изображений).
+    /// Preview address (for images).
     pub object_url: Option<String>,
 }
 
@@ -72,54 +72,54 @@ impl Entry {
     }
 }
 
-/// Результат успешной загрузки.
+/// Result of a successful upload.
 #[derive(Clone)]
 pub struct UploadEvent {
-    /// Загруженные файлы.
+    /// Uploaded files.
     pub files: Vec<web_sys::File>,
-    /// Код ответа.
+    /// Response code.
     pub status: u16,
-    /// Тело ответа.
+    /// Response body.
     pub response: String,
 }
 
-/// Ошибка загрузки.
+/// Upload error.
 #[derive(Clone)]
 pub struct UploadError {
-    /// Файлы, которые не удалось загрузить.
+    /// Files that failed to upload.
     pub files: Vec<web_sys::File>,
-    /// Код ответа (`None` — сетевая ошибка).
+    /// Response code (`None` is a network error).
     pub status: Option<u16>,
 }
 
-/// Pass-through частей [`FileUpload`].
+/// Pass-through of the [`FileUpload`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct FileUploadPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Шапка с кнопками.
+    /// Header with the buttons.
     pub header: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
-    /// Список файлов.
+    /// File list.
     pub file_list: Pt,
-    /// Файл.
+    /// File.
     pub file: Pt,
-    /// Миниатюра.
+    /// Thumbnail.
     pub file_thumbnail: Pt,
-    /// Блок сведений о файле.
+    /// File details block.
     pub file_info: Pt,
-    /// Имя файла.
+    /// File name.
     pub file_name: Pt,
-    /// Размер файла.
+    /// File size.
     pub file_size: Pt,
-    /// Блок действий файла.
+    /// File actions block.
     pub file_actions: Pt,
-    /// Содержимое режима `basic`.
+    /// Content of `basic` mode.
     pub basic_content: Pt,
 }
 
-/// Управляющий объект: выбор, загрузка и очистка из кода.
+/// Control object: choosing, uploading and clearing from code.
 #[derive(Clone, Copy)]
 pub struct FileUploadRef {
     files: RwSignal<Vec<Entry>, LocalStorage>,
@@ -136,7 +136,7 @@ impl Default for FileUploadRef {
 }
 
 impl FileUploadRef {
-    /// Создаёт объект. Вызывать внутри компонента (владелец сигналов).
+    /// Creates the object. Call inside a component (the signal owner).
     pub fn new() -> Self {
         Self {
             files: RwSignal::new_local(Vec::new()),
@@ -147,31 +147,31 @@ impl FileUploadRef {
         }
     }
 
-    /// Выбранные файлы (без подписки).
+    /// Selected files (without subscribing).
     pub fn files(&self) -> Vec<web_sys::File> {
         self.files.with_untracked(|f| f.iter().map(|e| e.file.clone()).collect())
     }
 
-    /// Загруженные файлы (без подписки).
+    /// Uploaded files (without subscribing).
     pub fn uploaded_files(&self) -> Vec<web_sys::File> {
         self.uploaded.with_untracked(|f| f.iter().map(|e| e.file.clone()).collect())
     }
 
-    /// Открывает диалог выбора файлов.
+    /// Opens the file chooser dialog.
     pub fn choose(&self) {
         if let Some(input) = self.input.get_untracked() {
             input.click();
         }
     }
 
-    /// Загружает выбранные файлы.
+    /// Uploads the selected files.
     pub fn upload(&self) {
         if let Some(hook) = self.upload_hook.get_value() {
             hook.run(());
         }
     }
 
-    /// Очищает список выбранных файлов.
+    /// Clears the list of selected files.
     pub fn clear(&self) {
         if let Some(hook) = self.clear_hook.get_value() {
             hook.run(());
@@ -184,7 +184,7 @@ struct Msg {
     text: String,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 struct Core {
     r: FileUploadRef,
     messages: RwSignal<Vec<Msg>>,
@@ -333,7 +333,7 @@ impl Core {
         }
     }
 
-    /// Обработка выбранных или перетащенных файлов (`onFileSelect`).
+    /// Handling selected or dropped files (`onFileSelect`).
     fn select(self: &Arc<Self>, list: &web_sys::FileList) {
         if !self.multiple.get_untracked() {
             self.r.files.update(|files| {
@@ -387,7 +387,7 @@ impl Core {
         self.send(files);
     }
 
-    /// Отправка через `XMLHttpRequest` с прогрессом.
+    /// Sending via `XMLHttpRequest` with progress.
     fn send(self: &Arc<Self>, files: Vec<web_sys::File>) {
         use wasm_bindgen::closure::Closure;
         self.uploading.set(true);
@@ -484,7 +484,7 @@ impl Core {
         }
     }
 
-    /// После успешной загрузки список ожидающих уже передан в загруженные: только сообщения и поле.
+    /// After a successful upload the pending list has already been moved to uploaded: only messages and the input.
     fn clear_after_upload(&self) {
         if let Some(cb) = self.on_clear {
             cb.run(());
@@ -494,141 +494,141 @@ impl Core {
     }
 }
 
-/// Загрузка файлов.
+/// File upload.
 ///
-/// Каждое свойство принимает значение или сигнал. Выбранные и загруженные файлы доступны через [`FileUploadRef`].
+/// Every property accepts a value or a signal. Selected and uploaded files are available through [`FileUploadRef`].
 #[component]
 pub fn FileUpload(
-    /// Управляющий объект.
+    /// Control object.
     #[prop(optional)]
     file_upload_ref: Option<FileUploadRef>,
-    /// Режим.
+    /// Mode.
     #[prop(optional, into)]
     mode: Prop<FileUploadMode>,
-    /// Имя поля формы с файлами.
+    /// Name of the form field with the files.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Адрес загрузки.
+    /// Upload URL.
     #[prop(optional, into)]
     url: OptProp<String>,
-    /// HTTP-метод.
+    /// HTTP method.
     #[prop(optional, default = Prop::Static("post".to_owned()), into)]
     method: Prop<String>,
-    /// Заголовки запроса.
+    /// Request headers.
     #[prop(optional, into)]
     headers: Vec<(String, String)>,
-    /// Передавать учётные данные при кросс-доменном запросе.
+    /// Send credentials on a cross-origin request.
     #[prop(optional, into)]
     with_credentials: Prop<bool>,
-    /// Разрешить несколько файлов.
+    /// Allow several files.
     #[prop(optional, into)]
     multiple: Prop<bool>,
-    /// Допустимые типы (список через запятую).
+    /// Allowed types (comma-separated list).
     #[prop(optional, into)]
     accept: OptProp<String>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Загружать сразу после выбора.
+    /// Upload right after selection.
     #[prop(optional, into)]
     auto: Prop<bool>,
-    /// Не отправлять запрос, а вызвать `on_upload_handler`.
+    /// Do not send a request, call `on_upload_handler` instead.
     #[prop(optional, into)]
     custom_upload: Prop<bool>,
-    /// Максимальный размер файла, байты.
+    /// Maximum file size, bytes.
     #[prop(optional, into)]
     max_file_size: OptProp<u64>,
-    /// Максимальное число файлов.
+    /// Maximum number of files.
     #[prop(optional, into)]
     file_limit: OptProp<usize>,
-    /// Начало сообщения о неверном размере.
+    /// Start of the invalid size message.
     #[prop(optional, default = Prop::Static("{0}: Invalid file size, ".to_owned()), into)]
     invalid_file_size_message_summary: Prop<String>,
-    /// Окончание сообщения о неверном размере.
+    /// End of the invalid size message.
     #[prop(optional, default = Prop::Static("maximum upload size is {0}.".to_owned()), into)]
     invalid_file_size_message_detail: Prop<String>,
-    /// Начало сообщения о неверном типе.
+    /// Start of the invalid type message.
     #[prop(optional, default = Prop::Static("{0}: Invalid file type, ".to_owned()), into)]
     invalid_file_type_message_summary: Prop<String>,
-    /// Окончание сообщения о неверном типе.
+    /// End of the invalid type message.
     #[prop(optional, default = Prop::Static("allowed file types: {0}.".to_owned()), into)]
     invalid_file_type_message_detail: Prop<String>,
-    /// Начало сообщения о превышении лимита.
+    /// Start of the limit exceeded message.
     #[prop(optional, default = Prop::Static("Maximum number of files exceeded, ".to_owned()), into)]
     invalid_file_limit_message_summary: Prop<String>,
-    /// Окончание сообщения о превышении лимита.
+    /// End of the limit exceeded message.
     #[prop(optional, default = Prop::Static("limit is {0} at most.".to_owned()), into)]
     invalid_file_limit_message_detail: Prop<String>,
-    /// Ширина превью, px.
+    /// Preview width, px.
     #[prop(optional, default = Prop::Static(50), into)]
     preview_width: Prop<u32>,
-    /// Метка кнопки выбора.
+    /// Choose button label.
     #[prop(optional, into)]
     choose_label: OptProp<String>,
-    /// Метка кнопки загрузки.
+    /// Upload button label.
     #[prop(optional, into)]
     upload_label: OptProp<String>,
-    /// Метка кнопки отмены.
+    /// Cancel button label.
     #[prop(optional, into)]
     cancel_label: OptProp<String>,
-    /// Показывать кнопку загрузки.
+    /// Show the upload button.
     #[prop(optional, default = Prop::Static(true), into)]
     show_upload_button: Prop<bool>,
-    /// Показывать кнопку отмены.
+    /// Show the cancel button.
     #[prop(optional, default = Prop::Static(true), into)]
     show_cancel_button: Prop<bool>,
-    /// Класс кнопки выбора.
+    /// Choose button class.
     #[prop(optional, into)]
     choose_style_class: OptProp<String>,
-    /// Класс кнопки загрузки.
+    /// Upload button class.
     #[prop(optional, into)]
     upload_style_class: OptProp<String>,
-    /// Класс кнопки отмены.
+    /// Cancel button class.
     #[prop(optional, into)]
     cancel_style_class: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Дополнительное содержимое шапки (после кнопок).
+    /// Extra header content (after the buttons).
     #[prop(optional, into)]
     header: Option<ViewFn>,
-    /// Содержимое для пустого списка.
+    /// Content for an empty list.
     #[prop(optional, into)]
     empty: Option<ViewFn>,
-    /// Вызывается после выбора файлов.
+    /// Called after files are selected.
     #[prop(optional, into)]
     on_select: Option<Callback<Vec<web_sys::File>>>,
-    /// Вызывается перед отправкой; позволяет дополнить `FormData`.
+    /// Called before sending; lets you add to the `FormData`.
     #[prop(optional, into)]
     on_before_upload: Option<Callback<web_sys::FormData>>,
-    /// Вызывается после отправки запроса.
+    /// Called after the request is sent.
     #[prop(optional, into)]
     on_send: Option<Callback<()>>,
-    /// Вызывается при изменении прогресса (0–100).
+    /// Called when progress changes (0–100).
     #[prop(optional, into)]
     on_progress: Option<Callback<f64>>,
-    /// Вызывается после успешной загрузки.
+    /// Called after a successful upload.
     #[prop(optional, into)]
     on_upload: Option<Callback<UploadEvent>>,
-    /// Вызывается при ошибке загрузки.
+    /// Called on an upload error.
     #[prop(optional, into)]
     on_error: Option<Callback<UploadError>>,
-    /// Вызывается при очистке списка.
+    /// Called when the list is cleared.
     #[prop(optional, into)]
     on_clear: Option<Callback<()>>,
-    /// Вызывается при удалении выбранного файла.
+    /// Called when a selected file is removed.
     #[prop(optional, into)]
     on_remove: Option<Callback<web_sys::File>>,
-    /// Вызывается при удалении загруженного файла.
+    /// Called when an uploaded file is removed.
     #[prop(optional, into)]
     on_remove_uploaded_file: Option<Callback<web_sys::File>>,
-    /// Обработчик собственной загрузки (`custom_upload`).
+    /// Custom upload handler (`custom_upload`).
     #[prop(optional, into)]
     on_upload_handler: Option<Callback<Vec<web_sys::File>>>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<FileUploadPt>,
 ) -> impl IntoView {
@@ -756,7 +756,7 @@ fn class_with(base: &str, extra: &OptProp<String>) -> String {
     }
 }
 
-/// Скрытое поле выбора файлов.
+/// Hidden file chooser input.
 fn file_input(core: &Arc<Core>) -> impl IntoView + use<> {
     let (c_dis, c_change, c_mult, c_accept) = (core.clone(), core.clone(), core.clone(), core.clone());
     let input = core.r.input;
@@ -926,7 +926,7 @@ fn advanced_view(core: &Arc<Core>, pt: &Arc<FileUploadPt>, labels: &Arc<Labels>,
     }
 }
 
-/// Список ожидающих или загруженных файлов.
+/// List of pending or uploaded files.
 fn file_list(core: &Arc<Core>, pt: &Arc<FileUploadPt>, extras: &Arc<Extras>, uploaded: bool) -> impl IntoView + use<> {
     let (core, pt, extras) = (core.clone(), pt.clone(), extras.clone());
     move || {

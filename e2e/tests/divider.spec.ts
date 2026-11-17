@@ -3,18 +3,18 @@ import { expect, test } from '@playwright/test';
 test.describe('Divider', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/divider');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-divider')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(5);
         const border = await page.locator('[data-demo=basic] .p-divider').evaluate((el) => getComputedStyle(el, '::before').borderTopStyle);
         expect(['solid', 'dashed', 'dotted']).toContain(border);
     });
 
-    test('role, aria-orientation и data-p', async ({ page }) => {
+    test('role, aria-orientation and data-p', async ({ page }) => {
         const basic = page.locator('[data-demo=basic] .p-divider');
         await expect(basic).toHaveAttribute('role', 'separator');
         await expect(basic).toHaveAttribute('aria-orientation', 'horizontal');
@@ -23,7 +23,7 @@ test.describe('Divider', () => {
         await expect(vertical).toHaveAttribute('aria-orientation', 'vertical');
     });
 
-    test('классы выравнивания и типа', async ({ page }) => {
+    test('alignment and type classes', async ({ page }) => {
         await expect(page.locator('[data-demo=content] .p-divider-left')).toHaveCount(1);
         await expect(page.locator('[data-demo=content] .p-divider-center.p-divider-dotted')).toHaveCount(1);
         await expect(page.locator('[data-demo=content] .p-divider-right.p-divider-dashed')).toHaveCount(1);
@@ -31,7 +31,7 @@ test.describe('Divider', () => {
         await expect(page.locator('[data-demo=vertical] .p-divider-top')).toHaveCount(1);
     });
 
-    test('содержимое внутри p-divider-content и стиль выравнивания', async ({ page }) => {
+    test('content inside p-divider-content and the alignment style', async ({ page }) => {
         const right = page.locator('[data-demo=content] .p-divider-right');
         await expect(right.locator('.p-divider-content')).toContainText('Right');
         expect(await right.evaluate((el) => getComputedStyle(el).justifyContent)).toBe('flex-end');

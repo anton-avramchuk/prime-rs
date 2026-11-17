@@ -1,51 +1,51 @@
-//! Чистая логика Stepper: идентификаторы, состояния шага, разделитель, классы (по `stepper.ts` и `style/*` PrimeNG).
+//! Pure Stepper logic: identifiers, step states, separator, classes (after PrimeNG `stepper.ts` and `style/*`).
 
 use prime_core::ClassNames;
 use std::borrow::Cow;
 
-/// Идентификатор кнопки шага: `<id>_step_<значение>`.
+/// Step button identifier: `<id>_step_<value>`.
 pub fn step_id(id: &str, value: u32) -> String {
     format!("{id}_step_{value}")
 }
 
-/// Идентификатор панели: `<id>_steppanel_<значение>`.
+/// Panel identifier: `<id>_steppanel_<value>`.
 pub fn panel_id(id: &str, value: u32) -> String {
     format!("{id}_steppanel_{value}")
 }
 
-/// Активен ли шаг со значением `value` при текущем `current`.
+/// Whether the step with value `value` is active at the current `current`.
 pub fn is_active(current: Option<u32>, value: u32) -> bool {
     current == Some(value)
 }
 
-/// Недоступен ли шаг: неактивный и либо в линейном режиме, либо отключённый (`isStepDisabled`).
+/// Whether the step is unavailable: inactive and either in linear mode or disabled (`isStepDisabled`).
 pub fn step_disabled(active: bool, linear: bool, disabled: bool) -> bool {
     !active && (linear || disabled)
 }
 
-/// Нужен ли разделитель после шага/элемента: значение не последнее в реестре (отсутствующее в реестре — нужен, как в PrimeNG).
+/// Whether a separator is needed after a step/item: the value is not last in the registry (one absent from the registry needs it, as in PrimeNG).
 pub fn separator_after(values: &[u32], value: u32) -> bool {
     values.iter().position(|v| *v == value) != values.len().checked_sub(1)
 }
 
-/// Классы корня: `p-stepper p-component` и `p-readonly` в линейном режиме.
+/// Root classes: `p-stepper p-component` and `p-readonly` in linear mode.
 pub fn root_classes(linear: bool) -> &'static str {
     if linear { "p-stepper p-component p-readonly" } else { "p-stepper p-component" }
 }
 
-/// Классы шага.
+/// Step classes.
 pub fn step_classes(active: bool, disabled: bool) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-step").add_if(active, "p-step-active").add_if(disabled, "p-disabled");
     cn.finish_cow()
 }
 
-/// Классы элемента вертикальной раскладки.
+/// Vertical layout item classes.
 pub fn item_classes(active: bool) -> &'static str {
     if active { "p-stepitem p-stepitem-active" } else { "p-stepitem" }
 }
 
-/// Классы панели: `p-steppanel-active` только у активной вертикальной.
+/// Panel classes: `p-steppanel-active` only on the active vertical one.
 pub fn panel_classes(vertical: bool, active: bool) -> &'static str {
     if vertical && active { "p-steppanel p-steppanel-active" } else { "p-steppanel" }
 }
@@ -65,7 +65,7 @@ mod tests {
         assert!(is_active(Some(2), 2));
         assert!(!is_active(Some(1), 2));
         assert!(!is_active(None, 1));
-        // (активен, linear, disabled) -> недоступен
+        // (active, linear, disabled) -> unavailable
         let cases = [
             (true, false, false, false),
             (true, true, false, false),
@@ -86,9 +86,9 @@ mod tests {
         assert!(separator_after(&[1, 2, 3], 1));
         assert!(separator_after(&[1, 2, 3], 2));
         assert!(!separator_after(&[1, 2, 3], 3));
-        assert!(!separator_after(&[1], 1), "единственный шаг");
-        assert!(separator_after(&[1, 2], 9), "неизвестное значение — как indexOf = -1 в PrimeNG");
-        assert!(!separator_after(&[], 1), "пустой реестр: indexOf = -1 и длина − 1 = -1 равны");
+        assert!(!separator_after(&[1], 1), "the only step");
+        assert!(separator_after(&[1, 2], 9), "unknown value: like indexOf = -1 in PrimeNG");
+        assert!(!separator_after(&[], 1), "empty registry: indexOf = -1 and length - 1 = -1 are equal");
     }
 
     #[test]
@@ -101,7 +101,7 @@ mod tests {
         assert_eq!(step_classes(true, true), "p-step p-step-active p-disabled");
         assert_eq!(item_classes(false), "p-stepitem");
         assert_eq!(item_classes(true), "p-stepitem p-stepitem-active");
-        assert_eq!(panel_classes(false, true), "p-steppanel", "горизонтальная панель без -active");
+        assert_eq!(panel_classes(false, true), "p-steppanel", "horizontal panel without -active");
         assert_eq!(panel_classes(true, false), "p-steppanel");
         assert_eq!(panel_classes(true, true), "p-steppanel p-steppanel-active");
     }

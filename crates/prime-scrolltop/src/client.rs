@@ -1,4 +1,4 @@
-//! Клиентская часть ScrollTop (только `wasm32`): подписка на `scroll`, фазы показа, анимация и z-index.
+//! ScrollTop client part (`wasm32` only): `scroll` subscription, show phases, animation and z-index.
 
 use crate::state::{Phase, ScrollTopTarget, enter_classes, is_visible, leave_classes};
 use leptos::prelude::*;
@@ -7,10 +7,10 @@ use std::time::Duration;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::Closure;
 
-/// Длительность перехода в теме (`transition: opacity 300ms`).
+/// Transition duration in the theme (`transition: opacity 300ms`).
 const TRANSITION: Duration = Duration::from_millis(300);
 
-/// Состояние экземпляра, нужное клиенту.
+/// Instance state needed by the client.
 #[derive(Clone, Copy)]
 pub struct Setup {
     pub target: ScrollTopTarget,
@@ -28,7 +28,7 @@ impl Setup {
         !self.phase.is_disposed()
     }
 
-    /// Проверка прокрутки: показать или скрыть.
+    /// Scroll check: show or hide.
     fn check(&self, scroll: f64) {
         let visible = is_visible(scroll, self.threshold.with_value(|t| t.get_untracked()));
         match (visible, self.phase.get_untracked()) {
@@ -38,7 +38,7 @@ impl Setup {
         }
     }
 
-    /// Поколение анимации: устаревшие таймеры ничего не делают.
+    /// Animation generation: stale timers do nothing.
     fn bump(&self) -> u32 {
         self.epoch.update_value(|e| *e = e.wrapping_add(1));
         self.epoch.get_value()
@@ -96,7 +96,7 @@ impl Setup {
         }
     }
 
-    /// Текущая прокрутка цели.
+    /// Current scroll of the target.
     fn scroll_of(&self, parent: Option<&web_sys::Element>) -> f64 {
         match parent {
             Some(el) => f64::from(el.scroll_top()),
@@ -105,7 +105,7 @@ impl Setup {
     }
 }
 
-/// Подписывается на прокрутку цели после монтирования и снимает подписку при уничтожении.
+/// Subscribes to the target scroll after mounting and drops the subscription on destruction.
 pub fn setup(s: Setup) {
     let listener = StoredValue::new_local(None::<Box<dyn FnOnce()>>);
     Effect::new(move |_| {

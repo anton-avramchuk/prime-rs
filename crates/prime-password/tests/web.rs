@@ -1,5 +1,5 @@
-//! Поведение Password в реальном браузере (wasm-bindgen-test): панель по фокусу и вводу, уровни, `Escape`, потеря фокуса,
-//! показ пароля, очистка, фокус при клике по значкам, z-index и выравнивание.
+//! Password behavior in a real browser (wasm-bindgen-test): panel on focus and input, levels, `Escape`, focus loss,
+//! show password, clear, focus on icon clicks, z-index and alignment.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, selector: &str) -> web_sys::Element {
-    host.query_selector(selector).unwrap().unwrap_or_else(|| panic!("нет {selector}"))
+    host.query_selector(selector).unwrap().unwrap_or_else(|| panic!("no {selector}"))
 }
 
 fn qh(host: &HtmlElement, selector: &str) -> HtmlElement {
@@ -146,7 +146,7 @@ async fn toggle_mask_switches_type_and_keeps_focus() {
     input(&host).focus().unwrap();
     assert_eq!(input(&host).type_(), "password");
     let icon = q(&host, ".p-password-unmask-icon");
-    assert!(!mouse(&icon, "mousedown"), "mousedown должен быть отменён, чтобы поле не теряло фокус");
+    assert!(!mouse(&icon, "mousedown"), "mousedown must be cancelled so the field does not lose focus");
     click(&icon);
     leptos::task::tick().await;
     assert_eq!(input(&host).type_(), "text");
@@ -196,7 +196,7 @@ async fn panel_is_aligned_under_input_with_z_index() {
     sleep(100).await;
     let panel = qh(&host, ".p-password-overlay");
     let (root, panel_rect) = (q(&host, ".p-password").get_bounding_client_rect(), panel.get_bounding_client_rect());
-    assert!(panel_rect.top() >= root.bottom() - 1.0, "панель должна быть под полем: {} < {}", panel_rect.top(), root.bottom());
+    assert!(panel_rect.top() >= root.bottom() - 1.0, "the panel must be below the field: {} < {}", panel_rect.top(), root.bottom());
     assert!(panel_rect.width() >= root.width() - 1.0);
     assert!(panel.style().get_property_value("z-index").unwrap().parse::<i32>().unwrap() > 0);
     assert_eq!(web_sys::window().unwrap().get_computed_style(&panel).unwrap().unwrap().get_property_value("position").unwrap(), "absolute");

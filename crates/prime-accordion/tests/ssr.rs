@@ -1,4 +1,4 @@
-//! Структура DOM, классы, ARIA, слот иконки, `pt` и начальная скрытость Accordion (SSR).
+//! DOM structure, classes, ARIA, icon slot, `pt` and initial hidden state of Accordion (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 macro_rules! three {
@@ -72,8 +72,8 @@ fn structure_classes_and_order() {
         pos(&html, "p-accordioncontent-content"),
     );
     assert!(panel < header && header < content && content < motion && motion < wrapper && wrapper < inner, "{html}");
-    assert_eq!(html.matches("p-accordionpanel-active").count(), 1, "активна одна панель: {html}");
-    assert_eq!(html.matches(r#"class="p-accordionpanel p-disabled""#).count(), 1, "отключена одна панель: {html}");
+    assert_eq!(html.matches("p-accordionpanel-active").count(), 1, "one panel is active: {html}");
+    assert_eq!(html.matches(r#"class="p-accordionpanel p-disabled""#).count(), 1, "one panel is disabled: {html}");
 }
 
 #[test]
@@ -103,9 +103,9 @@ fn aria_ids_and_state() {
 #[test]
 fn only_active_content_is_visible_from_the_first_render() {
     let html = three!(default_value = vec!["1".to_owned()]);
-    assert_eq!(html.matches("display: none").count(), 2, "скрыты содержимое неактивных панелей: {html}");
+    assert_eq!(html.matches("display: none").count(), 2, "content of inactive panels is hidden: {html}");
     let hidden_first = html.find("display: none").unwrap();
-    assert!(hidden_first < pos(&html, "Content I<"), "панель 0 скрыта до своего содержимого: {html}");
+    assert!(hidden_first < pos(&html, "Content I<"), "panel 0 is hidden before its content: {html}");
     let all_open = three!(multiple = true, default_value = vec!["0".to_owned(), "1".to_owned(), "2".to_owned()]);
     lacks(&all_open, &["display: none"]);
 }
@@ -116,8 +116,8 @@ fn chevron_follows_state() {
     let closed = three!();
     let icon = |s: &str| s.split("<svg").nth(1).and_then(|r| r.split("</svg>").next()).map(str::to_owned);
     assert!(icon(&open).is_some() && icon(&closed).is_some());
-    assert_ne!(icon(&open), icon(&closed), "шеврон вверх у активной и вниз у неактивной");
-    assert_eq!(open.matches("p-accordionheader-toggle-icon").count(), 3, "иконка у каждого заголовка: {open}");
+    assert_ne!(icon(&open), icon(&closed), "chevron up for the active one and down for the inactive one");
+    assert_eq!(open.matches("p-accordionheader-toggle-icon").count(), 3, "an icon on every header: {open}");
 }
 
 #[test]

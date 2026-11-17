@@ -1,6 +1,6 @@
-//! Страница IconField: демонстрации `basic`, `sizes`, `template`, `floatlabel`, `iftalabel` по `apps/showcase/doc/iconfield` PrimeNG.
+//! IconField page: the `basic`, `sizes`, `template`, `floatlabel`, `iftalabel` demos from `apps/showcase/doc/iconfield` in PrimeNG.
 //!
-//! В `template` вместо логотипа PrimeVue — простой SVG; значки `user` и `lock` в `prime-icons` отсутствуют, взяты `search`, `eye`, `check`.
+//! In `template` a simple SVG replaces the PrimeVue logo; the `user` and `lock` icons are missing from `prime-icons`, so `search`, `eye`, `check` are used.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -11,7 +11,7 @@ use prime_icons::{CheckIcon, EyeIcon, SearchIcon, SpinnerIcon};
 use prime_iftalabel::IftaLabel;
 use prime_inputtext::InputText;
 
-/// Страница `/iconfield`.
+/// `/iconfield` page.
 #[component]
 pub fn IconFieldPage() -> impl IntoView {
     view! {

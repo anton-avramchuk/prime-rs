@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `style`, `pt` и паритет ветвей AvatarGroup (SSR).
+//! DOM structure, classes, `style`, `pt` and static/reactive parity of AvatarGroup (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

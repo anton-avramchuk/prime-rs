@@ -1,4 +1,4 @@
-//! Сервер showcase (SSR).
+//! Showcase server (SSR).
 
 #[cfg(feature = "ssr")]
 #[tokio::main]
@@ -8,7 +8,7 @@ async fn main() {
     use leptos_axum::{LeptosRoutes, generate_route_list};
     use showcase::{App, shell};
 
-    let conf = get_configuration(None).expect("конфигурация Leptos");
+    let conf = get_configuration(None).expect("Leptos configuration");
     let addr = conf.leptos_options.site_addr;
     let leptos_options = conf.leptos_options;
     let routes = generate_route_list(App);
@@ -22,8 +22,8 @@ async fn main() {
         .with_state(leptos_options);
 
     println!("showcase: http://{addr}");
-    let listener = tokio::net::TcpListener::bind(&addr).await.expect("порт занят");
-    axum::serve(listener, app.into_make_service()).await.expect("сервер остановился");
+    let listener = tokio::net::TcpListener::bind(&addr).await.expect("port is in use");
+    axum::serve(listener, app.into_make_service()).await.expect("server stopped");
 }
 
 #[cfg(not(feature = "ssr"))]

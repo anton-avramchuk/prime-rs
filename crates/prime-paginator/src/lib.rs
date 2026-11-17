@@ -1,11 +1,11 @@
-//! Paginator — порт `p-paginator` из PrimeNG 21.1.10.
+//! Paginator — port of PrimeNG 21.1.10 `p-paginator`.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-paginator`, кнопки `p-paginator-first/prev/next/last`, ссылки
-//! `p-paginator-page` в `span.p-paginator-pages`, отчёт `p-paginator-current`, списки перехода к странице и числа строк
-//! (`Select`), поле перехода (`InputNumber`) и области `p-paginator-content-start/end`.
+//! Markup and classes as in PrimeNG: root `div.p-paginator`, buttons `p-paginator-first/prev/next/last`, `p-paginator-page`
+//! links in `span.p-paginator-pages`, the `p-paginator-current` report, dropdowns for jumping to a page and for the number
+//! of rows (`Select`), the jump field (`InputNumber`) and the `p-paginator-content-start/end` areas.
 //!
-//! Управление — двусторонние сигналы `first` (индекс первой записи) и `rows` (число строк на странице); о смене страницы
-//! сообщает `on_page_change`. Без сигналов компонент ведёт внутреннее состояние.
+//! Control is via two-way signals `first` (index of the first record) and `rows` (rows per page); a page change is
+//! reported by `on_page_change`. Without signals the component keeps internal state.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -31,120 +31,120 @@ pub use state::{
     retreat_page, rows_items, write_nav_classes, write_page_classes,
 };
 
-/// Pass-through частей Paginator.
+/// Pass-through parts of Paginator.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct PaginatorPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Область слева.
+    /// Left area.
     pub content_start: Pt,
-    /// Область справа.
+    /// Right area.
     pub content_end: Pt,
-    /// Отчёт о странице.
+    /// Page report.
     pub current: Pt,
-    /// Кнопка «первая страница».
+    /// "First page" button.
     pub first: Pt,
-    /// Значок кнопки «первая страница».
+    /// "First page" button icon.
     pub first_icon: Pt,
-    /// Кнопка «предыдущая страница».
+    /// "Previous page" button.
     pub prev: Pt,
-    /// Значок кнопки «предыдущая страница».
+    /// "Previous page" button icon.
     pub prev_icon: Pt,
-    /// Контейнер ссылок.
+    /// Links container.
     pub pages: Pt,
-    /// Ссылка на страницу.
+    /// Page link.
     pub page: Pt,
-    /// Кнопка «следующая страница».
+    /// "Next page" button.
     pub next: Pt,
-    /// Значок кнопки «следующая страница».
+    /// "Next page" button icon.
     pub next_icon: Pt,
-    /// Кнопка «последняя страница».
+    /// "Last page" button.
     pub last: Pt,
-    /// Значок кнопки «последняя страница».
+    /// "Last page" button icon.
     pub last_icon: Pt,
 }
 
-/// Постраничная навигация: кнопки, ссылки на страницы, переход к странице и выбор числа строк.
+/// Pagination: buttons, page links, jump to a page and rows-per-page selection.
 ///
-/// Каждое свойство принимает значение или сигнал; `first` и `rows` — двусторонние сигналы.
+/// Each property accepts a value or a signal; `first` and `rows` are two-way signals.
 #[component]
 pub fn Paginator(
-    /// Двусторонний сигнал индекса первой записи.
+    /// Two-way signal of the first record index.
     #[prop(optional)]
     first: Option<RwSignal<usize>>,
-    /// Начальное значение `first`, если сигнал не передан.
+    /// Initial value of `first` if no signal is passed.
     #[prop(optional)]
     default_first: usize,
-    /// Двусторонний сигнал числа строк на странице.
+    /// Two-way signal of rows per page.
     #[prop(optional)]
     rows: Option<RwSignal<usize>>,
-    /// Начальное число строк, если сигнал не передан (по умолчанию 10).
+    /// Initial rows per page if no signal is passed (10 by default).
     #[prop(optional)]
     default_rows: Option<usize>,
-    /// Всего записей.
+    /// Total records.
     #[prop(optional, into)]
     total_records: Prop<usize>,
-    /// Варианты списка числа строк; пустой список — без выпадающего списка.
+    /// Options of the rows-per-page list; an empty list means no dropdown.
     #[prop(optional, into)]
     rows_per_page_options: Prop<Vec<RowsPerPage>>,
-    /// Сколько ссылок на страницы показывать (по умолчанию 5).
+    /// How many page links to show (5 by default).
     #[prop(optional, into)]
     page_link_size: OptProp<usize>,
-    /// Показывать, даже если страница одна (по умолчанию `true`).
+    /// Show even if there is a single page (`true` by default).
     #[prop(optional, into)]
     always_show: OptProp<bool>,
-    /// Отчёт о текущей странице.
+    /// Current page report.
     #[prop(optional, into)]
     show_current_page_report: Prop<bool>,
-    /// Шаблон отчёта (по умолчанию `{currentPage} of {totalPages}`).
+    /// Report template (`{currentPage} of {totalPages}` by default).
     #[prop(optional, into)]
     current_page_report_template: OptProp<String>,
-    /// Кнопки «первая» и «последняя» (по умолчанию `true`).
+    /// "First" and "last" buttons (`true` by default).
     #[prop(optional, into)]
     show_first_last_icon: OptProp<bool>,
-    /// Ссылки на страницы (по умолчанию `true`).
+    /// Page links (`true` by default).
     #[prop(optional, into)]
     show_page_links: OptProp<bool>,
-    /// Выпадающий список перехода к странице.
+    /// Dropdown for jumping to a page.
     #[prop(optional, into)]
     show_jump_to_page_dropdown: Prop<bool>,
-    /// Поле перехода к странице.
+    /// Jump-to-page field.
     #[prop(optional, into)]
     show_jump_to_page_input: Prop<bool>,
-    /// Высота списков (по умолчанию `200px`).
+    /// Height of the lists (`200px` by default).
     #[prop(optional, into)]
     dropdown_scroll_height: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Значок кнопки «первая страница».
+    /// "First page" button icon.
     #[prop(optional, into)]
     first_page_link_icon: Option<ViewFn>,
-    /// Значок кнопки «предыдущая страница».
+    /// "Previous page" button icon.
     #[prop(optional, into)]
     previous_page_link_icon: Option<ViewFn>,
-    /// Значок кнопки «следующая страница».
+    /// "Next page" button icon.
     #[prop(optional, into)]
     next_page_link_icon: Option<ViewFn>,
-    /// Значок кнопки «последняя страница».
+    /// "Last page" button icon.
     #[prop(optional, into)]
     last_page_link_icon: Option<ViewFn>,
-    /// Значок выпадающих списков.
+    /// Dropdowns icon.
     #[prop(optional, into)]
     dropdown_icon: Option<ViewFn>,
-    /// Содержимое области слева; получает состояние.
+    /// Content of the left area; receives the state.
     #[prop(optional, into)]
     template_left: Option<Callback<PaginatorState, AnyView>>,
-    /// Содержимое области справа; получает состояние.
+    /// Content of the right area; receives the state.
     #[prop(optional, into)]
     template_right: Option<Callback<PaginatorState, AnyView>>,
-    /// Вызывается при смене страницы.
+    /// Called when the page changes.
     #[prop(optional, into)]
     on_page_change: Option<Callback<PaginatorState>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<PaginatorPt>,
 ) -> impl IntoView {
@@ -191,8 +191,8 @@ pub fn Paginator(
     props.rpp_value.set(Some(rows.get_untracked().to_string()));
     props.jump_input.set(Some(props.current_page_number() as f64));
 
-    // Односторонняя синхронизация внутренних сигналов списков и поля с `first`/`rows`, поле перехода → страница и отступ назад
-    // при уменьшении числа записей — только в браузере (в нативных тестах без executor эффекты паникуют).
+    // One-way sync of the internal list and field signals with `first`/`rows`, jump field → page and step back
+    // when the record count shrinks — browser only (in native tests without an executor the effects panic).
     #[cfg(target_arch = "wasm32")]
     {
         let p = props.clone();
@@ -331,7 +331,7 @@ pub fn Paginator(
     }
 }
 
-/// Какая кнопка навигации.
+/// Which navigation button.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Nav {
     First,
@@ -340,7 +340,7 @@ enum Nav {
     Last,
 }
 
-/// Кнопка навигации: классы, `disabled` (кроме «первой», как в PrimeNG), подпись, значок.
+/// Navigation button: classes, `disabled` (except "first", as in PrimeNG), label, icon.
 fn nav_button(props: &Arc<Props>, pt: &Arc<PaginatorPt>, nav: Nav) -> impl IntoView + use<> {
     let (base, icon_base, label, part, icon_part) = match nav {
         Nav::First => ("p-paginator-first", "p-paginator-first-icon", props.first_label.clone(), &pt.first, &pt.first_icon),
@@ -417,7 +417,7 @@ fn nav_button(props: &Arc<Props>, pt: &Arc<PaginatorPt>, nav: Nav) -> impl IntoV
     }
 }
 
-/// Ссылки на страницы.
+/// Page links.
 fn pages_view(props: &Arc<Props>, pt: &Arc<PaginatorPt>) -> impl IntoView + use<> {
     let (class, attrs) = (pt.pages.merge_class("p-paginator-pages"), pt.pages.attrs());
     let buttons = {
@@ -454,7 +454,7 @@ fn pages_view(props: &Arc<Props>, pt: &Arc<PaginatorPt>) -> impl IntoView + use<
     view! { <span class={class} {..attrs}>{buttons}</span> }
 }
 
-/// Выпадающий список перехода к странице: подпись — отчёт о странице.
+/// Dropdown for jumping to a page: the label is the page report.
 fn jump_dropdown_view(props: &Arc<Props>) -> impl IntoView + use<> {
     let options = {
         let props = props.clone();
@@ -513,7 +513,7 @@ fn jump_dropdown_view(props: &Arc<Props>) -> impl IntoView + use<> {
     }
 }
 
-/// Поле перехода к странице.
+/// Jump-to-page field.
 fn jump_input_view(props: &Arc<Props>) -> impl IntoView + use<> {
     let disabled = {
         let props = props.clone();
@@ -522,7 +522,7 @@ fn jump_input_view(props: &Arc<Props>) -> impl IntoView + use<> {
     view! { <InputNumber value=props.jump_input disabled=disabled style_class="p-paginator-jtp-input" /> }
 }
 
-/// Выпадающий список числа строк на странице.
+/// Rows-per-page dropdown.
 fn rows_dropdown_view(props: &Arc<Props>) -> impl IntoView + use<> {
     let options = {
         let props = props.clone();
@@ -576,7 +576,7 @@ fn rows_dropdown_view(props: &Arc<Props>) -> impl IntoView + use<> {
     }
 }
 
-/// Свойства и состояние экземпляра.
+/// Properties and instance state.
 struct Props {
     first: RwSignal<usize>,
     rows: RwSignal<usize>,
@@ -608,16 +608,16 @@ struct Props {
     page_label: String,
     rows_label: String,
     jump_label: String,
-    /// Значение списка перехода к странице (индекс страницы).
+    /// Value of the jump-to-page list (page index).
     jtp_value: RwSignal<Option<String>>,
-    /// Значение списка числа строк.
+    /// Value of the rows list.
     rpp_value: RwSignal<Option<String>>,
-    /// Значение поля перехода (страница с единицы).
+    /// Value of the jump field (page counted from one).
     jump_input: RwSignal<Option<f64>>,
 }
 
 impl Props {
-    // ---- данные (с подпиской) ----
+    // ---- data (subscribed) ----
 
     fn page_total(&self) -> usize {
         page_count(self.total_records.get(), self.rows.get())
@@ -639,12 +639,12 @@ impl Props {
         self.page_index() + 1 == self.page_total()
     }
 
-    /// Индекс текущей страницы для списка перехода; `None` при пустом списке.
+    /// Index of the current page for the jump list; `None` for an empty list.
     fn current_page_index(&self) -> Option<usize> {
         (!self.is_empty()).then(|| self.page_index())
     }
 
-    /// Текущая страница с единицы (0 при пустом списке).
+    /// Current page counted from one (0 for an empty list).
     fn current_page_number(&self) -> usize {
         current_page(self.first.get(), self.rows.get(), self.total_records.get())
     }
@@ -668,14 +668,14 @@ impl Props {
         report(&template, self.first.get(), self.rows.get(), self.total_records.get())
     }
 
-    /// Виден ли корень: `always_show` или больше одной ссылки.
+    /// Whether the root is visible: `always_show` or more than one link.
     fn visible(&self) -> bool {
         self.always_show.get().unwrap_or(true) || links(self.page_index(), self.page_total(), self.link_size()).len() > 1
     }
 
-    // ---- действия ----
+    // ---- actions ----
 
-    /// `changePage`: переход на страницу `p` (с нуля), если она существует; записывает `first` и вызывает `on_page_change`.
+    /// `changePage`: go to page `p` (zero-based) if it exists; writes `first` and calls `on_page_change`.
     fn change_page(&self, p: usize) {
         let rows = self.rows.get_untracked();
         let count = page_count(self.total_records.get_untracked(), rows);

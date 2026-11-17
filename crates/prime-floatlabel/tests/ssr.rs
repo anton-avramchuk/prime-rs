@@ -1,4 +1,4 @@
-//! Структура DOM, варианты, `style`, `pt` и паритет ветвей FloatLabel (SSR).
+//! DOM structure, variants, `style`, `pt` and static/reactive parity of FloatLabel (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -19,7 +19,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 fn norm(s: &str) -> String {
@@ -111,6 +111,6 @@ fn reactive_variant_replaces_class() {
 
 #[test]
 fn field_and_label_stay_inside() {
-    let html = view! { <FloatLabel><input id="u" class="p-inputtext" /><label for="u">"Имя"</label></FloatLabel> }.to_html();
+    let html = view! { <FloatLabel><input id="u" class="p-inputtext" /><label for="u">"Name"</label></FloatLabel> }.to_html();
     assert!(pos(&html, "<input") < pos(&html, "<label"), "{html}");
 }

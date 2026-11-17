@@ -1,7 +1,7 @@
-name: Weekly (e2e, скриншоты, браузерные бенчмарки)
+name: Weekly (e2e, screenshots, browser benchmarks)
 
-# Тяжёлые браузерные проверки не запускаются на каждый PR: раз в неделю, вручную
-# или на PR с меткой `run-e2e`. Результаты — отчёты, они не блокируют слияние PR.
+# Heavy browser checks do not run on every PR: weekly, manually
+# or on PRs labeled `run-e2e`. Results are reports; they do not block merging PRs.
 on:
   schedule:
     - cron: "0 3 * * 1"
@@ -22,12 +22,12 @@ env:
 
 jobs:
   e2e:
-    name: e2e, скриншоты, замеры памяти
-    # На PR — только с меткой run-e2e.
+    name: e2e, screenshots, memory measurements
+    # On PRs only with the run-e2e label.
     if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-e2e')
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    # Расхождения с PrimeNG и нестабильность сборки Angular не должны блокировать PR.
+    # Differences from PrimeNG and Angular build flakiness must not block PRs.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -48,18 +48,18 @@ jobs:
         with:
           version: 10
 
-      - name: Закреплённая версия PrimeNG
+      - name: Pinned PrimeNG version
         id: upstream
         run: |
           echo "commit=$(grep -E '^commit' upstream.toml | head -1 | cut -d'"' -f2)" >> "$GITHUB_OUTPUT"
 
-      # Эталон строится заново из закреплённого коммита, скриншоты оригинала в репозиторий не коммитятся.
-      - name: Клон PrimeNG на закреплённом коммите
+      # The reference is rebuilt from the pinned commit; screenshots of the original are not committed to the repository.
+      - name: Clone PrimeNG at the pinned commit
         run: |
           git clone --filter=blob:none --no-checkout https://github.com/primefaces/primeng.git "$RUNNER_TEMP/primeng"
           git -C "$RUNNER_TEMP/primeng" checkout "${{ steps.upstream.outputs.commit }}"
 
-      - name: Сборка showcase PrimeNG
+      - name: Build the PrimeNG showcase
         id: upstream_build
         continue-on-error: true
         working-directory: ${{ runner.temp }}/primeng
@@ -69,18 +69,18 @@ jobs:
           pnpm --filter themes build
           pnpm --filter showcase build
 
-      - name: Сборка нашего showcase
+      - name: Build our showcase
         run: cargo leptos build --release
         working-directory: showcase
 
-      - name: Запуск серверов
+      - name: Start servers
         run: |
           (cd showcase && nohup cargo leptos serve --release > "$RUNNER_TEMP/ours.log" 2>&1 &)
           if [ "${{ steps.upstream_build.outcome }}" = "success" ]; then
-            # Корень сборки: prerender кладёт index.html и в подкаталоги маршрутов, поэтому берём самый короткий путь.
+            # Build root: prerender puts index.html into route subdirectories too, so take the shortest path.
             out=$(find "$RUNNER_TEMP/primeng/apps/showcase/dist" -name index.html -path '*browser*' | awk '{ print length($0) " " $0 }' | sort -n | head -1 | cut -d' ' -f2- | xargs dirname)
             echo "PrimeNG showcase: $out"
-            # SPA: неизвестные пути (/button) отдаём через корень, иначе глубокие ссылки Angular дают 404.
+            # SPA: serve unknown paths (/button) via the root, otherwise Angular deep links give 404.
             (nohup npx --yes http-server "$out" -p 4200 -s --proxy "http://127.0.0.1:4200?" > "$RUNNER_TEMP/upstream.log" 2>&1 &)
             npx --yes wait-on http://127.0.0.1:4200 --timeout 60000
           fi
@@ -94,7 +94,7 @@ jobs:
           if [ "${{ steps.upstream_build.outcome }}" = "success" ]; then export UPSTREAM_URL=http://127.0.0.1:4200; fi
           npx playwright test
 
-      - name: Отчёты
+      - name: Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:

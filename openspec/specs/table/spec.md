@@ -1,71 +1,71 @@
 # table Specification
 
 ## Purpose
-Table — таблица данных с сортировкой, выбором, раскрытием строк и пагинатором.
+Table is a data table with sorting, selection, row expansion and a paginator.
 
 ## Requirements
 
-### Requirement: Сортировка
-Клик по заголовку сортируемого столбца в режиме `single` SHALL сортировать по нему: первый клик — порядком по умолчанию (1), повторный — обратным; клик по другому столбцу сбрасывает прежний. В режиме `multiple` клик без Ctrl/⌘ SHALL оставлять один столбец, с Ctrl/⌘ — добавлять столбец или менять его порядок. Сортировка SHALL быть устойчивой и многоуровневой, `value` не изменяется. Заголовок SHALL иметь `p-datatable-sortable-column` (`-column-sorted` у сортируемого), `tabindex=0`, `aria-sort` (`ascending`/`descending`/`none`), значок `p-datatable-sort-icon`, счётчик `p-sortable-column-badge` при нескольких столбцах; `Enter`/`Space` SHALL сортировать так же, как клик. Сортировка SHALL возвращать на первую страницу.
+### Requirement: Sorting
+A click on the header of a sortable column in `single` mode SHALL sort by it: the first click uses the default order (1), a repeated click the reverse; a click on another column resets the previous one. In `multiple` mode a click without Ctrl/⌘ SHALL leave a single column, with Ctrl/⌘ it SHALL add a column or change its order. Sorting SHALL be stable and multi-level, `value` is not changed. The header SHALL have `p-datatable-sortable-column` (`-column-sorted` on the sorted one), `tabindex=0`, `aria-sort` (`ascending`/`descending`/`none`), the `p-datatable-sort-icon` icon, the `p-sortable-column-badge` counter with several columns; `Enter`/`Space` SHALL sort the same way as a click. Sorting SHALL return to the first page.
 
-#### Scenario: Цикл
-- **WHEN** клик по заголовку «Name» дважды
-- **THEN** порядок по возрастанию, затем по убыванию имени; `aria-sort` меняется
+#### Scenario: Cycle
+- **WHEN** the "Name" header is clicked twice
+- **THEN** the order is ascending, then descending by name; `aria-sort` changes
 
-#### Scenario: Несколько столбцов
-- **WHEN** клик по «Category», Ctrl-клик по «Quantity»
-- **THEN** строки сортируются по категории, затем по количеству; у заголовков счётчики 1 и 2
+#### Scenario: Several columns
+- **WHEN** click on "Category", Ctrl-click on "Quantity"
+- **THEN** rows are sorted by category, then by quantity; the headers have counters 1 and 2
 
-### Requirement: Выбор
-При заданном `selection_mode` клик по строке SHALL менять выбор: `single` — заменяет или снимает при повторном клике, `multiple` — переключает строку, при `meta_key_selection` — выбор заменяется без Ctrl/⌘, дополняется с ним и снимает выбранную с ним. Строки SHALL иметь `p-datatable-selectable-row` (`-row-selected`) и `aria-selected`. Столбец флажков SHALL переключать строку, флажок в заголовке — выбирать и снимать все строки (или только страницы при `selection_page_only`) и показываться отмеченным, когда выбраны все; столбец радиокнопок выбирает одну строку. Клик по флажку, радиокнопке или кнопке внутри строки SHALL не выбирать строку повторно.
+### Requirement: Selection
+With `selection_mode` set, a click on a row SHALL change the selection: `single` replaces it or clears it on a repeated click, `multiple` toggles the row, with `meta_key_selection` the selection is replaced without Ctrl/⌘, extended with it and a selected row is cleared with it. Rows SHALL have `p-datatable-selectable-row` (`-row-selected`) and `aria-selected`. The checkbox column SHALL toggle the row, the header checkbox SHALL select and clear all rows (or only the page's with `selection_page_only`) and be shown checked when all are selected; the radio button column selects one row. A click on a checkbox, radio button or button inside a row SHALL NOT select the row again.
 
-#### Scenario: Заголовок
-- **WHEN** клик по флажку в заголовке
-- **THEN** выбраны все строки, флажок отмечен; повторный клик снимает выбор
+#### Scenario: Header
+- **WHEN** click on the header checkbox
+- **THEN** all rows are selected, the checkbox is checked; a repeated click clears the selection
 
 #### Scenario: Ctrl
-- **WHEN** `meta_key_selection`, выбрана строка 3, Ctrl-клик по строке 1
-- **THEN** выбраны строки 3 и 1
+- **WHEN** `meta_key_selection`, row 3 is selected, Ctrl-click on row 1
+- **THEN** rows 3 and 1 are selected
 
-### Requirement: Раскрытие и страницы
-Кнопка раскрытия SHALL добавлять после строки `tr.p-datatable-row-expansion` с содержимым `row_expansion` (в режиме `row_expand_single` — только для одной строки) и вызывать события. Пагинатор SHALL показывать строки `[first, first + rows)` отсортированных данных, `first` за пределами возвращается на последнюю страницу. При отсутствии строк SHALL показываться сообщение `p-datatable-empty-message` (если нет загрузки), при `loading` — маска со значком.
+### Requirement: Expansion and pages
+The expansion button SHALL add a `tr.p-datatable-row-expansion` after the row with the `row_expansion` content (in `row_expand_single` mode only for one row) and call events. The paginator SHALL show rows `[first, first + rows)` of the sorted data, `first` out of range returns to the last page. When there are no rows the `p-datatable-empty-message` message SHALL be shown (if not loading), with `loading` a mask with an icon.
 
-#### Scenario: Раскрытие
-- **WHEN** клик по кнопке раскрытия второй строки
-- **THEN** сразу после неё строка раскрытия на всю ширину таблицы
+#### Scenario: Expansion
+- **WHEN** click on the expansion button of the second row
+- **THEN** right after it the expansion row spanning the full table width
 
-#### Scenario: Страница
-- **WHEN** пять строк, `rows = 2`, переход на вторую страницу
-- **THEN** показаны третья и четвёртая строки
+#### Scenario: Page
+- **WHEN** five rows, `rows = 2`, go to the second page
+- **THEN** the third and fourth rows are shown
 
-### Requirement: Фильтры
-Столбец с `filterable` SHALL получать в `thead` вторую строку `tr` с ячейкой `p-datatable-filter`, содержащей поле ввода и кнопку очистки. Ввод SHALL задавать фильтр столбца с режимом сравнения (по умолчанию `startsWith`; `Column::filter_match_mode`), оставлять строки, для которых значение поля удовлетворяет всем фильтрам, возвращать на первую страницу и вызывать `on_filter`. Пустое значение SHALL снимать фильтр. Сравнение строк SHALL быть без учёта регистра, числовые режимы — по числу. Глобальный фильтр `global_filter` SHALL оставлять строки, у которых хотя бы одно из `global_filter_fields` содержит значение. Пагинатор SHALL работать по отфильтрованным данным; при отсутствии подходящих строк SHALL показываться сообщение пустой таблицы.
+### Requirement: Filters
+A column with `filterable` SHALL get a second `tr` row in `thead` with a `p-datatable-filter` cell containing an input and a clear button. Input SHALL set the column filter with a match mode (default `startsWith`; `Column::filter_match_mode`), keep the rows whose field value satisfies all filters, return to the first page and call `on_filter`. An empty value SHALL clear the filter. String comparison SHALL be case-insensitive, numeric modes compare by number. The global filter `global_filter` SHALL keep the rows in which at least one of `global_filter_fields` contains the value. The paginator SHALL work over the filtered data; when no rows match, the empty table message SHALL be shown.
 
-#### Scenario: Фильтр столбца
-- **WHEN** в поле столбца «Name» введено «bam»
-- **THEN** остаются только строки, чьё имя начинается с «bam», страница первая
+#### Scenario: Column filter
+- **WHEN** "bam" is entered in the "Name" column input
+- **THEN** only the rows whose name starts with "bam" remain, the page is the first
 
-#### Scenario: Глобальный фильтр
-- **WHEN** `global_filter` = «acc», поля — name и category
-- **THEN** остаются строки, где «acc» встречается в любом из полей
+#### Scenario: Global filter
+- **WHEN** `global_filter` = "acc", fields are name and category
+- **THEN** the rows where "acc" occurs in any of the fields remain
 
-### Requirement: Правка ячеек
-В режиме `edit_mode = cell` ячейка столбца `editable` SHALL иметь класс `p-editable-column`; клик по ней SHALL открывать редактор (класс `p-cell-editing`) и вызывать `on_edit_init`. `Enter` или потеря фокуса SHALL завершать правку событием `on_edit_complete` с новой строкой и закрывать редактор; `Escape` SHALL отменять правку событием `on_edit_cancel`. Данные `value` не изменяются.
+### Requirement: Cell editing
+In `edit_mode = cell` mode a cell of an `editable` column SHALL have the class `p-editable-column`; a click on it SHALL open the editor (class `p-cell-editing`) and call `on_edit_init`. `Enter` or blur SHALL complete editing with the `on_edit_complete` event carrying the new row and close the editor; `Escape` SHALL cancel editing with the `on_edit_cancel` event. The `value` data is not changed.
 
-#### Scenario: Завершение
-- **WHEN** клик по ячейке, ввод «X», `Enter`
-- **THEN** событие complete содержит строку с новым значением, редактор закрыт
+#### Scenario: Completion
+- **WHEN** click on the cell, input "X", `Enter`
+- **THEN** the complete event contains the row with the new value, the editor is closed
 
-### Requirement: Правка строк
-В режиме `edit_mode = row` столбец `row_editor` SHALL показывать кнопку «изменить»; её нажатие SHALL открывать редакторы `editable` столбцов в строке и показывать кнопки «сохранить» и «отменить». Сохранение SHALL вызывать `on_row_edit_save` с новой строкой, отмена — `on_row_edit_cancel` без изменений. Ключи строк в правке SHALL храниться в сигнале `editing_keys`.
+### Requirement: Row editing
+In `edit_mode = row` mode a `row_editor` column SHALL show an "edit" button; pressing it SHALL open the editors of the `editable` columns in the row and show "save" and "cancel" buttons. Saving SHALL call `on_row_edit_save` with the new row, cancelling SHALL call `on_row_edit_cancel` without changes. The keys of the rows being edited SHALL be stored in the `editing_keys` signal.
 
-#### Scenario: Сохранение
-- **WHEN** нажата «изменить», изменено значение, нажата «сохранить»
-- **THEN** вызвано `on_row_edit_save` с новой строкой, строка вышла из правки
+#### Scenario: Saving
+- **WHEN** "edit" is pressed, the value is changed, "save" is pressed
+- **THEN** `on_row_edit_save` is called with the new row, the row left editing
 
-### Requirement: Ленивая загрузка
-При `lazy` таблица SHALL не сортировать, не фильтровать и не обрезать страницы сама, показывать `value` как есть, считать страницы по `total_records` и вызывать `on_lazy_load` с `first`, `rows`, сортировкой, фильтрами и глобальным фильтром при монтировании и после каждого их изменения.
+### Requirement: Lazy loading
+With `lazy` the table SHALL NOT sort, filter or slice pages itself, SHALL show `value` as is, count pages by `total_records` and call `on_lazy_load` with `first`, `rows`, the sort, the filters and the global filter on mount and after each change of them.
 
-#### Scenario: Смена страницы
-- **WHEN** `lazy`, `total_records = 100`, переход на вторую страницу
-- **THEN** вызвано `on_lazy_load` с `first = 10`
+#### Scenario: Page change
+- **WHEN** `lazy`, `total_records = 100`, go to the second page
+- **THEN** `on_lazy_load` is called with `first = 10`

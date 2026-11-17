@@ -1,56 +1,56 @@
 # tree Specification
 
 ## Purpose
-Tree показывает иерархические данные с раскрытием, выбором узлов (в том числе флажками) и фильтром.
+Tree shows hierarchical data with expansion, node selection (including checkboxes) and a filter.
 
 ## ADDED Requirements
 
-### Requirement: Разметка
-`Tree` крейта `prime-tree` SHALL принимать `Vec<TreeNode>` и выводить `div.p-tree.p-component` (`p-tree-selectable` при заданном режиме выбора, `p-tree-loading` при `loading`, `p-tree-flex-scrollable` при `scroll_height = "flex"`), `div.p-tree-root` и `ul.p-tree-root-children[role=tree]` (`aria-label`, `aria-labelledby`). Узел SHALL быть `li.p-tree-node[role=treeitem]` (`p-tree-node-leaf` у листа; `aria-label`, `aria-level`, `aria-setsize`, `aria-posinset`, `aria-expanded`, `aria-selected` в режимах `Single`/`Multiple`, `aria-checked` в `Checkbox`, `tabindex`, `data-id` = `key`) с `div.p-tree-node-content` (`p-tree-node-selectable`, `p-tree-node-selected`; левый отступ `уровень × indentation` rem), кнопкой `button.p-tree-node-toggle-button`, флажком `p-tree-node-checkbox` (в режиме `Checkbox`), значком `p-tree-node-icon`, подписью `p-tree-node-label` и, у раскрытого узла с детьми, `ul.p-tree-node-children[role=group]`. При пустом списке и без загрузки SHALL выводиться `div.p-tree-empty-message`.
+### Requirement: Markup
+`Tree` of the `prime-tree` crate SHALL accept `Vec<TreeNode>` and render `div.p-tree.p-component` (`p-tree-selectable` when a selection mode is set, `p-tree-loading` when `loading`, `p-tree-flex-scrollable` when `scroll_height = "flex"`), `div.p-tree-root` and `ul.p-tree-root-children[role=tree]` (`aria-label`, `aria-labelledby`). A node SHALL be `li.p-tree-node[role=treeitem]` (`p-tree-node-leaf` on a leaf; `aria-label`, `aria-level`, `aria-setsize`, `aria-posinset`, `aria-expanded`, `aria-selected` in `Single`/`Multiple` modes, `aria-checked` in `Checkbox`, `tabindex`, `data-id` = `key`) with `div.p-tree-node-content` (`p-tree-node-selectable`, `p-tree-node-selected`; left indent `level × indentation` rem), a `button.p-tree-node-toggle-button`, a `p-tree-node-checkbox` checkbox (in `Checkbox` mode), a `p-tree-node-icon` icon, a `p-tree-node-label` label and, on an expanded node with children, `ul.p-tree-node-children[role=group]`. With an empty list and no loading, `div.p-tree-empty-message` SHALL be rendered.
 
-#### Scenario: Состав
-- **WHEN** отрисовано дерево с раскрытым узлом из двух детей
-- **THEN** выведены `ul.p-tree-root-children`, узел, кнопка-шеврон и `ul.p-tree-node-children` с двумя `li`
+#### Scenario: Composition
+- **WHEN** a tree with an expanded node of two children is rendered
+- **THEN** `ul.p-tree-root-children`, the node, the chevron button and `ul.p-tree-node-children` with two `li` are rendered
 
-#### Scenario: Пусто
-- **WHEN** `value` пуст
-- **THEN** выведено сообщение из `empty_message`
+#### Scenario: Empty
+- **WHEN** `value` is empty
+- **THEN** the message from `empty_message` is rendered
 
-### Requirement: Раскрытие
-Клик по кнопке узла SHALL переключать его раскрытие и вызывать `on_node_expand`/`on_node_collapse`; шеврон SHALL быть вправо у свёрнутого и вниз у раскрытого узла. Начальное раскрытие SHALL браться из `TreeNode::expanded` либо из переданного сигнала `expanded_keys`. У узла со `loading = true` при `loading_mode = Icon` вместо шеврона SHALL быть спиннер.
+### Requirement: Expansion
+A click on a node's button SHALL toggle its expansion and call `on_node_expand`/`on_node_collapse`; the chevron SHALL point right on a collapsed node and down on an expanded one. Initial expansion SHALL come from `TreeNode::expanded` or from the passed `expanded_keys` signal. A node with `loading = true` and `loading_mode = Icon` SHALL show a spinner instead of the chevron.
 
-#### Scenario: Переключение
-- **WHEN** пользователь кликает по кнопке свёрнутого узла
-- **THEN** узел раскрыт, вызван `on_node_expand`
+#### Scenario: Toggle
+- **WHEN** the user clicks the button of a collapsed node
+- **THEN** the node is expanded, `on_node_expand` is called
 
-### Requirement: Выбор
-В режиме `Single` клик по узлу SHALL выбирать его, повторный — снимать; в `Multiple` — добавлять и убирать из выбора (с `meta_key_selection` без Ctrl/Meta выбор заменяется, с ним — дополняется или снимается). В режиме `Checkbox` клик SHALL переключать узел и, при `propagate_selection_down`, всех потомков, а при `propagate_selection_up` — пересчитывать предков (предок выбран, когда выбраны все его дети; частично выбранный предок получает `data-p-partialchecked` и неполное состояние флажка). Узлы с `selectable = false` SHALL не выбираться. Клик по кнопке раскрытия SHALL не менять выбор. События `on_node_select`/`on_node_unselect` SHALL вызываться при выборе/снятии.
+### Requirement: Selection
+In `Single` mode a click on a node SHALL select it, a repeated one — deselect it; in `Multiple` — add to and remove from the selection (with `meta_key_selection` without Ctrl/Meta the selection is replaced, with it — extended or reduced). In `Checkbox` mode a click SHALL toggle the node and, with `propagate_selection_down`, all descendants, and with `propagate_selection_up` — recompute ancestors (an ancestor is selected when all its children are selected; a partially selected ancestor gets `data-p-partialchecked` and the partial checkbox state). Nodes with `selectable = false` SHALL NOT be selectable. A click on the toggle button SHALL NOT change the selection. The `on_node_select`/`on_node_unselect` events SHALL be called on select/deselect.
 
-#### Scenario: Единичный выбор
-- **WHEN** пользователь кликает по узлу в режиме `Single`, затем по нему же
-- **THEN** сначала ключ в выборе и `aria-selected="true"`, затем выбор пуст
+#### Scenario: Single selection
+- **WHEN** the user clicks a node in `Single` mode, then the same node again
+- **THEN** first the key is in the selection and `aria-selected="true"`, then the selection is empty
 
-#### Scenario: Флажки
-- **WHEN** в режиме `Checkbox` отмечены все дети узла
-- **THEN** узел тоже отмечен; если отмечены не все — узел частично выбран
+#### Scenario: Checkboxes
+- **WHEN** in `Checkbox` mode all children of a node are checked
+- **THEN** the node is checked too; if not all are checked — the node is partially selected
 
-### Requirement: Фильтр
-При `filter` SHALL выводиться поле поиска с значком. Ввод SHALL оставлять узлы, у которых `filter_by` (поля через запятую: `label`, `key`) содержит текст без учёта регистра; в режиме `Lenient` совпавший узел сохраняет всех детей, в `Strict` — только совпавших; предки совпавших узлов остаются и раскрываются. Пустое поле SHALL возвращать полное дерево; вызывается `on_filter`.
+### Requirement: Filter
+With `filter`, a search field with an icon SHALL be rendered. Input SHALL keep the nodes whose `filter_by` (comma-separated fields: `label`, `key`) contains the text, case-insensitively; in `Lenient` mode a matching node keeps all its children, in `Strict` — only matching ones; ancestors of matching nodes stay and are expanded. An empty field SHALL restore the full tree; `on_filter` is called.
 
-#### Scenario: Совпадение вложенного узла
-- **WHEN** введён текст, совпадающий только с подписью вложенного узла
-- **THEN** остаются он и его предки, предки раскрыты
+#### Scenario: Match of a nested node
+- **WHEN** text is entered that matches only the label of a nested node
+- **THEN** it and its ancestors stay, the ancestors are expanded
 
-### Requirement: Клавиатура
-Один узел SHALL иметь `tabindex="0"` (выбранный, иначе первый), остальные `-1`. ↓/↑ SHALL переходить к следующему/предыдущему видимому узлу, → — раскрывать свёрнутый узел и переходить к его первому потомку, ← — сворачивать раскрытый либо идти к родителю, `Enter`/`Space` — выбирать узел, `Home`/`End` — к первому/последнему видимому, `Tab` — выходить из дерева.
+### Requirement: Keyboard
+One node SHALL have `tabindex="0"` (the selected one, else the first), the rest `-1`. ↓/↑ SHALL move to the next/previous visible node, → — expand a collapsed node and move to its first descendant, ← — collapse an expanded one or go to the parent, `Enter`/`Space` — select the node, `Home`/`End` — to the first/last visible one, `Tab` — leave the tree.
 
-#### Scenario: Стрелки
-- **WHEN** фокус на свёрнутом узле с детьми, нажата →
-- **THEN** узел раскрыт, фокус на первом ребёнке
+#### Scenario: Arrows
+- **WHEN** focus is on a collapsed node with children, → is pressed
+- **THEN** the node is expanded, focus is on the first child
 
-### Requirement: Шаблоны
-`node` SHALL заменять содержимое подписи узла (получает узел), `togglericon` — шеврон.
+### Requirement: Templates
+`node` SHALL replace the node's label content (receives the node), `togglericon` — the chevron.
 
-#### Scenario: Свой узел
-- **WHEN** задан `node`
-- **THEN** внутри `p-tree-node-label` выведено его содержимое
+#### Scenario: Custom node
+- **WHEN** `node` is set
+- **THEN** its content is rendered inside `p-tree-node-label`

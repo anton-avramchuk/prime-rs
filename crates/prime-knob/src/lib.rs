@@ -1,10 +1,10 @@
-//! Knob — порт `p-knob` из PrimeNG 21.1.10.
+//! Knob - port of PrimeNG 21.1.10 `p-knob`.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-knob` (вместо хоста `<p-knob>`), внутри `<svg viewBox="0 0 100 100" role="slider">`
-//! с `path.p-knob-range` (вся дуга), `path.p-knob-value` (дуга от нуля шкалы до значения) и `text.p-knob-text`.
+//! Markup and classes as in PrimeNG: root `div.p-knob` (instead of the `<p-knob>` host), inside `<svg viewBox="0 0 100 100" role="slider">`
+//! with `path.p-knob-range` (the whole arc), `path.p-knob-value` (the arc from the scale zero to the value) and `text.p-knob-text`.
 //!
-//! Значение — двусторонний сигнал `value: RwSignal<f64>`; без него компонент ведёт внутреннее состояние (`default_value`, по
-//! умолчанию `min`). Значение меняют кликом по шкале, перетаскиванием мышью и касанием и клавишами.
+//! The value is a two-way signal `value: RwSignal<f64>`; without it the component keeps internal state (`default_value`, `min` by
+//! default). The value is changed by clicking the scale, dragging with the mouse or touch, and with the keyboard.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -29,100 +29,100 @@ pub use state::{
     value_radians, write_classes, zero_radians,
 };
 
-/// Цвет дуги значения по умолчанию.
+/// Default color of the value arc.
 const VALUE_COLOR: &str = "var(--p-knob-value-background)";
-/// Цвет фоновой дуги по умолчанию.
+/// Default color of the background arc.
 const RANGE_COLOR: &str = "var(--p-knob-range-background)";
-/// Цвет текста по умолчанию.
+/// Default text color.
 const TEXT_COLOR: &str = "var(--p-knob-text-color)";
 
-/// Pass-through частей Knob.
+/// Pass-through for Knob parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct KnobPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Элемент `<svg>`.
+    /// `<svg>` element.
     pub svg: Pt,
-    /// Фоновая дуга (`path.p-knob-range`).
+    /// Background arc (`path.p-knob-range`).
     pub range: Pt,
-    /// Дуга значения (`path.p-knob-value`).
+    /// Value arc (`path.p-knob-value`).
     pub value: Pt,
-    /// Текст значения (`text.p-knob-text`).
+    /// Value text (`text.p-knob-text`).
     pub text: Pt,
 }
 
-/// Круговой ввод числа.
+/// Circular number input.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` — двусторонний сигнал.
+/// Each property accepts a value or a signal; `value` is a two-way signal.
 #[component]
 pub fn Knob(
-    /// Двусторонний сигнал значения.
+    /// Two-way value signal.
     #[prop(optional)]
     value: Option<RwSignal<f64>>,
-    /// Начальное значение, если `value` не передан (по умолчанию `min`).
+    /// Initial value if `value` is not passed (`min` by default).
     #[prop(optional, into)]
     default_value: OptProp<f64>,
-    /// Нижняя граница (по умолчанию 0).
+    /// Lower bound (0 by default).
     #[prop(optional, into)]
     min: OptProp<f64>,
-    /// Верхняя граница (по умолчанию 100).
+    /// Upper bound (100 by default).
     #[prop(optional, into)]
     max: OptProp<f64>,
-    /// Шаг значения при вводе указателем (по умолчанию 1).
+    /// Value step for pointer input (1 by default).
     #[prop(optional, into)]
     step: OptProp<f64>,
-    /// Размер в пикселях (по умолчанию 100).
+    /// Size in pixels (100 by default).
     #[prop(optional, into)]
     size: OptProp<u32>,
-    /// Толщина дуг (по умолчанию 14).
+    /// Arc stroke width (14 by default).
     #[prop(optional, into)]
     stroke_width: OptProp<f64>,
-    /// Показывать значение внутри (по умолчанию `true`).
+    /// Show the value inside (`true` by default).
     #[prop(optional, into)]
     show_value: OptProp<bool>,
-    /// Шаблон текста; `{value}` заменяется значением (по умолчанию `{value}`).
+    /// Text template; `{value}` is replaced by the value (`{value}` by default).
     #[prop(optional, into)]
     value_template: OptProp<String>,
-    /// Цвет дуги значения.
+    /// Value arc color.
     #[prop(optional, into)]
     value_color: OptProp<String>,
-    /// Цвет фоновой дуги.
+    /// Background arc color.
     #[prop(optional, into)]
     range_color: OptProp<String>,
-    /// Цвет текста.
+    /// Text color.
     #[prop(optional, into)]
     text_color: OptProp<String>,
-    /// Только чтение.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Обязателен.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Атрибут `name` текста значения.
+    /// `name` attribute of the value text.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Атрибут `tabindex` (по умолчанию 0; при `readonly` и `disabled` — `-1`).
+    /// `tabindex` attribute (0 by default; `-1` with `readonly` and `disabled`).
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при каждом изменении значения пользователем.
+    /// Called on every value change by the user.
     #[prop(optional, into)]
     on_change: Option<Callback<f64>>,
-    /// Pass-through частей.
+    /// Pass-through for parts.
     #[prop(optional)]
     pt: Option<KnobPt>,
 ) -> impl IntoView {
@@ -154,7 +154,7 @@ pub fn Knob(
         svg_ref: NodeRef::new(),
         listeners: StoredValue::new_local(Vec::new()),
     });
-    // Слушатели `window` живут только во время нажатия; при размонтировании снимаются.
+    // `window` listeners live only while pressed; they are removed on unmount.
     {
         let props = props.clone();
         on_cleanup(move || props.unbind_window());
@@ -296,7 +296,7 @@ pub fn Knob(
     }
 }
 
-/// Свойства и состояние экземпляра.
+/// Properties and state of the instance.
 struct Props {
     value: RwSignal<f64>,
     min: OptProp<f64>,
@@ -319,7 +319,7 @@ struct Props {
     style: OptProp<String>,
     style_class: OptProp<String>,
     on_change: Option<Callback<f64>>,
-    /// Во время нажатия значение менялось указателем: следующий `click` не повторяет изменение.
+    /// While pressed, the value was changed by the pointer: the next `click` does not repeat the change.
     moved: AtomicBool,
     svg_ref: NodeRef<leptos::svg::Svg>,
     listeners: StoredValue<Vec<leptos::leptos_dom::helpers::WindowListenerHandle>, LocalStorage>,
@@ -338,7 +338,7 @@ impl Props {
         (self.min.get_untracked().unwrap_or(0.0), self.max.get_untracked().unwrap_or(100.0))
     }
 
-    /// Только чтение или недоступен: ввод заблокирован.
+    /// Read-only or disabled: input is blocked.
     fn blocked(&self) -> bool {
         self.readonly.get() || self.disabled.get()
     }
@@ -347,7 +347,7 @@ impl Props {
         self.readonly.get_untracked() || self.disabled.get_untracked()
     }
 
-    /// Записывает значение и вызывает `on_change` (на каждое применение, как `updateModelValue` PrimeNG).
+    /// Writes the value and calls `on_change` (on every application, like PrimeNG `updateModelValue`).
     fn apply(&self, value: f64) {
         self.value.set(value);
         if let Some(cb) = self.on_change {
@@ -355,7 +355,7 @@ impl Props {
         }
     }
 
-    /// Значение по клиентским координатам указателя (`updateValue`); возвращает, было ли оно применено.
+    /// Value from the client coordinates of the pointer (`updateValue`); returns whether it was applied.
     fn update_from_pointer(&self, client_x: f64, client_y: f64) -> bool {
         let Some(svg) = self.svg_ref.get_untracked() else { return false };
         let rect = svg.unchecked_ref::<web_sys::Element>().get_bounding_client_rect();
@@ -374,7 +374,7 @@ impl Props {
         if self.blocked_untracked() {
             return;
         }
-        // `click` после перетаскивания только повторил бы изменение
+        // a `click` after dragging would only repeat the change
         if !self.moved.swap(false, Ordering::Relaxed) {
             self.update_from_pointer(e.client_x() as f64, e.client_y() as f64);
         }

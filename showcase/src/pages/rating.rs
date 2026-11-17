@@ -1,12 +1,12 @@
-//! Страница Rating: демонстрации `basic`, `disabled`, `numberofstars`, `readonly`, `template` из showcase PrimeNG
-//! (`apps/showcase/doc/rating`). Демонстрации с Angular Forms и `withoutcancel` (в 21.1.10 кнопки отмены нет) не переносятся;
-//! в `template` вместо внешних картинок пользовательские иконки — символы `♥` и `♡`.
+//! Rating page: the `basic`, `disabled`, `numberofstars`, `readonly`, `template` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/rating`). Demos with Angular Forms and `withoutcancel` (21.1.10 has no cancel button) are not ported;
+//! in `template`, instead of external images, the custom icons are the `♥` and `♡` characters.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_rating::{Rating, RatingIcon};
 
-/// Страница `/rating`.
+/// The `/rating` page.
 #[component]
 pub fn RatingPage() -> impl IntoView {
     let basic = RwSignal::new(None::<u32>);

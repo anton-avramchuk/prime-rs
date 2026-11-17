@@ -2,55 +2,55 @@
 
 ## Context
 
-Требования — в `specs/{buttongroup,fluid,iconfield,floatlabel,iftalabel}`. Исходники PrimeNG 21.1.10: `buttongroup/buttongroup.ts`, `fluid/fluid.ts`, `iconfield/iconfield.ts`, `inputicon/inputicon.ts`, `floatlabel/floatlabel.ts`, `iftalabel/iftalabel.ts` и их `style/*style.ts`. Образцы — `crates/prime-inputgroup` (контейнер с слотом и `pt.root`, два компонента в одном крейте), `crates/prime-toolbar`/`prime-card` (контейнер с `style_class`), `prime_core::config` (контекст через `provide_context`).
+Requirements are in `specs/{buttongroup,fluid,iconfield,floatlabel,iftalabel}`. PrimeNG 21.1.10 sources: `buttongroup/buttongroup.ts`, `fluid/fluid.ts`, `iconfield/iconfield.ts`, `inputicon/inputicon.ts`, `floatlabel/floatlabel.ts`, `iftalabel/iftalabel.ts` and their `style/*style.ts`. Models: `crates/prime-inputgroup` (a container with a slot and `pt.root`, two components in one crate), `crates/prime-toolbar`/`prime-card` (a container with `style_class`), `prime_core::config` (context via `provide_context`).
 
-Наблюдения по исходнику, влияющие на решения:
-- Все шесть — «глупые» контейнеры: шаблон `<ng-content>`, классы корня и `pt`; логики нет, кроме выбора класса по `variant` и `iconPosition`.
-- Положение значка, подъём метки, цвета и скругления целиком в CSS темы: `@primeuix/styles/{buttongroup,floatlabel,iftalabel,iconfield}` (в `iconfield` — и правила `.p-inputicon`). Для `fluid` модуля стилей нет (`FluidStyle` только задаёт класс `p-fluid`).
-- Блоки `/* For PrimeNG */` у `buttongroup` нацелены на хост-элемент `p-button` (`.p-buttongroup p-button …`) и у `floatlabel`/`iftalabel` на `.ng-invalid.ng-dirty` — к нашей разметке они неприменимы. Базовый CSS тем уже содержит `.p-buttongroup .p-button …` и `:has(.p-invalid) label`, чего достаточно; `primeng_extra` не расширяется.
-- `Fluid` ничего не стилизует: потомки (`Button`, `InputText`, `Textarea`, `InputNumber`, `Select`, а также `AutoComplete`, `DatePicker` и другие, которых у нас пока нет) читают `hasFluid = fluid() ?? !!pcFluid` через DI и сами добавляют свой класс растягивания. Значит, настоящая работа — потребители.
-- `iconPosition` у `IconField` по умолчанию `left` (в документации сказано «right», но код ставит `left`); поскольку CSS позиционирует значок по `:first-child`/`:last-child`, класс `p-iconfield-left|right` информационный. Переносим поведение кода.
+Observations about the source that affect decisions:
+- All six are "dumb" containers: an `<ng-content>` template, root classes and `pt`; no logic except choosing a class by `variant` and `iconPosition`.
+- Icon position, label lift, colors and rounding are entirely in the theme CSS: `@primeuix/styles/{buttongroup,floatlabel,iftalabel,iconfield}` (`iconfield` also has the `.p-inputicon` rules). `fluid` has no style module (`FluidStyle` only sets the class `p-fluid`).
+- The `/* For PrimeNG */` blocks of `buttongroup` target the `p-button` host element (`.p-buttongroup p-button …`) and those of `floatlabel`/`iftalabel` target `.ng-invalid.ng-dirty` — they do not apply to our markup. The base theme CSS already contains `.p-buttongroup .p-button …` and `:has(.p-invalid) label`, which is enough; `primeng_extra` is not extended.
+- `Fluid` styles nothing: descendants (`Button`, `InputText`, `Textarea`, `InputNumber`, `Select`, as well as `AutoComplete`, `DatePicker` and others we do not have yet) read `hasFluid = fluid() ?? !!pcFluid` via DI and add their own stretching class. So the real work is in the consumers.
+- `iconPosition` of `IconField` defaults to `left` (the documentation says "right", but the code sets `left`); since the CSS positions the icon by `:first-child`/`:last-child`, the class `p-iconfield-left|right` is informational. We port the behavior of the code.
 
 ## Decisions
 
-### D1. Крейты
-`prime-buttongroup`, `prime-fluid`, `prime-iconfield` (`IconField`, `InputIcon`), `prime-floatlabel`, `prime-iftalabel`. Каждый зависит только от `prime-core` (`ClassNames`, `Pt`, `OptProp`/`Prop`); у каждого `ssr`/`hydrate` features, rustdoc с примером, SSR-тесты. Компоненты — по образцу `InputGroup`: `children: Children`, `style_class: OptProp<String>`, `style: OptProp<String>`, `pt: Option<…Pt>`, где `…Pt { root: Pt }`; одиночные свойства (`variant`, `icon_position`) — `Prop<…>`. Все пять без статической ветви: разметка из одного элемента с замыканиями только там, где свойство может быть сигналом (`class` корня).
+### D1. Crates
+`prime-buttongroup`, `prime-fluid`, `prime-iconfield` (`IconField`, `InputIcon`), `prime-floatlabel`, `prime-iftalabel`. Each depends only on `prime-core` (`ClassNames`, `Pt`, `OptProp`/`Prop`); each has `ssr`/`hydrate` features, rustdoc with an example, SSR tests. Components follow `InputGroup`: `children: Children`, `style_class: OptProp<String>`, `style: OptProp<String>`, `pt: Option<…Pt>`, where `…Pt { root: Pt }`; single properties (`variant`, `icon_position`) are `Prop<…>`. All five have no static branch: markup of a single element with closures only where a property can be a signal (the root `class`).
 
-### D2. Контекст Fluid (`prime-core::fluid`)
-`FluidContext` (маркерный тип), `provide_fluid()` (`provide_context(FluidContext)`), `in_fluid() -> bool` (`use_context::<FluidContext>().is_some()`), `resolve_fluid(explicit: Option<bool>) -> bool` (`explicit.unwrap_or_else(in_fluid)`). `Fluid` вызывает `provide_fluid()` при создании и рисует `div.p-fluid`. Потребители читают контекст **один раз при создании** (`let inherited = in_fluid()`), потому что предок не меняется.
+### D2. Fluid context (`prime-core::fluid`)
+`FluidContext` (a marker type), `provide_fluid()` (`provide_context(FluidContext)`), `in_fluid() -> bool` (`use_context::<FluidContext>().is_some()`), `resolve_fluid(explicit: Option<bool>) -> bool` (`explicit.unwrap_or_else(in_fluid)`). `Fluid` calls `provide_fluid()` on creation and renders `div.p-fluid`. Consumers read the context **once on creation** (`let inherited = in_fluid()`), because the ancestor does not change.
 
-### D3. Потребители fluid
-В `Button`, `InputText`, `Textarea`, `InputNumber` и `Select` свойство `fluid` меняется с `Prop<bool>` на `OptProp<bool>` (вызовы `fluid=true` и `fluid=signal_of_option` совместимы; `fluid=signal_of_bool` теперь нужно оборачивать в `Some`, но в showcase и тестах таких вызовов нет). Эффективное значение — `fluid.get().unwrap_or(inherited)`: в статической ветви вычисляется один раз (признак `all_static!` не нарушается — контекст статичен), в реактивной читается в замыкании. `ToggleButton` и `SelectButton` не меняются (у них в PrimeNG нет наследования).
+### D3. Fluid consumers
+In `Button`, `InputText`, `Textarea`, `InputNumber` and `Select` the `fluid` property changes from `Prop<bool>` to `OptProp<bool>` (calls `fluid=true` and `fluid=signal_of_option` are compatible; `fluid=signal_of_bool` now has to be wrapped in `Some`, but there are no such calls in the showcase and tests). The effective value is `fluid.get().unwrap_or(inherited)`: in the static branch it is computed once (the `all_static!` marker is not violated — the context is static), in the reactive one it is read in a closure. `ToggleButton` and `SelectButton` do not change (they have no inheritance in PrimeNG).
 
-### D4. FloatLabel и IftaLabel
-`FloatLabelVariant { Over (по умолчанию), On, In }` и классы `p-floatlabel p-floatlabel-over|on|in` (чистая функция `write_classes` с табличным тестом); замыкание `class` позволяет менять вариант без пересоздания детей. `IftaLabel` — один постоянный класс. Метка `<label for>` и поле остаются в разметке пользователя (как в PrimeNG).
+### D4. FloatLabel and IftaLabel
+`FloatLabelVariant { Over (default), On, In }` and classes `p-floatlabel p-floatlabel-over|on|in` (the pure function `write_classes` with a table-driven test); the `class` closure lets the variant change without recreating children. `IftaLabel` has one constant class. The `<label for>` and the field stay in the user's markup (as in PrimeNG).
 
-### D5. IconField и InputIcon
-`IconPosition { Left (по умолчанию), Right }`; классы `p-iconfield p-iconfield-left|right`; `InputIcon` — `span.p-inputicon` со слотом, иконка передаётся как дочерний элемент (SVG из `prime-icons` или свой).
+### D5. IconField and InputIcon
+`IconPosition { Left (default), Right }`; classes `p-iconfield p-iconfield-left|right`; `InputIcon` is `span.p-inputicon` with a slot, the icon is passed as a child element (an SVG from `prime-icons` or custom).
 
 ### D6. CSS
-`buttongroup`, `floatlabel`, `iftalabel` добавляются в `theme.components` (`iconfield` уже там); `cargo xtask gen-theme`, затем проверка `git diff` на неизменность CSS остальных компонентов. Для `fluid` модуля нет — не добавляется.
+`buttongroup`, `floatlabel`, `iftalabel` are added to `theme.components` (`iconfield` is already there); `cargo xtask gen-theme`, then check `git diff` for unchanged CSS of other components. `fluid` has no module — not added.
 
-### D7. Демонстрации
-Страницы `/buttongroup` (`basic` — три кнопки; `split` с иконкой — по `button/buttongroup-doc.ts`), `/fluid` (`basic`), `/iconfield` (`basic`, `sizes`, `template`, `floatlabel`, `iftalabel`), `/floatlabel` (`basic`, `variants`, `invalid`), `/iftalabel` (`basic`, `invalid`). В `template` у `iconfield` вместо логотипа PrimeVue — простой SVG. На страницы InputText, InputNumber, Select и Textarea добавляются демонстрации `floatlabel` и `iftalabel` из их документации (если они там есть); e2e каждой страницы и обновлённых мест. Иконки — `SearchIcon`, `UserIcon`/`LockIcon` недоступны в `prime-icons`, поэтому в демонстрациях используются только имеющиеся (`SearchIcon`, `SpinnerIcon`, `TimesIcon`, `CheckIcon`); различие фиксируется в документации.
+### D7. Demos
+Pages `/buttongroup` (`basic` — three buttons; `split` with an icon — after `button/buttongroup-doc.ts`), `/fluid` (`basic`), `/iconfield` (`basic`, `sizes`, `template`, `floatlabel`, `iftalabel`), `/floatlabel` (`basic`, `variants`, `invalid`), `/iftalabel` (`basic`, `invalid`). In `iconfield`'s `template` a simple SVG replaces the PrimeVue logo. The `floatlabel` and `iftalabel` demos from their documentation (if they exist there) are added to the InputText, InputNumber, Select and Textarea pages; e2e for each page and the updated places. Icons — `SearchIcon`, `UserIcon`/`LockIcon` are unavailable in `prime-icons`, so the demos use only the available ones (`SearchIcon`, `SpinnerIcon`, `TimesIcon`, `CheckIcon`); the difference is recorded in the documentation.
 
-### D8. Тесты
-SSR: структура, классы и порядок, `style`/`style_class`/`pt`, варианты и позиции, вложенность, пустое содержимое; для Fluid — все пять потребителей (включая приоритет явного `false`, реактивное `fluid`, вложенность). Браузерных тестов нет: компоненты статичны, а поведение проверяют e2e (позиционирование и подъём метки, слитность кнопок, растягивание по ширине).
+### D8. Tests
+SSR: structure, classes and order, `style`/`style_class`/`pt`, variants and positions, nesting, empty content; for Fluid — all five consumers (including the priority of an explicit `false`, reactive `fluid`, nesting). No browser tests: the components are static, and behavior is checked by e2e (positioning and label lift, joined buttons, stretching to full width).
 
-### D9. Бенчмарки
-Сценарии `buttongroup`, `fluid`, `iconfield`, `floatlabel`, `iftalabel` (по `-1` и `-1000`) и `case-*` для wasm; бюджеты по измерению.
+### D9. Benchmarks
+Scenarios `buttongroup`, `fluid`, `iconfield`, `floatlabel`, `iftalabel` (`-1` and `-1000` each) and `case-*` for wasm; budgets by measurement.
 
 ## Risks / Trade-offs
 
-- [Смена типа `fluid` в пяти существующих крейтах] → API остаётся совместимым для `fluid=true` и без значения; поведение без `Fluid` не меняется (тесты существующих крейтов остаются зелёными без правок, кроме тех, что явно подают `Signal<bool>`).
-- [CSS темы меняется только добавлением модулей] → проверка `git diff` после `gen-theme`.
-- [Нет браузерных тестов] → компенсируется e2e с вычисленными стилями (расположение значка, подъём метки, радиусы кнопок).
-- [Иконок `user`, `lock` в `prime-icons` нет, демонстрации упрощены] → фиксируется в `docs/field-wrappers.md`.
+- [Changing the `fluid` type in five existing crates] → the API stays compatible for `fluid=true` and with no value; behavior without `Fluid` does not change (tests of existing crates stay green without edits, except those that explicitly pass `Signal<bool>`).
+- [Theme CSS changes only by adding modules] → check `git diff` after `gen-theme`.
+- [No browser tests] → compensated by e2e with computed styles (icon position, label lift, button radii).
+- [No `user`, `lock` icons in `prime-icons`, demos simplified] → recorded in `docs/field-wrappers.md`.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

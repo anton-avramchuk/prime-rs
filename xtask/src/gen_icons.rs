@@ -1,25 +1,25 @@
-//! `gen-icons`: генерация `prime-icons` из исходников иконок PrimeNG (`packages/primeng/src/icons`).
+//! `gen-icons`: generation of `prime-icons` from PrimeNG icon sources (`packages/primeng/src/icons`).
 //!
-//! У всех иконок PrimeNG общий `viewBox="0 0 14 14"` (задаётся в `BaseIcon`); форма иконки — один или
-//! несколько `<svg:path d="…">`, иногда внутри `<svg:g clip-path>` с `clipPath`, равным всему `viewBox`
-//! (его мы не воспроизводим: он ничего не обрезает). `blank` — отдельный случай (прозрачный `rect`) и пишется вручную.
+//! All PrimeNG icons share the same `viewBox="0 0 14 14"` (set in `BaseIcon`); an icon's shape is one or
+//! several `<svg:path d="...">`, sometimes inside `<svg:g clip-path>` with a `clipPath` equal to the whole `viewBox`
+//! (we do not reproduce it: it clips nothing). `blank` is a special case (a transparent `rect`) and is written by hand.
 
 use std::fmt::Write as _;
 use std::path::Path;
 
-/// Одна иконка PrimeNG.
+/// A single PrimeNG icon.
 #[derive(Debug, PartialEq, Eq)]
 pub struct Icon {
-    /// Имя каталога PrimeNG; оно же имя feature-флага (`check`, `chevrondown`).
+    /// PrimeNG directory name; also the feature flag name (`check`, `chevrondown`).
     pub feature: String,
-    /// Имя типа (`CheckIcon`).
+    /// Type name (`CheckIcon`).
     pub class: String,
-    /// Значения `d` всех `<svg:path>` по порядку.
+    /// `d` values of all `<svg:path>` in order.
     pub paths: Vec<String>,
 }
 
 const ALLOWED_TAGS: [&str; 5] = ["g", "path", "defs", "clipPath", "rect"];
-/// Каталоги, которые не генерируются.
+/// Directories that are not generated.
 const SKIP: [&str; 2] = ["baseicon", "blank"];
 const VIEW_BOX: &str = "0 0 14 14";
 
@@ -29,18 +29,18 @@ fn between<'a>(s: &'a str, start: &str, end: &str) -> Option<&'a str> {
     Some(&s[from..from + len])
 }
 
-/// Разбирает исходник иконки.
+/// Parses an icon source.
 pub fn parse_icon(feature: &str, source: &str) -> Result<Icon, String> {
     let err = |m: &str| format!("{feature}: {m}");
-    let class = between(source, "export class ", " extends BaseIcon").ok_or_else(|| err("не найден `export class … extends BaseIcon`"))?;
-    let template = between(source, "template: `", "`").ok_or_else(|| err("не найден template"))?;
+    let class = between(source, "export class ", " extends BaseIcon").ok_or_else(|| err("`export class ... extends BaseIcon` not found"))?;
+    let template = between(source, "template: `", "`").ok_or_else(|| err("template not found"))?;
 
     let mut rest = template;
     while let Some(i) = rest.find("<svg:") {
         rest = &rest[i + "<svg:".len()..];
         let tag: String = rest.chars().take_while(|c| c.is_ascii_alphanumeric()).collect();
         if !ALLOWED_TAGS.contains(&tag.as_str()) {
-            return Err(err(&format!("неожиданный тег <svg:{tag}>")));
+            return Err(err(&format!("unexpected tag <svg:{tag}>")));
         }
     }
 
@@ -48,24 +48,24 @@ pub fn parse_icon(feature: &str, source: &str) -> Result<Icon, String> {
     let mut rest = template;
     while let Some(i) = rest.find("<svg:path") {
         rest = &rest[i..];
-        let tag_end = rest.find("/>").ok_or_else(|| err("не закрыт <svg:path>"))?;
-        let d = between(&rest[..tag_end], " d=\"", "\"").ok_or_else(|| err("у <svg:path> нет d"))?;
+        let tag_end = rest.find("/>").ok_or_else(|| err("<svg:path> is not closed"))?;
+        let d = between(&rest[..tag_end], " d=\"", "\"").ok_or_else(|| err("<svg:path> has no d"))?;
         paths.push(d.split_whitespace().collect::<Vec<_>>().join(" "));
         rest = &rest[tag_end..];
     }
     if paths.is_empty() {
-        return Err(err("нет ни одного <svg:path>"));
+        return Err(err("no <svg:path> at all"));
     }
     Ok(Icon { feature: feature.to_owned(), class: class.trim().to_owned(), paths })
 }
 
-/// Проверяет, что `BaseIcon` по-прежнему задаёт `viewBox`, на который рассчитан `prime-icons`.
+/// Checks that `BaseIcon` still sets the `viewBox` that `prime-icons` is designed for.
 pub fn check_view_box(base_icon_source: &str) -> Result<(), String> {
-    let found = between(base_icon_source, "viewBox: '", "'").ok_or("в baseicon.ts не найден viewBox")?;
-    if found == VIEW_BOX { Ok(()) } else { Err(format!("viewBox PrimeNG изменился: {found}, ожидалось {VIEW_BOX}")) }
+    let found = between(base_icon_source, "viewBox: '", "'").ok_or("viewBox not found in baseicon.ts")?;
+    if found == VIEW_BOX { Ok(()) } else { Err(format!("PrimeNG viewBox changed: {found}, expected {VIEW_BOX}")) }
 }
 
-/// Читает все иконки из каталога `icons`.
+/// Reads all icons from the `icons` directory.
 pub fn read_icons(icons_dir: &Path) -> Result<Vec<Icon>, String> {
     let base = std::fs::read_to_string(icons_dir.join("baseicon/baseicon.ts")).map_err(|e| format!("baseicon.ts: {e}"))?;
     check_view_box(&base)?;
@@ -80,29 +80,29 @@ pub fn read_icons(icons_dir: &Path) -> Result<Vec<Icon>, String> {
     dirs.iter()
         .map(|name| {
             let dir = icons_dir.join(name);
-            // Исходник иконки — единственный .ts, кроме public_api.ts (у `filterfill` он называется `filter.ts`).
+            // The icon source is the only .ts other than public_api.ts (for `filterfill` it is called `filter.ts`).
             let file = std::fs::read_dir(&dir)
                 .map_err(|e| format!("{name}: {e}"))?
                 .flatten()
                 .map(|e| e.path())
                 .find(|p| p.extension().is_some_and(|x| x == "ts") && p.file_name().is_some_and(|f| f != "public_api.ts"))
-                .ok_or_else(|| format!("{name}: нет исходника"))?;
+                .ok_or_else(|| format!("{name}: no source"))?;
             parse_icon(name, &std::fs::read_to_string(&file).map_err(|e| format!("{}: {e}", file.display()))?)
         })
         .collect()
 }
 
-/// Rust-код всех иконок (`src/generated.rs`).
+/// Rust code of all icons (`src/generated.rs`).
 pub fn render_rust(icons: &[Icon]) -> String {
     let mut s = String::from(
-        "// Файл сгенерирован `cargo xtask gen-icons` из иконок PrimeNG; не редактировать вручную.\n\
-         // Иконки добавляются только при включённом одноимённом feature.\n\n",
+        "// File generated by `cargo xtask gen-icons` from the PrimeNG icons; do not edit manually.\n\
+         // Icons are added only when the feature of the same name is enabled.\n\n",
     );
     for icon in icons {
         let paths = icon.paths.iter().map(|d| format!("{d:?}")).collect::<Vec<_>>().join(", ");
         let _ = writeln!(s, "#[cfg(feature = {:?})]\nicon!({}, [{}]);\n", icon.feature, icon.class, paths);
     }
-    s.push_str("/// Все иконки подряд (для демо и измерений размера).\n#[cfg(feature = \"all-icons\")]\n#[::leptos::component]\n");
+    s.push_str("/// All icons in a row (for demos and size measurements).\n#[cfg(feature = \"all-icons\")]\n#[::leptos::component]\n");
     s.push_str("pub fn AllIcons() -> impl ::leptos::prelude::IntoView {\n    use ::leptos::prelude::*;\n    [\n");
     s.push_str("        view! { <crate::BlankIcon /> }.into_any(),\n");
     for icon in icons {
@@ -115,10 +115,10 @@ pub fn render_rust(icons: &[Icon]) -> String {
 const BEGIN: &str = "# BEGIN GENERATED FEATURES";
 const END: &str = "# END GENERATED FEATURES";
 
-/// Подставляет список features между маркерами в `Cargo.toml` крейта.
+/// Substitutes the features list between the markers in the crate's `Cargo.toml`.
 pub fn render_features(cargo_toml: &str, icons: &[Icon]) -> Result<String, String> {
     let (b, e) = (cargo_toml.find(BEGIN), cargo_toml.find(END));
-    let (Some(b), Some(e)) = (b, e) else { return Err(format!("в Cargo.toml нет маркеров `{BEGIN}` / `{END}`")) };
+    let (Some(b), Some(e)) = (b, e) else { return Err(format!("Cargo.toml has no markers `{BEGIN}` / `{END}`")) };
     let mut block = format!("{BEGIN}\n");
     for icon in icons {
         let _ = writeln!(block, "{} = []", icon.feature);
@@ -128,7 +128,7 @@ pub fn render_features(cargo_toml: &str, icons: &[Icon]) -> Result<String, Strin
     Ok(format!("{}{block}{}", &cargo_toml[..b], &cargo_toml[e..]))
 }
 
-/// Генерирует файлы `prime-icons` из исходников PrimeNG.
+/// Generates the `prime-icons` files from PrimeNG sources.
 pub fn run(icons_dir: &Path, crate_dir: &Path) -> Result<usize, String> {
     let icons = read_icons(icons_dir)?;
     let rs = render_rust(&icons);

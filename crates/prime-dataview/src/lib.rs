@@ -1,8 +1,8 @@
-//! DataView — порт `p-dataview` из PrimeNG 21.1.10.
+//! DataView - port of `p-dataview` from PrimeNG 21.1.10.
 //!
-//! Данные в виде списка или сетки с пагинатором, сортировкой и фильтром. Вид элементов задаёт приложение
-//! (`list` и `grid` получают элементы текущей страницы), фильтр — предикатом, сортировка — сравнением и порядком.
-//! Логика отбора и страницы — чистая [`data`].
+//! Data as a list or a grid with a paginator, sorting and a filter. The application defines how items look
+//! (`list` and `grid` receive the items of the current page), the filter is a predicate, sorting is a comparison and an order.
+//! The selection and page logic is the pure [`data`].
 //!
 //! ```
 //! #![recursion_limit = "512"]
@@ -30,68 +30,68 @@ use std::sync::Arc;
 #[cfg(target_arch = "wasm32")]
 use std::sync::atomic::{AtomicBool, Ordering as AtomicOrdering};
 
-/// Вид данных.
+/// Data layout.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum DataViewLayout {
-    /// Список (по умолчанию).
+    /// List (default).
     #[default]
     List,
-    /// Сетка.
+    /// Grid.
     Grid,
 }
 
-/// Положение пагинатора.
+/// Paginator position.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum PaginatorPosition {
-    /// Сверху.
+    /// Top.
     Top,
-    /// Снизу (по умолчанию).
+    /// Bottom (default).
     #[default]
     Bottom,
-    /// Сверху и снизу.
+    /// Top and bottom.
     Both,
 }
 
-/// Событие загрузки в режиме `lazy`: страница, строки, порядок сортировки.
+/// Load event in `lazy` mode: page, rows, sort order.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct LazyLoadEvent {
-    /// Индекс первой записи.
+    /// Index of the first record.
     pub first: usize,
-    /// Число строк на странице.
+    /// Number of rows per page.
     pub rows: usize,
-    /// Порядок сортировки: 1, -1 или 0.
+    /// Sort order: 1, -1 or 0.
     pub sort_order: i32,
 }
 
-/// Событие смены страницы.
+/// Page change event.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct PageEvent {
-    /// Индекс первой записи.
+    /// Index of the first record.
     pub first: usize,
-    /// Число строк на странице.
+    /// Number of rows per page.
     pub rows: usize,
 }
 
-/// Pass-through частей [`DataView`].
+/// Pass-through of the [`DataView`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct DataViewPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Заголовок.
+    /// Header.
     pub header: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
-    /// Сообщение о пустых данных.
+    /// Empty data message.
     pub empty_message: Pt,
-    /// Подвал.
+    /// Footer.
     pub footer: Pt,
-    /// Индикатор загрузки.
+    /// Loading indicator.
     pub loading: Pt,
-    /// Части пагинатора.
+    /// Paginator parts.
     pub paginator: PaginatorPt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 struct Core<T: Send + Sync + 'static> {
     value: Prop<Vec<T>>,
     first: RwSignal<usize>,
@@ -142,114 +142,114 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
     }
 }
 
-/// Данные в виде списка или сетки.
+/// Data as a list or a grid.
 ///
-/// Каждое свойство принимает значение или сигнал; `first` и `rows` — двусторонние сигналы.
+/// Every property accepts a value or a signal; `first` and `rows` are two-way signals.
 #[component]
 pub fn DataView<T>(
-    /// Элементы.
+    /// Items.
     #[prop(optional, into)]
     value: Prop<Vec<T>>,
-    /// Шаблон списка: получает элементы текущей страницы.
+    /// List template: receives the items of the current page.
     #[prop(optional, into)]
     list: Option<Callback<Vec<T>, AnyView>>,
-    /// Шаблон сетки: получает элементы текущей страницы.
+    /// Grid template: receives the items of the current page.
     #[prop(optional, into)]
     grid: Option<Callback<Vec<T>, AnyView>>,
-    /// Вид.
+    /// Layout.
     #[prop(optional, into)]
     layout: Prop<DataViewLayout>,
-    /// Включить пагинатор.
+    /// Enable the paginator.
     #[prop(optional, into)]
     paginator: Prop<bool>,
-    /// Двусторонний сигнал индекса первой записи страницы.
+    /// Two-way signal of the index of the first record of the page.
     #[prop(optional)]
     first: Option<RwSignal<usize>>,
-    /// Двусторонний сигнал числа строк на странице.
+    /// Two-way signal of the number of rows per page.
     #[prop(optional)]
     rows: Option<RwSignal<usize>>,
-    /// Число строк по умолчанию (когда `rows` не передан).
+    /// Default number of rows (when `rows` is not passed).
     #[prop(optional, default = 10)]
     default_rows: usize,
-    /// Всего записей в режиме `lazy`.
+    /// Total records in `lazy` mode.
     #[prop(optional, into)]
     total_records: Prop<usize>,
-    /// Число ссылок на страницы.
+    /// Number of page links.
     #[prop(optional, default = Prop::Static(5), into)]
     page_links: Prop<usize>,
-    /// Варианты числа строк на странице.
+    /// Options for the number of rows per page.
     #[prop(optional, into)]
     rows_per_page_options: Prop<Vec<RowsPerPage>>,
-    /// Положение пагинатора.
+    /// Paginator position.
     #[prop(optional, into)]
     paginator_position: Prop<PaginatorPosition>,
-    /// Дополнительный класс пагинатора.
+    /// Extra class of the paginator.
     #[prop(optional, into)]
     paginator_style_class: OptProp<String>,
-    /// Показывать пагинатор при единственной странице.
+    /// Show the paginator when there is a single page.
     #[prop(optional, default = Prop::Static(true), into)]
     always_show_paginator: Prop<bool>,
-    /// Высота выпадающего списка пагинатора.
+    /// Height of the paginator dropdown.
     #[prop(optional, default = Prop::Static(Some("200px".to_owned())), into)]
     paginator_dropdown_scroll_height: OptProp<String>,
-    /// Шаблон отчёта о текущей странице.
+    /// Current page report template.
     #[prop(optional, default = Prop::Static(Some("{currentPage} of {totalPages}".to_owned())), into)]
     current_page_report_template: OptProp<String>,
-    /// Показывать отчёт о текущей странице.
+    /// Show the current page report.
     #[prop(optional, into)]
     show_current_page_report: Prop<bool>,
-    /// Показывать список перехода на страницу.
+    /// Show the jump-to-page dropdown.
     #[prop(optional, into)]
     show_jump_to_page_dropdown: Prop<bool>,
-    /// Показывать кнопки первой и последней страницы.
+    /// Show the first and last page buttons.
     #[prop(optional, default = Prop::Static(true), into)]
     show_first_last_icon: Prop<bool>,
-    /// Показывать ссылки на страницы.
+    /// Show the page links.
     #[prop(optional, default = Prop::Static(true), into)]
     show_page_links: Prop<bool>,
-    /// Данные приходят постранично от приложения.
+    /// Data arrives page by page from the application.
     #[prop(optional, into)]
     lazy: Prop<bool>,
-    /// Вызвать `on_lazy_load` при создании (в режиме `lazy`).
+    /// Call `on_lazy_load` on creation (in `lazy` mode).
     #[prop(optional, default = true)]
     lazy_load_on_init: bool,
-    /// Предикат фильтра (замена `filterBy`).
+    /// Filter predicate (replaces `filterBy`).
     #[prop(optional, into)]
     filter: Option<Callback<T, bool>>,
-    /// Сравнение для сортировки (замена `sortField`).
+    /// Comparison for sorting (replaces `sortField`).
     #[prop(optional, into)]
     compare: Option<Callback<(T, T), Ordering>>,
-    /// Порядок сортировки: 1, -1 или 0.
+    /// Sort order: 1, -1 or 0.
     #[prop(optional, into)]
     sort_order: Prop<i32>,
-    /// Текст при отсутствии данных.
+    /// Text when there is no data.
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-    /// Показывать индикатор загрузки.
+    /// Show the loading indicator.
     #[prop(optional, into)]
     loading: Prop<bool>,
-    /// Заголовок.
+    /// Header.
     #[prop(optional, into)]
     header: Option<ViewFn>,
-    /// Подвал.
+    /// Footer.
     #[prop(optional, into)]
     footer: Option<ViewFn>,
-    /// Свое содержимое при отсутствии данных.
+    /// Custom content when there is no data.
     #[prop(optional, into)]
     empty: Option<ViewFn>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при смене страницы.
+    /// Called when the page changes.
     #[prop(optional, into)]
     on_page: Option<Callback<PageEvent>>,
-    /// Вызывается в режиме `lazy` при смене страницы, сортировки и при создании.
+    /// Called in `lazy` mode on page change, sort change and on creation.
     #[prop(optional, into)]
     on_lazy_load: Option<Callback<LazyLoadEvent>>,
-    /// Pass-through частей.
+    /// Pass-through of the parts.
     #[prop(optional)]
     pt: Option<DataViewPt>,
 ) -> impl IntoView
@@ -271,7 +271,7 @@ where
         on_lazy_load,
     });
 
-    // Возврат на допустимую страницу, начальная загрузка и сортировка в режиме `lazy` — только в браузере.
+    // Returning to a valid page, initial load and sorting in `lazy` mode - browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let c = core.clone();
@@ -296,7 +296,7 @@ where
                 }
             });
         }
-        // Смена порядка сортировки возвращает на первую страницу и в режиме `lazy` запрашивает данные.
+        // A sort order change returns to the first page and, in `lazy` mode, requests data.
         let c = core.clone();
         let started = Arc::new(AtomicBool::new(false));
         Effect::new(move |_| {

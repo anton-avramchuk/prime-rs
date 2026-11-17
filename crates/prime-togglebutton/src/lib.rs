@@ -1,19 +1,19 @@
-//! ToggleButton — порт `p-togglebutton` из PrimeNG 21.1.10.
+//! ToggleButton: a port of `p-togglebutton` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-togglebutton[role=button]` (вместо хоста `<p-togglebutton>`), внутри
-//! `span.p-togglebutton-content` с иконкой и `span.p-togglebutton-label`. Нативного `<input>` нет.
+//! Markup and classes as in PrimeNG: root `div.p-togglebutton[role=button]` (instead of the host `<p-togglebutton>`), inside it
+//! `span.p-togglebutton-content` with an icon and `span.p-togglebutton-label`. There is no native `<input>`.
 //!
-//! Состояние — двусторонний сигнал `checked: RwSignal<bool>`; без него компонент ведёт внутреннее состояние, начинающееся
-//! с `default_checked`. Клик и клавиши Enter и Space переключают состояние и вызывают `on_change`. Иконка передаётся как
-//! `ViewFn` (например, `<CheckIcon />` из `prime-icons`), а не именем класса шрифта.
+//! State is a two-way signal `checked: RwSignal<bool>`; without it the component keeps internal state starting
+//! from `default_checked`. Click and the Enter and Space keys toggle the state and call `on_change`. The icon is passed as a
+//! `ViewFn` (for example, `<CheckIcon />` from `prime-icons`), not as a font class name.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_togglebutton::ToggleButton;
 //!
 //! let checked = RwSignal::new(true);
-//! let html = view! { <ToggleButton checked=checked on_label="Вкл" off_label="Выкл" /> }.to_html();
-//! assert!(html.contains("p-togglebutton-checked") && html.contains(r#"aria-pressed="true""#) && html.contains("Вкл"));
+//! let html = view! { <ToggleButton checked=checked on_label="On" off_label="Off" /> }.to_html();
+//! assert!(html.contains("p-togglebutton-checked") && html.contains(r#"aria-pressed="true""#) && html.contains("On"));
 //! ```
 
 mod state;
@@ -25,100 +25,100 @@ use std::sync::Arc;
 
 pub use state::{IconPos, ToggleButtonState, data_p, write_classes};
 
-/// Событие изменения: новое состояние и исходное событие браузера.
+/// Change event: the new state and the original browser event.
 #[derive(Clone, Debug)]
 pub struct ToggleButtonChange {
-    /// Новое состояние.
+    /// New state.
     pub checked: bool,
-    /// Исходное событие (`click` или `keydown`).
+    /// Original event (`click` or `keydown`).
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей ToggleButton.
+/// Pass-through parts of ToggleButton.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ToggleButtonPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Содержимое (`span.p-togglebutton-content`).
+    /// Content (`span.p-togglebutton-content`).
     pub content: Pt,
-    /// Оболочка иконки (`span.p-togglebutton-icon`).
+    /// Icon wrapper (`span.p-togglebutton-icon`).
     pub icon: Pt,
-    /// Метка (`span.p-togglebutton-label`).
+    /// Label (`span.p-togglebutton-label`).
     pub label: Pt,
 }
 
-/// Кнопка с булевым состоянием.
+/// Button with a boolean state.
 ///
-/// Каждое свойство принимает значение или сигнал; `checked` — двусторонний сигнал.
+/// Every property accepts a value or a signal; `checked` is a two-way signal.
 #[component]
 pub fn ToggleButton(
-    /// Двусторонний сигнал состояния.
+    /// Two-way state signal.
     #[prop(optional)]
     checked: Option<RwSignal<bool>>,
-    /// Начальное состояние, если `checked` не передан.
+    /// Initial state when `checked` is not passed.
     #[prop(optional)]
     default_checked: bool,
-    /// Метка включённой кнопки (по умолчанию «Yes»).
+    /// Label of the checked button ("Yes" by default).
     #[prop(optional, into)]
     on_label: OptProp<String>,
-    /// Метка выключенной кнопки (по умолчанию «No»).
+    /// Label of the unchecked button ("No" by default).
     #[prop(optional, into)]
     off_label: OptProp<String>,
-    /// Иконка включённой кнопки; выводится в `span.p-togglebutton-icon`.
+    /// Icon of the checked button; rendered in `span.p-togglebutton-icon`.
     #[prop(optional, into)]
     on_icon: Option<ViewFn>,
-    /// Иконка выключенной кнопки; выводится в `span.p-togglebutton-icon`.
+    /// Icon of the unchecked button; rendered in `span.p-togglebutton-icon`.
     #[prop(optional, into)]
     off_icon: Option<ViewFn>,
-    /// Положение иконки.
+    /// Icon position.
     #[prop(optional, into)]
     icon_pos: Prop<IconPos>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Недоступна.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Разрешено ли снимать выбор; ограничение действует только при явном `false`.
+    /// Whether deselecting is allowed; the restriction applies only to an explicit `false`.
     #[prop(optional, into)]
     allow_empty: OptProp<bool>,
-    /// На всю ширину.
+    /// Full width.
     #[prop(optional, into)]
     fluid: Prop<bool>,
-    /// Атрибут `tabindex` (по умолчанию `0`, при `disabled` `-1`).
+    /// `tabindex` attribute (`0` by default, `-1` when `disabled`).
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Заменяет иконку по умолчанию; получает текущее состояние.
+    /// Replaces the default icon; receives the current state.
     #[prop(optional, into)]
     icon_template: Option<Callback<bool, AnyView>>,
-    /// Заменяет всё содержимое после `span.p-togglebutton-content`; получает текущее состояние.
+    /// Replaces all content after `span.p-togglebutton-content`; receives the current state.
     #[prop(optional, into)]
     content_template: Option<Callback<bool, AnyView>>,
-    /// Вызывается после переключения пользователем.
+    /// Called after the user toggles it.
     #[prop(optional, into)]
     on_change: Option<Callback<ToggleButtonChange>>,
-    /// Вызывается при получении фокуса.
+    /// Called when it receives focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса.
+    /// Called when it loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<ToggleButtonPt>,
 ) -> impl IntoView {
@@ -144,7 +144,7 @@ pub fn ToggleButton(
         content_template,
     });
 
-    // Как `toggle` в PrimeNG: и клик, и Enter/Space; `allow_empty = false` не даёт выключить включённую кнопку.
+    // Like `toggle` in PrimeNG: both click and Enter/Space; `allow_empty = false` prevents switching a checked button off.
     let toggle = {
         let props = props.clone();
         move |e: web_sys::Event| {
@@ -218,7 +218,7 @@ pub fn ToggleButton(
     }
 }
 
-/// Замыкание над свойствами экземпляра: клоны `Arc` и указатель на функцию без захвата.
+/// Closure over the instance properties: `Arc` clones and a function pointer without capture.
 fn rx<T>(
     props: &Arc<Props>,
     pt: &Arc<ToggleButtonPt>,
@@ -253,13 +253,13 @@ fn root_class(props: &Props, pt: &ToggleButtonPt) -> Cow<'static, str> {
     cn.finish_cow()
 }
 
-/// Стиль корня; пустой результат — `None`, чтобы не выводить `style=""`.
+/// Root style; an empty result is `None`, so that `style=""` is not rendered.
 fn root_style(props: &Props, pt: &ToggleButtonPt) -> Option<String> {
     let style = props.style.with(|st| pt.root.merge_style(st.as_deref().unwrap_or_default()));
     (!style.is_empty()).then_some(style)
 }
 
-/// Метка с подстановкой по умолчанию; пустая метка — один пробел, как в шаблоне PrimeNG.
+/// Label with a default fallback; an empty label is a single space, as in the PrimeNG template.
 fn label_of(props: &Props) -> String {
     let (label, default) = if props.checked.get() { (props.on_label.get(), "Yes") } else { (props.off_label.get(), "No") };
     match label {
@@ -296,7 +296,7 @@ fn content_of(props: &Props, pt: &ToggleButtonPt) -> AnyView {
     .into_any()
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     checked: RwSignal<bool>,
     on_label: OptProp<String>,

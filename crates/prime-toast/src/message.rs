@@ -1,11 +1,11 @@
-//! Сообщение Toast (аналог `ToastMessageOptions` PrimeNG) и серьёзность.
+//! Toast message (analogue of PrimeNG `ToastMessageOptions`) and severity.
 
-/// Серьёзность сообщения: определяет класс `p-toast-message-<severity>` и значок по умолчанию.
+/// Message severity: determines the `p-toast-message-<severity>` class and the default icon.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub enum ToastSeverity {
     /// `success`.
     Success,
-    /// `info` (по умолчанию).
+    /// `info` (default).
     #[default]
     Info,
     /// `warn`.
@@ -16,12 +16,12 @@ pub enum ToastSeverity {
     Secondary,
     /// `contrast`.
     Contrast,
-    /// Свой вид (как `severity: 'custom'` в PrimeNG): без класса серьёзности, значок информации.
+    /// Custom look (like `severity: 'custom'` in PrimeNG): no severity class, info icon.
     Custom(String),
 }
 
 impl ToastSeverity {
-    /// Значение, как в PrimeNG.
+    /// Value, as in PrimeNG.
     pub fn as_str(&self) -> &str {
         match self {
             Self::Success => "success",
@@ -35,32 +35,32 @@ impl ToastSeverity {
     }
 }
 
-/// Сообщение: что показать, кому (по ключу) и как долго.
+/// Message: what to show, to whom (by key) and for how long.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ToastMessage {
-    /// Серьёзность.
+    /// Severity.
     pub severity: ToastSeverity,
-    /// Заголовок.
+    /// Summary.
     pub summary: Option<String>,
-    /// Подробности.
+    /// Detail.
     pub detail: Option<String>,
-    /// Ключ `Toast`, которому адресовано сообщение; `None` — `Toast` без ключа.
+    /// `Toast` key the message is addressed to; `None` — the key-less `Toast`.
     pub key: Option<String>,
-    /// Атрибут `id` сообщения.
+    /// Message `id` attribute.
     pub id: Option<String>,
-    /// Время показа, мс; `None` — значение `Toast`.
+    /// Display time, ms; `None` — the `Toast` value.
     pub life: Option<u32>,
-    /// Не закрывать по времени.
+    /// Do not close on a timer.
     pub sticky: bool,
-    /// Показывать кнопку закрытия.
+    /// Show the close button.
     pub closable: bool,
-    /// CSS-класс значка (вместо значка серьёзности).
+    /// Icon CSS class (instead of the severity icon).
     pub icon: Option<String>,
-    /// CSS-класс значка кнопки закрытия.
+    /// Close button icon CSS class.
     pub close_icon: Option<String>,
-    /// Дополнительный класс сообщения.
+    /// Extra message class.
     pub style_class: Option<String>,
-    /// Дополнительный класс содержимого сообщения.
+    /// Extra message content class.
     pub content_style_class: Option<String>,
 }
 
@@ -84,60 +84,60 @@ impl Default for ToastMessage {
 }
 
 impl ToastMessage {
-    /// Сообщение с серьёзностью, заголовком и подробностями.
+    /// Message with severity, summary and detail.
     pub fn new(severity: ToastSeverity, summary: impl Into<String>, detail: impl Into<String>) -> Self {
         Self { severity, summary: Some(summary.into()), detail: Some(detail.into()), ..Self::default() }
     }
 
-    /// Ключ адресата.
+    /// Addressee key.
     pub fn key(mut self, key: impl Into<String>) -> Self {
         self.key = Some(key.into());
         self
     }
 
-    /// Атрибут `id`.
+    /// `id` attribute.
     pub fn id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self
     }
 
-    /// Время показа, мс.
+    /// Display time, ms.
     pub fn life(mut self, ms: u32) -> Self {
         self.life = Some(ms);
         self
     }
 
-    /// Не закрывать по времени.
+    /// Do not close on a timer.
     pub fn sticky(mut self, sticky: bool) -> Self {
         self.sticky = sticky;
         self
     }
 
-    /// Показывать кнопку закрытия.
+    /// Show the close button.
     pub fn closable(mut self, closable: bool) -> Self {
         self.closable = closable;
         self
     }
 
-    /// CSS-класс значка.
+    /// Icon CSS class.
     pub fn icon(mut self, class: impl Into<String>) -> Self {
         self.icon = Some(class.into());
         self
     }
 
-    /// CSS-класс значка кнопки закрытия.
+    /// Close button icon CSS class.
     pub fn close_icon(mut self, class: impl Into<String>) -> Self {
         self.close_icon = Some(class.into());
         self
     }
 
-    /// Дополнительный класс сообщения.
+    /// Extra message class.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 
-    /// Дополнительный класс содержимого.
+    /// Extra message content class.
     pub fn content_style_class(mut self, class: impl Into<String>) -> Self {
         self.content_style_class = Some(class.into());
         self

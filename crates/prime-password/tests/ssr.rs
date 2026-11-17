@@ -1,4 +1,4 @@
-//! Разметка Password (SSR): корень, поле, значки, `pt`, панель закрыта.
+//! Password markup (SSR): root, field, icons, `pt`, panel closed.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -59,14 +59,14 @@ fn variant_fluid_and_data_p() {
 #[test]
 fn input_props_reach_input() {
     let html = view! {
-        <Password placeholder="Пароль" autocomplete="off" input_id="pw" aria_label="Пароль" max_length=20 disabled=true invalid=true input_style_class="extra" />
+        <Password placeholder="Password" autocomplete="off" input_id="pw" aria_label="Password" max_length=20 disabled=true invalid=true input_style_class="extra" />
     }
     .to_html();
     for needle in [
-        "placeholder=\"Пароль\"",
+        "placeholder=\"Password\"",
         "autocomplete=\"off\"",
         "id=\"pw\"",
-        "aria-label=\"Пароль\"",
+        "aria-label=\"Password\"",
         "maxlength=\"20\"",
         "disabled",
         "p-invalid",

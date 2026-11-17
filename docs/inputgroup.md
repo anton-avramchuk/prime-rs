@@ -1,33 +1,33 @@
 # InputGroup
 
-Порт `p-inputgroup` и `p-inputgroup-addon` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-inputgroup` and `p-inputgroup-addon` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-inputgroup::InputGroup` | `packages/primeng/src/inputgroup/inputgroup.ts`, `inputgroup/style/inputgroupstyle.ts` |
 | `prime-inputgroup::InputGroupAddon` | `packages/primeng/src/inputgroupaddon/inputgroupaddon.ts`, `inputgroupaddon/style/inputgroupaddonstyle.ts` |
-| CSS | `@primeuix/styles/inputgroup` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/inputgroup/*-doc.ts` (`basic`, `button`, `checkbox`, `multiple`) |
+| CSS | `@primeuix/styles/inputgroup` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/inputgroup/*-doc.ts` (`basic`, `button`, `checkbox`, `multiple`) |
 
-Спека: `openspec/specs/inputgroup`.
+Spec: `openspec/specs/inputgroup`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Корень `div.p-inputgroup`, аддон `div.p-inputgroupaddon`; внутри проецируемое содержимое без дополнительных обёрток.
-- У хостов нет `role` и `data-p`.
+- Root `div.p-inputgroup`, addon `div.p-inputgroupaddon`; projected content inside without extra wrappers.
+- The hosts have no `role` and no `data-p`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корни — `<div>`, а не хосты `<p-inputgroup>` и `<p-inputgroup-addon>` | Хост в Angular — деталь фреймворка. |
-| У `InputGroup` есть `style` | В PrimeNG его нет у `InputGroup` (только у аддона); для единообразия с остальными компонентами. |
-| Нет блока `/*For PrimeNG*/` из `inputgroupstyle.ts` | Правила для Angular-обёрток `p-button`, `p-inputwrapper`, `p-inputmask`, которых в Leptos нет. |
-| Нет `fluid` | В PrimeNG 21.1.10 у `InputGroup` такого входа нет: `instance.fluid` всегда `undefined`, класс `p-inputgroup-fluid` не выводится. |
-| Нет демонстраций `floatlabel` и `iftalabel` | FloatLabel и IftaLabel ещё не портированы. |
-| В `basic` и `button` вместо InputNumber, Select и Menu — `InputText` и обычные кнопки; иконки SVG из `prime-icons` (`search`, `star-fill`, `check`, `times`) вместо шрифта PrimeIcons (`user`, `map`, `clock`) | Этих компонентов ещё нет в порте, а иконок `user`, `map`, `clock` нет в наборе. |
+| The roots are `<div>`, not the `<p-inputgroup>` and `<p-inputgroup-addon>` hosts | The host in Angular is a framework detail. |
+| `InputGroup` has `style` | PrimeNG does not have it on `InputGroup` (only on the addon); for consistency with the other components. |
+| No `/*For PrimeNG*/` block from `inputgroupstyle.ts` | Rules for the Angular wrappers `p-button`, `p-inputwrapper`, `p-inputmask`, which do not exist in Leptos. |
+| No `fluid` | In PrimeNG 21.1.10 `InputGroup` has no such input: `instance.fluid` is always `undefined`, the `p-inputgroup-fluid` class is not rendered. |
+| No `floatlabel` and `iftalabel` demos | FloatLabel and IftaLabel are not ported yet. |
+| In `basic` and `button`, `InputText` and plain buttons instead of InputNumber, Select and Menu; SVG icons from `prime-icons` (`search`, `star-fill`, `check`, `times`) instead of the PrimeIcons font (`user`, `map`, `clock`) | These components are not in the port yet, and the icons `user`, `map`, `clock` are not in the set. |
 
-## Производительность
+## Performance
 
-SSR: 19 аллокаций на экземпляр с двумя аддонами и полем (бюджет 21); вклад в сырой wasm +93 КБ (бюджет 107 КБ).
-Шаблон — как у Toolbar (`docs/toolbar.md`).
+SSR: 19 allocations per instance with two addons and an input (budget 21); contribution to raw wasm +93 KB (budget 107 KB).
+The template is like Toolbar's (`docs/toolbar.md`).

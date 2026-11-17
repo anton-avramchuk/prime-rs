@@ -1,4 +1,4 @@
-//! Поведение Panel в реальном браузере (wasm-bindgen-test): клик, клавиатура, `aria-expanded`, анимация, `tabindex`, события.
+//! Panel behaviour in a real browser (wasm-bindgen-test): click, keyboard, `aria-expanded`, animation, `tabindex`, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 async fn sleep(ms: i32) {
@@ -54,7 +54,7 @@ async fn button_click_toggles_signal_aria_and_icon() {
     assert_eq!(q(&host, ".p-panel-content-container").get_attribute("aria-hidden").as_deref(), Some("true"));
     assert_eq!(q(&host, ".p-panel-content-container").get_attribute("tabindex").as_deref(), Some("-1"));
     assert!(root.class_name().contains("p-panel-collapsed") && !root.class_name().contains("p-panel-expanded"));
-    assert_ne!(button.inner_html(), minus, "иконка сменилась на «плюс»");
+    assert_ne!(button.inner_html(), minus, "icon changed to plus");
     button.click();
     leptos::task::tick().await;
     assert!(!collapsed.get_untracked());
@@ -97,7 +97,7 @@ async fn animation_class_is_set_and_removed_and_after_toggle_fires() {
     assert_ne!(container.style().get_property_value("display").unwrap(), "none");
     sleep(700).await;
     assert!(!container.class_name().contains("p-collapsible-enter-active"));
-    assert_eq!(after.load(Ordering::SeqCst), 1, "on_after_toggle с collapsed=false");
+    assert_eq!(after.load(Ordering::SeqCst), 1, "on_after_toggle with collapsed=false");
 
     q(&host, ".p-panel-toggle-button").click();
     leptos::task::tick().await;
@@ -126,8 +126,8 @@ async fn header_toggler_toggles_once_and_button_does_not_double() {
     assert!(collapsed.get_untracked());
     q(&host, ".p-panel-toggle-button").click();
     leptos::task::tick().await;
-    assert!(!collapsed.get_untracked(), "клик по кнопке переключает один раз");
-    assert_eq!(before.load(Ordering::SeqCst), 11, "до переключения передаётся прежнее состояние");
+    assert!(!collapsed.get_untracked(), "a click on the button toggles once");
+    assert_eq!(before.load(Ordering::SeqCst), 11, "the previous state is passed before toggling");
 }
 
 #[wasm_bindgen_test]
@@ -151,7 +151,7 @@ async fn enter_and_space_on_button_toggle() {
         view! { <Panel header="H" toggleable=true collapsed=collapsed>"body"</Panel> }
     });
     leptos::task::tick().await;
-    // Нативная <button> превращает Enter и Space в click; проверяем, что клавиатурное нажатие даёт ровно одно переключение.
+    // A native <button> turns Enter and Space into click; we check that a keyboard press produces exactly one toggle.
     let button = q(&host, ".p-panel-toggle-button");
     button.focus().unwrap();
     let init = web_sys::KeyboardEventInit::new();

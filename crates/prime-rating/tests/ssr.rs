@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `data-p`, радиокнопки, подписи, иконки, слоты и `pt` Rating (SSR).
+//! DOM structure, classes, `data-p`, radio buttons, labels, icons, slots and `pt` of Rating (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -44,12 +44,12 @@ fn value_marks_active_stars_and_on_icons() {
     assert_eq!(count(&html, "p-rating-option-active"), 3, "{html}");
     assert_eq!(count(&html, "p-rating-on-icon"), 3, "{html}");
     assert_eq!(count(&html, "p-rating-off-icon"), 2, "{html}");
-    // `checked` только у радиокнопки звезды, равной значению (в SSR — атрибутом `checked`)
+    // `checked` only on the radio button of the star equal to the value (in SSR as the `checked` attribute)
     assert_eq!(count(&html, "checked"), 1, "{html}");
     let checked = html.find("checked").unwrap();
     let input_start = html[..checked].rfind("<input").unwrap();
     assert!(html[input_start..checked].contains(r#"value="3""#) || html[checked..].contains(r#"value="3""#), "{html}");
-    // `default_value` без сигнала
+    // `default_value` without a signal
     let html = view! { <Rating default_value=2 /> }.to_html();
     assert_eq!(count(&html, "p-rating-option-active"), 2, "{html}");
 }
@@ -67,7 +67,7 @@ fn stars_count_and_reactive_stars() {
 fn modifiers_and_data_p() {
     let html = view! { <Rating readonly=true /> }.to_html();
     assert!(html.contains(r#"class="p-rating p-readonly""#) && html.contains(r#"data-p="readonly""#), "{html}");
-    assert_eq!(count(&html, "readonly"), 1 + 1 + 5, "класс, data-p и 5 радиокнопок: {html}");
+    assert_eq!(count(&html, "readonly"), 1 + 1 + 5, "class, data-p and 5 radio buttons: {html}");
     let html = view! { <Rating disabled=true /> }.to_html();
     assert!(html.contains(r#"class="p-rating p-disabled""#) && html.contains(r#"data-p="disabled""#), "{html}");
     assert_eq!(count(&html, "disabled"), 1 + 1 + 5, "{html}");

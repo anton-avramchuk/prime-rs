@@ -1,30 +1,30 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `imagecompare` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился и что есть классы `p-imagecompare`, `p-imagecompare-slider`
+- [x] 1.1 Add `imagecompare` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of the other components did not change and that the classes `p-imagecompare`, `p-imagecompare-slider` are present
 
-## 2. Крейт
+## 2. Crate
 
-- [x] 2.1 `crates/prime-imagecompare`: `state.rs` (`clip_path`) с табличными тестами
-- [x] 2.2 Компонент `ImageCompare`, `ImageComparePt`: корень, `left`/`right`, ползунок, атрибуты, обработчик ввода (`clip-path`, `rtl`), SSR-тесты, rustdoc
-- [x] 2.3 Браузерные `tests/web.rs`: ввод значения, `rtl`, повторный ввод, ввод без соседа
+- [x] 2.1 `crates/prime-imagecompare`: `state.rs` (`clip_path`) with table tests
+- [x] 2.2 The `ImageCompare` component, `ImageComparePt`: the root, `left`/`right`, the slider, attributes, the input handler (`clip-path`, `rtl`), SSR tests, rustdoc
+- [x] 2.3 Browser `tests/web.rs`: input of a value, `rtl`, repeated input, input without a sibling
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/imagecompare` (`basic`, `responsive`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `imagecompare.spec.ts` (разметка, перетаскивание ручки, `clip-path`); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test imagecompare`
+- [x] 3.1 The `/imagecompare` page (`basic`, `responsive`), the menu, the route, `stylesheet(&[..])`, the crate in the workspace and the showcase
+- [x] 3.2 `e2e/tests/pages.json` and `imagecompare.spec.ts` (markup, dragging the handle, `clip-path`); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test imagecompare`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-imagecompare` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`; замер wasm — в фоне, с отдельным файлом бюджетов)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-imagecompare` and the budgets (first `cargo bench -p render-bench --bench alloc`; the wasm measurement — in the background, with a separate budgets file)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/imagecompare.md` (отличия от PrimeNG, что не проверялось); `prime-imagecompare` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с исключениями CI и `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-imagecompare`; CI `dev` зелёный
+- [x] 5.1 `docs/imagecompare.md` (differences from PrimeNG, what was not verified); `prime-imagecompare` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with the CI exceptions and `--all-features` (and for the wasm target), tests, deny, machete, `openspec validate port-imagecompare`; CI `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: BlockUI.
+- Archive after CI.
+- Next: BlockUI.

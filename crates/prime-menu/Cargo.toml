@@ -1,6 +1,6 @@
 [package]
 name = "prime-menu"
-description = "prime-rs: компонент Menu (порт PrimeNG)"
+description = "prime-rs: Menu component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -19,7 +19,7 @@ prime-dom = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration", "DomRect", "Navigator"] }
 wasm-bindgen = { workspace = true }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

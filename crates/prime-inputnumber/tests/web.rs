@@ -1,5 +1,5 @@
-//! Поведение InputNumber в реальном браузере (wasm-bindgen-test): набор через `beforeinput` и курсор, Backspace/Delete, вставка,
-//! фиксация, границы, стрелки, кнопки и повтор, `readonly`/`disabled`, очистка, внешний сигнал и смена локали.
+//! InputNumber behaviour in a real browser (wasm-bindgen-test): typing via `beforeinput` and the caret, Backspace/Delete, paste,
+//! commit, bounds, arrows, buttons and repeat, `readonly`/`disabled`, clearing, external signal and locale change.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -26,14 +26,14 @@ fn host() -> HtmlElement {
 }
 
 fn input(host: &HtmlElement) -> HtmlInputElement {
-    host.query_selector("input").unwrap().expect("нет input").dyn_into().unwrap()
+    host.query_selector("input").unwrap().expect("no input").dyn_into().unwrap()
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
-/// `beforeinput`; возвращает `false`, если действие по умолчанию отменено.
+/// `beforeinput`; returns `false` if the default action was cancelled.
 fn before_input(el: &HtmlInputElement, kind: &str, data: Option<&str>) -> bool {
     let init = InputEventInit::new();
     init.set_bubbles(true);
@@ -45,7 +45,7 @@ fn before_input(el: &HtmlInputElement, kind: &str, data: Option<&str>) -> bool {
     el.dispatch_event(&InputEvent::new_with_event_init_dict("beforeinput", &init).unwrap()).unwrap()
 }
 
-/// Набор символов подряд на месте курсора.
+/// Types characters in a row at the caret.
 fn type_text(el: &HtmlInputElement, text: &str) {
     for c in text.chars() {
         before_input(el, "insertText", Some(&c.to_string()));
@@ -83,7 +83,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Журнал `on_input`: значение (или `-`) и текст.
+/// `on_input` log: the value (or `-`) and the text.
 fn log() -> (Arc<Mutex<Vec<String>>>, Callback<InputNumberInput>) {
     let log = Arc::new(Mutex::new(Vec::new()));
     let l = log.clone();
@@ -111,9 +111,9 @@ async fn typing_digits_formats_and_keeps_caret_and_element() {
     assert_eq!(caret(&el), (5, 5));
     assert_eq!(el.get_attribute("aria-valuenow").as_deref(), Some("1234"));
     assert_eq!(*log.lock().unwrap(), ["1|1", "12|12", "123|123", "1234|1,234"]);
-    assert!(el.is_same_node(Some(&input(&host))), "поле пересоздано при наборе");
-    assert!(el.is_same_node(doc().active_element().as_deref()), "фокус потерян при наборе");
-    // значок очистки появился и не пересоздал поле
+    assert!(el.is_same_node(Some(&input(&host))), "field was recreated while typing");
+    assert!(el.is_same_node(doc().active_element().as_deref()), "focus lost while typing");
+    // the clear icon appeared and did not recreate the field
     assert!(host.query_selector(".p-inputnumber-clear-icon").unwrap().is_some());
     host.remove();
 }
@@ -125,7 +125,7 @@ async fn foreign_characters_are_rejected_and_default_is_prevented() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <InputNumber value=value /> });
     leptos::task::tick().await;
     let el = input(&host);
-    assert!(!before_input(&el, "insertText", Some("a")), "браузерная вставка должна быть отменена");
+    assert!(!before_input(&el, "insertText", Some("a")), "native insertion must be cancelled");
     leptos::task::tick().await;
     assert_eq!((el.value().as_str(), value.get_untracked()), ("5", Some(5.0)));
     host.remove();
@@ -140,7 +140,7 @@ async fn typed_fraction_survives_the_external_sync_and_respects_the_limit() {
     let el = input(&host);
     type_text(&el, "1.");
     leptos::task::tick().await;
-    assert_eq!((el.value().as_str(), value.get_untracked()), ("1.", Some(1.0)), "«1.» затёрто синхронизацией");
+    assert_eq!((el.value().as_str(), value.get_untracked()), ("1.", Some(1.0)), "\"1.\" was overwritten by sync");
     type_text(&el, "259");
     leptos::task::tick().await;
     assert_eq!((el.value().as_str(), value.get_untracked()), ("1.25", Some(1.25)));
@@ -154,16 +154,16 @@ async fn backspace_and_delete_skip_separators_and_ranges() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <InputNumber value=value /> });
     leptos::task::tick().await;
     let el = input(&host);
-    // сразу после запятой Backspace убирает «1»
+    // right after the decimal point Backspace removes "1"
     el.set_selection_range(2, 2).unwrap();
     before_input(&el, "deleteContentBackward", None);
     leptos::task::tick().await;
     assert_eq!((el.value().as_str(), value.get_untracked()), ("234", Some(234.0)));
-    // Delete в начале
+    // Delete at the start
     el.set_selection_range(0, 0).unwrap();
     before_input(&el, "deleteContentForward", None);
     assert_eq!(el.value(), "34");
-    // удаление выделения
+    // deleting a selection
     el.set_selection_range(0, 2).unwrap();
     before_input(&el, "deleteContentBackward", None);
     leptos::task::tick().await;
@@ -194,7 +194,7 @@ async fn commit_on_blur_and_enter_clamps_to_bounds() {
     leptos::task::tick().await;
     let el = input(&host);
     type_text(&el, "250");
-    assert_eq!(value.get_untracked(), Some(250.0), "до фиксации значение не ограничено");
+    assert_eq!(value.get_untracked(), Some(250.0), "value is not clamped before commit");
     blur(&el);
     leptos::task::tick().await;
     assert_eq!((el.value().as_str(), value.get_untracked()), ("100.00", Some(100.0)));
@@ -203,12 +203,12 @@ async fn commit_on_blur_and_enter_clamps_to_bounds() {
     key(&el, "Enter", "Enter");
     leptos::task::tick().await;
     assert_eq!((el.value().as_str(), value.get_untracked()), ("12.00", Some(12.0)));
-    // Home и End при заданных границах
+    // Home and End with bounds set
     assert!(!key(&el, "End", "End"));
     assert_eq!(value.get_untracked(), Some(100.0));
     key(&el, "Home", "Home");
     leptos::task::tick().await;
-    assert_eq!((el.value().as_str(), value.get_untracked()), ("0.00", Some(0.0)), "Home работает и при min = 0");
+    assert_eq!((el.value().as_str(), value.get_untracked()), ("0.00", Some(0.0)), "Home works with min = 0 too");
     host.remove();
 }
 
@@ -239,22 +239,22 @@ async fn buttons_step_once_and_repeat_while_held() {
     leptos::task::tick().await;
     let up = q(&host, ".p-inputnumber-increment-button");
     mouse(&up, "mousedown");
-    assert_eq!(value.get_untracked(), Some(1.0), "первый шаг сразу");
+    assert_eq!(value.get_untracked(), Some(1.0), "first step immediately");
     mouse(&up, "mouseup");
     sleep(700).await;
-    assert_eq!(value.get_untracked(), Some(1.0), "после отпускания повтора нет");
+    assert_eq!(value.get_untracked(), Some(1.0), "no repeat after release");
     mouse(&up, "mousedown");
     sleep(800).await;
     mouse(&up, "mouseleave");
     let held = value.get_untracked().unwrap();
-    assert!(held > 5.0, "после задержки шаг повторяется каждые 40 мс: {held}");
+    assert!(held > 5.0, "after the delay the step repeats every 40 ms: {held}");
     sleep(300).await;
-    assert_eq!(value.get_untracked(), Some(held), "уход указателя остановил повтор");
+    assert_eq!(value.get_untracked(), Some(held), "pointer leaving stopped the repeat");
     let down = q(&host, ".p-inputnumber-decrement-button");
     mouse(&down, "mousedown");
     mouse(&down, "mouseup");
     assert_eq!(value.get_untracked(), Some(held - 1.0));
-    // клавиши Enter и Space на кнопке
+    // Enter and Space keys on the button
     key(&up, "Enter", "Enter");
     q(&host, ".p-inputnumber-increment-button").dispatch_event(&Event::new("keyup").unwrap()).unwrap();
     assert_eq!(value.get_untracked(), Some(held));
@@ -298,7 +298,7 @@ async fn clear_icon_resets_the_value_and_calls_on_clear() {
     leptos::task::tick().await;
     assert_eq!((input(&host).value().as_str(), value.get_untracked()), ("", None));
     assert_eq!(*cleared.lock().unwrap(), 1);
-    assert!(host.query_selector(".p-inputnumber-clear-icon").unwrap().is_none(), "значок остался при пустом значении");
+    assert!(host.query_selector(".p-inputnumber-clear-icon").unwrap().is_none(), "icon remained with an empty value");
     host.remove();
 }
 
@@ -340,7 +340,7 @@ async fn focus_class_and_caret_click_clamping() {
     assert!(q(&host, ".p-inputnumber").class_name().contains("p-inputwrapper-focus"));
     el.set_selection_range(0, 0).unwrap();
     mouse(&el, "click");
-    assert_eq!(caret(&el), (1, 1), "курсор должен уйти из префикса");
+    assert_eq!(caret(&el), (1, 1), "caret must leave the prefix");
     el.dispatch_event(&FocusEvent::new("blur").unwrap()).unwrap();
     leptos::task::tick().await;
     assert!(!q(&host, ".p-inputnumber").class_name().contains("p-inputwrapper-focus"));

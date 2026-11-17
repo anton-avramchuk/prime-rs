@@ -1,6 +1,6 @@
 [package]
 name = "prime-tag"
-description = "prime-rs: компонент Tag (порт PrimeNG)"
+description = "prime-rs: Tag component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

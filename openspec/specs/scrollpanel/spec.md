@@ -5,82 +5,82 @@ TBD - created by archiving change port-scrollpanel. Update Purpose after archive
 
 ## Requirements
 
-### Requirement: Структура и классы ScrollPanel
-Компонент `ScrollPanel` крейта `prime-scrollpanel` SHALL отрисовывать `<div class="p-scrollpanel p-component">`, внутри которого по порядку идут `div.p-scrollpanel-content-container` с вложенным `div.p-scrollpanel-content` (в нём содержимое), затем полоса `div.p-scrollpanel-bar.p-scrollpanel-bar-x` и полоса `div.p-scrollpanel-bar.p-scrollpanel-bar-y`. Содержимое SHALL задаваться `children` или слотом `content_template`; при заданном слоте `children` не выводятся. `style_class` и `style` SHALL добавляться без потери собственных классов.
+### Requirement: ScrollPanel structure and classes
+The `ScrollPanel` component of the `prime-scrollpanel` crate SHALL render `<div class="p-scrollpanel p-component">`, inside which come, in order, `div.p-scrollpanel-content-container` with a nested `div.p-scrollpanel-content` (holding the content), then the bar `div.p-scrollpanel-bar.p-scrollpanel-bar-x` and the bar `div.p-scrollpanel-bar.p-scrollpanel-bar-y`. The content SHALL be set by `children` or the `content_template` slot; when the slot is set, `children` are not rendered. `style_class` and `style` SHALL be appended without losing the component's own classes.
 
-#### Scenario: Порядок элементов
-- **WHEN** отрисован ScrollPanel с `children`
-- **THEN** HTML содержит контейнер содержимого с `p-scrollpanel-content` внутри, затем `p-scrollpanel-bar-x`, затем `p-scrollpanel-bar-y`
+#### Scenario: Element order
+- **WHEN** a ScrollPanel with `children` is rendered
+- **THEN** the HTML contains the content container with `p-scrollpanel-content` inside, then `p-scrollpanel-bar-x`, then `p-scrollpanel-bar-y`
 
-#### Scenario: Слот вместо children
-- **WHEN** заданы `content_template` и `children`
-- **THEN** внутри `p-scrollpanel-content` выведено только содержимое слота
+#### Scenario: Slot instead of children
+- **WHEN** `content_template` and `children` are both set
+- **THEN** only the slot content is rendered inside `p-scrollpanel-content`
 
-### Requirement: Доступность полос ScrollPanel
-Каждая полоса SHALL иметь `role="scrollbar"`, `tabindex="0"`, `aria-orientation` (`horizontal` для X, `vertical` для Y), `aria-valuenow` (последний известный `scrollLeft`/`scrollTop`, изначально 0), `aria-controls` со ссылкой на `id` содержимого и `data-pc-group-section="bar"`. Содержимое `p-scrollpanel-content` SHALL иметь этот `id`, уникальный на странице и одинаковый при SSR и гидрации.
+### Requirement: ScrollPanel bar accessibility
+Each bar SHALL have `role="scrollbar"`, `tabindex="0"`, `aria-orientation` (`horizontal` for X, `vertical` for Y), `aria-valuenow` (the last known `scrollLeft`/`scrollTop`, initially 0), `aria-controls` referencing the content `id` and `data-pc-group-section="bar"`. The `p-scrollpanel-content` content SHALL have this `id`, unique on the page and identical in SSR and hydration.
 
-#### Scenario: Атрибуты полос
-- **WHEN** отрисован ScrollPanel
-- **THEN** у `bar-x` `aria-orientation="horizontal"`, у `bar-y` `aria-orientation="vertical"`, у обеих `role="scrollbar"` и `aria-controls`, равный `id` содержимого
+#### Scenario: Bar attributes
+- **WHEN** a ScrollPanel is rendered
+- **THEN** `bar-x` has `aria-orientation="horizontal"`, `bar-y` has `aria-orientation="vertical"`, both have `role="scrollbar"` and `aria-controls` equal to the content `id`
 
-### Requirement: Свойства и pass-through ScrollPanel
-Свойства `style`, `style_class` и `step` SHALL принимать значение или сигнал; `style` и `style_class` обновляют разметку при смене сигнала, `step` читается в момент нажатия клавиши. `pt` SHALL принимать части `root`, `content_container`, `content`, `bar_x`, `bar_y`, добавляя классы, стиль и атрибуты без замены собственных.
+### Requirement: ScrollPanel properties and pass-through
+The properties `style`, `style_class` and `step` SHALL accept a value or a signal; `style` and `style_class` update the markup when the signal changes, `step` is read when a key is pressed. `pt` SHALL accept the parts `root`, `content_container`, `content`, `bar_x`, `bar_y`, adding classes, style and attributes without replacing the component's own.
 
-#### Scenario: Реактивный класс
-- **WHEN** `style_class` передан сигналом и меняется
-- **THEN** класс корня обновляется, собственные классы сохраняются
+#### Scenario: Reactive class
+- **WHEN** `style_class` is passed as a signal and changes
+- **THEN** the root class is updated, the component's own classes are kept
 
-#### Scenario: Класс через pt
-- **WHEN** в `pt.bar_y` передан класс `custom`
-- **THEN** у вертикальной полосы есть `custom` и `p-scrollpanel-bar-y`
+#### Scenario: Class via pt
+- **WHEN** the class `custom` is passed in `pt.bar_y`
+- **THEN** the vertical bar has `custom` and `p-scrollpanel-bar-y`
 
-### Requirement: Расчёт и скрытие полос
-В браузере ScrollPanel SHALL пересчитывать полосы при `scroll` и `mouseenter` на содержимом, при `resize` окна, после монтирования и по вызову `refresh()`. Для оси, где `clientSize / scrollSize >= 1`, полоса SHALL получать `data-p-scrollpanel-hidden="true"` и класс `p-scrollpanel-hidden`; иначе `data-p-scrollpanel-hidden="false"`, класс снят, а размер и положение полосы заданы в `style` по формулам PrimeNG (длина — `max(ratio × 100, 10)` процентов, смещение пропорционально прокрутке).
+### Requirement: Bar calculation and hiding
+In the browser ScrollPanel SHALL recalculate the bars on `scroll` and `mouseenter` on the content, on window `resize`, after mounting and on a `refresh()` call. For an axis where `clientSize / scrollSize >= 1`, the bar SHALL get `data-p-scrollpanel-hidden="true"` and the class `p-scrollpanel-hidden`; otherwise `data-p-scrollpanel-hidden="false"`, the class is removed, and the bar size and position are set in `style` by the PrimeNG formulas (length is `max(ratio × 100, 10)` percent, offset proportional to scroll).
 
-#### Scenario: Содержимое умещается
-- **WHEN** содержимое не превышает видимую область по вертикали
-- **THEN** вертикальная полоса скрыта (`p-scrollpanel-hidden`)
+#### Scenario: Content fits
+- **WHEN** the content does not exceed the visible area vertically
+- **THEN** the vertical bar is hidden (`p-scrollpanel-hidden`)
 
-#### Scenario: Содержимое выше области
-- **WHEN** содержимое выше области и прокручено на половину доступного хода
-- **THEN** вертикальная полоса видима, её `height` — не менее 10% и `top` отражает положение прокрутки
+#### Scenario: Content taller than the area
+- **WHEN** the content is taller than the area and scrolled half of the available travel
+- **THEN** the vertical bar is visible, its `height` is at least 10% and `top` reflects the scroll position
 
-#### Scenario: Максимальная высота
-- **WHEN** у корня задана `max-height`, а собственная высота равна нулю
-- **THEN** после монтирования высота корня равна `min(max-height, высота содержимого с отступами и рамкой)`
+#### Scenario: Maximum height
+- **WHEN** the root has `max-height` set and its own height is zero
+- **THEN** after mounting the root height equals `min(max-height, content height with paddings and borders)`
 
-### Requirement: Перетаскивание полос
-При `mousedown` на полосе ScrollPanel SHALL фокусировать её, ставить `data-p-scrollpanel-grabbed="true"` и класс `p-scrollpanel-grabbed` на полосе и на `body`, подписываться на `mousemove` и `mouseup` документа и отменять действие по умолчанию. На `mousemove` содержимое SHALL прокручиваться на `delta / ratio` соответствующей оси. На `mouseup` атрибуты и классы снимаются, слушатели документа отписываются. При размонтировании все слушатели SHALL быть сняты.
+### Requirement: Bar dragging
+On `mousedown` on a bar ScrollPanel SHALL focus it, set `data-p-scrollpanel-grabbed="true"` and the class `p-scrollpanel-grabbed` on the bar and on `body`, subscribe to document `mousemove` and `mouseup` and cancel the default action. On `mousemove` the content SHALL scroll by `delta / ratio` of the corresponding axis. On `mouseup` the attributes and classes are removed and the document listeners are unsubscribed. On unmount all listeners SHALL be removed.
 
-#### Scenario: Перетаскивание
-- **WHEN** пользователь нажимает на вертикальную полосу и сдвигает мышь вниз
-- **THEN** `scrollTop` содержимого растёт, а по `mouseup` класс `p-scrollpanel-grabbed` снят
+#### Scenario: Dragging
+- **WHEN** the user presses the vertical bar and moves the mouse down
+- **THEN** the content `scrollTop` grows, and on `mouseup` the class `p-scrollpanel-grabbed` is removed
 
-### Requirement: Клавиатура ScrollPanel
-При фокусе на полосе ScrollPanel SHALL определять активную ось (фокус на X — горизонтальная, на Y — вертикальная; прокрутка колесом/жестом переключает ось по изменившемуся `scrollLeft`/`scrollTop`). Для вертикальной оси `ArrowDown`/`ArrowUp` прокручивают на `±step` пикселей через 40 мс после нажатия (повтор до `keyup`), `ArrowLeft`/`ArrowRight` лишь отменяют действие по умолчанию; для горизонтальной — симметрично. `keyup` SHALL сбрасывать таймер. После `blur` с горизонтальной полосы ось SHALL вернуться к вертикальной.
+### Requirement: ScrollPanel keyboard
+When a bar is focused ScrollPanel SHALL determine the active axis (focus on X is horizontal, on Y is vertical; wheel/gesture scrolling switches the axis by the changed `scrollLeft`/`scrollTop`). For the vertical axis `ArrowDown`/`ArrowUp` scroll by `±step` pixels 40 ms after the press (repeating until `keyup`), `ArrowLeft`/`ArrowRight` only cancel the default action; for the horizontal axis symmetrically. `keyup` SHALL reset the timer. After `blur` from the horizontal bar the axis SHALL return to vertical.
 
-#### Scenario: Стрелка вниз
-- **WHEN** фокус на вертикальной полосе и нажата `ArrowDown`
-- **THEN** через 40 мс `scrollTop` содержимого вырос на `step`, событие отменено
+#### Scenario: Arrow down
+- **WHEN** focus is on the vertical bar and `ArrowDown` is pressed
+- **THEN** after 40 ms the content `scrollTop` has grown by `step`, the event is cancelled
 
-#### Scenario: Отпускание клавиши
-- **WHEN** `keyup` пришёл раньше таймера
-- **THEN** прокрутка не выполняется
+#### Scenario: Key release
+- **WHEN** `keyup` arrives before the timer
+- **THEN** no scrolling is performed
 
-### Requirement: Программное управление ScrollPanel
-Свойство `panel_ref: Option<ScrollPanelRef>` SHALL давать ручку с методами `refresh()` (пересчёт полос) и `scroll_top(value)` (устанавливает `scrollTop` содержимого, значение ограничено диапазоном `0..=scrollHeight − clientHeight`). Вне браузера методы ничего не делают.
+### Requirement: ScrollPanel programmatic control
+The property `panel_ref: Option<ScrollPanelRef>` SHALL provide a handle with the methods `refresh()` (bar recalculation) and `scroll_top(value)` (sets the content `scrollTop`, the value clamped to the range `0..=scrollHeight − clientHeight`). Outside the browser the methods do nothing.
 
-#### Scenario: Ограничение scroll_top
-- **WHEN** вызван `scroll_top(100000)` для содержимого высотой 500 при области 150
-- **THEN** `scrollTop` равен 350
+#### Scenario: scroll_top clamping
+- **WHEN** `scroll_top(100000)` is called for content 500 tall with an area of 150
+- **THEN** `scrollTop` equals 350
 
-### Requirement: Стоимость отрисовки ScrollPanel
-ScrollPanel со статическими свойствами SHALL использовать статическую ветвь; обе ветви SHALL давать одинаковую разметку. SSR не обращается к DOM. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `scrollpanel-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `scrollpanel` в `benches/budgets.toml`.
+### Requirement: ScrollPanel rendering cost
+A ScrollPanel with static properties SHALL use the static branch; both branches SHALL produce the same markup. SSR does not touch the DOM. The number of allocations per instance on SSR SHALL fit within the `scrollpanel-1000` budget in `benches/alloc-budgets.toml`, the wasm contribution within the `scrollpanel` budget in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** one set of values is passed statically and as signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения ScrollPanel не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** values of ScrollPanel do not exceed the budgets

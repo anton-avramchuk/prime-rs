@@ -1,37 +1,37 @@
 ## ADDED Requirements
 
-### Requirement: Состояние сворачивания
-Общая логика сворачивания в `prime-core` SHALL хранить флаг `collapsed`, принимая необязательный внешний `RwSignal<bool>` (двусторонняя привязка) либо начальное значение для внутреннего состояния. Переключение SHALL записывать новое значение во внешний сигнал, если он задан.
+### Requirement: Collapse state
+The shared collapsing logic in `prime-core` SHALL keep a `collapsed` flag, accepting an optional external `RwSignal<bool>` (a two-way binding) or an initial value for an internal state. Toggling SHALL write the new value to the external signal, if it is set.
 
-#### Scenario: Внешний сигнал
-- **WHEN** передан `RwSignal<bool>` и вызвано переключение
-- **THEN** значение сигнала инвертируется
+#### Scenario: External signal
+- **WHEN** an `RwSignal<bool>` is passed and a toggle is called
+- **THEN** the value of the signal is inverted
 
-#### Scenario: Внутреннее состояние
-- **WHEN** сигнал не передан, начальное значение `true`
-- **THEN** состояние свёрнуто, переключение разворачивает его
+#### Scenario: Internal state
+- **WHEN** no signal is passed and the initial value is `true`
+- **THEN** the state is collapsed, and a toggle expands it
 
-### Requirement: Атрибуты ARIA сворачиваемой области
-Логика SHALL порождать по базовому `id` производные идентификаторы (заголовка, области содержимого) и значения атрибутов: `aria-expanded` и `aria-controls` для переключателя; `role="region"`, `aria-labelledby`, `aria-hidden` и `tabindex="-1"` (только при свёрнутом) для области. Значения SHALL быть одинаковыми при SSR и на клиенте.
+### Requirement: ARIA attributes of a collapsible region
+The logic SHALL derive, from the base `id`, the derived identifiers (of the header, of the content region) and the attribute values: `aria-expanded` and `aria-controls` for the toggle; `role="region"`, `aria-labelledby`, `aria-hidden` and `tabindex="-1"` (only when collapsed) for the region. The values SHALL be the same during SSR and on the client.
 
-#### Scenario: Развёрнуто
+#### Scenario: Expanded
 - **WHEN** `collapsed = false`
-- **THEN** `aria-expanded="true"`, `aria-hidden="false"`, `tabindex` у области отсутствует
+- **THEN** `aria-expanded="true"`, `aria-hidden="false"`, and the region has no `tabindex`
 
-#### Scenario: Свёрнуто
+#### Scenario: Collapsed
 - **WHEN** `collapsed = true`
 - **THEN** `aria-expanded="false"`, `aria-hidden="true"`, `tabindex="-1"`
 
-### Requirement: Анимация и события сворачивания
-Логика SHALL на клиенте при смене состояния ставить области класс `p-collapsible-enter-active` либо `p-collapsible-leave-active` до события `animationend`, затем снимать его и вызывать обратный вызов завершения. Если анимация не запускается (нет `animationend`, например `prefers-reduced-motion` либо скрытый элемент), завершение SHALL всё равно произойти, чтобы `on_after_toggle` не терялся.
+### Requirement: Animation and events of collapsing
+On the client, when the state changes, the logic SHALL set on the region the class `p-collapsible-enter-active` or `p-collapsible-leave-active` until the `animationend` event, then remove it and call the completion callback. If no animation starts (no `animationend`, for example with `prefers-reduced-motion` or a hidden element), the completion SHALL still happen, so that `on_after_toggle` is not lost.
 
-#### Scenario: Завершение без анимации
-- **WHEN** анимация отключена либо длится 0
-- **THEN** обратный вызов завершения вызван, класс не остаётся на элементе
+#### Scenario: Completion without animation
+- **WHEN** the animation is disabled or lasts 0
+- **THEN** the completion callback is called, and the class does not remain on the element
 
-### Requirement: Недоступность скрытого содержимого
-Логика SHALL при смене состояния проставлять `tabindex="-1"` фокусируемым потомкам области при сворачивании и снимать его при разворачивании.
+### Requirement: Unavailability of hidden content
+When the state changes, the logic SHALL set `tabindex="-1"` on the focusable descendants of the region when collapsing, and remove it when expanding.
 
-#### Scenario: Разворачивание
-- **WHEN** область разворачивается
-- **THEN** у потомков, которым атрибут поставила логика, он снят
+#### Scenario: Expanding
+- **WHEN** the region expands
+- **THEN** the attribute set by the logic is removed from the descendants

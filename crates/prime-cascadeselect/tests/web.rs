@@ -1,7 +1,7 @@
-//! Поведение CascadeSelect в реальном браузере (wasm-bindgen-test): открытие, каскад кликом и наведением, выбор листа,
-//! очистка, клик вне, клавиатура и мобильный класс.
+//! CascadeSelect behavior in a real browser (wasm-bindgen-test): opening, cascade by click and hover, leaf selection,
+//! clearing, outside click, keyboard and the mobile class.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели окна и фокус общие на страницу. Стили темы не подключены.
+//! Scenarios run as one sequential test: window listeners and focus are shared across the page. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -27,7 +27,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}: {}", host.outer_html())).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -45,7 +45,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться и слушателям окна повеситься.
+/// Lets effects apply and window listeners attach.
 async fn settle() {
     sleep(60).await;
 }
@@ -80,7 +80,7 @@ fn mouse(el: &web_sys::Element, name: &str, bubbles: bool) {
     el.dispatch_event(&MouseEvent::new_with_mouse_event_init_dict(name, &init).unwrap()).unwrap();
 }
 
-/// Нажатие клавиши и ожидание реактивных обновлений.
+/// Key press and waiting for reactive updates.
 async fn key(el: &HtmlElement, code: &str, key: &str) {
     let init = KeyboardEventInit::new();
     init.set_code(code);
@@ -134,7 +134,7 @@ async fn opens_the_panel() {
     assert!(!q(&host, ".p-cascadeselect-overlay").style().get_property_value("z-index").unwrap().is_empty());
     assert!(option(&host, "0").class_name().contains("p-cascadeselect-option-group"));
     assert!(!option(&host, "2").class_name().contains("p-cascadeselect-option-group"));
-    assert!(!has(&host, &format!("li[id=\"{}\"]", id_of(&host, "0_0"))), "вложенные списки выводятся только у раскрытых групп");
+    assert!(!has(&host, &format!("li[id=\"{}\"]", id_of(&host, "0_0"))), "nested lists are rendered only for expanded groups");
     host.remove();
 }
 
@@ -163,33 +163,33 @@ async fn cascade_and_leaf_selection() {
     assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 1);
     content(&host, "0_0").click();
     settle().await;
-    assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 2, "два вложенных списка");
+    assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 2, "two nested lists");
     assert_eq!(count(&host, "li[role=\"treeitem\"]"), 3 + 2 + 3);
     assert_eq!(option(&host, "0_0_0").get_attribute("aria-level").as_deref(), Some("3"));
     content(&host, "0_1").click();
     settle().await;
-    assert!(!has(&host, &format!("li[id=\"{}\"]", id_of(&host, "0_0_0"))), "соседняя группа закрывает прежнюю");
+    assert!(!has(&host, &format!("li[id=\"{}\"]", id_of(&host, "0_0_0"))), "a sibling group closes the previous one");
     content(&host, "0_1").click();
     settle().await;
-    assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 1, "повторный клик сворачивает группу");
+    assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 1, "a repeated click collapses the group");
     content(&host, "0_0").click();
     settle().await;
     content(&host, "0_0_1").click();
     settle().await;
-    assert_eq!(value.get_untracked(), None, "отключённый лист не выбирается");
+    assert_eq!(value.get_untracked(), None, "a disabled leaf is not selected");
     content(&host, "0_0_2").click();
     settle().await;
     assert_eq!(value.get_untracked().as_deref(), Some("w"));
-    assert!(!has(&host, ".p-cascadeselect-overlay"), "выбор листа закрывает панель");
+    assert!(!has(&host, ".p-cascadeselect-overlay"), "selecting a leaf closes the panel");
     assert_eq!(q(&host, ".p-cascadeselect-label").text_content().unwrap(), "Wollongong");
     assert_eq!(log.lock().unwrap().as_slice(), ["show", "change:w", "hide"]);
     q(&host, ".p-cascadeselect").click();
     settle().await;
-    assert!(option(&host, "0_0_2").class_name().contains("p-cascadeselect-option-selected"), "при открытии раскрыт путь к выбранному");
+    assert!(option(&host, "0_0_2").class_name().contains("p-cascadeselect-option-selected"), "on open the path to the selected one is expanded");
     assert_eq!(option(&host, "0_0_2").get_attribute("aria-selected").as_deref(), Some("true"));
     mouse(&doc().body().unwrap().into(), "click", true);
     settle().await;
-    assert!(!has(&host, ".p-cascadeselect-overlay"), "клик вне закрывает");
+    assert!(!has(&host, ".p-cascadeselect-overlay"), "outside click closes");
     host.remove();
 }
 
@@ -205,20 +205,20 @@ async fn hover_rules_and_clear() {
     settle().await;
     mouse(&content(&host, "0"), "mouseenter", false);
     settle().await;
-    assert!(option(&host, "0").class_name().contains("p-cascadeselect-option-active"), "до клика наведение раскрывает корневую группу");
+    assert!(option(&host, "0").class_name().contains("p-cascadeselect-option-active"), "before a click hover expands the root group");
     mouse(&content(&host, "0_0"), "mouseenter", false);
     settle().await;
     assert_eq!(
         count(&host, "ul.p-cascadeselect-option-list"),
         2,
-        "раскрытие корневой группы наведением включает наведение для вложенных (dirty, как в PrimeNG)"
+        "expanding a root group by hover enables hover for nested ones (dirty, as in PrimeNG)"
     );
     mouse(&content(&host, "0_1"), "mouseenter", false);
     settle().await;
     assert!(
         option(&host, "0_1").class_name().contains("p-cascadeselect-option-active")
             && !option(&host, "0_0").class_name().contains("p-cascadeselect-option-active"),
-        "наведение на соседнюю группу переключает"
+        "hover over a sibling group switches"
     );
     content(&host, "2").click();
     settle().await;
@@ -227,7 +227,7 @@ async fn hover_rules_and_clear() {
     mouse(&host.query_selector(".p-cascadeselect-clear-icon").unwrap().unwrap(), "click", true);
     settle().await;
     assert_eq!(value.get_untracked(), None);
-    assert!(!has(&host, ".p-cascadeselect-overlay"), "очистка не открывает панель");
+    assert!(!has(&host, ".p-cascadeselect-overlay"), "clearing does not open the panel");
     assert!(!has(&host, ".p-cascadeselect-clear-icon"));
     host.remove();
 }
@@ -254,18 +254,18 @@ async fn keyboard_walks_the_cascade() {
     assert!(q(&host, ".p-cascadeselect").class_name().contains("p-focus"));
     key(&input, "ArrowDown", "ArrowDown").await;
     settle().await;
-    assert!(has(&host, ".p-cascadeselect-overlay"), "↓ открывает панель");
+    assert!(has(&host, ".p-cascadeselect-overlay"), "↓ opens the panel");
     key(&input, "ArrowDown", "ArrowDown").await;
     assert_eq!(focused(&host).as_deref(), Some("0"));
-    assert!(option(&host, "0").class_name().contains("p-cascadeselect-option-active"), "фокус на группе раскрывает её");
+    assert!(option(&host, "0").class_name().contains("p-cascadeselect-option-active"), "focus on a group expands it");
     key(&input, "ArrowRight", "ArrowRight").await;
-    assert_eq!(focused(&host).as_deref(), Some("0_0"), "→ входит в раскрытую группу");
+    assert_eq!(focused(&host).as_deref(), Some("0_0"), "→ enters the expanded group");
     key(&input, "ArrowRight", "ArrowRight").await;
     assert_eq!(focused(&host).as_deref(), Some("0_0_0"));
     key(&input, "ArrowDown", "ArrowDown").await;
-    assert_eq!(focused(&host).as_deref(), Some("0_0_2"), "отключённый пропущен");
+    assert_eq!(focused(&host).as_deref(), Some("0_0_2"), "the disabled one is skipped");
     key(&input, "ArrowLeft", "ArrowLeft").await;
-    assert_eq!(focused(&host).as_deref(), Some("0_0"), "← возвращает на группу-родителя");
+    assert_eq!(focused(&host).as_deref(), Some("0_0"), "← returns to the parent group");
     key(&input, "End", "End").await;
     assert_eq!(focused(&host).as_deref(), Some("0_1"));
     key(&input, "ArrowRight", "ArrowRight").await;
@@ -273,27 +273,27 @@ async fn keyboard_walks_the_cascade() {
     assert_eq!(focused(&host).as_deref(), Some("0_1_0"));
     key(&input, "Enter", "Enter").await;
     settle().await;
-    assert_eq!(value.get_untracked().as_deref(), Some("Brisbane"), "Enter на листе выбирает значение");
+    assert_eq!(value.get_untracked().as_deref(), Some("Brisbane"), "Enter on a leaf selects the value");
     assert!(!has(&host, ".p-cascadeselect-overlay"));
     assert_eq!(log.lock().unwrap().as_slice(), ["Brisbane"]);
 
     key(&input, "Space", " ").await;
     settle().await;
-    assert!(has(&host, ".p-cascadeselect-overlay") && focused(&host).as_deref() == Some("0_1_0"), "при открытии фокус на выбранном");
+    assert!(has(&host, ".p-cascadeselect-overlay") && focused(&host).as_deref() == Some("0_1_0"), "on open focus is on the selected one");
     key(&input, "Escape", "Escape").await;
     settle().await;
-    assert!(!has(&host, ".p-cascadeselect-overlay"), "Escape закрывает");
+    assert!(!has(&host, ".p-cascadeselect-overlay"), "Escape closes");
     key(&input, "KeyP", "p").await;
     settle().await;
-    assert!(has(&host, ".p-cascadeselect-overlay"), "печатный символ открывает панель");
-    assert_eq!(focused(&host).as_deref(), Some("0_1_0"), "поиск идёт по списку уровня выбранного, совпадений нет — фокус на выбранном");
+    assert!(has(&host, ".p-cascadeselect-overlay"), "a printable character opens the panel");
+    assert_eq!(focused(&host).as_deref(), Some("0_1_0"), "search goes over the list of the selected level, no matches — focus stays on the selected one");
     key(&input, "KeyB", "b").await;
-    assert_eq!(focused(&host).as_deref(), Some("0_1_0"), "поиск по началу подписи находит Brisbane");
+    assert_eq!(focused(&host).as_deref(), Some("0_1_0"), "search by label prefix finds Brisbane");
     key(&input, "Tab", "Tab").await;
     settle().await;
-    assert!(!has(&host, ".p-cascadeselect-overlay"), "Tab закрывает");
+    assert!(!has(&host, ".p-cascadeselect-overlay"), "Tab closes");
     key(&input, "Backspace", "Backspace").await;
-    assert_eq!(value.get_untracked(), None, "Backspace очищает при show_clear");
+    assert_eq!(value.get_untracked(), None, "Backspace clears with show_clear");
     host.remove();
 }
 
@@ -303,7 +303,7 @@ async fn disabled_and_mobile() {
     settle().await;
     q(&host, ".p-cascadeselect").click();
     settle().await;
-    assert!(!has(&host, ".p-cascadeselect-overlay"), "отключённое поле не открывается");
+    assert!(!has(&host, ".p-cascadeselect-overlay"), "a disabled field does not open");
     host.remove();
 
     let host = self::host();
@@ -315,10 +315,10 @@ async fn disabled_and_mobile() {
     assert!(q(&host, ".p-cascadeselect-overlay").class_name().contains("p-cascadeselect-mobile-active"));
     mouse(&content(&host, "0"), "mouseenter", false);
     settle().await;
-    assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 0, "на узком окне наведение путь не меняет");
+    assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 0, "in a narrow window hover does not change the path");
     content(&host, "0").click();
     settle().await;
-    assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 1, "клик раскрывает");
+    assert_eq!(count(&host, "ul.p-cascadeselect-option-list"), 1, "click expands");
     host.remove();
 }
 

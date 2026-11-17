@@ -1,4 +1,4 @@
-//! Ловушка фокуса (порт директивы `pFocusTrap`) и поиск фокусируемых элементов.
+//! Focus trap (port of the `pFocusTrap` directive) and the search for focusable elements.
 
 use crate::dom::document;
 use wasm_bindgen::JsCast;
@@ -26,12 +26,12 @@ fn focusables(container: &Element) -> Vec<HtmlElement> {
     (0..list.length()).filter_map(|i| list.item(i)).filter_map(|n| n.dyn_into::<HtmlElement>().ok()).collect()
 }
 
-/// Первый фокусируемый элемент внутри контейнера.
+/// First focusable element inside the container.
 pub fn first_focusable(container: &Element) -> Option<HtmlElement> {
     focusables(container).into_iter().next()
 }
 
-/// Последний фокусируемый элемент внутри контейнера.
+/// Last focusable element inside the container.
 pub fn last_focusable(container: &Element) -> Option<HtmlElement> {
     focusables(container).pop()
 }
@@ -58,9 +58,9 @@ fn focus_el(el: Option<HtmlElement>) {
     }
 }
 
-/// Активная ловушка фокуса: Tab на последнем элементе переводит фокус на первый и наоборот.
+/// Active focus trap: Tab on the last element moves the focus to the first one, and vice versa.
 ///
-/// При `Drop` (или [`FocusTrap::detach`]) служебные элементы и обработчики удаляются.
+/// On `Drop` (or [`FocusTrap::detach`]) the service elements and handlers are removed.
 pub struct FocusTrap {
     first: HtmlElement,
     last: HtmlElement,
@@ -69,7 +69,7 @@ pub struct FocusTrap {
 }
 
 impl FocusTrap {
-    /// Включает ловушку в `container`. Вне браузера возвращает `None`.
+    /// Enables the trap in `container`. Outside the browser returns `None`.
     pub fn attach(container: &HtmlElement) -> Option<Self> {
         let doc = document()?;
         let first = sentinel(&doc, "firstfocusableelement")?;
@@ -101,17 +101,17 @@ impl FocusTrap {
         Some(Self { first, last, _on_first: on_first, _on_last: on_last })
     }
 
-    /// Первый служебный элемент (для тестов и отладки).
+    /// First service element (for tests and debugging).
     pub fn first_sentinel(&self) -> &HtmlElement {
         &self.first
     }
 
-    /// Последний служебный элемент (для тестов и отладки).
+    /// Last service element (for tests and debugging).
     pub fn last_sentinel(&self) -> &HtmlElement {
         &self.last
     }
 
-    /// Отключает ловушку.
+    /// Disables the trap.
     pub fn detach(self) {}
 }
 

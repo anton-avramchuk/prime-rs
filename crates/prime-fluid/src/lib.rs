@@ -1,8 +1,8 @@
-//! Fluid — порт `p-fluid` из PrimeNG 21.1.10.
+//! Fluid — port of `p-fluid` from PrimeNG 21.1.10.
 //!
-//! Рисует `<div class="p-fluid">` и предоставляет потомкам контекст [`prime_core::fluid`]: `Button`, `InputText`,
-//! `Textarea`, `InputNumber` и `Select` без явного `fluid` растягиваются на всю ширину. Явное `fluid` (в том числе `false`)
-//! главнее контекста. Собственных стилей у `Fluid` нет (модуля `@primeuix/styles/fluid` не существует).
+//! Renders `<div class="p-fluid">` and provides descendants with the context [`prime_core::fluid`]: `Button`, `InputText`,
+//! `Textarea`, `InputNumber` and `Select` without an explicit `fluid` stretch to the full width. An explicit `fluid` (including `false`)
+//! takes precedence over the context. `Fluid` has no styles of its own (there is no `@primeuix/styles/fluid` module).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -18,34 +18,34 @@ use prime_core::wrapper::{root_class, root_style};
 use prime_core::{OptProp, Pt, all_static};
 use std::sync::Arc;
 
-/// Pass-through Fluid.
+/// Pass-through for Fluid.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct FluidPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
-/// Контейнер, растягивающий вложенные поля и кнопки на всю ширину.
+/// Container that stretches nested fields and buttons to the full width.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn Fluid(
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<FluidPt>,
-    /// Содержимое.
+    /// Content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
     let root = pt.unwrap_or_default().root;
-    // Контекст кладётся в дочернего владельца, чтобы не протечь на соседей, идущих после `Fluid` в том же владельце.
-    // Владелец держится до очистки родителя: сам по себе он освободился бы сразу и унёс бы за собой реактивные значения потомков.
+    // The context is put into a child owner, so it does not leak to siblings that come after `Fluid` in the same owner.
+    // The owner is kept alive until the parent is cleaned up: on its own it would be released immediately and take the descendants' reactive values with it.
     let content = children.map(|c| match Owner::current() {
         Some(parent) => {
             let owner = parent.child();
@@ -74,7 +74,7 @@ pub fn Fluid(
     }
 }
 
-/// Разметка: одна для статической и реактивной ветвей (меняются только выражения атрибутов корня).
+/// Markup: one for the static and reactive branches (only the root attribute expressions differ).
 macro_rules! fluid_markup {
     ($class:expr, $style:expr, $attrs:expr, $content:expr) => {
         view! { <div class={$class} style={$style} {..$attrs}>{$content}</div> }

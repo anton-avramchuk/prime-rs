@@ -1,8 +1,8 @@
-//! SplitButton — порт `p-splitbutton` из PrimeNG 21.1.10.
+//! SplitButton — port of `p-splitbutton` from PrimeNG 21.1.10.
 //!
-//! Кнопка с действием по умолчанию (`p-splitbutton-button`, это `Button`), кнопка-стрелка (`p-splitbutton-dropdown`) и всплывающее
-//! меню команд (`Menu` в режиме `popup`), привязанное ко всему компоненту. В PrimeNG меню — `TieredMenu` с подменю; здесь пока
-//! плоский `Menu` с группами, вложенные подменю появятся вместе с `TieredMenu`.
+//! A button with a default action (`p-splitbutton-button`, which is a `Button`), an arrow button (`p-splitbutton-dropdown`) and a popup
+//! command menu (`Menu` in `popup` mode) attached to the whole component. In PrimeNG the menu is a `TieredMenu` with submenus; here for now it is a
+//! flat `Menu` with groups, nested submenus will arrive together with `TieredMenu`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -28,107 +28,107 @@ use std::sync::Arc;
 
 pub use state::{is_toggle_key, root_classes};
 
-/// Pass-through частей SplitButton.
+/// Pass-through parts of SplitButton.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct SplitButtonPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Основная кнопка (классы и атрибуты добавляются к `Button`).
+    /// Main button (classes and attributes are added to `Button`).
     pub button: Pt,
-    /// Кнопка раскрытия.
+    /// Dropdown button.
     pub dropdown: Pt,
 }
 
-/// Кнопка с действием по умолчанию и раскрывающимся меню команд.
+/// A button with a default action and a dropdown command menu.
 ///
-/// Каждое свойство принимает значение или сигнал.
+/// Every property accepts a value or a signal.
 #[component]
 pub fn SplitButton(
-    /// Команды меню.
+    /// Menu commands.
     #[prop(optional, into)]
     model: Prop<Vec<MenuItem>>,
-    /// Серьёзность обеих кнопок.
+    /// Severity of both buttons.
     #[prop(optional, into)]
     severity: OptProp<ButtonSeverity>,
-    /// С тенью (класс корня).
+    /// With a shadow (root class).
     #[prop(optional, into)]
     raised: Prop<bool>,
-    /// Скруглённые края (класс корня).
+    /// Rounded edges (root class).
     #[prop(optional, into)]
     rounded: Prop<bool>,
-    /// Текстовые кнопки.
+    /// Text buttons.
     #[prop(optional, into)]
     text: Prop<bool>,
-    /// Кнопки с рамкой.
+    /// Buttons with a border.
     #[prop(optional, into)]
     outlined: Prop<bool>,
-    /// Простой текст.
+    /// Plain text.
     #[prop(optional, into)]
     plain: Prop<bool>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Значок основной кнопки.
+    /// Icon of the main button.
     #[prop(optional, into)]
     icon: Option<ViewFn>,
-    /// Положение значка основной кнопки.
+    /// Position of the main button icon.
     #[prop(optional, into)]
     icon_pos: Prop<IconPos>,
-    /// Метка основной кнопки.
+    /// Label of the main button.
     #[prop(optional, into)]
     label: OptProp<String>,
-    /// Атрибут `aria-label` основной кнопки.
+    /// `aria-label` attribute of the main button.
     #[prop(optional, into)]
     button_aria_label: OptProp<String>,
-    /// Атрибут `aria-label` кнопки раскрытия.
+    /// `aria-label` attribute of the dropdown button.
     #[prop(optional, into)]
     expand_aria_label: OptProp<String>,
-    /// Значок кнопки раскрытия вместо стрелки.
+    /// Icon of the dropdown button instead of the arrow.
     #[prop(optional, into)]
     dropdown_icon: Option<ViewFn>,
-    /// Содержимое основной кнопки вместо метки и значка.
+    /// Content of the main button instead of the label and icon.
     #[prop(optional, into)]
     content: Option<ViewFn>,
-    /// Обе кнопки недоступны.
+    /// Both buttons are unavailable.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Основная кнопка недоступна.
+    /// The main button is unavailable.
     #[prop(optional, into)]
     button_disabled: Prop<bool>,
-    /// Кнопка раскрытия недоступна.
+    /// The dropdown button is unavailable.
     #[prop(optional, into)]
     menu_button_disabled: Prop<bool>,
-    /// Атрибут `tabindex` основной кнопки.
+    /// `tabindex` attribute of the main button.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Фокус на основную кнопку при показе.
+    /// Focus the main button on show.
     #[prop(optional)]
     autofocus: bool,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Встроенный стиль меню.
+    /// Inline style of the menu.
     #[prop(optional, into)]
     menu_style: OptProp<String>,
-    /// Дополнительный класс меню.
+    /// Extra class of the menu.
     #[prop(optional, into)]
     menu_style_class: OptProp<String>,
-    /// Клик по основной кнопке.
+    /// Click on the main button.
     #[prop(optional, into)]
     on_click: Option<Callback<web_sys::MouseEvent>>,
-    /// Клик по кнопке раскрытия.
+    /// Click on the dropdown button.
     #[prop(optional, into)]
     on_dropdown_click: Option<Callback<web_sys::MouseEvent>>,
-    /// Меню показано.
+    /// Menu shown.
     #[prop(optional, into)]
     on_menu_show: Option<Callback<()>>,
-    /// Меню скрыто.
+    /// Menu hidden.
     #[prop(optional, into)]
     on_menu_hide: Option<Callback<()>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<SplitButtonPt>,
 ) -> impl IntoView {
@@ -251,7 +251,7 @@ pub fn SplitButton(
     }
 }
 
-/// Свойства основной кнопки.
+/// Properties of the main button.
 struct MainParts {
     label: OptProp<String>,
     severity: OptProp<ButtonSeverity>,
@@ -268,7 +268,7 @@ struct MainParts {
     on_click: Callback<web_sys::MouseEvent>,
 }
 
-/// Основная кнопка: `Button` с учётом необязательных `icon` и `content` (четыре варианта разметки).
+/// Main button: `Button` taking the optional `icon` and `content` into account (four markup variants).
 fn main_button(p: MainParts, icon: Option<ViewFn>, content: Option<ViewFn>) -> AnyView {
     macro_rules! button {
         ($($extra:tt)*) => {
@@ -338,7 +338,7 @@ fn main_button(p: MainParts, icon: Option<ViewFn>, content: Option<ViewFn>) -> A
     }
 }
 
-/// Свойства кнопки раскрытия.
+/// Properties of the dropdown button.
 struct DropdownParts {
     severity: OptProp<ButtonSeverity>,
     text: Prop<bool>,
@@ -353,7 +353,7 @@ struct DropdownParts {
     dropdown_icon: Option<ViewFn>,
 }
 
-/// Кнопка раскрытия со своей разметкой: `Button` не принимает реактивные `aria-expanded` и `aria-controls`.
+/// Dropdown button with its own markup: `Button` does not accept reactive `aria-expanded` and `aria-controls`.
 fn dropdown_button(
     p: DropdownParts,
     click: impl Fn(web_sys::MouseEvent) + Send + Sync + 'static,
@@ -363,7 +363,7 @@ fn dropdown_button(
         let (severity, text, outlined, plain, size) =
             (p.severity.clone(), p.text.clone(), p.outlined.clone(), p.plain.clone(), p.size.clone());
         move || {
-            // у кнопки-стрелки нет метки и бейджа: только значок
+            // the arrow button has no label and badge: only an icon
             ButtonState {
                 has_icon: true,
                 severity: severity.get(),
@@ -406,7 +406,7 @@ fn dropdown_button(
         Some(icon) => icon.run().into_any(),
         None => view! { <ChevronDownIcon /> }.into_any(),
     };
-    // `NodeRef` нужен только клиенту (ripple): при SSR его нет, а `()` — пустой атрибут вместо `node_ref`.
+    // `NodeRef` is needed only by the client (ripple): on SSR it is absent, and `()` is an empty attribute instead of `node_ref`.
     #[cfg(target_arch = "wasm32")]
     let node = {
         let node = NodeRef::<html::Button>::new();

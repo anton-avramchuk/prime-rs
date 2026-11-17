@@ -1,20 +1,20 @@
-//! Положение панели у курсора (`position()` из PrimeNG).
+//! Panel position near the cursor (PrimeNG's `position()`).
 
-/// Размеры окна и прокрутка страницы.
+/// Window size and page scroll.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Viewport {
-    /// Ширина окна без полосы прокрутки.
+    /// Window width without the scrollbar.
     pub width: f64,
-    /// Высота окна.
+    /// Window height.
     pub height: f64,
-    /// Горизонтальная прокрутка страницы.
+    /// Horizontal page scroll.
     pub scroll_x: f64,
-    /// Вертикальная прокрутка страницы.
+    /// Vertical page scroll.
     pub scroll_y: f64,
 }
 
-/// Координаты левого верхнего угла панели размером `width × height` для курсора в точке (`page_x`, `page_y`) страницы:
-/// сдвиг на 1 пиксель, переворот влево/вверх, если панель не помещается справа/снизу, затем прижатие к левому/верхнему краю окна.
+/// Coordinates of the top-left corner of a panel of size `width × height` for a cursor at the page point (`page_x`, `page_y`):
+/// a 1-pixel offset, flip left/up if the panel does not fit right/below, then clamp to the window's left/top edge.
 pub fn place(page_x: f64, page_y: f64, width: f64, height: f64, view: Viewport) -> (f64, f64) {
     let (mut left, mut top) = (page_x + 1.0, page_y + 1.0);
     if left + width - view.scroll_x > view.width {

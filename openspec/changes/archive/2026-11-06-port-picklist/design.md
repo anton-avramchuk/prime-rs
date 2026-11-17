@@ -2,36 +2,36 @@
 
 ## Context
 
-Требования — в `specs/picklist`. Исходники PrimeNG 21.1.10: `picklist/picklist.ts` (`moveRight`, `moveAllRight`, `moveLeft`, `moveAllLeft`, `moveUp/Top/Down/Bottom`, `onDrop`), `style/pickliststyle.ts`, `@primeuix/styles/picklist`. Образец: `prime-orderlist` (кнопки + `Listbox`, `reorder`).
+Requirements are in `specs/picklist`. PrimeNG 21.1.10 sources: `picklist/picklist.ts` (`moveRight`, `moveAllRight`, `moveLeft`, `moveAllLeft`, `moveUp/Top/Down/Bottom`, `onDrop`), `style/pickliststyle.ts`, `@primeuix/styles/picklist`. Model: `prime-orderlist` (buttons + `Listbox`, `reorder`).
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM и поведение кнопок и переноса.
+**Goals:** the same DOM and behaviour of the buttons and transfer.
 
-**Non-Goals:** перетаскивание, вертикальный адаптивный вид, шаблоны Angular.
+**Non-Goals:** drag and drop, the vertical responsive view, Angular templates.
 
 ## Decisions
 
-### D1. Перенос (`transfer.rs`)
-Функции над `Vec<ListboxOption>`: `move_selected(from, to, selection) -> Vec<ListboxOption>` и `move_all(from, to, visible) -> Vec<ListboxOption>`; дубликат определяется по значению. Видимость при поиске — `prime_listbox::matches_filter(label, текст)`, текст поиска приходит из `on_filter` каждого списка.
+### D1. Transfer (`transfer.rs`)
+Functions over `Vec<ListboxOption>`: `move_selected(from, to, selection) -> Vec<ListboxOption>` and `move_all(from, to, visible) -> Vec<ListboxOption>`; a duplicate is determined by value. Visibility under the search is `prime_listbox::matches_filter(label, text)`, the search text comes from each list's `on_filter`.
 
-### D2. Перестановка
-`prime_orderlist::reorder` над ключами выбранных, затем сортировка списка по полученному порядку.
+### D2. Reordering
+`prime_orderlist::reorder` over the keys of the selected ones, then sorting the list by the resulting order.
 
-### D3. Компонент
-Два `Listbox` (`multiple`, `values` = выбор списка, `header_content` для `source_header`/`target_header`, `on_dbl_click` переносит выбранные). Кнопки — `Button` `severity=secondary`. `Listbox::header_content` добавлен как единственное изменение `prime-listbox`.
+### D3. Component
+Two `Listbox`es (`multiple`, `values` = the list's selection, `header_content` for `source_header`/`target_header`, `on_dbl_click` moves the selected ones). Buttons are `Button` with `severity=secondary`. `Listbox::header_content` was added as the only change to `prime-listbox`.
 
-### D4. Тесты
-Перенос — таблицы. SSR: пять блоков, состояние кнопок, заголовки, `show_*_controls`. Браузерные `tests/web.rs`: выбор и перенос в обе стороны, «всё», перестановка, двойной клик, `keep_selection`, поиск и «всё», `disabled`. e2e: стили и клики.
+### D4. Tests
+Transfer — tables. SSR: five blocks, button state, headers, `show_*_controls`. Browser `tests/web.rs`: selection and transfer in both directions, "all", reordering, double click, `keep_selection`, search and "all", `disabled`. e2e: styles and clicks.
 
 ## Risks / Trade-offs
 
-- [Порядок выбора] перенос следует порядку выбора, как в PrimeNG.
+- [Selection order] transfer follows the selection order, as in PrimeNG.
 
 ## Open Questions
 
-- Нет.
+- None.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

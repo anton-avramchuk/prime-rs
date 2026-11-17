@@ -1,44 +1,44 @@
 # Stepper
 
-Порт `p-stepper`, `p-step-list`, `p-step`, `p-step-panels`, `p-step-panel`, `p-step-item` и `p-stepper-separator` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-stepper`, `p-step-list`, `p-step`, `p-step-panels`, `p-step-panel`, `p-step-item` and `p-stepper-separator` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-stepper::Stepper`, `StepList`, `Step`, `StepPanels`, `StepPanel`, `StepItem`, `StepContext`, `StepPt`, `StepPanelPt` | `stepper/stepper.ts`, `stepper/style/*` |
-| CSS | `@primeuix/styles/stepper` и правило `.p-steppanel .p-motion` из `stepperstyle.ts` — `cargo xtask gen-theme`, `primeng_extra` |
-| Демонстрации | `apps/showcase/doc/stepper/{basic,linear,vertical,template,stepsonly}-doc.ts` |
+| CSS | `@primeuix/styles/stepper` and the `.p-steppanel .p-motion` rule from `stepperstyle.ts` - `cargo xtask gen-theme`, `primeng_extra` |
+| Demos | `apps/showcase/doc/stepper/{basic,linear,vertical,template,stepsonly}-doc.ts` |
 
-Спека: `openspec/specs/stepper`.
+Spec: `openspec/specs/stepper`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-stepper.p-component[role=tablist]` (`p-readonly` при `linear`), `div.p-steplist`, `div.p-step[role=presentation]` (`p-step-active`, `p-disabled`, `aria-current="step"`, `data-p-active`, `data-p-disabled`) с кнопкой `button.p-step-header[role=tab]` (`id`, `aria-controls`, `tabindex=-1` и `disabled` у недоступного) > `span.p-step-number` + `span.p-step-title`, `div.p-stepper-separator` после каждого шага списка, кроме последнего; `div.p-steppanels`, `div.p-steppanel[role=tabpanel]` (`id`, `aria-controls`, `data-p-active`, `data-pc-name="steppanel"`) > `div.p-steppanel-content-wrapper` > `div.p-steppanel-content`; `div.p-stepitem` (`p-stepitem-active`).
-- Идентификаторы `<id>_step_<N>` и `<id>_steppanel_<N>`; `id` по умолчанию `pn_id_<N>`.
-- Недоступность: `!active && (linear || disabled)`; клик по шагу записывает его значение в `value`.
-- В горизонтальной раскладке содержимое выводится только у активной панели (как `p-motion` с `visible = active`); в вертикальной (`StepItem`) панель получает `p-steppanel-active`, разделитель панели — для каждого элемента, кроме последнего, шаг внутри `StepItem` разделителя не выводит.
-- Клавиатурной навигации сверх нативных кнопок нет — как в PrimeNG.
+- Markup and classes: `div.p-stepper.p-component[role=tablist]` (`p-readonly` with `linear`), `div.p-steplist`, `div.p-step[role=presentation]` (`p-step-active`, `p-disabled`, `aria-current="step"`, `data-p-active`, `data-p-disabled`) with a `button.p-step-header[role=tab]` button (`id`, `aria-controls`, `tabindex=-1` and `disabled` when unavailable) > `span.p-step-number` + `span.p-step-title`, `div.p-stepper-separator` after each list step except the last; `div.p-steppanels`, `div.p-steppanel[role=tabpanel]` (`id`, `aria-controls`, `data-p-active`, `data-pc-name="steppanel"`) > `div.p-steppanel-content-wrapper` > `div.p-steppanel-content`; `div.p-stepitem` (`p-stepitem-active`).
+- Identifiers `<id>_step_<N>` and `<id>_steppanel_<N>`; the default `id` is `pn_id_<N>`.
+- Unavailability: `!active && (linear || disabled)`; a click on a step writes its value to `value`.
+- In the horizontal layout content is rendered only for the active panel (like `p-motion` with `visible = active`); in the vertical one (`StepItem`) the panel gets `p-steppanel-active`, the panel separator is rendered for every item except the last, a step inside `StepItem` renders no separator.
+- No keyboard navigation beyond native buttons - as in PrimeNG.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Части — обычные `div`, без хостов `<p-stepper>`, `<p-step>` и т. п. | Хосты в Angular — деталь фреймворка. |
-| Значения — `u32` (в PrimeNG — число), `value` — `RwSignal<Option<u32>>` | Двусторонняя привязка сигналами; `None` — нет активного шага. |
-| `content` вместо шаблона `#content`: `Callback<StepContext, AnyView>`, где `StepContext { value, active: Signal<bool>, activate: Callback<u32> }` | Аналог `activateCallback`, `value`, `active` шаблона PrimeNG; `activate(n)` ставит значение `n` (у шага — любое, как `updateValue`). Обычное содержимое — дочерние элементы. |
-| Разделитель шага определяется реестром шагов в контексте `Stepper` (порядок создания = порядок в DOM) | Вместо `contentChildren`. Шаг, вставленный динамически в середину списка, порядок реестра нарушит: добавлять и убирать можно только в конце. |
-| Вертикальная раскладка: неактивные панели остаются в разметке (`display: none`), содержимое всех панелей выводится сразу; раскрытие анимируют классы темы `p-collapsible-*` через `prime_core::collapsible::bind_region_with` | В PrimeNG `p-motion` убирает содержимое неактивной панели; анимация нужна, пока содержимое ещё на месте. |
-| Нет `transitionOptions`, `motionOptions` и `@primeuix/motion` | Анимация — классы темы, как у Accordion. |
-| Контекст `Stepper` и `StepItem` кладётся в дочернего владельца, а содержимое возвращается как `OwnedView` с этим владельцем | Иначе контекст течёт на соседей, идущих после компонента (горизонтальная панель после вертикального `Stepper` считала бы себя вертикальной); `OwnedView` нужен, чтобы шаги, добавляемые условием уже после монтирования, тоже находили контекст. |
-| `xtask gen-theme` для компонентов из `primeng_extra` берёт CSS после `${…_style}` в литерале, если маркера `/* For PrimeNG */` нет | У `stepperstyle.ts` нет маркера, но правило `.p-steppanel .p-motion` нужно для вертикальной анимации. |
-| Демонстрация `template`: значки `pi-user`/`pi-id-card` заменены `HomeIcon`/`CheckIcon`, картинка с CDN — «🎉»; `ngModel` — сигналы | В `prime-icons` нет подходящих значков; независимость от CDN. |
-| Класс `p-readonly` при `linear` вместо `p-stepper-readonly` из CSS темы | Следуем `stepperstyle.ts`: селектор `.p-stepper.p-stepper-readonly .p-step` в стилях не срабатывает ни у PrimeNG, ни у нас. |
+| Parts are plain `div`s, without the `<p-stepper>`, `<p-step>` etc. hosts | Hosts in Angular are a framework detail. |
+| Values are `u32` (a number in PrimeNG), `value` is `RwSignal<Option<u32>>` | Two-way binding with signals; `None` means no active step. |
+| `content` instead of the `#content` template: `Callback<StepContext, AnyView>`, where `StepContext { value, active: Signal<bool>, activate: Callback<u32> }` | Counterpart of the PrimeNG template's `activateCallback`, `value`, `active`; `activate(n)` sets the value `n` (for a step - any, like `updateValue`). Regular content is child elements. |
+| A step's separator is determined by the step registry in the `Stepper` context (creation order = DOM order) | Instead of `contentChildren`. A step inserted dynamically into the middle of the list breaks the registry order: steps may only be added and removed at the end. |
+| Vertical layout: inactive panels stay in the markup (`display: none`), the content of all panels is rendered at once; expansion is animated by the theme's `p-collapsible-*` classes via `prime_core::collapsible::bind_region_with` | In PrimeNG `p-motion` removes the content of an inactive panel; the animation needs the content to still be in place. |
+| No `transitionOptions`, `motionOptions` or `@primeuix/motion` | The animation is theme classes, like Accordion. |
+| The `Stepper` and `StepItem` context is placed in a child owner, and the content is returned as an `OwnedView` with that owner | Otherwise the context leaks to siblings after the component (a horizontal panel after a vertical `Stepper` would consider itself vertical); `OwnedView` is needed so that steps added by a condition after mounting find the context too. |
+| For components from `primeng_extra`, `xtask gen-theme` takes the CSS after `${…_style}` in the literal if there is no `/* For PrimeNG */` marker | `stepperstyle.ts` has no marker, but the `.p-steppanel .p-motion` rule is needed for the vertical animation. |
+| The `template` demo: the `pi-user`/`pi-id-card` icons are replaced by `HomeIcon`/`CheckIcon`, the CDN image by "🎉"; `ngModel` is signals | `prime-icons` has no suitable icons; independence from the CDN. |
+| Class `p-readonly` with `linear` instead of `p-stepper-readonly` from the theme CSS | We follow `stepperstyle.ts`: the selector `.p-stepper.p-stepper-readonly .p-step` in the styles does not fire either in PrimeNG or here. |
 
-## Что не проверялось
+## Not verified
 
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Раскладка справа налево и сенсорный ввод.
-- Плавность анимации высоты вертикальной панели оценивалась только по классам и итоговому состоянию (`display`), не по кадрам.
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behavior was not.
+- Right-to-left layout and touch input.
+- The smoothness of the vertical panel's height animation was assessed only by classes and the final state (`display`), not frame by frame.
 
-## Производительность
+## Performance
 
-См. `benches/` (`stepper-1`, `stepper-1000`, `case-stepper`) и `benches/*budgets.toml`.
+See `benches/` (`stepper-1`, `stepper-1000`, `case-stepper`) and `benches/*budgets.toml`.

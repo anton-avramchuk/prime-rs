@@ -1,7 +1,7 @@
-//! Поведение SpeedDial в реальном браузере (wasm-bindgen-test): показ и скрытие, команды, клик вне, `Escape`, клавиатура
-//! во всех направлениях, маска, управляемый `visible`, раскладка и шаблоны.
+//! SpeedDial behavior in a real browser (wasm-bindgen-test): show and hide, commands, outside click, `Escape`, keyboard
+//! in all directions, mask, controlled `visible`, layout and templates.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели окна общие на страницу. Стили темы не подключены.
+//! Scenarios run as one sequential test: window listeners are shared per page. Theme styles are not loaded.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -27,7 +27,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn all(host: &HtmlElement, sel: &str) -> Vec<HtmlElement> {
@@ -42,7 +42,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться и слушателю окна повеситься (он вешается в следующем такте).
+/// Lets effects apply and the window listener attach (it is attached on the next tick).
 async fn settle() {
     sleep(60).await;
 }
@@ -99,8 +99,8 @@ async fn toggle_events_and_item_commands() {
     button.click();
     settle().await;
     assert!(is_open(&host) && button.get_attribute("aria-expanded").as_deref() == Some("true"));
-    assert_eq!(all(&host, ".p-speeddial-action")[0].get_attribute("tabindex").as_deref(), Some("0"), "у действий tabindex при показе");
-    assert!(all(&host, ".p-speeddial-action")[1].get_attribute("tabindex").is_none(), "у отключённого нет tabindex");
+    assert_eq!(all(&host, ".p-speeddial-action")[0].get_attribute("tabindex").as_deref(), Some("0"), "actions have tabindex when shown");
+    assert!(all(&host, ".p-speeddial-action")[1].get_attribute("tabindex").is_none(), "a disabled one has no tabindex");
     button.click();
     settle().await;
     assert!(!is_open(&host));
@@ -108,7 +108,7 @@ async fn toggle_events_and_item_commands() {
     settle().await;
     all(&host, ".p-speeddial-action")[2].click();
     settle().await;
-    assert!(!is_open(&host), "команда скрывает список");
+    assert!(!is_open(&host), "the command hides the list");
     all(&host, ".p-speeddial-action")[1].click();
     settle().await;
     assert_eq!(
@@ -131,23 +131,23 @@ async fn outside_click_escape_disabled_and_mask() {
     settle().await;
     let a = q(&host, ".a");
     let (button_a, button_b) = (q(&a, ".p-speeddial-button"), q(&q(&host, ".b"), ".p-speeddial-button"));
-    assert!(a.query_selector(".p-speeddial-mask").unwrap().is_none(), "маски нет, пока закрыто");
+    assert!(a.query_selector(".p-speeddial-mask").unwrap().is_none(), "no mask while closed");
     button_a.click();
     settle().await;
     let mask = q(&a, ".p-speeddial-mask");
     assert!(mask.class_name().contains("p-overlay-mask"), "{}", mask.class_name());
     doc().body().unwrap().click();
     settle().await;
-    assert!(!is_open(&a) && a.query_selector(".p-speeddial-mask").unwrap().is_none(), "клик вне скрывает, маска убрана");
+    assert!(!is_open(&a) && a.query_selector(".p-speeddial-mask").unwrap().is_none(), "outside click hides, mask removed");
     button_a.click();
     settle().await;
     q(&a, ".p-speeddial-list").click();
     settle().await;
-    assert!(is_open(&a), "клик внутри компонента не скрывает");
+    assert!(is_open(&a), "click inside the component does not hide");
     key(&button_a, "Escape");
     settle().await;
-    assert!(!is_open(&a), "Escape на кнопке скрывает");
-    assert!(doc().active_element().unwrap().is_same_node(Some(&button_a)), "фокус на кнопке");
+    assert!(!is_open(&a), "Escape on the button hides");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&button_a)), "focus on the button");
 
     let b = q(&host, ".b");
     stay.set(false);
@@ -155,17 +155,17 @@ async fn outside_click_escape_disabled_and_mask() {
     settle().await;
     doc().body().unwrap().click();
     settle().await;
-    assert!(is_open(&b), "hide_on_click_outside=false: клик снаружи не скрывает");
+    assert!(is_open(&b), "hide_on_click_outside=false: outside click does not hide");
     stay.set(true);
     doc().body().unwrap().click();
     settle().await;
-    assert!(!is_open(&b), "hide_on_click_outside=true: клик снаружи скрывает");
+    assert!(!is_open(&b), "hide_on_click_outside=true: outside click hides");
     host.remove();
 }
 
 async fn keyboard_in_every_direction() {
     use SpeedDialDirection as D;
-    // (направление, клавиша «следующий», клавиша «предыдущий»)
+    // (direction, "next" key, "previous" key)
     let table = [
         (D::Up, "ArrowUp", "ArrowDown"),
         (D::Down, "ArrowDown", "ArrowUp"),
@@ -182,18 +182,18 @@ async fn keyboard_in_every_direction() {
         let _h = leptos::mount::mount_to(host.clone(), move || view! { <SpeedDial id="k" model=items.clone() direction=direction /> });
         settle().await;
         let (button, list) = (q(&host, ".p-speeddial-button"), q(&host, ".p-speeddial-list"));
-        assert!(!key(&button, "ArrowDown"), "{direction:?}: стрелка на кнопке перехвачена");
+        assert!(!key(&button, "ArrowDown"), "{direction:?}: arrow on the button is intercepted");
         settle().await;
-        assert!(is_open(&host), "{direction:?}: список открыт");
-        assert_eq!(focused_label(&host).as_deref(), Some("a"), "{direction:?}: первый доступный пункт");
+        assert!(is_open(&host), "{direction:?}: list is open");
+        assert_eq!(focused_label(&host).as_deref(), Some("a"), "{direction:?}: first available item");
         assert_eq!(list.get_attribute("aria-activedescendant").as_deref(), Some("k_0"));
         key(&list, next);
         settle().await;
-        assert_eq!(focused_label(&host).as_deref(), Some("c"), "{direction:?} {next}: b отключён");
+        assert_eq!(focused_label(&host).as_deref(), Some("c"), "{direction:?} {next}: b is disabled");
         key(&list, next);
         key(&list, next);
         settle().await;
-        assert_eq!(focused_label(&host).as_deref(), Some("d"), "{direction:?}: на границе остаётся");
+        assert_eq!(focused_label(&host).as_deref(), Some("d"), "{direction:?}: stays at the boundary");
         key(&list, prev);
         settle().await;
         assert_eq!(focused_label(&host).as_deref(), Some("c"), "{direction:?} {prev}");
@@ -205,9 +205,9 @@ async fn keyboard_in_every_direction() {
         assert_eq!(focused_label(&host).as_deref(), Some("d"), "{direction:?}: End");
         key(&list, "Enter");
         settle().await;
-        assert_eq!(*log.lock().unwrap(), ["d"], "{direction:?}: Enter активирует пункт");
-        assert!(!is_open(&host), "{direction:?}: после Enter список скрыт");
-        assert!(doc().active_element().unwrap().is_same_node(Some(&button)), "{direction:?}: фокус вернулся на кнопку");
+        assert_eq!(*log.lock().unwrap(), ["d"], "{direction:?}: Enter activates the item");
+        assert!(!is_open(&host), "{direction:?}: list is hidden after Enter");
+        assert!(doc().active_element().unwrap().is_same_node(Some(&button)), "{direction:?}: focus returned to the button");
         assert!(list.get_attribute("aria-activedescendant").is_none());
         host.remove();
     }
@@ -219,20 +219,20 @@ async fn toggler_up_arrow_focuses_the_last_item_and_unhandled_keys_pass() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <SpeedDial id="t" model=items.clone() /> });
     settle().await;
     let (button, list) = (q(&host, ".p-speeddial-button"), q(&host, ".p-speeddial-list"));
-    assert!(key(&button, "KeyA"), "посторонняя клавиша не перехватывается");
+    assert!(key(&button, "KeyA"), "an unrelated key is not intercepted");
     assert!(!key(&button, "ArrowUp"));
     settle().await;
-    assert_eq!(focused_label(&host).as_deref(), Some("d"), "ArrowUp на кнопке — последний пункт");
-    assert!(key(&list, "Tab"), "Tab в списке не перехватывается");
+    assert_eq!(focused_label(&host).as_deref(), Some("d"), "ArrowUp on the button — last item");
+    assert!(key(&list, "Tab"), "Tab in the list is not intercepted");
     key(&list, "Space");
     settle().await;
-    assert_eq!(*log.lock().unwrap(), ["d"], "Space активирует пункт");
+    assert_eq!(*log.lock().unwrap(), ["d"], "Space activates the item");
     key(&button, "ArrowLeft");
     settle().await;
-    assert_eq!(focused_label(&host).as_deref(), Some("a"), "ArrowLeft на кнопке — первый пункт");
+    assert_eq!(focused_label(&host).as_deref(), Some("a"), "ArrowLeft on the button — first item");
     key(&list, "Escape");
     settle().await;
-    assert!(!is_open(&host), "Escape в списке скрывает");
+    assert!(!is_open(&host), "Escape in the list hides it");
     host.remove();
 }
 
@@ -244,11 +244,11 @@ async fn controlled_visible_disabled_and_hidden_items() {
     settle().await;
     visible.set(true);
     settle().await;
-    assert!(is_open(&host), "сигнал открывает список");
+    assert!(is_open(&host), "the signal opens the list");
     q(&host, ".p-speeddial-button").click();
     settle().await;
-    assert!(!visible.get_untracked() && !is_open(&host), "кнопка меняет сигнал");
-    assert!(all(&host, ".p-speeddial-item")[1].class_name().contains("p-hidden"), "скрытый пункт");
+    assert!(!visible.get_untracked() && !is_open(&host), "the button changes the signal");
+    assert!(all(&host, ".p-speeddial-item")[1].class_name().contains("p-hidden"), "hidden item");
     q(&host, ".p-speeddial-button").click();
     settle().await;
     let list = q(&host, ".p-speeddial-list");
@@ -259,7 +259,7 @@ async fn controlled_visible_disabled_and_hidden_items() {
     assert_eq!(focused_label(&host).as_deref(), Some("a"));
     key(&list, "ArrowUp");
     settle().await;
-    assert_eq!(focused_label(&host).as_deref(), Some("c"), "скрытый пункт пропускается");
+    assert_eq!(focused_label(&host).as_deref(), Some("c"), "hidden item is skipped");
     key(&list, "ArrowDown");
     settle().await;
     assert_eq!(focused_label(&host).as_deref(), Some("a"));
@@ -278,7 +278,7 @@ async fn host_with_disabled() -> HtmlElement {
     assert!(button.has_attribute("disabled") && q(&host, ".p-speeddial").class_name().contains("p-disabled"));
     button.click();
     settle().await;
-    assert!(!is_open(&host), "отключённый компонент не открывается");
+    assert!(!is_open(&host), "a disabled component does not open");
     host
 }
 
@@ -297,15 +297,15 @@ async fn layout_styles_and_offsets() {
         lis[0].style().get_property_value("left").unwrap()
     );
     assert!(lis[0].style().get_property_value("top").unwrap().contains("var(--item-diff-y"));
-    assert_eq!(lis[0].style().get_property_value("transition-delay").unwrap(), "120ms", "закрыто: задержка с конца");
-    assert!(!list.style().get_property_value("--item-diff-x").unwrap().is_empty(), "смещения посчитаны после монтирования");
+    assert_eq!(lis[0].style().get_property_value("transition-delay").unwrap(), "120ms", "closed: delay from the end");
+    assert!(!list.style().get_property_value("--item-diff-x").unwrap().is_empty(), "offsets are computed after mount");
     q(&host, ".p-speeddial-button").click();
     settle().await;
     assert_eq!(all(&host, ".p-speeddial-item")[3].style().get_property_value("transition-delay").unwrap(), "120ms");
     assert_eq!(
         all(&host, ".p-speeddial-item")[0].style().get_property_value("transition-delay").unwrap(),
         "0ms",
-        "открыто: задержка с начала"
+        "open: delay from the start"
     );
     host.remove();
 }
@@ -335,11 +335,11 @@ async fn templates_and_custom_toggler() {
     assert!(host.query_selector(".p-speeddial-button").unwrap().is_none());
     q(&host, ".my-toggler").click();
     settle().await;
-    assert!(is_open(&host), "обратный вызов переключения");
+    assert!(is_open(&host), "toggle callback");
     all(&host, ".my-item")[2].click();
     settle().await;
-    assert!(!is_open(&host), "click из контекста скрывает список");
-    assert_eq!(*log.lock().unwrap(), ["tpl:c", "c"], "и вызывает команду пункта");
+    assert!(!is_open(&host), "click from the context hides the list");
+    assert_eq!(*log.lock().unwrap(), ["tpl:c", "c"], "and runs the item command");
     host.remove();
 }
 
@@ -358,7 +358,7 @@ async fn unmount_removes_the_outside_listener() {
     settle().await;
     doc().body().unwrap().click();
     settle().await;
-    assert!(log.lock().unwrap().is_empty(), "после размонтирования слушатель снят");
+    assert!(log.lock().unwrap().is_empty(), "the listener is removed after unmount");
     host.remove();
 }
 

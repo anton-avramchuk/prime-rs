@@ -1,4 +1,4 @@
-//! Служебные команды репозитория (`cargo xtask <команда>`).
+//! Repository utility commands (`cargo xtask <command>`).
 
 mod affected;
 mod bench;
@@ -14,24 +14,24 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 const HELP: &str = "\
-cargo xtask <команда>
+cargo xtask <command>
 
-Команды:
-  upstream-diff [--to <rev>]   портированные компоненты, изменившиеся в PrimeNG с закреплённого коммита
-  gen-spec <имя> [--out <файл>] заготовка спеки компонента из исходников PrimeNG
-  gen-docs [--check]           данные сайта документации showcase/src/generated.rs из исходников
-  gen-icons                    сгенерировать crates/prime-icons из иконок PrimeNG
-  gen-theme                    сгенерировать CSS темы Aura в crates/prime-theme (нужен Node)
-  wasm-size [--budgets <файл>] вклад компонентов в размер wasm и проверка бюджетов (benches/budgets.toml)
-  alloc-budget [--budgets <файл>] проверить target/bench/alloc.json по benches/alloc-budgets.toml
-  bench-compare <база> <сейчас> [--threshold 10] [--fail-over]
-                               сравнить каталоги отчётов бенчмарков (*.json), вывод — Markdown
-  affected [--base <ref> | файлы...]  затронутые крейты для выборочных проверок CI (формат $GITHUB_OUTPUT)
-  clean [--days <N>] [--max-size <ГБ>]  удалить артефакты target/ старше N дней (по умолчанию 7) и/или самые старые, пока target/ больше ГБ
+Commands:
+  upstream-diff [--to <rev>]   ported components changed in PrimeNG since the pinned commit
+  gen-spec <name> [--out <file>] component spec skeleton from PrimeNG sources
+  gen-docs [--check]           docs site data showcase/src/generated.rs from the sources
+  gen-icons                    generate crates/prime-icons from PrimeNG icons
+  gen-theme                    generate the Aura theme CSS into crates/prime-theme (needs Node)
+  wasm-size [--budgets <file>] contribution of components to wasm size and budget check (benches/budgets.toml)
+  alloc-budget [--budgets <file>] check target/bench/alloc.json against benches/alloc-budgets.toml
+  bench-compare <base> <now> [--threshold 10] [--fail-over]
+                               compare benchmark report directories (*.json), output is Markdown
+  affected [--base <ref> | files...]  affected crates for selective CI checks ($GITHUB_OUTPUT format)
+  clean [--days <N>] [--max-size <GB>]  remove target/ artifacts older than N days (7 by default) and/or the oldest ones while target/ is larger than GB
 ";
 
 fn root() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).parent().expect("xtask лежит в корне репозитория").to_path_buf()
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).parent().expect("xtask lives in the repository root").to_path_buf()
 }
 
 fn flag(args: &[String], name: &str) -> Option<String> {
@@ -47,15 +47,15 @@ fn run(args: &[String]) -> Result<(), String> {
             let ported = diff::ported_components(&root);
             let changed = diff::changed_components(&up.path, &up.commit, &to, &ported)?;
             if changed.is_empty() {
-                println!("изменений в портированных компонентах нет ({}..{to})", &up.commit[..10.min(up.commit.len())]);
+                println!("no changes in ported components ({}..{to})", &up.commit[..10.min(up.commit.len())]);
             } else {
-                println!("изменились компоненты:");
+                println!("changed components:");
                 changed.iter().for_each(|c| println!("  {c}"));
             }
             Ok(())
         }
         Some("gen-spec") => {
-            let name = args.get(1).filter(|a| !a.starts_with("--")).ok_or("укажите имя компонента")?;
+            let name = args.get(1).filter(|a| !a.starts_with("--")).ok_or("specify the component name")?;
             let up = upstream::Upstream::load(&root)?;
             let text = gen_spec::generate(&up.src_dir(), name, &up.commit, &up.version)?;
             match flag(args, "--out") {
@@ -69,7 +69,7 @@ fn run(args: &[String]) -> Result<(), String> {
         Some("gen-icons") => {
             let up = upstream::Upstream::load(&root)?;
             let n = gen_icons::run(&up.src_dir().join("icons"), &root.join("crates/prime-icons"))?;
-            println!("иконок сгенерировано: {n} (+ blank вручную)");
+            println!("icons generated: {n} (+ blank by hand)");
             Ok(())
         }
         Some("gen-docs") => gen_docs::run(&root, args.iter().any(|a| a == "--check")),
@@ -87,7 +87,7 @@ fn run(args: &[String]) -> Result<(), String> {
         }
         Some("bench-compare") => {
             let (Some(base), Some(cur)) = (args.get(1), args.get(2)) else {
-                return Err("использование: bench-compare <каталог базы> <каталог текущих отчётов>".into());
+                return Err("usage: bench-compare <base directory> <current reports directory>".into());
             };
             let threshold = flag(args, "--threshold").map_or(Ok(10.0), |v| v.parse::<f64>().map_err(|e| format!("--threshold: {e}")))?;
             bench::bench_compare(&PathBuf::from(base), &PathBuf::from(cur), threshold, args.iter().any(|a| a == "--fail-over"))
@@ -110,7 +110,7 @@ fn run(args: &[String]) -> Result<(), String> {
             print!("{HELP}");
             Ok(())
         }
-        Some(other) => Err(format!("неизвестная команда `{other}`\n\n{HELP}")),
+        Some(other) => Err(format!("unknown command `{other}`\n\n{HELP}")),
     }
 }
 
@@ -119,7 +119,7 @@ fn main() -> ExitCode {
     match run(&args) {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
-            eprintln!("ошибка: {e}");
+            eprintln!("error: {e}");
             ExitCode::FAILURE
         }
     }

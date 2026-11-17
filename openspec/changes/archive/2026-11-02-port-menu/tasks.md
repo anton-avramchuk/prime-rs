@@ -1,31 +1,31 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `menu` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился и что `p-menu-*` и `p-menu-overlay` есть (иначе — решить вопрос из design.md)
+- [x] 1.1 Add `menu` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of other components did not change and that `p-menu-*` and `p-menu-overlay` exist (otherwise — resolve the question from design.md)
 
-## 2. Крейт
+## 2. Crate
 
-- [x] 2.1 `crates/prime-menu`: `state.rs` (`MenuItem`, `flatten`, `item_id`, `root_classes`, `item_classes`, `root_style`, `enabled_ids`, `next_id`, `prev_id`, `should_prevent_default`, `can_run_command`) с табличными тестами
-- [x] 2.2 Компонент `Menu` и `MenuPt`: корень, `start`/`end`, список, пункты, группы, разделители, `item`/`submenu_header`, SSR-тесты, rustdoc
-- [x] 2.3 Поведение статичного режима: клик и `command`, отключённые пункты, фокус и клавиши, `on_focus`/`on_blur`
-- [x] 2.4 `MenuRef` и всплывающий режим: показ/скрытие, выравнивание, слой, клик вне, resize, прокрутка, Escape/Tab/Alt+↑, `on_show`/`on_hide`; браузерные `tests/web.rs`
+- [x] 2.1 `crates/prime-menu`: `state.rs` (`MenuItem`, `flatten`, `item_id`, `root_classes`, `item_classes`, `root_style`, `enabled_ids`, `next_id`, `prev_id`, `should_prevent_default`, `can_run_command`) with table-driven tests
+- [x] 2.2 Component `Menu` and `MenuPt`: root, `start`/`end`, list, items, groups, separators, `item`/`submenu_header`, SSR tests, rustdoc
+- [x] 2.3 Static mode behavior: click and `command`, disabled items, focus and keys, `on_focus`/`on_blur`
+- [x] 2.4 `MenuRef` and popup mode: show/hide, alignment, layer, outside click, resize, scroll, Escape/Tab/Alt+Up, `on_show`/`on_hide`; browser `tests/web.rs`
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/menu` (`basic`, `group`, `command`, `popup`, `template`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `menu.spec.ts` (разметка, группы, клик и команда, клавиши, popup: показ, клик вне, Escape); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test menu`
+- [x] 3.1 Page `/menu` (`basic`, `group`, `command`, `popup`, `template`), menu, route, `stylesheet(&[..])`, crate in workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `menu.spec.ts` (markup, groups, click and command, keys, popup: show, outside click, Escape); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test menu`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-menu` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`; замер wasm — в фоне)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-menu` and budgets (first `cargo bench -p render-bench --bench alloc`; wasm measurement — in the background)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/menu.md` (отличия от PrimeNG, что не проверялось); `prime-menu` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-menu`; CI `dev` зелёный
+- [x] 5.1 `docs/menu.md` (differences from PrimeNG, what was not verified); `prime-menu` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with `--all-features` (and for the wasm target), tests, deny, machete, `openspec validate port-menu`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: Listbox.
+- Archive after CI.
+- Next: Listbox.

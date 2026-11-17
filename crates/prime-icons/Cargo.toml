@@ -1,6 +1,6 @@
 [package]
 name = "prime-icons"
-description = "prime-rs: SVG-иконки PrimeNG"
+description = "prime-rs: PrimeNG SVG icons"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,7 +11,7 @@ rust-version.workspace = true
 default = []
 ssr = ["leptos/ssr", "prime-core/ssr"]
 hydrate = ["leptos/hydrate", "prime-core/hydrate"]
-# Иконки: по feature на иконку (имя каталога PrimeNG), `all-icons` включает все.
+# Icons: one feature per icon (PrimeNG directory name), `all-icons` enables all of them.
 # BEGIN GENERATED FEATURES
 angledoubledown = []
 angledoubleleft = []

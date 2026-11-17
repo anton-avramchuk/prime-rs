@@ -1,9 +1,9 @@
-//! Чистая логика Button: из свойств в классы и `data-p*` (по `buttonstyle.ts` и `Button.dataP*` PrimeNG).
+//! Pure Button logic: from properties to classes and `data-p*` (based on `buttonstyle.ts` and `Button.dataP*` in PrimeNG).
 
 use prime_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
-/// Серьёзность кнопки (`p-button-<severity>`).
+/// Button severity (`p-button-<severity>`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ButtonSeverity {
     /// `secondary`.
@@ -23,7 +23,7 @@ pub enum ButtonSeverity {
 }
 
 impl ButtonSeverity {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Secondary => "secondary",
@@ -37,22 +37,22 @@ impl ButtonSeverity {
     }
 }
 
-/// Положение иконки относительно метки.
+/// Icon position relative to the label.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum IconPos {
-    /// Слева (по умолчанию).
+    /// Left (default).
     #[default]
     Left,
-    /// Справа.
+    /// Right.
     Right,
-    /// Сверху.
+    /// Top.
     Top,
-    /// Снизу.
+    /// Bottom.
     Bottom,
 }
 
 impl IconPos {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Left => "left",
@@ -63,47 +63,47 @@ impl IconPos {
     }
 }
 
-/// Вид кнопки (`variant`).
+/// Button variant (`variant`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ButtonVariant {
-    /// С рамкой, без фона.
+    /// With a border, no background.
     Outlined,
-    /// Текстовая.
+    /// Text.
     Text,
 }
 
-/// Снимок свойств, влияющих на классы и `data-p*` (строки заимствованы, без копирования).
+/// Snapshot of the properties that affect classes and `data-p*` (strings are borrowed, not copied).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct ButtonState<'a> {
-    /// Метка (пустая строка равна отсутствию).
+    /// Label (an empty string is the same as absent).
     pub label: Option<&'a str>,
-    /// Есть ли иконка, иконка загрузки или их шаблон (`hasIcon` в PrimeNG).
+    /// Whether there is an icon, loading icon or their template (`hasIcon` in PrimeNG).
     pub has_icon: bool,
-    /// Значение бейджа.
+    /// Badge value.
     pub badge: Option<&'a str>,
-    /// Идёт загрузка.
+    /// Loading.
     pub loading: bool,
-    /// Серьёзность.
+    /// Severity.
     pub severity: Option<ButtonSeverity>,
-    /// Вид.
+    /// Variant.
     pub variant: Option<ButtonVariant>,
-    /// Текстовая кнопка.
+    /// Text button.
     pub text: bool,
-    /// Кнопка с рамкой.
+    /// Outlined button.
     pub outlined: bool,
-    /// Простой текст.
+    /// Plain text.
     pub plain: bool,
-    /// Ссылка.
+    /// Link.
     pub link: bool,
-    /// С тенью.
+    /// With shadow.
     pub raised: bool,
-    /// Скруглённая.
+    /// Rounded.
     pub rounded: bool,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
-    /// На всю ширину.
+    /// Full width.
     pub fluid: bool,
-    /// Положение иконки.
+    /// Icon position.
     pub icon_pos: IconPos,
 }
 
@@ -112,12 +112,12 @@ fn filled(s: Option<&str>) -> bool {
 }
 
 impl ButtonState<'_> {
-    /// Есть ли метка.
+    /// Whether there is a label.
     pub fn has_label(&self) -> bool {
         filled(self.label)
     }
 
-    /// Есть ли бейдж.
+    /// Whether there is a badge.
     pub fn has_badge(&self) -> bool {
         filled(self.badge)
     }
@@ -139,7 +139,7 @@ impl ButtonState<'_> {
     }
 }
 
-/// Добавляет классы корневого `<button>` в порядке `buttonstyle.ts` (без `p-ripple`, `style_class` и `pt`).
+/// Adds the classes of the root `<button>` in the order of `buttonstyle.ts` (without `p-ripple`, `style_class` and `pt`).
 pub fn write_root_classes(cn: &mut ClassNames, s: &ButtonState) {
     cn.add("p-button p-component")
         .add_if(s.icon_only(), "p-button-icon-only")
@@ -167,14 +167,14 @@ pub fn write_root_classes(cn: &mut ClassNames, s: &ButtonState) {
         .add_if(s.fluid, "p-button-fluid");
 }
 
-/// Классы корневого `<button>` строкой.
+/// Classes of the root `<button>` as a string.
 pub fn root_classes(s: &ButtonState) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     write_root_classes(&mut cn, s);
     cn.finish_cow()
 }
 
-/// Значение `data-p` корня: размер, `icon-only`, `loading`, `fluid`, `rounded`, `raised`, `outlined`, `text`, `link`, `vertical`.
+/// `data-p` value of the root: size, `icon-only`, `loading`, `fluid`, `rounded`, `raised`, `outlined`, `text`, `link`, `vertical`.
 pub fn root_data_p(s: &ButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_opt(s.size.map(Size::as_str))
@@ -190,7 +190,7 @@ pub fn root_data_p(s: &ButtonState) -> Cow<'static, str> {
     d.finish_cow()
 }
 
-/// Классы оболочки иконки: `p-button-icon` и модификатор положения (только при наличии метки).
+/// Icon wrapper classes: `p-button-icon` and the position modifier (only when there is a label).
 pub fn icon_classes(s: &ButtonState) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-button-icon");
@@ -205,14 +205,14 @@ pub fn icon_classes(s: &ButtonState) -> Cow<'static, str> {
     cn.finish_cow()
 }
 
-/// `data-p` иконки: положение и размер.
+/// Icon `data-p`: position and size.
 pub fn icon_data_p(s: &ButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(s.icon_pos.as_str()).add_opt(s.size.map(Size::as_str));
     d.finish_cow()
 }
 
-/// `data-p` метки: размер и `icon-only`.
+/// Label `data-p`: size and `icon-only`.
 pub fn label_data_p(s: &ButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_opt(s.size.map(Size::as_str)).add_if(s.icon_only(), "icon-only");

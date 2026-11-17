@@ -1,8 +1,8 @@
-//! Страница Popover: демонстрации `basic`, `target`, `selectdata`, `template` по `apps/showcase/doc/popover` PrimeNG.
+//! Popover page: demos `basic`, `target`, `selectdata`, `template` after PrimeNG `apps/showcase/doc/popover`.
 //!
-//! Демонстрация `datatable` не переносится (нет DataTable). Значков `share-alt`, `copy`, `users`, `image` в `prime-icons` нет,
-//! поэтому кнопки без значков, а аватары — инициалы вместо картинок. Панель выводится внутри корня, поэтому триггер и
-//! `Popover` лежат в обёртке с `position: relative`.
+//! The `datatable` demo is not ported (there is no DataTable). The `share-alt`, `copy`, `users`, `image` icons are missing from `prime-icons`,
+//! so the buttons have no icons, and the avatars are initials instead of pictures. The panel is rendered inside the root, so the trigger and
+//! `Popover` live in a wrapper with `position: relative`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -24,7 +24,7 @@ fn avatar(initials: &'static str) -> impl IntoView {
     }
 }
 
-/// Страница `/popover`.
+/// Page `/popover`.
 #[component]
 pub fn PopoverPage() -> impl IntoView {
     let basic = PopoverRef::new();

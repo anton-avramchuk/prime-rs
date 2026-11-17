@@ -1,6 +1,6 @@
-name: Неиспользуемые зависимости
+name: Unused dependencies
 
-# Лишние зависимости раздувают target/ и wasm; проверка по расписанию и вручную, на PR не запускается.
+# Extra dependencies bloat target/ and wasm; the check runs on a schedule and manually, not on PRs.
 on:
   schedule:
     - cron: "0 4 * * 1"

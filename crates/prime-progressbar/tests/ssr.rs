@@ -1,4 +1,4 @@
-//! Структура DOM обоих режимов, ARIA, ширина, подпись, `color`, шаблон, `pt` и паритет ветвей ProgressBar (SSR).
+//! DOM structure of both modes, ARIA, width, label, `color`, template, `pt` and branch parity of ProgressBar (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -40,7 +40,7 @@ fn determinate_structure_aria_and_width() {
 fn without_value_aria_attributes_are_absent() {
     let html = view! { <ProgressBar /> }.to_html();
     assert!(!html.contains("aria-valuenow") && !html.contains("aria-level") && !html.contains("width:"), "{html}");
-    assert!(html.contains("display: none"), "подпись скрыта: {html}");
+    assert!(html.contains("display: none"), "label is hidden: {html}");
 }
 
 #[test]

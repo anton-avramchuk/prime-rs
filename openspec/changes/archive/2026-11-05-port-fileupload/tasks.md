@@ -1,32 +1,32 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 `fileupload` в `theme.components`, `cargo xtask gen-theme`; есть `p-fileupload-file-badge`, `p-fileupload-highlight`
-- [x] 1.2 Свериться с `onFileSelect`, `validate`, `uploader`, `isFileLimitExceeded`, `basicFileChosenLabel`, `onDrop` исходника
+- [x] 1.1 `fileupload` in `theme.components`, `cargo xtask gen-theme`; `p-fileupload-file-badge`, `p-fileupload-highlight` exist
+- [x] 1.2 Check against the source's `onFileSelect`, `validate`, `uploader`, `isFileLimitExceeded`, `basicFileChosenLabel`, `onDrop`
 
-## 2. Крейт `prime-fileupload`
+## 2. Crate `prime-fileupload`
 
-- [x] 2.1 Модуль `files.rs` с табличными тестами
-- [x] 2.2 Компонент `FileUpload`, `FileUploadPt`, `FileUploadRef`: режимы `advanced` и `basic`, SSR-тесты, rustdoc
-- [x] 2.3 Выбор, перетаскивание, проверки, лимит, удаление, очистка
-- [x] 2.4 Отправка через XHR, прогресс, `custom_upload`, `auto`
-- [x] 2.5 Браузерные `tests/web.rs` (один последовательный тест)
+- [x] 2.1 Module `files.rs` with table tests
+- [x] 2.2 The `FileUpload` component, `FileUploadPt`, `FileUploadRef`: `advanced` and `basic` modes, SSR tests, rustdoc
+- [x] 2.3 Selection, drag and drop, checks, limit, removal, clear
+- [x] 2.4 Sending via XHR, progress, `custom_upload`, `auto`
+- [x] 2.5 Browser `tests/web.rs` (one sequential test)
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/fileupload`, меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `fileupload.spec.ts`
+- [x] 3.1 Page `/fileupload`, menu, route, `stylesheet(&[..])`, the crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `fileupload.spec.ts`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-fileupload`, бюджеты
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-fileupload`, budgets
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/fileupload.md`; `prime-fileupload` в браузерный job `ci.yml` (три места)
-- [x] 5.2 fmt, clippy, тесты, deny, machete, `openspec validate port-fileupload`
+- [x] 5.1 `docs/fileupload.md`; `prime-fileupload` in the browser job of `ci.yml` (three places)
+- [x] 5.2 fmt, clippy, tests, deny, machete, `openspec validate port-fileupload`
 
 ## Workflow follow-up
 
-- Волна 6 — CI один раз в конце волны; коммит и архив локально.
+- Wave 6 — CI once at the end of the wave; commit and archive locally.

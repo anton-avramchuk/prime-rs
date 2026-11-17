@@ -1,25 +1,25 @@
-//! Чистая логика SpeedDial: классы, раскладка, задержки, клавиши и шаги фокуса (по `speeddial.ts` и `speeddialstyle.ts` PrimeNG).
+//! Pure SpeedDial logic: classes, layout, delays, keys and focus steps (from PrimeNG's `speeddial.ts` and `speeddialstyle.ts`).
 
 use prime_core::ClassNames;
 use std::borrow::Cow;
 use std::f64::consts::PI;
 
-/// Тип раскладки пунктов.
+/// Item layout type.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum SpeedDialType {
-    /// По прямой (по умолчанию).
+    /// In a straight line (default).
     #[default]
     Linear,
-    /// По кругу вокруг кнопки.
+    /// In a circle around the button.
     Circle,
-    /// По полукругу.
+    /// In a semicircle.
     SemiCircle,
-    /// По четверти круга.
+    /// In a quarter circle.
     QuarterCircle,
 }
 
 impl SpeedDialType {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Linear => "linear",
@@ -30,30 +30,30 @@ impl SpeedDialType {
     }
 }
 
-/// Направление раскрытия.
+/// Expansion direction.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum SpeedDialDirection {
-    /// Вверх (по умолчанию).
+    /// Up (default).
     #[default]
     Up,
-    /// Вниз.
+    /// Down.
     Down,
-    /// Влево.
+    /// Left.
     Left,
-    /// Вправо.
+    /// Right.
     Right,
-    /// Вверх и влево.
+    /// Up and left.
     UpLeft,
-    /// Вверх и вправо.
+    /// Up and right.
     UpRight,
-    /// Вниз и влево.
+    /// Down and left.
     DownLeft,
-    /// Вниз и вправо.
+    /// Down and right.
     DownRight,
 }
 
 impl SpeedDialDirection {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Up => "up",
@@ -68,7 +68,7 @@ impl SpeedDialDirection {
     }
 }
 
-/// Классы корня: `p-speeddial p-component p-speeddial-<тип>`, `p-speeddial-direction-<направление>` (кроме круга),
+/// Root classes: `p-speeddial p-component p-speeddial-<type>`, `p-speeddial-direction-<direction>` (except circle),
 /// `p-speeddial-open`, `p-disabled`.
 pub fn root_classes(
     kind: SpeedDialType,
@@ -96,7 +96,7 @@ fn flex_direction(direction: SpeedDialDirection) -> Option<&'static str> {
     }
 }
 
-/// Инлайн-стиль корня: выравнивание и `flex-direction` по направлению.
+/// Inline style of the root: alignment and `flex-direction` by direction.
 pub fn root_inline_style(direction: SpeedDialDirection) -> String {
     let mut parts = Vec::new();
     if matches!(direction, SpeedDialDirection::Up | SpeedDialDirection::Down) {
@@ -111,19 +111,19 @@ pub fn root_inline_style(direction: SpeedDialDirection) -> String {
     parts.join("; ")
 }
 
-/// Инлайн-стиль списка: `flex-direction` по направлению.
+/// Inline style of the list: `flex-direction` by direction.
 pub fn list_inline_style(direction: SpeedDialDirection) -> String {
     flex_direction(direction).map(|d| format!("flex-direction: {d}")).unwrap_or_default()
 }
 
-/// Классы пункта: `p-speeddial-item`, `p-hidden` (`visible = false`), `p-focus`, пользовательский.
+/// Item classes: `p-speeddial-item`, `p-hidden` (`visible = false`), `p-focus`, custom.
 pub fn item_classes(hidden: bool, focused: bool, extra: Option<&str>) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-speeddial-item").add_if(hidden, "p-hidden").add_if(focused, "p-focus").add_user(extra);
     cn.finish_cow()
 }
 
-/// Радиус раскладки: `radius`, а при нуле — `20 × число пунктов`.
+/// Layout radius: `radius`, or `20 × item count` when zero.
 pub fn effective_radius(radius: f64, length: usize) -> f64 {
     if radius == 0.0 { length as f64 * 20.0 } else { radius }
 }
@@ -132,7 +132,7 @@ fn calc(value: f64, var: &str) -> String {
     format!("calc({value}px + var({var}, 0px))")
 }
 
-/// Положение пункта `index` из `length` по раскладке (`calculatePointStyle`); у `linear` стиля нет.
+/// Position of item `index` out of `length` per the layout (`calculatePointStyle`); `linear` has no style.
 pub fn point_style(kind: SpeedDialType, direction: SpeedDialDirection, index: usize, length: usize, radius: f64) -> String {
     use SpeedDialDirection as D;
     if kind == SpeedDialType::Linear || length == 0 {
@@ -171,13 +171,13 @@ pub fn point_style(kind: SpeedDialType, direction: SpeedDialDirection, index: us
     }
 }
 
-/// Задержка перехода пункта, мс: при показе растёт к концу списка, при скрытии — к началу.
+/// Item transition delay, ms: when showing it grows toward the end of the list, when hiding — toward the start.
 pub fn transition_delay(visible: bool, index: usize, length: usize, step: u32) -> u64 {
     let order = if visible { index } else { length.saturating_sub(index + 1) };
     order as u64 * u64::from(step)
 }
 
-/// Инлайн-стиль пункта: задержка перехода и положение.
+/// Inline style of the item: transition delay and position.
 pub fn item_style(
     visible: bool,
     kind: SpeedDialType,
@@ -192,20 +192,20 @@ pub fn item_style(
     if point.is_empty() { format!("transition-delay: {delay}ms") } else { format!("transition-delay: {delay}ms; {point}") }
 }
 
-/// Шаг фокуса по списку.
+/// Focus step along the list.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Action {
-    /// Следующий доступный пункт.
+    /// Next available item.
     Next,
-    /// Предыдущий доступный пункт.
+    /// Previous available item.
     Prev,
-    /// Первый пункт.
+    /// First item.
     First,
-    /// Последний пункт.
+    /// Last item.
     Last,
-    /// Активировать пункт под фокусом.
+    /// Activate the focused item.
     Activate,
-    /// Скрыть список.
+    /// Hide the list.
     Hide,
 }
 
@@ -213,7 +213,7 @@ fn left_valid(d: SpeedDialDirection) -> bool {
     matches!(d, SpeedDialDirection::Left | SpeedDialDirection::UpRight | SpeedDialDirection::DownLeft)
 }
 
-/// Действие клавиши в списке; `None` — клавиша не обрабатывается.
+/// Key action in the list; `None` — the key is not handled.
 pub fn list_action(direction: SpeedDialDirection, code: &str) -> Option<Action> {
     use SpeedDialDirection as D;
     Some(match code {
@@ -247,18 +247,18 @@ pub fn list_action(direction: SpeedDialDirection, code: &str) -> Option<Action> 
     })
 }
 
-/// Что делает клавиша на кнопке переключателя.
+/// What a key does on the toggle button.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TogglerAction {
-    /// Открыть список и перейти на следующий пункт.
+    /// Open the list and move to the next item.
     OpenNext,
-    /// Открыть список и перейти на предыдущий пункт (на последний при пустом фокусе).
+    /// Open the list and move to the previous item (to the last one when focus is empty).
     OpenPrev,
-    /// Скрыть список.
+    /// Hide the list.
     Hide,
 }
 
-/// Действие клавиши на кнопке; `None` — не обрабатывается.
+/// Key action on the button; `None` — not handled.
 pub fn toggler_action(code: &str) -> Option<TogglerAction> {
     match code {
         "ArrowDown" | "ArrowLeft" => Some(TogglerAction::OpenNext),
@@ -268,7 +268,7 @@ pub fn toggler_action(code: &str) -> Option<TogglerAction> {
     }
 }
 
-/// Новая позиция фокуса среди `count` доступных пунктов; на границах остаётся. Без пунктов — `None`.
+/// New focus position among `count` available items; stays at the boundaries. With no items — `None`.
 pub fn step(count: usize, current: Option<usize>, action: Action) -> Option<usize> {
     let last = count.checked_sub(1)?;
     match action {
@@ -280,10 +280,10 @@ pub fn step(count: usize, current: Option<usize>, action: Action) -> Option<usiz
     }
 }
 
-/// Какой значок кнопки показать.
+/// Which button icon to show.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum IconChoice {
-    /// Значок по умолчанию («плюс»).
+    /// Default icon ("plus").
     Default,
     /// `show_icon`.
     Show,
@@ -291,7 +291,7 @@ pub enum IconChoice {
     Hide,
 }
 
-/// Выбор значка кнопки (`buttonIconClass`).
+/// Button icon selection (`buttonIconClass`).
 pub fn icon_choice(visible: bool, has_show: bool, has_hide: bool) -> IconChoice {
     if visible && has_hide {
         IconChoice::Hide
@@ -302,7 +302,7 @@ pub fn icon_choice(visible: bool, has_show: bool, has_hide: bool) -> IconChoice 
     }
 }
 
-/// Дополнительные классы кнопки переключателя.
+/// Extra classes of the toggle button.
 pub fn button_extra_classes(rotate: bool, has_hide_icon: bool, extra: Option<&str>) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-speeddial-button").add_if(rotate && !has_hide_icon, "p-speeddial-rotate").add_user(extra);
@@ -362,14 +362,14 @@ mod tests {
             point_style(T::Circle, D::Up, 0, 4, 80.0),
             "left: calc(80px + var(--item-diff-x, 0px)); top: calc(0px + var(--item-diff-y, 0px))"
         );
-        // полукруг вверх, 3 пункта: углы 0, π/2, π
+        // semicircle up, 3 items: angles 0, π/2, π
         let s = point_style(T::SemiCircle, D::Up, 0, 3, 80.0);
         assert_eq!(s, "left: calc(80px + var(--item-diff-x, 0px)); bottom: calc(0px + var(--item-diff-y, 0px))");
         assert!(point_style(T::SemiCircle, D::Up, 2, 3, 80.0).starts_with("left: calc(-80px"));
         assert!(point_style(T::SemiCircle, D::Down, 0, 3, 80.0).contains("top:"));
         assert!(point_style(T::SemiCircle, D::Left, 0, 3, 80.0).starts_with("right: calc(0px"));
         assert!(point_style(T::SemiCircle, D::Right, 0, 3, 80.0).starts_with("left: calc(0px"));
-        assert_eq!(point_style(T::SemiCircle, D::UpLeft, 0, 3, 80.0), "", "диагональ для полукруга не задана");
+        assert_eq!(point_style(T::SemiCircle, D::UpLeft, 0, 3, 80.0), "", "no diagonal is defined for a semicircle");
         for (d, first, second) in [
             (D::UpLeft, "right: calc(80px", "bottom: calc(0px"),
             (D::UpRight, "left: calc(80px", "bottom: calc(0px"),
@@ -379,10 +379,10 @@ mod tests {
             let s = point_style(T::QuarterCircle, d, 0, 3, 80.0);
             assert!(s.starts_with(first) && s.contains(second), "{d:?}: {s}");
         }
-        // конечный пункт четверти круга лежит на другой оси
+        // the last item of a quarter circle lies on the other axis
         let last = point_style(T::QuarterCircle, D::UpRight, 2, 3, 80.0);
         assert!(last.contains("left: calc(0") || last.contains("left: calc(0.0") || last.contains("e-"), "{last}");
-        assert!(!point_style(T::SemiCircle, D::Up, 0, 1, 80.0).contains("NaN"), "один пункт не даёт NaN");
+        assert!(!point_style(T::SemiCircle, D::Up, 0, 1, 80.0).contains("NaN"), "a single item does not yield NaN");
         assert_eq!(point_style(T::Circle, D::Up, 0, 0, 80.0), "");
     }
 
@@ -439,9 +439,9 @@ mod tests {
     fn step_table() {
         assert_eq!(step(0, None, Action::Next), None);
         assert_eq!(step(3, None, Action::Next), Some(0));
-        assert_eq!(step(3, None, Action::Prev), Some(2), "без фокуса назад — последний");
+        assert_eq!(step(3, None, Action::Prev), Some(2), "backwards with no focus — the last one");
         assert_eq!(step(3, Some(0), Action::Next), Some(1));
-        assert_eq!(step(3, Some(2), Action::Next), Some(2), "на границе остаётся");
+        assert_eq!(step(3, Some(2), Action::Next), Some(2), "stays at the boundary");
         assert_eq!(step(3, Some(0), Action::Prev), Some(0));
         assert_eq!(step(3, Some(2), Action::Prev), Some(1));
         assert_eq!(step(3, Some(1), Action::First), Some(0));

@@ -2,61 +2,61 @@
 
 ## Context
 
-Требования — в `specs/splitter`. Исходники PrimeNG 21.1.10: `splitter/splitter.ts`, `splitter/style/splitterstyle.ts`; демонстрации `apps/showcase/doc/splitter/{horizontal,vertical,size,nested}-doc.ts`. Образцы в проекте: `prime-slider` (перетаскивание: `window_event_listener` из обработчика, handle в `StoredValue<_, LocalStorage>`, снятие в `on_cleanup`), `prime-knob` (координаты указателя), `prime-fieldset` (двусторонний сигнал).
+Requirements are in `specs/splitter`. PrimeNG 21.1.10 sources: `splitter/splitter.ts`, `splitter/style/splitterstyle.ts`; demos `apps/showcase/doc/splitter/{horizontal,vertical,size,nested}-doc.ts`. Reference implementations in the project: `prime-slider` (dragging: `window_event_listener` from a handler, handle in `StoredValue<_, LocalStorage>`, removal in `on_cleanup`), `prime-knob` (pointer coordinates), `prime-fieldset` (two-way signal).
 
-Наблюдения по исходнику:
-- Размеры панелей PrimeNG записывает прямо в `style.flexBasis` DOM-элементов; мы держим `RwSignal<Vec<f64>>` и выводим `flex-basis` реактивно.
-- `validateResize` сравнивает `minSizes[0]` с предыдущей и `minSizes[1]` со следующей панелью независимо от индекса разделителя (для трёх и более панелей это ошибка исходника); мы берём `minSizes[i]` и `minSizes[i+1]`.
-- Клавиатура: `keydown` ставит таймер 40 мс и вызывает `resizeStart(keydown)` + `onResize(step)`, где размеры соседей берутся в пикселях; `keyup` завершает. Мы применяем шаг на каждый `keydown` без таймера: `Δ% = 100 · step / размер_корня`.
-- Касание: `touchstart`/`touchmove`/`touchend` на разделителе плюс слушатели документа; в первой версии касание обрабатываем так же, как мышь, через слушатели `window`, без проверки на устройстве.
-- `p-splitterpanel-nested` и `nested` в `data-p` в PrimeNG вычисляются по `contentChild(Splitter)`; мы вводим явное свойство `nested`.
-- Разделитель выводится после каждой панели, кроме последней (`*ngIf="i !== panels.length - 1"`).
+Observations about the source:
+- PrimeNG writes panel sizes directly into the DOM elements' `style.flexBasis`; we keep a `RwSignal<Vec<f64>>` and render `flex-basis` reactively.
+- `validateResize` compares `minSizes[0]` with the previous panel and `minSizes[1]` with the next one regardless of the gutter index (for three or more panels this is a bug in the source); we use `minSizes[i]` and `minSizes[i+1]`.
+- Keyboard: `keydown` sets a 40 ms timer and calls `resizeStart(keydown)` + `onResize(step)`, where neighbor sizes are taken in pixels; `keyup` finishes. We apply the step on every `keydown` without a timer: `Δ% = 100 · step / root_size`.
+- Touch: `touchstart`/`touchmove`/`touchend` on the gutter plus document listeners; in the first version we handle touch the same way as mouse, via `window` listeners, without a device check.
+- `p-splitterpanel-nested` and `nested` in `data-p` are computed in PrimeNG from `contentChild(Splitter)`; we introduce an explicit `nested` property.
+- A gutter is rendered after every panel except the last (`*ngIf="i !== panels.length - 1"`).
 
 ## Decisions
 
-### D1. Крейт и зависимости
-`prime-splitter` с `Splitter`, `SplitterLayout { Horizontal, Vertical }`, `SplitterStorage { Session, Local }`, `SplitterResizeEvent { sizes }`, `SplitterPt { root, panel, gutter, gutter_handle }`. Зависит от `prime-core` и `web-sys`.
+### D1. Crate and dependencies
+`prime-splitter` with `Splitter`, `SplitterLayout { Horizontal, Vertical }`, `SplitterStorage { Session, Local }`, `SplitterResizeEvent { sizes }`, `SplitterPt { root, panel, gutter, gutter_handle }`. Depends on `prime-core` and `web-sys`.
 
-### D2. Чистая логика (`state.rs`)
-- `initial_sizes(panel_sizes, n) -> Vec<f64>` — заданные ненулевые или `100/n`.
+### D2. Pure logic (`state.rs`)
+- `initial_sizes(panel_sizes, n) -> Vec<f64>` - given non-zero ones or `100/n`.
 - `flex_basis(size, n, gutter) -> String` — `calc(<size>% - <(n-1)*gutter>px)`.
-- `drag_delta(start, current, container, rtl, horizontal) -> f64` — смещение в процентах.
-- `apply(sizes, index, prev, next, min_sizes) -> Option<(f64, f64)>` — проверка `min_sizes` для пары.
-- `key_step(layout, key, step) -> Option<f64>` — знак шага по клавише и раскладке.
+- `drag_delta(start, current, container, rtl, horizontal) -> f64` - the offset in percent.
+- `apply(sizes, index, prev, next, min_sizes) -> Option<(f64, f64)>` - the `min_sizes` check for a pair.
+- `key_step(layout, key, step) -> Option<f64>` - the sign of the step by key and layout.
 - `root_classes`, `panel_classes`, `data_p`.
-Табличные тесты на каждую функцию.
+Table-driven tests for each function.
 
-### D3. Состояние
-`sizes: RwSignal<Vec<f64>>` (проценты), `drag: StoredValue<Option<Drag>>` (индекс, стартовая позиция, стартовые размеры пары, размер корня), `resizing: RwSignal<Option<usize>>` для классов и `data-p-gutter-resizing`, `prev_sizes: RwSignal<Vec<f64>>` не нужен: `aria-valuenow` берётся из `sizes[i]`.
+### D3. State
+`sizes: RwSignal<Vec<f64>>` (percent), `drag: StoredValue<Option<Drag>>` (index, start position, start sizes of the pair, root size), `resizing: RwSignal<Option<usize>>` for classes and `data-p-gutter-resizing`; `prev_sizes: RwSignal<Vec<f64>>` is not needed: `aria-valuenow` is taken from `sizes[i]`.
 
-### D4. Перетаскивание
-`on:mousedown` на разделителе: измеряет размер корня (`getBoundingClientRect` по оси), запоминает стартовую позицию (`page_x/page_y` — как в оригинале) и размеры пары, вызывает `on_resize_start`, ставит `window_event_listener` на `mousemove` и `mouseup`/`touchmove`/`touchend`. Handle слушателей лежит в `StoredValue<_, LocalStorage>`, снимается по `mouseup`/`touchend` и в `on_cleanup`.
+### D4. Dragging
+`on:mousedown` on the gutter: measures the root size (`getBoundingClientRect` along the axis), remembers the start position (`page_x/page_y` - as in the original) and the sizes of the pair, calls `on_resize_start`, and sets a `window_event_listener` for `mousemove` and `mouseup`/`touchmove`/`touchend`. The listener handle lives in `StoredValue<_, LocalStorage>` and is removed on `mouseup`/`touchend` and in `on_cleanup`.
 
-### D5. Состояние в хранилище
-`state_key` + `state_storage`; чтение в `Effect` после монтирования (только `wasm32`), запись при завершении изменения. Ошибки хранилища (запрещено, переполнено) молча игнорируются. Формат — JSON-массив чисел, как в PrimeNG; разбор — вручную без новых зависимостей (`serde_json` не подключаем).
+### D5. State in storage
+`state_key` + `state_storage`; reading in an `Effect` after mount (`wasm32` only), writing when a resize finishes. Storage errors (forbidden, full) are silently ignored. The format is a JSON array of numbers, as in PrimeNG; parsing is manual without new dependencies (we do not add `serde_json`).
 
-### D6. Клавиатура
-Ручка: `on:keydown` — применяет шаг к паре `(i, i+1)`, всегда `preventDefault` для стрелок (как в оригинале, даже для «чужой» оси); `on:keyup` — завершает (сохранение, `on_resize_end`). `on_resize_start` вызывается на первом `keydown` серии (пока не было `keyup`).
+### D6. Keyboard
+Handle: `on:keydown` applies the step to the pair `(i, i+1)`, always `preventDefault` for arrows (as in the original, even for the "wrong" axis); `on:keyup` finishes (save, `on_resize_end`). `on_resize_start` is called on the first `keydown` of a series (until there was a `keyup`).
 
 ### D7. CSS
-`splitter` добавляется в `theme.components`; `cargo xtask gen-theme`; проверка, что CSS остальных не изменился.
+`splitter` is added to `theme.components`; `cargo xtask gen-theme`; check that the CSS of others did not change.
 
-### D8. Тесты
-SSR: разметка, `layout`, размеры по умолчанию и заданные, `nested`, `pt`. Браузерные `tests/web.rs`: перетаскивание (синтетические `mousedown`/`mousemove`/`mouseup`), `min_sizes`, клавиши, `on_resize_*`, хранилище, снятие слушателей. e2e: настоящее перетаскивание мышью и стрелки в Chrome, вложенный Splitter. Крейт добавляется в три места `ci.yml`.
+### D8. Tests
+SSR: markup, `layout`, default and given sizes, `nested`, `pt`. Browser `tests/web.rs`: dragging (synthetic `mousedown`/`mousemove`/`mouseup`), `min_sizes`, keys, `on_resize_*`, storage, listener removal. e2e: real mouse dragging and arrows in Chrome, nested Splitter. The crate is added in three places of `ci.yml`.
 
-### D9. Бенчмарки
-Сценарии `splitter-1`/`-1000` (две панели), `case-splitter`; сначала `cargo bench -p render-bench --bench alloc`, для wasm — временный большой бюджет.
+### D9. Benchmarks
+Scenarios `splitter-1`/`-1000` (two panels), `case-splitter`; first `cargo bench -p render-bench --bench alloc`, for wasm a temporary large budget.
 
 ## Risks / Trade-offs
 
-- [Расхождения с PrimeNG в `min_sizes` для трёх и более панелей] → намеренное исправление, записывается в docs.
-- [Касание не проверено на реальных устройствах] → честно записано в docs.
-- [Хранилище недоступно в SSR] → чтение только на клиенте; на сервере всегда начальные размеры.
+- [`min_sizes` divergence from PrimeNG for three or more panels] -> an intentional fix, recorded in the docs.
+- [Touch is not verified on real devices] -> honestly recorded in the docs.
+- [Storage is unavailable in SSR] -> reading only on the client; on the server always the initial sizes.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback is `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

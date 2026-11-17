@@ -1,4 +1,4 @@
-//! Страница Fieldset: демонстрации `basic`, `toggleable` и `template` из showcase PrimeNG (`apps/showcase/doc/fieldset`).
+//! Fieldset page: the `basic`, `toggleable` and `template` demos from the PrimeNG showcase (`apps/showcase/doc/fieldset`).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -7,7 +7,7 @@ use prime_fieldset::Fieldset;
 
 const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-/// Страница `/fieldset`.
+/// `/fieldset` page.
 #[component]
 pub fn FieldsetPage() -> impl IntoView {
     let collapsed = RwSignal::new(false);

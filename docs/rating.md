@@ -1,41 +1,41 @@
 # Rating
 
-Порт `p-rating` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10's `p-rating` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-rating::Rating` | `packages/primeng/src/rating/rating.ts`, `rating/style/ratingstyle.ts` |
-| CSS | `@primeuix/styles/rating` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/rating/*-doc.ts` (`basic`, `disabled`, `numberofstars`, `readonly`, `template`) |
+| CSS | `@primeuix/styles/rating` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/rating/*-doc.ts` (`basic`, `disabled`, `numberofstars`, `readonly`, `template`) |
 
-Спека: `openspec/specs/rating`.
+Spec: `openspec/specs/rating`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Структура: корень `div.p-rating`, на каждую звезду `div.p-rating-option` со скрытой радиокнопкой (`span.p-hidden-accessible > input[type=radio]`) и иконкой `p-rating-icon p-rating-on-icon` / `p-rating-off-icon`.
-- Классы корня, опции и иконок и их порядок: `p-rating`, `p-readonly`, `p-disabled`; `p-rating-option`, `p-rating-option-active`, `p-focus-visible`; `p-invalid` у иконок. `data-p` корня — `readonly disabled`.
-- Группа нативных радиокнопок с общим `name`: стрелки клавиатуры работают без собственного кода. Имя по умолчанию — `pn_id_<n>_name`, номер из контекста гидратации (общий хелпер `prime_core::ids::next_unique`, вынесенный из `collapsible`).
-- Клик по звезде выбирает её, повторный клик по текущему значению сбрасывает его; после клика фокус переходит на радиокнопку звезды, и он не считается видимым.
-- `aria-label` звезды из локали: `aria.star` для первой, `aria.stars` с подстановкой `{star}` для остальных.
-- Иконки по умолчанию — `StarFillIcon` и `StarIcon`; шаблоны `on_icon_template` и `off_icon_template` получают номер звезды и класс иконки (`{ $implicit, class }`).
+- Structure: root `div.p-rating`, for each star a `div.p-rating-option` with a hidden radio button (`span.p-hidden-accessible > input[type=radio]`) and the icon `p-rating-icon p-rating-on-icon` / `p-rating-off-icon`.
+- Classes of the root, option and icons and their order: `p-rating`, `p-readonly`, `p-disabled`; `p-rating-option`, `p-rating-option-active`, `p-focus-visible`; `p-invalid` on the icons. The root's `data-p` is `readonly disabled`.
+- A group of native radio buttons with a shared `name`: the keyboard arrows work without any code of our own. The default name is `pn_id_<n>_name`, the number from the hydration context (the shared helper `prime_core::ids::next_unique`, extracted from `collapsible`).
+- A click on a star selects it, a repeated click on the current value resets it; after a click focus moves to the star's radio button and is not considered visible.
+- A star's `aria-label` comes from the locale: `aria.star` for the first, `aria.stars` with `{star}` substituted for the rest.
+- Default icons are `StarFillIcon` and `StarIcon`; the `on_icon_template` and `off_icon_template` templates receive the star number and the icon class (`{ $implicit, class }`).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-rating>` | Хост в Angular — деталь фреймворка. |
-| `value: RwSignal<Option<u32>>` вместо `ngModel`; без него внутреннее состояние (`default_value`) | Двусторонняя привязка без форм-инфраструктуры. |
-| Стрелка клавиатуры выбирает соседнюю звезду, а не сбрасывает значение | В PrimeNG `onOptionSelect` сбрасывает значение, если индекс фокуса равен выбранному, а `focus` приходит раньше `change`; это выглядит побочным эффектом, у нас `change` всегда ставит значение звезды. Сбросить значение с клавиатуры нельзя, только кликом. |
-| Клик по самой радиокнопке обрабатывает `change`, а не `click` | Стрелки и программный `click()` шлют оба события, значение выставилось бы дважды. |
-| Атрибут `value` радиокнопки — номер звезды | В PrimeNG `[attr.value]="modelValue()"` перекрывает `[value]`, и у всех кнопок `value` равен текущему значению, что ломает нативную отправку формы (так же сделано у RadioButton). |
-| Видимый фокус — `:focus-visible` радиокнопки | `sourceCapabilities.firesTouchEvents` нет в `web-sys` и Firefox. |
-| `on_icon`/`off_icon` — `ViewFn` в `span` с классами иконки вместо `iconOnClass`/`iconOffClass`/`iconOnStyle`/`iconOffStyle` | В `prime-icons` нет шрифта; стили задаёт `style`/`pt`. |
-| Нет `autofocus`, интеграции с Angular Forms, блока `/* For PrimeNG */` | Вне объёма change. |
-| Демонстрация `withoutcancel` не перенесена | В 21.1.10 кнопки отмены у Rating нет, демонстрация дублирует `basic`. |
-| В демонстрации `template` символы `♥` и `♡` вместо внешних картинок | Без зависимости от CDN. |
+| The root is a `<div>`, not the `<p-rating>` host | The host in Angular is a framework detail. |
+| `value: RwSignal<Option<u32>>` instead of `ngModel`; without it, internal state (`default_value`) | Two-way binding without forms infrastructure. |
+| A keyboard arrow selects the neighbouring star and does not reset the value | In PrimeNG `onOptionSelect` resets the value if the focus index equals the selected one, and `focus` arrives before `change`; this looks like a side effect, in our case `change` always sets the star's value. The value cannot be reset from the keyboard, only by a click. |
+| A click on the radio button itself is handled by `change`, not `click` | Arrows and a programmatic `click()` send both events, so the value would be set twice. |
+| The radio button's `value` attribute is the star number | In PrimeNG `[attr.value]="modelValue()"` overrides `[value]`, and every button's `value` equals the current value, which breaks native form submission (RadioButton does the same). |
+| Visible focus is the radio button's `:focus-visible` | `sourceCapabilities.firesTouchEvents` is absent from `web-sys` and Firefox. |
+| `on_icon`/`off_icon` are a `ViewFn` in a `span` with the icon classes instead of `iconOnClass`/`iconOffClass`/`iconOnStyle`/`iconOffStyle` | `prime-icons` has no font; styles are set by `style`/`pt`. |
+| No `autofocus`, Angular Forms integration, `/* For PrimeNG */` block | Out of scope of the change. |
+| The `withoutcancel` demo is not ported | In 21.1.10 Rating has no cancel button, the demo duplicates `basic`. |
+| In the `template` demo the `♥` and `♡` characters instead of external images | No dependency on a CDN. |
 
-Список звёзд строится замыканием над `stars` и не читает значение: иначе выбор пересоздавал бы звёзды и ронял фокус; всё, что зависит от значения, — отдельные замыкания внутри звезды.
+The star list is built by a closure over `stars` and does not read the value: otherwise a selection would recreate the stars and drop focus; everything that depends on the value is separate closures inside a star.
 
-## Производительность
+## Performance
 
-SSR: 159 аллокаций на экземпляр с пятью звёздами (бюджет 175), HTML ≈ 9 КБ из-за контуров SVG в каждой иконке; вклад в сырой wasm +258 КБ (бюджет 300 КБ).
+SSR: 159 allocations per instance with five stars (budget 175), HTML ≈ 9 KB because of the SVG paths in each icon; contribution to raw wasm +258 KB (budget 300 KB).

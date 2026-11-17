@@ -2,25 +2,25 @@
 
 ## Why
 
-Rating — выбор оценки звёздами, часто нужный в формах и карточках; по сложности это компонент среднего размера, который строится на группе нативных радиокнопок (как RadioButton) без оверлеев и общей логики. Следующий в очереди порт после SelectButton.
+Rating is star rating selection, often needed in forms and cards; in complexity it is a medium-sized component built on a group of native radio buttons (like RadioButton) with no overlays and no shared logic. The next port in the queue after SelectButton.
 
 ## What Changes
 
-- Новый крейт `prime-rating` с компонентом `Rating`: двусторонний `value` (`RwSignal<Option<u32>>`) или внутреннее состояние с `default_value`, `stars` (по умолчанию 5), `readonly`, `disabled`, `invalid`, `name`, `required`, `style`, `style_class`, `on_icon`/`off_icon` (`ViewFn`) для замены звёзд по умолчанию, слоты `on_icon_template` и `off_icon_template` (получают номер звезды и класс иконки), события `on_rate` (новое значение и исходное событие), `on_focus`, `on_blur`, `pt`.
-- Разметка как в PrimeNG 21.1.10 (`rating.ts`, `ratingstyle.ts`): корень `<div class="p-rating" data-p>` с `p-readonly` и `p-disabled`; на каждую звезду `div.p-rating-option` (`p-rating-option-active`, `p-focus-visible`) со скрытым `<input type="radio">` в `span.p-hidden-accessible` и иконкой `p-rating-icon p-rating-on-icon` или `p-rating-off-icon` (`p-invalid`). Звёзды по умолчанию — `StarFillIcon` и `StarIcon` из `prime-icons`. Повторный выбор текущего значения сбрасывает его в `None`; навигация по звёздам — стрелками, как у нативной группы радиокнопок. `aria-label` каждой звезды — из локали (`aria.star`, `aria.stars`).
-- `prime-core` получает общий генератор уникальных номеров (вынос `next_unique` из `collapsible`), он же даёт имя радиогруппы по умолчанию (`pn_id_<n>_name`).
-- Страница `/rating` (`basic`, `disabled`, `numberofstars`, `readonly`, `template`), e2e, браузерные тесты, бенчмарки, бюджеты, `docs/rating.md`, CSS темы `rating`.
-- **Не входит:** Angular Forms (`ngModel`, реактивные формы); `autofocus`; `icon_on_class`/`icon_off_class`/`icon_on_style`/`icon_off_style` (классы шрифта иконок: вместо них `on_icon`/`off_icon` и шаблоны); блок `/* For PrimeNG */` (правило `.ng-invalid.ng-dirty`); демонстрации `reactiveforms` и `templatedrivenforms`; демонстрация `withoutcancel` (в 21.1.10 кнопки отмены у Rating уже нет, демонстрация дублирует `basic`).
+- A new crate `prime-rating` with the `Rating` component: a two-way `value` (`RwSignal<Option<u32>>`) or internal state with `default_value`, `stars` (5 by default), `readonly`, `disabled`, `invalid`, `name`, `required`, `style`, `style_class`, `on_icon`/`off_icon` (`ViewFn`) to replace the default stars, the `on_icon_template` and `off_icon_template` slots (receive the star number and the icon class), the events `on_rate` (new value and the original event), `on_focus`, `on_blur`, `pt`.
+- Markup as in PrimeNG 21.1.10 (`rating.ts`, `ratingstyle.ts`): root `<div class="p-rating" data-p>` with `p-readonly` and `p-disabled`; for each star a `div.p-rating-option` (`p-rating-option-active`, `p-focus-visible`) with a hidden `<input type="radio">` in a `span.p-hidden-accessible` and the icon `p-rating-icon p-rating-on-icon` or `p-rating-off-icon` (`p-invalid`). Default stars are `StarFillIcon` and `StarIcon` from `prime-icons`. Selecting the current value again resets it to `None`; star navigation is by arrows, as in a native radio button group. Each star's `aria-label` is from the locale (`aria.star`, `aria.stars`).
+- `prime-core` gets a shared unique number generator (extracting `next_unique` from `collapsible`), which also gives the default radio group name (`pn_id_<n>_name`).
+- The `/rating` page (`basic`, `disabled`, `numberofstars`, `readonly`, `template`), e2e, browser tests, benchmarks, budgets, `docs/rating.md`, the `rating` theme CSS.
+- **Out of scope:** Angular Forms (`ngModel`, reactive forms); `autofocus`; `icon_on_class`/`icon_off_class`/`icon_on_style`/`icon_off_style` (icon font classes: `on_icon`/`off_icon` and templates instead); the `/* For PrimeNG */` block (the `.ng-invalid.ng-dirty` rule); the `reactiveforms` and `templatedrivenforms` demos; the `withoutcancel` demo (in 21.1.10 Rating already has no cancel button, the demo duplicates `basic`).
 
 ## Capabilities
 
 ### New Capabilities
-- `rating`: компонент Rating — значение и события, выбор мышью и клавиатурой, структура и классы, доступность, `pt`, производительность.
+- `rating`: the Rating component: value and events, mouse and keyboard selection, structure and classes, accessibility, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет: `prime-core` получает внутренний общий хелпер без изменения поведения. -->
+<!-- None: `prime-core` gets an internal shared helper with no behaviour change. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-rating` (`publish = false`); зависимости `prime-core`, `prime-icons` (`star`, `starfill`), `prime-dom` не нужен.
-- Изменяются `prime-core` (`ids`, `collapsible`), `Cargo.toml` workspace, `upstream.toml` (`rating` в `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (браузерный job для `tests/web.rs`).
+- A new crate `crates/prime-rating` (`publish = false`); dependencies `prime-core`, `prime-icons` (`star`, `starfill`), `prime-dom` is not needed.
+- Changed: `prime-core` (`ids`, `collapsible`), workspace `Cargo.toml`, `upstream.toml` (`rating` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (browser job for `tests/web.rs`).

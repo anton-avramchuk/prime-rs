@@ -1,40 +1,40 @@
-//! Чистая логика Rating: выбор значения, классы и `data-p` (по `ratingstyle.ts` и `Rating.dataP` PrimeNG).
+//! Pure Rating logic: value selection, classes and `data-p` (after PrimeNG's `ratingstyle.ts` and `Rating.dataP`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Значение после выбора звезды: повторный выбор текущего значения сбрасывает его (как `onOptionSelect` PrimeNG).
+/// Value after selecting a star: selecting the current value again resets it (like PrimeNG's `onOptionSelect`).
 pub fn next_value(current: Option<u32>, star: u32) -> Option<u32> {
     if current == Some(star) { None } else { Some(star) }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p` корня.
+/// Snapshot of the properties that affect the root classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct RatingState {
-    /// Только чтение.
+    /// Read-only.
     pub readonly: bool,
-    /// Недоступен.
+    /// Disabled.
     pub disabled: bool,
 }
 
-/// Добавляет классы корня в порядке `ratingstyle.ts`.
+/// Adds the root classes in the order of `ratingstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &RatingState) {
     cn.add("p-rating").add_if(s.readonly, "p-readonly").add_if(s.disabled, "p-disabled");
 }
 
-/// Значение `data-p` корня: `readonly`, `disabled`.
+/// The root's `data-p` value: `readonly`, `disabled`.
 pub fn data_p(s: &RatingState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.readonly, "readonly").add_if(s.disabled, "disabled");
     d.finish_cow()
 }
 
-/// Добавляет классы опции (звезды): `p-rating-option`, активная, видимый фокус.
+/// Adds the option (star) classes: `p-rating-option`, active, visible focus.
 pub fn write_option_classes(cn: &mut ClassNames, active: bool, focus_visible: bool) {
     cn.add("p-rating-option").add_if(active, "p-rating-option-active").add_if(focus_visible, "p-focus-visible");
 }
 
-/// Добавляет классы иконки: включённая или выключенная, `p-invalid`.
+/// Adds the icon classes: on or off, `p-invalid`.
 pub fn write_icon_classes(cn: &mut ClassNames, on: bool, invalid: bool) {
     cn.add(if on { "p-rating-icon p-rating-on-icon" } else { "p-rating-icon p-rating-off-icon" }).add_if(invalid, "p-invalid");
 }

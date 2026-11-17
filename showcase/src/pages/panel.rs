@@ -1,8 +1,8 @@
-//! Страница Panel: демонстрации `basic`, `toggleable` и `template` из showcase PrimeNG (`apps/showcase/doc/panel`)
-//! и `header-toggler` (`toggler = "header"`, описан в тексте `toggleable-doc`).
+//! Panel page: the `basic`, `toggleable` and `template` demos from the PrimeNG showcase (`apps/showcase/doc/panel`)
+//! and `header-toggler` (`toggler = "header"`, described in the `toggleable-doc` text).
 //!
-//! Меню шестерёнки из `template` не переносится (Menu ещё не портирован): кнопка остаётся без выпадающего списка;
-//! вместо шрифта PrimeIcons используются SVG-иконки `prime-icons`.
+//! The gear menu from `template` is not ported (Menu is not ported yet): the button stays without a dropdown list;
+//! SVG icons from `prime-icons` are used instead of the PrimeIcons font.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -13,7 +13,7 @@ use prime_panel::{Panel, Toggler};
 
 const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-/// Страница `/panel`.
+/// `/panel` page.
 #[component]
 pub fn PanelPage() -> impl IntoView {
     let collapsed = RwSignal::new(false);

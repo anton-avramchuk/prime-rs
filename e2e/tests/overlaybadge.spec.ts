@@ -7,7 +7,7 @@ test.describe('OverlayBadge', () => {
         await expect(page.locator('[data-demo=basic] .p-overlaybadge').first()).toBeVisible();
     });
 
-    test('разметка: три обёртки, бейдж после содержимого', async ({ page }) => {
+    test('markup: three wrappers, the badge after the content', async ({ page }) => {
         const roots = page.locator('[data-demo=basic] .p-overlaybadge');
         await expect(roots).toHaveCount(3);
         await expect(roots.first().locator('> .p-badge')).toHaveText('2');
@@ -15,7 +15,7 @@ test.describe('OverlayBadge', () => {
         await expect(roots.nth(2).locator('> .p-badge')).toHaveClass(/p-badge-dot/);
     });
 
-    test('бейдж лежит на правом верхнем углу содержимого', async ({ page }) => {
+    test('the badge sits on the top-right corner of the content', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-overlaybadge').first();
         const box = (await root.boundingBox())!;
         const badge = (await root.locator('> .p-badge').boundingBox())!;

@@ -2,29 +2,29 @@
 
 ## Why
 
-Panel — контейнер с шапкой, необязательным сворачиванием и подвалом; первый компонент с анимацией раскрытия и связкой `aria-expanded`/`aria-controls`. Логика сворачивания (двусторонний `collapsed`, переключатель, анимация, ARIA) нужна и Fieldset, и будущим Accordion, поэтому её выделяют в общий код при первом же порте, а не копируют.
+Panel is a container with a header, optional collapsing and a footer; the first component with an expand animation and the `aria-expanded`/`aria-controls` link. The collapsing logic (the two-way `collapsed`, the toggle, the animation, the ARIA) is needed by both Fieldset and the future Accordion, so it is extracted into shared code at the very first port, rather than copied.
 
 ## What Changes
 
-- Новый крейт `prime-panel` с компонентом `Panel`: `header`, `toggleable`, двусторонний `collapsed` (`RwSignal<bool>`), `icon_pos` (`start`/`end`/`center`), `show_header`, `toggler` (`icon`/`header`), `id`, `style`, `style_class`, слоты `header_template`, `icons_template`, `header_icons_template` (получает `collapsed`), `footer_template`, события `on_before_toggle`, `on_after_toggle`, `pt`.
-- Классы как в PrimeNG 21.1.10 (`panelstyle.ts`): `p-panel p-component`, `p-panel-toggleable`, `p-panel-expanded`/`p-panel-collapsed`, `p-panel-header`, `p-panel-title`, `p-panel-header-actions` (+ `p-panel-icons-start|end|center`), `p-panel-toggle-button`, `p-panel-content-container`, `p-panel-content-wrapper`, `p-panel-content`, `p-panel-footer`; `data-p` как в `dataP`.
-- Доступность: кнопка-переключатель с `aria-controls`, `aria-expanded`, `aria-label` (текст заголовка), Enter/Space; контейнер содержимого с `role="region"`, `aria-labelledby`, `aria-hidden`, `tabindex="-1"` при свёрнутом; фокусируемые элементы внутри свёрнутого содержимого получают `tabindex="-1"`.
-- Анимация раскрытия: классы `p-collapsible-enter-active`/`p-collapsible-leave-active` из `base.css` темы; `on_after_toggle` вызывается по окончании анимации (`animationend`).
-- Общая логика сворачивания выделяется в модуль `prime-core::collapsible` (состояние, переключение, анимация, ARIA-атрибуты), на нём строятся Panel и следующий Fieldset.
-- Страница `/panel` (`basic`, `toggleable`, `header-toggler`, `template`), e2e, бенчмарки, бюджеты, `docs/panel.md`, CSS темы `panel`.
-- **Не входит:** Fieldset (отдельный change `port-fieldset`), `BlockableUI`, `toggleButtonProps`, `motionOptions`/`transitionOptions`, `<p-header>`/`<p-footer>` как фасеты (заменены слотами).
+- A new crate `prime-panel` with the `Panel` component: `header`, `toggleable`, a two-way `collapsed` (`RwSignal<bool>`), `icon_pos` (`start`/`end`/`center`), `show_header`, `toggler` (`icon`/`header`), `id`, `style`, `style_class`, the slots `header_template`, `icons_template`, `header_icons_template` (receives `collapsed`), `footer_template`, the events `on_before_toggle`, `on_after_toggle`, `pt`.
+- Classes as in PrimeNG 21.1.10 (`panelstyle.ts`): `p-panel p-component`, `p-panel-toggleable`, `p-panel-expanded`/`p-panel-collapsed`, `p-panel-header`, `p-panel-title`, `p-panel-header-actions` (+ `p-panel-icons-start|end|center`), `p-panel-toggle-button`, `p-panel-content-container`, `p-panel-content-wrapper`, `p-panel-content`, `p-panel-footer`; `data-p` as in `dataP`.
+- Accessibility: the toggle button with `aria-controls`, `aria-expanded`, `aria-label` (the header text), Enter/Space; the content container with `role="region"`, `aria-labelledby`, `aria-hidden`, `tabindex="-1"` when collapsed; focusable elements inside the collapsed content get `tabindex="-1"`.
+- Expand animation: the classes `p-collapsible-enter-active`/`p-collapsible-leave-active` from the theme's `base.css`; `on_after_toggle` is called when the animation ends (`animationend`).
+- The shared collapsing logic is extracted into the module `prime-core::collapsible` (the state, the toggle, the animation, the ARIA attributes); Panel and the next Fieldset are built on it.
+- The `/panel` page (`basic`, `toggleable`, `header-toggler`, `template`), e2e, benchmarks, budgets, `docs/panel.md`, the CSS of the theme `panel`.
+- **Not included:** Fieldset (a separate change `port-fieldset`), `BlockableUI`, `toggleButtonProps`, `motionOptions`/`transitionOptions`, `<p-header>`/`<p-footer>` as facets (replaced by slots).
 
 ## Capabilities
 
 ### New Capabilities
-- `panel`: компонент Panel — структура и классы, сворачивание и двусторонний `collapsed`, ARIA и клавиатура, анимация и `on_after_toggle`, слоты, `pt`, производительность.
-- `collapsible`: общая логика сворачивания в `prime-core` — состояние, переключение, события до/после, ARIA-атрибуты переключателя и области, анимация; переиспользуется Panel и Fieldset.
+- `panel`: the Panel component — structure and classes, collapsing and the two-way `collapsed`, ARIA and keyboard, animation and `on_after_toggle`, slots, `pt`, performance.
+- `collapsible`: the shared collapsing logic in `prime-core` — the state, the toggle, the before/after events, the ARIA attributes of the toggle and the region, the animation; reused by Panel and Fieldset.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-panel` (`publish = false`); зависимости `prime-core`, `prime-icons` (`minus`, `plus`), `web-sys`.
-- `prime-core`: новый модуль `collapsible`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml` (`panel` в `theme.components`), `showcase`, `benches/*`, `e2e/tests`, браузерный job CI.
+- A new crate `crates/prime-panel` (`publish = false`); dependencies `prime-core`, `prime-icons` (`minus`, `plus`), `web-sys`.
+- `prime-core`: a new module `collapsible`.
+- Changes to the workspace `Cargo.toml`, `upstream.toml` (`panel` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, the CI browser job.

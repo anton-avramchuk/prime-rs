@@ -1,5 +1,5 @@
-//! Страница ColorPicker: демонстрации `basic`, `inline`, `format` и `disabled` из showcase PrimeNG
-//! (`apps/showcase/doc/colorpicker`; формы Angular не переносятся).
+//! ColorPicker page: the `basic`, `inline`, `format` and `disabled` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/colorpicker`; Angular forms are not ported).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -70,7 +70,7 @@ fn Formats() -> impl IntoView {
     }
 }
 
-/// Страница `/colorpicker`.
+/// Page `/colorpicker`.
 #[component]
 pub fn ColorPickerPage() -> impl IntoView {
     view! {

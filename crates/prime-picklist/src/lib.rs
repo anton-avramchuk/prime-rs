@@ -1,7 +1,7 @@
-//! PickList — порт `p-picklist` из PrimeNG 21.1.10.
+//! PickList — port of `p-picklist` from PrimeNG 21.1.10.
 //!
-//! Два списка (источник и цель) с кнопками переноса и изменения порядка. Списки, выбор и поиск — готовый
-//! [`Listbox`](prime_listbox::Listbox); перенос — чистая логика в [`transfer`], перестановка — `prime_orderlist::reorder`.
+//! Two lists (source and target) with buttons for transferring and reordering. The lists, selection and search are the ready-made
+//! [`Listbox`](prime_listbox::Listbox); transfer is pure logic in [`transfer`], reordering is `prime_orderlist::reorder`.
 //!
 //! ```
 //! #![recursion_limit = "512"]
@@ -30,24 +30,24 @@ use prime_listbox::{Listbox, ListboxChange, ListboxFilter, ListboxOption, Listbo
 use prime_orderlist::reorder;
 use std::sync::Arc;
 
-/// Pass-through частей [`PickList`].
+/// Pass-through of the [`PickList`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct PickListPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Кнопки перестановки источника.
+    /// Source reorder buttons.
     pub source_controls: Pt,
-    /// Контейнер списка источника.
+    /// Source list container.
     pub source_list_container: Pt,
-    /// Кнопки переноса.
+    /// Transfer buttons.
     pub transfer_controls: Pt,
-    /// Контейнер списка цели.
+    /// Target list container.
     pub target_list_container: Pt,
-    /// Кнопки перестановки цели.
+    /// Target reorder buttons.
     pub target_controls: Pt,
-    /// Части списка источника.
+    /// Source list parts.
     pub source_listbox: ListboxPt,
-    /// Части списка цели.
+    /// Target list parts.
     pub target_listbox: ListboxPt,
 }
 
@@ -65,7 +65,7 @@ enum Move {
     Bottom,
 }
 
-/// События и состояние, общие для обработчиков.
+/// Events and state shared by the handlers.
 struct Core {
     source: RwSignal<Vec<ListboxOption>>,
     target: RwSignal<Vec<ListboxOption>>,
@@ -91,7 +91,7 @@ impl Core {
         if side == Side::Source { (self.sel_source, self.sel_target) } else { (self.sel_target, self.sel_source) }
     }
 
-    /// Выбранные элементы `from` переходят в `to`.
+    /// The selected `from` items move to `to`.
     fn transfer_selected(&self, from: Side) {
         let (from_list, to_list) = self.lists(from);
         let (from_sel, to_sel) = self.selections(from);
@@ -113,7 +113,7 @@ impl Core {
         }
     }
 
-    /// Все видимые при поиске элементы `from` переходят в `to`.
+    /// All `from` items visible under the search move to `to`.
     fn transfer_all(&self, from: Side) {
         let (from_list, to_list) = self.lists(from);
         let (from_sel, to_sel) = self.selections(from);
@@ -162,109 +162,109 @@ impl Core {
     }
 }
 
-/// Два списка с переносом элементов между ними.
+/// Two lists with item transfer between them.
 ///
-/// Каждое свойство принимает значение или сигнал; `source`, `target` и выбор — двусторонние сигналы.
+/// Every property accepts a value or a signal; `source`, `target` and the selection are two-way signals.
 #[component]
 pub fn PickList(
-    /// Элементы источника.
+    /// Source items.
     source: RwSignal<Vec<ListboxOption>>,
-    /// Элементы цели.
+    /// Target items.
     target: RwSignal<Vec<ListboxOption>>,
-    /// Выбранные значения источника.
+    /// Selected source values.
     #[prop(optional)]
     source_selection: Option<RwSignal<Vec<String>>>,
-    /// Выбранные значения цели.
+    /// Selected target values.
     #[prop(optional)]
     target_selection: Option<RwSignal<Vec<String>>>,
-    /// Заголовок источника.
+    /// Source header.
     #[prop(optional, into)]
     source_header: OptProp<String>,
-    /// Заголовок цели.
+    /// Target header.
     #[prop(optional, into)]
     target_header: OptProp<String>,
-    /// Поле поиска над списками.
+    /// Search field above the lists.
     #[prop(optional, into)]
     filter: Prop<bool>,
-    /// Показывать поиск источника (при `filter`).
+    /// Show the source search (with `filter`).
     #[prop(optional, default = Prop::Static(true), into)]
     show_source_filter: Prop<bool>,
-    /// Показывать поиск цели (при `filter`).
+    /// Show the target search (with `filter`).
     #[prop(optional, default = Prop::Static(true), into)]
     show_target_filter: Prop<bool>,
-    /// Подсказка поиска источника.
+    /// Source search hint.
     #[prop(optional, into)]
     source_filter_placeholder: OptProp<String>,
-    /// Подсказка поиска цели.
+    /// Target search hint.
     #[prop(optional, into)]
     target_filter_placeholder: OptProp<String>,
-    /// Чередующиеся цвета строк.
+    /// Alternating row colors.
     #[prop(optional, into)]
     striped_rows: Prop<bool>,
-    /// Для выбора нужна клавиша Ctrl/Meta.
+    /// The Ctrl/Meta key is required to select.
     #[prop(optional, into)]
     meta_key_selection: Prop<bool>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Кнопки перестановки источника.
+    /// Source reorder buttons.
     #[prop(optional, default = Prop::Static(true), into)]
     show_source_controls: Prop<bool>,
-    /// Кнопки перестановки цели.
+    /// Target reorder buttons.
     #[prop(optional, default = Prop::Static(true), into)]
     show_target_controls: Prop<bool>,
-    /// Сохранять выбор перенесённых элементов в списке назначения.
+    /// Keep the selection of transferred items in the destination list.
     #[prop(optional, into)]
     keep_selection: Prop<bool>,
-    /// Высота списков.
+    /// List height.
     #[prop(optional, default = Prop::Static(Some("14rem".to_owned())), into)]
     scroll_height: OptProp<String>,
-    /// Атрибут `tabindex` списков.
+    /// `tabindex` attribute of the lists.
     #[prop(optional, default = Prop::Static(Some(0)), into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label` списка источника.
+    /// `aria-label` attribute of the source list.
     #[prop(optional, into)]
     source_aria_label: OptProp<String>,
-    /// Атрибут `aria-label` списка цели.
+    /// `aria-label` attribute of the target list.
     #[prop(optional, into)]
     target_aria_label: OptProp<String>,
-    /// Встроенный стиль списка источника.
+    /// Inline style of the source list.
     #[prop(optional, into)]
     source_style: OptProp<String>,
-    /// Встроенный стиль списка цели.
+    /// Inline style of the target list.
     #[prop(optional, into)]
     target_style: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается после переноса выбранных в цель.
+    /// Called after the selected items are moved to the target.
     #[prop(optional, into)]
     on_move_to_target: Option<Callback<Vec<ListboxOption>>>,
-    /// Вызывается после переноса всех в цель.
+    /// Called after all items are moved to the target.
     #[prop(optional, into)]
     on_move_all_to_target: Option<Callback<Vec<ListboxOption>>>,
-    /// Вызывается после переноса выбранных в источник.
+    /// Called after the selected items are moved to the source.
     #[prop(optional, into)]
     on_move_to_source: Option<Callback<Vec<ListboxOption>>>,
-    /// Вызывается после переноса всех в источник.
+    /// Called after all items are moved to the source.
     #[prop(optional, into)]
     on_move_all_to_source: Option<Callback<Vec<ListboxOption>>>,
-    /// Вызывается после перестановки в источнике.
+    /// Called after reordering in the source.
     #[prop(optional, into)]
     on_source_reorder: Option<Callback<Vec<String>>>,
-    /// Вызывается после перестановки в цели.
+    /// Called after reordering in the target.
     #[prop(optional, into)]
     on_target_reorder: Option<Callback<Vec<String>>>,
-    /// Вызывается при изменении выбора в источнике.
+    /// Called when the source selection changes.
     #[prop(optional, into)]
     on_source_select: Option<Callback<Vec<String>>>,
-    /// Вызывается при изменении выбора в цели.
+    /// Called when the target selection changes.
     #[prop(optional, into)]
     on_target_select: Option<Callback<Vec<String>>>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<PickListPt>,
 ) -> impl IntoView {
@@ -287,7 +287,7 @@ pub fn PickList(
     let locale = prime_core::use_prime_config().locale;
     let label = |key: &str| locale.text(key).to_owned();
 
-    // Кнопка: подпись, значок, условие недоступности, действие.
+    // Button: label, icon, disabled condition, action.
     let button = |aria: String, icon: ViewFn, off: Signal<bool>, action: Callback<()>, button_pt: Pt| {
         view! {
             <Button
@@ -318,7 +318,7 @@ pub fn PickList(
             {button(label("aria.moveBottom"), ViewFn::from(|| view! { <AngleDoubleDownIcon /> }), off, act(Move::Bottom), Pt::default())}
         }
     };
-    // Наличие кнопок перестановки определяется при создании: представление нельзя собрать повторно из сигнала.
+    // Whether the reorder buttons exist is decided at creation: the view cannot be rebuilt from a signal.
     let source_controls = show_source_controls.get_untracked().then(|| {
         let buttons = reorder_buttons(Side::Source);
         view! {

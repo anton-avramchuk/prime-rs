@@ -1,10 +1,10 @@
-//! ProgressSpinner — порт `p-progressspinner` из PrimeNG 21.1.10.
+//! ProgressSpinner — port of `p-progressspinner` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы совпадают с PrimeNG: корень `div.p-progressspinner` (`role="progressbar"`, `aria-busy="true"`) с
-//! `svg.p-progressspinner-spin` и `circle.p-progressspinner-circle` внутри. Вместо хоста `<p-progressspinner>`
-//! отрисовывается `<div class="p-progressspinner">`.
+//! Markup and classes match PrimeNG: root `div.p-progressspinner` (`role="progressbar"`, `aria-busy="true"`) with
+//! `svg.p-progressspinner-spin` and `circle.p-progressspinner-circle` inside. Instead of the host `<p-progressspinner>`
+//! a `<div class="p-progressspinner">` is rendered.
 //!
-//! Свойства — [`Prop`]/[`OptProp`]; если все они статические, компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! Properties are [`Prop`]/[`OptProp`]; if all of them are static, the component renders ready values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -20,45 +20,45 @@ use prime_core::{ClassNames, OptProp, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
-/// Толщина линии по умолчанию.
+/// Default line thickness.
 const DEFAULT_STROKE_WIDTH: &str = "2";
-/// Заливка по умолчанию.
+/// Default fill.
 const DEFAULT_FILL: &str = "none";
-/// Длительность оборота по умолчанию.
+/// Default rotation duration.
 const DEFAULT_DURATION: &str = "2s";
 
-/// Pass-through частей ProgressSpinner.
+/// Pass-through for the parts of ProgressSpinner.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ProgressSpinnerPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Вращающийся `svg` (`.p-progressspinner-spin`).
+    /// Rotating `svg` (`.p-progressspinner-spin`).
     pub spin: Pt,
-    /// Окружность (`.p-progressspinner-circle`).
+    /// Circle (`.p-progressspinner-circle`).
     pub circle: Pt,
 }
 
-/// Индикатор ожидания.
+/// Loading indicator.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn ProgressSpinner(
-    /// Толщина линии окружности (по умолчанию `2`).
+    /// Circle line thickness (default `2`).
     #[prop(optional, into)]
     stroke_width: OptProp<String>,
-    /// Заливка окружности (по умолчанию `none`).
+    /// Circle fill (default `none`).
     #[prop(optional, into)]
     fill: OptProp<String>,
-    /// Длительность оборота (по умолчанию `2s`).
+    /// Rotation duration (default `2s`).
     #[prop(optional, into)]
     animation_duration: OptProp<String>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
@@ -130,7 +130,7 @@ pub fn ProgressSpinner(
     }
 }
 
-/// Разметка ProgressSpinner: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// ProgressSpinner markup: one for the static and reactive branches (only the attribute expressions differ).
 macro_rules! spinner_markup {
     (
         $class:expr, $style:expr, $aria:expr, $root_attrs:expr, $spin_class:expr, $spin_style:expr, $spin_attrs:expr,
@@ -182,7 +182,7 @@ fn fill_of(props: &Props) -> String {
     props.fill.get().unwrap_or_else(|| DEFAULT_FILL.to_owned())
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     stroke_width: OptProp<String>,
     fill: OptProp<String>,

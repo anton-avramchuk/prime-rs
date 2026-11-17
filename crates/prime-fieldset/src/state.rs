@@ -1,14 +1,14 @@
-//! Чистая логика Fieldset: классы и `data-p` (по `fieldsetstyle.ts` и `Fieldset.dataP` PrimeNG).
+//! Pure Fieldset logic: classes and `data-p` (based on `fieldsetstyle.ts` and `Fieldset.dataP` in PrimeNG).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Добавляет классы корня в порядке `fieldsetstyle.ts`.
+/// Adds the root classes in the order of `fieldsetstyle.ts`.
 pub fn write_root_classes(cn: &mut ClassNames, toggleable: bool, collapsed: bool) {
     cn.add("p-fieldset p-component").add_if(toggleable, "p-fieldset-toggleable").add_if(toggleable && collapsed, "p-fieldset-collapsed");
 }
 
-/// Значение `data-p` корня и легенды: `toggleable`.
+/// `data-p` value of the root and legend: `toggleable`.
 pub fn data_p(toggleable: bool) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(toggleable, "toggleable");

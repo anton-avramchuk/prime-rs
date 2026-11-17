@@ -1,4 +1,4 @@
-//! Разметка ScrollTop (SSR): окно скрыто, родитель спрятан стилем, классы, подпись, значок, `pt`.
+//! ScrollTop markup (SSR): the window is hidden, the parent is hidden by style, classes, label, icon, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -34,10 +34,10 @@ fn parent_button_defaults() {
 #[test]
 fn aria_label_and_custom_icon() {
     let html = view! {
-        <ScrollTop target=ScrollTopTarget::Parent aria_label="Наверх" icon=ViewFn::from(|| view! { <b class="mine">"^"</b> }) />
+        <ScrollTop target=ScrollTopTarget::Parent aria_label="To top" icon=ViewFn::from(|| view! { <b class="mine">"^"</b> }) />
     }
     .to_html();
-    assert!(html.contains(r#"aria-label="Наверх""#) && !html.contains("Scroll Top"), "{html}");
+    assert!(html.contains(r#"aria-label="To top""#) && !html.contains("Scroll Top"), "{html}");
     assert!(html.contains("p-scrolltop-icon"), "{html}");
     assert!(html.contains(r#"class="mine""#) && !html.contains("<svg"), "{html}");
 }

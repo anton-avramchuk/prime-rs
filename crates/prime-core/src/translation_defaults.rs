@@ -1,7 +1,7 @@
-//! Строки перевода по умолчанию (английские), перенесены из `PrimeNG.translation`.
-//! Файл сгенерирован из PrimeNG 21.1.10; порядок — по ключу.
+//! Default translation strings (English), ported from `PrimeNG.translation`.
+//! The file is generated from PrimeNG 21.1.10; ordered by key.
 
-/// Пары «ключ — значение», отсортированы по ключу для бинарного поиска.
+/// "Key — value" pairs, sorted by key for binary search.
 pub(crate) static DEFAULTS: &[(&str, &str)] = &[
     ("accept", "Yes"),
     ("addRule", "Add Rule"),

@@ -1,18 +1,18 @@
 # Popover
 
-Порт `p-popover` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-popover` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-popover::Popover`, `PopoverRef`, `PopoverPt` | `popover/popover.ts`, `popover/style/*` |
-| CSS | `@primeuix/styles/popover` — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет) |
-| Демонстрации | `apps/showcase/doc/popover/{basic,target,selectdata,template}-doc.ts` |
+| CSS | `@primeuix/styles/popover` — `cargo xtask gen-theme` (there is no `/* For PrimeNG */` block) |
+| Demos | `apps/showcase/doc/popover/{basic,target,selectdata,template}-doc.ts` |
 
-Спека: `openspec/specs/popover`.
+Spec: `openspec/specs/popover`.
 
-## Как пользоваться
+## Usage
 
-Панелью управляет `PopoverRef` (`Copy`), аналог `op.toggle($event)` из PrimeNG. Его создают заранее, передают в `Popover` и вызывают из обработчиков триггера:
+The panel is controlled by `PopoverRef` (`Copy`), the counterpart of `op.toggle($event)` in PrimeNG. Create it in advance, pass it to `Popover` and call it from the trigger's handlers:
 
 ```rust
 let op = PopoverRef::new();
@@ -22,34 +22,34 @@ view! {
 }
 ```
 
-Цель выравнивания — `currentTarget` события; другую цель передают в `show_at(&el)` / `toggle_at(&el)`. `hide()` скрывает панель, `visible()` читает состояние (его можно использовать для `aria-expanded` триггера).
+The alignment target is the event's `currentTarget`; pass a different target to `show_at(&el)` / `toggle_at(&el)`. `hide()` hides the panel, `visible()` reads the state (it can be used for the trigger's `aria-expanded`).
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка: `div.p-popover.p-component[role=dialog][aria-modal=true]` > `div.p-popover-content`; `aria-label`, `aria-labelledby`, `id`, `style`, `style_class`, `pt`.
-- Выравнивание по цели (`align_overlay`, как у `Select`), сдвиг стрелки `--p-popover-arrow-left`, `p-popover-flipped` и `data-p-popover-flipped` при размещении над целью, `z-index` группы оверлеев (`auto_z_index`, `base_z_index`).
-- Закрытие: клик вне панели и вне цели при `dismissable`, `Escape`, `resize` окна (не на сенсорных устройствах), прокрутка предка цели; повторный `toggle` с другой целью переносит панель к новой цели.
-- `focus_on_show`: фокус получает первый элемент с `autofocus`; `on_show` и `on_hide`.
-- Слушатели окна вешаются только на время показа и снимаются при скрытии и при размонтировании.
+- Markup: `div.p-popover.p-component[role=dialog][aria-modal=true]` > `div.p-popover-content`; `aria-label`, `aria-labelledby`, `id`, `style`, `style_class`, `pt`.
+- Alignment to the target (`align_overlay`, as in `Select`), arrow shift `--p-popover-arrow-left`, `p-popover-flipped` and `data-p-popover-flipped` when placed above the target, overlay group `z-index` (`auto_z_index`, `base_z_index`).
+- Closing: a click outside the panel and the target with `dismissable`, `Escape`, window `resize` (not on touch devices), a scroll of the target's ancestor; a repeated `toggle` with a different target moves the panel to the new target.
+- `focus_on_show`: the first element with `autofocus` gets focus; `on_show` and `on_hide`.
+- Window listeners are attached only while shown and removed on hide and on unmount.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Панель выводится внутри собственного места в разметке, `appendTo` нет | Так же устроен `Select`; нужен предок с `position: relative`, а `overflow: hidden` у предка обрежет панель. |
-| Управление — `PopoverRef`, а не ссылка на экземпляр (`#op`) | В Leptos нет шаблонных ссылок на компонент. |
-| Нет анимации появления и скрытия (`@primeuix/motion`) | Панель появляется и исчезает мгновенно; `motionOptions` и `*TransitionOptions` не переносятся. |
-| Нет `OverlayService` | Клик во вложенном оверлее, чья панель лежит вне DOM-поддерева `Popover`, закроет внешнюю панель. Панель `Select` лежит внутри своего корня, поэтому такой клик считается внутренним. |
-| На iOS закрытие по `click`, а не по `touchstart` | Один тип события на всех. |
-| Нет `aria-expanded` / `aria-controls` на триггере | Триггер — произвольный элемент пользователя; `aria-expanded` задают по `op.visible()`. |
-| Содержимое — `children`, нет шаблона `content` с `closeCallback` | Закрытие из содержимого — вызов `op.hide()`. |
-| Демонстрация `datatable` не перенесена; значков `share-alt`, `copy`, `users`, `image` в `prime-icons` нет | Нужен DataTable; кнопки без значков, аватары — инициалы. |
-| Нет `Bind`/`pt` с контекстом | `pt` — простые добавки классов, стиля и атрибутов. |
+| The panel is rendered in its own place in the markup, there is no `appendTo` | `Select` works the same way; an ancestor with `position: relative` is needed, and `overflow: hidden` on the ancestor will clip the panel. |
+| Control is via `PopoverRef`, not an instance reference (`#op`) | Leptos has no template references to a component. |
+| No show and hide animation (`@primeuix/motion`) | The panel appears and disappears instantly; `motionOptions` and `*TransitionOptions` are not ported. |
+| No `OverlayService` | A click in a nested overlay whose panel lies outside the `Popover` DOM subtree will close the outer panel. The `Select` panel lies inside its root, so such a click is considered inner. |
+| On iOS closing is on `click`, not `touchstart` | One event type for everyone. |
+| No `aria-expanded` / `aria-controls` on the trigger | The trigger is an arbitrary user element; `aria-expanded` is set from `op.visible()`. |
+| Content is `children`, there is no `content` template with `closeCallback` | Closing from the content is a call to `op.hide()`. |
+| The `datatable` demo is not ported; the `share-alt`, `copy`, `users`, `image` icons are missing from `prime-icons` | DataTable is needed; buttons without icons, avatars are initials. |
+| No `Bind`/`pt` with context | `pt` is simple additions of classes, style and attributes. |
 
-## Стоимость
+## Cost
 
-33 аллокации на экземпляр при SSR (скрытая панель); вклад в wasm ≈ 291 КБ (бюджет 325 КБ в `benches/budgets.toml`).
+33 allocations per instance in SSR (hidden panel); contribution to wasm ≈ 291 KB (budget 325 KB in `benches/budgets.toml`).
 
-## Не проверено
+## Not verified
 
-Касание (`touchstart`, `resize` на сенсорном устройстве), `rtl` и экранные считыватели. Проверены разметка, показ и скрытие, клик снаружи и внутри, Escape, смена цели, явная цель, `autofocus`, переворот над целью у нижнего края, закрытие по прокрутке предка и снятие слушателей в Chrome (браузерные тесты и e2e). Сравнение скриншотов с PrimeNG (`pages.json`) не запускалось.
+Touch (`touchstart`, `resize` on a touch device), `rtl` and screen readers. Verified: markup, show and hide, click outside and inside, Escape, target change, explicit target, `autofocus`, flip above the target at the bottom edge, closing on an ancestor scroll and removal of listeners in Chrome (browser tests and e2e). Screenshot comparison with PrimeNG (`pages.json`) was not run.

@@ -1,17 +1,17 @@
-//! Страница ProgressBar: демонстрации `basic`, `dynamic`, `indeterminate`, `template` из showcase PrimeNG
-//! (`apps/showcase/doc/progressbar`). В `dynamic` значение растёт детерминированно (+10 каждые 500 мс), а не случайно.
+//! ProgressBar page: demos `basic`, `dynamic`, `indeterminate`, `template` from the PrimeNG showcase
+//! (`apps/showcase/doc/progressbar`). In `dynamic` the value grows deterministically (+10 every 500 ms), not randomly.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_progressbar::{ProgressBar, ProgressBarMode};
 use std::time::Duration;
 
-/// Страница `/progressbar`.
+/// The `/progressbar` page.
 #[component]
 pub fn ProgressBarPage() -> impl IntoView {
     let value = RwSignal::new(Some(0.0_f64));
     Effect::new(move |_| {
-        // Интервал только в браузере: Effect не выполняется при SSR.
+        // The interval only runs in the browser: Effect does not run during SSR.
         let handle = set_interval_with_handle(
             move || {
                 if value.get_untracked().unwrap_or_default() < 100.0 {

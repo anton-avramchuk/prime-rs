@@ -1,18 +1,18 @@
-//! Общие значения пропсов полей ввода (как `BaseInput` в PrimeNG).
+//! Shared input prop values (like `BaseInput` in PrimeNG).
 
 use crate::config::PrimeConfig;
 
-/// Вариант оформления поля ввода.
+/// Input field styling variant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Variant {
-    /// Поле с рамкой (по умолчанию в теме).
+    /// Field with a border (the theme default).
     Outlined,
-    /// Поле с заливкой.
+    /// Field with a fill.
     Filled,
 }
 
 impl Variant {
-    /// Строковое значение, как в PrimeNG.
+    /// String value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Outlined => "outlined",
@@ -20,23 +20,23 @@ impl Variant {
         }
     }
 
-    /// Итоговый вариант: явный пропс, иначе значение из конфигурации (`None` — тема по умолчанию).
+    /// Resulting variant: the explicit prop, otherwise the value from the configuration (`None` means the theme default).
     pub fn resolve(explicit: Option<Self>, config: &PrimeConfig) -> Option<Self> {
         explicit.or(config.input_variant)
     }
 }
 
-/// Размер компонента.
+/// Component size.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Size {
-    /// Маленький (`small`).
+    /// Small (`small`).
     Small,
-    /// Большой (`large`).
+    /// Large (`large`).
     Large,
 }
 
 impl Size {
-    /// Строковое значение, как в PrimeNG (`small`, `large`).
+    /// String value, as in PrimeNG (`small`, `large`).
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Small => "small",
@@ -44,7 +44,7 @@ impl Size {
         }
     }
 
-    /// Суффикс класса: `sm` или `lg` (например, `p-inputtext-sm`).
+    /// Class suffix: `sm` or `lg` (for example, `p-inputtext-sm`).
     pub fn class_suffix(self) -> &'static str {
         match self {
             Self::Small => "sm",

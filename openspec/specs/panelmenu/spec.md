@@ -1,72 +1,72 @@
 # panelmenu Specification
 
 ## Purpose
-PanelMenu показывает вертикальный список панелей-заголовков с раскрывающимися вложенными ветками (гибрид Accordion и Tree).
+PanelMenu shows a vertical list of header panels with expandable nested branches (a hybrid of Accordion and Tree).
 
 ## Requirements
 
-### Requirement: Разметка
-`PanelMenu` крейта `prime-panelmenu` SHALL принимать `prime_menu::MenuItem` и выводить `div.p-panelmenu.p-component` (`id`, `style`, `style_class`). Каждый видимый корневой пункт (`visible != false`) SHALL выводиться как `div.p-panelmenu-panel` с заголовком `div.p-panelmenu-header` (`p-panelmenu-header-active` у раскрытой группы, `p-disabled` у отключённого; `aria-expanded`, `aria-controls`, `aria-disabled`, `data-p-highlight`) > `div.p-panelmenu-header-content` > `a.p-panelmenu-header-link` (шеврон `p-panelmenu-submenu-icon` у группы — вправо свёрнутой, вниз раскрытой; `p-panelmenu-header-icon`; `p-panelmenu-header-label`) и с областью `div.p-panelmenu-content-container` (`p-panelmenu-expanded` у раскрытой) > `div.p-panelmenu-content-wrapper` > `div.p-panelmenu-content` > `ul.p-panelmenu-root-list[role=tree]` (`tabindex`, `aria-activedescendant`, `aria-hidden`). Вложенные пункты SHALL выводиться как `li.p-panelmenu-item[role=treeitem]` (`aria-label`, `aria-level`, `aria-setsize`, `aria-posinset`, `aria-expanded` у групп, `data-p-focused`, `data-p-disabled`, `p-focus`, `p-disabled`) > `div.p-panelmenu-item-content` > `a.p-panelmenu-item-link` (`p-panelmenu-item-icon`, `p-panelmenu-item-label`, шеврон группы) и вложенным `ul.p-panelmenu-submenu`; разделители — `li.p-menuitem-separator[role=separator]`.
+### Requirement: Markup
+The `PanelMenu` of the `prime-panelmenu` crate SHALL accept `prime_menu::MenuItem` and render `div.p-panelmenu.p-component` (`id`, `style`, `style_class`). Each visible root item (`visible != false`) SHALL be rendered as a `div.p-panelmenu-panel` with a `div.p-panelmenu-header` header (`p-panelmenu-header-active` on an expanded group, `p-disabled` on a disabled one; `aria-expanded`, `aria-controls`, `aria-disabled`, `data-p-highlight`) > `div.p-panelmenu-header-content` > `a.p-panelmenu-header-link` (the `p-panelmenu-submenu-icon` chevron on a group — right when collapsed, down when expanded; `p-panelmenu-header-icon`; `p-panelmenu-header-label`) and with a `div.p-panelmenu-content-container` area (`p-panelmenu-expanded` when expanded) > `div.p-panelmenu-content-wrapper` > `div.p-panelmenu-content` > `ul.p-panelmenu-root-list[role=tree]` (`tabindex`, `aria-activedescendant`, `aria-hidden`). Nested items SHALL be rendered as `li.p-panelmenu-item[role=treeitem]` (`aria-label`, `aria-level`, `aria-setsize`, `aria-posinset`, `aria-expanded` on groups, `data-p-focused`, `data-p-disabled`, `p-focus`, `p-disabled`) > `div.p-panelmenu-item-content` > `a.p-panelmenu-item-link` (`p-panelmenu-item-icon`, `p-panelmenu-item-label`, group chevron) and a nested `ul.p-panelmenu-submenu`; separators — `li.p-menuitem-separator[role=separator]`.
 
-#### Scenario: Состав
-- **WHEN** отрисовано меню с группой из двух уровней
-- **THEN** выведены панели, заголовки, области содержимого и деревья с `role=tree`/`treeitem` и `aria-level` по глубине
+#### Scenario: Composition
+- **WHEN** a menu with a two-level group is rendered
+- **THEN** panels, headers, content areas and trees with `role=tree`/`treeitem` and `aria-level` by depth are rendered
 
-#### Scenario: Скрытые пункты
-- **WHEN** у пункта `visible = Some(false)`
-- **THEN** его нет в разметке
+#### Scenario: Hidden items
+- **WHEN** an item has `visible = Some(false)`
+- **THEN** it is absent from the markup
 
-### Requirement: Раскрытие
-Клик по заголовку группы или по пункту-группе SHALL переключать её раскрытие. Начальное состояние SHALL браться из `expanded` пунктов. При `multiple = false` (по умолчанию) раскрытие корневой панели SHALL сворачивать прежнюю раскрытую корневую панель; при `multiple = true` панели независимы. Вложенные ветки SHALL быть независимы: раскрытие одной не сворачивает сестёр. Раскрытие и сворачивание SHALL анимироваться через `prime_core::collapsible`.
+### Requirement: Expansion
+A click on a group header or on a group item SHALL toggle its expansion. The initial state SHALL come from the items' `expanded`. With `multiple = false` (default) expanding a root panel SHALL collapse the previously expanded root panel; with `multiple = true` panels are independent. Nested branches SHALL be independent: expanding one does not collapse siblings. Expanding and collapsing SHALL be animated via `prime_core::collapsible`.
 
-#### Scenario: Одиночный режим
-- **WHEN** раскрыта панель A, пользователь кликает по заголовку B
-- **THEN** B раскрыта, A свёрнута
+#### Scenario: Single mode
+- **WHEN** panel A is expanded, the user clicks the header of B
+- **THEN** B is expanded, A is collapsed
 
-#### Scenario: Множественный режим
-- **WHEN** `multiple = true` и раскрыта A, клик по B
-- **THEN** раскрыты обе
+#### Scenario: Multiple mode
+- **WHEN** `multiple = true` and A is expanded, a click on B
+- **THEN** both are expanded
 
-#### Scenario: Начальное состояние
-- **WHEN** у пункта `expanded = Some(true)`
-- **THEN** он выведен раскрытым без анимации
+#### Scenario: Initial state
+- **WHEN** an item has `expanded = Some(true)`
+- **THEN** it is rendered expanded without animation
 
-### Requirement: Команды и отключённые пункты
-Клик по листу SHALL вызывать `command` пункта, если он не отключён; клик по отключённому пункту или заголовку SHALL ничего не делать. Отключённые пункты SHALL пропускаться при навигации.
+### Requirement: Commands and disabled items
+A click on a leaf SHALL invoke the item's `command` if it is not disabled; a click on a disabled item or header SHALL do nothing. Disabled items SHALL be skipped during navigation.
 
-#### Scenario: Команда
-- **WHEN** пользователь кликает по листу с `command`
-- **THEN** `command` вызван один раз с пунктом
+#### Scenario: Command
+- **WHEN** the user clicks a leaf with a `command`
+- **THEN** `command` is invoked once with the item
 
-#### Scenario: Отключённый
-- **WHEN** пользователь кликает по отключённому заголовку
-- **THEN** раскрытие не меняется
+#### Scenario: Disabled
+- **WHEN** the user clicks a disabled header
+- **THEN** the expansion does not change
 
-### Requirement: Управляемое раскрытие
-`PanelMenuRef` SHALL позволять раскрыть все группы, свернуть все и переключить все (`expand_all`, `collapse_all`, `toggle_all`); состояние SHALL храниться по ключам пунктов (`key` или позиция), чтобы демонстрация `controlled` была воспроизводима.
+### Requirement: Controlled expansion
+`PanelMenuRef` SHALL allow expanding all groups, collapsing all and toggling all (`expand_all`, `collapse_all`, `toggle_all`); the state SHALL be stored by item keys (`key` or position) so that the `controlled` demo is reproducible.
 
-#### Scenario: Раскрыть всё
-- **WHEN** вызван `expand_all`
-- **THEN** все группы раскрыты и `aria-expanded="true"`
+#### Scenario: Expand all
+- **WHEN** `expand_all` is called
+- **THEN** all groups are expanded and `aria-expanded="true"`
 
-### Requirement: Клавиатура
-Заголовок панели SHALL быть фокусируемым (`tabindex="0"`): ↓ SHALL переводить в дерево раскрытой панели, иначе на следующий заголовок; ↑ — на предыдущий (в его дерево, если он раскрыт); `Home`/`End` — на первый/последний заголовок; `Enter`/`Space` — переключать панель. Отключённые заголовки пропускаются, переход идёт по кругу. В дереве панели (подсветка — `aria-activedescendant` и `p-focus`) ↓/↑ SHALL переходить к следующему/предыдущему видимому допустимому пункту, а за краями — к соседнему заголовку / заголовку своей панели; → SHALL раскрывать ветку, а на раскрытой — переходить к первому потомку; ← SHALL сворачивать раскрытую ветку, иначе переходить к родителю; `Home`/`End` — к первому/последнему пункту; `Enter`/`Space` — выполнять клик по пункту; печатные символы — поиск по началу подписи. `Tab` SHALL уводить фокус из компонента.
+### Requirement: Keyboard
+A panel header SHALL be focusable (`tabindex="0"`): ↓ SHALL move into the tree of an expanded panel, otherwise to the next header; ↑ — to the previous one (into its tree if it is expanded); `Home`/`End` — to the first/last header; `Enter`/`Space` — toggle the panel. Disabled headers are skipped, movement wraps around. In the panel tree (highlight — `aria-activedescendant` and `p-focus`) ↓/↑ SHALL move to the next/previous visible allowed item, and beyond the edges — to the adjacent header / the header of its own panel; → SHALL expand a branch, and on an expanded one — move to the first descendant; ← SHALL collapse an expanded branch, otherwise move to the parent; `Home`/`End` — to the first/last item; `Enter`/`Space` — perform a click on the item; printable characters — search by label prefix. `Tab` SHALL move focus out of the component.
 
-#### Scenario: Стрелки
-- **WHEN** фокус на раскрытом пункте-группе и нажата →, затем ↓
-- **THEN** активен первый потомок, затем второй
+#### Scenario: Arrows
+- **WHEN** focus is on an expanded group item and → is pressed, then ↓
+- **THEN** the first descendant is active, then the second
 
-#### Scenario: Сворачивание
-- **WHEN** фокус на раскрытой группе и нажата ←
-- **THEN** группа свёрнута
+#### Scenario: Collapsing
+- **WHEN** focus is on an expanded group and ← is pressed
+- **THEN** the group is collapsed
 
 #### Scenario: Enter
-- **WHEN** фокус на листе с `command` и нажат `Enter`
-- **THEN** `command` вызван
+- **WHEN** focus is on a leaf with a `command` and `Enter` is pressed
+- **THEN** `command` is invoked
 
-### Requirement: Шаблоны
-`item` SHALL заменять содержимое `div.p-panelmenu-item-content`; `submenu_icon` — шеврон группы. Заголовок корневой панели SHALL оставаться стандартным.
+### Requirement: Templates
+`item` SHALL replace the content of `div.p-panelmenu-item-content`; `submenu_icon` — the group chevron. The root panel header SHALL stay standard.
 
-#### Scenario: Свой пункт
-- **WHEN** задан `item`
-- **THEN** в `p-panelmenu-item-content` выведено его содержимое вместо ссылки
+#### Scenario: Custom item
+- **WHEN** `item` is set
+- **THEN** its content is rendered in `p-panelmenu-item-content` instead of the link

@@ -4,7 +4,7 @@ test.describe('Tree', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1000 });
         await page.goto('/tree');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_tree')).toBeAttached();
     });
@@ -13,7 +13,7 @@ test.describe('Tree', () => {
     const content = (page, tree: string, key: string) => node(page, tree, key).locator('> .p-tree-node-content');
     const toggle = (page, tree: string, key: string) => content(page, tree, key).locator('.p-tree-node-toggle-button');
 
-    test('стили темы: узлы в столбец, у вложенных отступ, у кнопки шеврон', async ({ page }) => {
+    test('theme styles: nodes in a column, nested ones indented, the button has a chevron', async ({ page }) => {
         const root = page.locator('#basic_tree');
         const first = (await content(page, 'basic_tree', '0').boundingBox())!;
         const second = (await content(page, 'basic_tree', '1').boundingBox())!;
@@ -28,7 +28,7 @@ test.describe('Tree', () => {
         await expect(node(page, 'basic_tree', '0-0')).toHaveCount(0);
     });
 
-    test('единичный выбор подсвечивает узел и снимается повторным кликом', async ({ page }) => {
+    test('single selection highlights the node and is cleared by a repeated click', async ({ page }) => {
         await content(page, 'single_tree', '1').scrollIntoViewIfNeeded();
         await content(page, 'single_tree', '1').click();
         await expect(content(page, 'single_tree', '1')).toHaveClass(/p-tree-node-selected/);
@@ -39,7 +39,7 @@ test.describe('Tree', () => {
         await expect(content(page, 'single_tree', '1')).not.toHaveClass(/p-tree-node-selected/);
     });
 
-    test('флажки: родитель отмечается, когда отмечены все дети, и бывает частично отмеченным', async ({ page }) => {
+    test('checkboxes: a parent is checked when all children are checked, and can be partially checked', async ({ page }) => {
         await toggle(page, 'checkbox_tree', '1').scrollIntoViewIfNeeded();
         await toggle(page, 'checkbox_tree', '1').click();
         await content(page, 'checkbox_tree', '1-0').click();
@@ -50,7 +50,7 @@ test.describe('Tree', () => {
         await expect(node(page, 'checkbox_tree', '1').locator('> .p-tree-node-content .p-tree-node-checkbox')).toHaveClass(/p-checkbox-checked/);
     });
 
-    test('Expand all раскрывает всё дерево', async ({ page }) => {
+    test('Expand all expands the whole tree', async ({ page }) => {
         const button = page.getByRole('button', { name: 'Expand all' });
         await button.scrollIntoViewIfNeeded();
         await button.click();
@@ -59,7 +59,7 @@ test.describe('Tree', () => {
         await expect(node(page, 'controlled_tree', '0-0')).toHaveCount(0);
     });
 
-    test('фильтр оставляет совпавшие узлы с предками', async ({ page }) => {
+    test('the filter keeps matching nodes with their ancestors', async ({ page }) => {
         const input = page.locator('#filter_tree .p-tree-filter-input');
         await input.scrollIntoViewIfNeeded();
         await input.fill('serpico');
@@ -71,7 +71,7 @@ test.describe('Tree', () => {
         await expect(page.locator('#filter_tree .p-tree-empty-message')).toBeVisible();
     });
 
-    test('клавиатура: → раскрывает и входит, ↓ ↑ ходят, ← сворачивает, Enter выбирает', async ({ page }) => {
+    test('keyboard: → expands and enters, ↓ ↑ move, ← collapses, Enter selects', async ({ page }) => {
         await node(page, 'single_tree', '0').scrollIntoViewIfNeeded();
         await node(page, 'single_tree', '0').focus();
         await page.keyboard.press('ArrowRight');
@@ -87,20 +87,20 @@ test.describe('Tree', () => {
         await expect(node(page, 'single_tree', '0-0')).toHaveCount(0);
     });
 
-    test('ленивая загрузка: спиннер, затем дети', async ({ page }) => {
+    test('lazy loading: spinner, then children', async ({ page }) => {
         await toggle(page, 'lazy_tree', '0').scrollIntoViewIfNeeded();
         await toggle(page, 'lazy_tree', '0').click();
         await expect(node(page, 'lazy_tree', '0-0')).toBeVisible();
         await expect(node(page, 'lazy_tree', '0')).toHaveAttribute('aria-expanded', 'true');
     });
 
-    test('события вызывают уведомления', async ({ page }) => {
+    test('events trigger notifications', async ({ page }) => {
         await content(page, 'event_tree', '1').scrollIntoViewIfNeeded();
         await content(page, 'event_tree', '1').click();
         await expect(page.locator('.p-toast-message').first()).toContainText('Node Selected');
     });
 
-    test('шаблон узла по типу', async ({ page }) => {
+    test('node template by type', async ({ page }) => {
         await toggle(page, 'template_tree', '0').scrollIntoViewIfNeeded();
         await toggle(page, 'template_tree', '0').click();
         await expect(page.locator('#template_tree [data-testid="url-node"]')).toBeVisible();

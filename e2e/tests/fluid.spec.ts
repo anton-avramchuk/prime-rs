@@ -7,7 +7,7 @@ test.describe('Fluid', () => {
         await expect(page.locator('[data-demo=basic] .p-fluid')).toBeVisible();
     });
 
-    test('все потребители получают класс растягивания', async ({ page }) => {
+    test('all consumers receive the stretch class', async ({ page }) => {
         const fluid = page.locator('[data-demo=basic] .p-fluid');
         await expect(fluid.locator('.p-button-fluid')).toHaveCount(1);
         await expect(fluid.locator('input.p-inputtext-fluid:not(.p-inputnumber-input)')).toHaveCount(1);
@@ -17,7 +17,7 @@ test.describe('Fluid', () => {
         await expect(fluid.locator('.p-select-fluid')).toHaveCount(1);
     });
 
-    test('поля растянуты на ширину контейнера, явное fluid=false и поля вне Fluid нет', async ({ page }) => {
+    test('fields stretch to the container width; explicit fluid=false and fields outside Fluid do not', async ({ page }) => {
         const width = (loc: ReturnType<typeof page.locator>) => loc.evaluate((el) => el.getBoundingClientRect().width);
         const container = await width(page.getByTestId('fluid'));
         expect(Math.abs((await width(page.locator('[data-demo=basic] .p-fluid input.p-inputtext-fluid:not(.p-inputnumber-input)'))) - container)).toBeLessThan(2);

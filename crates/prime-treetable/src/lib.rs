@@ -1,9 +1,9 @@
-//! TreeTable — порт `p-treetable` из PrimeNG 21.1.10, этап 1.
+//! TreeTable — port of `p-treetable` from PrimeNG 21.1.10, stage 1.
 //!
-//! Иерархические данные в таблице: узлы с потомками, кнопка раскрытия с отступом по уровню, сортировка на каждом уровне,
-//! пагинатор по корневым узлам, выбор (клик, Ctrl/⌘, флажки с распространением на потомков и родителей), индикатор
-//! загрузки. Столбцы — [`prime_table::Column`], логика — чистая [`tree`]. Фильтры, правка, изменение и перестановка
-//! столбцов, заморозка и ленивая загрузка — следующие этапы.
+//! Hierarchical data in a table: nodes with descendants, an expand button indented by level, sorting at every level,
+//! a paginator over root nodes, selection (click, Ctrl/⌘, checkboxes propagating to descendants and parents), a loading
+//! indicator. Columns are [`prime_table::Column`], the logic is the pure [`tree`]. Filters, editing, resizing and reordering of
+//! columns, freezing and lazy loading are later stages.
 //!
 //! ```
 //! #![recursion_limit = "512"]
@@ -38,37 +38,37 @@ use tree::{CheckState, RowNode, check_state, checkbox_toggle, find, flatten, ini
 pub use prime_table::{Column, PageEvent, PaginatorPosition};
 pub use tree::TreeNode;
 
-/// Режим выбора.
+/// Selection mode.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum TreeSelectionMode {
-    /// Один узел кликом.
+    /// A single node by click.
     Single,
-    /// Несколько узлов кликом.
+    /// Several nodes by click.
     Multiple,
-    /// Флажки с распространением на потомков и родителей.
+    /// Checkboxes propagating to descendants and parents.
     Checkbox,
 }
 
-/// Pass-through частей [`TreeTable`].
+/// Pass-through parts of [`TreeTable`].
 #[derive(Clone, Debug, Default)]
 pub struct TreeTablePt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Контейнер таблицы.
+    /// Table container.
     pub table_container: Pt,
-    /// Таблица.
+    /// Table.
     pub table: Pt,
-    /// Заголовок таблицы (`thead`).
+    /// Table header (`thead`).
     pub thead: Pt,
-    /// Тело (`tbody`).
+    /// Body (`tbody`).
     pub tbody: Pt,
-    /// Подвал (`tfoot`).
+    /// Footer (`tfoot`).
     pub tfoot: Pt,
-    /// Части пагинатора.
+    /// Paginator parts.
     pub paginator: PaginatorPt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared between handlers.
 struct Core<T: Send + Sync + 'static> {
     value: Prop<Vec<TreeNode<T>>>,
     columns: Prop<Vec<Column<T>>>,
@@ -93,7 +93,7 @@ struct Core<T: Send + Sync + 'static> {
 }
 
 impl<T: Clone + Send + Sync + 'static> Core<T> {
-    /// Дерево после сортировки на каждом уровне.
+    /// Tree after sorting at every level.
     fn sorted(&self) -> Vec<TreeNode<T>> {
         let columns = self.columns.get();
         let meta = self.sort.get();
@@ -103,7 +103,7 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
         self.value.with(|roots| sort_nodes(roots, &meta, &compare))
     }
 
-    /// Видимые строки текущей страницы.
+    /// Visible rows of the current page.
     fn visible_rows(&self) -> Vec<RowNode<T>> {
         let sorted = self.sorted();
         let rows = self.rows.get();
@@ -170,126 +170,126 @@ impl<T: Clone + Send + Sync + 'static> Core<T> {
     }
 }
 
-/// Иерархическая таблица данных.
+/// Hierarchical data table.
 ///
-/// Каждое свойство принимает значение или сигнал; `selection`, `expanded_keys`, `sort`, `first` и `rows` — двусторонние сигналы.
+/// Every property accepts a value or a signal; `selection`, `expanded_keys`, `sort`, `first` and `rows` are two-way signals.
 #[component]
 pub fn TreeTable<T>(
-    /// Корневые узлы.
+    /// Root nodes.
     #[prop(optional, into)]
     value: Prop<Vec<TreeNode<T>>>,
-    /// Столбцы (используются столбцы данных).
+    /// Columns (data columns are used).
     #[prop(optional, into)]
     columns: Prop<Vec<Column<T>>>,
-    /// Номер столбца, в котором выводятся кнопка раскрытия и флажок.
+    /// Index of the column that shows the expand button and the checkbox.
     #[prop(optional)]
     toggler_column: usize,
-    /// Режим выбора.
+    /// Selection mode.
     #[prop(optional, into)]
     selection_mode: Prop<Option<TreeSelectionMode>>,
-    /// Двусторонний сигнал ключей выбранных узлов.
+    /// Two-way signal of the selected node keys.
     #[prop(optional)]
     selection: Option<RwSignal<Vec<String>>>,
-    /// Для выбора нужна клавиша Ctrl/⌘.
+    /// Selection requires the Ctrl/⌘ key.
     #[prop(optional, into)]
     meta_key_selection: Prop<bool>,
-    /// Двусторонний сигнал ключей раскрытых узлов; без него начальное раскрытие берётся из `TreeNode::expanded`.
+    /// Two-way signal of the expanded node keys; without it the initial expansion comes from `TreeNode::expanded`.
     #[prop(optional)]
     expanded_keys: Option<RwSignal<Vec<String>>>,
-    /// Режим сортировки.
+    /// Sort mode.
     #[prop(optional, into)]
     sort_mode: Prop<SortMode>,
-    /// Двусторонний сигнал сортировки.
+    /// Two-way sort signal.
     #[prop(optional)]
     sort: Option<RwSignal<Vec<SortMeta>>>,
-    /// Порядок при первой сортировке столбца (1 или -1).
+    /// Order on the first sort of a column (1 or -1).
     #[prop(optional, default = Prop::Static(1), into)]
     default_sort_order: Prop<i32>,
-    /// Возвращаться на первую страницу при сортировке.
+    /// Return to the first page on sorting.
     #[prop(optional, default = Prop::Static(true), into)]
     reset_page_on_sort: Prop<bool>,
-    /// Включить пагинатор (по корневым узлам).
+    /// Enable the paginator (over root nodes).
     #[prop(optional, into)]
     paginator: Prop<bool>,
-    /// Двусторонний сигнал индекса первого корня страницы.
+    /// Two-way signal of the index of the first root of the page.
     #[prop(optional)]
     first: Option<RwSignal<usize>>,
-    /// Двусторонний сигнал числа корней на странице.
+    /// Two-way signal of the number of roots per page.
     #[prop(optional)]
     rows: Option<RwSignal<usize>>,
-    /// Число корней по умолчанию (когда `rows` не передан).
+    /// Default number of roots (when `rows` is not passed).
     #[prop(optional, default = 10)]
     default_rows: usize,
-    /// Число ссылок на страницы.
+    /// Number of page links.
     #[prop(optional, default = Prop::Static(5), into)]
     page_links: Prop<usize>,
-    /// Варианты числа корней на странице.
+    /// Options for the number of roots per page.
     #[prop(optional, into)]
     rows_per_page_options: Prop<Vec<RowsPerPage>>,
-    /// Положение пагинатора.
+    /// Paginator position.
     #[prop(optional, into)]
     paginator_position: Prop<PaginatorPosition>,
-    /// Показывать пагинатор при единственной странице.
+    /// Show the paginator when there is a single page.
     #[prop(optional, default = Prop::Static(true), into)]
     always_show_paginator: Prop<bool>,
-    /// Подсвечивать строку под курсором.
+    /// Highlight the row under the cursor.
     #[prop(optional, into)]
     row_hover: Prop<bool>,
-    /// Линии сетки.
+    /// Grid lines.
     #[prop(optional, into)]
     show_gridlines: Prop<bool>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Прокручиваемое тело.
+    /// Scrollable body.
     #[prop(optional, into)]
     scrollable: Prop<bool>,
-    /// Высота области прокрутки.
+    /// Height of the scroll area.
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-    /// Показывать индикатор загрузки.
+    /// Show the loading indicator.
     #[prop(optional, into)]
     loading: Prop<bool>,
-    /// Текст при отсутствии узлов.
+    /// Text shown when there are no nodes.
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-    /// Заголовок над таблицей.
+    /// Caption above the table.
     #[prop(optional, into)]
     caption: Option<ViewFn>,
-    /// Подвал под таблицей.
+    /// Footer below the table.
     #[prop(optional, into)]
     summary: Option<ViewFn>,
-    /// Встроенный стиль таблицы.
+    /// Inline style of the table.
     #[prop(optional, into)]
     table_style: OptProp<String>,
-    /// Атрибут `aria-label` таблицы.
+    /// `aria-label` attribute of the table.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается после смены сортировки.
+    /// Called after the sort changes.
     #[prop(optional, into)]
     on_sort: Option<Callback<Vec<SortMeta>>>,
-    /// Вызывается при смене страницы.
+    /// Called when the page changes.
     #[prop(optional, into)]
     on_page: Option<Callback<PageEvent>>,
-    /// Вызывается при выборе узла.
+    /// Called when a node is selected.
     #[prop(optional, into)]
     on_node_select: Option<Callback<T>>,
-    /// Вызывается при снятии выбора узла.
+    /// Called when a node is unselected.
     #[prop(optional, into)]
     on_node_unselect: Option<Callback<T>>,
-    /// Вызывается при раскрытии узла.
+    /// Called when a node is expanded.
     #[prop(optional, into)]
     on_node_expand: Option<Callback<T>>,
-    /// Вызывается при сворачивании узла.
+    /// Called when a node is collapsed.
     #[prop(optional, into)]
     on_node_collapse: Option<Callback<T>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<TreeTablePt>,
 ) -> impl IntoView
@@ -321,7 +321,7 @@ where
         on_node_collapse,
     });
 
-    // Возврат `first` на допустимую страницу — только в браузере.
+    // Resetting `first` to a valid page — browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let c = core.clone();
@@ -474,7 +474,7 @@ fn cell_attrs<T: Clone + Send + Sync + 'static>(column: &Column<T>) -> (String, 
     (column.style_class.clone().unwrap_or_default(), column.style.clone())
 }
 
-/// Строка заголовков.
+/// Header row.
 fn head_view<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>) -> impl IntoView + use<T> {
     let columns = core.columns.get();
     let cells = columns.iter().map(|column| header_cell(core, column)).collect_view();
@@ -615,7 +615,7 @@ fn body_cell<T: Clone + Send + Sync + 'static>(
     view! { <td class={extra_class} style={style} role="gridcell">{leading}{content}</td> }
 }
 
-/// Кнопка раскрытия с отступом по уровню.
+/// Expand button indented by level.
 fn toggler<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, row: &RowNode<T>) -> impl IntoView + use<T> {
     let (toggle_core, toggle_row) = (core.clone(), row.clone());
     let visibility = if row.expandable { "visible" } else { "hidden" };
@@ -642,7 +642,7 @@ fn toggler<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, row: &RowNode<
     }
 }
 
-/// Флажок узла с частичным выбором.
+/// Node checkbox with partial selection.
 fn node_checkbox<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, row: &RowNode<T>) -> impl IntoView + use<T> {
     let state = find(&core.value.get_untracked(), &row.key)
         .map(|n| core.selection.with_untracked(|s| check_state(n, s)))
@@ -666,7 +666,7 @@ fn node_checkbox<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, row: &Ro
     view! { <Checkbox binary=true checked=checked indeterminate=indeterminate style_class="p-treetable-node-checkbox" on_change=on_change /> }
 }
 
-/// Подвал: подписи столбцов.
+/// Footer: column labels.
 fn foot_view<T: Clone + Send + Sync + 'static>(core: &Arc<Core<T>>, pt: &Arc<TreeTablePt>) -> impl IntoView + use<T> {
     let columns = core.columns.get();
     columns.iter().any(|c| c.footer.is_some()).then(|| {

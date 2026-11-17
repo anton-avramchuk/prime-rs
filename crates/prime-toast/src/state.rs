@@ -1,29 +1,29 @@
-//! Чистая логика Toast: положение, классы, дубликаты, время жизни, адаптивные правила (по `toast.ts` и `toaststyle.ts` PrimeNG).
+//! Pure Toast logic: position, classes, duplicates, lifetime, responsive rules (after PrimeNG `toast.ts` and `toaststyle.ts`).
 
 use crate::message::{ToastMessage, ToastSeverity};
 
-/// Положение контейнера на экране.
+/// Container position on screen.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum ToastPosition {
-    /// Справа вверху (по умолчанию).
+    /// Top right (default).
     #[default]
     TopRight,
-    /// Слева вверху.
+    /// Top left.
     TopLeft,
-    /// Сверху по центру.
+    /// Top center.
     TopCenter,
-    /// Слева внизу.
+    /// Bottom left.
     BottomLeft,
-    /// Снизу по центру.
+    /// Bottom center.
     BottomCenter,
-    /// Справа внизу.
+    /// Bottom right.
     BottomRight,
-    /// По центру экрана.
+    /// Screen center.
     Center,
 }
 
 impl ToastPosition {
-    /// Значение, как в PrimeNG (`top-right`, …).
+    /// Value, as in PrimeNG (`top-right`, …).
     pub fn as_str(self) -> &'static str {
         match self {
             Self::TopRight => "top-right",
@@ -57,7 +57,7 @@ impl ToastPosition {
     }
 }
 
-/// Инлайн-стиль контейнера: `position: fixed` и сдвиги по положению (20px у краёв, 50% у центра).
+/// Container inline style: `position: fixed` and offsets by position (20px at edges, 50% at center).
 pub fn position_style(position: ToastPosition) -> String {
     let mut css = String::from("position: fixed");
     if position.is_top() {
@@ -79,7 +79,7 @@ pub fn position_style(position: ToastPosition) -> String {
     css
 }
 
-/// Классы контейнера: `p-toast p-component p-toast-<положение>` и пользовательский.
+/// Container classes: `p-toast p-component p-toast-<position>` and a custom one.
 pub fn root_classes(position: ToastPosition, style_class: Option<&str>) -> String {
     let mut cn = format!("p-toast p-component p-toast-{}", position.as_str());
     if let Some(extra) = style_class.filter(|c| !c.is_empty()) {
@@ -89,7 +89,7 @@ pub fn root_classes(position: ToastPosition, style_class: Option<&str>) -> Strin
     cn
 }
 
-/// Классы сообщения: `p-toast-message`, класс серьёзности (кроме своей) и пользовательский.
+/// Message classes: `p-toast-message`, severity class (except custom) and a custom one.
 pub fn message_classes(severity: &ToastSeverity, style_class: Option<&str>) -> String {
     let mut cn = String::from("p-toast-message");
     if !matches!(severity, ToastSeverity::Custom(_)) {
@@ -103,17 +103,17 @@ pub fn message_classes(severity: &ToastSeverity, style_class: Option<&str>) -> S
     cn
 }
 
-/// Адресовано ли сообщение этому `Toast`: ключи равны (оба `None` — тоже равны).
+/// Whether the message is addressed to this `Toast`: keys are equal (both `None` are equal too).
 pub fn matches_key(toast_key: Option<&str>, message_key: Option<&str>) -> bool {
     toast_key == message_key
 }
 
-/// В коллекции есть сообщение с теми же `summary`, `detail` и серьёзностью.
+/// The collection has a message with the same `summary`, `detail` and severity.
 pub fn contains_message(collection: &[ToastMessage], message: &ToastMessage) -> bool {
     collection.iter().any(|m| m.summary == message.summary && m.detail == message.detail && m.severity == message.severity)
 }
 
-/// Можно ли добавить сообщение в `Toast`: ключ, затем запрет дубликатов среди показанных и среди всех добавленных.
+/// Whether a message can be added to a `Toast`: key first, then duplicate prevention among shown and among all added.
 pub fn can_add(
     toast_key: Option<&str>,
     message: &ToastMessage,
@@ -131,12 +131,12 @@ pub fn can_add(
     !(prevent_duplicates && contains_message(archive, message))
 }
 
-/// Время показа, мс: у сообщения, иначе у `Toast`, иначе 3000; нулевые значения считаются незаданными.
+/// Display time, ms: from the message, else from `Toast`, else 3000; zero values count as unset.
 pub fn lifetime(message_life: Option<u32>, toast_life: u32) -> u32 {
     message_life.filter(|l| *l > 0).unwrap_or(if toast_life > 0 { toast_life } else { 3000 })
 }
 
-/// Правила `@media` для контейнера: `attr` — имя атрибута контейнера, стили каждого порога идут с `!important`.
+/// `@media` rules for the container: `attr` is the container attribute name, styles of each breakpoint carry `!important`.
 pub fn breakpoints_css(attr: &str, breakpoints: &[(String, Vec<(String, String)>)]) -> String {
     breakpoints
         .iter()
@@ -158,7 +158,7 @@ mod tests {
 
     #[test]
     fn position_style_table() {
-        // (положение, ожидаемые части, отсутствующие части)
+        // (position, expected parts, missing parts)
         let cases: [(ToastPosition, &[&str], &[&str]); 7] = [
             (TopRight, &["top: 20px", "right: 20px"], &["bottom", "left"]),
             (TopLeft, &["top: 20px", "left: 20px"], &["bottom", "right"]),
@@ -172,10 +172,10 @@ mod tests {
             let css = position_style(p);
             assert!(css.starts_with("position: fixed"), "{p:?}: {css}");
             for part in has {
-                assert!(css.contains(part), "{p:?}: нет {part} в {css}");
+                assert!(css.contains(part), "{p:?}: no {part} in {css}");
             }
             for part in hasnt {
-                assert!(!css.contains(part), "{p:?}: лишнее {part} в {css}");
+                assert!(!css.contains(part), "{p:?}: extra {part} in {css}");
             }
         }
     }
@@ -195,7 +195,7 @@ mod tests {
         ] {
             assert_eq!(message_classes(&severity, None), format!("p-toast-message p-toast-message-{name}"));
         }
-        assert_eq!(message_classes(&ToastSeverity::Custom("custom".into()), None), "p-toast-message", "своя серьёзность без класса");
+        assert_eq!(message_classes(&ToastSeverity::Custom("custom".into()), None), "p-toast-message", "custom severity has no class");
     }
 
     #[test]
@@ -225,7 +225,7 @@ mod tests {
         let keyed = msg("S", "D", ToastSeverity::Info).key("k");
         let open = [m.clone()];
         let archive = [m.clone()];
-        // (ключ Toast, сообщение, открытые, архив, prevent_open, prevent_all, ожидание)
+        // (Toast key, message, open, archive, prevent_open, prevent_all, expectation)
         type Case<'a> = (Option<&'a str>, &'a ToastMessage, &'a [ToastMessage], &'a [ToastMessage], bool, bool, bool);
         let cases: [Case; 8] = [
             (None, &m, &[], &[], false, false, true),
@@ -237,9 +237,9 @@ mod tests {
             (None, &m, &[], &archive, false, true, false),
             (Some("k"), &keyed, &open, &archive, true, true, false),
         ];
-        // последний случай: ключ совпал, но среди показанных уже лежит сообщение с теми же текстами (ключ при сравнении не учитывается)
+        // last case: key matches, but a message with the same texts is already among the shown ones (key is ignored in the comparison)
         for (i, (key, message, open, archive, po, pd, want)) in cases.into_iter().enumerate() {
-            assert_eq!(can_add(key, message, open, archive, po, pd), want, "случай {i}");
+            assert_eq!(can_add(key, message, open, archive, po, pd), want, "case {i}");
         }
     }
 
@@ -247,8 +247,8 @@ mod tests {
     fn lifetime_table() {
         assert_eq!(lifetime(None, 3000), 3000);
         assert_eq!(lifetime(Some(500), 3000), 500);
-        assert_eq!(lifetime(Some(0), 4000), 4000, "ноль у сообщения — не задано");
-        assert_eq!(lifetime(None, 0), 3000, "ноль у Toast — значение по умолчанию");
+        assert_eq!(lifetime(Some(0), 4000), 4000, "zero on the message — unset");
+        assert_eq!(lifetime(None, 0), 3000, "zero on Toast — default value");
         assert_eq!(lifetime(Some(0), 0), 3000);
     }
 

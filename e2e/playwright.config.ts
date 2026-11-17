@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
-// Серверы запускаются снаружи: наш showcase (cargo leptos serve) и, для сравнения, showcase PrimeNG.
-// PW_CHANNEL=chrome позволяет использовать установленный Chrome вместо скачанного Chromium.
+// Servers are started externally: our showcase (cargo leptos serve) and, for comparison, the PrimeNG showcase.
+// PW_CHANNEL=chrome allows using an installed Chrome instead of the downloaded Chromium.
 export default defineConfig({
     testDir: './tests',
     outputDir: './results/artifacts',

@@ -1,9 +1,9 @@
-//! Stepper — порт `p-stepper`, `p-step-list`, `p-step`, `p-step-panels`, `p-step-panel`, `p-step-item` и `p-stepper-separator`
-//! из PrimeNG 21.1.10.
+//! Stepper - port of `p-stepper`, `p-step-list`, `p-step`, `p-step-panels`, `p-step-panel`, `p-step-item` and `p-stepper-separator`
+//! from PrimeNG 21.1.10.
 //!
-//! Составной компонент, как Tabs: [`Stepper`] хранит активное значение, [`StepList`] и [`Step`] — список шагов с разделителями,
-//! [`StepPanels`] и [`StepPanel`] — панели, [`StepItem`] оборачивает шаг и панель в вертикальной раскладке. Шаг и панель связаны
-//! одинаковым `value` (число); части общаются через контекст Leptos. Активное значение — двусторонний сигнал `value`.
+//! A compound component, like Tabs: [`Stepper`] stores the active value, [`StepList`] and [`Step`] are the list of steps with separators,
+//! [`StepPanels`] and [`StepPanel`] are the panels, [`StepItem`] wraps a step and a panel in the vertical layout. A step and a panel are linked
+//! by the same `value` (a number); the parts communicate through the Leptos context. The active value is the two-way signal `value`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -35,75 +35,75 @@ use std::sync::Arc;
 
 pub use state::{is_active, item_classes, panel_classes, panel_id, root_classes, separator_after, step_classes, step_disabled, step_id};
 
-/// Состояние шага или панели, передаваемое `content` (аналог контекста шаблона `content` PrimeNG).
+/// State of a step or panel passed to `content` (like PrimeNG's `content` template context).
 #[derive(Clone, Copy)]
 pub struct StepContext {
-    /// Значение шага или панели.
+    /// Step or panel value.
     pub value: u32,
-    /// Активен ли шаг (панель).
+    /// Whether the step (panel) is active.
     pub active: Signal<bool>,
-    /// Делает активным шаг с указанным значением (`activateCallback`); работает и в линейном режиме.
+    /// Activates the step with the given value (`activateCallback`); works in linear mode too.
     pub activate: Callback<u32>,
 }
 
-/// Pass-through частей [`Step`].
+/// Pass-through of the [`Step`] parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct StepPt {
-    /// Корень шага.
+    /// Step root.
     pub root: Pt,
-    /// Кнопка-заголовок.
+    /// Header button.
     pub header: Pt,
-    /// Номер.
+    /// Number.
     pub number: Pt,
-    /// Заголовок.
+    /// Title.
     pub title: Pt,
-    /// Разделитель.
+    /// Separator.
     pub separator: Pt,
 }
 
-/// Pass-through частей [`StepPanel`].
+/// Pass-through of the [`StepPanel`] parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct StepPanelPt {
-    /// Корень панели.
+    /// Panel root.
     pub root: Pt,
-    /// Обёртка содержимого.
+    /// Content wrapper.
     pub content_wrapper: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
-    /// Разделитель (вертикальная раскладка).
+    /// Separator (vertical layout).
     pub separator: Pt,
 }
 
-/// Общее состояние группы, доступное частям.
+/// Shared state of the group, available to the parts.
 #[derive(Clone)]
 struct StepperCtx {
     id: String,
     value: RwSignal<Option<u32>>,
     linear: Prop<bool>,
-    /// Значения шагов `StepList` в порядке создания (для разделителей).
+    /// `StepList` step values in creation order (for separators).
     steps: RwSignal<Vec<u32>>,
-    /// Значения `StepItem` в порядке создания (для разделителей панелей).
+    /// `StepItem` values in creation order (for panel separators).
     items: RwSignal<Vec<u32>>,
 }
 
-/// Значение ближайшего `StepItem`.
+/// Value of the nearest `StepItem`.
 #[derive(Clone, Copy)]
 struct ItemCtx {
     value: u32,
 }
 
-const NO_STEPPER: &str = "StepList, Step, StepPanels, StepPanel и StepItem должны находиться внутри Stepper";
-const NO_VALUE: &str = "Step и StepPanel без value должны находиться внутри StepItem с value";
+const NO_STEPPER: &str = "StepList, Step, StepPanels, StepPanel and StepItem must be inside Stepper";
+const NO_VALUE: &str = "Step and StepPanel without value must be inside a StepItem with value";
 
 fn bool_attr(v: bool) -> &'static str {
     if v { "true" } else { "false" }
 }
 
-/// Строит `f` в дочернем владельце, чтобы положенный в `f` контекст не протёк на соседей, идущих после компонента.
+/// Builds `f` in a child owner so that a context placed in `f` does not leak to siblings that come after the component.
 ///
-/// Возвращаемый вид помнит владельца и строится, обновляется и гидратируется внутри него, поэтому реактивные потомки
-/// (например, шаги, добавляемые условием) тоже находят контекст. Владелец держится до очистки родителя: сам по себе он
-/// освободился бы сразу и унёс бы за собой реактивные значения потомков.
+/// The returned view remembers the owner and is built, updated and hydrated inside it, so reactive descendants
+/// (for example, steps added by a condition) find the context too. The owner is kept until the parent is cleaned up: on its own it
+/// would be released immediately and take the descendants' reactive values with it.
 fn scoped(f: impl FnOnce() -> AnyView) -> OwnedView<AnyView> {
     match Owner::current() {
         Some(parent) => {
@@ -117,39 +117,39 @@ fn scoped(f: impl FnOnce() -> AnyView) -> OwnedView<AnyView> {
     }
 }
 
-/// Значение шага/панели: своё или значение ближайшего `StepItem`.
+/// Step/panel value: its own or the value of the nearest `StepItem`.
 fn resolve_value(own: Option<u32>) -> (u32, bool) {
     let item = use_context::<ItemCtx>();
     (own.or(item.map(|i| i.value)).expect(NO_VALUE), item.is_some())
 }
 
-/// Мастер из шагов: хранит активное значение.
+/// A wizard of steps: stores the active value.
 ///
-/// `value` — двусторонний сигнал; без него состояние собственное, начальное — `default_value`.
+/// `value` is a two-way signal; without it the state is internal, initially `default_value`.
 #[component]
 pub fn Stepper(
-    /// Основа для `id` шагов и панелей; по умолчанию уникальная.
+    /// Base for the `id`s of steps and panels; unique by default.
     #[prop(optional, into)]
     id: Option<String>,
-    /// Двусторонний сигнал активного значения.
+    /// Two-way signal of the active value.
     #[prop(optional)]
     value: Option<RwSignal<Option<u32>>>,
-    /// Начальное значение, когда `value` не передан.
+    /// Initial value when `value` is not passed.
     #[prop(optional, into)]
     default_value: Option<u32>,
-    /// Линейный режим: клики по неактивным шагам недоступны, переходы — программно.
+    /// Linear mode: clicks on inactive steps are unavailable, transitions are programmatic.
     #[prop(optional, into)]
     linear: Prop<bool>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through корня.
+    /// Pass-through of the root.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Список шагов, панели или элементы.
+    /// Step list, panels or items.
     children: Children,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
@@ -188,13 +188,13 @@ pub fn Stepper(
     }
 }
 
-/// Список шагов.
+/// Step list.
 #[component]
 pub fn StepList(
-    /// Pass-through списка.
+    /// Pass-through of the list.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Шаги.
+    /// Steps.
     children: Children,
 ) -> impl IntoView {
     let pt = pt.unwrap_or_default();
@@ -205,22 +205,22 @@ pub fn StepList(
     }
 }
 
-/// Шаг: номер, заголовок и разделитель; внутри `StepItem` — без разделителя.
+/// Step: number, title and separator; inside a `StepItem` - without a separator.
 #[component]
 pub fn Step(
-    /// Значение, связывающее шаг с панелью; внутри `StepItem` можно не задавать.
+    /// Value linking the step to a panel; may be omitted inside a `StepItem`.
     #[prop(optional)]
     value: Option<u32>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Свой вид шага вместо кнопки-заголовка.
+    /// Custom step view instead of the header button.
     #[prop(optional, into)]
     content: Option<Callback<StepContext, AnyView>>,
-    /// Pass-through частей шага.
+    /// Pass-through of the step parts.
     #[prop(optional)]
     pt: Option<StepPt>,
-    /// Заголовок.
+    /// Title.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -307,13 +307,13 @@ pub fn Step(
     }
 }
 
-/// Контейнер панелей.
+/// Panel container.
 #[component]
 pub fn StepPanels(
-    /// Pass-through контейнера.
+    /// Pass-through of the container.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Панели.
+    /// Panels.
     children: Children,
 ) -> impl IntoView {
     let pt = pt.unwrap_or_default();
@@ -324,20 +324,20 @@ pub fn StepPanels(
     }
 }
 
-/// Панель шага: в горизонтальной раскладке содержимое есть только у активной, в вертикальной (внутри `StepItem`) — у всех, а
-/// неактивные скрыты и раскрываются анимацией.
+/// Step panel: in the horizontal layout only the active one has content, in the vertical one (inside `StepItem`) all of them do, and
+/// inactive ones are hidden and expand with an animation.
 #[component]
 pub fn StepPanel(
-    /// Значение, связывающее панель с шагом; внутри `StepItem` можно не задавать.
+    /// Value linking the panel to a step; may be omitted inside a `StepItem`.
     #[prop(optional)]
     value: Option<u32>,
-    /// Свой вид содержимого; получает [`StepContext`].
+    /// Custom content view; receives [`StepContext`].
     #[prop(optional, into)]
     content: Option<Callback<StepContext, AnyView>>,
-    /// Pass-through частей панели.
+    /// Pass-through of the panel parts.
     #[prop(optional)]
     pt: Option<StepPanelPt>,
-    /// Содержимое.
+    /// Content.
     #[prop(optional)]
     children: Option<ChildrenFn>,
 ) -> impl IntoView {
@@ -390,7 +390,7 @@ pub fn StepPanel(
     let (id, controls) = (panel_id(&ctx.id, value), step_id(&ctx.id, value));
     let data_active = move || bool_attr(active.get());
     if vertical {
-        // `NodeRef` нужен только клиенту (анимация и `tabindex`): при SSR его нет, а `()` — пустой атрибут вместо `node_ref`.
+        // `NodeRef` is needed only by the client (animation and `tabindex`): there is none during SSR, and `()` is an empty attribute instead of `node_ref`.
         #[cfg(target_arch = "wasm32")]
         let region = {
             let region = NodeRef::<leptos::html::Div>::new();
@@ -419,15 +419,15 @@ pub fn StepPanel(
     }
 }
 
-/// Элемент вертикальной раскладки: оборачивает [`Step`] и [`StepPanel`] и раздаёт им своё значение.
+/// Vertical layout item: wraps a [`Step`] and a [`StepPanel`] and hands them its value.
 #[component]
 pub fn StepItem(
-    /// Значение элемента.
+    /// Item value.
     value: u32,
-    /// Pass-through элемента.
+    /// Pass-through of the item.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Шаг и панель.
+    /// Step and panel.
     children: Children,
 ) -> impl IntoView {
     let ctx = use_context::<StepperCtx>().expect(NO_STEPPER);

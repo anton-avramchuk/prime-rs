@@ -2,71 +2,71 @@
 
 ## Context
 
-Требования — в `specs/drawer`. Исходники PrimeNG 21.1.10: `drawer/drawer.ts`, `drawer/style/drawerstyle.ts`; демонстрации `apps/showcase/doc/drawer/*-doc.ts`. Образцы в проекте: `prime-popover` (`Core` с очищающими замыканиями, слушатели окна, `PopoverRef`), `prime-select` (`ZGroup`, `on_cleanup`), `prime-dom` (`Portal` и `FocusTrap` готовы, потребителей пока нет).
+Requirements are in `specs/drawer`. PrimeNG 21.1.10 sources: `drawer/drawer.ts`, `drawer/style/drawerstyle.ts`; demos `apps/showcase/doc/drawer/*-doc.ts`. Reference implementations in the project: `prime-popover` (`Core` with cleanup closures, window listeners, `PopoverRef`), `prime-select` (`ZGroup`, `on_cleanup`), `prime-dom` (`Portal` and `FocusTrap` are ready, no consumers yet).
 
-Наблюдения по исходнику:
-- Состояние двухуровневое: `visible` (желаемое) и `modalVisible` (в DOM). Панель создаётся при `visible=true`, а убирается после `onAfterLeave` анимации выхода (`@primeuix/motion`).
-- Маска создаётся императивно в `body` в `enableModality()` с `z-index = z панели − 1` (или `z верхней открытой панели − 1`); на закрытии получает `p-overlay-mask-leave-active` и убирается по `animationend`.
-- Блок `For PrimeNG` в `drawerstyle.ts` помечен как `/** For PrimeNG **/` (две звёздочки), поэтому `xtask gen-theme` его не находит: нужна поддержка этого написания. В нём — позиции (`p-drawer-left` …), `position: fixed` и классы анимаций `p-drawer-enter-*` / `p-drawer-leave-*`, ссылающиеся на `@keyframes p-animate-drawer-*`; эти кадры в `base.css` проекта отсутствуют — проверить после генерации (см. Открытые вопросы).
-- `Escape` закрывает панель через слушатель документа, только если её `z-index` равен верхнему (`ZIndexUtils.get`); обработчик `keydown` на самом корне вызывает `hide(false)`, который ничего не закрывает — этот остаток не переносится.
-- `onHide` в PrimeNG вызывается только из `close()` (действия пользователя), при программном закрытии — нет.
+Observations about the source:
+- The state has two levels: `visible` (desired) and `modalVisible` (in the DOM). The panel is created when `visible=true` and removed after `onAfterLeave` of the leave animation (`@primeuix/motion`).
+- The mask is created imperatively in `body` in `enableModality()` with `z-index = panel z - 1` (or `z of the topmost open panel - 1`); on close it gets `p-overlay-mask-leave-active` and is removed on `animationend`.
+- The `For PrimeNG` block in `drawerstyle.ts` is marked `/** For PrimeNG **/` (two asterisks), so `xtask gen-theme` does not find it: support for this spelling is needed. It contains positions (`p-drawer-left` ...), `position: fixed` and the animation classes `p-drawer-enter-*` / `p-drawer-leave-*`, which refer to `@keyframes p-animate-drawer-*`; these keyframes are absent from the project's `base.css` - check after generation (see Open Questions).
+- `Escape` closes the panel through a document listener, only if its `z-index` equals the topmost one (`ZIndexUtils.get`); the `keydown` handler on the root itself calls `hide(false)`, which closes nothing - this leftover is not ported.
+- `onHide` in PrimeNG is called only from `close()` (user actions), not on programmatic close.
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы, закрытие и порядок слоёв; панель, маска, блокировка прокрутки и ловушка фокуса на готовых средствах `prime-dom`.
+**Goals:** the same DOM, classes, closing and layer order; the panel, mask, scroll lock and focus trap built on ready-made `prime-dom` facilities.
 
-**Non-Goals:** `appendTo`, `@primeuix/motion`, `closeButtonProps` (см. proposal).
+**Non-Goals:** `appendTo`, `@primeuix/motion`, `closeButtonProps` (see proposal).
 
 ## Decisions
 
-### D1. Крейт
-`prime-drawer` с `Drawer`, `DrawerPosition`, `DrawerPt`. Зависит от `prime-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`), `web-sys`.
+### D1. Crate
+`prime-drawer` with `Drawer`, `DrawerPosition`, `DrawerPt`. Depends on `prime-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`), `web-sys`.
 
-### D2. Состояние: `visible` и `rendered`
-`visible: RwSignal<bool>` — желаемое состояние (двусторонний сигнал или собственный). `rendered: RwSignal<bool>` — панель в DOM. `Effect`: `visible` стало истиной → `rendered=true`; стало ложным и `rendered` → запускается выход: корню меняется класс на `p-drawer-leave-*`, маске — на `p-overlay-mask-leave-active`, затем `rendered=false` после `animationend` корня либо через запасной таймер (`set_timeout` 700 мс — анимация длится 500 мс; нужен, если стили не подключены или включён `prefers-reduced-motion`), с проверкой `is_disposed()`.
+### D2. State: `visible` and `rendered`
+`visible: RwSignal<bool>` is the desired state (a two-way signal or its own). `rendered: RwSignal<bool>` - the panel is in the DOM. `Effect`: `visible` became true -> `rendered=true`; became false and `rendered` -> the leave starts: the root class changes to `p-drawer-leave-*`, the mask's to `p-overlay-mask-leave-active`, then `rendered=false` after the root's `animationend` or via a fallback timer (`set_timeout` 700 ms - the animation lasts 500 ms; needed if styles are not loaded or `prefers-reduced-motion` is on), with an `is_disposed()` check.
 
-### D3. Чистая логика (`state.rs`)
-- `DrawerPosition` и `position_class(position, full_screen)` → `left|right|top|bottom|full`.
+### D3. Pure logic (`state.rs`)
+- `DrawerPosition` and `position_class(position, full_screen)` -> `left|right|top|bottom|full`.
 - `root_classes(position, full_screen, open) -> String`, `enter_class(..)`, `leave_class(..)`, `mask_classes(modal, leaving, full)`.
 - `is_topmost(own_z, top_z) -> bool`.
 - `mask_z(own_z) -> i32` (`own_z - 1`).
-Табличные тесты на каждую.
+Table-driven tests for each.
 
-### D4. Вывод в `body`
-`Portal` из `prime-dom` выносит панель и маску в `body` одним блоком: сначала маска, затем панель (порядок для перекрытия по DOM; `z-index` задаётся явно). Маска — отдельный `div`, не потомок панели, чтобы клик по панели не доходил до неё. Вне браузера (SSR) `Portal` ничего не выводит.
+### D4. Output into `body`
+`Portal` from `prime-dom` moves the panel and mask into `body` as one block: first the mask, then the panel (DOM order for overlap; `z-index` is set explicitly). The mask is a separate `div`, not a descendant of the panel, so a click on the panel does not reach it. Outside the browser (SSR) `Portal` renders nothing.
 
-### D5. Слои и сторона эффектов (только `wasm32`)
-После вставки панели (`Effect`, следящий за `NodeRef` панели, как в Popover): `z-index` из `prime_core::zindex::generate(ZGroup::Modal, base)` (при `auto_z_index`), маске — `z-index − 1`; `FocusTrap::attach(&panel)`; `block_body_scroll()` при `block_scroll`; подписка `keydown` на `window` при `close_on_escape` (в следующем тике, как в Popover); `on_show`. При закрытии: слушатель, ловушка, `unblock_body_scroll()`, `revert(z)`, `on_hide`.
+### D5. Layers and the effect side (`wasm32` only)
+After the panel is inserted (an `Effect` tracking the panel's `NodeRef`, as in Popover): `z-index` from `prime_core::zindex::generate(ZGroup::Modal, base)` (with `auto_z_index`), the mask gets `z-index - 1`; `FocusTrap::attach(&panel)`; `block_body_scroll()` with `block_scroll`; a `keydown` subscription on `window` with `close_on_escape` (on the next tick, as in Popover); `on_show`. On close: the listener, the trap, `unblock_body_scroll()`, `revert(z)`, `on_hide`.
 
-### D6. Закрытие
-Единая `close()`: `visible.set(false)`. Источники: клик по маске при `dismissible` (клик по маске, а не по панели — маска отдельный элемент), кнопка закрытия, `Escape` у верхней панели (`is_topmost` по `zindex::current()`). `on_hide` вызывается при любом переходе `visible` в ложь (в PrimeNG — только при действиях пользователя; отличие записывается в docs).
+### D6. Closing
+A single `close()`: `visible.set(false)`. Sources: a click on the mask with `dismissible` (the click is on the mask, not the panel - the mask is a separate element), the close button, `Escape` on the topmost panel (`is_topmost` by `zindex::current()`). `on_hide` is called on any transition of `visible` to false (in PrimeNG only on user actions; the difference is recorded in the docs).
 
-### D7. Блокировка прокрутки
-`prime_dom::dom::block_body_scroll()` / `unblock_body_scroll()` с общим счётчиком в потоке: класс `p-overflow-hidden` ставится при 0→1 и снимается при 1→0. Чистая часть — счётчик — тестируется отдельно; доступ к DOM — только в браузере. Ширина полосы прокрутки (`--p-scrollbar-width`) задаётся при блокировке, как в PrimeNG `blockBodyScroll`.
+### D7. Scroll lock
+`prime_dom::dom::block_body_scroll()` / `unblock_body_scroll()` with a shared per-thread counter: the `p-overflow-hidden` class is set at 0->1 and removed at 1->0. The pure part - the counter - is tested separately; DOM access only in the browser. The scrollbar width (`--p-scrollbar-width`) is set on lock, as in PrimeNG `blockBodyScroll`.
 
-### D8. Кнопка закрытия
-`Button` с `text`, `rounded`, `severity=Secondary` и `TimesIcon` (или `close_icon`); `aria_close_label` по умолчанию из локали (`aria.close`); `Enter` на кнопке закрывает (нативное поведение `button`).
+### D8. Close button
+`Button` with `text`, `rounded`, `severity=Secondary` and `TimesIcon` (or `close_icon`); `aria_close_label` defaults from the locale (`aria.close`); `Enter` on the button closes (native `button` behaviour).
 
 ### D9. CSS
-`drawer` добавляется в `theme.components` и `primeng_extra`; `xtask gen-theme` расширяется на маркер `/** For PrimeNG **/` (тест рядом с существующими). Проверка: CSS остальных компонентов не изменился.
+`drawer` is added to `theme.components` and `primeng_extra`; `xtask gen-theme` is extended with the `/** For PrimeNG **/` marker (a test next to the existing ones). Check: the CSS of other components did not change.
 
-### D10. Тесты
-SSR: скрыт по умолчанию, свойства не просачиваются. Браузерные `tests/web.rs` (один последовательный тест-прогон, как у Popover — слушатели окна общие): показ, закрытие кнопкой/маской/Escape, `dismissible=false`, `modal=false`, позиции, классы анимации, удаление из DOM после выхода, `block_scroll`, Tab-цикл, две панели (z-index, Escape закрывает верхнюю), `on_show`/`on_hide`, снятие слушателей. e2e: настоящая мышь и клавиатура, прокрутка заблокирована. Крейт добавляется в три места `ci.yml`.
+### D10. Tests
+SSR: hidden by default, properties do not leak. Browser `tests/web.rs` (one sequential test run, as for Popover - window listeners are shared): showing, closing by button/mask/Escape, `dismissible=false`, `modal=false`, positions, animation classes, removal from the DOM after leave, `block_scroll`, Tab cycle, two panels (z-index, Escape closes the topmost), `on_show`/`on_hide`, listener removal. e2e: a real mouse and keyboard, scrolling is blocked. The crate is added in three places of `ci.yml`.
 
-### D11. Бенчмарки
-Сценарии `drawer-1`/`-1000` (скрытая панель) и `case-drawer`; сначала `cargo bench -p render-bench --bench alloc`, для wasm — временный большой бюджет (заменять по уникальной строке, не глобальным `sed`).
+### D11. Benchmarks
+Scenarios `drawer-1`/`-1000` (hidden panel) and `case-drawer`; first `cargo bench -p render-bench --bench alloc`, for wasm a temporary large budget (replace by a unique line, not a global `sed`).
 
 ## Risks / Trade-offs
 
-- [Запасной таймер выхода] → если `animationend` не придёт и таймер короче анимации, панель исчезнет раньше времени; таймер 700 мс при анимации 500 мс.
-- [Портал и гидратация] → панель в `body` не участвует в гидратации; скрытая по умолчанию панель SSR не отдаёт ничего, а открытая до гидратации — не поддерживается и фиксируется в docs.
-- [Нет `@primeuix/motion`] → анимации только CSS-классами; `motionOptions` не переносятся.
-- [`on_hide` при программном закрытии] → отличие от PrimeNG, записывается в docs.
+- [Fallback leave timer] -> if `animationend` never arrives and the timer is shorter than the animation, the panel disappears early; the timer is 700 ms for a 500 ms animation.
+- [Portal and hydration] -> a panel in `body` does not take part in hydration; a hidden-by-default panel renders nothing on SSR, and one opened before hydration is not supported and is recorded in the docs.
+- [No `@primeuix/motion`] -> animations only via CSS classes; `motionOptions` are not ported.
+- [`on_hide` on programmatic close] -> a difference from PrimeNG, recorded in the docs.
 
 ## Open Questions
 
-- Есть ли `@keyframes p-animate-drawer-*` в `@primeuix/styles/drawer` после `gen-theme`. Если нет — их нужно взять из исходников PrimeNG (поиск по `packages/primeng` и `@primeuix/*`); если их нет нигде, записать собственные кадры в `xtask` (сдвиг на ширину/высоту панели) и отметить в docs. Решается в первой задаче темы, до остальной работы со стилями.
+- Whether `@keyframes p-animate-drawer-*` exist in `@primeuix/styles/drawer` after `gen-theme`. If not, they must be taken from the PrimeNG sources (search in `packages/primeng` and `@primeuix/*`); if they are nowhere, write custom keyframes in `xtask` (a shift by the panel width/height) and note it in the docs. Resolved in the first theme task, before the other style work.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback is `git revert`.

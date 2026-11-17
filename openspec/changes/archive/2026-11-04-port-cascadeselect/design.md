@@ -2,40 +2,40 @@
 
 ## Context
 
-Требования — в `specs/cascadeselect`. Исходники PrimeNG 21.1.10: `cascadeselect/cascadeselect.ts` (`CascadeSelectSub` — список уровня, `CascadeSelect` — состояние, путь, клавиатура), `style/cascadeselectstyle.ts`; демонстрации `apps/showcase/doc/cascadeselect/*-doc.ts`. Образцы — `prime-treeselect` (оболочка, панель внутри корня, окно-слушатели) и `prime-menubar` (путь активных пунктов, фокус, поиск, `matchMedia`).
+Requirements are in `specs/cascadeselect`. PrimeNG 21.1.10 sources: `cascadeselect/cascadeselect.ts` (`CascadeSelectSub` — level list, `CascadeSelect` — state, path, keyboard), `style/cascadeselectstyle.ts`; demos `apps/showcase/doc/cascadeselect/*-doc.ts`. Reference implementations — `prime-treeselect` (shell, panel inside the root, window listeners) and `prime-menubar` (path of active items, focus, search, `matchMedia`).
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы, `aria-*`, путь и клавиши.
+**Goals:** the same DOM, classes, `aria-*`, path and keys.
 
-**Non-Goals:** произвольные объекты опций, формы Angular, `appendTo`, отзеркаливание списка у края окна, шаблоны `header`/`footer`/иконок.
+**Non-Goals:** arbitrary option objects, Angular forms, `appendTo`, mirroring the list at the window edge, `header`/`footer`/icon templates.
 
 ## Decisions
 
-### D1. Модель
-`CascadeOption { label, value: Option<String>, disabled, children }`; значение листа — `value` либо `label`. `build(options) -> Vec<Node>` с ключами `0`, `0_1`, `0_1_2` (как `createProcessedOptions`), в узле: `parent_key`, `level`, `index`, `group`, `valid`, `label`, `value`.
+### D1. Model
+`CascadeOption { label, value: Option<String>, disabled, children }`; the leaf value is `value` or else `label`. `build(options) -> Vec<Node>` with keys `0`, `0_1`, `0_1_2` (like `createProcessedOptions`), the node holds: `parent_key`, `level`, `index`, `group`, `valid`, `label`, `value`.
 
-### D2. Чистая логика (`state.rs`)
-`State { active: Vec<String>, focus: Option<String>, dirty: bool }` и `Menu { nodes }` с функциями по исходнику: `show` (путь к значению и начальный фокус), `option_change`, `option_click` (результат `Closed`/`Group`/`Select(value)`), `hover`, `arrow_down/up/left/right`, `home`/`end`, `enter`, `escape`/`tab`, `search`, `visible(focus)` — список уровня фокуса. Фокус хранится ключом; индекс среди видимых вычисляется. Все функции — чистые, с табличными тестами.
+### D2. Pure logic (`state.rs`)
+`State { active: Vec<String>, focus: Option<String>, dirty: bool }` and `Menu { nodes }` with functions following the source: `show` (path to the value and initial focus), `option_change`, `option_click` (result `Closed`/`Group`/`Select(value)`), `hover`, `arrow_down/up/left/right`, `home`/`end`, `enter`, `escape`/`tab`, `search`, `visible(focus)` — the list of the focus level. Focus is stored as a key; the index among visible ones is computed. All functions are pure, with table-driven tests.
 
-### D3. Оболочка
-Как у `TreeSelect`: `open`, `focused`, ссылки на корень, панель и поле; эффекты открытия (`z-index` группы `Overlay`, `align_overlay(Relative)`, слушатели клика вне и `resize`) — под `cfg(wasm32)`. Панель выводится только при открытии. После смены пути панель перевыравнивается (`set_timeout(0)`). `matchMedia(breakpoint)` даёт `mobile`.
+### D3. Shell
+Like `TreeSelect`: `open`, `focused`, references to the root, panel and input; open effects (`z-index` of the `Overlay` group, `align_overlay(Relative)`, outside-click and `resize` listeners) — under `cfg(wasm32)`. The panel is rendered only when open. After the path changes the panel is realigned (`set_timeout(0)`). `matchMedia(breakpoint)` provides `mobile`.
 
-### D4. Вложенные списки
-Рекурсивная функция уровня; вложенный список выводится только у активной группы. Положение вложенных списков задаёт CSS темы (`left: 100%`). Чтение сигналов при построении — только `*_untracked`.
+### D4. Nested lists
+A recursive level function; a nested list is rendered only for the active group. The position of nested lists is set by the theme CSS (`left: 100%`). Signals are read during construction only via `*_untracked`.
 
-### D5. Тесты
-Таблицы для модели; SSR: закрытое поле, метка, плейсхолдер, состояния, очистка, загрузка, `pt`; браузерные `tests/web.rs` одним последовательным тестом: открытие, каскад, выбор листа, очистка, клик вне, наведение, клавиатура, мобильный класс; после клавиши `sleep`.
+### D5. Tests
+Tables for the model; SSR: closed field, label, placeholder, states, clear, loading, `pt`; browser `tests/web.rs` as one sequential test: opening, cascade, leaf selection, clearing, outside click, hover, keyboard, mobile class; `sleep` after a key.
 
 ## Risks / Trade-offs
 
-- [Фокус и путь] В PrimeNG фокус хранит индекс уровня — у нас ключ, поэтому переходы по уровням (`←`) считаются от ключа родителя; поведение проверяется таблицей.
-- [Положение вложенных списков] Без `position()` список может выйти за правый край окна.
+- [Focus and path] In PrimeNG focus stores the level index — here a key, so level transitions (`←`) are computed from the parent key; behavior is checked by a table.
+- [Nested list position] Without `position()` a list may go beyond the right window edge.
 
 ## Open Questions
 
-- Что именно делает `Tab` на листе: `onOptionChange` без выбора (сверено: выбирает путь, значение не меняется) — оставляем.
+- What exactly `Tab` does on a leaf: `onOptionChange` without selection (verified: selects the path, the value does not change) — keep as is.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

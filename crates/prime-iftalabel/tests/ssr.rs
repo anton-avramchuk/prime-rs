@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `style`, `pt` и паритет ветвей IftaLabel (SSR).
+//! DOM structure, classes, `style`, `pt` and static/reactive parity of IftaLabel (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 fn norm(s: &str) -> String {
@@ -65,8 +65,8 @@ fn static_and_reactive_branches_render_the_same() {
 
 #[test]
 fn field_and_label_stay_inside() {
-    let html = view! { <IftaLabel><input id="u" class="p-inputtext p-invalid" /><label for="u">"Имя"</label></IftaLabel> }.to_html();
-    has(&html, &[r#"for="u""#, "p-invalid", "Имя"]);
+    let html = view! { <IftaLabel><input id="u" class="p-inputtext p-invalid" /><label for="u">"Name"</label></IftaLabel> }.to_html();
+    has(&html, &[r#"for="u""#, "p-invalid", "Name"]);
     assert!(pos(&html, "<input") < pos(&html, "<label"), "{html}");
     assert_eq!(html.matches("p-iftalabel").count(), 1, "{html}");
 }

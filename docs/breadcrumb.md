@@ -1,39 +1,39 @@
 # Breadcrumb
 
-Порт `p-breadcrumb` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-breadcrumb` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-breadcrumb::Breadcrumb`, `BreadcrumbItem` | `breadcrumb/breadcrumb.ts`, `breadcrumb/style/breadcrumbstyle.ts` |
-| CSS | `@primeuix/styles/breadcrumb` — `cargo xtask gen-theme` (блока `/* For PrimeNG */` у компонента нет) |
-| Демонстрации | `apps/showcase/doc/breadcrumb/{basic,template}-doc.ts` |
+| CSS | `@primeuix/styles/breadcrumb` - `cargo xtask gen-theme` (the component has no `/* For PrimeNG */` block) |
+| Demos | `apps/showcase/doc/breadcrumb/{basic,template}-doc.ts` |
 
-Спека: `openspec/specs/breadcrumb`.
+Spec: `openspec/specs/breadcrumb`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `nav.p-breadcrumb.p-component` > `ol.p-breadcrumb-list` > `li.p-breadcrumb-home-item`, `li.p-breadcrumb-item` (с `p-disabled`), `li.p-breadcrumb-separator`; в пункте `a.p-breadcrumb-item-link` со значком, подписью и бейджем.
-- Пункт «домой» без своего значка получает `HomeIcon`; разделитель по умолчанию — `ChevronRightIcon`.
-- Разделитель после пункта «домой» выводится, только если есть пункты модели; после последнего пункта — нет.
-- Клик: отключённый пункт отменяет действие и ничего не вызывает; пункт без `url` отменяет переход, но вызывает `command` и `on_item_click` (логика — чистая функция `click_plan` с табличным тестом).
+- Markup and classes: `nav.p-breadcrumb.p-component` > `ol.p-breadcrumb-list` > `li.p-breadcrumb-home-item`, `li.p-breadcrumb-item` (with `p-disabled`), `li.p-breadcrumb-separator`; inside an item `a.p-breadcrumb-item-link` with an icon, a label and a badge.
+- A "home" item without its own icon gets `HomeIcon`; the default separator is `ChevronRightIcon`.
+- The separator after the "home" item is rendered only if there are model items; not after the last item.
+- Click: a disabled item cancels the action and calls nothing; an item without `url` cancels navigation but calls `command` and `on_item_click` (the logic is the pure function `click_plan` with a table-driven test).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<nav>` без хоста `<p-breadcrumb>` | Хост в Angular — деталь фреймворка. |
-| `BreadcrumbItem` вместо `MenuItem` | Общий тип меню появится вместе со вторым потребителем (`Menu`, `Tabs`). |
-| Нет `routerLink`, `queryParams`, `fragment` и др. | Это API Angular Router; навигацию SPA ведёт `command` или `url` и свой роутер. |
-| Значок пункта — `ViewFn` (иконка из `prime-icons`), а не имя класса шрифта | Иконки проекта — SVG-компоненты. |
-| Шаблоны `item` и `separator` — колбэк и `ViewFn` | Вместо `ng-template`. |
-| Нет `tooltipOptions`, HTML-меток (`escape = false`), `pt` по пункту с контекстом `{item, index}`, демонстрации `router` | Привязаны к Angular или выходят за объём партии. |
-| `Steps` не переносится | В PrimeNG 21 устарел (заменён `Stepper`), нет страницы и демонстраций. |
-| В демонстрации `template` вместо иконок `sitemap`, `book`, `wallet`, `shopping-bag`, `calculator` — `star`, `calendar`, `eye`, `info-circle`, `search` | Этих иконок нет в `prime-icons`. |
+| The root is `<nav>` without the `<p-breadcrumb>` host | A host in Angular is a framework detail. |
+| `BreadcrumbItem` instead of `MenuItem` | A shared menu type will appear with the second consumer (`Menu`, `Tabs`). |
+| No `routerLink`, `queryParams`, `fragment`, etc. | That is the Angular Router API; SPA navigation is driven by `command` or `url` and your own router. |
+| The item icon is a `ViewFn` (an icon from `prime-icons`), not a font class name | The project's icons are SVG components. |
+| The `item` and `separator` templates are a callback and a `ViewFn` | Instead of `ng-template`. |
+| No `tooltipOptions`, HTML labels (`escape = false`), per-item `pt` with the `{item, index}` context, `router` demo | Tied to Angular or outside the batch scope. |
+| `Steps` is not ported | Deprecated in PrimeNG 21 (replaced by `Stepper`), has no page or demos. |
+| In the `template` demo, `star`, `calendar`, `eye`, `info-circle`, `search` are used instead of the icons `sitemap`, `book`, `wallet`, `shopping-bag`, `calculator` | Those icons are not in `prime-icons`. |
 
-## Стоимость
+## Cost
 
-176 аллокаций на экземпляр при SSR (домой и четыре пункта, четыре разделителя с SVG), вклад в wasm ≈ 244 КБ (из них основная часть — общий `Badge` и иконки).
+176 allocations per instance in SSR (home and four items, four separators with SVG), contribution to wasm is about 244 KB (most of it is the shared `Badge` and icons).
 
-## Не проверено
+## Not verified
 
-Клавиатура и экранные считыватели не проверялись на реальных устройствах: проверены разметка, вычисленные стили и отсутствие перехода по клику (e2e).
+Keyboard and screen readers were not tested on real devices: markup, computed styles and the absence of navigation on click (e2e) were verified.

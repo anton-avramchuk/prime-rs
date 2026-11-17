@@ -1,45 +1,45 @@
-//! Преобразования цветов HSB / RGB / HEX — чистый порт формул `colorpicker.ts` без DOM.
+//! HSB / RGB / HEX color conversions — a pure port of the `colorpicker.ts` formulas without the DOM.
 //!
-//! Округления и порядок операций совпадают с PrimeNG (там те же числа `f64`), поэтому результаты побитово те же.
+//! Rounding and the order of operations match PrimeNG (it uses the same `f64` numbers), so the results are bit-identical.
 
-/// Размер поля насыщенности/яркости и шкалы оттенка в пикселях.
+/// Size of the saturation/brightness field and the hue scale in pixels.
 pub const AREA: f64 = 150.0;
 
-/// Цвет в модели HSB: оттенок `h` 0–360, насыщенность `s` и яркость `b` 0–100.
+/// Color in the HSB model: hue `h` 0–360, saturation `s` and brightness `b` 0–100.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Hsb {
-    /// Оттенок, градусы.
+    /// Hue, degrees.
     pub h: f64,
-    /// Насыщенность, проценты.
+    /// Saturation, percent.
     pub s: f64,
-    /// Яркость, проценты.
+    /// Brightness, percent.
     pub b: f64,
 }
 
-/// Цвет в модели RGB, каналы 0–255.
+/// Color in the RGB model, channels 0–255.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Rgb {
-    /// Красный.
+    /// Red.
     pub r: u8,
-    /// Зелёный.
+    /// Green.
     pub g: u8,
-    /// Синий.
+    /// Blue.
     pub b: u8,
 }
 
-/// Ограничивает HSB допустимыми диапазонами (`validateHSB`).
+/// Clamps HSB to the allowed ranges (`validateHSB`).
 pub fn validate_hsb(hsb: Hsb) -> Hsb {
     Hsb { h: hsb.h.clamp(0.0, 360.0), s: hsb.s.clamp(0.0, 100.0), b: hsb.b.clamp(0.0, 100.0) }
 }
 
-/// Разбирает HEX с `#` или без; всё неразбираемое — чёрный (`HEXtoRGB`).
+/// Parses HEX with or without `#`; anything unparsable is black (`HEXtoRGB`).
 pub fn hex_to_rgb(hex: &str) -> Rgb {
     let digits = hex.strip_prefix('#').unwrap_or(hex);
     let value = u32::from_str_radix(digits, 16).unwrap_or(0);
     Rgb { r: ((value >> 16) & 0xff) as u8, g: ((value >> 8) & 0xff) as u8, b: (value & 0xff) as u8 }
 }
 
-/// RGB в HSB (`RGBtoHSB`).
+/// RGB to HSB (`RGBtoHSB`).
 pub fn rgb_to_hsb(rgb: Rgb) -> Hsb {
     let (r, g, b) = (f64::from(rgb.r), f64::from(rgb.g), f64::from(rgb.b));
     let min = r.min(g).min(b);
@@ -66,12 +66,12 @@ pub fn rgb_to_hsb(rgb: Rgb) -> Hsb {
     Hsb { h, s, b: max * (100.0 / 255.0) }
 }
 
-/// HEX (с `#` или без) в HSB (`HEXtoHSB`).
+/// HEX (with or without `#`) to HSB (`HEXtoHSB`).
 pub fn hex_to_hsb(hex: &str) -> Hsb {
     rgb_to_hsb(hex_to_rgb(hex))
 }
 
-/// HSB в RGB с округлением до целых (`HSBtoRGB`).
+/// HSB to RGB rounded to integers (`HSBtoRGB`).
 pub fn hsb_to_rgb(hsb: Hsb) -> Rgb {
     let mut h = hsb.h;
     let s = hsb.s * 255.0 / 100.0;
@@ -106,34 +106,34 @@ pub fn hsb_to_rgb(hsb: Hsb) -> Rgb {
     Rgb { r: channel(r), g: channel(g), b: channel(b) }
 }
 
-/// RGB в шесть шестнадцатеричных цифр без `#` (`RGBtoHEX`).
+/// RGB to six hexadecimal digits without `#` (`RGBtoHEX`).
 pub fn rgb_to_hex(rgb: Rgb) -> String {
     format!("{:02x}{:02x}{:02x}", rgb.r, rgb.g, rgb.b)
 }
 
-/// HSB в шесть шестнадцатеричных цифр без `#` (`HSBtoHEX`).
+/// HSB to six hexadecimal digits without `#` (`HSBtoHEX`).
 pub fn hsb_to_hex(hsb: Hsb) -> String {
     rgb_to_hex(hsb_to_rgb(hsb))
 }
 
-/// Насыщенность и яркость по точке `(x, y)` внутри поля (от его левого верхнего угла).
+/// Saturation and brightness for a point `(x, y)` inside the field (from its top-left corner).
 pub fn pick_field(x: f64, y: f64) -> (f64, f64) {
     let s = (100.0 * x.clamp(0.0, AREA) / AREA).floor();
     let b = (100.0 * (AREA - y.clamp(0.0, AREA)) / AREA).floor();
     (s, b)
 }
 
-/// Оттенок по вертикальной координате `y` внутри шкалы.
+/// Hue for a vertical coordinate `y` inside the scale.
 pub fn pick_hue(y: f64) -> f64 {
     (360.0 * (AREA - y.clamp(0.0, AREA)) / AREA).floor()
 }
 
-/// Положение указателя поля в пикселях: `(left, top)`.
+/// Field pointer position in pixels: `(left, top)`.
 pub fn field_handle(hsb: Hsb) -> (f64, f64) {
     ((AREA * hsb.s / 100.0).floor(), (AREA * (100.0 - hsb.b) / 100.0).floor())
 }
 
-/// Положение указателя шкалы оттенка (`top`, пиксели).
+/// Hue scale pointer position (`top`, pixels).
 pub fn hue_handle(hsb: Hsb) -> f64 {
     (AREA - AREA * hsb.h / 360.0).floor()
 }
@@ -173,7 +173,7 @@ mod tests {
         let red = hex_to_hsb("ff0000");
         assert_eq!((red.h, red.b), (0.0, 100.0));
         let white = hex_to_hsb("ffffff");
-        // у серых h = -1·60 + 360, как в PrimeNG
+        // for grays h = -1·60 + 360, as in PrimeNG
         assert_eq!((white.h, white.s), (300.0, 0.0));
         assert!((white.b - 100.0).abs() < 1e-9);
         assert_eq!(hex_to_hsb("000000"), hsb(300.0, 0.0, 0.0));
@@ -183,7 +183,7 @@ mod tests {
     fn hex_parsing() {
         assert_eq!(hex_to_rgb("#ff8000"), Rgb { r: 255, g: 128, b: 0 });
         assert_eq!(hex_to_rgb("0000ff"), Rgb { r: 0, g: 0, b: 255 });
-        // короткие значения читаются числом, как parseInt
+        // short values are read as a number, like parseInt
         assert_eq!(hex_to_rgb("ff"), Rgb { r: 0, g: 0, b: 255 });
         for bad in ["", "#", "zzz", "not a color"] {
             assert_eq!(hex_to_rgb(bad), Rgb { r: 0, g: 0, b: 0 }, "{bad:?}");

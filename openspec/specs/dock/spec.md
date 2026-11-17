@@ -1,68 +1,68 @@
 # dock Specification
 
 ## Purpose
-Dock показывает значки команд в панели у края контейнера и управляется мышью и клавиатурой.
+Dock shows command icons in a panel at the edge of a container and is controlled by mouse and keyboard.
 
 ## Requirements
 
-### Requirement: Разметка
-`Dock` крейта `prime-dock` SHALL выводить `div.p-dock.p-component.p-dock-<position>` (`style_class`, `style`, `pt`; `p-dock-mobile`, пока окно не шире `breakpoint`) > `div.p-dock-list-container` > `ul.p-dock-list[role=menu]` с `id`, `aria-orientation` (`horizontal` для `Bottom`/`Top`, `vertical` для `Left`/`Right`), `tabindex="0"`, `aria-label`, `aria-labelledby` и `aria-activedescendant` (пока есть фокус на пункте). Каждый пункт модели SHALL выводиться как `li.p-dock-item[role=menuitem]` с `id`, `aria-label` из `label`, `aria-disabled`, `data-p-disabled`, `data-p-focused`, классами `p-focus` (пункт под фокусом), `p-disabled` и классом пункта, а внутри — `div.p-dock-item-content` > `a.p-dock-item-link[aria-hidden=true]` с `href` (из `url`), `target`, `title` и классом ссылки.
+### Requirement: Markup
+`Dock` of the `prime-dock` crate SHALL render `div.p-dock.p-component.p-dock-<position>` (`style_class`, `style`, `pt`; `p-dock-mobile` while the window is not wider than `breakpoint`) > `div.p-dock-list-container` > `ul.p-dock-list[role=menu]` with `id`, `aria-orientation` (`horizontal` for `Bottom`/`Top`, `vertical` for `Left`/`Right`), `tabindex="0"`, `aria-label`, `aria-labelledby` and `aria-activedescendant` (while an item has focus). Each item of the model SHALL be rendered as `li.p-dock-item[role=menuitem]` with `id`, `aria-label` from `label`, `aria-disabled`, `data-p-disabled`, `data-p-focused`, the classes `p-focus` (the item under focus), `p-disabled` and the item class, and inside — `div.p-dock-item-content` > `a.p-dock-item-link[aria-hidden=true]` with `href` (from `url`), `target`, `title` and the link class.
 
-#### Scenario: Состав
-- **WHEN** отрисован `Dock` с тремя пунктами
-- **THEN** выведены три `li.p-dock-item` с ссылками `a.p-dock-item-link`, у корня класс `p-dock-bottom`
+#### Scenario: Composition
+- **WHEN** `Dock` with three items is rendered
+- **THEN** three `li.p-dock-item` with `a.p-dock-item-link` links are rendered, and the root has the class `p-dock-bottom`
 
-#### Scenario: Положение
-- **WHEN** задан `position = Left`
-- **THEN** у корня класс `p-dock-left`, у списка `aria-orientation="vertical"`
+#### Scenario: Position
+- **WHEN** `position = Left` is set
+- **THEN** the root has the class `p-dock-left`, and the list has `aria-orientation="vertical"`
 
-### Requirement: Значок, бейдж и представление
-Если у пункта есть `icon` и нет представления `item`, SHALL выводиться `span.p-dock-item-icon` со значком; представление `item` SHALL заменять значок и получать пункт. При `badge` SHALL выводиться `Badge` со значением. Пункт с `disabled` SHALL не вызывать `command` по клику.
+### Requirement: Icon, badge and view
+If an item has an `icon` and there is no `item` view, a `span.p-dock-item-icon` with the icon SHALL be rendered; the `item` view SHALL replace the icon and receive the item. With `badge` a `Badge` with the value SHALL be rendered. An item with `disabled` SHALL not call `command` on click.
 
-#### Scenario: Значок
-- **WHEN** у пункта задан `icon`
-- **THEN** внутри ссылки есть `.p-dock-item-icon` со значком
+#### Scenario: Icon
+- **WHEN** an item has `icon` set
+- **THEN** the link contains `.p-dock-item-icon` with the icon
 
-#### Scenario: Шаблон
-- **WHEN** задан `item`
-- **THEN** внутри ссылки вместо значка переданное представление
+#### Scenario: Template
+- **WHEN** `item` is set
+- **THEN** inside the link, instead of the icon, the passed view is rendered
 
-### Requirement: Клик
-Клик по пункту SHALL вызывать его `command` с исходным событием и пунктом, если пункт не отключён.
+### Requirement: Click
+A click on an item SHALL call its `command` with the original event and the item, if the item is not disabled.
 
-#### Scenario: Команда
-- **WHEN** пользователь кликает по пункту с `command`
-- **THEN** `command` вызвана с этим пунктом
+#### Scenario: Command
+- **WHEN** the user clicks an item with `command`
+- **THEN** `command` is called with this item
 
-#### Scenario: Отключённый пункт
-- **WHEN** пользователь кликает по пункту с `disabled`
-- **THEN** `command` не вызвана
+#### Scenario: Disabled item
+- **WHEN** the user clicks an item with `disabled`
+- **THEN** `command` is not called
 
-### Requirement: Клавиатура и фокус
-Получение фокуса списком SHALL вызывать `on_focus` и ставить фокус на первый доступный пункт; потеря фокуса — `on_blur` и сброс. Для `Bottom`/`Top` клавиша → SHALL переносить фокус на следующий доступный пункт, ← — на предыдущий; для `Left`/`Right` то же делают ↓ и ↑ (перпендикулярные стрелки отменяются без действия). `Home` SHALL переносить фокус на первый, `End` — на последний доступный пункт, `Enter` и `Space` — кликать по ссылке пункта под фокусом. Отключённые пункты SHALL пропускаться; на границах фокус SHALL оставаться на крайнем пункте.
+### Requirement: Keyboard and focus
+When the list receives focus, `on_focus` SHALL be called and the focus SHALL be placed on the first available item; on losing focus — `on_blur` and a reset. For `Bottom`/`Top` the → key SHALL move the focus to the next available item, ← — to the previous one; for `Left`/`Right` the ↓ and ↑ keys do the same (perpendicular arrows are cancelled without an action). `Home` SHALL move the focus to the first available item, `End` — to the last one, `Enter` and `Space` — click on the link of the item under focus. Disabled items SHALL be skipped; at the edges the focus SHALL stay on the edge item.
 
-#### Scenario: Навигация
-- **WHEN** список в фокусе, положение `Bottom`, нажато →
-- **THEN** фокус на втором доступном пункте, `aria-activedescendant` указывает на него
+#### Scenario: Navigation
+- **WHEN** the list has focus, the position is `Bottom`, and → is pressed
+- **THEN** the focus is on the second available item, and `aria-activedescendant` points to it
 
-#### Scenario: Отключённый пункт
-- **WHEN** второй пункт отключён и нажато → с первого
-- **THEN** фокус на третьем
+#### Scenario: Disabled item
+- **WHEN** the second item is disabled and → is pressed from the first
+- **THEN** the focus is on the third item
 
 #### Scenario: Enter
-- **WHEN** фокус на пункте с `command` и нажат Enter
-- **THEN** `command` вызвана
+- **WHEN** the focus is on an item with `command` and Enter is pressed
+- **THEN** `command` is called
 
-### Requirement: Мобильный режим
-Если окно не шире `breakpoint` (по умолчанию `960px`), корень SHALL получать класс `p-dock-mobile`; класс SHALL меняться при изменении ширины окна. Вне браузера (SSR) класса нет.
+### Requirement: Mobile mode
+If the window is not wider than `breakpoint` (default `960px`), the root SHALL get the class `p-dock-mobile`; the class SHALL change when the window width changes. Outside the browser (SSR) there is no class.
 
-#### Scenario: Узкое окно
-- **WHEN** ширина окна меньше `breakpoint`
-- **THEN** у корня есть `p-dock-mobile`
+#### Scenario: Narrow window
+- **WHEN** the window width is less than `breakpoint`
+- **THEN** the root has `p-dock-mobile`
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) `Dock` SHALL отрисовываться полностью; `window` и `document` SHALL не использоваться.
+### Requirement: Rendering without a browser
+Outside the browser (SSR) `Dock` SHALL be rendered in full; `window` and `document` SHALL not be used.
 
 #### Scenario: SSR
-- **WHEN** страница с `Dock` отрисована на сервере
-- **THEN** в разметке есть список пунктов
+- **WHEN** a page with `Dock` is rendered on the server
+- **THEN** the markup contains the list of items

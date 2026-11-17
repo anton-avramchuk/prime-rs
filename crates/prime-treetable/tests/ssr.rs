@@ -1,5 +1,5 @@
-//! Разметка TreeTable (SSR): строки дерева с уровнями, кнопки раскрытия, сортировка по уровням, пагинатор корней,
-//! выбор и флажки, пусто/загрузка, модификаторы, `pt`.
+//! TreeTable markup (SSR): tree rows with levels, expand buttons, per-level sorting, root paginator,
+//! selection and checkboxes, empty/loading, modifiers, `pt`.
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 
@@ -44,7 +44,7 @@ fn render(f: impl FnOnce() -> String) -> String {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 fn in_order(html: &str, names: &[&str]) -> bool {
@@ -52,9 +52,9 @@ fn in_order(html: &str, names: &[&str]) -> bool {
     order.windows(2).all(|w| w[0] < w[1])
 }
 
-/// Открывающий тег элемента, в котором встречается подстрока.
+/// Opening tag of the element in which the substring occurs.
 fn tag_of<'a>(html: &'a str, needle: &str) -> &'a str {
-    let at = html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"));
+    let at = html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"));
     let start = html[..at].rfind('<').unwrap();
     let end = at + html[at..].find('>').unwrap();
     &html[start..=end]
@@ -71,7 +71,7 @@ fn collapsed_tree_shows_roots() {
     assert!(html.contains(">Name<") && html.contains(">Size<"), "{html}");
     assert!(in_order(&html, &["Documents", "Pictures", "Movies"]), "{html}");
     assert!(!html.contains(">Work<") && !html.contains(">barcelona.png<"), "{html}");
-    assert_eq!(html.matches("p-treetable-toggler").count(), 3, "кнопка в каждой строке: {html}");
+    assert_eq!(html.matches("p-treetable-toggler").count(), 3, "a button in every row: {html}");
     assert!(html.contains("role=\"treegrid\""), "{html}");
 }
 
@@ -82,8 +82,8 @@ fn toggler_visibility_and_indent() {
         view! { <TreeTable value=tree() columns=columns() expanded_keys=expanded /> }.to_html()
     });
     assert!(in_order(&html, &["Documents", "Work", "Expenses.doc", "Resume.doc", "Home", "Pictures", "Movies"]), "{html}");
-    assert!(!html.contains(">Invoices.txt<"), "дети нераскрытого Home скрыты: {html}");
-    // у листа кнопка скрыта, у раскрываемого видна; отступ по уровню 16 px
+    assert!(!html.contains(">Invoices.txt<"), "children of the collapsed Home are hidden: {html}");
+    // a leaf has the button hidden, an expandable node has it visible; indent by level is 16 px
     let leaf = &html[..pos(&html, ">Expenses.doc<")];
     let leaf_toggler = &leaf[leaf.rfind("p-treetable-toggler").unwrap()..];
     assert!(leaf_toggler.contains("visibility: hidden") && leaf_toggler.contains("margin-inline-start: 32px"), "{leaf_toggler}");
@@ -108,7 +108,7 @@ fn sort_applies_per_level() {
         let sort = RwSignal::new(vec![SortMeta::new("size", -1)]);
         view! { <TreeTable value=tree() columns=columns() expanded_keys=expanded sort=sort /> }.to_html()
     });
-    assert!(in_order(&html, &["Movies", "Pictures", "Documents", "Work", "Home"]), "корни и дети по убыванию размера: {html}");
+    assert!(in_order(&html, &["Movies", "Pictures", "Documents", "Work", "Home"]), "roots and children by descending size: {html}");
     assert!(
         html.contains("aria-sort=\"descending\"") && html.contains("p-treetable-column-sorted") && html.contains("p-sortable-column"),
         "{html}"
@@ -125,7 +125,7 @@ fn paginator_counts_roots_not_rows() {
     assert!(html.contains("p-treetable-paginator-bottom") && html.contains("p-paginator"), "{html}");
     assert!(
         html.contains(">Documents<") && html.contains(">Work<") && !html.contains(">Pictures<"),
-        "первая страница — один корень с потомками: {html}"
+        "first page — one root with descendants: {html}"
     );
     let html = render(|| {
         let first = RwSignal::new(1usize);
@@ -153,9 +153,9 @@ fn checkbox_selection_states() {
         let selection = RwSignal::new(vec!["0-0-0".to_owned()]);
         view! { <TreeTable value=tree() columns=columns() expanded_keys=expanded selection=selection selection_mode=Some(TreeSelectionMode::Checkbox) /> }.to_html()
     });
-    assert!(!html.contains("p-treetable-hoverable-rows"), "в режиме флажков строки не выбираются кликом: {html}");
-    assert_eq!(html.matches("p-treetable-node-checkbox").count(), 7, "флажок в каждой видимой строке: {html}");
-    assert_eq!(html.matches("p-checkbox-checked").count(), 1, "выбран только лист Expenses.doc: {html}");
+    assert!(!html.contains("p-treetable-hoverable-rows"), "in checkbox mode rows are not selected by click: {html}");
+    assert_eq!(html.matches("p-treetable-node-checkbox").count(), 7, "a checkbox in every visible row: {html}");
+    assert_eq!(html.matches("p-checkbox-checked").count(), 1, "only the leaf Expenses.doc is selected: {html}");
     let partial_work = tag_of(&html, "p-treetable-node-checkbox");
     assert!(partial_work.contains("p-checkbox"), "{partial_work}");
 }

@@ -1,41 +1,41 @@
 ## ADDED Requirements
 
-### Requirement: Состояние и события ToggleSwitch
-Компонент `ToggleSwitch` крейта `prime-toggleswitch` SHALL принимать двусторонний `checked` (`RwSignal<bool>`), переключать его по клику на любой части корня (в том числе на нативном `<input>`), вызывать `on_change` с новым значением и исходным событием ровно один раз на клик, возвращать фокус на `<input>`, вызывать `on_focus` и `on_blur`. При `disabled` и `readonly` состояние SHALL не меняться.
+### Requirement: State and events of ToggleSwitch
+The `ToggleSwitch` component of the `prime-toggleswitch` crate SHALL accept a two-way `checked` (`RwSignal<bool>`), toggle it on a click on any part of the root (including the native `<input>`), call `on_change` with the new value and the original event exactly once per click, return the focus to `<input>`, and call `on_focus` and `on_blur`. With `disabled` and `readonly` the state SHALL not change.
 
-#### Scenario: Клик
-- **WHEN** пользователь кликает по ToggleSwitch
-- **THEN** сигнал меняет значение и `on_change` вызывается один раз с новым значением
+#### Scenario: Click
+- **WHEN** the user clicks the ToggleSwitch
+- **THEN** the signal changes its value, and `on_change` is called once with the new value
 
-#### Scenario: Readonly и disabled
-- **WHEN** включён `readonly` или `disabled` и пользователь кликает
-- **THEN** сигнал, нативное состояние `<input>` и `on_change` не затронуты
+#### Scenario: Readonly and disabled
+- **WHEN** `readonly` or `disabled` is enabled and the user clicks
+- **THEN** the signal, the native state of `<input>` and `on_change` are not affected
 
-### Requirement: Разметка и классы ToggleSwitch
-Корень SHALL быть `<div>` с классами `p-toggleswitch p-component` и модификаторами `p-toggleswitch-checked`, `p-disabled`, `p-invalid`, со `style="position: relative"` (к нему присоединяются `style` и `pt.root`); внутри SHALL идти `<input type="checkbox" role="switch" class="p-toggleswitch-input">` с `aria-checked`, затем `<div class="p-toggleswitch-slider">` с `<div class="p-toggleswitch-handle">`. Корень SHALL иметь `data-p-checked`, `data-p-disabled`, а корень, слайдер и ручка — `data-p` (через пробел `checked`, `disabled`, `invalid`).
+### Requirement: Markup and classes of ToggleSwitch
+The root SHALL be a `<div>` with the classes `p-toggleswitch p-component` and the modifiers `p-toggleswitch-checked`, `p-disabled`, `p-invalid`, with `style="position: relative"` (`style` and `pt.root` are attached to it); inside it SHALL come `<input type="checkbox" role="switch" class="p-toggleswitch-input">` with `aria-checked`, then `<div class="p-toggleswitch-slider">` with `<div class="p-toggleswitch-handle">`. The root SHALL have `data-p-checked`, `data-p-disabled`, and the root, the slider and the handle — `data-p` (separated by spaces: `checked`, `disabled`, `invalid`).
 
-#### Scenario: Включён
+#### Scenario: Enabled
 - **WHEN** `checked = true`
-- **THEN** есть класс `p-toggleswitch-checked`, `aria-checked="true"`, `data-p-checked="true"`, `data-p="checked"`, у `<input>` атрибут `checked`
+- **THEN** the class `p-toggleswitch-checked`, `aria-checked="true"`, `data-p-checked="true"`, `data-p="checked"` are present, and `<input>` has the `checked` attribute
 
-#### Scenario: Слот ручки
-- **WHEN** задан `handle_template`
-- **THEN** его содержимое внутри `p-toggleswitch-handle`, шаблон получает текущее `checked`
+#### Scenario: Handle slot
+- **WHEN** `handle_template` is set
+- **THEN** its content is inside `p-toggleswitch-handle`, and the template receives the current `checked`
 
-### Requirement: Атрибуты и pass-through ToggleSwitch
-`<input>` SHALL получать `id` (`input_id`), `name`, `tabindex`, `required`, `disabled`, `aria-label`, `aria-labelledby`; незаданные атрибуты SHALL отсутствовать. `pt` SHALL принимать `root`, `input`, `slider`, `handle`, добавляя классы и атрибуты без замены собственных.
+### Requirement: Attributes and pass-through of ToggleSwitch
+`<input>` SHALL get `id` (`input_id`), `name`, `tabindex`, `required`, `disabled`, `aria-label`, `aria-labelledby`; unset attributes SHALL be absent. `pt` SHALL accept `root`, `input`, `slider`, `handle`, adding classes and attributes without replacing the own ones.
 
-#### Scenario: Атрибуты
-- **WHEN** заданы `input_id`, `name`
-- **THEN** у `<input>` есть `id`, `name`, а `required` и `tabindex` нет
+#### Scenario: Attributes
+- **WHEN** `input_id`, `name` are set
+- **THEN** `<input>` has `id`, `name`, and there is no `required` or `tabindex`
 
-### Requirement: Стоимость отрисовки ToggleSwitch
-ToggleSwitch со статическими свойствами и без `checked` SHALL использовать статическую ветвь; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `toggleswitch` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `toggleswitch` в `benches/budgets.toml`.
+### Requirement: Rendering cost of ToggleSwitch
+A ToggleSwitch with static properties and without `checked` SHALL use the static branch; both branches SHALL produce the same markup. The number of allocations per instance during SSR SHALL fit the budget `toggleswitch` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `toggleswitch` in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** the same set of values is passed statically and through signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения ToggleSwitch не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of ToggleSwitch do not exceed the budgets

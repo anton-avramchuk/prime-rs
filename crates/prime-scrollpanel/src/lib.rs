@@ -1,18 +1,18 @@
-//! ScrollPanel — порт `p-scrollpanel` из PrimeNG 21.1.10.
+//! ScrollPanel — port of `p-scrollpanel` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы совпадают с PrimeNG: корень `div.p-scrollpanel`, контейнер `p-scrollpanel-content-container` с
-//! `p-scrollpanel-content` внутри и две полосы `p-scrollpanel-bar-x` / `p-scrollpanel-bar-y` (`role="scrollbar"`).
-//! Вместо хоста `<p-scrollpanel>` отрисовывается `<div class="p-scrollpanel …">`.
+//! Markup and classes match PrimeNG: root `div.p-scrollpanel`, container `p-scrollpanel-content-container` with
+//! `p-scrollpanel-content` inside and two bars `p-scrollpanel-bar-x` / `p-scrollpanel-bar-y` (`role="scrollbar"`).
+//! Instead of the `<p-scrollpanel>` host, `<div class="p-scrollpanel …">` is rendered.
 //!
-//! Размер и положение полос считаются только в браузере и пишутся прямо в DOM (см. `docs/scrollpanel.md`);
-//! SSR отдаёт разметку без обращения к DOM. Свойства — [`Prop`]/[`OptProp`]; если `style` и `style_class` статические,
-//! компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! Bar size and position are computed only in the browser and written straight to the DOM (see `docs/scrollpanel.md`);
+//! SSR emits markup without touching the DOM. Properties are [`Prop`]/[`OptProp`]; if `style` and `style_class` are static,
+//! the component renders ready-made values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_scrollpanel::ScrollPanel;
 //!
-//! let html = view! { <ScrollPanel style="height:150px">"Текст"</ScrollPanel> }.to_html();
+//! let html = view! { <ScrollPanel style="height:150px">"Text"</ScrollPanel> }.to_html();
 //! assert!(html.contains("p-scrollpanel-content") && html.contains("p-scrollpanel-bar-x") && html.contains("p-scrollpanel-bar-y"));
 //! ```
 
@@ -26,13 +26,13 @@ use prime_core::{ClassNames, OptProp, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
-/// Шаг прокрутки клавишами по умолчанию, пикселей.
+/// Default keyboard scroll step, pixels.
 pub const DEFAULT_STEP: f64 = 5.0;
 
-/// Минимальная длина полосы, процентов.
+/// Minimum bar length, percent.
 const MIN_BAR_PERCENT: f64 = 10.0;
 
-/// Доля видимой части: `own / total`; при пустом содержимом — 1 (полоса не нужна).
+/// Fraction of the visible part: `own / total`; with empty content it is 1 (no bar needed).
 ///
 /// ```
 /// use prime_scrollpanel::bar_ratio;
@@ -44,7 +44,7 @@ pub fn bar_ratio(own: f64, total: f64) -> f64 {
     if total > 0.0 { own / total } else { 1.0 }
 }
 
-/// Длина полосы в процентах: доля × 100, но не меньше 10.
+/// Bar length in percent: fraction × 100, but not less than 10.
 ///
 /// ```
 /// use prime_scrollpanel::bar_len;
@@ -56,12 +56,12 @@ pub fn bar_len(ratio: f64) -> f64 {
     (ratio * 100.0).max(MIN_BAR_PERCENT)
 }
 
-/// Смещение полосы в процентах: `scroll × (100 − len) / (total − own)`; без хода прокрутки — 0.
+/// Bar offset in percent: `scroll × (100 − len) / (total − own)`; with no scroll travel, 0.
 ///
 /// ```
 /// use prime_scrollpanel::bar_offset;
 ///
-/// // содержимое 400, область 100, полоса 25%, прокручено на половину хода (150 из 300)
+/// // content 400, area 100, bar 25%, scrolled half the travel (150 of 300)
 /// assert_eq!(bar_offset(150.0, 25.0, 400.0, 100.0), 37.5);
 /// assert_eq!(bar_offset(10.0, 25.0, 100.0, 100.0), 0.0);
 /// ```
@@ -70,24 +70,24 @@ pub fn bar_offset(scroll: f64, len: f64, total: f64, own: f64) -> f64 {
     if travel > 0.0 { scroll * (100.0 - len) / travel } else { 0.0 }
 }
 
-/// Реакция на клавишу, нажатую на полосе.
+/// Reaction to a key pressed on a bar.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum KeyAction {
-    /// Прокрутить: `horizontal` — по оси X, `delta` — знак шага (`1.0` или `-1.0`).
+    /// Scroll: `horizontal` means the X axis, `delta` is the step sign (`1.0` or `-1.0`).
     Scroll {
-        /// Ось X (иначе Y).
+        /// X axis (otherwise Y).
         horizontal: bool,
-        /// Знак шага.
+        /// Step sign.
         delta: f64,
     },
-    /// Только отменить действие браузера по умолчанию.
+    /// Only cancel the browser default action.
     Block,
-    /// Ничего не делать.
+    /// Do nothing.
     Ignore,
 }
 
-/// Таблица клавиш: вертикальная ось слушает `ArrowUp`/`ArrowDown`, горизонтальная — `ArrowLeft`/`ArrowRight`;
-/// остальные стрелки лишь блокируются.
+/// Key table: the vertical axis listens to `ArrowUp`/`ArrowDown`, the horizontal to `ArrowLeft`/`ArrowRight`;
+/// the other arrows are merely blocked.
 ///
 /// ```
 /// use prime_scrollpanel::{KeyAction, key_action};
@@ -108,7 +108,7 @@ pub fn key_action(horizontal: bool, code: &str) -> KeyAction {
     }
 }
 
-/// Ограничивает `scrollTop` диапазоном `0..=scroll_height − client_height`.
+/// Clamps `scrollTop` to the range `0..=scroll_height − client_height`.
 ///
 /// ```
 /// use prime_scrollpanel::clamp_scroll;
@@ -120,24 +120,24 @@ pub fn clamp_scroll(value: f64, scroll_size: f64, client_size: f64) -> f64 {
     value.min(scroll_size - client_size).max(0.0)
 }
 
-/// Pass-through частей ScrollPanel.
+/// Pass-through of ScrollPanel parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ScrollPanelPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Контейнер содержимого (`div.p-scrollpanel-content-container`).
+    /// Content container (`div.p-scrollpanel-content-container`).
     pub content_container: Pt,
-    /// Содержимое (`div.p-scrollpanel-content`).
+    /// Content (`div.p-scrollpanel-content`).
     pub content: Pt,
-    /// Горизонтальная полоса (`div.p-scrollpanel-bar-x`).
+    /// Horizontal bar (`div.p-scrollpanel-bar-x`).
     pub bar_x: Pt,
-    /// Вертикальная полоса (`div.p-scrollpanel-bar-y`).
+    /// Vertical bar (`div.p-scrollpanel-bar-y`).
     pub bar_y: Pt,
 }
 
-/// Ручка для вызова методов ScrollPanel из кода (аналог `@ViewChild`): `refresh` и `scroll_top`.
+/// Handle for calling ScrollPanel methods from code (like `@ViewChild`): `refresh` and `scroll_top`.
 ///
-/// Создаётся до компонента и передаётся свойством `panel_ref`; вне браузера и до монтирования методы ничего не делают.
+/// Created before the component and passed via the `panel_ref` property; outside the browser and before mounting the methods do nothing.
 #[derive(Clone, Copy)]
 pub struct ScrollPanelRef {
     #[cfg(target_arch = "wasm32")]
@@ -145,7 +145,7 @@ pub struct ScrollPanelRef {
 }
 
 impl ScrollPanelRef {
-    /// Пустая ручка; компонент заполняет её при монтировании.
+    /// Empty handle; the component fills it on mount.
     pub fn new() -> Self {
         Self {
             #[cfg(target_arch = "wasm32")]
@@ -153,7 +153,7 @@ impl ScrollPanelRef {
         }
     }
 
-    /// Пересчитывает положение и размер полос.
+    /// Recalculates the position and size of the bars.
     pub fn refresh(&self) {
         #[cfg(target_arch = "wasm32")]
         if let Some(c) = self.inner.try_get_value().flatten() {
@@ -161,7 +161,7 @@ impl ScrollPanelRef {
         }
     }
 
-    /// Прокручивает содержимое к `value` пикселей сверху (значение ограничено доступным ходом).
+    /// Scrolls the content to `value` pixels from the top (the value is clamped to the available travel).
     pub fn scroll_top(&self, value: f64) {
         #[cfg(target_arch = "wasm32")]
         if let Some(c) = self.inner.try_get_value().flatten() {
@@ -178,31 +178,31 @@ impl Default for ScrollPanelRef {
     }
 }
 
-/// Панель с тематизируемыми полосами прокрутки.
+/// Panel with themable scrollbars.
 ///
-/// `style` и `style_class` принимают значение или сигнал. Размеры (`width`, `height` или `max-height`) задаются через `style`.
-/// Содержимое — `children` либо слот `content_template` (при заданном слоте `children` не выводятся).
+/// `style` and `style_class` accept a value or a signal. Sizes (`width`, `height` or `max-height`) are set via `style`.
+/// Content is `children` or the `content_template` slot (when the slot is set, `children` are not rendered).
 #[component]
 pub fn ScrollPanel(
-    /// Шаг прокрутки клавишами стрелок, пикселей (по умолчанию 5).
+    /// Keyboard arrow scroll step, pixels (default 5).
     #[prop(optional, into)]
     step: OptProp<f64>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Слот содержимого (аналог шаблона `#content`).
+    /// Content slot (like the `#content` template).
     #[prop(optional, into)]
     content_template: Option<ViewFn>,
-    /// Ручка для `refresh` и `scroll_top`.
+    /// Handle for `refresh` and `scroll_top`.
     #[prop(optional)]
     panel_ref: Option<ScrollPanelRef>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<ScrollPanelPt>,
-    /// Содержимое.
+    /// Content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -211,7 +211,7 @@ pub fn ScrollPanel(
     let props = Props { style, style_class };
     let content_id = CollapseIds::new(None).content;
 
-    // `NodeRef` нужны только клиенту (измерение и слушатели): при SSR их нет, а `()` — пустой атрибут вместо `node_ref`.
+    // `NodeRef`s are needed only by the client (measuring and listeners): on SSR there are none, and `()` is an empty attribute instead of `node_ref`.
     #[cfg(target_arch = "wasm32")]
     let (root_ref, content_ref, x_ref, y_ref) = {
         use leptos::html::Div;
@@ -296,7 +296,7 @@ pub fn ScrollPanel(
     }
 }
 
-/// Разметка ScrollPanel: одна для статической и реактивной ветвей (меняются только выражения `class` и `style` корня).
+/// ScrollPanel markup: one for the static and reactive branches (only the root `class` and `style` expressions differ).
 macro_rules! scrollpanel_markup {
     (
         $class:expr, $style:expr, $root_attrs:expr, $root_ref:expr, $container_class:expr, $container_attrs:expr, $content_ref:expr,
@@ -352,12 +352,12 @@ fn style_of(props: &Props, pt: &ScrollPanelPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Класс, начальный стиль и атрибуты полосы; дальше `style` полосы ведёт клиентский пересчёт, а не Leptos.
+/// Class, initial style and bar attributes; after that the bar `style` is driven by the client recalculation, not Leptos.
 fn bar_of(pt: &Pt, base: &'static str) -> (Cow<'static, str>, Option<String>, Vec<leptos::attr::any_attribute::AnyAttribute>) {
     (pt.merge_class(base), pt.has_style().then(|| pt.merge_style("")), pt.attrs())
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     style: OptProp<String>,
     style_class: OptProp<String>,

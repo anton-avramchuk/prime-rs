@@ -1,35 +1,35 @@
 # upstream-tracking Specification
 
 ## Purpose
-Привязка порта к версии PrimeNG, поиск изменений в исходниках и генерация заготовок спек компонентов.
+Binding the port to a version of PrimeNG, finding changes in its sources, and generating spec skeletons of the components.
 
 ## Requirements
 
-### Requirement: Закреплённая версия PrimeNG
-Репозиторий SHALL хранить в `upstream.toml` версию (`21.1.10`) и коммит (`fe82b291d6`) PrimeNG, с которым синхронизирован порт, а также путь к локальной копии с возможностью переопределения.
+### Requirement: Pinned PrimeNG version
+The repository SHALL store in `upstream.toml` the version (`21.1.10`) and the commit (`fe82b291d6`) of PrimeNG with which the port is synchronized, as well as the path to the local copy, which can be overridden.
 
-#### Scenario: Чтение версии
-- **WHEN** инструментарий запрашивает версию upstream
-- **THEN** он получает значения из `upstream.toml`
+#### Scenario: Reading the version
+- **WHEN** the tooling requests the upstream version
+- **THEN** it gets the values from `upstream.toml`
 
-### Requirement: Поиск изменений в upstream
-Система SHALL предоставлять команду, показывающую, какие исходники PrimeNG, на которые ссылаются портированные компоненты, изменились между закреплённым и целевым коммитом.
+### Requirement: Finding changes in upstream
+The system SHALL provide a command that shows which PrimeNG sources referenced by the ported components have changed between the pinned commit and the target commit.
 
-#### Scenario: Исходник изменился
-- **WHEN** файл `button.ts` изменился между коммитами, а компонент Button портирован
-- **THEN** команда выводит Button в списке затронутых компонентов
+#### Scenario: A source changed
+- **WHEN** the file `button.ts` changed between the commits, and the Button component is ported
+- **THEN** the command lists Button among the affected components
 
-#### Scenario: Изменений нет
-- **WHEN** исходники портированных компонентов не менялись
-- **THEN** команда сообщает об отсутствии изменений и завершается с кодом 0
+#### Scenario: No changes
+- **WHEN** the sources of the ported components have not changed
+- **THEN** the command reports that there are no changes and exits with code 0
 
-### Requirement: Заготовка спеки из исходников
-Система SHALL предоставлять команду, формирующую заготовку спеки компонента (props, события, шаблон DOM, классы) из TypeScript-исходников PrimeNG с единой структурой разделов и ссылкой на исходный файл и коммит.
+### Requirement: Spec skeleton from the sources
+The system SHALL provide a command that generates a spec skeleton of a component (props, events, DOM template, classes) from the TypeScript sources of PrimeNG, with a unified structure of sections and a reference to the source file and the commit.
 
-#### Scenario: Генерация заготовки для Button
-- **WHEN** запускается команда для `button`
-- **THEN** создаётся заготовка с разделами props, событий, DOM и классов, a11y, клавиатуры и производительности, а также ссылкой на `button.ts` и закреплённый коммит
+#### Scenario: Generating a skeleton for Button
+- **WHEN** the command is run for `button`
+- **THEN** a skeleton with the sections props, events, DOM and classes, a11y, keyboard and performance is created, together with a reference to `button.ts` and the pinned commit
 
-#### Scenario: Неизвестный компонент
-- **WHEN** запрошен несуществующий компонент
-- **THEN** команда завершается с понятной ошибкой и не создаёт файлов
+#### Scenario: Unknown component
+- **WHEN** a non-existent component is requested
+- **THEN** the command exits with a clear error and creates no files

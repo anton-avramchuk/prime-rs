@@ -1,7 +1,7 @@
-//! Аллокации при рендере (dhat): `cargo bench -p render-bench --bench alloc`.
+//! Allocations during rendering (dhat): `cargo bench -p render-bench --bench alloc`.
 //!
-//! Каждый сценарий выполняется в отдельном процессе, чтобы пиковая память не смешивалась.
-//! Результат пишется в `target/bench/alloc.json`.
+//! Each scenario runs in a separate process so that peak memory does not get mixed.
+//! The result is written to `target/bench/alloc.json`.
 
 use render_bench::{SCENARIOS, out_dir};
 use std::collections::BTreeMap;
@@ -10,7 +10,7 @@ use std::collections::BTreeMap;
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
 fn measure(name: &str) {
-    let scenario = SCENARIOS.iter().find(|s| s.name == name).expect("неизвестный сценарий");
+    let scenario = SCENARIOS.iter().find(|s| s.name == name).expect("unknown scenario");
     let _profiler = dhat::Profiler::builder().testing().build();
     let before = dhat::HeapStats::get();
     let html = (scenario.run)();
@@ -35,11 +35,11 @@ fn main() {
     let exe = std::env::current_exe().unwrap();
     let mut metrics = BTreeMap::new();
     for s in SCENARIOS {
-        let out = std::process::Command::new(&exe).args(["--scenario", s.name]).output().expect("запуск сценария");
+        let out = std::process::Command::new(&exe).args(["--scenario", s.name]).output().expect("scenario launch");
         assert!(out.status.success(), "{}: {}", s.name, String::from_utf8_lossy(&out.stderr));
-        let v: serde_json::Value = serde_json::from_slice(&out.stdout).expect("JSON сценария");
+        let v: serde_json::Value = serde_json::from_slice(&out.stdout).expect("scenario JSON");
         println!(
-            "{:<20} аллокаций {:>8}  всего {:>10} Б  пик {:>10} Б  html {:>8} Б",
+            "{:<20} allocations {:>8}  total {:>10} B  peak {:>10} B  html {:>8} B",
             s.name, v["blocks"], v["bytes"], v["peak_bytes"], v["html_bytes"]
         );
         for key in ["blocks", "bytes", "peak_bytes"] {
@@ -48,5 +48,5 @@ fn main() {
     }
     let path = out_dir().join("alloc.json");
     std::fs::write(&path, serde_json::to_string_pretty(&serde_json::json!({ "metrics": metrics })).unwrap()).unwrap();
-    println!("отчёт: {}", path.display());
+    println!("report: {}", path.display());
 }

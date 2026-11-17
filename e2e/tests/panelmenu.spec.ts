@@ -4,7 +4,7 @@ test.describe('PanelMenu', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1000 });
         await page.goto('/panelmenu');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_menu')).toBeAttached();
     });
@@ -14,7 +14,7 @@ test.describe('PanelMenu', () => {
     const item = (page, menu: string, key: string) => page.locator(`li[id="${menu}_${key}"]`);
     const content = (page, menu: string, key: string) => item(page, menu, key).locator('> .p-panelmenu-item-content');
 
-    test('стили темы: панели в столбец с рамкой, у свёрнутой группы шеврон вправо, содержимое скрыто', async ({ page }) => {
+    test('theme styles: panels in a column with a border, a collapsed group has a right chevron, content hidden', async ({ page }) => {
         const root = page.locator('#basic_menu');
         expect(await root.evaluate((el) => getComputedStyle(el).flexDirection)).toBe('column');
         const panel = page.locator('#basic_menu .p-panelmenu-panel').first();
@@ -27,7 +27,7 @@ test.describe('PanelMenu', () => {
         await expect(header(page, 'basic_menu', 0).locator('.p-panelmenu-submenu-icon')).toHaveCount(1);
     });
 
-    test('клик раскрывает панель, в одиночном режиме закрывает прежнюю', async ({ page }) => {
+    test('a click expands a panel, in single mode closes the previous one', async ({ page }) => {
         await header(page, 'basic_menu', 0).click();
         await expect(region(page, 'basic_menu', 0)).toBeVisible();
         await expect(header(page, 'basic_menu', 0)).toHaveClass(/p-panelmenu-header-active/);
@@ -39,7 +39,7 @@ test.describe('PanelMenu', () => {
         await expect(region(page, 'basic_menu', 1)).toBeHidden();
     });
 
-    test('вложенные ветки раскрываются отступом вправо', async ({ page }) => {
+    test('nested branches expand with an indent to the right', async ({ page }) => {
         await header(page, 'basic_menu', 0).click();
         await content(page, 'basic_menu', '0_0').click();
         const parent = (await content(page, 'basic_menu', '0_0').boundingBox())!;
@@ -52,7 +52,7 @@ test.describe('PanelMenu', () => {
         expect(label.x).toBeGreaterThan(parentLabel.x + 8);
     });
 
-    test('множественный режим держит открытыми несколько панелей', async ({ page }) => {
+    test('multiple mode keeps several panels open', async ({ page }) => {
         await header(page, 'multiple_menu', 0).scrollIntoViewIfNeeded();
         await header(page, 'multiple_menu', 0).click();
         await header(page, 'multiple_menu', 1).click();
@@ -60,7 +60,7 @@ test.describe('PanelMenu', () => {
         await expect(region(page, 'multiple_menu', 1)).toBeVisible();
     });
 
-    test('Toggle All раскрывает и сворачивает всё', async ({ page }) => {
+    test('Toggle All expands and collapses everything', async ({ page }) => {
         const button = page.getByRole('button', { name: 'Toggle All' });
         await button.scrollIntoViewIfNeeded();
         await button.click();
@@ -70,7 +70,7 @@ test.describe('PanelMenu', () => {
         for (const i of [0, 1, 2]) await expect(region(page, 'controlled_menu', i)).toBeHidden();
     });
 
-    test('клавиатура: ↓ с заголовка в дерево, → раскрывает, ← сворачивает, ↓ после последнего — к следующему заголовку', async ({ page }) => {
+    test('keyboard: ↓ from a header into the tree, → expands, ← collapses, ↓ after the last — to the next header', async ({ page }) => {
         await header(page, 'basic_menu', 0).click();
         await expect(region(page, 'basic_menu', 0)).toBeVisible();
         await header(page, 'basic_menu', 0).focus();
@@ -94,14 +94,14 @@ test.describe('PanelMenu', () => {
         await expect(region(page, 'basic_menu', 0)).toBeHidden();
     });
 
-    test('команда листа вызывает уведомление', async ({ page }) => {
+    test('a leaf command triggers a notification', async ({ page }) => {
         await header(page, 'command_menu', 0).scrollIntoViewIfNeeded();
         await header(page, 'command_menu', 0).click();
         await content(page, 'command_menu', '0_0').click();
         await expect(page.locator('.p-toast-message').first()).toContainText('File created');
     });
 
-    test('шаблон заменяет ссылку пункта', async ({ page }) => {
+    test('the template replaces the item link', async ({ page }) => {
         await header(page, 'template_menu', 0).scrollIntoViewIfNeeded();
         await header(page, 'template_menu', 0).click();
         await expect(page.locator('#template_menu [data-testid="template-item"]').first()).toBeVisible();

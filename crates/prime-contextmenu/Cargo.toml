@@ -1,6 +1,6 @@
 [package]
 name = "prime-contextmenu"
-description = "prime-rs: компонент ContextMenu (порт PrimeNG)"
+description = "prime-rs: ContextMenu component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -22,7 +22,7 @@ prime-icons = { workspace = true, features = ["angleright"] }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "FocusEvent", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration", "MediaQueryList", "MediaQueryListEvent", "Navigator", "DomRect", "ScrollIntoViewOptions", "ScrollLogicalPosition", "TouchEvent", "Touch", "TouchList"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr is for native tests only: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

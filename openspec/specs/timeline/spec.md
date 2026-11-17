@@ -1,54 +1,54 @@
 # timeline Specification
 
 ## Purpose
-Timeline показывает последовательность событий вдоль вертикальной или горизонтальной линии с маркерами, соединителями и подписями по обе стороны линии.
+Timeline shows a sequence of events along a vertical or horizontal line with markers, connectors and labels on both sides of the line.
 
 ## Requirements
 
-### Requirement: Корень Timeline
-Компонент `Timeline` крейта `prime-timeline` SHALL выводить корень с классами `p-timeline p-component p-timeline-<align> p-timeline-<layout>`, где `align` — `left` (по умолчанию), `right`, `top`, `bottom` или `alternate`, а `layout` — `vertical` (по умолчанию) или `horizontal`. Атрибут `data-p` SHALL содержать через пробел `layout` и `align`. `style_class` SHALL добавляться после собственных классов, `style` — задавать встроенный стиль, `pt.root` — добавлять классы, стиль и атрибуты.
+### Requirement: Timeline root
+The `Timeline` component of the `prime-timeline` crate SHALL render a root with the classes `p-timeline p-component p-timeline-<align> p-timeline-<layout>`, where `align` is `left` (default), `right`, `top`, `bottom` or `alternate`, and `layout` is `vertical` (default) or `horizontal`. The `data-p` attribute SHALL contain `layout` and `align` separated by a space. `style_class` SHALL be added after the own classes, `style` — set the inline style, `pt.root` — add classes, style and attributes.
 
-#### Scenario: Значения по умолчанию
-- **WHEN** `align` и `layout` не заданы
-- **THEN** классы корня `p-timeline p-component p-timeline-left p-timeline-vertical`, `data-p="vertical left"`
+#### Scenario: Defaults
+- **WHEN** `align` and `layout` are not set
+- **THEN** root classes `p-timeline p-component p-timeline-left p-timeline-vertical`, `data-p="vertical left"`
 
-#### Scenario: Горизонтальная раскладка
+#### Scenario: Horizontal layout
 - **WHEN** `layout = Horizontal`, `align = Top`
-- **THEN** классы корня содержат `p-timeline-top` и `p-timeline-horizontal`
+- **THEN** the root classes contain `p-timeline-top` and `p-timeline-horizontal`
 
-#### Scenario: Реактивные свойства
-- **WHEN** `align` передан сигналом и меняется с `Left` на `Right`
-- **THEN** класс корня заменяется без пересоздания событий
+#### Scenario: Reactive properties
+- **WHEN** `align` is passed as a signal and changes from `Left` to `Right`
+- **THEN** the root class is replaced without recreating the events
 
-### Requirement: События Timeline
-Для каждого элемента `value` в исходном порядке SHALL выводиться `div.p-timeline-event` с тремя частями: `p-timeline-event-opposite`, `p-timeline-event-separator` и `p-timeline-event-content`. В разделителе SHALL быть маркер `p-timeline-event-marker` и, у всех событий кроме последнего, соединитель `p-timeline-event-connector`. Каждая часть SHALL иметь `data-p` корня и принимать `pt`.
+### Requirement: Timeline events
+For each `value` item in the source order a `div.p-timeline-event` SHALL be rendered with three parts: `p-timeline-event-opposite`, `p-timeline-event-separator` and `p-timeline-event-content`. The separator SHALL have the `p-timeline-event-marker` marker and, for all events except the last, the `p-timeline-event-connector` connector. Each part SHALL have the root's `data-p` and accept `pt`.
 
-#### Scenario: Структура
-- **WHEN** `value` содержит три события
-- **THEN** выводятся три `p-timeline-event`, в каждом три части, всего три маркера и два соединителя
+#### Scenario: Structure
+- **WHEN** `value` contains three events
+- **THEN** three `p-timeline-event` are rendered, each with three parts, three markers and two connectors in total
 
-#### Scenario: Пустой список
-- **WHEN** `value` пуст
-- **THEN** корень выводится без событий
+#### Scenario: Empty list
+- **WHEN** `value` is empty
+- **THEN** the root is rendered without events
 
-#### Scenario: pt частей
-- **WHEN** `pt.event_marker` содержит класс `custom`
-- **THEN** каждый маркер имеет класс `custom`
+#### Scenario: pt of the parts
+- **WHEN** `pt.event_marker` contains the class `custom`
+- **THEN** every marker has the class `custom`
 
-### Requirement: Шаблоны Timeline
-Шаблоны `content`, `opposite` и `marker` SHALL получать событие и выводиться в соответствующих частях. Без шаблона `content` и `opposite` части SHALL быть пустыми; шаблон `marker` заменяет стандартный маркер целиком, соединитель при этом сохраняется.
+### Requirement: Timeline templates
+The `content`, `opposite` and `marker` templates SHALL receive the event and be rendered in the corresponding parts. Without a `content` and `opposite` template the parts SHALL be empty; the `marker` template replaces the standard marker entirely, the connector is kept.
 
-#### Scenario: Содержимое
-- **WHEN** задан шаблон `content`, выводящий название события
-- **THEN** в `p-timeline-event-content` каждого события находится его название
+#### Scenario: Content
+- **WHEN** a `content` template that renders the event name is set
+- **THEN** the name of each event is in its `p-timeline-event-content`
 
-#### Scenario: Свой маркер
-- **WHEN** задан шаблон `marker`
-- **THEN** вместо `p-timeline-event-marker` выводится результат шаблона, а соединитель остаётся
+#### Scenario: Custom marker
+- **WHEN** a `marker` template is set
+- **THEN** the template result is rendered instead of `p-timeline-event-marker`, and the connector stays
 
-### Requirement: Стоимость отрисовки Timeline
-Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `timeline-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `timeline` в `benches/budgets.toml`.
+### Requirement: Timeline rendering cost
+The number of allocations per instance in SSR SHALL fit the `timeline-1000` budget in `benches/alloc-budgets.toml`, the wasm contribution — the `timeline` budget in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Timeline не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** Timeline values do not exceed the budgets

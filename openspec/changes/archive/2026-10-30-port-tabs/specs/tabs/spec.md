@@ -1,59 +1,59 @@
 ## Purpose
-Tabs переключает представления вкладками с навигацией по клавиатуре, индикатором активной вкладки и прокруткой.
+Tabs switches views with tabs, with keyboard navigation, an active tab indicator and scrolling.
 
 ## ADDED Requirements
 
-### Requirement: Разметка Tabs
-`Tabs` крейта `prime-tabs` SHALL выводить `div.p-tabs.p-component` (с `p-tabs-scrollable` при `scrollable`) и `id` (по умолчанию уникальный). `TabList` SHALL выводить `div.p-tablist` с `div.p-tablist-content.p-tablist-viewport` > `div.p-tablist-tab-list[role=tablist]`, содержащим вкладки и `span.p-tablist-active-bar[role=presentation][data-pc-section=activebar]`. `Tab` SHALL выводить `div.p-tab[role=tab]` с `id` `<tabs-id>_tab_<value>`, `aria-controls` `<tabs-id>_tabpanel_<value>`, `aria-selected`, `data-p-active`, `p-tab-active` у активной и `p-disabled`, `aria-disabled`, `data-p-disabled` у отключённой. `TabPanels` SHALL выводить `div.p-tabpanels`, `TabPanel` — `div.p-tabpanel[role=tabpanel]` с `id` `<tabs-id>_tabpanel_<value>`, `aria-labelledby`, `data-p-active`, `p-tabpanel-active` у активной и атрибутом `hidden` у неактивной. `style`, `style_class` и `pt` SHALL применяться к корню.
+### Requirement: Tabs markup
+The `Tabs` of the `prime-tabs` crate SHALL render `div.p-tabs.p-component` (with `p-tabs-scrollable` when `scrollable`) and an `id` (unique by default). `TabList` SHALL render `div.p-tablist` with `div.p-tablist-content.p-tablist-viewport` > `div.p-tablist-tab-list[role=tablist]` containing the tabs and `span.p-tablist-active-bar[role=presentation][data-pc-section=activebar]`. `Tab` SHALL render `div.p-tab[role=tab]` with `id` `<tabs-id>_tab_<value>`, `aria-controls` `<tabs-id>_tabpanel_<value>`, `aria-selected`, `data-p-active`, `p-tab-active` on the active one and `p-disabled`, `aria-disabled`, `data-p-disabled` on a disabled one. `TabPanels` SHALL render `div.p-tabpanels`, `TabPanel` SHALL render `div.p-tabpanel[role=tabpanel]` with `id` `<tabs-id>_tabpanel_<value>`, `aria-labelledby`, `data-p-active`, `p-tabpanel-active` on the active one and the `hidden` attribute on an inactive one. `style`, `style_class` and `pt` SHALL apply to the root.
 
-#### Scenario: Активная вкладка
-- **WHEN** `value` равно «1»
-- **THEN** вкладка «1» имеет `p-tab-active`, `aria-selected="true"`, панель «1» без `hidden`, остальные панели с `hidden`
+#### Scenario: Active tab
+- **WHEN** `value` equals "1"
+- **THEN** tab "1" has `p-tab-active`, `aria-selected="true"`, panel "1" has no `hidden`, the other panels have `hidden`
 
-#### Scenario: Связь вкладки и панели
-- **WHEN** отрисованы вкладка и панель со значением «a»
-- **THEN** `aria-controls` вкладки равен `id` панели, `aria-labelledby` панели равен `id` вкладки
+#### Scenario: Tab and panel linkage
+- **WHEN** a tab and a panel with the value "a" are rendered
+- **THEN** the tab's `aria-controls` equals the panel's `id`, the panel's `aria-labelledby` equals the tab's `id`
 
-### Requirement: Значение
-`value` SHALL быть двусторонним сигналом `Option<String>`; без него состояние собственное, начальное — `default_value`. Клик по доступной вкладке SHALL делать её значение активным. При `select_on_focus` фокус на доступной вкладке SHALL делать её активной.
+### Requirement: Value
+`value` SHALL be a two-way `Option<String>` signal; without it the state is internal, starting from `default_value`. A click on an enabled tab SHALL make its value active. With `select_on_focus`, focus on an enabled tab SHALL make it active.
 
-#### Scenario: Клик
-- **WHEN** пользователь нажимает на вкладку «2»
-- **THEN** `value` равно «2», панель «2» видна
+#### Scenario: Click
+- **WHEN** the user presses tab "2"
+- **THEN** `value` equals "2", panel "2" is visible
 
-#### Scenario: Отключённая вкладка
-- **WHEN** нажата отключённая вкладка
-- **THEN** `value` не меняется
+#### Scenario: Disabled tab
+- **WHEN** a disabled tab is pressed
+- **THEN** `value` does not change
 
-### Requirement: Клавиатура
-`tabindex` вкладки SHALL быть `tabindex` группы у активной доступной вкладки и −1 у остальных. На вкладке `ArrowRight`/`ArrowLeft` SHALL переносить фокус на следующую/предыдущую доступную вкладку (по кругу), `Home`/`End` — на первую/последнюю доступную, `PageUp`/`PageDown` — прокручивать список к первой/последней вкладке, `Enter`, `NumpadEnter` и `Space` — активировать вкладку; обработанные клавиши SHALL отменять действие по умолчанию, а событие SHALL не всплывать дальше вкладки. Фокус SHALL не активировать вкладку без `select_on_focus`.
+### Requirement: Keyboard
+A tab's `tabindex` SHALL be the group's `tabindex` for the active enabled tab and -1 for the others. On a tab, `ArrowRight`/`ArrowLeft` SHALL move focus to the next/previous enabled tab (wrapping around), `Home`/`End` to the first/last enabled one, `PageUp`/`PageDown` SHALL scroll the list to the first/last tab, `Enter`, `NumpadEnter` and `Space` SHALL activate the tab; handled keys SHALL cancel the default action, and the event SHALL NOT bubble beyond the tab. Focus SHALL NOT activate a tab without `select_on_focus`.
 
-#### Scenario: Стрелка по кругу
-- **WHEN** фокус на последней доступной вкладке и нажата `ArrowRight`
-- **THEN** фокус на первой доступной вкладке
+#### Scenario: Wrap-around arrow
+- **WHEN** focus is on the last enabled tab and `ArrowRight` is pressed
+- **THEN** focus is on the first enabled tab
 
-#### Scenario: Пропуск отключённой
-- **WHEN** следующая вкладка отключена
-- **THEN** фокус переходит через неё
+#### Scenario: Skipping a disabled tab
+- **WHEN** the next tab is disabled
+- **THEN** focus moves past it
 
-### Requirement: Индикатор и прокрутка
-Полоса `p-tablist-active-bar` SHALL получать `width` и `left` активной вкладки относительно списка; пересчёт SHALL выполняться при смене значения и изменении размера списка. При `show_navigators` (по умолчанию) `TabList` SHALL выводить кнопку `p-tablist-prev-button` (`aria-label` «Previous»), когда содержимое прокручено от начала, и `p-tablist-next-button` («Next»), когда справа есть скрытая часть; клик SHALL прокручивать содержимое на ширину видимой области (для следующей — за вычетом кнопок). `prev_icon` и `next_icon` SHALL заменять значки.
+### Requirement: Indicator and scrolling
+The `p-tablist-active-bar` bar SHALL get the `width` and `left` of the active tab relative to the list; recomputation SHALL happen on value change and list resize. With `show_navigators` (default), `TabList` SHALL render a `p-tablist-prev-button` button (`aria-label` "Previous") when the content is scrolled from the start, and a `p-tablist-next-button` ("Next") when there is a hidden part on the right; a click SHALL scroll the content by the width of the visible area (for next, minus the buttons). `prev_icon` and `next_icon` SHALL replace the icons.
 
-#### Scenario: Индикатор
-- **WHEN** активна вторая вкладка
-- **THEN** ширина полосы равна ширине этой вкладки, `left` — её смещению от начала списка
+#### Scenario: Indicator
+- **WHEN** the second tab is active
+- **THEN** the bar width equals the width of that tab, `left` equals its offset from the start of the list
 
-#### Scenario: Кнопки прокрутки
-- **WHEN** вкладки не помещаются и содержимое прокручено вправо
-- **THEN** выведены обе кнопки
+#### Scenario: Scroll buttons
+- **WHEN** the tabs do not fit and the content is scrolled to the right
+- **THEN** both buttons are rendered
 
-### Requirement: Ленивые панели
-При `lazy` у `Tabs` или `TabPanel` содержимое панели SHALL не выводиться до первой активации, а после неё SHALL оставаться (скрытым при деактивации). Без `lazy` содержимое выводится всегда.
+### Requirement: Lazy panels
+With `lazy` on `Tabs` or `TabPanel`, the panel content SHALL NOT be rendered until first activation, and after it SHALL stay (hidden on deactivation). Without `lazy` the content is always rendered.
 
-#### Scenario: До активации
-- **WHEN** `lazy` и панель неактивна
-- **THEN** внутри `div.p-tabpanel` ничего нет
+#### Scenario: Before activation
+- **WHEN** `lazy` is set and the panel is inactive
+- **THEN** there is nothing inside `div.p-tabpanel`
 
-#### Scenario: После активации
-- **WHEN** вкладка стала активной и затем неактивной
-- **THEN** содержимое остаётся в DOM, панель с `hidden`
+#### Scenario: After activation
+- **WHEN** a tab became active and then inactive
+- **THEN** the content stays in the DOM, the panel has `hidden`

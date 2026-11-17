@@ -1,8 +1,8 @@
-//! Страница Tabs: демонстрации `basic`, `controlled`, `disabled`, `scrollable`, `dynamic`, `lazy`, `customtemplate`
-//! по `apps/showcase/doc/tabs` PrimeNG.
+//! Tabs page: demos `basic`, `controlled`, `disabled`, `scrollable`, `dynamic`, `lazy`, `customtemplate`
+//! from PrimeNG `apps/showcase/doc/tabs`.
 //!
-//! Демонстрация `tabmenu` (нужен Router/Menu) не переносится. Значения вкладок — строки; в `customtemplate` значки
-//! `pi-minus`/`pi-plus` заменены знаками «−»/«+», утилитные классы Tailwind — встроенными стилями.
+//! The `tabmenu` demo (needs Router/Menu) is not ported. Tab values are strings; in `customtemplate` the `pi-minus`/`pi-plus`
+//! icons are replaced by the signs "-"/"+", Tailwind utility classes by inline styles.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -19,7 +19,7 @@ const LOREM: [&str; 3] = [
 
 const TAB_ROW: &str = "display: flex; align-items: center; gap: 0.5rem";
 
-/// Три панели с текстом по значениям `0`, `1`, `2`.
+/// Three panels with text by values `0`, `1`, `2`.
 fn lorem_panels() -> impl IntoView {
     view! {
         <TabPanels>
@@ -32,7 +32,7 @@ fn lorem_panels() -> impl IntoView {
     }
 }
 
-/// Страница `/tabs`.
+/// The `/tabs` page.
 #[component]
 pub fn TabsPage() -> impl IntoView {
     let controlled = RwSignal::new(Some("0".to_owned()));

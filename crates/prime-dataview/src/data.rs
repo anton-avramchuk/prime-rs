@@ -1,11 +1,11 @@
-//! Чистая логика DataView: фильтр, сортировка, страница и итог (по `dataview.ts` PrimeNG, без DOM).
+//! Pure DataView logic: filter, sort, page and total (after PrimeNG `dataview.ts`, no DOM).
 
 use std::cmp::Ordering;
 
-/// Сравнение двух элементов для сортировки.
+/// Comparison of two items for sorting.
 pub type Compare<'a, T> = &'a dyn Fn(&T, &T) -> Ordering;
 
-/// Первая запись последней непустой страницы; `first`, вышедший за итог, возвращается к ней.
+/// First record of the last non-empty page; a `first` beyond the total is returned to it.
 pub fn clamp_first(first: usize, total: usize, rows: usize) -> usize {
     if rows == 0 || total == 0 {
         return 0;
@@ -13,7 +13,7 @@ pub fn clamp_first(first: usize, total: usize, rows: usize) -> usize {
     first.min((total - 1) / rows * rows)
 }
 
-/// Элементы после фильтра и сортировки (`filter`, `sort`): `order` — 1 по возрастанию, -1 по убыванию, 0 — без сортировки.
+/// Items after filter and sort (`filter`, `sort`): `order` is 1 ascending, -1 descending, 0 no sorting.
 pub fn prepare<T: Clone>(items: &[T], filter: Option<&dyn Fn(&T) -> bool>, compare: Option<Compare<T>>, order: i32) -> Vec<T> {
     let mut out: Vec<T> = match filter {
         Some(f) => items.iter().filter(|i| f(i)).cloned().collect(),
@@ -28,7 +28,7 @@ pub fn prepare<T: Clone>(items: &[T], filter: Option<&dyn Fn(&T) -> bool>, compa
     out
 }
 
-/// Страница подготовленных элементов; в режиме `lazy` значение уже содержит нужную страницу (`slice` не нужен).
+/// Page of prepared items; in `lazy` mode the value already holds the needed page (`slice` is not needed).
 pub fn page<T: Clone>(prepared: &[T], paginator: bool, lazy: bool, first: usize, rows: usize) -> Vec<T> {
     if !paginator || lazy {
         return prepared.to_vec();
@@ -36,7 +36,7 @@ pub fn page<T: Clone>(prepared: &[T], paginator: bool, lazy: bool, first: usize,
     prepared.iter().skip(first).take(rows).cloned().collect()
 }
 
-/// Всего записей для пагинатора: `total_records` в режиме `lazy`, иначе число подготовленных элементов.
+/// Total records for the paginator: `total_records` in `lazy` mode, otherwise the number of prepared items.
 pub fn total(prepared_len: usize, lazy: bool, total_records: usize) -> usize {
     if lazy { total_records } else { prepared_len }
 }
@@ -59,8 +59,8 @@ mod tests {
         let items = vec![5, 3, 8, 1, 9, 2];
         let even_or_big = |n: &i32| *n > 2;
         let cmp = |a: &i32, b: &i32| a.cmp(b);
-        assert_eq!(prepare(&items, None, None, 1), items, "без сравнения порядок прежний");
-        assert_eq!(prepare(&items, None, Some(&cmp), 0), items, "порядок 0 — без сортировки");
+        assert_eq!(prepare(&items, None, None, 1), items, "without comparison the order is unchanged");
+        assert_eq!(prepare(&items, None, Some(&cmp), 0), items, "order 0: no sorting");
         assert_eq!(prepare(&items, None, Some(&cmp), 1), [1, 2, 3, 5, 8, 9]);
         assert_eq!(prepare(&items, None, Some(&cmp), -1), [9, 8, 5, 3, 2, 1]);
         assert_eq!(prepare(&items, Some(&even_or_big), Some(&cmp), 1), [3, 5, 8, 9]);
@@ -81,8 +81,8 @@ mod tests {
         assert_eq!(page(&items, true, false, 3, 3), [3, 4, 5]);
         assert_eq!(page(&items, true, false, 9, 3), [9]);
         assert_eq!(page(&items, true, false, 30, 3), Vec::<i32>::new());
-        assert_eq!(page(&items, false, false, 3, 3), items, "без пагинатора — всё");
-        assert_eq!(page(&items, true, true, 3, 3), items, "lazy — значение уже страница");
+        assert_eq!(page(&items, false, false, 3, 3), items, "without a paginator: everything");
+        assert_eq!(page(&items, true, true, 3, 3), items, "lazy: the value is already a page");
     }
 
     #[test]

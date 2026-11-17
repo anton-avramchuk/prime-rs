@@ -1,6 +1,6 @@
 [package]
 name = "prime-speeddial"
-description = "prime-rs: компонент SpeedDial (порт PrimeNG)"
+description = "prime-rs: SpeedDial component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -21,7 +21,7 @@ prime-icons = { workspace = true, features = ["plus"] }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "FocusEvent", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

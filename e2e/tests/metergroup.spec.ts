@@ -7,7 +7,7 @@ test.describe('MeterGroup', () => {
         await expect(page.locator('[data-demo=basic] .p-metergroup')).toBeVisible();
     });
 
-    test('демонстрации и ARIA', async ({ page }) => {
+    test('demos and ARIA', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(6);
         const group = page.locator('[data-demo=multiple] .p-metergroup');
         await expect(group).toHaveAttribute('role', 'meter');
@@ -17,7 +17,7 @@ test.describe('MeterGroup', () => {
         await expect(group).toHaveClass(/p-metergroup-horizontal/);
     });
 
-    test('ширина отрезков пропорциональна значению', async ({ page }) => {
+    test('segment width is proportional to the value', async ({ page }) => {
         const group = page.locator('[data-demo=multiple] .p-metergroup-meters');
         const total = (await group.boundingBox())!.width;
         const meters = group.locator('.p-metergroup-meter');
@@ -26,14 +26,14 @@ test.describe('MeterGroup', () => {
         expect(Math.abs(w / total - 0.24)).toBeLessThan(0.01);
     });
 
-    test('minmax: max=200 уменьшает отрезки вдвое', async ({ page }) => {
+    test('minmax: max=200 halves the segments', async ({ page }) => {
         const group = page.locator('[data-demo=minmax] .p-metergroup-meters');
         const total = (await group.boundingBox())!.width;
         const w = (await group.locator('.p-metergroup-meter').nth(2).boundingBox())!.width;
         expect(Math.abs(w / total - 0.12)).toBeLessThan(0.01);
     });
 
-    test('подписи: текст с процентом и цветом маркера', async ({ page }) => {
+    test('labels: text with percentage and marker color', async ({ page }) => {
         const labels = page.locator('[data-demo=multiple] .p-metergroup-label');
         await expect(labels).toHaveCount(4);
         await expect(labels.first().locator('.p-metergroup-label-text')).toHaveText('Apps (16%)');
@@ -41,7 +41,7 @@ test.describe('MeterGroup', () => {
         expect(color).toBe('rgb(52, 211, 153)');
     });
 
-    test('label: подписи перед шкалой, вертикальный список', async ({ page }) => {
+    test('label: labels before the meter, vertical list', async ({ page }) => {
         const demo = page.locator('[data-demo=label] .p-metergroup');
         await expect(demo.locator('.p-metergroup-label-list')).toHaveClass(/p-metergroup-label-list-vertical/);
         const list = (await demo.locator('.p-metergroup-label-list').boundingBox())!;
@@ -49,7 +49,7 @@ test.describe('MeterGroup', () => {
         expect(list.y).toBeLessThan(meters.y);
     });
 
-    test('vertical: отрезки задают высоту', async ({ page }) => {
+    test('vertical: segments set the height', async ({ page }) => {
         const demo = page.locator('[data-demo=vertical] .p-metergroup');
         await expect(demo).toHaveClass(/p-metergroup-vertical/);
         const meters = (await demo.locator('.p-metergroup-meters').boundingBox())!;
@@ -58,7 +58,7 @@ test.describe('MeterGroup', () => {
         expect(Math.abs(h / meters.height - 0.24)).toBeLessThan(0.02);
     });
 
-    test('icon: значки вместо маркеров', async ({ page }) => {
+    test('icon: icons instead of markers', async ({ page }) => {
         const labels = page.locator('[data-demo=icon] .p-metergroup-label');
         await expect(labels.first().locator('.p-metergroup-label-icon svg')).toBeVisible();
         await expect(labels.first().locator('.p-metergroup-label-marker')).toHaveCount(0);

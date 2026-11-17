@@ -3,28 +3,28 @@ import { expect, test } from '@playwright/test';
 test.describe('InputText', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/inputtext');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] input.p-inputtext')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(8);
         const radius = await page.locator('[data-demo=basic] input').evaluate((el) => getComputedStyle(el).borderTopWidth);
         expect(radius).not.toBe('0px');
     });
 
-    test('ввод попадает в сигнал и ставит p-filled', async ({ page }) => {
+    test('input goes into the signal and sets p-filled', async ({ page }) => {
         const input = page.locator('[data-demo=basic] input');
         await expect(input).not.toHaveClass(/p-filled/);
-        await input.fill('привет');
-        await expect(page.getByTestId('echo')).toHaveText('привет');
+        await input.fill('hello');
+        await expect(page.getByTestId('echo')).toHaveText('hello');
         await expect(input).toHaveClass(/p-filled/);
         await input.fill('');
         await expect(input).not.toHaveClass(/p-filled/);
     });
 
-    test('классы размера, варианта, invalid и fluid', async ({ page }) => {
+    test('size, variant, invalid and fluid classes', async ({ page }) => {
         await expect(page.locator('[data-demo=sizes] .p-inputtext-sm')).toHaveCount(1);
         await expect(page.locator('[data-demo=sizes] .p-inputtext-lg')).toHaveCount(1);
         await expect(page.locator('[data-demo=filled] .p-variant-filled')).toHaveCount(1);
@@ -32,11 +32,11 @@ test.describe('InputText', () => {
         await expect(page.locator('[data-demo=fluid] .p-inputtext-fluid')).toHaveCount(1);
     });
 
-    test('disabled недоступно', async ({ page }) => {
+    test('disabled is unavailable', async ({ page }) => {
         await expect(page.locator('[data-demo=disabled] input')).toBeDisabled();
     });
 
-    test('floatlabel: метка в обёртке и поднимается при вводе', async ({ page }) => {
+    test('floatlabel: the label is in the wrapper and rises on input', async ({ page }) => {
         await page.waitForLoadState('networkidle');
         const demo = page.locator('[data-demo=floatlabel]');
         await expect(demo.locator('.p-floatlabel.p-floatlabel-over input.p-inputtext')).toHaveCount(1);
@@ -47,7 +47,7 @@ test.describe('InputText', () => {
         await expect.poll(async () => (await label.boundingBox())!.y).toBeLessThan(before);
     });
 
-    test('iftalabel: метка в обёртке над значением', async ({ page }) => {
+    test('iftalabel: the label is in the wrapper above the value', async ({ page }) => {
         const demo = page.locator('[data-demo=iftalabel]');
         await expect(demo.locator('.p-iftalabel input.p-inputtext')).toHaveCount(1);
         const label = demo.locator('.p-iftalabel > label');

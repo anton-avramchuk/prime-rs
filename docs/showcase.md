@@ -1,48 +1,47 @@
-# Showcase и сайт документации
+# Showcase and the documentation site
 
-`showcase/` — приложение (SSR + гидратация), в котором у каждого компонента своя страница в духе primeng.dev/components:
-описание, блок «Import», примеры с живым результатом и кодом на Rust, справочник API, оформление и заметки о порте.
+`showcase/` is the application (SSR + hydration), in which each component has its own page in the spirit of primeng.dev/components:
+description, an "Import" block, examples with a live result and Rust code, an API reference, styling and notes about the port.
 
-## Запуск
+## Running
 
 ```sh
 cd showcase
 cargo leptos serve        # http://127.0.0.1:3000
 ```
 
-Слева — меню по разделам (Form, Button, Data, Panel, Overlay, File, Menu, Messages, Media, Misc) с поиском по имени, справа —
-оглавление страницы («On this page»). Переключатель светлой и тёмной схемы — в шапке.
+On the left is a menu by sections (Form, Button, Data, Panel, Overlay, File, Menu, Messages, Media, Misc) with search by name; on the right is the table of contents of the page ("On this page"). The light and dark scheme switch is in the header.
 
-## Что на странице компонента
+## What is on a component page
 
-| Раздел | Откуда берётся |
+| Section | Where it comes from |
 |---|---|
-| Описание | первый абзац `//!` в `crates/prime-<имя>/src/lib.rs` |
-| Import | операторы `use prime_…` страницы `showcase/src/pages/<имя>.rs` |
-| Примеры и кнопка **Code** | `<Demo name=".." title="..">` страницы; код — тот самый `#[component] fn …` (или содержимое `<Demo>`), который выполняется на странице |
-| Props, Events | параметры `#[component]` крейта: имя, тип, значение по умолчанию (`default = …`), `///`-описание; `*` — обязательные |
-| Pass Through | поля структур `*Pt` крейта |
-| Theming | CSS-классы `p-…` из `crates/prime-theme/css/components/<имя>.css` |
-| Accessibility | пункты `docs/<имя>.md` про `aria-*`, `role=` и клавиши |
-| Notes | `docs/<имя>.md` целиком (совпадает с PrimeNG, отличия, не вошло, не проверялось) |
+| Description | the first `//!` paragraph in `crates/prime-<name>/src/lib.rs` |
+| Import | the `use prime_…` statements of the page `showcase/src/pages/<name>.rs` |
+| Examples and the **Code** button | `<Demo name=".." title="..">` of the page; the code is the very `#[component] fn …` (or the content of `<Demo>`) that runs on the page |
+| Props, Events | the parameters of `#[component]` in the crate: name, type, default value (`default = …`), `///` description; `*` — required |
+| Pass Through | the fields of the crate's `*Pt` structs |
+| Theming | the `p-…` CSS classes from `crates/prime-theme/css/components/<name>.css` |
+| Accessibility | the items of `docs/<name>.md` about `aria-*`, `role=` and keys |
+| Notes | `docs/<name>.md` in full (matches PrimeNG, differences, not included, not verified) |
 
-## Как обновлять
+## How to update
 
-Все данные раздела — в `showcase/src/generated.rs`, который создаёт `cargo xtask gen-docs` и который нельзя править руками.
-После изменения демо, свойств компонента, `docs/*.md` или CSS темы:
+All data of the section is in `showcase/src/generated.rs`, which `cargo xtask gen-docs` creates and which must not be edited by hand.
+After changing a demo, component properties, `docs/*.md` or the theme CSS:
 
 ```sh
-cargo xtask gen-docs          # пересобрать showcase/src/generated.rs
-cargo xtask gen-docs --check  # проверка актуальности (её запускает CI)
+cargo xtask gen-docs          # regenerate showcase/src/generated.rs
+cargo xtask gen-docs --check  # check that it is up to date (CI runs it)
 ```
 
-Новая страница компонента: добавьте `showcase/src/pages/<имя>.rs` с `<Demo>`, маршрут в `showcase/src/app.rs`
-(`<DocPage name="<имя>">`) и строку в `MENU` (`showcase/src/doc.rs`), затем выполните `cargo xtask gen-docs`.
+A new component page: add `showcase/src/pages/<name>.rs` with a `<Demo>`, a route in `showcase/src/app.rs`
+(`<DocPage name="<name>">`) and a line in `MENU` (`showcase/src/doc.rs`), then run `cargo xtask gen-docs`.
 
-## Ограничения
+## Limitations
 
-- Разбор исходников текстовый (без `syn`): ожидается код, отформатированный `rustfmt`. Если у компонента нестандартная
-  сигнатура, раздел API останется пустым — `gen-docs --check` и тесты `xtask` это не скроют, но и не исправят.
-- Свойства берутся только из `src/lib.rs` крейта; компоненты в подмодулях в справочник не попадают.
-- Для нескольких компонентов, описанных одним документом (`field-wrappers.md`, `display-batch.md`), заметки общие.
-- Публикации сайта нет: он запускается локально.
+- Source parsing is textual (without `syn`): code formatted by `rustfmt` is expected. If a component has a non-standard
+  signature, its API section will stay empty — `gen-docs --check` and the `xtask` tests do not hide this, but they do not fix it either.
+- Properties are taken only from the crate's `src/lib.rs`; components in submodules do not get into the reference.
+- For several components described by one document (`field-wrappers.md`, `display-batch.md`), the notes are shared.
+- The site is not published: it runs locally.

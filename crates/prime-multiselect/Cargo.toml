@@ -1,6 +1,6 @@
 [package]
 name = "prime-multiselect"
-description = "prime-rs: компонент MultiSelect (порт PrimeNG)"
+description = "prime-rs: MultiSelect component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -21,7 +21,7 @@ prime-checkbox = { workspace = true }
 prime-icons = { workspace = true, features = ["chevrondown", "search", "times", "check", "spinner"] }
 web-sys = { workspace = true, features = ["Event", "FocusEvent", "KeyboardEvent", "MouseEvent", "HtmlElement", "HtmlInputElement", "Element", "Node", "ScrollIntoViewOptions", "ScrollLogicalPosition", "Window"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

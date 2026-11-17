@@ -1,5 +1,5 @@
-//! Поведение ScrollPanel в реальном браузере (wasm-bindgen-test): скрытие и размер полос, перетаскивание, клавиатура,
-//! `scroll_top` и снятие слушателей при размонтировании.
+//! ScrollPanel behavior in a real browser (wasm-bindgen-test): hiding and sizing of bars, dragging, keyboard,
+//! `scroll_top` and removal of listeners on unmount.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -16,7 +16,7 @@ fn doc() -> web_sys::Document {
 }
 
 fn host() -> HtmlElement {
-    // Минимум CSS темы, без которого содержимое не прокручивается.
+    // Minimal theme CSS without which the content does not scroll.
     let style = doc().create_element("style").unwrap();
     style.set_text_content(Some(".p-scrollpanel{position:relative}.p-scrollpanel-content-container{height:100%;width:100%;float:left}.p-scrollpanel-content{height:100%;overflow:auto}"));
     doc().head().unwrap().append_child(&style).unwrap();
@@ -26,7 +26,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 async fn sleep(ms: i32) {
@@ -52,7 +52,7 @@ fn mouse(target: &web_sys::EventTarget, kind: &str, y: i32) {
     target.dispatch_event(&MouseEvent::new_with_mouse_event_init_dict(kind, &init).unwrap()).unwrap();
 }
 
-/// Панель 100×100 с содержимым высотой `inner` пикселей.
+/// A 100×100 panel with content `inner` pixels tall.
 fn panel(host: &HtmlElement, inner: u32, panel_ref: ScrollPanelRef) -> impl Drop {
     let pt = ScrollPanelPt { content: Pt::new().style("box-sizing:border-box"), ..Default::default() };
     leptos::mount::mount_to(host.clone(), move || {
@@ -118,13 +118,13 @@ async fn arrow_keys_scroll_by_step_after_delay_and_keyup_cancels() {
     let (y, content) = (q(&host, ".p-scrollpanel-bar-y"), q(&host, ".p-scrollpanel-content"));
     y.focus().unwrap();
     key(&y, "keydown", "ArrowDown");
-    assert_eq!(content.scroll_top(), 0, "прокрутка не мгновенная");
+    assert_eq!(content.scroll_top(), 0, "scrolling is not instant");
     sleep(120).await;
     assert_eq!(content.scroll_top(), 10);
     key(&y, "keydown", "ArrowUp");
     key(&y, "keyup", "ArrowUp");
     sleep(120).await;
-    assert_eq!(content.scroll_top(), 10, "keyup отменил таймер");
+    assert_eq!(content.scroll_top(), 10, "keyup cancelled the timer");
     key(&y, "keydown", "ArrowUp");
     sleep(120).await;
     assert_eq!(content.scroll_top(), 0);
@@ -142,13 +142,13 @@ async fn dragging_the_bar_scrolls_and_mouseup_releases() {
     assert!(doc().body().unwrap().class_name().contains("p-scrollpanel-grabbed"));
     mouse(&doc(), "mousemove", 20);
     sleep(80).await;
-    assert_eq!(content.scroll_top(), 50, "сдвиг 10 при доле 0.2 даёт 50");
+    assert_eq!(content.scroll_top(), 50, "an offset of 10 at ratio 0.2 gives 50");
     mouse(&doc(), "mouseup", 20);
     assert!(!y.class_name().contains("p-scrollpanel-grabbed"));
     assert!(!doc().body().unwrap().class_name().contains("p-scrollpanel-grabbed"));
     mouse(&doc(), "mousemove", 40);
     sleep(80).await;
-    assert_eq!(content.scroll_top(), 50, "после mouseup слушатели документа сняты");
+    assert_eq!(content.scroll_top(), 50, "after mouseup the document listeners are removed");
 }
 
 #[wasm_bindgen_test]
@@ -164,7 +164,7 @@ async fn unmount_releases_grab_and_listeners() {
     assert!(!doc().body().unwrap().class_name().contains("p-scrollpanel-grabbed"));
     mouse(&doc(), "mousemove", 30);
     sleep(80).await;
-    assert_eq!(content.scroll_top(), 0, "слушатель документа снят");
+    assert_eq!(content.scroll_top(), 0, "the document listener is removed");
 }
 
 #[wasm_bindgen_test]

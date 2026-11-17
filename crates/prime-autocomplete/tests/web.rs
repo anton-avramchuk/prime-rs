@@ -1,7 +1,7 @@
-//! Поведение AutoComplete в реальном браузере (wasm-bindgen-test): запрос с задержкой, показ и выбор вариантов, клавиатура,
-//! множественный режим с чипами, кнопка-стрелка, очистка, `force_selection`, группы, клик вне.
+//! AutoComplete behaviour in a real browser (wasm-bindgen-test): delayed query, showing and selecting options, keyboard,
+//! multiple mode with chips, arrow button, clear, `force_selection`, groups, click outside.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели окна и фокус общие на страницу. Стили темы не подключены.
+//! The scenarios run as one sequential test: window listeners and focus are shared across the page. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -27,7 +27,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}: {}", host.outer_html())).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -45,7 +45,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться.
+/// Lets effects apply.
 async fn settle() {
     sleep(60).await;
 }
@@ -77,7 +77,7 @@ fn focused_option(host: &HtmlElement) -> Option<String> {
     host.query_selector("li.p-autocomplete-option.p-focus").unwrap().and_then(|e| e.text_content()).map(|t| t.trim().to_owned())
 }
 
-/// Нажатие клавиши и ожидание реактивных обновлений.
+/// Key press and waiting for reactive updates.
 async fn key(el: &HtmlElement, code: &str, key: &str, alt: bool) {
     let init = KeyboardEventInit::new();
     init.set_code(code);
@@ -129,34 +129,34 @@ async fn typing_queries_and_selects() {
     settle().await;
     input(&host).focus().unwrap();
     type_text(&host, "ap");
-    assert_eq!(value.get_untracked(), "ap", "без force_selection набранный текст — значение");
+    assert_eq!(value.get_untracked(), "ap", "without force_selection the typed text is the value");
     sleep(15).await;
-    assert!(log.lock().unwrap().is_empty(), "запрос ждёт delay");
+    assert!(log.lock().unwrap().is_empty(), "the query waits for delay");
     sleep(120).await;
     assert_eq!(log.lock().unwrap().as_slice(), ["complete:ap"]);
     assert!(has(&host, ".p-autocomplete-overlay") && q(&host, ".p-autocomplete").class_name().contains("p-autocomplete-open"));
-    assert_eq!(option_labels(&host), ["Apple", "Apricot"], "варианты по запросу");
-    assert!(!has(&host, ".p-autocomplete-loader"), "спиннер снят после ответа");
+    assert_eq!(option_labels(&host), ["Apple", "Apricot"], "options by query");
+    assert!(!has(&host, ".p-autocomplete-loader"), "spinner removed after the response");
     assert_eq!(q(&host, "input").get_attribute("aria-expanded").as_deref(), Some("true"));
     assert!(!q(&host, ".p-autocomplete-overlay").style().get_property_value("z-index").unwrap().is_empty());
 
     mouse(&q(&host, "li.p-autocomplete-option:nth-child(2)"), "mouseenter");
     settle().await;
-    assert_eq!(focused_option(&host).as_deref(), Some("Apricot"), "наведение переносит фокус");
+    assert_eq!(focused_option(&host).as_deref(), Some("Apricot"), "hover moves focus");
     q(&host, "li.p-autocomplete-option:nth-child(2)").click();
     settle().await;
     assert_eq!(value.get_untracked(), "Apricot");
     assert_eq!(input(&host).value(), "Apricot");
-    assert!(!has(&host, ".p-autocomplete-overlay"), "выбор закрывает панель");
+    assert!(!has(&host, ".p-autocomplete-overlay"), "selection closes the panel");
     assert_eq!(log.lock().unwrap().as_slice(), ["complete:ap", "select:Apricot", "hide"]);
 
     type_text(&host, "zzz");
     sleep(150).await;
-    assert!(has(&host, "li.p-autocomplete-empty-message"), "пустой результат — сообщение");
+    assert!(has(&host, "li.p-autocomplete-empty-message"), "empty result: message");
     assert!(q(&host, "li.p-autocomplete-empty-message").text_content().unwrap().contains("No results found"));
     type_text(&host, "");
     sleep(60).await;
-    assert!(!has(&host, ".p-autocomplete-overlay"), "очистка поля закрывает панель");
+    assert!(!has(&host, ".p-autocomplete-overlay"), "clearing the field closes the panel");
     host.remove();
 }
 
@@ -185,7 +185,7 @@ async fn keyboard_navigation() {
     assert_eq!(focused_option(&host).as_deref(), Some("Apricot"));
     key(&i, "Enter", "Enter", false).await;
     settle().await;
-    assert_eq!(value.get_untracked(), "Apricot", "Enter выбирает");
+    assert_eq!(value.get_untracked(), "Apricot", "Enter selects");
     assert!(!has(&host, ".p-autocomplete-overlay"));
 
     type_text(&host, "b");
@@ -193,18 +193,18 @@ async fn keyboard_navigation() {
     key(&i, "ArrowDown", "ArrowDown", false).await;
     key(&i, "ArrowUp", "ArrowUp", true).await;
     settle().await;
-    assert_eq!(value.get_untracked(), "Banana", "Alt+↑ выбирает и закрывает");
+    assert_eq!(value.get_untracked(), "Banana", "Alt+Up selects and closes");
     type_text(&host, "av");
     sleep(100).await;
     key(&i, "Escape", "Escape", false).await;
     settle().await;
-    assert!(!has(&host, ".p-autocomplete-overlay"), "Escape закрывает");
+    assert!(!has(&host, ".p-autocomplete-overlay"), "Escape closes");
     type_text(&host, "av");
     sleep(100).await;
     key(&i, "ArrowDown", "ArrowDown", false).await;
     key(&i, "Tab", "Tab", false).await;
     settle().await;
-    assert_eq!(value.get_untracked(), "Avocado", "Tab выбирает сфокусированный");
+    assert_eq!(value.get_untracked(), "Avocado", "Tab selects the focused one");
     host.remove();
 }
 
@@ -219,11 +219,11 @@ async fn dropdown_clear_and_force_selection() {
     settle().await;
     q(&host, ".p-autocomplete-dropdown").click();
     sleep(100).await;
-    assert_eq!(log.lock().unwrap().as_slice(), ["complete:"], "кнопка отправляет пустой запрос");
+    assert_eq!(log.lock().unwrap().as_slice(), ["complete:"], "the button sends an empty query");
     assert_eq!(option_labels(&host).len(), 4);
     q(&host, ".p-autocomplete-dropdown").click();
     settle().await;
-    assert!(!has(&host, ".p-autocomplete-overlay"), "повторный клик закрывает панель");
+    assert!(!has(&host, ".p-autocomplete-overlay"), "a repeated click closes the panel");
 
     q(&host, ".p-autocomplete-dropdown").click();
     sleep(100).await;
@@ -233,18 +233,18 @@ async fn dropdown_clear_and_force_selection() {
     assert!(has(&host, ".p-autocomplete-clear-icon"));
     mouse(&host.query_selector(".p-autocomplete-clear-icon").unwrap().unwrap(), "click");
     settle().await;
-    assert!(value.get_untracked().is_empty() && input(&host).value().is_empty(), "очистка");
+    assert!(value.get_untracked().is_empty() && input(&host).value().is_empty(), "clear");
     assert!(!has(&host, ".p-autocomplete-clear-icon"));
 
-    // force_selection: не совпавший с вариантом ввод очищается по change.
+    // force_selection: input that does not match an option is cleared on change.
     input(&host).focus().unwrap();
     type_text(&host, "zzz");
-    assert!(value.get_untracked().is_empty(), "при force_selection текст значением не становится");
+    assert!(value.get_untracked().is_empty(), "with force_selection the text does not become the value");
     sleep(100).await;
     input(&host).dispatch_event(&web_sys::Event::new("change").unwrap()).unwrap();
     key(&input(&host), "Escape", "Escape", false).await;
     settle().await;
-    assert!(input(&host).value().is_empty(), "несовпавший ввод очищен");
+    assert!(input(&host).value().is_empty(), "the non-matching input is cleared");
     host.remove();
 }
 
@@ -276,26 +276,26 @@ async fn multiple_chips() {
     settle().await;
     assert_eq!(values.get_untracked(), ["Apple"]);
     assert_eq!(count(&host, ".p-autocomplete-chip-item"), 1);
-    assert!(input(&host).value().is_empty(), "после выбора поле очищается");
+    assert!(input(&host).value().is_empty(), "the field is cleared after selection");
     type_text(&host, "ap");
     sleep(100).await;
     q(&host, "li.p-autocomplete-option:nth-child(1)").click();
     settle().await;
-    assert_eq!(values.get_untracked(), ["Apple"], "unique: повтор не добавляется");
+    assert_eq!(values.get_untracked(), ["Apple"], "unique: a duplicate is not added");
     type_text(&host, "ban");
     sleep(100).await;
     q(&host, "li.p-autocomplete-option:nth-child(1)").click();
     settle().await;
     assert_eq!(values.get_untracked(), ["Apple", "Banana"]);
-    // Backspace в пустом поле удаляет последний чип.
+    // Backspace in an empty field removes the last chip.
     input(&host).focus().unwrap();
     key(&input(&host), "Backspace", "Backspace", false).await;
     settle().await;
     assert_eq!(values.get_untracked(), ["Apple"]);
-    // ← на пустом поле переводит на чипы, Backspace удаляет сфокусированный.
+    // Left arrow on an empty field moves to the chips, Backspace removes the focused one.
     key(&input(&host), "ArrowLeft", "ArrowLeft", false).await;
     settle().await;
-    assert!(has(&host, "li.p-autocomplete-chip-item.p-focus"), "чип сфокусирован");
+    assert!(has(&host, "li.p-autocomplete-chip-item.p-focus"), "chip is focused");
     let ul = q(&host, "ul.p-autocomplete-input-multiple");
     key(&ul, "Backspace", "Backspace", false).await;
     settle().await;
@@ -327,10 +327,10 @@ async fn typeahead_off_adds_typed_text() {
     i.focus().unwrap();
     type_text(&host, "one");
     key(&i, "Enter", "Enter", false).await;
-    assert_eq!(values.get_untracked(), ["one"], "Enter добавляет набранное");
+    assert_eq!(values.get_untracked(), ["one"], "Enter adds the typed text");
     type_text(&host, "two");
     key(&i, "Comma", ",", false).await;
-    assert_eq!(values.get_untracked(), ["one", "two"], "разделитель добавляет набранное");
+    assert_eq!(values.get_untracked(), ["one", "two"], "the separator adds the typed text");
     type_text(&host, "three");
     i.blur().unwrap();
     settle().await;
@@ -351,8 +351,8 @@ async fn groups_and_outside_click() {
     settle().await;
     q(&host, ".p-autocomplete-dropdown").click();
     sleep(80).await;
-    assert!(has(&host, ".p-autocomplete-overlay"), "кнопка показывает панель при ответе");
-    assert_eq!(count(&host, "li.p-autocomplete-option-group"), 2, "заголовки групп");
+    assert!(has(&host, ".p-autocomplete-overlay"), "the button shows the panel on response");
+    assert_eq!(count(&host, "li.p-autocomplete-option-group"), 2, "group headers");
     assert_eq!(count(&host, "li.p-autocomplete-option"), 3);
     assert_eq!(q(&host, "li.p-autocomplete-option:nth-of-type(3)").get_attribute("aria-disabled").as_deref(), Some("true"));
     assert_eq!(q(&host, "li.p-autocomplete-option").get_attribute("aria-posinset").as_deref(), Some("1"));
@@ -360,7 +360,7 @@ async fn groups_and_outside_click() {
     let i = input(&host);
     key(&i, "ArrowDown", "ArrowDown", false).await;
     key(&i, "ArrowDown", "ArrowDown", false).await;
-    assert_eq!(focused_option(&host).as_deref(), Some("Kale"), "отключённый и заголовки пропущены");
+    assert_eq!(focused_option(&host).as_deref(), Some("Kale"), "disabled and headers skipped");
     host.remove();
 
     let host = self::host();
@@ -378,7 +378,7 @@ async fn groups_and_outside_click() {
     assert!(has(&host, ".p-autocomplete-overlay"));
     mouse(&doc().body().unwrap().into(), "click");
     settle().await;
-    assert!(!has(&host, ".p-autocomplete-overlay"), "клик вне закрывает");
+    assert!(!has(&host, ".p-autocomplete-overlay"), "click outside closes");
     host.remove();
 }
 

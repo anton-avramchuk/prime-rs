@@ -1,9 +1,9 @@
-//! Чтение `upstream.toml`: закреплённая версия PrimeNG.
+//! Reading `upstream.toml`: the pinned PrimeNG version.
 
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 
-/// Содержимое `upstream.toml`.
+/// Contents of `upstream.toml`.
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct Upstream {
     pub version: String,
@@ -13,17 +13,17 @@ pub struct Upstream {
     pub theme: ThemeConfig,
 }
 
-/// Настройки генерации темы.
+/// Theme generation settings.
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct ThemeConfig {
     pub dark_mode_selector: String,
     pub components: Vec<String>,
-    /// Компоненты, к CSS которых добавляется блок `/* For PrimeNG */` из `<имя>style.ts` (правила, которых нет в `@primeuix/styles`).
+    /// Components whose CSS gets the `/* For PrimeNG */` block from `<name>style.ts` (rules that are not in `@primeuix/styles`).
     #[serde(default)]
     pub primeng_extra: Vec<String>,
 }
 
-/// Версии npm-пакетов `@primeuix/*`.
+/// Versions of the `@primeuix/*` npm packages.
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct Primeuix {
     pub themes: String,
@@ -33,7 +33,7 @@ pub struct Primeuix {
 }
 
 impl Upstream {
-    /// Читает `upstream.toml` из корня репозитория; `PRIMENG_PATH` перекрывает `path`.
+    /// Reads `upstream.toml` from the repository root; `PRIMENG_PATH` overrides `path`.
     pub fn load(root: &Path) -> Result<Self, String> {
         Self::load_with_env(root, std::env::var("PRIMENG_PATH").ok())
     }
@@ -48,7 +48,7 @@ impl Upstream {
         Ok(upstream)
     }
 
-    /// Каталог исходников компонентов PrimeNG.
+    /// PrimeNG component sources directory.
     pub fn src_dir(&self) -> PathBuf {
         self.path.join("packages/primeng/src")
     }

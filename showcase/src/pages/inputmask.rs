@@ -1,5 +1,5 @@
-//! Страница InputMask: демонстрации `basic`, `mask`, `optional`, `slotchar`, `unmask`, `clearicon`, `disabled` и `invalid`
-//! из showcase PrimeNG (`apps/showcase/doc/inputmask`; формы Angular не переносятся).
+//! InputMask page: the `basic`, `mask`, `optional`, `slotchar`, `unmask`, `clearicon`, `disabled` and `invalid` demos
+//! from the PrimeNG showcase (`apps/showcase/doc/inputmask`; Angular forms are not ported).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -54,7 +54,7 @@ fn Clear() -> impl IntoView {
     view! { <InputMask id="clear_mask" mask="(999) 999-9999" value=value show_clear=true style=WIDTH /> }
 }
 
-/// Страница `/inputmask`.
+/// `/inputmask` page.
 #[component]
 pub fn InputMaskPage() -> impl IntoView {
     view! {

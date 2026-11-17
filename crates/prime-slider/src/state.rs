@@ -1,21 +1,21 @@
-//! Чистая логика Slider: проценты, шаг, нормализация, клавиши, координаты указателя, классы и `data-p`
-//! (по `slider.ts` и `sliderstyle.ts` PrimeNG).
+//! Pure Slider logic: percentages, step, normalization, keys, pointer coordinates, classes and `data-p`
+//! (after PrimeNG's `slider.ts` and `sliderstyle.ts`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Ориентация полосы.
+/// Track orientation.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum SliderOrientation {
-    /// Горизонтальная (по умолчанию).
+    /// Horizontal (default).
     #[default]
     Horizontal,
-    /// Вертикальная: значение растёт снизу вверх.
+    /// Vertical: the value grows from bottom to top.
     Vertical,
 }
 
 impl SliderOrientation {
-    /// Строковое значение, как в PrimeNG.
+    /// String value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Horizontal => "horizontal",
@@ -23,22 +23,22 @@ impl SliderOrientation {
         }
     }
 
-    /// Вертикальная ли полоса.
+    /// Whether the track is vertical.
     pub fn is_vertical(self) -> bool {
         self == Self::Vertical
     }
 }
 
-/// Значение Slider: одиночное или диапазон (меньшее первым).
+/// Slider value: single or a range (smaller first).
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SliderValue {
-    /// Одиночное значение.
+    /// Single value.
     Single(f64),
-    /// Диапазон `[меньшее, большее]`.
+    /// Range `[smaller, larger]`.
     Range([f64; 2]),
 }
 
-/// Доля значения в отрезке `min..max`, 0–100 (значения вне отрезка прижимаются к краям; при `min == max` — 0).
+/// Fraction of a value within the `min..max` interval, 0–100 (values outside the interval are clamped to the edges; at `min == max` — 0).
 pub fn percent(value: f64, min: f64, max: f64) -> f64 {
     if max <= min {
         return 0.0;
@@ -52,12 +52,12 @@ pub fn percent(value: f64, min: f64, max: f64) -> f64 {
     }
 }
 
-/// Значение по доле 0–100 (`getValueFromHandle`); доля не ограничивается.
+/// Value by a 0–100 fraction (`getValueFromHandle`); the fraction is not clamped.
 pub fn value_from_percent(percent: f64, min: f64, max: f64) -> f64 {
     (max - min) * (percent / 100.0) + min
 }
 
-/// Число знаков после запятой у `step` (`getDecimalsCount`).
+/// Number of decimal places of `step` (`getDecimalsCount`).
 pub fn decimals(step: Option<f64>) -> usize {
     match step {
         Some(s) if s.is_finite() && s.fract() != 0.0 => format!("{s}").split('.').nth(1).map_or(0, str::len),
@@ -65,7 +65,7 @@ pub fn decimals(step: Option<f64>) -> usize {
     }
 }
 
-/// Нормализация значения (`getNormalizedValue`): округление до знаков `step`, а без дробных знаков — вниз до целого.
+/// Value normalization (`getNormalizedValue`): rounding to the `step` decimals, and without fractional digits — down to an integer.
 pub fn normalize(value: f64, step: Option<f64>) -> f64 {
     match decimals(step) {
         0 => value.floor(),
@@ -76,7 +76,7 @@ pub fn normalize(value: f64, step: Option<f64>) -> f64 {
     }
 }
 
-/// Значение с шагом (`handleStepChange`): сдвиг от прежнего значения на целое число шагов в сторону нового.
+/// Value with a step (`handleStepChange`): shift from the previous value by a whole number of steps toward the new one.
 pub fn step_change(new: f64, old: f64, step: f64) -> f64 {
     let diff = new - old;
     if diff < 0.0 {
@@ -88,23 +88,23 @@ pub fn step_change(new: f64, old: f64, step: f64) -> f64 {
     }
 }
 
-/// Ограничение значения отрезком `min..=max`.
+/// Clamping a value to the `min..=max` interval.
 pub fn clamp(value: f64, min: f64, max: f64) -> f64 {
     value.max(min).min(max)
 }
 
-/// Действие клавиши.
+/// Key action.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum KeyMove {
-    /// Изменить значение на величину.
+    /// Change the value by an amount.
     By(f64),
-    /// Установить `min`.
+    /// Set `min`.
     ToMin,
-    /// Установить `max`.
+    /// Set `max`.
     ToMax,
 }
 
-/// Действие по `KeyboardEvent.code` (`onKeyDown`): стрелки — `step` или 1, страницы — `step` или (10; в диапазоне 1).
+/// Action by `KeyboardEvent.code` (`onKeyDown`): arrows — `step` or 1, pages — `step` or (10; in a range 1).
 pub fn key_move(code: &str, step: Option<f64>, range: bool) -> Option<KeyMove> {
     let arrow = step.unwrap_or(1.0);
     let page = step.unwrap_or(if range { 1.0 } else { 10.0 });
@@ -119,31 +119,31 @@ pub fn key_move(code: &str, step: Option<f64>, range: bool) -> Option<KeyMove> {
     }
 }
 
-/// Доля положения указателя вдоль полосы (`calculateHandleValue`); `start` — левый (верхний) край, `size` — ширина (высота).
+/// Fraction of the pointer position along the track (`calculateHandleValue`); `start` — left (top) edge, `size` — width (height).
 pub fn bar_percent(pointer: f64, start: f64, size: f64, vertical: bool, rtl: bool) -> f64 {
     if vertical || rtl { (start + size - pointer) * 100.0 / size } else { (pointer - start) * 100.0 / size }
 }
 
-/// Доля при касании (`onDrag`): смещение пальца от точки касания в процентах (вниз до целого) плюс стартовая доля.
+/// Fraction on touch (`onDrag`): finger offset from the touch point in percent (rounded down to an integer) plus the starting fraction.
 pub fn touch_percent(pointer: f64, touch_start: f64, size: f64, vertical: bool, start_percent: f64) -> f64 {
     let delta = if vertical { touch_start - pointer } else { pointer - touch_start };
     (delta * 100.0 / size).floor() + start_percent
 }
 
-/// Снимок свойств, влияющих на классы и `data-p` корня.
+/// Snapshot of the properties affecting the root's classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct SliderState {
-    /// Недоступен.
+    /// Disabled.
     pub disabled: bool,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// Ориентация.
+    /// Orientation.
     pub orientation: SliderOrientation,
-    /// Анимация положения (не во время перетаскивания).
+    /// Position animation (not during dragging).
     pub animate: bool,
 }
 
-/// Добавляет классы корня в порядке `sliderstyle.ts`.
+/// Appends the root classes in the order of `sliderstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &SliderState) {
     cn.add("p-slider p-component")
         .add_if(s.disabled, "p-disabled")
@@ -152,7 +152,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &SliderState) {
         .add_if(s.animate, "p-slider-animate");
 }
 
-/// Значение `data-p`: ориентация.
+/// `data-p` value: orientation.
 pub fn data_p(orientation: SliderOrientation) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(orientation.as_str());
@@ -232,11 +232,11 @@ mod tests {
 
     #[test]
     fn pointer_and_touch_percent() {
-        // ширина 200 px, левый край 100
+        // width 200 px, left edge 100
         assert_eq!(bar_percent(200.0, 100.0, 200.0, false, false), 50.0);
         assert_eq!(bar_percent(200.0, 100.0, 200.0, false, true), 50.0);
         assert_eq!(bar_percent(120.0, 100.0, 200.0, false, true), 90.0);
-        // высота 200 px, верхний край 100: ниже — меньше
+        // height 200 px, top edge 100: lower means smaller
         assert_eq!(bar_percent(250.0, 100.0, 200.0, true, false), 25.0);
         assert_eq!(touch_percent(150.0, 100.0, 200.0, false, 10.0), 35.0);
         assert_eq!(touch_percent(151.0, 100.0, 200.0, false, 10.0), 35.0);

@@ -1,5 +1,5 @@
-//! Поведение Tabs в реальном браузере (wasm-bindgen-test): клик, фокус, клавиши, roving `tabindex`, `lazy`, индикатор
-//! и кнопки прокрутки.
+//! Tabs behaviour in a real browser (wasm-bindgen-test): click, focus, keys, roving `tabindex`, `lazy`, indicator
+//! and scroll buttons.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -21,7 +21,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, selector: &str) -> HtmlElement {
-    host.query_selector(selector).unwrap().unwrap_or_else(|| panic!("нет {selector}")).dyn_into().unwrap()
+    host.query_selector(selector).unwrap().unwrap_or_else(|| panic!("no {selector}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, selector: &str) -> bool {
@@ -43,7 +43,7 @@ async fn sleep(ms: i32) {
     let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
 }
 
-/// Нажатие клавиши по `code`; `true`, если действие не отменено.
+/// Key press by `code`; `true` if the action was not cancelled.
 fn press(target: &HtmlElement, code: &str) -> bool {
     let init = KeyboardEventInit::new();
     init.set_bubbles(true);
@@ -124,17 +124,17 @@ async fn arrows_move_focus_skipping_disabled_and_wrapping() {
     let _h = leptos::mount::mount_to(host.clone(), move || four_tabs(false, value));
     leptos::task::tick().await;
     tab(&host, "0").focus().unwrap();
-    assert!(!press(&tab(&host, "0"), "ArrowRight"), "стрелка отменяет действие по умолчанию");
+    assert!(!press(&tab(&host, "0"), "ArrowRight"), "the arrow cancels the default action");
     assert!(focused_id().unwrap().ends_with("_tab_1"));
     press(&tab(&host, "1"), "ArrowRight");
-    assert!(focused_id().unwrap().ends_with("_tab_3"), "отключённая вкладка пропущена");
+    assert!(focused_id().unwrap().ends_with("_tab_3"), "the disabled tab is skipped");
     press(&tab(&host, "3"), "ArrowRight");
-    assert!(focused_id().unwrap().ends_with("_tab_0"), "по кругу к первой");
+    assert!(focused_id().unwrap().ends_with("_tab_0"), "wrapping around to the first");
     press(&tab(&host, "0"), "ArrowLeft");
-    assert!(focused_id().unwrap().ends_with("_tab_3"), "по кругу к последней");
+    assert!(focused_id().unwrap().ends_with("_tab_3"), "wrapping around to the last");
     press(&tab(&host, "3"), "ArrowLeft");
     assert!(focused_id().unwrap().ends_with("_tab_1"));
-    assert_eq!(value.get_untracked().as_deref(), Some("0"), "фокус без select_on_focus не активирует");
+    assert_eq!(value.get_untracked().as_deref(), Some("0"), "focus without select_on_focus does not activate");
 }
 
 #[wasm_bindgen_test]
@@ -157,7 +157,7 @@ async fn enter_space_and_numpad_enter_activate() {
     let _h = leptos::mount::mount_to(host.clone(), move || four_tabs(false, value));
     leptos::task::tick().await;
     for (code, target) in [("Enter", "1"), ("Space", "3"), ("NumpadEnter", "0")] {
-        assert!(!press(&tab(&host, target), code), "{code}: действие по умолчанию отменено");
+        assert!(!press(&tab(&host, target), code), "{code}: default action cancelled");
         leptos::task::tick().await;
         assert_eq!(value.get_untracked().as_deref(), Some(target), "{code}");
     }
@@ -169,7 +169,7 @@ async fn other_keys_pass_through_but_do_not_bubble() {
     let value = RwSignal::new(Some("0".to_owned()));
     let _h = leptos::mount::mount_to(host.clone(), move || four_tabs(false, value));
     leptos::task::tick().await;
-    assert!(press(&tab(&host, "0"), "KeyA"), "необработанная клавиша не отменяется");
+    assert!(press(&tab(&host, "0"), "KeyA"), "an unhandled key is not cancelled");
     assert!(press(&tab(&host, "0"), "ArrowDown"));
 }
 
@@ -184,7 +184,7 @@ async fn select_on_focus_activates() {
     assert_eq!(value.get_untracked().as_deref(), Some("1"));
     press(&tab(&host, "1"), "ArrowRight");
     leptos::task::tick().await;
-    assert_eq!(value.get_untracked().as_deref(), Some("3"), "перенос фокуса активирует следующую доступную");
+    assert_eq!(value.get_untracked().as_deref(), Some("3"), "moving focus activates the next enabled one");
 }
 
 #[wasm_bindgen_test]
@@ -212,7 +212,7 @@ async fn lazy_content_appears_on_first_activation_and_stays() {
     assert!(has(&host, ".c1"));
     tab(&host, "0").click();
     leptos::task::tick().await;
-    assert!(has(&host, ".c1") && panel(&host, "1").has_attribute("hidden"), "после деактивации содержимое остаётся");
+    assert!(has(&host, ".c1") && panel(&host, "1").has_attribute("hidden"), "the content remains after deactivation");
 }
 
 #[wasm_bindgen_test]
@@ -265,19 +265,19 @@ async fn navigation_buttons_appear_and_scroll() {
     });
     leptos::task::tick().await;
     sleep(120).await;
-    // без темы список не прокручивается сам: даём содержимому переполнение вручную
+    // without a theme the list does not scroll by itself: give the content overflow manually
     let content = q(&host, ".p-tablist-content");
     content.style().set_property("overflow-x", "auto").unwrap();
     q(&host, ".p-tablist-tab-list").style().set_property("display", "flex").unwrap();
     content.dispatch_event(&web_sys::Event::new("scroll").unwrap()).unwrap();
     leptos::task::tick().await;
-    assert!(has(&host, ".p-tablist-next-button"), "справа есть скрытая часть");
+    assert!(has(&host, ".p-tablist-next-button"), "there is a hidden part on the right");
     assert!(!has(&host, ".p-tablist-prev-button"));
     assert_eq!(q(&host, ".p-tablist-next-button").get_attribute("aria-label").as_deref(), Some("Next"));
     q(&host, ".p-tablist-next-button").click();
     sleep(50).await;
     leptos::task::tick().await;
-    assert!(content.scroll_left() > 0, "клик прокрутил содержимое");
+    assert!(content.scroll_left() > 0, "the click scrolled the content");
     assert!(has(&host, ".p-tablist-prev-button"));
     assert_eq!(q(&host, ".p-tablist-prev-button").get_attribute("aria-label").as_deref(), Some("Previous"));
     q(&host, ".p-tablist-prev-button").click();

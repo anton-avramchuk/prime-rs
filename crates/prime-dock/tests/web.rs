@@ -1,5 +1,5 @@
-//! Поведение Dock в реальном браузере (wasm-bindgen-test): клик и команда, отключённые пункты, фокус и клавиши во всех
-//! положениях, `Home`/`End`/`Enter`/`Space`, события фокуса, мобильный режим по `matchMedia`.
+//! Dock behaviour in a real browser (wasm-bindgen-test): click and command, disabled items, focus and keys in all
+//! positions, `Home`/`End`/`Enter`/`Space`, focus events, mobile mode via `matchMedia`.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -24,7 +24,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn list(host: &HtmlElement) -> HtmlElement {
@@ -32,15 +32,15 @@ fn list(host: &HtmlElement) -> HtmlElement {
 }
 
 fn item(host: &HtmlElement, i: u32) -> HtmlElement {
-    host.query_selector_all(".p-dock-item").unwrap().item(i).unwrap_or_else(|| panic!("нет пункта {i}")).dyn_into().unwrap()
+    host.query_selector_all(".p-dock-item").unwrap().item(i).unwrap_or_else(|| panic!("no item {i}")).dyn_into().unwrap()
 }
 
-/// Подпись пункта под фокусом.
+/// Label of the item under focus.
 fn focused(host: &HtmlElement) -> Option<String> {
     host.query_selector(".p-dock-item.p-focus").unwrap().and_then(|e| e.get_attribute("aria-label"))
 }
 
-/// Нажатие клавиши на списке; `false`, если действие по умолчанию отменено.
+/// Presses a key on the list; `false` if the default action was cancelled.
 fn press(host: &HtmlElement, code: &str) -> bool {
     let init = KeyboardEventInit::new();
     init.set_code(code);
@@ -117,15 +117,15 @@ async fn horizontal_arrows_skip_disabled_items_and_stop_at_the_edges() {
     let _h = mount!(host, log,);
     leptos::task::tick().await;
     list(&host).focus().unwrap();
-    assert!(!press(&host, "ArrowRight"), "действие по умолчанию отменено");
+    assert!(!press(&host, "ArrowRight"), "default action cancelled");
     leptos::task::tick().await;
-    assert_eq!(focused(&host).as_deref(), Some("C"), "B отключён");
+    assert_eq!(focused(&host).as_deref(), Some("C"), "B is disabled");
     press(&host, "ArrowRight");
     leptos::task::tick().await;
     assert_eq!(focused(&host).as_deref(), Some("D"));
     press(&host, "ArrowRight");
     leptos::task::tick().await;
-    assert_eq!(focused(&host).as_deref(), Some("D"), "на границе остаётся");
+    assert_eq!(focused(&host).as_deref(), Some("D"), "stays at the edge");
     press(&host, "ArrowLeft");
     press(&host, "ArrowLeft");
     leptos::task::tick().await;
@@ -133,7 +133,7 @@ async fn horizontal_arrows_skip_disabled_items_and_stop_at_the_edges() {
     press(&host, "ArrowLeft");
     leptos::task::tick().await;
     assert_eq!(focused(&host).as_deref(), Some("A"));
-    // поперечные стрелки перехватываются без действия
+    // cross-axis arrows are intercepted without an action
     assert!(!press(&host, "ArrowDown"));
     leptos::task::tick().await;
     assert_eq!(focused(&host).as_deref(), Some("A"));
@@ -155,7 +155,7 @@ async fn vertical_docks_use_up_and_down() {
         assert_eq!(focused(&host).as_deref(), Some("A"));
         press(&host, "ArrowRight");
         leptos::task::tick().await;
-        assert_eq!(focused(&host).as_deref(), Some("A"), "поперечная стрелка ничего не делает");
+        assert_eq!(focused(&host).as_deref(), Some("A"), "a cross-axis arrow does nothing");
         host.remove();
     }
 }
@@ -185,7 +185,7 @@ async fn unhandled_keys_are_not_prevented() {
     let _h = mount!(host, log,);
     leptos::task::tick().await;
     list(&host).focus().unwrap();
-    assert!(press(&host, "Tab"), "Tab не перехватывается");
+    assert!(press(&host, "Tab"), "Tab is not intercepted");
     assert!(press(&host, "KeyA"));
     host.remove();
 }
@@ -195,7 +195,7 @@ async fn mobile_class_follows_the_media_query() {
     let (host, log) = (host(), Log::default());
     let _wide = mount!(host, log, breakpoint = "100000px");
     leptos::task::tick().await;
-    assert!(q(&host, ".p-dock").class_name().contains("p-dock-mobile"), "окно уже предела — мобильный режим");
+    assert!(q(&host, ".p-dock").class_name().contains("p-dock-mobile"), "the window is already at the breakpoint — mobile mode");
     host.remove();
     let (host, log) = (self::host(), Log::default());
     let _narrow = mount!(host, log, breakpoint = "1px");

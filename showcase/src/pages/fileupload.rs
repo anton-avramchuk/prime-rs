@@ -1,6 +1,6 @@
-//! Страница FileUpload: демонстрации `basic`, `advanced`, `auto` и `custom` из showcase PrimeNG
-//! (`apps/showcase/doc/fileupload`; формы Angular и шаблоны не переносятся).
-//! Сервера загрузки у showcase нет: запрос на `/api/upload` получает ошибку, что видно по строке состояния.
+//! FileUpload page: demos `basic`, `advanced`, `auto` and `custom` from the PrimeNG showcase
+//! (`apps/showcase/doc/fileupload`; Angular forms and templates are not ported).
+//! The showcase has no upload server: a request to `/api/upload` gets an error, visible in the status line.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -95,7 +95,7 @@ fn Custom() -> impl IntoView {
     }
 }
 
-/// Страница `/fileupload`.
+/// Page `/fileupload`.
 #[component]
 pub fn FileUploadPage() -> impl IntoView {
     view! {

@@ -1,11 +1,11 @@
-//! ToggleSwitch — порт `p-toggleswitch` из PrimeNG 21.1.10.
+//! ToggleSwitch — port of `p-toggleswitch` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-toggleswitch` (вместо хоста `<p-toggleswitch>`) со `style="position: relative"`,
-//! внутри `input.p-toggleswitch-input[role=switch]` и `div.p-toggleswitch-slider` с `div.p-toggleswitch-handle`.
+//! Markup and classes as in PrimeNG: root `div.p-toggleswitch` (instead of the host `<p-toggleswitch>`) with `style="position: relative"`,
+//! inside `input.p-toggleswitch-input[role=switch]` and `div.p-toggleswitch-slider` with `div.p-toggleswitch-handle`.
 //!
-//! Состояние — двусторонний сигнал `checked: RwSignal<bool>`; клик по любой части корня переключает его и вызывает `on_change`.
-//! Без `checked` переключатель неконтролируемый: начальное состояние из `default_checked`, дальше его хранит DOM, а классы корня
-//! не отслеживаются.
+//! The state is a two-way signal `checked: RwSignal<bool>`; a click on any part of the root toggles it and calls `on_change`.
+//! Without `checked` the switch is uncontrolled: the initial state comes from `default_checked`, after that the DOM keeps it, and the root classes
+//! are not tracked.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -28,85 +28,85 @@ use std::sync::Arc;
 
 pub use state::{ToggleSwitchState, data_p, write_classes};
 
-/// Событие изменения: новое состояние и исходное событие браузера.
+/// Change event: the new state and the original browser event.
 #[derive(Clone, Debug)]
 pub struct ToggleSwitchChange {
-    /// Новое состояние.
+    /// New state.
     pub checked: bool,
-    /// Исходное событие `click`.
+    /// Original `click` event.
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей ToggleSwitch.
+/// Pass-through for the parts of ToggleSwitch.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ToggleSwitchPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Нативный `<input>`.
+    /// Native `<input>`.
     pub input: Pt,
-    /// Дорожка (`div.p-toggleswitch-slider`).
+    /// Track (`div.p-toggleswitch-slider`).
     pub slider: Pt,
-    /// Ручка (`div.p-toggleswitch-handle`).
+    /// Handle (`div.p-toggleswitch-handle`).
     pub handle: Pt,
 }
 
-/// Переключатель булева значения.
+/// Boolean value switch.
 ///
-/// Каждое свойство принимает значение или сигнал; `checked` — двусторонний сигнал.
+/// Each property accepts a value or a signal; `checked` is a two-way signal.
 #[component]
 pub fn ToggleSwitch(
-    /// Двусторонний сигнал состояния.
+    /// Two-way state signal.
     #[prop(optional)]
     checked: Option<RwSignal<bool>>,
-    /// Начальное состояние неконтролируемого переключателя.
+    /// Initial state of an uncontrolled switch.
     #[prop(optional)]
     default_checked: bool,
-    /// Атрибут `id` у `<input>`.
+    /// `id` attribute of `<input>`.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Атрибут `name`.
+    /// `name` attribute.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Атрибут `tabindex`.
+    /// `tabindex` attribute.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Недоступен.
+    /// Unavailable.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Только для чтения.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Обязателен.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Встроенный стиль корня (после `position: relative`).
+    /// Inline style of the root (after `position: relative`).
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Содержимое ручки; получает текущее состояние.
+    /// Handle content; receives the current state.
     #[prop(optional, into)]
     handle_template: Option<Callback<bool, AnyView>>,
-    /// Вызывается после переключения пользователем.
+    /// Called after the user toggles.
     #[prop(optional, into)]
     on_change: Option<Callback<ToggleSwitchChange>>,
-    /// Вызывается при получении фокуса.
+    /// Called when focus is received.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса.
+    /// Called when focus is lost.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<ToggleSwitchPt>,
 ) -> impl IntoView {
@@ -137,7 +137,7 @@ pub fn ToggleSwitch(
         let props = props.clone();
         move |e: web_sys::MouseEvent| {
             let Some(input) = input_ref.get() else { return };
-            // Клик по самому `<input>` переключил его нативно ещё до обработчика корня; клик по слайдеру нет.
+            // A click on the `<input>` itself has already toggled it natively, before the root handler; a click on the slider has not.
             let via_input = e.target().is_some_and(|t| t.is_instance_of::<web_sys::HtmlInputElement>());
             let before = match props.checked {
                 Some(sig) => sig.get_untracked(),
@@ -258,7 +258,7 @@ pub fn ToggleSwitch(
     }
 }
 
-/// Разметка ToggleSwitch: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// ToggleSwitch markup: one for the static and reactive branches (only the attribute expressions differ).
 macro_rules! switch_markup {
     (
         $root_class:expr, $root_style:expr, $checked_attr:expr, $disabled_attr:expr, $data:expr, $id:expr, $name:expr, $tabindex:expr,
@@ -308,7 +308,7 @@ macro_rules! switch_markup {
 }
 use switch_markup;
 
-/// Замыкание над свойствами экземпляра: клоны `Arc` и указатель на функцию без захвата.
+/// Closure over the instance properties: `Arc` clones and a function pointer without capture.
 fn rx<T>(
     props: &Arc<Props>,
     pt: &Arc<ToggleSwitchPt>,
@@ -362,7 +362,7 @@ fn handle_of(props: &Props, checked: bool) -> Option<AnyView> {
     props.handle_template.map(|template| template.run(checked))
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     checked: Option<RwSignal<bool>>,
     default_checked: bool,

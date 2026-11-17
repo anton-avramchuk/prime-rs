@@ -1,6 +1,6 @@
 [package]
 name = "prime-colorpicker"
-description = "prime-rs: компонент ColorPicker (порт PrimeNG)"
+description = "prime-rs: ColorPicker component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -19,7 +19,7 @@ prime-dom = { workspace = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "KeyboardEvent", "MouseEvent", "TouchEvent", "TouchList", "Touch", "HtmlElement", "Element", "Node", "Window", "Document", "CssStyleDeclaration", "DomRect", "Navigator"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

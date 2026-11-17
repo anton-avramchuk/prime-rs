@@ -2,33 +2,33 @@
 
 ## Why
 
-Волна 2 начинается с набора крошечных обёрток форм — `ButtonGroup`, `Fluid`, `IconField` с `InputIcon`, `FloatLabel`, `IftaLabel`. Каждая в PrimeNG занимает 30–60 строк (контейнер с классами и слотом), но без них нельзя собрать типичную форму: значок в поле, плавающая метка, группа кнопок, «растянуть всё». От них же зависят демонстрации, которые я пропускал в InputText, InputNumber и Select (`floatlabel`, `iftalabel`), а Select уже использует разметку `p-iconfield` для поля поиска.
+Wave 2 starts with a set of tiny form wrappers — `ButtonGroup`, `Fluid`, `IconField` with `InputIcon`, `FloatLabel`, `IftaLabel`. Each takes 30–60 lines in PrimeNG (a container with classes and a slot), but without them a typical form cannot be assembled: an icon in a field, a floating label, a button group, "stretch everything". The demos that were skipped in InputText, InputNumber and Select (`floatlabel`, `iftalabel`) also depend on them, and Select already uses the `p-iconfield` markup for the search field.
 
 ## What Changes
 
-- Пять новых крейтов, по одному на обёртку: `prime-buttongroup` (`ButtonGroup`), `prime-fluid` (`Fluid`), `prime-iconfield` (`IconField` и `InputIcon`, как `InputGroup` и `InputGroupAddon` в одном крейте), `prime-floatlabel` (`FloatLabel`), `prime-iftalabel` (`IftaLabel`). У всех: дочернее содержимое, `style`, `style_class`, `pt` с частью `root`.
+- Five new crates, one per wrapper: `prime-buttongroup` (`ButtonGroup`), `prime-fluid` (`Fluid`), `prime-iconfield` (`IconField` and `InputIcon`, like `InputGroup` and `InputGroupAddon` in one crate), `prime-floatlabel` (`FloatLabel`), `prime-iftalabel` (`IftaLabel`). All have: child content, `style`, `style_class`, `pt` with a `root` part.
   - `ButtonGroup` — `<span class="p-buttongroup p-component" role="group">`.
-  - `IconField` — `<span class="p-iconfield p-iconfield-left|right">` (`icon_position`, по умолчанию слева), `InputIcon` — `<span class="p-inputicon">` с иконкой внутри.
-  - `FloatLabel` — `<span class="p-floatlabel p-floatlabel-over|on|in">` (`variant`, по умолчанию `Over`), `IftaLabel` — `<span class="p-iftalabel">`.
-  - `Fluid` — `<div class="p-fluid">`, который задаёт контекст «растянуть вложенные поля».
-- Наследование `fluid` через контекст: в `prime-core` появляется `FluidContext` (`provide_fluid`, `in_fluid`, `resolve_fluid`); `Button`, `InputText`, `Textarea`, `InputNumber` и `Select` становятся потребителями — их свойство `fluid` меняется с `Prop<bool>` на `OptProp<bool>`: явное значение (в том числе `false`) главнее контекста, а без него компонент внутри `Fluid` растягивается, как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG. Вызовы вида `fluid=true` остаются прежними.
-- CSS темы `buttongroup`, `floatlabel`, `iftalabel` (`iconfield` уже подключён); у `fluid` стилей в PrimeNG нет.
-- Страницы showcase `/buttongroup` (демонстрации из `button/buttongroup-doc.ts`), `/fluid`, `/iconfield` (`basic`, `sizes`, `template`, `floatlabel`, `iftalabel`), `/floatlabel` (`basic`, `variants`, `invalid`), `/iftalabel` (`basic`, `invalid`); демонстрации `floatlabel` и `iftalabel`, пропущенные ранее, добавляются на страницы InputText, InputNumber, Select и Textarea; e2e, бенчмарки и бюджеты для пяти крейтов, `docs/field-wrappers.md`.
-- **Не входит:** интеграция с Angular Forms (`ng-invalid`, правила `:has(.ng-invalid.ng-dirty)` в блоках `/* For PrimeNG */` — они не применимы, `primeng_extra` не меняется); правила `.p-buttongroup p-button …` из блока `/* For PrimeNG */` у ButtonGroup (в PrimeNG они нужны хост-элементу `<p-button>`, наш `Button` рисует `<button class="p-button">` сам, и базовый CSS темы его уже покрывает); `hostName`; поддержка `fluid` в `ToggleButton` и `SelectButton` (у них в PrimeNG нет наследования от `Fluid`).
+    - `IconField` — `<span class="p-iconfield p-iconfield-left|right">` (`icon_position`, left by default), `InputIcon` — `<span class="p-inputicon">` with an icon inside.
+    - `FloatLabel` — `<span class="p-floatlabel p-floatlabel-over|on|in">` (`variant`, `Over` by default), `IftaLabel` — `<span class="p-iftalabel">`.
+    - `Fluid` — `<div class="p-fluid">`, which sets the "stretch nested fields" context.
+- `fluid` inheritance via context: `prime-core` gets `FluidContext` (`provide_fluid`, `in_fluid`, `resolve_fluid`); `Button`, `InputText`, `Textarea`, `InputNumber` and `Select` become consumers — their `fluid` property changes from `Prop<bool>` to `OptProp<bool>`: an explicit value (including `false`) takes precedence over the context, and without it a component inside `Fluid` stretches, like `hasFluid = fluid() ?? !!pcFluid` in PrimeNG. Calls like `fluid=true` stay the same.
+- Theme CSS `buttongroup`, `floatlabel`, `iftalabel` (`iconfield` is already attached); `fluid` has no styles in PrimeNG.
+- Showcase pages `/buttongroup` (demos from `button/buttongroup-doc.ts`), `/fluid`, `/iconfield` (`basic`, `sizes`, `template`, `floatlabel`, `iftalabel`), `/floatlabel` (`basic`, `variants`, `invalid`), `/iftalabel` (`basic`, `invalid`); the `floatlabel` and `iftalabel` demos skipped earlier are added to the InputText, InputNumber, Select and Textarea pages; e2e, benchmarks and budgets for the five crates, `docs/field-wrappers.md`.
+- **Out of scope:** Angular Forms integration (`ng-invalid`, `:has(.ng-invalid.ng-dirty)` rules in the `/* For PrimeNG */` blocks — they do not apply, `primeng_extra` does not change); the `.p-buttongroup p-button …` rules from the ButtonGroup `/* For PrimeNG */` block (in PrimeNG they are needed by the `<p-button>` host element, our `Button` renders `<button class="p-button">` itself, and the base theme CSS already covers it); `hostName`; `fluid` support in `ToggleButton` and `SelectButton` (in PrimeNG they do not inherit from `Fluid`).
 
 ## Capabilities
 
 ### New Capabilities
-- `buttongroup`: группа слитных кнопок.
-- `fluid`: контекст растягивания вложенных полей и кнопок.
-- `iconfield`: поле со значком внутри (`IconField` и `InputIcon`).
-- `floatlabel`: плавающая метка трёх вариантов.
-- `iftalabel`: метка над введённым значением.
+- `buttongroup`: a group of joined buttons.
+- `fluid`: a context for stretching nested fields and buttons.
+- `iconfield`: a field with an icon inside (`IconField` and `InputIcon`).
+- `floatlabel`: a floating label of three variants.
+- `iftalabel`: a label above the entered value.
 
 ### Modified Capabilities
-<!-- Поведение существующих компонентов расширяется требованием из `fluid` (наследование от контекста); их собственные требования остаются в силе, поэтому дельты не нужны. -->
+<!-- The behavior of existing components is extended by the requirement from `fluid` (inheritance from the context); their own requirements remain in force, so no deltas are needed. -->
 
 ## Impact
 
-- Новые крейты `crates/prime-buttongroup`, `prime-fluid`, `prime-iconfield`, `prime-floatlabel`, `prime-iftalabel` (`publish = false`); зависимости `prime-core`.
-- Изменяются `prime-core` (`fluid`), `prime-button`, `prime-inputtext`, `prime-textarea`, `prime-inputnumber`, `prime-select` (тип и разрешение `fluid`), `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`.
+- New crates `crates/prime-buttongroup`, `prime-fluid`, `prime-iconfield`, `prime-floatlabel`, `prime-iftalabel` (`publish = false`); dependencies `prime-core`.
+- Changed: `prime-core` (`fluid`), `prime-button`, `prime-inputtext`, `prime-textarea`, `prime-inputnumber`, `prime-select` (the type and resolution of `fluid`), workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`.

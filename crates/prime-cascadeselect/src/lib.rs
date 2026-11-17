@@ -1,8 +1,8 @@
-//! CascadeSelect — порт `p-cascadeselect` из PrimeNG 21.1.10.
+//! CascadeSelect — port of `p-cascadeselect` from PrimeNG 21.1.10.
 //!
-//! Поле выбора значения из вложенной структуры: панель с корневым списком, из которого вбок раскрываются списки
-//! вложенных групп. Варианты — [`CascadeOption`] (лист со значением либо группа с `children`), значение —
-//! двусторонний сигнал `RwSignal<Option<String>>` со значением выбранного листа.
+//! A field for picking a value from a nested structure: a panel with a root list, from which lists of
+//! nested groups unfold sideways. Options are [`CascadeOption`] (a leaf with a value or a group with `children`), the value is a
+//! two-way signal `RwSignal<Option<String>>` holding the value of the selected leaf.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -40,57 +40,57 @@ use prime_dom::dom::{AlignMode, align_overlay};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
-/// Pass-through частей [`CascadeSelect`].
+/// Pass-through parts of [`CascadeSelect`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CascadeSelectPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Контейнер скрытого поля.
+    /// Hidden input container.
     pub hidden_input_wrapper: Pt,
-    /// Скрытое поле.
+    /// Hidden input.
     pub hidden_input: Pt,
-    /// Метка.
+    /// Label.
     pub label: Pt,
-    /// Значок очистки.
+    /// Clear icon.
     pub clear_icon: Pt,
-    /// Кнопка раскрытия.
+    /// Dropdown button.
     pub dropdown: Pt,
-    /// Стрелка кнопки.
+    /// Button arrow.
     pub dropdown_icon: Pt,
-    /// Значок загрузки.
+    /// Loading icon.
     pub loading_icon: Pt,
-    /// Панель.
+    /// Panel.
     pub overlay: Pt,
-    /// Контейнер списка.
+    /// List container.
     pub list_container: Pt,
-    /// Корневой список.
+    /// Root list.
     pub list: Pt,
-    /// Вариант `li`.
+    /// Option `li`.
     pub option: Pt,
-    /// Содержимое варианта.
+    /// Option content.
     pub option_content: Pt,
-    /// Текст варианта.
+    /// Option text.
     pub option_text: Pt,
-    /// Значок группы.
+    /// Group icon.
     pub group_icon: Pt,
-    /// Вложенный список.
+    /// Nested list.
     pub option_list: Pt,
 }
 
-/// Контекст представления `option`.
+/// Context of the `option` view.
 #[derive(Clone, Debug)]
 pub struct CascadeOptionContext {
-    /// Подпись.
+    /// Label.
     pub label: String,
-    /// Значение (подпись, если не задано).
+    /// Value (the label if not set).
     pub value: String,
-    /// Уровень вложенности (корневые — `0`).
+    /// Nesting level (root options are `0`).
     pub level: usize,
-    /// Вариант — группа.
+    /// The option is a group.
     pub group: bool,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared between handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: String,
@@ -147,14 +147,14 @@ impl Core {
         self.disabled.get_untracked() || self.loading.get_untracked()
     }
 
-    /// `show()`: открывает панель, раскрывает путь к выбранному значению.
+    /// `show()`: opens the panel, expands the path to the selected value.
     fn show(&self) {
         let (value, auto) = (self.value.get_untracked(), self.auto_option_focus.get_untracked());
         self.update(|m, st| m.show(st, value.as_deref(), auto));
         self.open.set(true);
     }
 
-    /// `hide()`: закрывает панель и сбрасывает путь и фокус.
+    /// `hide()`: closes the panel and resets the path and focus.
     fn hide(&self, focus: bool) {
         self.open.try_set(false);
         self.clicked.try_set_value(false);
@@ -187,7 +187,7 @@ impl Core {
         }
     }
 
-    /// Клик по корню: открывает или закрывает панель, кроме кликов внутри панели.
+    /// Click on the root: opens or closes the panel, except clicks inside the panel.
     fn root_click(&self, e: &web_sys::MouseEvent) {
         if self.blocked() {
             return;
@@ -210,7 +210,7 @@ impl Core {
         self.clicked.set_value(true);
     }
 
-    /// Клик по варианту.
+    /// Click on an option.
     fn option_click(&self, key: &str) {
         let Some(node) = self.tree(|m| m.node(key).cloned()) else { return };
         if !node.valid {
@@ -257,7 +257,7 @@ impl Core {
         }
     }
 
-    /// Печатаемый символ: поиск по началу подписи; строка поиска сбрасывается через 500 мс.
+    /// Printable character: search by label prefix; the search string resets after 500 ms.
     fn type_char(&self, ch: &str) {
         self.search.update_value(|s| s.push_str(ch));
         let text = self.search.get_value();
@@ -396,7 +396,7 @@ impl Core {
         self.clicked.set_value(false);
     }
 
-    /// Панель только что открылась: z-index, положение, слушатели окна, `on_show`.
+    /// The panel has just opened: z-index, position, window listeners, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         if let (Some(overlay), Some(root)) = (self.overlay_ref.get_untracked(), self.root_ref.get_untracked()) {
@@ -429,7 +429,7 @@ impl Core {
         }
     }
 
-    /// Панель только что закрылась: слушатели и z-index освобождаются, `on_hide`.
+    /// The panel has just closed: listeners and z-index are released, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -448,7 +448,7 @@ impl Core {
     }
 }
 
-/// Всё, что нужно для вывода списков.
+/// Everything needed to render the lists.
 #[derive(Clone)]
 struct Ctx {
     core: Arc<Core>,
@@ -457,105 +457,105 @@ struct Ctx {
     group_icon: Option<ViewFn>,
 }
 
-/// Поле выбора значения из каскада вложенных списков.
+/// A field for picking a value from a cascade of nested lists.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn CascadeSelect(
-    /// Варианты.
+    /// Options.
     #[prop(optional, into)]
     options: Prop<Vec<CascadeOption>>,
-    /// Значение выбранного листа (двусторонний сигнал).
+    /// Value of the selected leaf (two-way signal).
     #[prop(optional)]
     value: Option<RwSignal<Option<String>>>,
-    /// Подсказка пустого поля.
+    /// Placeholder of the empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Показывать значок очистки.
+    /// Show the clear icon.
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-    /// Недоступно.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Идёт загрузка.
+    /// Loading in progress.
     #[prop(optional, into)]
     loading: Prop<bool>,
-    /// Вариант оформления.
+    /// Style variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину.
+    /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Ширина окна, до которой включён мобильный режим (по умолчанию `960px`).
+    /// Window width up to which mobile mode is on (`960px` by default).
     #[prop(optional, into)]
     breakpoint: OptProp<String>,
-    /// Раскрывать группы при наведении и переносе фокуса клавишами.
+    /// Expand groups on hover and when focus moves via keys.
     #[prop(optional, default = Prop::Static(true), into)]
     focus_on_hover: Prop<bool>,
-    /// Фокус на первый вариант при открытии.
+    /// Focus the first option on open.
     #[prop(optional, into)]
     auto_option_focus: Prop<bool>,
-    /// Атрибут `id`.
+    /// `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `id` скрытого поля.
+    /// `id` attribute of the hidden input.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Порядок обхода Tab.
+    /// Tab order.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Дополнительный класс панели.
+    /// Extra class of the panel.
     #[prop(optional, into)]
     panel_style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<CascadeSelectPt>,
-    /// Своё представление выбранного (вместо метки): подпись выбранного листа.
+    /// Custom view of the selected value (instead of the label): the label of the selected leaf.
     #[prop(optional)]
     value_view: Option<Callback<Option<String>, AnyView>>,
-    /// Своё содержимое варианта.
+    /// Custom option content.
     #[prop(optional)]
     option: Option<Callback<CascadeOptionContext, AnyView>>,
-    /// Свой значок группы.
+    /// Custom group icon.
     #[prop(optional, into)]
     group_icon: Option<ViewFn>,
-    /// Значение изменено.
+    /// Value changed.
     #[prop(optional)]
     on_change: Option<Callback<Option<String>>>,
-    /// Группа раскрыта кликом (значение — значение группы, т. е. её подпись).
+    /// Group expanded by click (the value is the group value, i.e. its label).
     #[prop(optional)]
     on_group_change: Option<Callback<String>>,
-    /// Панель показана.
+    /// Panel shown.
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-    /// Панель скрыта.
+    /// Panel hidden.
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
-    /// Значение очищено.
+    /// Value cleared.
     #[prop(optional)]
     on_clear: Option<Callback<()>>,
-    /// Скрытое поле получило фокус.
+    /// Hidden input gained focus.
     #[prop(optional)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Скрытое поле потеряло фокус.
+    /// Hidden input lost focus.
     #[prop(optional)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
 ) -> impl IntoView {
@@ -802,7 +802,7 @@ pub fn CascadeSelect(
     }
 }
 
-/// Панель с корневым списком.
+/// Panel with the root list.
 fn panel_view(ctx: &Ctx, extra: &OptProp<String>) -> impl IntoView + use<> {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
     let class = {
@@ -814,7 +814,7 @@ fn panel_view(ctx: &Ctx, extra: &OptProp<String>) -> impl IntoView + use<> {
             pt.overlay.merge_class(&cn.finish_cow()).into_owned()
         }
     };
-    // В PrimeNG положение задаёт обёртка `p-overlay`; у нас панель внутри корня, поэтому позиционирование — встроенным стилем.
+    // In PrimeNG the position is set by the `p-overlay` wrapper; here the panel is inside the root, so positioning is via an inline style.
     let overlay_style = pt.overlay.merge_style("position: absolute; top: 0; left: 0");
     let (container_class, container_attrs, overlay_attrs) =
         (pt.list_container.merge_class("p-cascadeselect-list-container").into_owned(), pt.list_container.attrs(), pt.overlay.attrs());
@@ -834,19 +834,19 @@ fn panel_view(ctx: &Ctx, extra: &OptProp<String>) -> impl IntoView + use<> {
     }
 }
 
-/// Варианты одного списка (дети узла `parent`).
+/// Options of one list (children of the `parent` node).
 fn level_view(ctx: &Ctx, parent: &str) -> AnyView {
     let nodes: Vec<Node> = ctx.core.nodes.with_untracked(|n| n.iter().filter(|x| x.parent_key == parent).cloned().collect());
     nodes.iter().map(|n| option_view(ctx, n)).collect_view().into_any()
 }
 
-#[allow(clippy::clone_on_copy)] // замыкание над `Memo` — `Copy`, `clone()` оставлен для единообразия с остальными замыканиями
+#[allow(clippy::clone_on_copy)] // a closure over `Memo` is `Copy`, `clone()` is kept for consistency with the other closures
 fn option_view(ctx: &Ctx, node: &Node) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
     let key = node.key.clone();
     let id = format!("{}_{key}", core.id);
     let state = core.state;
-    // Memo: вложенный список перестраивается только при смене флага этого варианта, а не при любом изменении состояния.
+    // Memo: the nested list is rebuilt only when this option flag changes, not on any state change.
     let is_active = {
         let key = key.clone();
         let memo = Memo::new(move |_| state.with(|s| s.active.contains(&key)));
@@ -946,7 +946,7 @@ fn option_view(ctx: &Ctx, node: &Node) -> AnyView {
     .into_any()
 }
 
-/// Если вложенный список выходит за правый край окна, он раскрывается влево (аналог `position()` PrimeNG).
+/// If a nested list goes beyond the right window edge, it opens to the left (analogue of PrimeNG `position()`).
 #[cfg(target_arch = "wasm32")]
 fn flip_if_clipped(ul: &web_sys::HtmlUListElement) {
     let el: &web_sys::HtmlElement = ul.as_ref();
@@ -961,12 +961,12 @@ fn flip_if_clipped(ul: &web_sys::HtmlUListElement) {
 
 #[cfg(target_arch = "wasm32")]
 mod client {
-    //! Мобильный режим: `matchMedia("(max-width: <breakpoint>)")`.
+    //! Mobile mode: `matchMedia("(max-width: <breakpoint>)")`.
 
     use leptos::prelude::*;
     use leptos::wasm_bindgen::{JsCast, closure::Closure};
 
-    /// Ведёт `mobile` по медиазапросу, вызывает `on_change` при смене и снимает слушатель при размонтировании.
+    /// Drives `mobile` from the media query, calls `on_change` on change and removes the listener on unmount.
     pub fn bind_media(breakpoint: String, mobile: RwSignal<bool>, on_change: impl Fn() + 'static) {
         let Some(window) = web_sys::window() else { return };
         let Some(query) = window.match_media(&format!("(max-width: {breakpoint})")).ok().flatten() else { return };

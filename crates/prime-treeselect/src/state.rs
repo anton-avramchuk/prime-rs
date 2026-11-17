@@ -1,9 +1,9 @@
-//! Чистая логика TreeSelect: предки выбранных узлов и подписи выбранного.
+//! Pure TreeSelect logic: ancestors of selected nodes and captions of the selection.
 
 use prime_tree::{Flat, TreeNode};
 use std::collections::HashSet;
 
-/// Ключи предков всех узлов с ключами из `keys` (их нужно раскрыть, чтобы выбранные узлы были видны).
+/// Keys of the ancestors of all nodes with keys from `keys` (they must be expanded so the selected nodes are visible).
 pub fn ancestors_of(options: &[TreeNode], keys: &[String]) -> HashSet<String> {
     fn walk(nodes: &[TreeNode], keys: &[String], path: &mut Vec<String>, out: &mut HashSet<String>) {
         for n in nodes {
@@ -20,7 +20,7 @@ pub fn ancestors_of(options: &[TreeNode], keys: &[String]) -> HashSet<String> {
     out
 }
 
-/// Пары `(ключ, подпись)` выбранных узлов в порядке выбора; ключи, которых нет в дереве, пропускаются.
+/// `(key, caption)` pairs of selected nodes in selection order; keys that are not in the tree are skipped.
 pub fn labels_of(flat: &[Flat], keys: &[String]) -> Vec<(String, String)> {
     keys.iter().filter_map(|k| flat.iter().find(|f| &f.key == k).map(|f| (f.key.clone(), f.label.clone()))).collect()
 }
@@ -47,7 +47,7 @@ mod tests {
         let set = |k: &[&str]| k.iter().map(|s| (*s).to_owned()).collect::<HashSet<_>>();
         assert_eq!(ancestors_of(&tree(), &keys(&["a11"])), set(&["a", "a1"]));
         assert_eq!(ancestors_of(&tree(), &keys(&["a2", "b"])), set(&["a"]));
-        assert_eq!(ancestors_of(&tree(), &keys(&["a"])), set(&[]), "у корневого узла предков нет");
+        assert_eq!(ancestors_of(&tree(), &keys(&["a"])), set(&[]), "a root node has no ancestors");
         assert!(ancestors_of(&tree(), &keys(&["zzz"])).is_empty());
         assert!(ancestors_of(&tree(), &[]).is_empty());
     }

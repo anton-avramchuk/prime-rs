@@ -1,11 +1,11 @@
-//! Страница Image: демонстрации `basic`, `preview`, `previewimagesource` и `template` из showcase PrimeNG
-//! (`apps/showcase/doc/image`). Фотографии с CDN заменены встроенными SVG-картинками (независимость от сети).
+//! Image page: the `basic`, `preview`, `previewimagesource` and `template` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/image`). CDN photos are replaced with built-in SVG images (independence from the network).
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_image::{Image, ImagePreviewContext};
 
-/// SVG-картинка с градиентом и подписью как `data:`-ссылка; `size` — сторона viewBox.
+/// SVG image with a gradient and a caption as a `data:` URL; `size` is the viewBox side.
 fn picture(from: &str, to: &str, label: &str, size: u32) -> String {
     let half = size / 2;
     let font = size / 8;
@@ -17,7 +17,7 @@ fn picture(from: &str, to: &str, label: &str, size: u32) -> String {
     )
 }
 
-/// Страница `/image`.
+/// The `/image` page.
 #[component]
 pub fn ImagePage() -> impl IntoView {
     let small = picture("0ea5e9", "1e3a8a", "Photo", 400);

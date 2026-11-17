@@ -1,36 +1,36 @@
-//! Чистая логика FileUpload: проверка файлов, размеры, лимиты, подписи (по `fileupload.ts` PrimeNG, без DOM).
+//! Pure FileUpload logic: file validation, sizes, limits, labels (after PrimeNG `fileupload.ts`, no DOM).
 
-/// Единицы размера по умолчанию (`fileSizeTypes`).
+/// Default size units (`fileSizeTypes`).
 pub const SIZE_UNITS: [&str; 9] = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
-/// Сведения о файле, нужные для проверок.
+/// File information needed for the checks.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct FileInfo {
-    /// Имя файла.
+    /// File name.
     pub name: String,
-    /// MIME-тип (может быть пустым).
+    /// MIME type (may be empty).
     pub mime: String,
-    /// Размер в байтах.
+    /// Size in bytes.
     pub size: u64,
 }
 
 impl FileInfo {
-    /// Сведения о файле.
+    /// File information.
     pub fn new(name: impl Into<String>, mime: impl Into<String>, size: u64) -> Self {
         Self { name: name.into(), mime: mime.into(), size }
     }
 }
 
-/// Причина отклонения файла.
+/// Reason a file was rejected.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Rejection {
-    /// Тип не входит в `accept`.
+    /// The type is not in `accept`.
     Type,
-    /// Размер больше `max_file_size`.
+    /// The size exceeds `max_file_size`.
     Size,
 }
 
-/// Размер в виде «число с тремя знаками и единица» (`formatSize`).
+/// Size as "a number with three decimals and a unit" (`formatSize`).
 pub fn format_size(bytes: u64, units: &[&str]) -> String {
     let unit = |i: usize| units.get(i).copied().unwrap_or("");
     if bytes == 0 {
@@ -38,17 +38,17 @@ pub fn format_size(bytes: u64, units: &[&str]) -> String {
     }
     let k = 1024f64;
     let i = ((bytes as f64).ln() / k.ln()).floor() as usize;
-    // `toFixed(3)` округляет половину вверх, а `{:.3}` в Rust — к чётному: 976.5625 → 976.563, не 976.562
+    // `toFixed(3)` rounds half up, while `{:.3}` in Rust rounds to even: 976.5625 → 976.563, not 976.562
     let value = (bytes as f64 / k.powi(i as i32) * 1000.0).round() / 1000.0;
     format!("{value:.3} {}", unit(i))
 }
 
-/// Расширение файла с точкой (`getFileExtension`): для имени без точки — всё имя.
+/// File extension with the dot (`getFileExtension`): for a name without a dot — the whole name.
 pub fn file_extension(name: &str) -> String {
     format!(".{}", name.rsplit('.').next().unwrap_or(name))
 }
 
-/// Тип файла подходит под один из `accept` (`isFileTypeValid`).
+/// The file type matches one of the `accept` entries (`isFileTypeValid`).
 pub fn is_type_valid(file: &FileInfo, accept: &str) -> bool {
     accept.split(',').map(str::trim).any(|kind| {
         if kind.contains('*') {
@@ -59,12 +59,12 @@ pub fn is_type_valid(file: &FileInfo, accept: &str) -> bool {
     })
 }
 
-/// Часть типа до `/` (`getTypeClass`); без `/` — пустая строка.
+/// The part of the type before `/` (`getTypeClass`); without `/` — an empty string.
 fn type_class(kind: &str) -> &str {
     kind.find('/').map_or("", |i| &kind[..i])
 }
 
-/// Проверка файла по `accept` и `max_file_size` (`validate`).
+/// Checks a file against `accept` and `max_file_size` (`validate`).
 pub fn validate(file: &FileInfo, accept: Option<&str>, max_size: Option<u64>) -> Result<(), Rejection> {
     if let Some(accept) = accept.filter(|a| !a.is_empty())
         && !is_type_valid(file, accept)
@@ -79,24 +79,24 @@ pub fn validate(file: &FileInfo, accept: Option<&str>, max_size: Option<u64>) ->
     Ok(())
 }
 
-/// Файл уже выбран: совпадают имя, тип и размер (`isFileSelected`).
+/// The file is already selected: name, type and size match (`isFileSelected`).
 pub fn is_duplicate(selected: &[FileInfo], file: &FileInfo) -> bool {
     selected.iter().any(|f| f.name == file.name && f.mime == file.mime && f.size == file.size)
 }
 
-/// Превышен `file_limit` (`isFileLimitExceeded`).
+/// `file_limit` is exceeded (`isFileLimitExceeded`).
 pub fn limit_exceeded(auto: bool, selected: usize, uploaded: usize, limit: Option<usize>) -> bool {
     let total = if auto { selected } else { selected + uploaded };
     limit.is_some_and(|l| l < total)
 }
 
-/// Выбор файлов недоступен: лимит достигнут (`isChooseDisabled`).
+/// Choosing files is unavailable: the limit is reached (`isChooseDisabled`).
 pub fn choose_disabled(auto: bool, selected: usize, uploaded: usize, limit: Option<usize>) -> bool {
     let total = if auto { selected } else { selected + uploaded };
     limit.is_some_and(|l| l <= total)
 }
 
-/// Подпись выбранного в режиме `basic` (`basicFileChosenLabel`).
+/// Label of the selection in `basic` mode (`basicFileChosenLabel`).
 pub fn basic_label(auto: bool, choose_label: &str, names: &[String], chosen_template: &str, none: &str) -> String {
     if auto {
         choose_label.to_owned()
@@ -109,7 +109,7 @@ pub fn basic_label(auto: bool, choose_label: &str, names: &[String], chosen_temp
     }
 }
 
-/// Файл — изображение (`isImage`).
+/// The file is an image (`isImage`).
 pub fn is_image(file: &FileInfo) -> bool {
     file.mime.starts_with("image/")
 }
@@ -147,7 +147,7 @@ mod tests {
 
     #[test]
     fn accept_table() {
-        // (файл, accept, ожидание)
+        // (file, accept, expectation)
         let cases = [
             (f("a.png", "image/png", 1), "image/*", true),
             (f("a.pdf", "application/pdf", 1), "image/*", false),
@@ -171,8 +171,8 @@ mod tests {
         assert_eq!(validate(&pdf, Some("image/*"), None), Err(Rejection::Type));
         assert_eq!(validate(&pdf, None, Some(1000)), Err(Rejection::Size));
         assert_eq!(validate(&pdf, None, Some(2048)), Ok(()));
-        assert_eq!(validate(&pdf, None, Some(0)), Ok(()), "ноль — без ограничения");
-        assert_eq!(validate(&pdf, Some("image/*"), Some(1000)), Err(Rejection::Type), "тип проверяется первым");
+        assert_eq!(validate(&pdf, None, Some(0)), Ok(()), "zero means no limit");
+        assert_eq!(validate(&pdf, Some("image/*"), Some(1000)), Err(Rejection::Type), "the type is checked first");
     }
 
     #[test]
@@ -187,8 +187,8 @@ mod tests {
     fn limits() {
         assert!(!limit_exceeded(false, 1, 0, Some(1)));
         assert!(limit_exceeded(false, 2, 0, Some(1)));
-        assert!(limit_exceeded(false, 1, 1, Some(1)), "ожидающие и загруженные считаются вместе");
-        assert!(!limit_exceeded(true, 1, 5, Some(1)), "в режиме auto загруженные не считаются");
+        assert!(limit_exceeded(false, 1, 1, Some(1)), "pending and uploaded ones are counted together");
+        assert!(!limit_exceeded(true, 1, 5, Some(1)), "in auto mode uploaded ones are not counted");
         assert!(!limit_exceeded(false, 9, 9, None));
         assert!(choose_disabled(false, 1, 0, Some(1)));
         assert!(!choose_disabled(false, 0, 0, Some(1)));

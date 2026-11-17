@@ -2,39 +2,39 @@
 
 ## Context
 
-Требования — в `specs/fieldset`. Исходники PrimeNG 21.1.10: `packages/primeng/src/fieldset/fieldset.ts`, `fieldset/style/fieldsetstyle.ts`, демонстрации `apps/showcase/doc/fieldset`. Образец — `crates/prime-panel` (`docs/panel.md`): те же `CollapseState`, `CollapseIds`, `bind_region`, `aria_*`, `hidden_style`, структура двух ветвей и `macro_rules!`. Логика сворачивания не меняется, поэтому спека `collapsible` не затрагивается.
+The requirements are in `specs/fieldset`. PrimeNG 21.1.10 sources: `packages/primeng/src/fieldset/fieldset.ts`, `fieldset/style/fieldsetstyle.ts`, demos `apps/showcase/doc/fieldset`. The template is `crates/prime-panel` (`docs/panel.md`): the same `CollapseState`, `CollapseIds`, `bind_region`, `aria_*`, `hidden_style`, the structure of two branches and `macro_rules!`. The collapsing logic does not change, so the `collapsible` spec is not affected.
 
 ## Decisions
 
-### D1. Только разметка и привязка
-`Fieldset` создаёт `CollapseState::new(collapsed, default_collapsed)` и `CollapseIds::new(id)`, вызывает `bind_region` (только `wasm32` и `toggleable`), атрибуты ARIA берёт из функций `prime_core::collapsible`. Копий анимации, `tabindex` или идентификаторов в крейте нет.
+### D1. Only the markup and the binding
+`Fieldset` creates `CollapseState::new(collapsed, default_collapsed)` and `CollapseIds::new(id)`, calls `bind_region` (only `wasm32` and `toggleable`), and takes the ARIA attributes from the functions of `prime_core::collapsible`. There are no copies of the animation, `tabindex` or identifiers in the crate.
 
-### D2. Идентификаторы
-`{id}_header` — `id` кнопки, на него указывает `aria-labelledby` области; `{id}_content` — идентификатор области. Без `toggleable` кнопки нет, поэтому `aria-labelledby` не выводится (в PrimeNG он остаётся висячей ссылкой). `{id}-titlebar` не используется.
+### D2. Identifiers
+`{id}_header` is the `id` of the button, to which the `aria-labelledby` of the region points; `{id}_content` is the identifier of the region. Without `toggleable` there is no button, so `aria-labelledby` is not rendered (in PrimeNG it remains a dangling reference). `{id}-titlebar` is not used.
 
-### D3. Легенда
-- без `toggleable`: `<legend><span.p-fieldset-legend-label>{legend}</span>{header_template}</legend>`;
-- с `toggleable`: `<legend><button …>{иконка}<span.p-fieldset-legend-label>{legend}</span>{header_template}</button></legend>`.
-Иконка: `span.p-fieldset-toggle-icon` вокруг слота `expand_icon_template`/`collapse_icon_template`, а без слотов — svg `PlusIcon`/`MinusIcon` с классом `p-fieldset-toggle-icon`. Иконка зависит от `collapsed`, поэтому читается во вложенном замыкании, а легенда не перерисовывается целиком.
+### D3. Legend
+- without `toggleable`: `<legend><span.p-fieldset-legend-label>{legend}</span>{header_template}</legend>`;
+- with `toggleable`: `<legend><button …>{icon}<span.p-fieldset-legend-label>{legend}</span>{header_template}</button></legend>`.
+The icon: `span.p-fieldset-toggle-icon` around the slot `expand_icon_template`/`collapse_icon_template`, and without slots — an svg `PlusIcon`/`MinusIcon` with the class `p-fieldset-toggle-icon`. The icon depends on `collapsed`, so it is read in a nested closure, and the legend is not re-rendered as a whole.
 
-### D4. Кнопка
-Собственный `<button type="button">` с `aria-controls`, `aria-expanded`, `aria-label`. Enter/Space — нативный `click` (как в Panel). `on_before_toggle` получает `MouseEvent` и прежний `collapsed`; `preventDefault` вызывается.
+### D4. Button
+Its own `<button type="button">` with `aria-controls`, `aria-expanded`, `aria-label`. Enter/Space — the native `click` (as in Panel). `on_before_toggle` receives the `MouseEvent` and the previous `collapsed`; `preventDefault` is called.
 
-### D5. Ветви и классы
-Статическая ветвь — не `toggleable` и все свойства статические. Разметка — `macro_rules!`; `Arc<Props>` и `Arc<FieldsetPt>`; `NodeRef` только на `wasm32` (как в Panel). `data-p` на корне и легенде. Порядок классов — как в `fieldsetstyle.ts`. Корень — `<fieldset>`, как в PrimeNG.
+### D5. Branches and classes
+The static branch — not `toggleable` and all properties static. The markup is in a `macro_rules!`; `Arc<Props>` and `Arc<FieldsetPt>`; `NodeRef` only on `wasm32` (as in Panel). `data-p` on the root and the legend. The order of the classes is as in `fieldsetstyle.ts`. The root is `<fieldset>`, as in PrimeNG.
 
-### D6. Тесты
-SSR: структура, классы, ARIA, слоты, `pt`, паритет. Браузер: клик, сигнал, `aria-expanded`, анимационный класс и `on_after_toggle`, `tabindex` потомков, события. e2e — реальная CSS-анимация.
+### D6. Tests
+SSR: structure, classes, ARIA, slots, `pt`, parity. Browser: click, signal, `aria-expanded`, the animation class and `on_after_toggle`, the `tabindex` of the descendants, events. e2e — the real CSS animation.
 
 ## Risks / Trade-offs
 
-- [`<button>` внутри `<legend>` зависит от стилей темы] → проверяется в e2e по видимости и клику.
-- [Разметка Panel и Fieldset похожа] → общая только логика (`prime-core`), разметка различается; выносить общий компонент рано.
+- [The `<button>` inside `<legend>` depends on the theme styles] → checked in e2e by visibility and click.
+- [The markup of Panel and Fieldset is similar] → only the logic is shared (`prime-core`), the markup differs; extracting a common component is premature.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

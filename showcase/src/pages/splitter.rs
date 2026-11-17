@@ -1,7 +1,7 @@
-//! Страница Splitter: демонстрации `horizontal`, `vertical`, `size`, `nested` по `apps/showcase/doc/splitter` PrimeNG.
+//! Splitter page: demos `horizontal`, `vertical`, `size`, `nested` from PrimeNG `apps/showcase/doc/splitter`.
 //!
-//! Карточка демонстрации у нас flex, а у PrimeNG блочная, поэтому корню задана ширина 100 %. Утилитные классы Tailwind из исходных демонстраций заменены встроенными стилями; во вложенном Splitter признак
-//! вложенности (`nested`) задан явно.
+//! Our demo card is flex while PrimeNG's is block, so the root is given a width of 100 %. Tailwind utility classes from the original demos are replaced with inline styles; in the nested Splitter the nesting flag
+//! (`nested`) is set explicitly.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -13,7 +13,7 @@ fn cell(text: &'static str) -> ViewFn {
     ViewFn::from(move || view! { <div style=CENTER>{text}</div> })
 }
 
-/// Страница `/splitter`.
+/// Page `/splitter`.
 #[component]
 pub fn SplitterPage() -> impl IntoView {
     let inner = ViewFn::from(|| {

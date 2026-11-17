@@ -1,8 +1,8 @@
-//! Dialog — порт `p-dialog` из PrimeNG 21.1.10.
+//! Dialog — port of `p-dialog` from PrimeNG 21.1.10.
 //!
-//! Окно поверх страницы с заголовком, содержимым и подвалом: маска, анимации входа и выхода, перетаскивание за заголовок,
-//! изменение размера, максимизация, закрытие кнопкой, `Escape` и (по настройке) кликом по маске, блокировка прокрутки страницы
-//! и ловушка фокуса. Маска и окно выносятся в `body`.
+//! A window over the page with a header, content and footer: mask, enter and leave animations, drag by the header,
+//! resizing, maximizing, closing via the button, `Escape` and (optionally) a click on the mask, page scroll locking
+//! and a focus trap. The mask and window are rendered into `body`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -15,7 +15,7 @@
 //!     </Dialog>
 //! }
 //! .to_html();
-//! // пока диалог не показан, в разметке его нет
+//! // while the dialog is not shown, it is absent from the markup
 //! assert!(!html.contains("p-dialog") && !html.contains("Body"));
 //! ```
 
@@ -44,43 +44,43 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Запасное время выхода: анимация идёт 300 мс, но без стилей или при отключённой анимации `animationend` не придёт.
+/// Fallback leave timeout: the animation runs 300 ms, but without styles or with animation disabled `animationend` never fires.
 #[cfg(target_arch = "wasm32")]
 const LEAVE_FALLBACK: Duration = Duration::from_millis(700);
 
-/// Pass-through частей [`Dialog`].
+/// Pass-through parts of [`Dialog`].
 #[derive(Clone, Debug, Default)]
 pub struct DialogPt {
-    /// Окно.
+    /// Window.
     pub root: Pt,
-    /// Маска.
+    /// Mask.
     pub mask: Pt,
-    /// Заголовок.
+    /// Header.
     pub header: Pt,
-    /// Название в заголовке.
+    /// Title in the header.
     pub title: Pt,
-    /// Блок кнопок заголовка.
+    /// Header buttons block.
     pub header_actions: Pt,
-    /// Кнопка максимизации.
+    /// Maximize button.
     pub maximize_button: Pt,
-    /// Кнопка закрытия.
+    /// Close button.
     pub close_button: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
-    /// Подвал.
+    /// Footer.
     pub footer: Pt,
-    /// Ручка изменения размера.
+    /// Resize handle.
     pub resize_handle: Pt,
 }
 
-/// Состояние, общее для обработчиков окна.
+/// State shared by the window handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: usize,
     visible: RwSignal<bool>,
-    /// Окно в DOM (пока играет анимация выхода, оно ещё в DOM).
+    /// Window in the DOM (while the leave animation plays, it is still in the DOM).
     rendered: RwSignal<bool>,
-    /// Идёт анимация выхода.
+    /// Leave animation in progress.
     leaving: RwSignal<bool>,
     maximized: RwSignal<bool>,
     mask: NodeRef<leptos::html::Div>,
@@ -110,7 +110,7 @@ struct Core {
     modal_blocked: StoredValue<bool>,
     max_blocked: StoredValue<bool>,
     was_open: StoredValue<bool>,
-    /// Последняя точка указателя (`pageX`, `pageY`) для перетаскивания и изменения размера.
+    /// Last pointer point (`pageX`, `pageY`) for dragging and resizing.
     last: StoredValue<(f64, f64)>,
     on_show: Option<Callback<()>>,
     on_hide: Option<Callback<()>>,
@@ -127,13 +127,13 @@ struct Core {
 }
 
 impl Core {
-    /// Атрибут окна, на который ссылаются правила `breakpoints`.
+    /// Window attribute referenced by the `breakpoints` rules.
     #[cfg(target_arch = "wasm32")]
     fn attr_name(&self) -> String {
         format!("data-dlg-{}", self.id)
     }
 
-    /// Снимает слушатели `Escape` и жестов и ловушку фокуса.
+    /// Removes the `Escape` and gesture listeners and the focus trap.
     fn release_input(&self) {
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
             cleanup();
@@ -145,7 +145,7 @@ impl Core {
         }
     }
 
-    /// Снимает слушатели `mousemove`/`mouseup` жеста и возвращает выделение текста.
+    /// Removes the gesture's `mousemove`/`mouseup` listeners and restores text selection.
     fn stop_gesture(&self) {
         let handles = self.gesture.try_update_value(std::mem::take).unwrap_or_default();
         if handles.is_empty() {
@@ -161,7 +161,7 @@ impl Core {
         }
     }
 
-    /// Освобождает слой, блокировки прокрутки и элемент `style` с правилами `breakpoints`.
+    /// Releases the layer, scroll locks and the `style` element with the `breakpoints` rules.
     fn release_layer(&self) {
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
             prime_core::zindex::revert(z);
@@ -178,7 +178,7 @@ impl Core {
         }
     }
 
-    /// Полное освобождение при размонтировании компонента.
+    /// Full release when the component is unmounted.
     fn teardown(&self) {
         self.release_input();
         self.release_layer();
@@ -188,7 +188,7 @@ impl Core {
         }
     }
 
-    /// Переключает максимизацию; немодальный диалог без `block_scroll` блокирует прокрутку страницы.
+    /// Toggles maximization; a non-modal dialog without `block_scroll` locks page scrolling.
     fn maximize(&self) {
         let now = !self.maximized.get_untracked();
         self.maximized.set(now);
@@ -205,7 +205,7 @@ impl Core {
         }
     }
 
-    /// Окно только что попало в DOM: слой, блокировка прокрутки, ловушка фокуса, Escape, `breakpoints`, фокус, `on_show`.
+    /// The window has just entered the DOM: layer, scroll lock, focus trap, Escape, `breakpoints`, focus, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let Some(panel) = self.panel.get_untracked() else { return };
@@ -260,7 +260,7 @@ impl Core {
         }
     }
 
-    /// Фокус на первый фокусируемый элемент содержимого, затем подвала и заголовка.
+    /// Focus on the first focusable element of the content, then the footer and header.
     #[cfg(target_arch = "wasm32")]
     fn focus(&self) {
         if self.rendered.is_disposed() {
@@ -276,7 +276,7 @@ impl Core {
         }
     }
 
-    /// Закрытие началось: слушатели сняты, играет анимация выхода, `on_hide`.
+    /// Closing has started: listeners removed, leave animation playing, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn begin_leave(self: &Arc<Self>) {
         self.release_input();
@@ -291,7 +291,7 @@ impl Core {
         }
     }
 
-    /// Анимация выхода закончилась: окно убирается из DOM, слой и блокировки освобождаются, максимизация сбрасывается.
+    /// Leave animation finished: the window is removed from the DOM, layer and locks released, maximization reset.
     #[cfg(target_arch = "wasm32")]
     fn finish_leave(&self) {
         if self.rendered.is_disposed() || !self.leaving.get_untracked() {
@@ -306,7 +306,7 @@ impl Core {
         self.rendered.set(false);
     }
 
-    /// Начало жеста: запоминает точку, запрещает выделение текста и подписывается на `mousemove`/`mouseup` окна.
+    /// Gesture start: records the point, disables text selection and subscribes to the window's `mousemove`/`mouseup`.
     #[cfg(target_arch = "wasm32")]
     fn start_gesture(
         self: &Arc<Self>,
@@ -330,7 +330,7 @@ impl Core {
         });
     }
 
-    /// `mousedown` на заголовке: перетаскивание, если нажали не на кнопки.
+    /// `mousedown` on the header: drag, unless a button was pressed.
     #[cfg(target_arch = "wasm32")]
     fn init_drag(self: &Arc<Self>, e: &web_sys::MouseEvent) {
         if !self.draggable.get_untracked() {
@@ -398,7 +398,7 @@ impl Core {
         }
     }
 
-    /// `mousedown` на ручке: изменение размера.
+    /// `mousedown` on the handle: resize.
     #[cfg(target_arch = "wasm32")]
     fn init_resize(self: &Arc<Self>, e: &web_sys::MouseEvent) {
         if !self.resizable.get_untracked() {
@@ -458,143 +458,143 @@ impl Core {
     }
 }
 
-/// Левый и верхний край элемента в координатах окна (`getBoundingClientRect`).
+/// Left and top edge of an element in window coordinates (`getBoundingClientRect`).
 #[cfg(target_arch = "wasm32")]
 fn client_origin(el: &web_sys::HtmlElement) -> (f64, f64) {
     let rect = el.get_bounding_client_rect();
     (rect.left(), rect.top())
 }
 
-/// Окно поверх страницы с заголовком, содержимым и подвалом, которое можно перетаскивать, масштабировать и разворачивать.
+/// A window over the page with a header, content and footer that can be dragged, resized and maximized.
 ///
-/// Каждое свойство принимает значение или сигнал; `visible` — двусторонний сигнал. Маска и окно выводятся в `body`
-/// и до гидратации не отдаются сервером.
+/// Each property accepts a value or a signal; `visible` is a two-way signal. The mask and window are rendered into `body`
+/// and are not sent by the server before hydration.
 #[component]
 pub fn Dialog(
-    /// Двусторонний сигнал видимости; без него состояние хранится внутри (по умолчанию скрыт).
+    /// Two-way visibility signal; without it the state is kept internally (hidden by default).
     #[prop(optional)]
     visible: Option<RwSignal<bool>>,
-    /// Название в заголовке.
+    /// Title in the header.
     #[prop(optional, into)]
     header: OptProp<String>,
-    /// Положение окна на экране.
+    /// Window position on the screen.
     #[prop(optional, into)]
     position: Prop<DialogPosition>,
-    /// Модальная маска: блокирует страницу и прокрутку.
+    /// Modal mask: blocks the page and scrolling.
     #[prop(optional, into)]
     modal: Prop<bool>,
-    /// Закрывать диалог нажатием на маску.
+    /// Close the dialog by clicking the mask.
     #[prop(optional, into)]
     dismissable_mask: Prop<bool>,
-    /// Закрывать диалог клавишей `Escape`.
+    /// Close the dialog with the `Escape` key.
     #[prop(optional, default = Prop::Static(true), into)]
     close_on_escape: Prop<bool>,
-    /// Показывать кнопку закрытия (и разрешать закрытие по `Escape` и маске).
+    /// Show the close button (and allow closing via `Escape` and the mask).
     #[prop(optional, default = Prop::Static(true), into)]
     closable: Prop<bool>,
-    /// Разрешить перетаскивание за заголовок.
+    /// Allow dragging by the header.
     #[prop(optional, default = Prop::Static(true), into)]
     draggable: Prop<bool>,
-    /// Разрешить изменение размера.
+    /// Allow resizing.
     #[prop(optional, default = Prop::Static(true), into)]
     resizable: Prop<bool>,
-    /// Показывать кнопку максимизации.
+    /// Show the maximize button.
     #[prop(optional, into)]
     maximizable: Prop<bool>,
-    /// Не выпускать окно за пределы экрана при перетаскивании.
+    /// Keep the window within the screen while dragging.
     #[prop(optional, default = Prop::Static(true), into)]
     keep_in_viewport: Prop<bool>,
-    /// Минимальная координата `left` при перетаскивании.
+    /// Minimum `left` coordinate while dragging.
     #[prop(optional, into)]
     min_x: Prop<f64>,
-    /// Минимальная координата `top` при перетаскивании.
+    /// Minimum `top` coordinate while dragging.
     #[prop(optional, into)]
     min_y: Prop<f64>,
-    /// Показывать заголовок.
+    /// Show the header.
     #[prop(optional, default = Prop::Static(true), into)]
     show_header: Prop<bool>,
-    /// Блокировать прокрутку страницы при максимизации немодального диалога.
+    /// Block page scrolling when a non-modal dialog is maximized.
     #[prop(optional, into)]
     block_scroll: Prop<bool>,
-    /// Переводить фокус на первый фокусируемый элемент при показе.
+    /// Move focus to the first focusable element when shown.
     #[prop(optional, default = Prop::Static(true), into)]
     focus_on_show: Prop<bool>,
-    /// Не выпускать фокус за пределы окна.
+    /// Keep focus within the window.
     #[prop(optional, default = Prop::Static(true), into)]
     focus_trap: Prop<bool>,
-    /// Автоматически назначать `z-index`.
+    /// Assign `z-index` automatically.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the configuration value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Ширина окна по ширине экрана: пары «максимальная ширина экрана — ширина окна», например `("575px", "90vw")`.
+    /// Window width by screen width: pairs "max screen width — window width", e.g. `("575px", "90vw")`.
     #[prop(optional, into)]
     breakpoints: Vec<(String, String)>,
-    /// Атрибут `role` окна.
+    /// `role` attribute of the window.
     #[prop(optional, default = Prop::Static("dialog".to_owned()), into)]
     role: Prop<String>,
-    /// Атрибут `aria-label` кнопки закрытия.
+    /// `aria-label` attribute of the close button.
     #[prop(optional, into)]
     close_aria_label: OptProp<String>,
-    /// Встроенный стиль содержимого.
+    /// Inline style of the content.
     #[prop(optional, into)]
     content_style: OptProp<String>,
-    /// Дополнительный класс содержимого.
+    /// Extra class of the content.
     #[prop(optional, into)]
     content_style_class: OptProp<String>,
-    /// Встроенный стиль маски.
+    /// Inline style of the mask.
     #[prop(optional, into)]
     mask_style: OptProp<String>,
-    /// Дополнительный класс маски.
+    /// Extra class of the mask.
     #[prop(optional, into)]
     mask_style_class: OptProp<String>,
-    /// Встроенный стиль окна.
+    /// Inline style of the window.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс окна.
+    /// Extra class of the window.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Значок кнопки закрытия вместо `TimesIcon`.
+    /// Close button icon instead of `TimesIcon`.
     #[prop(optional, into)]
     close_icon: Option<ViewFn>,
-    /// Значок кнопки максимизации вместо `WindowMaximizeIcon`.
+    /// Maximize button icon instead of `WindowMaximizeIcon`.
     #[prop(optional, into)]
     maximize_icon: Option<ViewFn>,
-    /// Значок кнопки возврата размера вместо `WindowMinimizeIcon`.
+    /// Restore-size button icon instead of `WindowMinimizeIcon`.
     #[prop(optional, into)]
     minimize_icon: Option<ViewFn>,
-    /// Своё содержимое заголовка вместо названия.
+    /// Custom header content instead of the title.
     #[prop(optional, into)]
     header_content: Option<ViewFn>,
-    /// Подвал окна.
+    /// Window footer.
     #[prop(optional, into)]
     footer: Option<ViewFn>,
-    /// Заменяет всё содержимое окна (заголовок, содержимое, подвал).
+    /// Replaces the entire window content (header, content, footer).
     #[prop(optional, into)]
     headless: Option<ViewFn>,
-    /// Вызывается после показа.
+    /// Called after being shown.
     #[prop(optional, into)]
     on_show: Option<Callback<()>>,
-    /// Вызывается, когда диалог начинает закрываться.
+    /// Called when the dialog starts closing.
     #[prop(optional, into)]
     on_hide: Option<Callback<()>>,
-    /// Вызывается в начале изменения размера.
+    /// Called when resizing starts.
     #[prop(optional, into)]
     on_resize_init: Option<Callback<web_sys::MouseEvent>>,
-    /// Вызывается в конце изменения размера.
+    /// Called when resizing ends.
     #[prop(optional, into)]
     on_resize_end: Option<Callback<web_sys::MouseEvent>>,
-    /// Вызывается в конце перетаскивания.
+    /// Called when dragging ends.
     #[prop(optional, into)]
     on_drag_end: Option<Callback<web_sys::MouseEvent>>,
-    /// Вызывается при максимизации (`true`) и возврате размера (`false`).
+    /// Called on maximize (`true`) and restore (`false`).
     #[prop(optional, into)]
     on_maximize: Option<Callback<bool>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<DialogPt>,
-    /// Содержимое окна.
+    /// Window content.
     children: ChildrenFn,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
@@ -650,20 +650,20 @@ pub fn Dialog(
         let core = core.clone();
         on_cleanup(move || core.teardown());
     }
-    // Показ, закрытие и побочные эффекты (слой, ловушка фокуса, Escape, жесты) — только в браузере.
+    // Showing, closing and side effects (layer, focus trap, Escape, gestures) — browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
         Effect::new(move |_| {
             let shown = core.visible.get();
-            // Окно попадает в DOM после этого эффекта, поэтому следим и за ссылкой на него.
+            // The window enters the DOM after this effect, so we also track the reference to it.
             let mounted = core.panel.get().is_some();
             let was_open = core.was_open.get_value();
             if shown {
                 if let Some(handle) = core.timer.try_update_value(Option::take).flatten() {
                     handle.clear();
                 }
-                // Повторный показ во время выхода: окно ещё в DOM, возвращаем его в состояние «открыто».
+                // Re-shown during leave: the window is still in the DOM, return it to the "open" state.
                 if core.leaving.get_untracked() {
                     core.leaving.set(false);
                 }
@@ -678,7 +678,7 @@ pub fn Dialog(
                 core.was_open.set_value(false);
                 core.begin_leave();
             } else if core.rendered.get_untracked() && !core.leaving.get_untracked() {
-                // Закрыли, не дождавшись появления окна в DOM.
+                // Closed before the window appeared in the DOM.
                 core.rendered.set(false);
             }
         });
@@ -704,14 +704,14 @@ pub fn Dialog(
         headless,
         children,
     });
-    // Содержимое строится заново внутри `Portal` при каждом показе: готовые представления не `Send + Sync`.
+    // Content is rebuilt inside `Portal` on every show: ready-made views are not `Send + Sync`.
     move || {
         let (core, pt, parts) = (core.clone(), pt.clone(), parts.clone());
         core.rendered.get().then(move || view! { <Portal>{build_dialog(&core, &pt, &parts)}</Portal> })
     }
 }
 
-/// Свойства, нужные только при выводе окна.
+/// Properties needed only when rendering the window.
 struct Parts {
     header: OptProp<String>,
     role: Prop<String>,
@@ -733,7 +733,7 @@ struct Parts {
     children: ChildrenFn,
 }
 
-/// Добавляет пользовательский класс к базовому.
+/// Appends a user class to the base one.
 fn with_user_class(mut base: String, user: &OptProp<String>) -> String {
     user.with(|c| {
         if let Some(c) = c.as_deref().filter(|c| !c.is_empty()) {
@@ -744,7 +744,7 @@ fn with_user_class(mut base: String, user: &OptProp<String>) -> String {
     base
 }
 
-/// Кнопка заголовка: вторичная, текстовая, круглая.
+/// Header button: secondary, text, round.
 fn header_button(
     class: &'static str,
     icon: ViewFn,
@@ -768,7 +768,7 @@ fn header_button(
     .into_any()
 }
 
-/// Маска и окно.
+/// Mask and window.
 fn build_dialog(core: &Arc<Core>, pt: &Arc<DialogPt>, parts: &Arc<Parts>) -> AnyView {
     let (mask_ref, panel_ref, header_ref, content_ref, footer_ref) = (core.mask, core.panel, core.header, core.content, core.footer);
     let (leaving, maximized, visible) = (core.leaving, core.maximized, core.visible);
@@ -793,7 +793,7 @@ fn build_dialog(core: &Arc<Core>, pt: &Arc<DialogPt>, parts: &Arc<Parts>) -> Any
             let title = match parts.header_content.clone() {
                 Some(custom) => custom.run().into_any(),
                 None => {
-                    // Реактивно: ConfirmDialog меняет заголовок при замене подтверждения на месте.
+                    // Reactive: ConfirmDialog changes the header when the confirmation is replaced in place.
                     let header = parts.header.clone();
                     let text = move || header.get();
                     view! { <span id=label_id.clone() class={pt.title.merge_class("p-dialog-title")} {..pt.title.attrs()}>{text}</span> }.into_any()
@@ -935,7 +935,7 @@ fn build_dialog(core: &Arc<Core>, pt: &Arc<DialogPt>, parts: &Arc<Parts>) -> Any
     .into_any()
 }
 
-/// Нажатие на самой маске (не на окне) закрывает диалог при `dismissable_mask` и `closable`.
+/// A click on the mask itself (not the window) closes the dialog when `dismissable_mask` and `closable`.
 fn mask_down(core: &Arc<Core>, event: &web_sys::MouseEvent) {
     let on_mask = event.target().is_some_and(|t| event.current_target().is_some_and(|c| t == c));
     if on_mask && core.dismissable_mask.get_untracked() && core.closable.get_untracked() {
@@ -943,7 +943,7 @@ fn mask_down(core: &Arc<Core>, event: &web_sys::MouseEvent) {
     }
 }
 
-/// `animationend` окна (не вложенных элементов) завершает выход.
+/// The window's `animationend` (not nested elements') ends the leave.
 fn animation_end(core: &Arc<Core>, event: &web_sys::AnimationEvent) {
     #[cfg(target_arch = "wasm32")]
     {

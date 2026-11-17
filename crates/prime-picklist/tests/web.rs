@@ -1,5 +1,5 @@
-//! Поведение PickList в реальном браузере (wasm-bindgen-test): выбор, перенос в обе стороны, «всё», перестановка,
-//! двойной клик, `keep_selection`, поиск и перенос видимых, `disabled`. Сценарии идут одним последовательным тестом.
+//! PickList behaviour in a real browser (wasm-bindgen-test): selection, transfer in both directions, "all", reordering,
+//! double click, `keep_selection`, search and transfer of visible items, `disabled`. The scenarios run as one sequential test.
 #![cfg(target_arch = "wasm32")]
 #![recursion_limit = "512"]
 
@@ -63,7 +63,7 @@ fn click_option(host: &HtmlElement, container: &str, index: usize) {
 fn button(host: &HtmlElement, aria: &str) -> HtmlElement {
     host.query_selector(&format!("button[aria-label=\"{aria}\"]"))
         .unwrap()
-        .unwrap_or_else(|| panic!("нет {aria}: {}", host.outer_html()))
+        .unwrap_or_else(|| panic!("no {aria}: {}", host.outer_html()))
         .dyn_into()
         .unwrap()
 }
@@ -105,7 +105,7 @@ async fn transfer_selected_and_all() {
     button(&host, "Move to Target").click();
     settle().await;
     assert_eq!((source(&host), target(&host)), ("A C".to_owned(), "X B D".to_owned()));
-    assert!(disabled(&button(&host, "Move to Target")), "выбор источника очищен");
+    assert!(disabled(&button(&host, "Move to Target")), "source selection cleared");
 
     click_option(&host, TGT, 0);
     settle().await;
@@ -116,12 +116,12 @@ async fn transfer_selected_and_all() {
     button(&host, "Move All to Target").click();
     settle().await;
     assert_eq!((source(&host), target(&host)), (String::new(), "B D A C X".to_owned()));
-    assert!(disabled(&button(&host, "Move All to Target")), "источник пуст");
+    assert!(disabled(&button(&host, "Move All to Target")), "source is empty");
     button(&host, "Move All to Source").click();
     settle().await;
     assert_eq!((source(&host), target(&host)), ("B D A C X".to_owned(), String::new()));
     assert_eq!(log.lock().unwrap().as_slice(), ["to_target:2", "to_source:1", "all_to_target:3"]);
-    assert_eq!(source_list.get_untracked().len(), 5, "сигнал источника обновлён");
+    assert_eq!(source_list.get_untracked().len(), 5, "source signal updated");
     host.remove();
 }
 
@@ -145,7 +145,7 @@ async fn reorder_in_both_lists() {
         let root = host.query_selector(c).unwrap().unwrap().dyn_into::<HtmlElement>().unwrap();
         root.query_selector(&format!("button[aria-label=\"{aria}\"]")).unwrap().unwrap().dyn_into().unwrap()
     };
-    assert!(disabled(&ctl(src_ctl, "Move Up")), "без выбора перестановка недоступна");
+    assert!(disabled(&ctl(src_ctl, "Move Up")), "reordering is unavailable without a selection");
     click_option(&host, SRC, 2);
     settle().await;
     ctl(src_ctl, "Move Up").click();
@@ -160,7 +160,7 @@ async fn reorder_in_both_lists() {
     settle().await;
     assert_eq!(target(&host), "Y Z X");
     ctl(tgt_ctl, "Move Down").click();
-    assert_eq!(target(&host), "Y Z X", "уже внизу — на месте");
+    assert_eq!(target(&host), "Y Z X", "already at the bottom — stays in place");
     assert_eq!(log.lock().unwrap().as_slice(), ["src:c", "src:c", "tgt:x", "tgt:x"]);
     host.remove();
 }
@@ -173,7 +173,7 @@ async fn double_click_keep_selection_and_filter() {
         view! { <PickList source=source_list target=target_list target_selection=target_sel filter=true keep_selection=true /> }
     });
     settle().await;
-    // поиск: «всё в цель» переносит только найденное
+    // search: "all to target" moves only what was found
     let filter: HtmlInputElement = host.query_selector(&format!("{SRC} input.p-listbox-filter")).unwrap().unwrap().dyn_into().unwrap();
     filter.set_value("ap");
     let init = EventInit::new();
@@ -184,10 +184,10 @@ async fn double_click_keep_selection_and_filter() {
     button(&host, "Move All to Target").click();
     settle().await;
     assert_eq!(target(&host), "Apple");
-    assert_eq!(target_sel.get_untracked(), ["apple"], "keep_selection: перенесённые выбраны в цели");
-    assert_eq!(source_list.get_untracked().len(), 2, "Banana и Avocado остались");
+    assert_eq!(target_sel.get_untracked(), ["apple"], "keep_selection: transferred items are selected in the target");
+    assert_eq!(source_list.get_untracked().len(), 2, "Banana and Avocado stayed");
 
-    // двойной клик переносит выбранные
+    // double click moves the selected ones
     filter.set_value("");
     filter.dispatch_event(&Event::new_with_event_init_dict("input", &init).unwrap()).unwrap();
     settle().await;

@@ -1,40 +1,40 @@
-//! Чистая логика InputOtp: токены, решения по клавишам и вставке (по `inputotp.ts` PrimeNG).
+//! Pure InputOtp logic: tokens, key and paste decisions (after PrimeNG `inputotp.ts`).
 
-/// Что делать с нажатой клавишей.
+/// What to do with a pressed key.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum KeyAction {
-    /// Оставить действие браузеру.
+    /// Leave the action to the browser.
     Allow,
-    /// Отменить действие браузера.
+    /// Cancel the browser action.
     Prevent,
-    /// Отменить и перевести фокус на предыдущую ячейку.
+    /// Cancel and move focus to the previous cell.
     Prev,
-    /// Отменить и перевести фокус на следующую ячейку.
+    /// Cancel and move focus to the next cell.
     Next,
 }
 
-/// Куда переводить фокус после `input`.
+/// Where to move focus after `input`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Move {
-    /// На предыдущую ячейку.
+    /// To the previous cell.
     Prev,
-    /// На следующую ячейку.
+    /// To the next cell.
     Next,
-    /// Оставить фокус.
+    /// Keep focus.
     None,
 }
 
-/// Символы значения по порядку, не более `length`.
+/// Characters of the value in order, at most `length`.
 pub fn tokens_of(value: &str, length: usize) -> Vec<String> {
     value.chars().take(length).map(String::from).collect()
 }
 
-/// Склеивает токены (пустые пропускаются).
+/// Joins the tokens (empty ones are skipped).
 pub fn join(tokens: &[String]) -> String {
     tokens.concat()
 }
 
-/// Решение по `keydown`. `ctrl_like` — нажат `Alt`, `Ctrl` или `Meta`.
+/// Decision for `keydown`. `ctrl_like` means `Alt`, `Ctrl` or `Meta` is pressed.
 pub fn key_decision(
     key: &str,
     ctrl_like: bool,
@@ -52,7 +52,7 @@ pub fn key_decision(
         "ArrowRight" => KeyAction::Next,
         "ArrowUp" | "ArrowDown" => KeyAction::Prevent,
         "Backspace" if cell_empty => KeyAction::Prev,
-        // Управляющие клавиши (Tab, Enter, Delete, Home…) не ограничиваются: «символ» — ровно один знак.
+        // Control keys (Tab, Enter, Delete, Home…) are not restricted: a "character" is exactly one char.
         _ if key.chars().count() != 1 => KeyAction::Allow,
         _ if integer_only && !key.chars().all(|c| c.is_ascii_digit()) => KeyAction::Prevent,
         _ if filled >= length && !has_selection => KeyAction::Prevent,
@@ -60,7 +60,7 @@ pub fn key_decision(
     }
 }
 
-/// Значение из вставленного текста: до `length` символов; `None`, если пусто или при `integer_only` есть не только цифры.
+/// Value from pasted text: up to `length` characters; `None` if empty or, with `integer_only`, there is something other than digits.
 pub fn paste_value(text: &str, length: usize, integer_only: bool) -> Option<String> {
     if text.is_empty() || (integer_only && !text.chars().all(|c| c.is_ascii_digit())) {
         return None;
@@ -68,7 +68,7 @@ pub fn paste_value(text: &str, length: usize, integer_only: bool) -> Option<Stri
     Some(text.chars().take(length).collect())
 }
 
-/// Переход фокуса по `InputEvent.inputType`.
+/// Focus move by `InputEvent.inputType`.
 pub fn input_move(input_type: &str) -> Move {
     match input_type {
         "deleteContentBackward" => Move::Prev,
@@ -86,7 +86,7 @@ mod tests {
         assert_eq!(tokens_of("12", 4), ["1", "2"]);
         assert_eq!(tokens_of("123456", 4), ["1", "2", "3", "4"]);
         assert_eq!(tokens_of("", 4), Vec::<String>::new());
-        assert_eq!(tokens_of("я1", 4), ["я", "1"]);
+        assert_eq!(tokens_of("é1", 4), ["é", "1"]);
         assert_eq!(join(&["1".into(), String::new(), "3".into()]), "13");
         assert_eq!(join(&[]), "");
     }

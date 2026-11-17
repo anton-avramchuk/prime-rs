@@ -1,12 +1,12 @@
-//! Textarea — порт директивы `pTextarea` из PrimeNG 21.1.10.
+//! Textarea — port of the `pTextarea` directive from PrimeNG 21.1.10.
 //!
-//! В PrimeNG это директива на нативном `<textarea>`; здесь компонент отрисовывает `<textarea>` с теми же классами
-//! (`p-textarea p-component`, `p-filled`, `p-textarea-resizable`, `p-variant-filled`, `p-textarea-fluid`, размеры, `p-invalid`).
+//! In PrimeNG this is a directive on a native `<textarea>`; here the component renders a `<textarea>` with the same classes
+//! (`p-textarea p-component`, `p-filled`, `p-textarea-resizable`, `p-variant-filled`, `p-textarea-fluid`, sizes, `p-invalid`).
 //!
-//! Значение — необязательное двустороннее `value: RwSignal<String>`: при SSR оно выводится дочерним текстом `<textarea>`, на клиенте
-//! обновляется через `prop:value`. Без `value` поле неконтролируемое, а `p-filled` не отслеживается.
+//! The value is an optional two-way `value: RwSignal<String>`: during SSR it is rendered as the child text of `<textarea>`, on the client
+//! it is updated through `prop:value`. Without `value` the field is uncontrolled, and `p-filled` is not tracked.
 //!
-//! `auto_resize` подгоняет высоту по `scrollHeight` (с учётом встроенного `max-height`) в браузере; `on_resize` вызывается после подгонки.
+//! `auto_resize` adjusts the height by `scrollHeight` (taking the inline `max-height` into account) in the browser; `on_resize` is called after the adjustment.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -27,7 +27,7 @@ use std::sync::Arc;
 
 pub use state::{Fit, TextareaState, fit_height, write_classes};
 
-/// Подгонка высоты по содержимому (только в браузере).
+/// Height adjustment to the content (browser only).
 #[cfg(target_arch = "wasm32")]
 fn resize(el: &web_sys::HtmlTextAreaElement, on_resize: Option<Callback<Option<web_sys::Event>>>, event: Option<web_sys::Event>) {
     let style = web_sys::HtmlElement::style(AsRef::<web_sys::HtmlElement>::as_ref(el));
@@ -45,84 +45,84 @@ fn resize(el: &web_sys::HtmlTextAreaElement, on_resize: Option<Callback<Option<w
     }
 }
 
-/// Многострочное поле ввода.
+/// Multi-line input field.
 ///
-/// Каждое свойство принимает значение или сигнал. `value` — двусторонняя привязка (`RwSignal<String>`).
+/// Each property accepts a value or a signal. `value` is a two-way binding (`RwSignal<String>`).
 #[component]
 pub fn Textarea(
-    /// Двусторонне связанное значение; без него поле неконтролируемое.
+    /// Two-way bound value; without it the field is uncontrolled.
     #[prop(optional)]
     value: Option<RwSignal<String>>,
-    /// Атрибут `id`.
+    /// `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `name`.
+    /// `name` attribute.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Подсказка в пустом поле.
+    /// Hint in the empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Число строк (`rows`).
+    /// Number of rows (`rows`).
     #[prop(optional, into)]
     rows: OptProp<u32>,
-    /// Число столбцов (`cols`).
+    /// Number of columns (`cols`).
     #[prop(optional, into)]
     cols: OptProp<u32>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-describedby`.
+    /// `aria-describedby` attribute.
     #[prop(optional, into)]
     aria_describedby: OptProp<String>,
-    /// Недоступно.
+    /// Unavailable.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Только для чтения.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Обязательное.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Максимальная длина (`maxlength`).
+    /// Maximum length (`maxlength`).
     #[prop(optional, into)]
     maxlength: OptProp<i32>,
-    /// Автоматическая подгонка высоты по содержимому.
+    /// Automatic height adjustment to the content.
     #[prop(optional)]
     auto_resize: bool,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Вариант; если не задан, берётся `PrimeConfig.input_variant`.
+    /// Variant; if not set, `PrimeConfig.input_variant` is used.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// На всю ширину контейнера.
+    /// Full width of the container.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при вводе, после записи значения в `value`.
+    /// Called on input, after the value is written to `value`.
     #[prop(optional, into)]
     on_input: Option<Callback<web_sys::Event>>,
-    /// Вызывается при фиксации значения (потеря фокуса).
+    /// Called when the value is committed (focus lost).
     #[prop(optional, into)]
     on_change: Option<Callback<web_sys::Event>>,
-    /// Вызывается при получении фокуса.
+    /// Called when focus is received.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса.
+    /// Called when focus is lost.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается после подгонки высоты (`auto_resize`); событие — если подгонка вызвана вводом.
+    /// Called after the height adjustment (`auto_resize`); the event is passed if the adjustment was caused by input.
     #[prop(optional, into)]
     on_resize: Option<Callback<Option<web_sys::Event>>>,
-    /// Pass-through корня.
+    /// Pass-through of the root.
     #[prop(optional)]
     pt: Option<Pt>,
 ) -> impl IntoView {
@@ -171,7 +171,7 @@ pub fn Textarea(
     };
     let attrs = pt.attrs();
 
-    // `NodeRef` и `Effect` нужны только клиенту с `auto_resize`; при SSR их нет вовсе.
+    // `NodeRef` and `Effect` are needed only by the client with `auto_resize`; during SSR they are absent altogether.
     #[cfg(target_arch = "wasm32")]
     let node = {
         let node = NodeRef::<leptos::html::Textarea>::new();
@@ -297,7 +297,7 @@ pub fn Textarea(
     }
 }
 
-/// Разметка Textarea: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// Textarea markup: one for the static and reactive branches (only the attribute expressions differ).
 macro_rules! textarea_markup {
     (
         $class:expr, $style:expr, $id:expr, $name:expr, $placeholder:expr, $rows:expr, $cols:expr, $aria_label:expr, $aria_describedby:expr,
@@ -334,11 +334,11 @@ macro_rules! textarea_markup {
 }
 use textarea_markup;
 
-/// Начальный текст `<textarea>` для SSR и гидратации.
+/// Initial text of the `<textarea>` for SSR and hydration.
 ///
-/// Leptos выводит детей `<textarea>` без экранирования (как `<script>`), поэтому `&`, `<` и `>` экранируются здесь, иначе значение вроде
-/// `</textarea><script>` ломало бы разметку. Парсер HTML отбрасывает первый перевод строки внутри `<textarea>`, поэтому ведущий
-/// перевод строки значения защищается лишним. В чисто клиентской сборке (CSR) текст остаётся как есть: значение поля задаёт `prop:value`.
+/// Leptos renders the children of `<textarea>` without escaping (like `<script>`), so `&`, `<` and `>` are escaped here, otherwise a value like
+/// `</textarea><script>` would break the markup. The HTML parser drops the first line break inside `<textarea>`, so a leading line break of the value is protected by an extra one.
+/// In a pure client build (CSR) the text stays as is: the field value is set by `prop:value`.
 fn initial_text(value: &str) -> String {
     if cfg!(all(target_arch = "wasm32", not(feature = "hydrate"))) {
         return value.to_owned();
@@ -381,7 +381,7 @@ fn style_of(props: &Props, pt: &Pt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.has_style()).then(|| pt.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     value: Option<RwSignal<String>>,
     auto_resize: bool,

@@ -1,5 +1,5 @@
-//! Поведение Listbox в реальном браузере (wasm-bindgen-test): выбор мышью и клавишами, мета-режим, множественный выбор,
-//! диапазоны, `Ctrl+A`, поиск набором и полем, флажки, события, блокировки, фокус.
+//! Listbox behavior in a real browser (wasm-bindgen-test): mouse and keyboard selection, meta mode, multiple selection,
+//! ranges, `Ctrl+A`, type-ahead and field search, checkboxes, events, locking, focus.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -23,7 +23,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -35,7 +35,7 @@ fn list(host: &HtmlElement) -> HtmlElement {
 }
 
 fn opt(host: &HtmlElement, i: u32) -> HtmlElement {
-    host.query_selector_all(".p-listbox-option").unwrap().item(i).unwrap_or_else(|| panic!("нет варианта {i}")).dyn_into().unwrap()
+    host.query_selector_all(".p-listbox-option").unwrap().item(i).unwrap_or_else(|| panic!("no option {i}")).dyn_into().unwrap()
 }
 
 fn count(host: &HtmlElement, sel: &str) -> u32 {
@@ -129,7 +129,7 @@ async fn click_selects_and_second_click_clears_in_single_mode() {
     assert_eq!(opt(&host, 0).get_attribute("aria-selected").as_deref(), Some("true"));
     opt(&host, 2).click();
     leptos::task::tick().await;
-    assert_eq!(selected(&host), ["London"], "выбор заменяет прежний");
+    assert_eq!(selected(&host), ["London"], "selection replaces the previous one");
     opt(&host, 2).click();
     leptos::task::tick().await;
     assert_eq!(value.get_untracked(), None);
@@ -164,7 +164,7 @@ async fn disabled_option_readonly_and_disabled_list_ignore_clicks() {
     leptos::task::tick().await;
     opt(&host, 1).click();
     leptos::task::tick().await;
-    assert_eq!(value.get_untracked(), None, "недоступный вариант");
+    assert_eq!(value.get_untracked(), None, "disabled option");
     readonly.set(true);
     opt(&host, 0).click();
     leptos::task::tick().await;
@@ -188,7 +188,7 @@ async fn meta_key_selection_needs_ctrl_to_clear_in_single_mode() {
     leptos::task::tick().await;
     click_with(&opt(&host, 0), false);
     leptos::task::tick().await;
-    assert_eq!(value.get_untracked().as_deref(), Some("NY"), "без Ctrl выбор остаётся");
+    assert_eq!(value.get_untracked().as_deref(), Some("NY"), "without Ctrl the selection stays");
     click_with(&opt(&host, 0), true);
     leptos::task::tick().await;
     assert_eq!(value.get_untracked(), None);
@@ -252,7 +252,7 @@ async fn list_focus_highlights_first_valid_or_selected_option_and_blur_clears() 
     leptos::task::tick().await;
     assert_eq!(focused_label(&host), None);
     assert!(list(&host).get_attribute("aria-activedescendant").is_none());
-    // с выбранным значением фокус на нём
+    // with a selected value, focus is on it
     value.set(Some("IST".to_owned()));
     focus_list(&host);
     leptos::task::tick().await;
@@ -269,13 +269,13 @@ async fn arrows_home_end_skip_disabled_and_enter_space_select() {
     focus_list(&host);
     press(&host, "ArrowDown");
     leptos::task::tick().await;
-    assert_eq!(focused_label(&host).as_deref(), Some("London"), "Rome пропущен");
+    assert_eq!(focused_label(&host).as_deref(), Some("London"), "Rome is skipped");
     press(&host, "End");
     leptos::task::tick().await;
     assert_eq!(focused_label(&host).as_deref(), Some("Paris"));
     press(&host, "ArrowDown");
     leptos::task::tick().await;
-    assert_eq!(focused_label(&host).as_deref(), Some("Paris"), "дальше некуда");
+    assert_eq!(focused_label(&host).as_deref(), Some("Paris"), "nowhere further");
     press(&host, "ArrowUp");
     leptos::task::tick().await;
     assert_eq!(focused_label(&host).as_deref(), Some("Istanbul"));
@@ -287,7 +287,7 @@ async fn arrows_home_end_skip_disabled_and_enter_space_select() {
     assert_eq!(value.get_untracked().as_deref(), Some("NY"));
     press(&host, "Space");
     leptos::task::tick().await;
-    assert_eq!(value.get_untracked(), None, "Space снимает выбор");
+    assert_eq!(value.get_untracked(), None, "Space clears the selection");
     host.remove();
 }
 
@@ -303,7 +303,7 @@ async fn shift_arrows_select_a_range_and_ctrl_a_selects_everything_valid() {
     press_shift(&host, "ArrowDown");
     press_shift(&host, "ArrowDown");
     leptos::task::tick().await;
-    assert_eq!(values.get_untracked(), ["NY", "LDN", "IST"], "диапазон без отключённого");
+    assert_eq!(values.get_untracked(), ["NY", "LDN", "IST"], "range without the disabled one");
     press_shift(&host, "ArrowUp");
     leptos::task::tick().await;
     assert_eq!(values.get_untracked(), ["NY", "LDN"]);
@@ -328,7 +328,7 @@ async fn typing_moves_focus_to_a_matching_option_and_resets_after_a_pause() {
     assert_eq!(focused_label(&host).as_deref(), Some("Istanbul"));
     key_with(&list(&host), "KeyS", "s", false, false);
     leptos::task::tick().await;
-    assert_eq!(focused_label(&host).as_deref(), Some("Istanbul"), "накопленная строка «is»");
+    assert_eq!(focused_label(&host).as_deref(), Some("Istanbul"), "accumulated string \"is\"");
     host.remove();
 }
 
@@ -352,7 +352,7 @@ async fn hover_moves_focus_only_while_the_list_is_focused() {
     leptos::task::tick().await;
     opt(&host, 2).dispatch_event(&Event::new("mouseenter").unwrap()).unwrap();
     leptos::task::tick().await;
-    assert_eq!(focused_label(&host), None, "список без фокуса");
+    assert_eq!(focused_label(&host), None, "list without focus");
     focus_list(&host);
     opt(&host, 3).dispatch_event(&Event::new("mouseenter").unwrap()).unwrap();
     leptos::task::tick().await;
@@ -403,7 +403,7 @@ async fn filter_arrows_move_the_option_focus_and_enter_selects() {
     assert_eq!(value.get_untracked().as_deref(), Some("NY"));
     key_with(&input, "ArrowLeft", "ArrowLeft", false, false);
     leptos::task::tick().await;
-    assert_eq!(focused_label(&host), None, "стрелка влево сбрасывает вариант");
+    assert_eq!(focused_label(&host), None, "left arrow clears the option");
     host.remove();
 }
 
@@ -419,15 +419,15 @@ async fn checkbox_mode_toggles_options_and_select_all_respects_the_filter() {
         view! { <Listbox options=cities() multiple=true checkbox=true filter=true values=values on_change=on_change on_select_all_change=on_all /> }
     });
     leptos::task::tick().await;
-    // клик по флажку варианта выбирает его
+    // a click on the option checkbox selects it
     let first_box: HtmlElement = opt(&host, 0).query_selector(".p-checkbox-input").unwrap().unwrap().dyn_into().unwrap();
     first_box.click();
     leptos::task::tick().await;
     assert_eq!(values.get_untracked(), ["NY"]);
     assert!(opt(&host, 0).query_selector(".p-checkbox-checked").unwrap().is_some());
     let input_checked = first_box.dyn_into::<HtmlInputElement>().unwrap().checked();
-    assert!(input_checked, "поле флажка отмечено");
-    // «выбрать все» при фильтре «n» — только видимые доступные
+    assert!(input_checked, "checkbox input is checked");
+    // "select all" with the filter "n": only visible enabled ones
     let filter: HtmlInputElement = q(&host, ".p-listbox-filter").dyn_into().unwrap();
     filter.set_value("n");
     filter.dispatch_event(&Event::new("input").unwrap()).unwrap();
@@ -440,7 +440,7 @@ async fn checkbox_mode_toggles_options_and_select_all_respects_the_filter() {
     assert!(q(&host, ".p-listbox-header .p-checkbox").class_name().contains("p-checkbox-checked"));
     toggle.click();
     leptos::task::tick().await;
-    assert!(values.get_untracked().is_empty(), "повторный клик снимает выбор");
+    assert!(values.get_untracked().is_empty(), "a second click clears the selection");
     assert_eq!(*all.lock().unwrap(), [true, false]);
     assert_eq!(log.lock().unwrap().len(), 3);
     host.remove();
@@ -462,7 +462,7 @@ async fn click_and_double_click_events_carry_the_option() {
     opt(&host, 1).click();
     opt(&host, 1).dispatch_event(&Event::new("dblclick").unwrap()).unwrap();
     leptos::task::tick().await;
-    assert_eq!(*clicks.lock().unwrap(), ["click:LDN", "dbl:LDN"], "недоступный вариант событий не вызывает");
+    assert_eq!(*clicks.lock().unwrap(), ["click:LDN", "dbl:LDN"], "a disabled option triggers no events");
     host.remove();
 }
 

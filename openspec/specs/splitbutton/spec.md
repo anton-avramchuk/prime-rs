@@ -1,61 +1,61 @@
 # splitbutton Specification
 
 ## Purpose
-SplitButton объединяет кнопку с действием по умолчанию и кнопку-стрелку, которая раскрывает всплывающее меню дополнительных команд.
+SplitButton combines a button with a default action and an arrow button that opens a popup menu of additional commands.
 
 ## Requirements
 
-### Requirement: Разметка
-`SplitButton` крейта `prime-splitbutton` SHALL выводить `div.p-splitbutton.p-component` с `data-p-severity` (при `severity`), модификаторами `p-splitbutton-raised`, `p-splitbutton-rounded`, `p-splitbutton-outlined`, `p-splitbutton-text`, `p-splitbutton-sm`/`p-splitbutton-lg` (по `size`), `style`, `style_class` и `pt`. Внутри в порядке: основная кнопка `button.p-button.p-splitbutton-button` (метка `label`, значок `icon` с `icon_pos`), кнопка раскрытия `button.p-button.p-splitbutton-dropdown.p-button-icon-only` со значком стрелки или `dropdown_icon`, всплывающее меню. Основная и дополнительная кнопки SHALL наследовать `severity`, `text`, `outlined`, `size` и `plain` от `SplitButton`; `raised` и `rounded` SHALL задаваться классами корня.
+### Requirement: Markup
+`SplitButton` of crate `prime-splitbutton` SHALL render `div.p-splitbutton.p-component` with `data-p-severity` (when `severity` is set), modifiers `p-splitbutton-raised`, `p-splitbutton-rounded`, `p-splitbutton-outlined`, `p-splitbutton-text`, `p-splitbutton-sm`/`p-splitbutton-lg` (by `size`), `style`, `style_class` and `pt`. Inside, in order: the main button `button.p-button.p-splitbutton-button` (label `label`, icon `icon` with `icon_pos`), the dropdown button `button.p-button.p-splitbutton-dropdown.p-button-icon-only` with an arrow icon or `dropdown_icon`, the popup menu. The main and dropdown buttons SHALL inherit `severity`, `text`, `outlined`, `size` and `plain` from `SplitButton`; `raised` and `rounded` SHALL be set by root classes.
 
-#### Scenario: Состав
-- **WHEN** отрисован `SplitButton` с `label = "Save"` и `model`
-- **THEN** выведены две кнопки: «Save» с классом `p-splitbutton-button` и стрелка с классом `p-splitbutton-dropdown`
+#### Scenario: Composition
+- **WHEN** a `SplitButton` with `label = "Save"` and `model` is rendered
+- **THEN** two buttons are rendered: "Save" with class `p-splitbutton-button` and an arrow with class `p-splitbutton-dropdown`
 
-#### Scenario: Модификаторы
-- **WHEN** заданы `raised`, `rounded`, `size = small`, `severity = success`
-- **THEN** корень имеет классы `p-splitbutton-raised`, `p-splitbutton-rounded`, `p-splitbutton-sm` и `data-p-severity="success"`, а обе кнопки — класс `p-button-success`
+#### Scenario: Modifiers
+- **WHEN** `raised`, `rounded`, `size = small`, `severity = success` are set
+- **THEN** the root has classes `p-splitbutton-raised`, `p-splitbutton-rounded`, `p-splitbutton-sm` and `data-p-severity="success"`, and both buttons have class `p-button-success`
 
-### Requirement: Основная кнопка
-Клик по основной кнопке SHALL вызывать `on_click` с событием и закрывать меню, если оно открыто. `content` SHALL заменять содержимое основной кнопки (вместо метки и значка). `disabled` и `button_disabled` SHALL делать основную кнопку недоступной (`disabled`); `tabindex`, `autofocus` и `button_aria_label` SHALL применяться к ней.
+### Requirement: Main button
+A click on the main button SHALL call `on_click` with the event and close the menu if it is open. `content` SHALL replace the content of the main button (instead of the label and icon). `disabled` and `button_disabled` SHALL make the main button unavailable (`disabled`); `tabindex`, `autofocus` and `button_aria_label` SHALL apply to it.
 
-#### Scenario: Клик
-- **WHEN** пользователь кликает по основной кнопке при открытом меню
-- **THEN** вызван `on_click`, меню закрыто
+#### Scenario: Click
+- **WHEN** the user clicks the main button while the menu is open
+- **THEN** `on_click` is called, the menu is closed
 
-#### Scenario: Недоступность
-- **WHEN** задан `button_disabled`
-- **THEN** основная кнопка имеет `disabled`, а кнопка раскрытия остаётся доступной
+#### Scenario: Unavailability
+- **WHEN** `button_disabled` is set
+- **THEN** the main button has `disabled`, and the dropdown button stays available
 
-### Requirement: Кнопка раскрытия
-Кнопка раскрытия SHALL иметь `aria-haspopup="true"`, `aria-expanded` (`true` пока меню открыто), `aria-controls` (идентификатор меню) и `aria-label` из `expand_aria_label`. Клик по ней SHALL вызывать `on_dropdown_click` и переключать меню; нажатие ↓ или ↑ на ней SHALL переключать меню и отменять действие по умолчанию. `disabled` и `menu_button_disabled` SHALL делать её недоступной.
+### Requirement: Dropdown button
+The dropdown button SHALL have `aria-haspopup="true"`, `aria-expanded` (`true` while the menu is open), `aria-controls` (the menu identifier) and `aria-label` from `expand_aria_label`. A click on it SHALL call `on_dropdown_click` and toggle the menu; pressing ↓ or ↑ on it SHALL toggle the menu and cancel the default action. `disabled` and `menu_button_disabled` SHALL make it unavailable.
 
-#### Scenario: Открытие
-- **WHEN** пользователь кликает по кнопке раскрытия
-- **THEN** меню открыто, `aria-expanded="true"`, вызваны `on_dropdown_click` и `on_menu_show`
+#### Scenario: Opening
+- **WHEN** the user clicks the dropdown button
+- **THEN** the menu is open, `aria-expanded="true"`, `on_dropdown_click` and `on_menu_show` are called
 
-#### Scenario: Клавиша
-- **WHEN** фокус на кнопке раскрытия и нажата ↓
-- **THEN** меню открыто, действие по умолчанию отменено
+#### Scenario: Key
+- **WHEN** focus is on the dropdown button and ↓ is pressed
+- **THEN** the menu is open, the default action is cancelled
 
-#### Scenario: Закрытие
-- **WHEN** меню открыто и пользователь кликает вне компонента
-- **THEN** меню закрыто, `aria-expanded="false"`, вызван `on_menu_hide`
+#### Scenario: Closing
+- **WHEN** the menu is open and the user clicks outside the component
+- **THEN** the menu is closed, `aria-expanded="false"`, `on_menu_hide` is called
 
-### Requirement: Меню
-Меню SHALL быть всплывающим `Menu` с `model`, `menu_style`, `menu_style_class` и привязываться к корню `SplitButton` (панель выравнивается под всем компонентом, а не под стрелкой). Выбор пункта меню SHALL закрывать меню и выполнять `command` пункта, как у `Menu`.
+### Requirement: Menu
+The menu SHALL be a popup `Menu` with `model`, `menu_style`, `menu_style_class` and be attached to the `SplitButton` root (the panel is aligned under the whole component, not under the arrow). Selecting a menu item SHALL close the menu and run the item `command`, as in `Menu`.
 
-#### Scenario: Положение
-- **WHEN** меню открыто
-- **THEN** панель меню расположена под корнем `SplitButton` и не уже его
+#### Scenario: Position
+- **WHEN** the menu is open
+- **THEN** the menu panel is located under the `SplitButton` root and is not narrower than it
 
-#### Scenario: Команда
-- **WHEN** пользователь выбирает пункт меню с `command`
-- **THEN** `command` выполнена, меню закрыто
+#### Scenario: Command
+- **WHEN** the user selects a menu item with a `command`
+- **THEN** the `command` is run, the menu is closed
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) `SplitButton` SHALL отрисовываться с обеими кнопками и закрытым меню (панель не выводится); `window` и `document` SHALL не использоваться.
+### Requirement: Rendering without a browser
+Outside the browser (SSR) `SplitButton` SHALL render with both buttons and a closed menu (the panel is not rendered); `window` and `document` SHALL NOT be used.
 
 #### Scenario: SSR
-- **WHEN** страница со `SplitButton` отрисована на сервере
-- **THEN** в разметке две кнопки, `aria-expanded="false"` и нет панели меню
+- **WHEN** a page with `SplitButton` is rendered on the server
+- **THEN** the markup has two buttons, `aria-expanded="false"` and no menu panel

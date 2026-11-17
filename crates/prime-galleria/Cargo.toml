@@ -1,6 +1,6 @@
 [package]
 name = "prime-galleria"
-description = "prime-rs: компонент Galleria (порт PrimeNG)"
+description = "prime-rs: Galleria component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -20,7 +20,7 @@ prime-icons = { workspace = true, features = ["times", "chevronleft", "chevronri
 web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "TouchEvent", "TouchList", "Touch", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration", "AnimationEvent", "TransitionEvent"] }
 wasm-bindgen = { workspace = true }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client-side event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

@@ -1,4 +1,4 @@
-//! Страница Checkbox: демонстрации `basic`, `multiple`, `filled`, `sizes`, `indeterminate`, `invalid`, `disabled` из showcase PrimeNG
+//! Checkbox page: the `basic`, `multiple`, `filled`, `sizes`, `indeterminate`, `invalid`, `disabled` demos from the PrimeNG showcase
 //! (`apps/showcase/doc/checkbox`).
 
 use super::Demo;
@@ -6,7 +6,7 @@ use leptos::prelude::*;
 use prime_checkbox::Checkbox;
 use prime_core::{Size, Variant};
 
-/// Страница `/checkbox`.
+/// `/checkbox` page.
 #[component]
 pub fn CheckboxPage() -> impl IntoView {
     let checked = RwSignal::new(false);

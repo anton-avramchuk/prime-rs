@@ -2,49 +2,49 @@
 
 ## Context
 
-Требования — в `specs/tree`. Исходники PrimeNG 21.1.10: `tree/tree.ts` (`UITreeNode` — узел и клавиатура, `Tree` — выбор, фильтр, раскрытие), `tree/style/treestyle.ts`; демонстрации `apps/showcase/doc/tree/{basic,single,multiple,checkbox,controlled,event,filter,lazy,template}-doc.ts`. Образцы в проекте — `prime-panelmenu` (раскрытые ключи, фокус по ключу, `PanelMenuRef`), `prime-multiselect` (разметка флажка и фильтра), `prime-iconfield`/`prime-inputtext`.
+Requirements are in `specs/tree`. PrimeNG 21.1.10 sources: `tree/tree.ts` (`UITreeNode` — node and keyboard, `Tree` — selection, filter, expansion), `tree/style/treestyle.ts`; demos `apps/showcase/doc/tree/{basic,single,multiple,checkbox,controlled,event,filter,lazy,template}-doc.ts`. Reference implementations in the project are `prime-panelmenu` (expanded keys, focus by key, `PanelMenuRef`), `prime-multiselect` (checkbox and filter markup), `prime-iconfield`/`prime-inputtext`.
 
-В PrimeNG состояние (`expanded`, `partialSelected`) пишется в сами узлы, а фокус хранится в DOM (`tabindex` переставляется вручную). У нас модель неизменяема, а состояние лежит в сигналах.
+In PrimeNG state (`expanded`, `partialSelected`) is written into the nodes themselves, and focus is kept in the DOM (`tabindex` is moved manually). Ours keeps the model immutable and the state lives in signals.
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы, `aria-*`, выбор, фильтр и клавиши.
+**Goals:** the same DOM, classes, `aria-*`, selection, filter and keys.
 
-**Non-Goals:** перетаскивание, виртуальная прокрутка, `contextMenu`, `trackBy`, шаблоны `header`/`footer`/`loader`, `filterOptions`.
+**Non-Goals:** drag and drop, virtual scroll, `contextMenu`, `trackBy`, `header`/`footer`/`loader` templates, `filterOptions`.
 
 ## Decisions
 
-### D1. Состояние
-`expanded: RwSignal<HashSet<String>>` (ключи; начальные из `TreeNode::expanded`, внешний сигнал `expanded_keys` — двусторонний) и `selection: RwSignal<Vec<String>>` (ключи; внешний сигнал — двусторонний). Частичный выбор вычисляется из выбора (`partial(node) = не выбран и выбран хотя бы один потомок`), а не хранится.
+### D1. State
+`expanded: RwSignal<HashSet<String>>` (keys; initial ones from `TreeNode::expanded`, the external `expanded_keys` signal is two-way) and `selection: RwSignal<Vec<String>>` (keys; the external signal is two-way). Partial selection is computed from the selection (`partial(node) = not selected and at least one descendant is selected`), not stored.
 
-### D2. Чистая модель (`state.rs`)
-Плоский список узлов с ключом, родителем, уровнем и признаками (`leaf`, `selectable`), построенный из `value`. Функции без `web_sys` и с табличными тестами: `visible(nodes, expanded)`, `toggle_select(...)` для каждого режима (включая `meta`), `propagate_up/down`, `is_partial`, `filter_tree(nodes, text, by, strict)` (порт `_filter`/`isFilterMatched`/`findFilteredNodes`; возвращает отфильтрованное дерево и ключи для раскрытия), `next/prev/first/last`, `arrow_left/right`, `tab_stop`.
+### D2. Pure model (`state.rs`)
+A flat list of nodes with key, parent, level and flags (`leaf`, `selectable`), built from `value`. Functions without `web_sys` and with table-driven tests: `visible(nodes, expanded)`, `toggle_select(...)` for each mode (including `meta`), `propagate_up/down`, `is_partial`, `filter_tree(nodes, text, by, strict)` (a port of `_filter`/`isFilterMatched`/`findFilteredNodes`; returns the filtered tree and the keys to expand), `next/prev/first/last`, `arrow_left/right`, `tab_stop`.
 
-### D3. Фильтр
-Поле — `InputText` в `IconField` с `SearchIcon`; текст — сигнал; отфильтрованное дерево — `Memo` от `value` и текста. Ключи, раскрытые фильтром, добавляются в `expanded` при вводе (как `node.expanded = true` на копиях PrimeNG).
+### D3. Filter
+The field is an `InputText` in an `IconField` with `SearchIcon`; the text is a signal; the filtered tree is a `Memo` of `value` and the text. Keys expanded by the filter are added to `expanded` on input (like `node.expanded = true` on PrimeNG copies).
 
-### D4. Разметка и фокус
-Рекурсивная функция уровня; фокус — сигнал ключа, `tabindex` у `li` реактивный (`0` у узла-«опоры»: сфокусированный, иначе выбранный, иначе первый); перенос фокуса — `focus()` по `id` (`<id дерева>_<ключ>`) под `cfg(wasm32)`. Чтение сигналов при построении вида — только `*_untracked` (иначе перестраивается всё дерево и теряется фокус).
+### D4. Markup and focus
+A recursive per-level function; focus is a key signal, the `li` `tabindex` is reactive (`0` on the "anchor" node: the focused one, else the selected one, else the first); focus is moved with `focus()` by `id` (`<tree id>_<key>`) under `cfg(wasm32)`. Signals are read while building the view only via `*_untracked` (otherwise the whole tree is rebuilt and focus is lost).
 
-### D5. Флажок
-Разметка `p-checkbox` внутри узла своя (по `prime_checkbox::{CheckboxState, write_classes, data_p}`), как в MultiSelect; частичное состояние — `MinusIcon`, `data-p-partialchecked`.
+### D5. Checkbox
+The `p-checkbox` markup inside the node is our own (via `prime_checkbox::{CheckboxState, write_classes, data_p}`), as in MultiSelect; the partial state is `MinusIcon`, `data-p-partialchecked`.
 
-### D6. Ленивая загрузка
-Нет встроенного загрузчика: `on_node_expand` получает узел, а пользователь обновляет `value`-сигнал (`loading`, `children`). Спиннер вместо шеврона — при `loading_mode = Icon`, маска — при `loading` самого дерева.
+### D6. Lazy loading
+There is no built-in loader: `on_node_expand` receives the node and the user updates the `value` signal (`loading`, `children`). A spinner instead of the chevron — with `loading_mode = Icon`, a mask — when the tree itself is `loading`.
 
-### D7. Тесты
-SSR: разметка, ARIA, режимы выбора, раскрытие из модели, пусто, шаблоны, `pt`. Браузерные `tests/web.rs` одним последовательным тестом: раскрытие, выбор во всех режимах, распространение флажков, фильтр, клавиатура, события; после `dispatch` клавиши ждать `sleep(10)`. e2e: раскладка темой, отступы по уровням, клавиатура, фильтр, флажки.
+### D7. Tests
+SSR: markup, ARIA, selection modes, expansion from the model, empty, templates, `pt`. Browser `tests/web.rs` as one sequential test: expansion, selection in all modes, checkbox propagation, filter, keyboard, events; after a key `dispatch` wait `sleep(10)`. e2e: theme layout, per-level indents, keyboard, filter, checkboxes.
 
 ## Risks / Trade-offs
 
-- [Своя модель вместо мутабельных узлов] Расхождение в частичном выборе → он выводится из выбора, как итог `propagateUp`, табличные тесты.
-- [Фильтр копирует узлы] В PrimeNG выбор по отфильтрованным копиям; у нас ключи, поэтому выбор общий для полного и отфильтрованного дерева.
-- [Большие деревья] Вид перестраивается при смене `value` и фильтра; раскрытие и выбор реактивны на уровне атрибутов. Виртуальной прокрутки нет.
+- [Own model instead of mutable nodes] Divergence in partial selection → it is derived from the selection, as the result of `propagateUp`, table-driven tests.
+- [The filter copies nodes] In PrimeNG selection works on the filtered copies; ours uses keys, so the selection is shared between the full and the filtered tree.
+- [Large trees] The view is rebuilt when `value` and the filter change; expansion and selection are reactive at the attribute level. No virtual scroll.
 
 ## Open Questions
 
-- Как PrimeNG ведёт себя при `Enter` на узле при `selection_mode = None` (ничего) — сверить.
+- How PrimeNG behaves on `Enter` on a node with `selection_mode = None` (nothing) — to verify.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

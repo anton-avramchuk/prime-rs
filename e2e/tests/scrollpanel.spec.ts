@@ -3,14 +3,14 @@ import { expect, test } from '@playwright/test';
 test.describe('ScrollPanel', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/scrollpanel');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-scrollpanel')).toBeVisible();
-        // полосы считаются после гидрации
+        // bars are computed after hydration
         await expect(page.locator('[data-demo=basic] .p-scrollpanel-bar-y')).toHaveAttribute('data-p-scrollpanel-hidden', 'false');
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(2);
         const root = page.locator('[data-demo=basic] .p-scrollpanel');
         expect(await root.evaluate((el) => el.getBoundingClientRect().height)).toBeCloseTo(150, 0);
@@ -18,7 +18,7 @@ test.describe('ScrollPanel', () => {
         expect(await content.evaluate((el) => getComputedStyle(el).scrollbarWidth)).toBe('none');
     });
 
-    test('ARIA полос и связь с содержимым', async ({ page }) => {
+    test('bar ARIA and link with the content', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-scrollpanel');
         const id = await root.locator('.p-scrollpanel-content').getAttribute('id');
         expect(id).toMatch(/^pn_id_\d+_content$/);
@@ -29,13 +29,13 @@ test.describe('ScrollPanel', () => {
         await expect(root.locator('.p-scrollpanel-bar-x')).toHaveAttribute('aria-orientation', 'horizontal');
     });
 
-    test('горизонтальная полоса скрыта, вертикальная видна', async ({ page }) => {
+    test('the horizontal bar is hidden, the vertical one is visible', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-scrollpanel');
         await expect(root.locator('.p-scrollpanel-bar-x')).toHaveClass(/p-scrollpanel-hidden/);
         await expect(root.locator('.p-scrollpanel-bar-y')).not.toHaveClass(/p-scrollpanel-hidden/);
     });
 
-    test('прокрутка колесом сдвигает полосу и обновляет aria-valuenow', async ({ page }) => {
+    test('wheel scrolling moves the bar and updates aria-valuenow', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-scrollpanel');
         const y = root.locator('.p-scrollpanel-bar-y');
         const before = await y.evaluate((el) => (el as HTMLElement).style.top);
@@ -46,7 +46,7 @@ test.describe('ScrollPanel', () => {
         await expect.poll(async () => Number(await y.getAttribute('aria-valuenow'))).toBeGreaterThan(0);
     });
 
-    test('перетаскивание вертикальной полосы прокручивает содержимое', async ({ page }) => {
+    test('dragging the vertical bar scrolls the content', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-scrollpanel');
         await root.hover();
         const bar = root.locator('.p-scrollpanel-bar-y');
@@ -60,16 +60,16 @@ test.describe('ScrollPanel', () => {
         await expect(bar).not.toHaveClass(/p-scrollpanel-grabbed/);
     });
 
-    test('стрелка вниз на полосе прокручивает содержимое', async ({ page }) => {
+    test('arrow down on the bar scrolls the content', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-scrollpanel');
         await root.locator('.p-scrollpanel-bar-y').focus();
-        // как в PrimeNG, прокрутка идёт через 40 мс после нажатия, а keyup отменяет её: клавишу нужно удерживать
+        // as in PrimeNG, scrolling happens 40 ms after the press and keyup cancels it: the key must be held down
         await page.keyboard.down('ArrowDown');
         await expect.poll(() => root.locator('.p-scrollpanel-content').evaluate((el) => el.scrollTop)).toBe(5);
         await page.keyboard.up('ArrowDown');
     });
 
-    test('custom: цвет полосы берётся из primary', async ({ page }) => {
+    test('custom: the bar color comes from primary', async ({ page }) => {
         const custom = page.locator('[data-demo=custom] .p-scrollpanel');
         await expect(custom).toHaveClass(/custombar/);
         const bar = await custom.locator('.p-scrollpanel-bar-y').evaluate((el) => getComputedStyle(el).backgroundColor);

@@ -1,6 +1,6 @@
 [package]
 name = "render-bench"
-description = "Бенчмарки SSR-рендера и аллокаций компонентов prime-rs"
+description = "Benchmarks of SSR rendering and allocations of prime-rs components"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

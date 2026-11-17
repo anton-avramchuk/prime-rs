@@ -1,5 +1,5 @@
-//! Страница PickList: демонстрации `basic` и `filter` из showcase PrimeNG
-//! (`apps/showcase/doc/picklist`; перетаскивание и шаблоны не переносятся).
+//! PickList page: demos `basic` and `filter` from the PrimeNG showcase
+//! (`apps/showcase/doc/picklist`; drag and drop and templates are not ported).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -45,7 +45,7 @@ fn Filter() -> impl IntoView {
     }
 }
 
-/// Страница `/picklist`.
+/// Page `/picklist`.
 #[component]
 pub fn PickListPage() -> impl IntoView {
     view! {

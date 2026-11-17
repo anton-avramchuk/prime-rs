@@ -1,6 +1,6 @@
 [package]
 name = "prime-metergroup"
-description = "prime-rs: компонент MeterGroup (порт PrimeNG)"
+description = "prime-rs: MeterGroup component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -1,5 +1,5 @@
-//! Поведение FileUpload в реальном браузере (wasm-bindgen-test): выбор, проверки, лимит, удаление, очистка, перетаскивание,
-//! собственная загрузка, отправка по сети, режим `basic`. Сценарии идут одним последовательным тестом.
+//! FileUpload behaviour in a real browser (wasm-bindgen-test): selection, checks, limit, removal, clear, drag and drop,
+//! custom upload, network sending, `basic` mode. The scenarios run as one sequential test.
 #![cfg(target_arch = "wasm32")]
 #![recursion_limit = "512"]
 
@@ -46,7 +46,7 @@ fn all(root: &HtmlElement, selector: &str) -> Vec<HtmlElement> {
 }
 
 fn input(host: &HtmlElement) -> HtmlInputElement {
-    q(host, "input[type=file]").expect("нет поля выбора").dyn_into().unwrap()
+    q(host, "input[type=file]").expect("no file input").dyn_into().unwrap()
 }
 
 fn make_file(name: &str, kind: &str, content: &str) -> File {
@@ -64,7 +64,7 @@ fn data_transfer(files: &[File]) -> DataTransfer {
     dt
 }
 
-/// Подставляет файлы в поле и сообщает об изменении.
+/// Puts files into the input and reports the change.
 fn choose(host: &HtmlElement, files: &[File]) {
     let input = input(host);
     input.set_files(data_transfer(files).files().as_ref());
@@ -86,7 +86,7 @@ fn names(host: &HtmlElement) -> Vec<String> {
 }
 
 fn button(host: &HtmlElement, class: &str) -> HtmlElement {
-    q(host, class).unwrap_or_else(|| panic!("нет {class}: {}", host.outer_html()))
+    q(host, class).unwrap_or_else(|| panic!("no {class}: {}", host.outer_html()))
 }
 
 fn disabled(el: &HtmlElement) -> bool {
@@ -121,13 +121,13 @@ async fn selecting_and_removing() {
     assert_eq!(names(&host), ["a.txt", "b.png"]);
     assert_eq!(texts(&host, ".p-fileupload-file-size"), "5.000 B|2.000 B");
     assert_eq!(texts(&host, ".p-fileupload-file-badge"), "Pending|Pending");
-    assert_eq!(all(&host, ".p-fileupload-file-thumbnail").len(), 1, "превью только у изображения");
+    assert_eq!(all(&host, ".p-fileupload-file-thumbnail").len(), 1, "preview only for the image");
     assert!(q(&host, ".p-fileupload-file-thumbnail").unwrap().get_attribute("src").unwrap().starts_with("blob:"));
-    assert!(q(&host, ".p-progressbar").is_some(), "индикатор виден при наличии файлов");
+    assert!(q(&host, ".p-progressbar").is_some(), "the indicator is visible when there are files");
     assert!(!disabled(&button(&host, ".p-fileupload-upload-button")) && !disabled(&button(&host, ".p-fileupload-cancel-button")));
-    assert_eq!(input(&host).value(), "", "поле сброшено");
+    assert_eq!(input(&host).value(), "", "input reset");
 
-    // повторный выбор того же файла не дублирует
+    // selecting the same file again does not duplicate it
     choose(&host, &[make_file("a.txt", "text/plain", "hello")]);
     settle().await;
     assert_eq!(names(&host), ["a.txt", "b.png"]);
@@ -163,15 +163,15 @@ async fn validation_and_limit() {
 
     choose(&host, &[make_file("1.png", "image/png", "1"), make_file("2.png", "image/png", "22"), make_file("3.png", "image/png", "333")]);
     settle().await;
-    assert_eq!(names(&host).len(), 3, "лишние файлы добавляются, но лимит превышен");
+    assert_eq!(names(&host).len(), 3, "extra files are added, but the limit is exceeded");
     let messages = texts(&host, ".p-message");
     assert!(messages.contains("Maximum number of files exceeded,") && messages.contains("limit is 2 at most."), "{messages}");
-    assert!(disabled(&button(&host, ".p-fileupload-upload-button")), "загрузка недоступна при превышении");
-    assert!(disabled(&input(&host).dyn_into::<HtmlElement>().unwrap()), "выбор недоступен при достигнутом лимите");
+    assert!(disabled(&button(&host, ".p-fileupload-upload-button")), "upload is unavailable when exceeded");
+    assert!(disabled(&input(&host).dyn_into::<HtmlElement>().unwrap()), "choosing is unavailable when the limit is reached");
     all(&host, ".p-fileupload-file-remove-button")[2].click();
     settle().await;
-    assert!(!disabled(&button(&host, ".p-fileupload-upload-button")), "после удаления лимит соблюдён");
-    assert!(!texts(&host, ".p-message").contains("Maximum number"), "сообщение о лимите убрано");
+    assert!(!disabled(&button(&host, ".p-fileupload-upload-button")), "after removal the limit is met");
+    assert!(!texts(&host, ".p-message").contains("Maximum number"), "the limit message is removed");
     host.remove();
 }
 
@@ -183,7 +183,7 @@ async fn single_mode_replaces() {
     settle().await;
     choose(&host, &[make_file("b.txt", "text/plain", "b")]);
     settle().await;
-    assert_eq!(names(&host), ["b.txt"], "без multiple новый файл заменяет прежний");
+    assert_eq!(names(&host), ["b.txt"], "without multiple a new file replaces the previous one");
     host.remove();
 }
 
@@ -203,10 +203,10 @@ async fn drag_and_drop() {
     drag(&content, "drop", &[make_file("dropped.txt", "text/plain", "d")]);
     settle().await;
     assert_eq!(names(&host), ["dropped.txt"]);
-    assert!(!content.class_name().contains("p-fileupload-highlight"), "после drop подсветка снята");
+    assert!(!content.class_name().contains("p-fileupload-highlight"), "after drop the highlight is removed");
     host.remove();
 
-    // без multiple несколько перетащенных файлов отклоняются
+    // without multiple, several dropped files are rejected
     let host = host_again();
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <FileUpload url="/nowhere" /> });
     settle().await;
@@ -246,7 +246,7 @@ async fn custom_upload_and_auto() {
     button(&host, ".p-fileupload-upload-button").click();
     settle().await;
     assert_eq!(log.lock().unwrap().as_slice(), ["handler:2"]);
-    assert_eq!(names(&host).len(), 2, "при собственной загрузке список очищает приложение");
+    assert_eq!(names(&host).len(), 2, "with custom upload the application clears the list");
     let file_ref = r.get().unwrap();
     assert_eq!(file_ref.files().len(), 2);
     file_ref.clear();
@@ -254,7 +254,7 @@ async fn custom_upload_and_auto() {
     assert!(names(&host).is_empty());
     host.remove();
 
-    // auto: загрузка сразу после выбора
+    // auto: upload right after selection
     let (host, log) = (host_again(), Log::default());
     let l = log.clone();
     let _h = leptos::mount::mount_to(host.clone(), move || {
@@ -297,8 +297,8 @@ async fn network_error_keeps_files() {
     let log = log.lock().unwrap().clone();
     assert_eq!(log.first().map(String::as_str), Some("before"), "{log:?}");
     assert!(log.iter().any(|l| l.starts_with("error:1:")), "{log:?}");
-    assert_eq!(names(&host), ["a.txt"], "файл остался в списке");
-    assert!(!disabled(&button(&host, ".p-fileupload-cancel-button")), "после ошибки отмена снова доступна");
+    assert_eq!(names(&host), ["a.txt"], "the file stayed in the list");
+    assert!(!disabled(&button(&host, ".p-fileupload-cancel-button")), "after an error cancel is available again");
     host.remove();
 }
 

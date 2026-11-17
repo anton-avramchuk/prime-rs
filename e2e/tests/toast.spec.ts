@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 const message = (page: Page, demo: string) => page.locator(`[data-demo=${demo}] .p-toast-message`);
 
-// сообщение въезжает 300 мс (масштаб 0.6 → 1): размеры сравниваем после анимации входа
+// the message slides in over 300 ms (scale 0.6 → 1): compare sizes after the enter animation
 const stableBox = async (locator: ReturnType<Page['locator']>) => {
     let last = JSON.stringify(await locator.boundingBox());
     await expect
@@ -23,13 +23,13 @@ test.describe('Toast', () => {
         await expect(page.locator('[data-demo=basic] button')).toBeVisible();
     });
 
-    test('контейнеры пусты, пока не показали сообщение', async ({ page }) => {
+    test('containers are empty until a message is shown', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(11);
         await expect(page.locator('.p-toast-message')).toHaveCount(0);
         await expect(page.locator('[data-demo=basic] .p-toast')).toHaveClass(/p-toast-top-right/);
     });
 
-    test('basic: сообщение справа вверху, закрывается кнопкой', async ({ page }) => {
+    test('basic: message at top right, closes via the button', async ({ page }) => {
         await page.locator('[data-demo=basic]').getByRole('button', { name: 'Show' }).click();
         const m = message(page, 'basic');
         await expect(m).toBeVisible();
@@ -44,13 +44,13 @@ test.describe('Toast', () => {
         await expect(m).toHaveCount(0);
     });
 
-    test('сообщение закрывается само через life (3 секунды)', async ({ page }) => {
+    test('message closes on its own via life (3 seconds)', async ({ page }) => {
         await page.locator('[data-demo=basic]').getByRole('button', { name: 'Show' }).click();
         await expect(message(page, 'basic')).toBeVisible();
         await expect(message(page, 'basic')).toHaveCount(0, { timeout: 6000 });
     });
 
-    test('наведение мыши останавливает таймер, уход запускает заново', async ({ page }) => {
+    test('mouse hover stops the timer, leaving restarts it', async ({ page }) => {
         await page.locator('[data-demo=basic]').getByRole('button', { name: 'Show' }).click();
         const m = message(page, 'basic');
         await expect(m).toBeVisible();
@@ -61,7 +61,7 @@ test.describe('Toast', () => {
         await expect(m).toHaveCount(0, { timeout: 6000 });
     });
 
-    test('severity: класс по серьёзности', async ({ page }) => {
+    test('severity: class by severity', async ({ page }) => {
         const demo = page.locator('[data-demo=severity]');
         for (const [name, cls] of [['Error', 'error'], ['Warn', 'warn'], ['Contrast', 'contrast']] as const) {
             await demo.getByRole('button', { name, exact: true }).click();
@@ -69,12 +69,12 @@ test.describe('Toast', () => {
         }
     });
 
-    test('multiple: три сообщения сразу', async ({ page }) => {
+    test('multiple: three messages at once', async ({ page }) => {
         await page.locator('[data-demo=multiple]').getByRole('button', { name: 'Multiple' }).click();
         await expect(message(page, 'multiple')).toHaveCount(3);
     });
 
-    test('position: нижний левый угол', async ({ page }) => {
+    test('position: bottom left corner', async ({ page }) => {
         await page.locator('[data-demo=position]').getByRole('button', { name: 'Bottom Left' }).click();
         const m = message(page, 'position');
         await expect(m).toBeVisible();
@@ -84,7 +84,7 @@ test.describe('Toast', () => {
         expect(v.height - (b.y + b.height)).toBeLessThan(60);
     });
 
-    test('sticky остаётся, clear закрывает', async ({ page }) => {
+    test('sticky stays, clear closes', async ({ page }) => {
         await page.locator('[data-demo=sticky]').getByRole('button', { name: 'Sticky' }).click();
         await expect(message(page, 'sticky')).toBeVisible();
         await page.waitForTimeout(3600);
@@ -97,7 +97,7 @@ test.describe('Toast', () => {
         await expect(message(page, 'clear')).toHaveCount(0);
     });
 
-    test('target: сообщение попадает в Toast со своим ключом', async ({ page }) => {
+    test('target: message goes to the Toast with its own key', async ({ page }) => {
         const demo = page.locator('[data-demo=target]');
         await demo.getByRole('button', { name: 'Show Success' }).click();
         await expect(demo.locator('.p-toast-top-left .p-toast-message')).toHaveCount(1);
@@ -107,7 +107,7 @@ test.describe('Toast', () => {
         await expect(demo.locator('.p-toast-top-left .p-toast-message')).toHaveCount(0);
     });
 
-    test('responsive: на узком экране ширина 50%', async ({ page }) => {
+    test('responsive: 50% width on a narrow screen', async ({ page }) => {
         await page.setViewportSize({ width: 800, height: 700 });
         await page.locator('[data-demo=responsive]').getByRole('button', { name: 'Show' }).click();
         const toast = page.locator('[data-demo=responsive] .p-toast');
@@ -116,7 +116,7 @@ test.describe('Toast', () => {
         expect(Math.abs(b.width - 400)).toBeLessThan(3);
     });
 
-    test('template: свой вид сообщения, Reply закрывает', async ({ page }) => {
+    test('template: custom message view, Reply closes', async ({ page }) => {
         await page.locator('[data-demo=template]').getByRole('button', { name: 'View' }).click();
         const m = message(page, 'template');
         await expect(m).toContainText('Amy Elsner');
@@ -125,7 +125,7 @@ test.describe('Toast', () => {
         await expect(m).toHaveCount(0);
     });
 
-    test('headless: только своё содержимое, кнопка закрывает', async ({ page }) => {
+    test('headless: only custom content, the button closes', async ({ page }) => {
         await page.locator('[data-demo=headless]').getByRole('button', { name: 'Confirm' }).click();
         const m = message(page, 'headless');
         await expect(m).toContainText('Uploading your files.');

@@ -1,8 +1,8 @@
-//! TreeSelect — порт `p-treeselect` из PrimeNG 21.1.10.
+//! TreeSelect — port of `p-treeselect` from PrimeNG 21.1.10.
 //!
-//! Поле выбора узла (или узлов) дерева: метка с подписями через запятую либо чипами, значок очистки, кнопка раскрытия и
-//! панель внутри корня с готовым [`prime_tree::Tree`]. Значение — двусторонний сигнал ключей выбранных узлов
-//! (`RwSignal<Vec<String>>`; в режиме `Single` — 0 или 1 ключ). Режимы выбора, фильтр и сообщения передаются в `Tree`.
+//! A field for selecting a tree node (or nodes): a label with comma-separated captions or chips, a clear icon, a dropdown button and
+//! a panel inside the root with a ready-made [`prime_tree::Tree`]. The value is a two-way signal of the keys of selected nodes
+//! (`RwSignal<Vec<String>>`; in `Single` mode — 0 or 1 key). Selection modes, filter and messages are passed to `Tree`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -42,44 +42,44 @@ use prime_dom::dom::{AlignMode, align_overlay};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
-/// Как показывать выбранные узлы в метке.
+/// How to show selected nodes in the label.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TreeSelectDisplay {
-    /// Подписи через запятую.
+        /// Comma-separated captions.
     #[default]
     Comma,
-    /// Чипы.
+        /// Chips.
     Chip,
 }
 
-/// Pass-through частей [`TreeSelect`].
+/// Pass-through parts of [`TreeSelect`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TreeSelectPt {
-    /// Корень.
+        /// Root.
     pub root: Pt,
-    /// Контейнер скрытого поля.
+        /// Hidden field container.
     pub hidden_input_container: Pt,
-    /// Скрытое поле.
+        /// Hidden field.
     pub hidden_input: Pt,
-    /// Контейнер метки.
+        /// Label container.
     pub label_container: Pt,
-    /// Метка.
+        /// Label.
     pub label: Pt,
-    /// Элемент чипа.
+        /// Chip element.
     pub chip_item: Pt,
-    /// Значок очистки.
+        /// Clear icon.
     pub clear_icon: Pt,
-    /// Кнопка раскрытия.
+        /// Dropdown button.
     pub dropdown: Pt,
-    /// Стрелка кнопки.
+        /// Button arrow.
     pub dropdown_icon: Pt,
-    /// Панель.
+        /// Panel.
     pub panel: Pt,
-    /// Контейнер дерева.
+        /// Tree container.
     pub tree_container: Pt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: String,
@@ -115,7 +115,7 @@ impl Core {
         }
     }
 
-    /// `show()`: раскрывает предков выбранных узлов и открывает панель.
+        /// `show()`: expands the ancestors of selected nodes and opens the panel.
     fn show(&self) {
         if self.open.get_untracked() {
             return;
@@ -126,7 +126,7 @@ impl Core {
         self.open.set(true);
     }
 
-    /// `hide()`: закрывает панель.
+        /// `hide()`: closes the panel.
     fn hide(&self) {
         self.open.try_set(false);
     }
@@ -144,7 +144,7 @@ impl Core {
         }
     }
 
-    /// Клик по корню: открывает или закрывает панель, кроме кликов внутри панели.
+        /// Click on the root: opens or closes the panel, except clicks inside the panel.
     fn root_click(&self, e: &web_sys::MouseEvent) {
         if self.disabled.get_untracked() {
             return;
@@ -162,7 +162,7 @@ impl Core {
         self.focus_input();
     }
 
-    /// Первый узел дерева в панели получает фокус (в следующем такте, пока панель рисуется).
+        /// The first tree node in the panel gets focus (on the next tick, while the panel is being drawn).
     fn focus_first_node(self: &Arc<Self>) {
         #[cfg(target_arch = "wasm32")]
         {
@@ -209,7 +209,7 @@ impl Core {
         }
     }
 
-    /// Выбор узла: в `Single` панель закрывается, фокус возвращается на поле.
+        /// Node selection: in `Single` the panel closes, focus returns to the field.
     fn node_select(&self, e: TreeNodeEvent) {
         if let Some(cb) = self.on_node_select {
             cb.run(e);
@@ -220,7 +220,7 @@ impl Core {
         }
     }
 
-    /// Панель только что открылась: z-index, положение, слушатели окна, `on_show`.
+        /// The panel has just opened: z-index, position, window listeners, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         if let (Some(overlay), Some(root)) = (self.overlay_ref.get_untracked(), self.root_ref.get_untracked()) {
@@ -253,7 +253,7 @@ impl Core {
         }
     }
 
-    /// Панель только что закрылась: слушатели и z-index освобождаются, `on_hide`.
+        /// The panel has just closed: listeners and z-index are released, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -271,7 +271,7 @@ impl Core {
         }
     }
 
-    /// Пересчитывает положение панели после раскрытия узла.
+        /// Recomputes the panel position after a node is expanded.
     fn realign(self: &Arc<Self>) {
         #[cfg(target_arch = "wasm32")]
         {
@@ -296,132 +296,132 @@ impl Core {
     }
 }
 
-/// Поле выбора узлов дерева в выпадающей панели.
+/// A field for selecting tree nodes in a dropdown panel.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn TreeSelect(
-    /// Узлы дерева.
+        /// Tree nodes.
     #[prop(optional, into)]
     options: Prop<Vec<TreeNode>>,
-    /// Выбранные ключи (двусторонний сигнал).
+        /// Selected keys (two-way signal).
     #[prop(optional)]
     value: Option<RwSignal<Vec<String>>>,
-    /// Режим выбора (по умолчанию `Single`).
+        /// Selection mode (default `Single`).
     #[prop(optional, default = TreeSelectionMode::Single)]
     selection_mode: TreeSelectionMode,
-    /// Вид метки.
+        /// Label kind.
     #[prop(optional, into)]
     display: Prop<TreeSelectDisplay>,
-    /// Подсказка пустого поля.
+        /// Placeholder of the empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Высота контейнера дерева (по умолчанию `400px`).
+        /// Height of the tree container (default `400px`).
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-    /// Выбор с Ctrl/Meta (`Multiple`).
+        /// Selection with Ctrl/Meta (`Multiple`).
     #[prop(optional, into)]
     meta_key_selection: Prop<bool>,
-    /// Распространять выбор на предков (`Checkbox`).
+        /// Propagate selection to ancestors (`Checkbox`).
     #[prop(optional, default = Prop::Static(true), into)]
     propagate_selection_up: Prop<bool>,
-    /// Распространять выбор на потомков (`Checkbox`).
+        /// Propagate selection to descendants (`Checkbox`).
     #[prop(optional, default = Prop::Static(true), into)]
     propagate_selection_down: Prop<bool>,
-    /// Показывать значок очистки.
+        /// Show the clear icon.
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-    /// Недоступно.
+        /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+        /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Вариант оформления.
+        /// Styling variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Размер.
+        /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину.
+        /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Поле фильтра в панели.
+        /// Filter field in the panel.
     #[prop(optional, into)]
     filter: Prop<bool>,
-    /// Поля фильтра через запятую.
+        /// Comma-separated filter fields.
     #[prop(optional, default = Prop::Static("label".to_owned()), into)]
     filter_by: Prop<String>,
-    /// Режим фильтра.
+        /// Filter mode.
     #[prop(optional, into)]
     filter_mode: Prop<TreeFilterMode>,
-    /// Подсказка поля фильтра.
+        /// Placeholder of the filter field.
     #[prop(optional, into)]
     filter_placeholder: OptProp<String>,
-    /// Сообщение о пустом дереве.
+        /// Message for an empty tree.
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-    /// Идёт загрузка дерева.
+        /// The tree is loading.
     #[prop(optional, into)]
     loading: Prop<bool>,
-    /// Атрибут `id` корня (основа идентификатора панели).
+        /// `id` attribute of the root (basis of the panel identifier).
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `id` скрытого поля.
+        /// `id` attribute of the hidden field.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Порядок обхода Tab.
+        /// Tab order.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+        /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+        /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль корня.
+        /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+        /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Дополнительный класс панели.
+        /// Additional class of the panel.
     #[prop(optional, into)]
     panel_style_class: OptProp<String>,
-    /// Pass-through частей.
+        /// Pass-through parts.
     #[prop(optional)]
     pt: Option<TreeSelectPt>,
-    /// Своё представление выбранного (вместо метки).
+        /// Custom view of the selection (instead of the label).
     #[prop(optional)]
     value_view: Option<Callback<Vec<TreeNode>, AnyView>>,
-    /// Своё содержимое подписи узла дерева.
+        /// Custom content of the tree node label.
     #[prop(optional)]
     node: Option<Callback<TreeNode, AnyView>>,
-    /// Узел выбран.
+        /// Node selected.
     #[prop(optional)]
     on_node_select: Option<Callback<TreeNodeEvent>>,
-    /// Выбор узла снят.
+        /// Node unselected.
     #[prop(optional)]
     on_node_unselect: Option<Callback<TreeNodeEvent>>,
-    /// Узел раскрыт.
+        /// Node expanded.
     #[prop(optional)]
     on_node_expand: Option<Callback<TreeNodeEvent>>,
-    /// Узел свёрнут.
+        /// Node collapsed.
     #[prop(optional)]
     on_node_collapse: Option<Callback<TreeNodeEvent>>,
-    /// Значение очищено.
+        /// Value cleared.
     #[prop(optional)]
     on_clear: Option<Callback<()>>,
-    /// Панель показана.
+        /// Panel shown.
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-    /// Панель скрыта.
+        /// Panel hidden.
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
-    /// Скрытое поле получило фокус.
+        /// The hidden field received focus.
     #[prop(optional)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Скрытое поле потеряло фокус.
+        /// The hidden field lost focus.
     #[prop(optional)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
 ) -> impl IntoView {
@@ -458,7 +458,7 @@ pub fn TreeSelect(
         let core = core.clone();
         on_cleanup(move || core.release());
     }
-    // Побочные эффекты открытия и закрытия панели — только в браузере.
+    // Side effects of opening and closing the panel — only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
@@ -475,7 +475,7 @@ pub fn TreeSelect(
         });
     }
 
-    // Выбранные узлы по ключам, в порядке выбора.
+    // Selected nodes by keys, in selection order.
     let selected_labels = {
         let (options, value) = (options.clone(), core.value);
         move || -> Vec<(String, String)> { options.with(|o| value.with(|v| labels_of(&flatten(o), v))) }
@@ -696,7 +696,7 @@ fn collect_nodes(nodes: &[TreeNode], keys: &[String], out: &mut Vec<TreeNode>) {
     }
 }
 
-/// Свойства, которые панель передаёт в дерево.
+/// Properties the panel passes to the tree.
 struct PanelProps {
     scroll_height: OptProp<String>,
     meta_key_selection: Prop<bool>,
@@ -712,7 +712,7 @@ struct PanelProps {
     node: Option<Callback<TreeNode, AnyView>>,
 }
 
-/// Панель с деревом.
+/// Panel with the tree.
 fn panel_view(core: &Arc<Core>, pt: &Arc<TreeSelectPt>, p: &PanelProps) -> impl IntoView + use<> {
     let class = {
         let (pt, extra) = (pt.clone(), p.panel_style_class.clone());

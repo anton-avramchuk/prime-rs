@@ -1,10 +1,10 @@
-//! Общая отрисовка иконок.
+//! Shared icon rendering.
 
 use leptos::prelude::*;
 use prime_core::ClassNames;
 use std::borrow::Cow;
 
-/// `viewBox` всех иконок PrimeNG.
+/// `viewBox` of all PrimeNG icons.
 pub const VIEW_BOX: &str = "0 0 14 14";
 
 fn attrs(
@@ -18,8 +18,8 @@ fn attrs(
     (cn.finish_cow(), decorative.then_some("true"), (!decorative).then_some("img"))
 }
 
-/// Рисует иконку; `inner` — готовая разметка контуров (`<path …></path>`), вставляется как есть без аллокаций.
-/// Используется сгенерированными компонентами.
+/// Renders an icon; `inner` is ready-made path markup (`<path …></path>`), inserted as is without allocations.
+/// Used by the generated components.
 pub fn icon_view(inner: &'static str, class: Option<String>, spin: bool, size: u32, aria_label: Option<String>) -> impl IntoView {
     let (class, aria_hidden, role) = attrs(class, spin, &aria_label);
     view! {
@@ -38,7 +38,7 @@ pub fn icon_view(inner: &'static str, class: Option<String>, spin: bool, size: u
     }
 }
 
-/// Прозрачная иконка-заполнитель (`BlankIcon` в PrimeNG).
+/// Transparent placeholder icon (`BlankIcon` in PrimeNG).
 #[cfg(feature = "blank")]
 #[component]
 pub fn BlankIcon(
@@ -65,11 +65,11 @@ pub fn BlankIcon(
     }
 }
 
-/// Объявляет компонент иконки по набору контуров.
+/// Declares an icon component from a set of paths.
 #[allow(unused_macros)]
 macro_rules! icon {
     ($name:ident, [$($d:expr),+ $(,)?]) => {
-        /// Иконка PrimeNG (см. документацию крейта).
+        /// PrimeNG icon (see the crate documentation).
         #[::leptos::component]
         pub fn $name(
             #[prop(optional, into)] class: Option<String>,

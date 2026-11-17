@@ -1,6 +1,6 @@
-//! Страница Skeleton: демонстрации `shapes`, `card`, `list` из showcase PrimeNG (`apps/showcase/doc/skeleton`).
+//! Skeleton page: the `shapes`, `card`, `list` demos from the PrimeNG showcase (`apps/showcase/doc/skeleton`).
 //!
-//! Демонстрация `datatable` не перенесена (нужна таблица), утилиты Tailwind заменены инлайн-стилями.
+//! The `datatable` demo is not ported (it needs a table), Tailwind utilities are replaced with inline styles.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -8,7 +8,7 @@ use prime_skeleton::{Skeleton, SkeletonShape};
 
 const MB2: &str = "margin-bottom: 0.5rem";
 
-/// Страница `/skeleton`.
+/// Page `/skeleton`.
 #[component]
 pub fn SkeletonPage() -> impl IntoView {
     let list_item = || {

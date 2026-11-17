@@ -1,31 +1,31 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 `datatable` в `theme.components` и `primeng_extra`; `xtask gen-theme`: каталог исходников `table`; `cargo xtask gen-theme`
-- [x] 1.2 Свериться с `sort`, `handleRowClick`, `toggleRowsWithCheckbox`, `toggleRow`, `SortableColumn`, `SortIcon` исходника
+- [x] 1.1 `datatable` in `theme.components` and `primeng_extra`; `xtask gen-theme`: the `table` sources directory; `cargo xtask gen-theme`
+- [x] 1.2 Check against the source's `sort`, `handleRowClick`, `toggleRowsWithCheckbox`, `toggleRow`, `SortableColumn`, `SortIcon`
 
-## 2. Крейт `prime-table`
+## 2. Crate `prime-table`
 
-- [x] 2.1 Модель `model.rs` с табличными тестами
-- [x] 2.2 Компонент `Table<T>`, `Column<T>`, `TablePt`: разметка, заголовок, строки, подвал, пагинатор, SSR-тесты, rustdoc
-- [x] 2.3 Сортировка (одиночная, многоуровневая, клавиши), выбор (клик, флажки, радио, заголовок), раскрытие, события
-- [x] 2.4 Браузерные `tests/web.rs`
+- [x] 2.1 Model `model.rs` with table-driven tests
+- [x] 2.2 Component `Table<T>`, `Column<T>`, `TablePt`: markup, header, rows, footer, paginator, SSR tests, rustdoc
+- [x] 2.3 Sorting (single, multi-level, keys), selection (click, checkboxes, radio, header), expansion, events
+- [x] 2.4 Browser `tests/web.rs`
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/table`, меню, маршрут, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `table.spec.ts`
+- [x] 3.1 The `/table` page, menu, route, crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `table.spec.ts`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-table`, бюджеты
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-table`, budgets
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/table.md`; `prime-table` в браузерный job `ci.yml` (три места)
-- [x] 5.2 fmt, clippy, тесты, deny, machete, `openspec validate port-table`
+- [x] 5.1 `docs/table.md`; `prime-table` in the browser job of `ci.yml` (three places)
+- [x] 5.2 fmt, clippy, tests, deny, machete, `openspec validate port-table`
 
 ## Workflow follow-up
 
-- Волна 7: после каждого компонента — коммит и архив локально, CI один раз в конце волны.
+- Wave 7: after each component - commit and archive locally, CI once at the end of the wave.

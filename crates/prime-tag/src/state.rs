@@ -1,9 +1,9 @@
-//! Чистая логика Tag: из свойств в классы и `data-p` (по `tagstyle.ts` и `Tag.dataP` PrimeNG).
+//! Pure Tag logic: from properties to classes and `data-p` (after PrimeNG `tagstyle.ts` and `Tag.dataP`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Серьёзность тега (`p-tag-<severity>`).
+/// Tag severity (`p-tag-<severity>`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum TagSeverity {
     /// `secondary`.
@@ -21,7 +21,7 @@ pub enum TagSeverity {
 }
 
 impl TagSeverity {
-    /// Значение, как в PrimeNG.
+    /// Value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Secondary => "secondary",
@@ -45,16 +45,16 @@ impl TagSeverity {
     }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct TagState {
-    /// Серьёзность.
+    /// Severity.
     pub severity: Option<TagSeverity>,
-    /// Скруглённые края.
+    /// Rounded edges.
     pub rounded: bool,
 }
 
-/// Добавляет классы корня в порядке `tagstyle.ts`.
+/// Adds the root classes in the order of `tagstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &TagState) {
     cn.add("p-tag p-component");
     if let Some(sev) = s.severity {
@@ -63,7 +63,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &TagState) {
     cn.add_if(s.rounded, "p-tag-rounded");
 }
 
-/// Значение `data-p`: `rounded`, серьёзность.
+/// `data-p` value: `rounded`, severity.
 pub fn data_p(s: &TagState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.rounded, "rounded").add_opt(s.severity.map(TagSeverity::as_str));

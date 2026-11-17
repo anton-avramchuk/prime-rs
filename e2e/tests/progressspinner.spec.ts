@@ -8,12 +8,12 @@ test.describe('ProgressSpinner', () => {
         page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
         page.on('pageerror', (e) => errors.push(e.message));
         await page.goto('/progressspinner');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-progressspinner')).toBeVisible();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(2);
         const spin = page.locator('[data-demo=basic] .p-progressspinner-spin');
         expect(await spin.evaluate((el) => getComputedStyle(el).animationName)).not.toBe('none');
@@ -21,7 +21,7 @@ test.describe('ProgressSpinner', () => {
         expect((await root.boundingBox())!.width).toBeGreaterThan(50);
     });
 
-    test('basic: ARIA и окружность по умолчанию', async ({ page }) => {
+    test('basic: ARIA and the circle by default', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-progressspinner');
         await expect(root).toHaveAttribute('role', 'progressbar');
         await expect(root).toHaveAttribute('aria-busy', 'true');
@@ -31,7 +31,7 @@ test.describe('ProgressSpinner', () => {
         await expect(circle).toHaveAttribute('fill', 'none');
     });
 
-    test('custom: размер, толщина, заливка и скорость', async ({ page }) => {
+    test('custom: size, thickness, fill and speed', async ({ page }) => {
         const root = page.locator('[data-demo=custom] .p-progressspinner');
         const box = (await root.boundingBox())!;
         expect(Math.round(box.width)).toBe(50);
@@ -42,7 +42,7 @@ test.describe('ProgressSpinner', () => {
         expect(await root.locator('svg').evaluate((el) => (el as unknown as SVGElement).style.animationDuration)).toBe('0.5s');
     });
 
-    test('гидрация без ошибок', async ({ page }) => {
+    test('hydration without errors', async ({ page }) => {
         await page.waitForTimeout(500);
         expect(errors).toEqual([]);
     });

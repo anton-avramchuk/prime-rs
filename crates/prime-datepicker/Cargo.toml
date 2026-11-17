@@ -1,6 +1,6 @@
 [package]
 name = "prime-datepicker"
-description = "prime-rs: компонент DatePicker (порт PrimeNG)"
+description = "prime-rs: DatePicker component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -23,7 +23,7 @@ js-sys = { workspace = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "FocusEvent", "HtmlElement", "HtmlInputElement", "Element", "Node", "Window", "Document", "CssStyleDeclaration", "Navigator"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

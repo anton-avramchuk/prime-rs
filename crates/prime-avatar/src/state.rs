@@ -1,12 +1,12 @@
-//! Чистая логика Avatar: классы и `data-p` (по `avatarstyle.ts` и `Avatar.dataP` PrimeNG).
+//! Pure Avatar logic: classes and `data-p` (per `avatarstyle.ts` and `Avatar.dataP` of PrimeNG).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Размер аватара.
+/// Avatar size.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum AvatarSize {
-    /// `normal` (по умолчанию).
+    /// `normal` (default).
     #[default]
     Normal,
     /// `large`.
@@ -16,7 +16,7 @@ pub enum AvatarSize {
 }
 
 impl AvatarSize {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Normal => "normal",
@@ -26,10 +26,10 @@ impl AvatarSize {
     }
 }
 
-/// Форма аватара.
+/// Avatar shape.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum AvatarShape {
-    /// `square` (по умолчанию).
+    /// `square` (default).
     #[default]
     Square,
     /// `circle`.
@@ -37,7 +37,7 @@ pub enum AvatarShape {
 }
 
 impl AvatarShape {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Square => "square",
@@ -46,18 +46,18 @@ impl AvatarShape {
     }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct AvatarState {
-    /// Задано ли изображение (`image != null`).
+    /// Whether an image is set (`image != null`).
     pub has_image: bool,
-    /// Форма.
+    /// Shape.
     pub shape: AvatarShape,
-    /// Размер.
+    /// Size.
     pub size: AvatarSize,
 }
 
-/// Добавляет классы корня в порядке `avatarstyle.ts`.
+/// Appends the root classes in the order of `avatarstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &AvatarState) {
     cn.add("p-avatar p-component")
         .add_if(s.has_image, "p-avatar-image")
@@ -66,7 +66,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &AvatarState) {
         .add_if(s.size == AvatarSize::XLarge, "p-avatar-xl");
 }
 
-/// Значение `data-p`: форма и размер (всегда, включая значения по умолчанию).
+/// `data-p` value: shape and size (always, including defaults).
 pub fn data_p(s: &AvatarState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(s.shape.as_str()).add(s.size.as_str());

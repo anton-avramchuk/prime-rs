@@ -1,70 +1,70 @@
-//! Модель AutoComplete и чистая логика (по `autocomplete.ts` PrimeNG 21.1.10): плоский список вариантов с группами,
-//! навигация по допустимым строкам, подпись значения, совпадение для `force_selection` и разбиение по разделителю.
+//! AutoComplete model and pure logic (from PrimeNG 21.1.10 `autocomplete.ts`): flat suggestion list with groups,
+//! navigation over eligible rows, value label, match for `force_selection` and splitting by separator.
 
-/// Вариант подсказки; с `items` и `group = true` — заголовок группы.
+/// Suggestion; with `items` and `group = true` it is a group header.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct AutoCompleteOption {
-    /// Подпись.
+    /// Label.
     pub label: String,
-    /// Значение (по умолчанию — подпись).
+    /// Value (defaults to the label).
     pub value: Option<String>,
-    /// Недоступен.
+    /// Disabled.
     pub disabled: bool,
-    /// Вложенные варианты группы.
+    /// Nested group options.
     pub items: Vec<AutoCompleteOption>,
 }
 
 impl AutoCompleteOption {
-    /// Вариант с подписью.
+    /// Option with a label.
     pub fn new(label: impl Into<String>) -> Self {
         Self { label: label.into(), ..Self::default() }
     }
 
-    /// Значение варианта.
+    /// Option value.
     pub fn value(mut self, value: impl Into<String>) -> Self {
         self.value = Some(value.into());
         self
     }
 
-    /// Недоступность.
+    /// Disabled state.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 
-    /// Вложенные варианты (группа).
+    /// Nested options (group).
     pub fn items(mut self, items: Vec<AutoCompleteOption>) -> Self {
         self.items = items;
         self
     }
 
-    /// Значение варианта: заданное либо подпись.
+    /// Option value: the given one or the label.
     pub fn value_or_label(&self) -> &str {
         self.value.as_deref().unwrap_or(&self.label)
     }
 }
 
-/// Строка плоского списка.
+/// Row of the flat list.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Row {
-    /// Заголовок группы, а не вариант.
+    /// Group header, not an option.
     pub group: bool,
-    /// Подпись.
+    /// Label.
     pub label: String,
-    /// Значение (у групп пусто).
+    /// Value (empty for groups).
     pub value: String,
-    /// Недоступен.
+    /// Disabled.
     pub disabled: bool,
 }
 
 impl Row {
-    /// Допустим для фокуса: вариант (не заголовок) и не отключён.
+    /// Eligible for focus: an option (not a header) that is not disabled.
     pub fn valid(&self) -> bool {
         !self.group && !self.disabled
     }
 }
 
-/// Разворачивает варианты: при `group` каждый верхний вариант — заголовок, за которым идут его `items`.
+/// Expands options: with `group`, each top-level option is a header followed by its `items`.
 pub fn flatten(options: &[AutoCompleteOption], group: bool) -> Vec<Row> {
     let row = |o: &AutoCompleteOption, group: bool| Row {
         group,
@@ -84,7 +84,7 @@ pub fn flatten(options: &[AutoCompleteOption], group: bool) -> Vec<Row> {
     out
 }
 
-/// Подпись варианта со значением `value` (поиск по всем вложенным).
+/// Label of the option with value `value` (searches all nested ones).
 pub fn label_for_value<'a>(options: &'a [AutoCompleteOption], value: &str) -> Option<&'a str> {
     for o in options {
         if o.items.is_empty() && o.value_or_label() == value {
@@ -97,12 +97,12 @@ pub fn label_for_value<'a>(options: &'a [AutoCompleteOption], value: &str) -> Op
     None
 }
 
-/// Текст поля для значения: подпись известного варианта либо само значение.
+/// Field text for a value: the label of a known option or the value itself.
 pub fn input_text(options: &[AutoCompleteOption], value: &str) -> String {
     label_for_value(options, value).unwrap_or(value).to_owned()
 }
 
-/// Выбран ли вариант: одиночный режим — равенство значению, `multiple` — вхождение (при `unique`).
+/// Whether an option is selected: single mode compares with the value, `multiple` checks membership (with `unique`).
 pub fn is_selected(row: &Row, value: &str, values: &[String], multiple: bool, unique: bool) -> bool {
     if row.group {
         return false;
@@ -110,53 +110,53 @@ pub fn is_selected(row: &Row, value: &str, values: &[String], multiple: bool, un
     if multiple { unique && values.contains(&row.value) } else { !value.is_empty() && row.value == value }
 }
 
-/// Первая допустимая строка.
+/// First eligible row.
 pub fn first(rows: &[Row]) -> Option<usize> {
     rows.iter().position(Row::valid)
 }
 
-/// Последняя допустимая строка.
+/// Last eligible row.
 pub fn last(rows: &[Row]) -> Option<usize> {
     rows.iter().rposition(Row::valid)
 }
 
-/// Следующая допустимая строка после `index`; если её нет — `index`.
+/// Next eligible row after `index`; if there is none, `index`.
 pub fn next(rows: &[Row], index: usize) -> usize {
     rows.iter().enumerate().skip(index + 1).find(|(_, r)| r.valid()).map_or(index, |(i, _)| i)
 }
 
-/// Предыдущая допустимая строка перед `index`; если её нет — `index`.
+/// Previous eligible row before `index`; if there is none, `index`.
 pub fn prev(rows: &[Row], index: usize) -> usize {
     rows[..index.min(rows.len())].iter().rposition(Row::valid).unwrap_or(index)
 }
 
-/// Выбранная допустимая строка, иначе первая допустимая.
+/// Selected eligible row, otherwise the first eligible one.
 pub fn first_focused(rows: &[Row], selected: impl Fn(&Row) -> bool) -> Option<usize> {
     rows.iter().position(|r| r.valid() && selected(r)).or_else(|| first(rows))
 }
 
-/// Выбранная допустимая строка, иначе последняя допустимая.
+/// Selected eligible row, otherwise the last eligible one.
 pub fn last_focused(rows: &[Row], selected: impl Fn(&Row) -> bool) -> Option<usize> {
     rows.iter().position(|r| r.valid() && selected(r)).or_else(|| last(rows))
 }
 
-/// `aria-posinset`: номер среди вариантов без заголовков групп (с единицы).
+/// `aria-posinset`: number among options without group headers (one-based).
 pub fn pos_inset(rows: &[Row], index: usize) -> usize {
     index - rows[..index].iter().filter(|r| r.group).count() + 1
 }
 
-/// Число вариантов без заголовков групп (`aria-setsize`).
+/// Number of options without group headers (`aria-setsize`).
 pub fn set_size(rows: &[Row]) -> usize {
     rows.iter().filter(|r| !r.group).count()
 }
 
-/// Строка, подпись которой совпадает с текстом без учёта регистра (`isOptionMatched`).
+/// Row whose label matches the text case-insensitively (`isOptionMatched`).
 pub fn matched(rows: &[Row], text: &str) -> Option<usize> {
     let t = text.to_lowercase();
     rows.iter().position(|r| r.valid() && r.label.to_lowercase() == t)
 }
 
-/// Разбивает текст по разделителю: непустые усечённые части.
+/// Splits text by the separator: non-empty trimmed parts.
 pub fn split_separator(text: &str, separator: &str) -> Vec<String> {
     text.split(separator).map(str::trim).filter(|s| !s.is_empty()).map(str::to_owned).collect()
 }
@@ -191,7 +191,7 @@ mod tests {
         assert_eq!(g[2].value, "p");
         assert!(!g[0].valid() && g[1].valid() && !g[4].valid());
         assert_eq!(set_size(&g), 4);
-        assert_eq!((pos_inset(&g, 1), pos_inset(&g, 2), pos_inset(&g, 5)), (1, 2, 4), "заголовки не считаются");
+        assert_eq!((pos_inset(&g, 1), pos_inset(&g, 2), pos_inset(&g, 5)), (1, 2, 4), "headers are not counted");
     }
 
     #[test]
@@ -199,7 +199,7 @@ mod tests {
         let g = grouped();
         assert_eq!(label_for_value(&g, "p"), Some("Pear"));
         assert_eq!(label_for_value(&g, "Apple"), Some("Apple"));
-        assert_eq!(label_for_value(&g, "Fruits"), None, "группа не имеет значения");
+        assert_eq!(label_for_value(&g, "Fruits"), None, "a group has no value");
         assert_eq!(input_text(&g, "p"), "Pear");
         assert_eq!(input_text(&g, "typed"), "typed");
     }
@@ -212,7 +212,7 @@ mod tests {
         assert!(!is_selected(&r[2], "", &[], false, true));
         assert!(
             is_selected(&r[2], "", &vals, true, true) && !is_selected(&r[2], "", &vals, true, false),
-            "без unique выбранным не считается"
+            "without unique it does not count as selected"
         );
         let g = flatten(&grouped(), true);
         assert!(!is_selected(&g[0], "Fruits", &[], false, true));
@@ -222,15 +222,15 @@ mod tests {
     fn navigation_skips_disabled_and_groups() {
         let r = rows();
         assert_eq!((first(&r), last(&r)), (Some(0), Some(3)));
-        assert_eq!(next(&r, 0), 2, "отключённый пропущен");
-        assert_eq!((next(&r, 3), prev(&r, 0)), (3, 0), "на краях остаётся");
+        assert_eq!(next(&r, 0), 2, "disabled skipped");
+        assert_eq!((next(&r, 3), prev(&r, 0)), (3, 0), "stays at the edges");
         assert_eq!(prev(&r, 3), 2);
         let g = flatten(&grouped(), true);
         assert_eq!(first(&g), Some(1));
-        assert_eq!(next(&g, 2), 5, "заголовок и отключённый пропущены");
+        assert_eq!(next(&g, 2), 5, "header and disabled skipped");
         assert_eq!(prev(&g, 5), 2);
         assert_eq!(first(&[]), None);
-        assert_eq!(first_focused(&r, |row| row.value == "b"), Some(2), "выбранный важнее первого");
+        assert_eq!(first_focused(&r, |row| row.value == "b"), Some(2), "selected takes precedence over the first");
         assert_eq!(first_focused(&r, |_| false), Some(0));
         assert_eq!(last_focused(&r, |_| false), Some(3));
     }
@@ -239,7 +239,7 @@ mod tests {
     fn matching_and_separator() {
         let r = rows();
         assert_eq!(matched(&r, "APPLE"), Some(0));
-        assert_eq!(matched(&r, "avocado"), None, "отключённый не совпадает");
+        assert_eq!(matched(&r, "avocado"), None, "disabled does not match");
         assert_eq!(matched(&r, "app"), None);
         assert_eq!(split_separator(" a, b ,, c ", ","), ["a", "b", "c"]);
         assert!(split_separator("  ", ",").is_empty());

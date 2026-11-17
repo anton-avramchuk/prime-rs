@@ -1,11 +1,11 @@
-//! Структура DOM, классы, `data-p`, текст и дети, слоты, `pt` и паритет ветвей Message (SSR).
+//! DOM structure, classes, `data-p`, text and children, slots, `pt` and branch parity of Message (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
 use prime_core::{Pt, Size};
 use prime_message::{Message, MessagePt, MessageSeverity, MessageVariant};
 
-/// Убирает маркеры гидратации (`<!>` и `<!--…-->`): их число зависит от ветви, но не от разметки.
+/// Strips hydration markers (`<!>` and `<!--…-->`): their number depends on the branch, not on the markup.
 fn strip(s: &str) -> String {
     let mut out = s.replace("<!>", "");
     while let Some(start) = out.find("<!--") {
@@ -28,7 +28,7 @@ fn defaults_give_info_alert_structure() {
     for unwanted in ["p-message-close-button", "p-message-icon", "p-message-outlined", "p-message-sm", "display: none"] {
         assert!(!html.contains(unwanted), "{unwanted}: {html}");
     }
-    assert_eq!(html.matches("p-message-text").count(), 1, "только span с детьми: {html}");
+    assert_eq!(html.matches("p-message-text").count(), 1, "only the span with children: {html}");
 }
 
 #[test]

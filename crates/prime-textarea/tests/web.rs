@@ -1,4 +1,4 @@
-//! Поведение Textarea в реальном браузере (wasm-bindgen-test): привязка значения, события, автоподгонка высоты.
+//! Textarea behaviour in a real browser (wasm-bindgen-test): value binding, events, height auto-resize.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn area(host: &HtmlElement) -> HtmlTextAreaElement {
-    host.query_selector("textarea").unwrap().expect("нет textarea").dyn_into().unwrap()
+    host.query_selector("textarea").unwrap().expect("no textarea").dyn_into().unwrap()
 }
 
 fn typed(el: &HtmlTextAreaElement, text: &str) {
@@ -78,10 +78,10 @@ async fn auto_resize_grows_with_content_and_calls_on_resize() {
     leptos::task::tick().await;
     let el = area(&host);
     let before = height_px(&el);
-    assert!(n.load(Ordering::SeqCst) >= 1, "подгонка при монтировании");
+    assert!(n.load(Ordering::SeqCst) >= 1, "resize on mount");
     typed(&el, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10");
     leptos::task::tick().await;
-    assert!(height_px(&el) > before + 50.0, "высота выросла: {before} -> {}", height_px(&el));
+    assert!(height_px(&el) > before + 50.0, "the height grew: {before} -> {}", height_px(&el));
     assert_eq!(style_of(&el).get_property_value("overflow").unwrap(), "hidden");
     host.remove();
 }
@@ -116,6 +116,6 @@ async fn uncontrolled_auto_resize_reacts_to_input() {
     let before = height_px(&el);
     typed(&el, "1\n2\n3\n4\n5\n6\n7\n8");
     assert!(height_px(&el) > before + 40.0);
-    assert!(n.load(Ordering::SeqCst) >= 101, "событие ввода передано в on_resize");
+    assert!(n.load(Ordering::SeqCst) >= 101, "the input event is passed to on_resize");
     host.remove();
 }

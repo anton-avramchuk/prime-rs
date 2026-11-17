@@ -1,9 +1,9 @@
-//! Страница Toast: демонстрации `basic`, `severity`, `multiple`, `position`, `sticky`, `life`, `clear`, `target`, `responsive`, `template`,
-//! `headless` по `apps/showcase/doc/toast` PrimeNG.
+//! Toast page: demos `basic`, `severity`, `multiple`, `position`, `sticky`, `life`, `clear`, `target`, `responsive`, `template`,
+//! `headless` after PrimeNG `apps/showcase/doc/toast`.
 //!
-//! У каждой демонстрации свой `MessageService` (как `providers: [MessageService]` в PrimeNG), поэтому безключевые `Toast` разных
-//! демонстраций не получают чужих сообщений. `Ripple` из `multiple`, градиентный фон и загрузка файла из `headless` не
-//! переносятся: `headless` упрощена до карточки с двумя кнопками, закрывающими сообщение.
+//! Each demo has its own `MessageService` (like `providers: [MessageService]` in PrimeNG), so key-less `Toast`s of different
+//! demos do not receive each other messages. `Ripple` from `multiple`, the gradient background and the file upload from `headless` are not
+//! ported: `headless` is simplified to a card with two buttons that close the message.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -243,7 +243,7 @@ fn HeadlessDemo() -> impl IntoView {
     }
 }
 
-/// Страница `/toast`.
+/// `/toast` page.
 #[component]
 pub fn ToastPage() -> impl IntoView {
     view! {

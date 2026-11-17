@@ -1,23 +1,23 @@
-//! Чистая логика Drawer: позиция, классы корня и маски, слои (по `drawer.ts` и `drawerstyle.ts` PrimeNG).
+//! Pure Drawer logic: position, root and mask classes, layers (after PrimeNG `drawer.ts` and `drawerstyle.ts`).
 
-/// Край экрана, у которого показывается панель.
+/// Screen edge at which the panel is shown.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum DrawerPosition {
-    /// Слева (по умолчанию).
+    /// Left (default).
     #[default]
     Left,
-    /// Справа.
+    /// Right.
     Right,
-    /// Сверху.
+    /// Top.
     Top,
-    /// Снизу.
+    /// Bottom.
     Bottom,
-    /// На весь экран.
+    /// Full screen.
     Full,
 }
 
 impl DrawerPosition {
-    /// Суффикс классов: `left`, `right`, `top`, `bottom`, `full`.
+    /// Class suffix: `left`, `right`, `top`, `bottom`, `full`.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Left => "left",
@@ -29,7 +29,7 @@ impl DrawerPosition {
     }
 }
 
-/// Классы корня: позиция, `p-drawer-full` при `full_screen`, `p-drawer-open` пока панель не закрывается.
+/// Root classes: position, `p-drawer-full` with `full_screen`, `p-drawer-open` while the panel is not closing.
 pub fn root_classes(position: DrawerPosition, full_screen: bool, open: bool) -> String {
     let mut cn = String::from("p-drawer p-component");
     if full_screen && position != DrawerPosition::Full {
@@ -43,13 +43,13 @@ pub fn root_classes(position: DrawerPosition, full_screen: bool, open: bool) -> 
     cn
 }
 
-/// Класс анимации: `p-drawer-enter-<позиция>` или `p-drawer-leave-<позиция>` (`full` при `full_screen`).
+/// Animation class: `p-drawer-enter-<position>` or `p-drawer-leave-<position>` (`full` with `full_screen`).
 pub fn animation_class(position: DrawerPosition, full_screen: bool, leaving: bool) -> String {
     let side = if full_screen { "full" } else { position.as_str() };
     format!("p-drawer-{}-{side}", if leaving { "leave" } else { "enter" })
 }
 
-/// Классы маски (она всегда модальная): состояние анимации и `p-drawer-full`.
+/// Mask classes (it is always modal): animation state and `p-drawer-full`.
 pub fn mask_classes(full_screen: bool, leaving: bool) -> String {
     let mut cn = String::from("p-drawer-mask p-overlay-mask ");
     cn.push_str(if leaving { "p-overlay-mask-leave-active" } else { "p-overlay-mask-enter-active" });
@@ -59,7 +59,7 @@ pub fn mask_classes(full_screen: bool, leaving: bool) -> String {
     cn
 }
 
-/// Значение `data-p`: перечень признаков через пробел.
+/// `data-p` value: a space-separated list of flags.
 pub fn data_p(position: DrawerPosition, open: bool, modal: bool) -> String {
     let mut parts = Vec::new();
     if position == DrawerPosition::Full {
@@ -75,12 +75,12 @@ pub fn data_p(position: DrawerPosition, open: bool, modal: bool) -> String {
     parts.join(" ")
 }
 
-/// Эта панель — верхняя по `z-index` (только она закрывается по Escape).
+/// This panel is topmost by `z-index` (only it closes on Escape).
 pub fn is_topmost(own_z: i32, top_z: i32) -> bool {
     own_z >= top_z
 }
 
-/// `z-index` маски: на единицу ниже панели.
+/// Mask `z-index`: one below the panel.
 pub fn mask_z(panel_z: i32) -> i32 {
     panel_z - 1
 }
@@ -92,7 +92,7 @@ mod tests {
 
     #[test]
     fn root_classes_table() {
-        // (позиция, full_screen, open, ожидание)
+        // (position, full_screen, open, pending)
         let cases = [
             (Left, false, false, "p-drawer p-component p-drawer-left"),
             (Right, false, true, "p-drawer p-component p-drawer-open p-drawer-right"),

@@ -4,7 +4,7 @@ test.describe('Table', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1800 });
         await page.goto('/table');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_table')).toBeAttached();
     });
@@ -12,7 +12,7 @@ test.describe('Table', () => {
     const names = (page, id: string) => page.locator(`#${id} tbody > tr:not(.p-datatable-row-expansion) > td:nth-child(2)`).allTextContents();
     const nameCol = (page, id: string, offset = 2) => page.locator(`#${id} tbody > tr:not(.p-datatable-row-expansion) > td:nth-child(${offset})`).allTextContents();
 
-    test('стили темы: рамка заголовка, ячейки с отступами, строки в таблице', async ({ page }) => {
+    test('theme styles: header border, padded cells, rows in the table', async ({ page }) => {
         const table = page.locator('#basic_table .p-datatable-table');
         expect(await table.evaluate((el) => getComputedStyle(el).borderSpacing)).toBe('0px');
         expect(await table.evaluate((el) => getComputedStyle(el).width)).not.toBe('0px');
@@ -25,7 +25,7 @@ test.describe('Table', () => {
         expect(b.y).toBeGreaterThan(a.y);
     });
 
-    test('сортировка по одному столбцу', async ({ page }) => {
+    test('sorting by a single column', async ({ page }) => {
         const header = page.locator('#sort_table thead th').nth(1);
         await header.click();
         expect(await names(page, 'sort_table')).toEqual(['Bamboo Watch', 'Black Watch', 'Blue Band', 'Blue T-Shirt', 'Bracelet']);
@@ -34,7 +34,7 @@ test.describe('Table', () => {
         await header.click();
         expect((await names(page, 'sort_table'))[0]).toBe('Bracelet');
         await expect(header).toHaveAttribute('aria-sort', 'descending');
-        // сортировка клавишей
+        // sorting by key
         const quantity = page.locator('#sort_table thead th').nth(3);
         await quantity.focus();
         await page.keyboard.press('Enter');
@@ -42,7 +42,7 @@ test.describe('Table', () => {
         await expect(header).toHaveAttribute('aria-sort', 'none');
     });
 
-    test('многоуровневая сортировка: Ctrl-клик добавляет столбец и показывает счётчик', async ({ page }) => {
+    test('multi-level sorting: Ctrl-click adds a column and shows a counter', async ({ page }) => {
         const category = page.locator('#multisort_table thead th').nth(2);
         const quantity = page.locator('#multisort_table thead th').nth(3);
         await category.click();
@@ -54,7 +54,7 @@ test.describe('Table', () => {
         await expect(page.locator('#multisort_table .p-sortable-column-badge')).toHaveCount(2);
     });
 
-    test('пагинатор и возврат на первую страницу при сортировке', async ({ page }) => {
+    test('paginator and return to the first page on sort', async ({ page }) => {
         const view = page.locator('#paginator_table');
         await view.scrollIntoViewIfNeeded();
         await expect(view.locator('tbody tr')).toHaveCount(4);
@@ -68,7 +68,7 @@ test.describe('Table', () => {
         await expect(view.locator('tbody tr')).toHaveCount(2);
     });
 
-    test('выбор одной строки и нескольких с Ctrl', async ({ page }) => {
+    test('selecting one row and several with Ctrl', async ({ page }) => {
         const single = page.locator('#single_table');
         await single.scrollIntoViewIfNeeded();
         await single.locator('tbody tr').nth(1).click();
@@ -88,7 +88,7 @@ test.describe('Table', () => {
         await expect(page.getByTestId('multiple-selection')).toHaveText('zz21cz3c1, f230fh0g3');
     });
 
-    test('флажки: строка и «выбрать все» в заголовке', async ({ page }) => {
+    test('checkboxes: row and "select all" in the header', async ({ page }) => {
         const view = page.locator('#checkbox_table');
         await view.scrollIntoViewIfNeeded();
         await view.locator('tbody .p-checkbox').nth(1).click();
@@ -101,7 +101,7 @@ test.describe('Table', () => {
         await expect(page.getByTestId('checkbox-selection')).toHaveText('0');
     });
 
-    test('радиокнопки выбирают одну строку', async ({ page }) => {
+    test('radio buttons select one row', async ({ page }) => {
         const view = page.locator('#radio_table');
         await view.scrollIntoViewIfNeeded();
         await view.locator('tbody .p-radiobutton').nth(1).click();
@@ -111,7 +111,7 @@ test.describe('Table', () => {
         await expect(view.locator('.p-radiobutton-checked')).toHaveCount(1);
     });
 
-    test('раскрытие строк', async ({ page }) => {
+    test('row expansion', async ({ page }) => {
         const view = page.locator('#expansion_table');
         await view.scrollIntoViewIfNeeded();
         await view.locator('.p-datatable-row-toggle-button').nth(0).click();
@@ -123,7 +123,7 @@ test.describe('Table', () => {
         await expect(view.locator('.p-datatable-row-expansion')).toHaveCount(1);
     });
 
-    test('полосатость, сетка и размеры', async ({ page }) => {
+    test('stripes, grid and sizes', async ({ page }) => {
         const tables = page.locator('#looks_table .p-datatable');
         await tables.first().scrollIntoViewIfNeeded();
         await expect(tables.nth(0)).toHaveClass(/p-datatable-striped/);
@@ -134,11 +134,11 @@ test.describe('Table', () => {
         expect(await padding(2)).toBeLessThan(await padding(0));
         expect(await padding(3)).toBeGreaterThan(await padding(0));
         const odd = tables.nth(0).locator('tbody tr').nth(1);
-        const even = tables.nth(0).locator('tbody tr').nth(0); // полосатыми считаются нечётные по счёту (1-я, 3-я)
+        const even = tables.nth(0).locator('tbody tr').nth(0); // odd rows by count (1st, 3rd) are the striped ones
         expect(await odd.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(await even.evaluate((el) => getComputedStyle(el).backgroundColor));
     });
 
-    test('вертикальная прокрутка и загрузка', async ({ page }) => {
+    test('vertical scrolling and loading', async ({ page }) => {
         const scroll = page.locator('#scroll_table .p-datatable-table-container');
         await scroll.scrollIntoViewIfNeeded();
         const box = (await scroll.boundingBox())!;
@@ -148,7 +148,7 @@ test.describe('Table', () => {
         await mask.scrollIntoViewIfNeeded();
         await expect(mask).toBeVisible();
     });
-    test('фильтры по столбцам: поле, режим, очистка и страницы', async ({ page }) => {
+    test('column filters: input, mode, clear and pages', async ({ page }) => {
         const view = page.locator('#filter_table');
         await view.scrollIntoViewIfNeeded();
         const names = () => view.locator('tbody > tr > td:nth-child(1)').allTextContents();
@@ -160,13 +160,13 @@ test.describe('Table', () => {
         await expect(view.locator('tbody tr')).toHaveCount(5);
         await view.locator('.p-datatable-filter input').nth(2).fill('60'); // quantity >= 60
         await expect.poll(names).toEqual(['Black Watch', 'Bracelet', 'Gaming Set']);
-        await view.locator('.p-datatable-filter input').nth(1).fill('access'); // category содержит
+        await view.locator('.p-datatable-filter input').nth(1).fill('access'); // category contains
         await expect.poll(names).toEqual(['Black Watch', 'Bracelet']);
         const input = view.locator('.p-datatable-filter input').nth(0);
         expect(await input.evaluate((el) => getComputedStyle(el).borderTopWidth)).not.toBe('0px');
     });
 
-    test('глобальный фильтр', async ({ page }) => {
+    test('global filter', async ({ page }) => {
         const view = page.locator('#global_table');
         await view.scrollIntoViewIfNeeded();
         await view.getByLabel('Global Search').fill('electr');
@@ -175,7 +175,7 @@ test.describe('Table', () => {
         await expect(view.locator('.p-datatable-empty-message')).toBeVisible();
     });
 
-    test('правка ячейки: Enter сохраняет, Escape отменяет', async ({ page }) => {
+    test('cell editing: Enter saves, Escape cancels', async ({ page }) => {
         const view = page.locator('#celledit_table');
         await view.scrollIntoViewIfNeeded();
         const cell = view.locator('tbody tr').nth(0).locator('td').nth(1);
@@ -193,11 +193,11 @@ test.describe('Table', () => {
         await expect(cell).toHaveText('Clock');
         await cell.click();
         await cell.locator('input').fill('Lamp');
-        await view.locator('tbody tr').nth(2).locator('td').nth(0).click(); // потеря фокуса завершает правку
+        await view.locator('tbody tr').nth(2).locator('td').nth(0).click(); // blur completes editing
         await expect(cell).toHaveText('Lamp');
     });
 
-    test('правка строки: изменить, сохранить, отменить', async ({ page }) => {
+    test('row editing: edit, save, cancel', async ({ page }) => {
         const view = page.locator('#rowedit_table');
         await view.scrollIntoViewIfNeeded();
         const row = view.locator('tbody tr').nth(1);
@@ -213,7 +213,7 @@ test.describe('Table', () => {
         await expect(row.locator('td').nth(1)).toHaveText('Strap');
     });
 
-    test('ленивая загрузка: страницы и фильтр приходят из запроса', async ({ page }) => {
+    test('lazy loading: pages and filter come from the request', async ({ page }) => {
         const view = page.locator('#lazy_table');
         await view.scrollIntoViewIfNeeded();
         const names = () => view.locator('tbody > tr > td:nth-child(1)').allTextContents();

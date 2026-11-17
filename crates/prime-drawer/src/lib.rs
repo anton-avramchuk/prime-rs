@@ -1,7 +1,7 @@
-//! Drawer — порт `p-drawer` из PrimeNG 21.1.10.
+//! Drawer - port of PrimeNG 21.1.10 `p-drawer`.
 //!
-//! Панель у края экрана поверх страницы: маска, анимации входа и выхода, закрытие по маске, кнопке и `Escape`,
-//! блокировка прокрутки страницы и ловушка фокуса. Панель и маска выносятся в `body`.
+//! A panel at the screen edge over the page: mask, enter and leave animations, closing by mask, button and `Escape`,
+//! page scroll blocking and a focus trap. The panel and mask are rendered into `body`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -14,7 +14,7 @@
 //!     </Drawer>
 //! }
 //! .to_html();
-//! // пока панель не показана, в разметке её нет
+//! // while the panel is not shown, it is absent from the markup
 //! assert!(!html.contains("p-drawer") && !html.contains("Body"));
 //! ```
 
@@ -40,36 +40,36 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Запасное время выхода: анимация идёт 500 мс, но без стилей или при отключённой анимации `animationend` не придёт.
+/// Fallback leave time: the animation lasts 500 ms, but without styles or with animation disabled `animationend` never arrives.
 #[cfg(target_arch = "wasm32")]
 const LEAVE_FALLBACK: Duration = Duration::from_millis(700);
 
-/// Pass-through частей [`Drawer`].
+/// Pass-through for [`Drawer`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct DrawerPt {
-    /// Корень панели.
+    /// Panel root.
     pub root: Pt,
-    /// Маска.
+    /// Mask.
     pub mask: Pt,
-    /// Заголовок панели.
+    /// Panel header.
     pub header: Pt,
-    /// Название в заголовке.
+    /// Header title.
     pub title: Pt,
-    /// Кнопка закрытия.
+    /// Close button.
     pub close_button: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
-    /// Подвал.
+    /// Footer.
     pub footer: Pt,
 }
 
-/// Состояние, общее для обработчиков панели.
+/// State shared by the panel handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     visible: RwSignal<bool>,
-    /// Панель в DOM (пока играет анимация выхода, она ещё в DOM).
+    /// Panel in the DOM (while the leave animation plays it is still in the DOM).
     rendered: RwSignal<bool>,
-    /// Идёт анимация выхода.
+    /// The leave animation is playing.
     leaving: RwSignal<bool>,
     panel: NodeRef<leptos::html::Div>,
     mask: NodeRef<leptos::html::Div>,
@@ -94,7 +94,7 @@ struct Core {
 }
 
 impl Core {
-    /// Снимает слушатель `Escape` и ловушку фокуса.
+    /// Removes the `Escape` listener and the focus trap.
     fn release_input(&self) {
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
             cleanup();
@@ -105,7 +105,7 @@ impl Core {
         }
     }
 
-    /// Освобождает слой и блокировку прокрутки.
+    /// Releases the layer and the scroll lock.
     fn release_layer(&self) {
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
             prime_core::zindex::revert(z);
@@ -116,7 +116,7 @@ impl Core {
         }
     }
 
-    /// Полное освобождение при размонтировании компонента.
+    /// Full release when the component unmounts.
     fn teardown(&self) {
         self.release_input();
         self.release_layer();
@@ -126,7 +126,7 @@ impl Core {
         }
     }
 
-    /// Панель только что попала в DOM: слой, ловушка фокуса, блокировка прокрутки, Escape, `on_show`.
+    /// The panel has just entered the DOM: layer, focus trap, scroll lock, Escape, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let Some(panel) = self.panel.get_untracked() else { return };
@@ -164,7 +164,7 @@ impl Core {
         }
     }
 
-    /// Закрытие началось: слушатели сняты, играет анимация выхода, `on_hide`.
+    /// Closing has started: listeners removed, the leave animation plays, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn begin_leave(self: &Arc<Self>) {
         self.release_input();
@@ -179,7 +179,7 @@ impl Core {
         }
     }
 
-    /// Анимация выхода закончилась: панель убирается из DOM, слой и блокировка освобождаются.
+    /// The leave animation has finished: the panel is removed from the DOM, the layer and lock are released.
     #[cfg(target_arch = "wasm32")]
     fn finish_leave(&self) {
         if self.rendered.is_disposed() || !self.leaving.get_untracked() {
@@ -194,79 +194,79 @@ impl Core {
     }
 }
 
-/// Панель у края экрана с маской, анимацией и ловушкой фокуса.
+/// Panel at the screen edge with a mask, animation and a focus trap.
 ///
-/// Каждое свойство принимает значение или сигнал; `visible` — двусторонний сигнал. Панель и маска выводятся
-/// в `body` и до гидратации не отдаются сервером.
+/// Each property accepts a value or a signal; `visible` is a two-way signal. The panel and mask are rendered
+/// into `body` and are not emitted by the server before hydration.
 #[component]
 pub fn Drawer(
-    /// Двусторонний сигнал видимости; без него состояние хранится внутри (по умолчанию скрыта).
+    /// Two-way visibility signal; without it the state is kept internally (hidden by default).
     #[prop(optional)]
     visible: Option<RwSignal<bool>>,
-    /// Край экрана.
+    /// Screen edge.
     #[prop(optional, into)]
     position: Prop<DrawerPosition>,
-    /// Растянуть панель на весь экран.
+    /// Stretch the panel to the full screen.
     #[prop(optional, into)]
     full_screen: Prop<bool>,
-    /// Показывать маску за панелью.
+    /// Show a mask behind the panel.
     #[prop(optional, default = Prop::Static(true), into)]
     modal: Prop<bool>,
-    /// Закрывать панель кликом по маске.
+    /// Close the panel by clicking the mask.
     #[prop(optional, default = Prop::Static(true), into)]
     dismissible: Prop<bool>,
-    /// Закрывать панель клавишей `Escape`.
+    /// Close the panel with the `Escape` key.
     #[prop(optional, default = Prop::Static(true), into)]
     close_on_escape: Prop<bool>,
-    /// Показывать в заголовке кнопку закрытия.
+    /// Show a close button in the header.
     #[prop(optional, default = Prop::Static(true), into)]
     closable: Prop<bool>,
-    /// Блокировать прокрутку страницы, пока панель показана.
+    /// Block page scrolling while the panel is shown.
     #[prop(optional, into)]
     block_scroll: Prop<bool>,
-    /// Автоматически назначать `z-index`.
+    /// Assign `z-index` automatically.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the config value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Название в заголовке.
+    /// Header title.
     #[prop(optional, into)]
     header: OptProp<String>,
-    /// Атрибут `aria-label` кнопки закрытия.
+    /// `aria-label` attribute of the close button.
     #[prop(optional, into)]
     aria_close_label: OptProp<String>,
-    /// Встроенный стиль маски.
+    /// Inline style of the mask.
     #[prop(optional, into)]
     mask_style: OptProp<String>,
-    /// Встроенный стиль панели.
+    /// Inline style of the panel.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс панели.
+    /// Extra class of the panel.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Значок кнопки закрытия вместо `TimesIcon`.
+    /// Close button icon instead of `TimesIcon`.
     #[prop(optional, into)]
     close_icon: Option<ViewFn>,
-    /// Своё содержимое заголовка (выводится перед названием).
+    /// Custom header content (rendered before the title).
     #[prop(optional, into)]
     header_content: Option<ViewFn>,
-    /// Подвал панели.
+    /// Panel footer.
     #[prop(optional, into)]
     footer: Option<ViewFn>,
-    /// Заменяет всё содержимое панели (заголовок, содержимое, подвал).
+    /// Replaces the entire panel content (header, content, footer).
     #[prop(optional, into)]
     headless: Option<ViewFn>,
-    /// Вызывается после показа панели.
+    /// Called after the panel is shown.
     #[prop(optional, into)]
     on_show: Option<Callback<()>>,
-    /// Вызывается, когда панель начинает закрываться.
+    /// Called when the panel starts closing.
     #[prop(optional, into)]
     on_hide: Option<Callback<()>>,
-    /// Pass-through частей.
+    /// Pass-through for parts.
     #[prop(optional)]
     pt: Option<DrawerPt>,
-    /// Содержимое панели.
+    /// Panel content.
     children: ChildrenFn,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
@@ -300,20 +300,20 @@ pub fn Drawer(
         let core = core.clone();
         on_cleanup(move || core.teardown());
     }
-    // Показ, закрытие и побочные эффекты (слой, ловушка фокуса, Escape) — только в браузере.
+    // Showing, closing and side effects (layer, focus trap, Escape) happen only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
         Effect::new(move |_| {
             let shown = core.visible.get();
-            // Панель попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
+            // The panel enters the DOM after this effect, so we also track the reference to it.
             let mounted = core.panel.get().is_some();
             let was_open = core.was_open.get_value();
             if shown {
                 if let Some(handle) = core.timer.try_update_value(Option::take).flatten() {
                     handle.clear();
                 }
-                // Повторный показ во время выхода: панель ещё в DOM, возвращаем её в состояние «открыта».
+                // Shown again during the leave animation: the panel is still in the DOM, return it to the "open" state.
                 if core.leaving.get_untracked() {
                     core.leaving.set(false);
                 }
@@ -328,7 +328,7 @@ pub fn Drawer(
                 core.was_open.set_value(false);
                 core.begin_leave();
             } else if core.rendered.get_untracked() && !core.leaving.get_untracked() {
-                // Закрыли, не дождавшись появления панели в DOM: убирать нечего ждать.
+                // Closed before the panel appeared in the DOM: nothing to wait for.
                 core.rendered.set(false);
             }
         });
@@ -347,14 +347,14 @@ pub fn Drawer(
         headless,
         children,
     });
-    // Содержимое строится заново внутри `Portal` при каждом показе: готовые представления не `Send + Sync`.
+    // The content is rebuilt inside `Portal` on every show: ready-made views are not `Send + Sync`.
     move || {
         let (core, pt, parts) = (core.clone(), pt.clone(), parts.clone());
         core.rendered.get().then(move || view! { <Portal>{build_panel(&core, &pt, &parts)}</Portal> })
     }
 }
 
-/// Свойства, нужные только при выводе панели.
+/// Properties needed only when rendering the panel.
 struct Parts {
     closable: Prop<bool>,
     header: OptProp<String>,
@@ -369,7 +369,7 @@ struct Parts {
     children: ChildrenFn,
 }
 
-/// Маска и панель.
+/// Mask and panel.
 fn build_panel(core: &Arc<Core>, pt: &Arc<DrawerPt>, parts: &Arc<Parts>) -> AnyView {
     let (panel, mask_ref, leaving) = (core.panel, core.mask, core.leaving);
 
@@ -485,7 +485,7 @@ fn build_panel(core: &Arc<Core>, pt: &Arc<DrawerPt>, parts: &Arc<Parts>) -> AnyV
     .into_any()
 }
 
-/// `animationend` корня панели (не вложенных элементов) завершает выход.
+/// `animationend` of the panel root (not of nested elements) completes the leave.
 fn animation_end(core: &Arc<Core>, event: &web_sys::AnimationEvent) {
     #[cfg(target_arch = "wasm32")]
     {

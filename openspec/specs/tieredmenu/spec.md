@@ -1,61 +1,61 @@
 # tieredmenu Specification
 
 ## Purpose
-TieredMenu показывает меню, группы которого раскрываются во вложенных панелях рядом с пунктом; управляется мышью и клавиатурой, может быть всплывающим.
+TieredMenu shows a menu whose groups expand into nested panels next to the item; it is controlled by mouse and keyboard and can be a popup.
 
 ## Requirements
 
-### Requirement: Разметка
-`TieredMenu` крейта `prime-tieredmenu` SHALL принимать пункты `prime_menu::MenuItem` и выводить `div.p-tieredmenu.p-component` (`p-tieredmenu-overlay` в режиме `popup`, `p-tieredmenu-mobile`, пока окно не шире `breakpoint`; `id`, `style`, `style_class`, `pt`) с корневым списком `ul.p-tieredmenu-root-list[role=menu][aria-orientation=vertical]` (`tabindex` — `tabindex` или `-1` при `disabled`, `aria-label`, `aria-labelledby`, `aria-activedescendant`). Каждый видимый пункт SHALL выводиться как `li.p-tieredmenu-item[role=menuitem]` с `id` (`<id меню>_<ключ>`, ключ — `0`, `0_1`, …), `p-tieredmenu-item-active` (раскрыт), `p-focus`, `p-disabled`, `data-p-highlight`, `data-p-focused`, `data-p-disabled`, `aria-label`, `aria-disabled`, `aria-setsize`, `aria-posinset` (разделители не считаются) и у групп `aria-haspopup="menu"` и `aria-expanded`; внутри — `div.p-tieredmenu-item-content` > `a.p-tieredmenu-item-link` (`href`, `target`, `title`) со значком `p-tieredmenu-item-icon`, подписью `p-tieredmenu-item-label` и у групп стрелкой `p-tieredmenu-submenu-icon`, затем, пока группа раскрыта, вложенный `ul.p-tieredmenu-submenu[role=menu]` с подпунктами. Разделитель SHALL быть `li.p-tieredmenu-separator[role=separator]`; невидимые пункты — не выводиться.
+### Requirement: Markup
+The `TieredMenu` of the `prime-tieredmenu` crate SHALL accept `prime_menu::MenuItem` items and render `div.p-tieredmenu.p-component` (`p-tieredmenu-overlay` in `popup` mode, `p-tieredmenu-mobile` while the window is not wider than `breakpoint`; `id`, `style`, `style_class`, `pt`) with a root list `ul.p-tieredmenu-root-list[role=menu][aria-orientation=vertical]` (`tabindex` is `tabindex` or `-1` when `disabled`, `aria-label`, `aria-labelledby`, `aria-activedescendant`). Each visible item SHALL be rendered as `li.p-tieredmenu-item[role=menuitem]` with `id` (`<menu id>_<key>`, the key is `0`, `0_1`, ...), `p-tieredmenu-item-active` (expanded), `p-focus`, `p-disabled`, `data-p-highlight`, `data-p-focused`, `data-p-disabled`, `aria-label`, `aria-disabled`, `aria-setsize`, `aria-posinset` (separators are not counted) and, on groups, `aria-haspopup="menu"` and `aria-expanded`; inside it, `div.p-tieredmenu-item-content` > `a.p-tieredmenu-item-link` (`href`, `target`, `title`) with the `p-tieredmenu-item-icon` icon, the `p-tieredmenu-item-label` label and, on groups, the `p-tieredmenu-submenu-icon` arrow, then, while the group is expanded, a nested `ul.p-tieredmenu-submenu[role=menu]` with sub-items. A separator SHALL be `li.p-tieredmenu-separator[role=separator]`; invisible items SHALL NOT be rendered.
 
-#### Scenario: Состав
-- **WHEN** отрисовано меню из двух пунктов, один из них группа с двумя подпунктами
-- **THEN** выведены `li.p-tieredmenu-item`, у группы — стрелка и `aria-haspopup="menu"`, а вложенный `ul.p-tieredmenu-submenu` появляется после её раскрытия
+#### Scenario: Composition
+- **WHEN** a menu of two items is rendered, one of them a group with two sub-items
+- **THEN** `li.p-tieredmenu-item` elements are rendered, the group has an arrow and `aria-haspopup="menu"`, and the nested `ul.p-tieredmenu-submenu` appears after it is expanded
 
-#### Scenario: Нумерация
-- **WHEN** между пунктами стоит разделитель
-- **THEN** `aria-setsize` не считает разделитель, а `aria-posinset` второго пункта равен 2
+#### Scenario: Numbering
+- **WHEN** a separator sits between items
+- **THEN** `aria-setsize` does not count the separator, and `aria-posinset` of the second item is 2
 
-### Requirement: Раскрытие мышью
-Клик по группе SHALL раскрывать её (в путь активных пунктов добавляется группа, лишние ветки убираются), повторный клик по раскрытой группе или её предку — сворачивать ветку до этого пункта, оставляя фокус на нём. Клик по листу SHALL вызывать `command` (если пункт не отключён), закрывать все подменю и возвращать фокус в корневой список; в режиме `popup` — скрывать и меню. Наведение на пункт SHALL раскрывать группу, только если до этого что-то уже раскрывали кликом и `auto_display` (по умолчанию да) включён; на узком окне наведение путь не меняет. Подменю SHALL показываться только у раскрытого пункта и выравниваться справа от него, а при нехватке места справа — слева.
+### Requirement: Expanding by mouse
+A click on a group SHALL expand it (the group is added to the path of active items, extra branches are removed); a repeated click on an expanded group or its ancestor SHALL collapse the branch down to that item, leaving focus on it. A click on a leaf SHALL invoke `command` (if the item is not disabled), close all submenus and return focus to the root list; in `popup` mode it SHALL also hide the menu. Hovering an item SHALL expand a group only if something was already expanded by click before and `auto_display` (on by default) is enabled; in a narrow window hover does not change the path. A submenu SHALL be shown only for the expanded item and aligned to the right of it, and to the left when there is not enough room on the right.
 
-#### Scenario: Раскрытие и сворачивание
-- **WHEN** пользователь кликает по группе дважды
-- **THEN** первым кликом подменю показано, вторым — скрыто
+#### Scenario: Expanding and collapsing
+- **WHEN** the user clicks a group twice
+- **THEN** the first click shows the submenu, the second hides it
 
-#### Scenario: Лист
-- **WHEN** пользователь кликает по листу вложенной группы
-- **THEN** вызван `command`, все подменю закрыты
+#### Scenario: Leaf
+- **WHEN** the user clicks a leaf of a nested group
+- **THEN** `command` is invoked and all submenus are closed
 
-#### Scenario: Наведение
-- **WHEN** группа раскрыта кликом, после чего курсор наведён на соседнюю группу
-- **THEN** раскрывается соседняя группа
+#### Scenario: Hover
+- **WHEN** a group is expanded by click and then the cursor is moved onto a sibling group
+- **THEN** the sibling group expands
 
-### Requirement: Клавиатура
-В корневом списке клавиши SHALL работать так: ↓ — следующий допустимый пункт текущего уровня (первый или выбранный, если фокуса нет); ↑ — предыдущий (последний при пустом фокусе); → — раскрыть группу под фокусом и перейти к её первому допустимому пункту; ← — свернуть подменю и вернуться к родителю; `Home`/`End` — первый/последний допустимый пункт; `Enter` и `Space` — клик по ссылке пункта; `Escape` — закрыть всё и вернуть фокус; `Tab` — активировать лист под фокусом и закрыть всё; `Alt+↑` в режиме `popup` — закрыть меню. Допустимый пункт SHALL быть видимым, не отключённым и не разделителем. Печатаемый символ SHALL искать пункт текущего уровня по началу подписи без учёта регистра, продолжая поиск от текущего пункта по кругу; накопленная строка поиска SHALL сбрасываться через 500 мс. Обработанные клавиши SHALL отменять действие по умолчанию, `aria-activedescendant` — указывать на пункт под фокусом, пока список в фокусе.
+### Requirement: Keyboard
+In the root list the keys SHALL work as follows: ↓ is the next valid item of the current level (the first or selected one if there is no focus); ↑ is the previous (the last one when focus is empty); → expands the focused group and moves to its first valid item; ← collapses the submenu and returns to the parent; `Home`/`End` are the first/last valid item; `Enter` and `Space` click the item link; `Escape` closes everything and returns focus; `Tab` activates the focused leaf and closes everything; `Alt+↑` in `popup` mode closes the menu. A valid item SHALL be visible, not disabled and not a separator. A printable character SHALL search for an item of the current level by label prefix, case-insensitively, continuing from the current item and wrapping around; the accumulated search string SHALL be reset after 500 ms. Handled keys SHALL cancel the default action, and `aria-activedescendant` SHALL point to the focused item while the list has focus.
 
-#### Scenario: Вниз и вправо
-- **WHEN** фокус на группе и нажата →, затем ↓
-- **THEN** группа раскрыта, фокус на втором допустимом пункте подменю
+#### Scenario: Down and right
+- **WHEN** focus is on a group and → is pressed, then ↓
+- **THEN** the group is expanded, focus is on the second valid item of the submenu
 
-#### Scenario: Поиск
-- **WHEN** пользователь печатает «e» при пунктах «File», «Edit», «Users»
-- **THEN** фокус на «Edit»
+#### Scenario: Search
+- **WHEN** the user types "e" with the items "File", "Edit", "Users"
+- **THEN** focus is on "Edit"
 
-### Requirement: Всплывающий режим
-При `popup` меню SHALL выводиться только пока оно показано через `TieredMenuRef` (`show`, `show_at`, `toggle`, `hide`, `visible`): выравниваться по цели, получать слой группы `Menu` (`auto_z_index`, `base_z_index`) и фокус корневого списка, затем вызывать `on_show`. Клик вне меню и цели, изменение размера окна (кроме сенсорных устройств) и прокрутка предка цели SHALL закрывать меню и сбрасывать путь и фокус; после скрытия вызывается `on_hide`. Слушатели SHALL вешаться на время показа (клик — в следующем тике) и сниматься при скрытии и размонтировании. Вне режима `popup` слушатель клика вне меню SHALL работать, пока путь активных пунктов не пуст, и закрывать подменю.
+### Requirement: Popup mode
+With `popup` the menu SHALL be rendered only while it is shown via `TieredMenuRef` (`show`, `show_at`, `toggle`, `hide`, `visible`): it aligns to the target, receives the `Menu` group layer (`auto_z_index`, `base_z_index`) and focus of the root list, then calls `on_show`. A click outside the menu and target, a window resize (except on touch devices) and scrolling an ancestor of the target SHALL close the menu and reset the path and focus; after hiding, `on_hide` is called. Listeners SHALL be attached for the duration of the display (the click one on the next tick) and removed on hide and unmount. Outside `popup` mode the outside-click listener SHALL work while the path of active items is not empty, and close the submenus.
 
-#### Scenario: Переключение
-- **WHEN** вызван `toggle` с событием кнопки
-- **THEN** меню показано у кнопки, повторный вызов скрывает его
+#### Scenario: Toggle
+- **WHEN** `toggle` is called with a button event
+- **THEN** the menu is shown at the button, a repeated call hides it
 
-#### Scenario: Клик вне
-- **WHEN** меню показано и пользователь кликает вне меню и цели
-- **THEN** меню скрыто
+#### Scenario: Outside click
+- **WHEN** the menu is shown and the user clicks outside the menu and target
+- **THEN** the menu is hidden
 
-### Requirement: Шаблоны
-Представление `item` SHALL заменять содержимое `div.p-tieredmenu-item-content` и получать пункт и признак наличия подменю; `submenu_icon` SHALL заменять стрелку группы. Отключённое меню (`disabled`) SHALL не принимать фокус (`tabindex="-1"`).
+### Requirement: Templates
+The `item` view SHALL replace the content of `div.p-tieredmenu-item-content` and receive the item and a flag indicating whether it has a submenu; `submenu_icon` SHALL replace the group arrow. A disabled menu (`disabled`) SHALL NOT accept focus (`tabindex="-1"`).
 
-#### Scenario: Свой пункт
-- **WHEN** задан `item`
-- **THEN** внутри `div.p-tieredmenu-item-content` каждого пункта выведено своё представление вместо ссылки
+#### Scenario: Custom item
+- **WHEN** `item` is set
+- **THEN** inside `div.p-tieredmenu-item-content` of each item the custom view is rendered instead of the link

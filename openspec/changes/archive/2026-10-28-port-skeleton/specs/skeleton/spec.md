@@ -1,45 +1,45 @@
 ## ADDED Requirements
 
-### Requirement: Разметка и классы Skeleton
-Компонент `Skeleton` крейта `prime-skeleton` SHALL отрисовывать `<div aria-hidden="true">` с классами `p-skeleton p-component`, `p-skeleton-circle` (при `shape = circle`), `p-skeleton-animation-none` (при `animation = none`) и `data-p`, равным имени формы (`rectangle` по умолчанию, `circle`). `style_class` SHALL добавляться без потери собственных классов.
+### Requirement: Markup and classes of Skeleton
+The `Skeleton` component of the `prime-skeleton` crate SHALL render `<div aria-hidden="true">` with the classes `p-skeleton p-component`, `p-skeleton-circle` (when `shape = circle`), `p-skeleton-animation-none` (when `animation = none`) and `data-p` equal to the shape name (`rectangle` by default, `circle`). `style_class` SHALL be added without losing the own classes.
 
-#### Scenario: Значения по умолчанию
-- **WHEN** свойства не заданы
-- **THEN** корень имеет класс `p-skeleton p-component` и `data-p="rectangle"`, без `p-skeleton-circle` и `p-skeleton-animation-none`
+#### Scenario: Default values
+- **WHEN** the properties are not set
+- **THEN** the root has the class `p-skeleton p-component` and `data-p="rectangle"`, without `p-skeleton-circle` and `p-skeleton-animation-none`
 
-#### Scenario: Круг без анимации
-- **WHEN** заданы `shape = circle` и `animation = none`
-- **THEN** есть классы `p-skeleton-circle` и `p-skeleton-animation-none`, а `data-p` равен `circle`
+#### Scenario: Circle without animation
+- **WHEN** `shape = circle` and `animation = none` are set
+- **THEN** the classes `p-skeleton-circle` and `p-skeleton-animation-none` are present, and `data-p` equals `circle`
 
-### Requirement: Размеры Skeleton
-Встроенный стиль SHALL начинаться с `position: relative;`, затем `width` (по умолчанию `100%`) и `height` (по умолчанию `1rem`); при заданном `size` ширина и высота SHALL равняться `size`; при заданном `border_radius` SHALL добавляться `border-radius`.
+### Requirement: Size of Skeleton
+The inline style SHALL start with `position: relative;`, then `width` (default `100%`) and `height` (default `1rem`); when `size` is set, the width and height SHALL equal `size`; when `border_radius` is set, `border-radius` SHALL be added.
 
-#### Scenario: Ширина и высота
-- **WHEN** заданы `width = "10rem"` и `height = "4rem"`
-- **THEN** стиль равен `position: relative; width: 10rem; height: 4rem;`
+#### Scenario: Width and height
+- **WHEN** `width = "10rem"` and `height = "4rem"` are set
+- **THEN** the style equals `position: relative; width: 10rem; height: 4rem;`
 
-#### Scenario: Размер
-- **WHEN** задан `size = "3rem"` вместе с `width`
-- **THEN** ширина и высота равны `3rem`, `width` игнорируется
+#### Scenario: Size
+- **WHEN** `size = "3rem"` is set together with `width`
+- **THEN** the width and height equal `3rem`, and `width` is ignored
 
-#### Scenario: Скругление
-- **WHEN** задан `border_radius = "16px"`
-- **THEN** стиль заканчивается на `border-radius: 16px;`
+#### Scenario: Border radius
+- **WHEN** `border_radius = "16px"` is set
+- **THEN** the style ends with `border-radius: 16px;`
 
 ### Requirement: Pass-through Skeleton
-`pt` SHALL принимать `root`, добавляя классы, стиль и атрибуты без замены собственных.
+`pt` SHALL accept `root`, adding classes, style and attributes without replacing the own ones.
 
-#### Scenario: Класс через pt
-- **WHEN** в `pt.root` передан класс `custom`
-- **THEN** у корня есть и `custom`, и `p-skeleton`
+#### Scenario: Class through pt
+- **WHEN** the class `custom` is passed in `pt.root`
+- **THEN** the root has both `custom` and `p-skeleton`
 
-### Requirement: Стоимость отрисовки Skeleton
-Skeleton со статическими свойствами SHALL использовать статическую ветвь; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `skeleton` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `skeleton` в `benches/budgets.toml`.
+### Requirement: Rendering cost of Skeleton
+A Skeleton with static properties SHALL use the static branch; both branches SHALL produce the same markup. The number of allocations per instance during SSR SHALL fit the budget `skeleton` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `skeleton` in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** the same set of values is passed statically and through signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Skeleton не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of Skeleton do not exceed the budgets

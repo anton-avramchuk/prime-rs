@@ -1,20 +1,20 @@
-//! Чистая логика ToggleButton: классы и `data-p` (по `togglebuttonstyle.ts` и `ToggleButton.dataP` PrimeNG).
+//! Pure ToggleButton logic: classes and `data-p` (per `togglebuttonstyle.ts` and `ToggleButton.dataP` of PrimeNG).
 
 use prime_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
-/// Положение иконки относительно метки.
+/// Icon position relative to the label.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum IconPos {
-    /// Слева от метки.
+    /// Left of the label.
     #[default]
     Left,
-    /// Справа от метки.
+    /// Right of the label.
     Right,
 }
 
 impl IconPos {
-    /// Класс оболочки иконки.
+    /// Icon wrapper class.
     pub fn class(self) -> &'static str {
         match self {
             Self::Left => "p-togglebutton-icon p-togglebutton-icon-left",
@@ -23,22 +23,22 @@ impl IconPos {
     }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct ToggleButtonState {
-    /// Включена.
+    /// Enabled.
     pub checked: bool,
-    /// Недоступна.
+    /// Disabled.
     pub disabled: bool,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
-    /// На всю ширину.
+    /// Full width.
     pub fluid: bool,
 }
 
-/// Добавляет классы корня в порядке `togglebuttonstyle.ts`.
+/// Appends the root classes in the order of `togglebuttonstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &ToggleButtonState) {
     cn.add("p-togglebutton p-component")
         .add_if(s.checked, "p-togglebutton-checked")
@@ -49,7 +49,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &ToggleButtonState) {
         .add_if(s.fluid, "p-togglebutton-fluid");
 }
 
-/// Значение `data-p`: `checked`, `invalid`, размер.
+/// `data-p` value: `checked`, `invalid`, size.
 pub fn data_p(s: &ToggleButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.checked, "checked").add_if(s.invalid, "invalid").add_opt(s.size.map(Size::as_str));

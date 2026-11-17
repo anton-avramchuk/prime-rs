@@ -3,27 +3,27 @@ import { expect, test } from '@playwright/test';
 test.describe('Fieldset', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/fieldset');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-fieldset')).toBeVisible();
         await page.waitForFunction(() => document.querySelector('[data-demo=toggleable] .p-fieldset-toggle-button') !== null);
         await page.waitForTimeout(300);
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(3);
         const border = await page.locator('[data-demo=basic] .p-fieldset').evaluate((el) => getComputedStyle(el).borderTopWidth);
         expect(border).toBe('1px');
     });
 
-    test('basic: легенда и содержимое без переключателя', async ({ page }) => {
+    test('basic: legend and content without a toggle', async ({ page }) => {
         const fieldset = page.locator('[data-demo=basic] .p-fieldset');
         await expect(fieldset.locator('legend .p-fieldset-legend-label')).toHaveText('Header');
         await expect(fieldset.locator('.p-fieldset-content')).toContainText('Lorem ipsum');
         await expect(fieldset.locator('button')).toHaveCount(0);
     });
 
-    test('toggleable: кнопка в легенде сворачивает и разворачивает с aria-expanded и анимацией', async ({ page }) => {
+    test('toggleable: the button in the legend collapses and expands with aria-expanded and animation', async ({ page }) => {
         const fieldset = page.locator('[data-demo=toggleable] .p-fieldset');
         const button = fieldset.locator('legend button.p-fieldset-toggle-button');
         const container = fieldset.locator('.p-fieldset-content-container');
@@ -49,7 +49,7 @@ test.describe('Fieldset', () => {
         await expect(page.getByTestId('collapsed-state')).toHaveText('expanded');
     });
 
-    test('toggleable: Enter и Space переключают Fieldset', async ({ page }) => {
+    test('toggleable: Enter and Space toggle the Fieldset', async ({ page }) => {
         const button = page.locator('[data-demo=toggleable] .p-fieldset-toggle-button');
         await button.focus();
         await page.keyboard.press('Enter');
@@ -58,7 +58,7 @@ test.describe('Fieldset', () => {
         await expect(button).toHaveAttribute('aria-expanded', 'true');
     });
 
-    test('template: слот легенды', async ({ page }) => {
+    test('template: legend slot', async ({ page }) => {
         const fieldset = page.locator('[data-demo=template] .p-fieldset');
         await expect(fieldset.locator('legend')).toContainText('Amy Elsner');
         await expect(fieldset.locator('.p-fieldset-content')).toContainText('Lorem ipsum');

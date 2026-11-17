@@ -1,6 +1,6 @@
-//! Поведение TreeTable в реальном браузере (wasm-bindgen-test): раскрытие и сворачивание, сортировка по уровням,
-//! выбор кликом и Ctrl, флажки с распространением и частичным состоянием, пагинатор по корням.
-//! Сценарии идут одним последовательным тестом.
+//! TreeTable behavior in a real browser (wasm-bindgen-test): expanding and collapsing, per-level sorting,
+//! selection by click and Ctrl, checkboxes with propagation and partial state, root paginator.
+//! Scenarios run as one sequential test.
 #![cfg(target_arch = "wasm32")]
 #![recursion_limit = "512"]
 
@@ -113,21 +113,21 @@ async fn expand_collapse_and_sort() {
     settle().await;
     assert_eq!(names(&host), "Documents Work Expenses.doc Resume.doc Home Pictures Movies");
     let leaf = toggler(&host, 2);
-    assert!(leaf.get_attribute("style").unwrap().contains("visibility: hidden"), "у листа кнопки нет");
+    assert!(leaf.get_attribute("style").unwrap().contains("visibility: hidden"), "a leaf has no button");
     toggler(&host, 0).click();
     settle().await;
-    assert_eq!(names(&host), "Documents Pictures Movies", "сворачивание скрывает всё поддерево");
+    assert_eq!(names(&host), "Documents Pictures Movies", "collapsing hides the whole subtree");
     assert_eq!(log.lock().unwrap().as_slice(), ["expand:Documents", "expand:Work", "collapse:Documents"]);
 
-    // сортировка действует на каждом уровне
+    // sorting applies at every level
     toggler(&host, 0).click();
     settle().await;
     all(&host, "thead th")[1].click();
     settle().await;
-    assert_eq!(names(&host), "Documents Home Work Resume.doc Expenses.doc Pictures Movies", "по возрастанию размера на каждом уровне");
+    assert_eq!(names(&host), "Documents Home Work Resume.doc Expenses.doc Pictures Movies", "ascending by size at every level");
     all(&host, "thead th")[1].click();
     settle().await;
-    assert_eq!(names(&host), "Movies Pictures Documents Work Expenses.doc Resume.doc Home", "по убыванию размера");
+    assert_eq!(names(&host), "Movies Pictures Documents Work Expenses.doc Resume.doc Home", "descending by size");
     host.remove();
 }
 
@@ -147,8 +147,8 @@ async fn selection_by_click() {
     assert_eq!(selection.get_untracked(), ["0", "2"]);
     click_with(&all(&host, "tbody > tr")[0], true);
     settle().await;
-    assert_eq!(selection.get_untracked(), ["2"], "Ctrl снимает выбранный узел");
-    // клик по кнопке раскрытия не выбирает узел
+    assert_eq!(selection.get_untracked(), ["2"], "Ctrl unselects the selected node");
+    // a click on the expand button does not select the node
     toggler(&host, 1).click();
     settle().await;
     assert_eq!(selection.get_untracked(), ["2"]);
@@ -180,22 +180,22 @@ async fn checkbox_propagation() {
     settle().await;
     assert_eq!(selection.get_untracked(), ["0-0-0"]);
     let rows = all(&host, "tbody .p-treetable-node-checkbox");
-    assert!(!rows[1].class_name().contains("p-checkbox-checked"), "Work: частично");
+    assert!(!rows[1].class_name().contains("p-checkbox-checked"), "Work: partial");
     assert!(
         host.query_selector("tbody tr:nth-child(2) .p-checkbox-icon").unwrap().is_some(),
-        "у частично выбранного Work значок состояния"
+        "partially selected Work has a state icon"
     );
     boxes()[3].click(); // Resume.doc
     settle().await;
-    assert_eq!(selection.get_untracked(), ["0-0-0", "0-0-1", "0-0"], "когда выбраны оба ребёнка, выбирается Work");
+    assert_eq!(selection.get_untracked(), ["0-0-0", "0-0-1", "0-0"], "when both children are selected, Work is selected");
     assert!(all(&host, "tbody .p-treetable-node-checkbox")[1].class_name().contains("p-checkbox-checked"));
-    boxes()[0].click(); // Documents: дети Work выбраны, но Home нет
+    boxes()[0].click(); // Documents: Work children are selected, but Home is not
     settle().await;
     let sel = selection.get_untracked();
-    assert!(sel.contains(&"0".to_owned()) && sel.contains(&"0-1".to_owned()), "выбор корня выбирает всё поддерево: {sel:?}");
+    assert!(sel.contains(&"0".to_owned()) && sel.contains(&"0-1".to_owned()), "selecting the root selects the whole subtree: {sel:?}");
     boxes()[0].click();
     settle().await;
-    assert!(selection.get_untracked().is_empty(), "снятие корня снимает поддерево");
+    assert!(selection.get_untracked().is_empty(), "unselecting the root unselects the subtree");
     let log = log.lock().unwrap().clone();
     assert_eq!(&log[..2], ["select:Expenses.doc", "select:Resume.doc"], "{log:?}");
     host.remove();
@@ -209,14 +209,14 @@ async fn paginator_over_roots() {
         view! { <TreeTable value=tree() columns=columns() paginator=true default_rows=2usize first=first expanded_keys=expanded /> }
     });
     settle().await;
-    assert_eq!(names(&host), "Documents Work Home Pictures", "два корня со вложенными строками");
+    assert_eq!(names(&host), "Documents Work Home Pictures", "two roots with nested rows");
     all(&host, "button.p-paginator-next")[0].click();
     settle().await;
     assert_eq!(first.get_untracked(), 2);
     assert_eq!(names(&host), "Movies");
     all(&host, "thead th")[0].click();
     settle().await;
-    assert_eq!(first.get_untracked(), 0, "сортировка возвращает на первую страницу");
+    assert_eq!(first.get_untracked(), 0, "sorting returns to the first page");
     host.remove();
 }
 

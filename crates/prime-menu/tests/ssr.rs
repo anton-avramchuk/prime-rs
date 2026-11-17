@@ -1,4 +1,4 @@
-//! Разметка Menu (SSR): список, группы, разделители, невидимые пункты, всплывающий режим.
+//! Menu markup (SSR): list, groups, separators, invisible items, popup mode.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

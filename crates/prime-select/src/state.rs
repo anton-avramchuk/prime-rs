@@ -1,30 +1,30 @@
-//! Чистая логика Select: классы и `data-p` (по `selectstyle.ts` и `Select.*DataP` PrimeNG).
+//! Pure Select logic: classes and `data-p` (from `selectstyle.ts` and PrimeNG `Select.*DataP`).
 
 use prime_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
-/// Снимок свойств, влияющих на классы и `data-p` корня.
+/// Snapshot of properties affecting root classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct SelectState {
-    /// Недоступен.
+    /// Disabled.
     pub disabled: bool,
-    /// Вариант `filled`.
+    /// `filled` variant.
     pub variant_filled: bool,
-    /// Метка в фокусе.
+    /// Label is focused.
     pub focused: bool,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// Выбрано значение.
+    /// A value is selected.
     pub filled: bool,
-    /// Панель открыта.
+    /// Panel is open.
     pub open: bool,
-    /// На всю ширину.
+    /// Full width.
     pub fluid: bool,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
 }
 
-/// Добавляет классы корня в порядке `selectstyle.ts`.
+/// Appends root classes in `selectstyle.ts` order.
 pub fn write_classes(cn: &mut ClassNames, s: &SelectState) {
     cn.add("p-select p-component p-inputwrapper")
         .add_if(s.disabled, "p-disabled")
@@ -39,7 +39,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &SelectState) {
         .add_if(s.size == Some(Size::Large), "p-select-lg p-inputfield-lg");
 }
 
-/// Значение `data-p` корня: `invalid`, `disabled`, `focus`, `fluid`, `filled`, размер.
+/// Root `data-p` value: `invalid`, `disabled`, `focus`, `fluid`, `filled`, size.
 pub fn data_p(s: &SelectState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.invalid, "invalid")
@@ -51,25 +51,25 @@ pub fn data_p(s: &SelectState) -> Cow<'static, str> {
     d.finish_cow()
 }
 
-/// Что показывает метка.
+/// What the label shows.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum LabelKind {
-    /// Метка выбранного варианта (или шаблон выбранного).
+    /// Label of the selected option (or the selected template).
     Selected,
-    /// Подсказка `placeholder`.
+    /// `placeholder` hint.
     Placeholder,
-    /// Ничего: нет ни выбора, ни подсказки.
+    /// Nothing: neither a selection nor a placeholder.
     Empty,
 }
 
-/// Добавляет классы метки.
+/// Appends label classes.
 pub fn write_label_classes(cn: &mut ClassNames, kind: LabelKind) {
     cn.add("p-select-label")
         .add_if(kind == LabelKind::Placeholder, "p-placeholder")
         .add_if(kind == LabelKind::Empty, "p-select-label-empty");
 }
 
-/// Значение `data-p` метки: `placeholder`, `clearable`, `disabled`, размер, `empty`.
+/// Label `data-p` value: `placeholder`, `clearable`, `disabled`, size, `empty`.
 pub fn label_data_p(kind: LabelKind, clearable: bool, disabled: bool, size: Option<Size>) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(kind == LabelKind::Placeholder, "placeholder")
@@ -80,7 +80,7 @@ pub fn label_data_p(kind: LabelKind, clearable: bool, disabled: bool, size: Opti
     d.finish_cow()
 }
 
-/// Добавляет классы варианта.
+/// Appends option classes.
 pub fn write_option_classes(cn: &mut ClassNames, selected: bool, checkmark: bool, disabled: bool, focused: bool) {
     cn.add("p-select-option")
         .add_if(selected && !checkmark, "p-select-option-selected")
@@ -157,7 +157,7 @@ mod tests {
         };
         assert_eq!(built(false, false, false, false), "p-select-option");
         assert_eq!(built(true, false, false, false), "p-select-option p-select-option-selected");
-        assert_eq!(built(true, true, false, false), "p-select-option", "с галочкой выделения классом нет");
+        assert_eq!(built(true, true, false, false), "p-select-option", "no class for the selection checkmark");
         assert_eq!(built(false, false, true, true), "p-select-option p-disabled p-focus");
         assert_eq!(built(true, false, true, true), "p-select-option p-select-option-selected p-disabled p-focus");
     }

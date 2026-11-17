@@ -1,24 +1,24 @@
-//! Чистая логика Dock: положение, классы, идентификаторы, клавиши и шаги фокуса (по `dock.ts` и `dockstyle.ts` PrimeNG).
+//! Pure Dock logic: position, classes, identifiers, keys and focus steps (based on PrimeNG `dock.ts` and `dockstyle.ts`).
 
 use prime_core::ClassNames;
 use std::borrow::Cow;
 
-/// Положение дока.
+/// Dock position.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum DockPosition {
-    /// У нижнего края (по умолчанию).
+    /// At the bottom edge (default).
     #[default]
     Bottom,
-    /// У верхнего края.
+    /// At the top edge.
     Top,
-    /// У левого края.
+    /// At the left edge.
     Left,
-    /// У правого края.
+    /// At the right edge.
     Right,
 }
 
 impl DockPosition {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Bottom => "bottom",
@@ -28,18 +28,18 @@ impl DockPosition {
         }
     }
 
-    /// Горизонтальный ли док.
+    /// Whether the dock is horizontal.
     pub fn is_horizontal(self) -> bool {
         matches!(self, Self::Bottom | Self::Top)
     }
 }
 
-/// Значение `aria-orientation` списка.
+/// `aria-orientation` value of the list.
 pub fn orientation(position: DockPosition) -> &'static str {
     if position.is_horizontal() { "horizontal" } else { "vertical" }
 }
 
-/// Классы корня: `p-dock p-component p-dock-<положение>` и `p-dock-mobile`.
+/// Root classes: `p-dock p-component p-dock-<position>` and `p-dock-mobile`.
 pub fn root_classes(position: DockPosition, mobile: bool, extra: Option<&str>) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-dock p-component").add(match position {
@@ -52,14 +52,14 @@ pub fn root_classes(position: DockPosition, mobile: bool, extra: Option<&str>) -
     cn.finish_cow()
 }
 
-/// Классы пункта: `p-dock-item`, `p-focus`, `p-disabled` и пользовательский класс.
+/// Item classes: `p-dock-item`, `p-focus`, `p-disabled` and the user class.
 pub fn item_classes(focused: bool, disabled: bool, extra: Option<&str>) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-dock-item").add_if(focused, "p-focus").add_if(disabled, "p-disabled").add_user(extra);
     cn.finish_cow()
 }
 
-/// Идентификатор пункта: собственный `id` или `<id списка>_<индекс>`.
+/// Item identifier: its own `id` or `<list id>_<index>`.
 pub fn item_id(list_id: &str, own: Option<&str>, index: usize) -> String {
     match own {
         Some(id) if !id.is_empty() => id.to_owned(),
@@ -67,24 +67,24 @@ pub fn item_id(list_id: &str, own: Option<&str>, index: usize) -> String {
     }
 }
 
-/// Действие клавиши.
+/// Key action.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Action {
-    /// Следующий доступный пункт.
+    /// Next available item.
     Next,
-    /// Предыдущий доступный пункт.
+    /// Previous available item.
     Prev,
-    /// Первый пункт.
+    /// First item.
     First,
-    /// Последний пункт.
+    /// Last item.
     Last,
-    /// Клик по ссылке пункта.
+    /// Click on the item's link.
     Activate,
-    /// Клавиша перехватывается без действия (стрелка поперёк дока).
+    /// The key is intercepted without an action (an arrow across the dock).
     Noop,
 }
 
-/// Действие клавиши `code` в доке с положением `position`; `None` — клавиша не обрабатывается.
+/// Action of the key `code` in a dock at `position`; `None` — the key is not handled.
 pub fn key_action(position: DockPosition, code: &str) -> Option<Action> {
     let horizontal = position.is_horizontal();
     Some(match code {
@@ -123,8 +123,8 @@ pub fn key_action(position: DockPosition, code: &str) -> Option<Action> {
     })
 }
 
-/// Новая позиция фокуса среди `count` доступных пунктов (`changeFocusedOptionIndex`): `Next` и `Prev` исходят из текущей
-/// позиции (без неё — `0`) и зажимаются в границах; `First`/`Last` — крайние. Без пунктов — `None`.
+/// New focus position among `count` available items (`changeFocusedOptionIndex`): `Next` and `Prev` start from the current
+/// position (without it — `0`) and are clamped to the bounds; `First`/`Last` — the edges. Without items — `None`.
 pub fn step(count: usize, current: Option<usize>, action: Action) -> Option<usize> {
     let last = count.checked_sub(1)?;
     match action {
@@ -170,7 +170,7 @@ mod tests {
     fn keys_follow_the_orientation() {
         assert_eq!(key_action(Bottom, "ArrowRight"), Some(Action::Next));
         assert_eq!(key_action(Top, "ArrowLeft"), Some(Action::Prev));
-        assert_eq!(key_action(Bottom, "ArrowDown"), Some(Action::Noop), "поперёк дока — перехват без действия");
+        assert_eq!(key_action(Bottom, "ArrowDown"), Some(Action::Noop), "across the dock — intercepted without an action");
         assert_eq!(key_action(Left, "ArrowDown"), Some(Action::Next));
         assert_eq!(key_action(Right, "ArrowUp"), Some(Action::Prev));
         assert_eq!(key_action(Right, "ArrowLeft"), Some(Action::Noop));
@@ -186,11 +186,11 @@ mod tests {
 
     #[test]
     fn step_table() {
-        assert_eq!(step(0, None, Action::Next), None, "нет доступных пунктов");
-        assert_eq!(step(3, None, Action::Next), Some(0), "без фокуса — первый");
+        assert_eq!(step(0, None, Action::Next), None, "no available items");
+        assert_eq!(step(3, None, Action::Next), Some(0), "without focus — the first");
         assert_eq!(step(3, None, Action::Prev), Some(0));
         assert_eq!(step(3, Some(0), Action::Next), Some(1));
-        assert_eq!(step(3, Some(2), Action::Next), Some(2), "на границе остаётся");
+        assert_eq!(step(3, Some(2), Action::Next), Some(2), "stays at the edge");
         assert_eq!(step(3, Some(0), Action::Prev), Some(0));
         assert_eq!(step(3, Some(2), Action::Prev), Some(1));
         assert_eq!(step(3, Some(1), Action::First), Some(0));

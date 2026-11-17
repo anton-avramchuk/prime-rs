@@ -1,6 +1,6 @@
-//! Страница ConfirmDialog: демонстрации `basic`, `position`, `template` и `headless` из showcase PrimeNG
-//! (`apps/showcase/doc/confirmdialog`). У каждой демонстрации свои `ConfirmationService` и `MessageService` (как `providers` в
-//! PrimeNG), у `position` — отдельный `key`. Значки PrimeIcons заменены значками `prime-icons`.
+//! ConfirmDialog page: the `basic`, `position`, `template` and `headless` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/confirmdialog`). Each demo has its own `ConfirmationService` and `MessageService` (like `providers` in
+//! PrimeNG), `position` has a separate `key`. PrimeIcons icons are replaced with `prime-icons` icons.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -147,7 +147,7 @@ fn HeadlessDemo() -> impl IntoView {
     }
 }
 
-/// Страница `/confirmdialog`.
+/// Page `/confirmdialog`.
 #[component]
 pub fn ConfirmDialogPage() -> impl IntoView {
     view! {

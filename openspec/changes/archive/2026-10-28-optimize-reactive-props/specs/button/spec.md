@@ -1,20 +1,20 @@
 ## ADDED Requirements
 
-### Requirement: Стоимость рендера Button
-Рендер `Button` со статическими свойствами SHALL NOT создавать сигналов и `Memo` (ни для свойств, ни для состояния), кроме эффектов автофокуса и ripple, которые существуют только при сборке для `wasm32`. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет, заданный в `benches` и проверяемый командой бенчмарков. Классы и атрибуты SHALL вычисляться в реактивных замыканиях атрибутов.
+### Requirement: Button render cost
+Rendering a `Button` with static properties SHALL NOT create signals or `Memo`s (neither for properties nor for state), except the autofocus and ripple effects, which exist only when building for `wasm32`. The allocation count per instance during SSR SHALL fit within the budget set in `benches` and checked by the benchmark command. Classes and attributes SHALL be computed in reactive attribute closures.
 
-#### Scenario: Статический Button
-- **WHEN** рендерится 1000 экземпляров `Button` с меткой и серьёзностью
-- **THEN** число аллокаций на экземпляр не превышает бюджет `button`
+#### Scenario: Static Button
+- **WHEN** 1000 instances of `Button` with a label and severity are rendered
+- **THEN** the allocation count per instance does not exceed the `button` budget
 
-#### Scenario: Полная кнопка
-- **WHEN** рендерится 1000 кнопок с иконкой, меткой и бейджем
-- **THEN** число аллокаций на экземпляр не превышает бюджет `button-full`
+#### Scenario: Full button
+- **WHEN** 1000 buttons with an icon, label and badge are rendered
+- **THEN** the allocation count per instance does not exceed the `button-full` budget
 
-#### Scenario: Реактивная кнопка
-- **WHEN** свойство `loading` передано сигналом и меняется
-- **THEN** класс, атрибуты, блокировка и индикатор обновляются, а `class` не перезаписывается при изменении свойства, не влияющего на классы
+#### Scenario: Reactive button
+- **WHEN** the `loading` property is passed as a signal and changes
+- **THEN** the class, attributes, disabled state and indicator update, and `class` is not rewritten when a property that does not affect the classes changes
 
-#### Scenario: Поведение не изменилось
-- **WHEN** выполняются тесты спеки `button` (SSR и браузерные)
-- **THEN** все они проходят без изменений ожидаемых значений
+#### Scenario: Behavior unchanged
+- **WHEN** the tests of the `button` spec (SSR and browser) are run
+- **THEN** all of them pass without changing expected values

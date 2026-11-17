@@ -1,38 +1,38 @@
 # BlockUI
 
-Порт `p-blockui` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-blockui` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-blockui::BlockUI`, `BlockTarget` | `packages/primeng/src/blockui/blockui.ts`, `blockui/style/blockuistyle.ts` |
-| CSS | `@primeuix/styles/blockui` и общие правила `p-overlay-mask*` из `base.css` — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет) |
-| Демонстрации | `apps/showcase/doc/blockui/{basic,document}-doc.ts` |
+| CSS | `@primeuix/styles/blockui` and the shared `p-overlay-mask*` rules from `base.css` — `cargo xtask gen-theme` (there is no `/* For PrimeNG */` block) |
+| Demos | `apps/showcase/doc/blockui/{basic,document}-doc.ts` |
 
-Спека: `openspec/specs/blockui`.
+Spec: `openspec/specs/blockui`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы маски: `p-blockui p-blockui-mask`, у документа `p-blockui-mask-document`, при показе `p-overlay-mask p-overlay-mask-enter-active`, при снятии `p-overlay-mask-leave-active`; инлайн `display: flex`; `aria-busy` — `true` при показе и `false` при выходе.
-- Цель (`target`): маска — последний ребёнок целевого элемента, ему на время показа ставится `position: relative`; тема растягивает маску (`position: absolute`). Без цели маска лежит в `body` (`position: fixed`), прокрутка страницы блокируется через `prime_dom::block_body_scroll` (общий счётчик с Dialog и Drawer).
-- Слой: при `auto_z_index` (по умолчанию да) маска получает `z-index` группы `Modal` со сдвигом `base_z_index`. Как и в PrimeNG (`ZIndexUtils`), стек слоёв общий: новый слой выше предыдущего, а базовое значение учитывается, только когда выше нет других оверлеев.
-- Выход: после снятия блокировки играет анимация, по `animationend` (либо запасному таймеру 400 мс) маска убирается, слой и блокировка прокрутки освобождаются; повторное включение во время выхода возвращает маску в состояние «заблокировано».
+- Mask classes: `p-blockui p-blockui-mask`, for the document `p-blockui-mask-document`, when shown `p-overlay-mask p-overlay-mask-enter-active`, when released `p-overlay-mask-leave-active`; inline `display: flex`; `aria-busy` — `true` when shown and `false` when leaving.
+- Target (`target`): the mask is the last child of the target element, which gets `position: relative` while shown; the theme stretches the mask (`position: absolute`). Without a target the mask lies in `body` (`position: fixed`), and page scrolling is blocked through `prime_dom::block_body_scroll` (a counter shared with Dialog and Drawer).
+- Layer: with `auto_z_index` (on by default) the mask gets a `z-index` of the `Modal` group with the `base_z_index` offset. As in PrimeNG (`ZIndexUtils`), the layer stack is shared: a new layer is above the previous one, and the base value is taken into account only when there are no other overlays above.
+- Exit: after the block is lifted an animation plays; on `animationend` (or the fallback timer of 400 ms) the mask is removed and the layer and the scroll block are released; re-enabling during the exit returns the mask to the "blocked" state.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Пока `blocked = false`, в DOM ничего нет; маска выводится только в браузере (`Portal`) и до гидратации не отдаётся сервером | В PrimeNG хост остаётся в разметке (с `display: none` после первого снятия); здесь как у Drawer и Dialog. `aria-busy` тоже существует только на показанной маске. |
-| `target` — `BlockTarget` из `NodeRef` любого элемента вместо `BlockableUI` (`getBlockableElement()`) | В Rust нет интерфейсов Angular; цель — элемент на странице. |
-| Инлайн-значение `position` у цели возвращается после выхода маски | PrimeNG оставляет `position: relative` навсегда. |
-| Содержимое — `children` (`ChildrenFn`, строится заново при каждом показе) вместо шаблона `content` | Нет `ng-template`. |
-| Если `target` задан, но его элемента ещё нет в DOM, маска не выводится | PrimeNG бросает исключение. Для начальной блокировки цели `blocked` нужно включать после монтирования. |
-| Нет `Bind`, `pTemplate`; `pt` — один `Pt` на корень маски | `pt` — простые добавки классов, стиля и атрибутов. |
+| While `blocked = false`, nothing is in the DOM; the mask is rendered only in the browser (`Portal`) and is not sent by the server before hydration | In PrimeNG the host stays in the markup (with `display: none` after the first release); here it is as for Drawer and Dialog. `aria-busy` also exists only on the shown mask. |
+| `target` is a `BlockTarget` made from the `NodeRef` of any element instead of `BlockableUI` (`getBlockableElement()`) | Rust has no Angular interfaces; the target is an element on the page. |
+| The inline `position` value of the target is restored after the mask exits | PrimeNG keeps `position: relative` forever. |
+| The content is `children` (`ChildrenFn`, rebuilt on each show) instead of the `content` template | There is no `ng-template`. |
+| If `target` is set but its element is not yet in the DOM, the mask is not rendered | PrimeNG throws an exception. For an initial block of a target, `blocked` must be enabled after mounting. |
+| No `Bind`, `pTemplate`; `pt` is one `Pt` for the root of the mask | `pt` is simple additions of classes, style and attributes. |
 
-## Что не проверялось
+## Not verified
 
-- Блокировка фокуса: маска закрывает указатель, но не перехватывает клавиатуру — как и в PrimeNG, Tab может уйти на элементы под маской.
-- Несколько одновременно включённых масок на разных целях: слои и счётчик прокрутки проверены на одном и последовательных сценариях.
+- Focus blocking: the mask covers the pointer but does not intercept the keyboard — as in PrimeNG, Tab may move to elements under the mask.
+- Several masks enabled at the same time on different targets: the layers and the scroll counter were verified on one and on sequential scenarios.
 
-## Производительность
+## Performance
 
-См. `benches/` (`blockui-1`, `blockui-1000`, `case-blockui`) и `benches/*budgets.toml`: на сервере маска не выводится, измеряется только обвязка (28 аллокаций на экземпляр).
+See `benches/` (`blockui-1`, `blockui-1000`, `case-blockui`) and `benches/*budgets.toml`: on the server the mask is not rendered, only the wrapper is measured (28 allocations per instance).

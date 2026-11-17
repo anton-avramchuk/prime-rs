@@ -2,41 +2,41 @@
 
 ## Why
 
-Проект prime-rs — порт компонентов PrimeNG (21.1.10, коммит `fe82b291d6`) на Rust/Leptos 0.8 по принципу «один компонент — один крейт». Репозиторий пока пуст (только `openspec/`). Прежде чем портировать первый компонент, нужна инфраструктура («волна 0»): структура workspace, общее ядро, тема, иконки, CI, бенчмарки и защита от разрастания `target/`. Без неё каждый компонент будет изобретать это заново, а ограничения по диску, памяти и производительности придётся навязывать задним числом.
+The prime-rs project is a port of PrimeNG components (21.1.10, commit `fe82b291d6`) to Rust/Leptos 0.8 on the "one component, one crate" principle. The repository is empty so far (only `openspec/`). Before porting the first component, infrastructure is needed ("wave 0"): the workspace structure, shared core, theme, icons, CI, benchmarks and protection against `target/` bloat. Without it every component would reinvent these things, and disk, memory and performance constraints would have to be imposed retroactively.
 
 ## What Changes
 
-- Cargo workspace: `crates/`, `showcase/`, `xtask/`, `benches/`, общий `[workspace.dependencies]`, `rust-toolchain.toml` (stable, wasm32).
-- Крейт `prime-core`: конфиг (`PrimeConfig` через Leptos context), `ClassNames`, z-index менеджер, locale, базовые пропсы (`disabled`, `invalid`, `variant`, `size`), общий хелпер `pt` (pass-through) для корневого элемента.
-- Крейт `prime-dom`: порт нужной части `DomHandler` (позиционирование, фокус, scroll), `focustrap`, `ripple`, портал; только `web-sys`, без `leptos-use`.
-- Крейт `prime-theme` и `xtask gen-theme`: генерация статического CSS из токенов пресета Aura и стилей компонентов (npm-пакеты `@primeuix/themes` и `@primeuix/styles`, которые использует PrimeNG) командой `xtask`; результат коммитится.
-- Крейт `prime-icons` и `xtask gen-icons`: 53 SVG-иконки PrimeNG, по компоненту на иконку за feature-флагом.
-- `upstream.toml` и `xtask upstream-diff`: привязка к версии PrimeNG и поиск изменений в исходниках.
-- `xtask gen-spec`: заготовка OpenSpec-спеки компонента из TS-исходников PrimeNG.
-- Режим CSR и SSR/hydrate через features `ssr`/`hydrate` во всех крейтах; `showcase` на cargo-leptos.
-- Меры против роста диска: `debug = "line-tables-only"`, `rust-lld`, инкрементальная сборка только в dev, `cargo-sweep`, `xtask clean`, минимум зависимостей.
-- CI (GitHub Actions): на PR — fmt, clippy, nextest, wasm-bindgen-test, deny, бенчмарки (divan/dhat), бюджет размера wasm, только затронутые крейты; по расписанию раз в неделю и вручную — e2e (Playwright), сравнение скриншотов с PrimeNG, браузерные бенчмарки памяти.
-- Лицензирование: MIT, `NOTICE` с копирайтом PrimeNG.
-- Публикация на crates.io **не входит** в изменение.
+- Cargo workspace: `crates/`, `showcase/`, `xtask/`, `benches/`, a shared `[workspace.dependencies]`, `rust-toolchain.toml` (stable, wasm32).
+- Crate `prime-core`: config (`PrimeConfig` via Leptos context), `ClassNames`, z-index manager, locale, base props (`disabled`, `invalid`, `variant`, `size`), a shared `pt` (pass-through) helper for the root element.
+- Crate `prime-dom`: a port of the needed part of `DomHandler` (positioning, focus, scroll), `focustrap`, `ripple`, portal; `web-sys` only, no `leptos-use`.
+- Crate `prime-theme` and `xtask gen-theme`: generating static CSS from the Aura preset tokens and component styles (the npm packages `@primeuix/themes` and `@primeuix/styles` used by PrimeNG) with an `xtask` command; the result is committed.
+- Crate `prime-icons` and `xtask gen-icons`: 53 PrimeNG SVG icons, one component per icon behind a feature flag.
+- `upstream.toml` and `xtask upstream-diff`: pinning to the PrimeNG version and finding changes in the sources.
+- `xtask gen-spec`: an OpenSpec spec stub of a component from the PrimeNG TS sources.
+- CSR and SSR/hydrate modes via the `ssr`/`hydrate` features in all crates; `showcase` on cargo-leptos.
+- Measures against disk growth: `debug = "line-tables-only"`, `rust-lld`, incremental builds only in dev, `cargo-sweep`, `xtask clean`, minimal dependencies.
+- CI (GitHub Actions): on PRs — fmt, clippy, nextest, wasm-bindgen-test, deny, benchmarks (divan/dhat), wasm size budget, affected crates only; weekly on a schedule and manually — e2e (Playwright), screenshot comparison with PrimeNG, browser memory benchmarks.
+- Licensing: MIT, `NOTICE` with the PrimeNG copyright.
+- Publishing to crates.io is **not included** in the change.
 
 ## Capabilities
 
 ### New Capabilities
-- `workspace-layout`: структура Cargo workspace, именование крейтов `prime-<name>`, feature-флаги `ssr`/`hydrate`, тулчейн, лицензия и `NOTICE`.
-- `core-runtime`: `prime-core` и `prime-dom` — конфиг, контекст, ClassNames, z-index, pass-through, DOM-хелперы.
-- `theme-css`: генерация статического CSS из токенов Aura и его подключение.
-- `icon-set`: крейт `prime-icons` и генерация иконок из PrimeNG.
-- `upstream-tracking`: закрепление версии PrimeNG, `upstream-diff`, генерация заготовок спек.
-- `disk-footprint`: ограничения на размер `target/` и профили сборки.
-- `ci-pipeline`: набор проверок на PR и еженедельные проверки (e2e, скриншоты, браузерные бенчмарки).
-- `benchmarking`: бенчмарки SSR-рендера и аллокаций, бюджеты размера wasm, порог регрессий.
+- `workspace-layout`: Cargo workspace structure, `prime-<name>` crate naming, `ssr`/`hydrate` feature flags, toolchain, license and `NOTICE`.
+- `core-runtime`: `prime-core` and `prime-dom` — config, context, ClassNames, z-index, pass-through, DOM helpers.
+- `theme-css`: generating static CSS from the Aura tokens and including it.
+- `icon-set`: the `prime-icons` crate and generating icons from PrimeNG.
+- `upstream-tracking`: pinning the PrimeNG version, `upstream-diff`, generating spec stubs.
+- `disk-footprint`: limits on `target/` size and build profiles.
+- `ci-pipeline`: the set of PR checks and weekly checks (e2e, screenshots, browser benchmarks).
+- `benchmarking`: SSR render and allocation benchmarks, wasm size budgets, regression threshold.
 
 ### Modified Capabilities
-<!-- Нет: существующих спеков в openspec/specs/ нет. -->
+<!-- None: there are no existing specs in openspec/specs/. -->
 
 ## Impact
 
-- Весь код репозитория создаётся с нуля; затрагиваются `Cargo.toml`, `rust-toolchain.toml`, `.cargo/config.toml`, `.github/workflows/`, `.gitignore` (добавить `nul`), `NOTICE`, `LICENSE`, `upstream.toml`.
-- Зависимости: `leptos` 0.8, `web-sys`, `wasm-bindgen`; dev: `divan`, `dhat`, `wasm-bindgen-test`. На стороне CI: `cargo-nextest`, `cargo-deny`, `cargo-sweep`, Playwright (только в еженедельном job).
-- Читается (только чтение) `C:\Projects\primeng`; в репозиторий он не копируется.
-- Компоненты (Button и далее) в это изменение не входят: каждый идёт отдельным change.
+- All repository code is created from scratch; `Cargo.toml`, `rust-toolchain.toml`, `.cargo/config.toml`, `.github/workflows/`, `.gitignore` (add `nul`), `NOTICE`, `LICENSE`, `upstream.toml` are affected.
+- Dependencies: `leptos` 0.8, `web-sys`, `wasm-bindgen`; dev: `divan`, `dhat`, `wasm-bindgen-test`. On the CI side: `cargo-nextest`, `cargo-deny`, `cargo-sweep`, Playwright (weekly job only).
+- `C:\Projects\primeng` is read (read-only); it is not copied into the repository.
+- Components (Button and onward) are not part of this change: each goes in a separate change.

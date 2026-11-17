@@ -2,30 +2,30 @@
 
 ## Context
 
-Требования — в `specs/table`. Исходники PrimeNG 21.1.10: `table/table.ts` (`filter`, `filterGlobal`, `_filter`, `executeLocalFilter`, `ColumnFilter`, `EditableColumn`, `CellEditor`, `EditableRow`, `RowEditor`, `initRowEdit/saveRowEdit/cancelRowEdit`, `createLazyLoadMetadata`), `api/filtermatchmode.ts`, `table/style/tablestyle.ts`.
+Requirements are in `specs/table`. PrimeNG 21.1.10 sources: `table/table.ts` (`filter`, `filterGlobal`, `_filter`, `executeLocalFilter`, `ColumnFilter`, `EditableColumn`, `CellEditor`, `EditableRow`, `RowEditor`, `initRowEdit/saveRowEdit/cancelRowEdit`, `createLazyLoadMetadata`), `api/filtermatchmode.ts`, `table/style/tablestyle.ts`.
 
 ## Decisions
 
-### D1. Чистая фильтрация в `model.rs`
-`FilterMeta { field, value, match_mode }`, `MatchMode` (десять режимов), `matches(text, value, mode)`, `set_filter`, `filter_rows(rows, filters, global, fields, text_of)`. Значение поля берётся функцией столбца (`Column::filterable(text_of)`). Регистр игнорируется; числовые режимы разбирают оба значения как `f64`.
+### D1. Pure filtering in `model.rs`
+`FilterMeta { field, value, match_mode }`, `MatchMode` (ten modes), `matches(text, value, mode)`, `set_filter`, `filter_rows(rows, filters, global, fields, text_of)`. The field value is taken by the column function (`Column::filterable(text_of)`). Case is ignored; numeric modes parse both values as `f64`.
 
-### D2. Фильтры — данные столбца
-`Column::filterable(text_of)` задаёт функцию значения; `filter_match_mode` — режим. Строка фильтров строится под заголовком, поле — `input.p-inputtext`. Сигнал `filters: RwSignal<Vec<FilterMeta>>`.
+### D2. Filters are column data
+`Column::filterable(text_of)` sets the value function; `filter_match_mode` sets the mode. The filter row is built under the header, the field is `input.p-inputtext`. Signal `filters: RwSignal<Vec<FilterMeta>>`.
 
-### D3. Правка без мутации
-`Column::editable(editor)`, где редактор — `Callback<RwSignal<T>, AnyView>`, сигнал — черновик строки; редактор пишет в черновик, завершение отдаёт приложению новую строку. Готовый `Column::edit_text(get, set)` — текстовое поле. Правка ячеек — одна пара ключ+поле в состоянии; правка строк — `editing_keys` и черновики по ключам.
+### D3. Editing without mutation
+`Column::editable(editor)`, where the editor is a `Callback<RwSignal<T>, AnyView>` and the signal is the row draft; the editor writes to the draft, completion hands the application a new row. The ready-made `Column::edit_text(get, set)` is a text field. Cell editing is a single key+field pair in the state; row editing uses `editing_keys` and drafts by key.
 
 ### D4. Lazy
-`lazy` отключает внутренние сортировку, фильтрацию и срез; `LazyLoadEvent` собирается из сигналов `first`, `rows`, `sort`, `filters`, `global_filter`; `Effect` под `cfg(wasm32)` вызывает `on_lazy_load` при изменении, в том числе при монтировании.
+`lazy` disables the internal sorting, filtering and slicing; `LazyLoadEvent` is assembled from the signals `first`, `rows`, `sort`, `filters`, `global_filter`; an `Effect` under `cfg(wasm32)` calls `on_lazy_load` on change, including on mount.
 
-### D5. Тесты
-Модель — таблицы. SSR: строка фильтров, фильтрация, начальное состояние редакторов, lazy. Браузерные: ввод, очистка, правка ячейки (Enter/Escape/blur), правка строки, lazy. e2e и бенчмарки как для остальных компонентов.
+### D5. Tests
+Model: tables. SSR: the filter row, filtering, the initial state of editors, lazy. Browser: input, clear, cell editing (Enter/Escape/blur), row editing, lazy. e2e and benchmarks as for the other components.
 
 ## Risks / Trade-offs
 
-- [Размер] Новых зависимостей нет: поля — обычные `input` с классами `p-inputtext`.
-- [Отличие] Нет меню фильтра, `in`/`between`/датовых режимов — позже.
+- [Size] No new dependencies: the fields are plain `input` elements with `p-inputtext` classes.
+- [Difference] No filter menu, no `in`/`between`/date modes - later.
 
 ## Migration Plan
 
-Миграции нет: новые свойства необязательны. Откат — `git revert`.
+No migration: the new properties are optional. Rollback is `git revert`.

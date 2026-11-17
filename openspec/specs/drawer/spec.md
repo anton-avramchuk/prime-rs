@@ -1,107 +1,107 @@
 # drawer Specification
 
 ## Purpose
-Drawer показывает панель с содержимым у края экрана поверх страницы: с маской, анимацией входа и выхода, закрытием по маске, кнопке и клавише Escape, блокировкой прокрутки страницы и ловушкой фокуса.
+Drawer shows a panel with content at the screen edge over the page: with a mask, enter and leave animation, closing by the mask, a button and the Escape key, page scroll lock and a focus trap.
 
 ## Requirements
 
-### Requirement: Разметка
-Пока `visible` ложно и анимация выхода не доиграла, `Drawer` крейта `prime-drawer` SHALL не выводить ничего. Видимая панель SHALL быть `div.p-drawer.p-component[role=complementary]` с классом `p-drawer-<position>` (`left`, `right`, `top`, `bottom`, `full`), `p-drawer-open` при `visible` и `p-drawer-full` при `position=Full` или `full_screen`, и дочерними `div.p-drawer-header` (заголовок `div.p-drawer-title` при `header`, кнопка закрытия `button.p-drawer-close-button` при `closable`), `div.p-drawer-content` с `children` и `div.p-drawer-footer` только при заданном `footer`. При `headless` SHALL выводиться только переданное представление, без заголовка, содержимого и подвала. `style`, `style_class` и `pt` SHALL применяться к корню панели. Панель и маска SHALL находиться в `body`, а не внутри места объявления компонента.
+### Requirement: Markup
+While `visible` is false and the leave animation has not finished, the `Drawer` of the `prime-drawer` crate SHALL render nothing. A visible panel SHALL be `div.p-drawer.p-component[role=complementary]` with the class `p-drawer-<position>` (`left`, `right`, `top`, `bottom`, `full`), `p-drawer-open` when `visible` and `p-drawer-full` with `position=Full` or `full_screen`, and children `div.p-drawer-header` (title `div.p-drawer-title` with `header`, close button `button.p-drawer-close-button` with `closable`), `div.p-drawer-content` with `children` and `div.p-drawer-footer` only when `footer` is given. With `headless` only the supplied view SHALL be rendered, without the header, content and footer. `style`, `style_class` and `pt` SHALL apply to the panel root. The panel and mask SHALL be in `body`, not inside the place where the component is declared.
 
-#### Scenario: Скрыт по умолчанию
-- **WHEN** `visible` ложно и панель ни разу не показывали
-- **THEN** в документе нет `.p-drawer` и `.p-drawer-mask`
+#### Scenario: Hidden by default
+- **WHEN** `visible` is false and the panel has never been shown
+- **THEN** the document has no `.p-drawer` and no `.p-drawer-mask`
 
-#### Scenario: Показан
-- **WHEN** `visible` становится истинным при `header="Left Drawer"`
-- **THEN** в `body` есть `.p-drawer.p-drawer-left.p-drawer-open[role=complementary]` с заголовком «Left Drawer» и кнопкой закрытия
+#### Scenario: Shown
+- **WHEN** `visible` becomes true with `header="Left Drawer"`
+- **THEN** `body` contains `.p-drawer.p-drawer-left.p-drawer-open[role=complementary]` with the title "Left Drawer" and a close button
 
 #### Scenario: Headless
-- **WHEN** задан `headless`
-- **THEN** внутри `.p-drawer` только переданное представление
+- **WHEN** `headless` is set
+- **THEN** inside `.p-drawer` there is only the supplied view
 
-### Requirement: Позиция и размер
-`position` SHALL выбирать край экрана: `Left`, `Right`, `Top`, `Bottom`; `Full` и `full_screen` SHALL растягивать панель на весь экран. Размеры по умолчанию (ширина 20rem у боковых, высота 10rem у верхней и нижней) SHALL задаваться стилями темы и переопределяться `style`.
+### Requirement: Position and size
+`position` SHALL choose the screen edge: `Left`, `Right`, `Top`, `Bottom`; `Full` and `full_screen` SHALL stretch the panel to the full screen. Default sizes (width 20rem for the side panels, height 10rem for top and bottom) SHALL be set by theme styles and overridable with `style`.
 
-#### Scenario: Боковая позиция
+#### Scenario: Side position
 - **WHEN** `position=Right`
-- **THEN** панель прижата к правому краю и занимает всю высоту окна
+- **THEN** the panel is pinned to the right edge and takes the full window height
 
-#### Scenario: Свой размер
-- **WHEN** `style="height: auto"` у верхней панели
-- **THEN** высота панели определяется содержимым
+#### Scenario: Custom size
+- **WHEN** `style="height: auto"` on a top panel
+- **THEN** the panel height is determined by its content
 
-### Requirement: Значение видимости
-`visible` SHALL быть двусторонним сигналом `bool`: установка в истину показывает панель, в ложь — закрывает. Закрытие пользователем (маска, кнопка, Escape) SHALL записывать ложь в `visible`.
+### Requirement: Visibility value
+`visible` SHALL be a two-way `bool` signal: setting it to true shows the panel, to false closes it. Closing by the user (mask, button, Escape) SHALL write false to `visible`.
 
-#### Scenario: Закрытие кнопкой
-- **WHEN** панель видима и пользователь нажимает кнопку закрытия
-- **THEN** `visible` становится ложным и панель убирается после анимации выхода
+#### Scenario: Closing with the button
+- **WHEN** the panel is visible and the user presses the close button
+- **THEN** `visible` becomes false and the panel is removed after the leave animation
 
-### Requirement: Анимация
-При показе корень SHALL получать класс анимации входа `p-drawer-enter-<position>` (`p-drawer-enter-full` для полноэкранной), при закрытии — `p-drawer-leave-<position>`; панель SHALL оставаться в DOM до `animationend` (или до истечения запасного времени, если анимации нет) и только потом убираться, а маска — получать `p-overlay-mask-enter-active` при показе и `p-overlay-mask-leave-active` при закрытии.
+### Requirement: Animation
+On show the root SHALL get the enter animation class `p-drawer-enter-<position>` (`p-drawer-enter-full` for full screen), on close `p-drawer-leave-<position>`; the panel SHALL stay in the DOM until `animationend` (or until the fallback time elapses if there is no animation) and only then be removed, and the mask SHALL get `p-overlay-mask-enter-active` on show and `p-overlay-mask-leave-active` on close.
 
-#### Scenario: Выход
-- **WHEN** панель закрывают
-- **THEN** сначала у корня `p-drawer-leave-left`, после окончания анимации корня и маски `.p-drawer` нет в документе
+#### Scenario: Leave
+- **WHEN** the panel is closed
+- **THEN** first the root has `p-drawer-leave-left`, after the root and mask animation finish `.p-drawer` is absent from the document
 
-### Requirement: Маска и закрытие по ней
-При `modal` за панелью SHALL выводиться маска `div.p-drawer-mask.p-overlay-mask` с `z-index` на единицу ниже панели и `mask_style`; при `dismissible` клик по маске SHALL закрывать панель, клик по самой панели — нет. Без `modal` маски нет.
+### Requirement: Mask and closing by it
+With `modal` a mask `div.p-drawer-mask.p-overlay-mask` SHALL be rendered behind the panel with a `z-index` one below the panel and `mask_style`; with `dismissible` a click on the mask SHALL close the panel, a click on the panel itself SHALL NOT. Without `modal` there is no mask.
 
-#### Scenario: Клик по маске
-- **WHEN** панель модальная, `dismissible` включён и пользователь кликает по маске
-- **THEN** панель закрывается
+#### Scenario: Click on the mask
+- **WHEN** the panel is modal, `dismissible` is on and the user clicks the mask
+- **THEN** the panel closes
 
-#### Scenario: Не закрываемая маской
-- **WHEN** `dismissible` выключен и пользователь кликает по маске
-- **THEN** панель остаётся видимой
+#### Scenario: Not closable by the mask
+- **WHEN** `dismissible` is off and the user clicks the mask
+- **THEN** the panel stays visible
 
-#### Scenario: Без маски
-- **WHEN** `modal` выключен
-- **THEN** `.p-drawer-mask` нет в документе
+#### Scenario: No mask
+- **WHEN** `modal` is off
+- **THEN** the document has no `.p-drawer-mask`
 
 ### Requirement: Escape
-При `close_on_escape` клавиша `Escape` SHALL закрывать панель; при нескольких открытых панелях — только верхнюю по `z-index`. Слушатель SHALL быть снят после закрытия.
+With `close_on_escape` the `Escape` key SHALL close the panel; with several open panels only the topmost by `z-index`. The listener SHALL be removed after closing.
 
-#### Scenario: Две панели
-- **WHEN** открыты две панели и нажат Escape
-- **THEN** закрывается только верхняя
+#### Scenario: Two panels
+- **WHEN** two panels are open and Escape is pressed
+- **THEN** only the topmost closes
 
-#### Scenario: Escape выключен
-- **WHEN** `close_on_escape` выключен и нажат Escape
-- **THEN** панель остаётся видимой
+#### Scenario: Escape off
+- **WHEN** `close_on_escape` is off and Escape is pressed
+- **THEN** the panel stays visible
 
-### Requirement: Блокировка прокрутки
-При `block_scroll` на время показа `body` SHALL получать класс `p-overflow-hidden`; после закрытия класс SHALL сниматься, а при нескольких панелях — когда закрыта последняя из блокирующих.
+### Requirement: Scroll lock
+With `block_scroll`, while shown, `body` SHALL get the class `p-overflow-hidden`; after closing the class SHALL be removed, and with several panels - when the last of the locking ones is closed.
 
-#### Scenario: Блокировка и снятие
-- **WHEN** панель с `block_scroll` показана и затем закрыта
-- **THEN** класс есть на `body` во время показа и снят после закрытия
+#### Scenario: Lock and release
+- **WHEN** a panel with `block_scroll` is shown and then closed
+- **THEN** the class is on `body` while shown and removed after closing
 
-### Requirement: Фокус
-Пока панель показана, `Tab` и `Shift+Tab` SHALL циклически перемещать фокус внутри панели; после закрытия ловушка SHALL быть снята.
+### Requirement: Focus
+While the panel is shown, `Tab` and `Shift+Tab` SHALL cycle focus within the panel; after closing the trap SHALL be removed.
 
-#### Scenario: Цикл по Tab
-- **WHEN** фокус на последнем элементе панели и нажат Tab
-- **THEN** фокус переходит на первый фокусируемый элемент панели
+#### Scenario: Tab cycle
+- **WHEN** focus is on the last element of the panel and Tab is pressed
+- **THEN** focus moves to the first focusable element of the panel
 
-### Requirement: Слои
-При `auto_z_index` панель SHALL получать `z-index` группы модальных окон со смещением `base_z_index`; индекс SHALL освобождаться после закрытия.
+### Requirement: Layers
+With `auto_z_index` the panel SHALL get a `z-index` of the modal group offset by `base_z_index`; the index SHALL be released after closing.
 
-#### Scenario: Две панели
-- **WHEN** открыты две панели
-- **THEN** `z-index` позже открытой выше
+#### Scenario: Two panels
+- **WHEN** two panels are open
+- **THEN** the `z-index` of the later opened one is higher
 
-### Requirement: События
-`on_show` SHALL вызываться один раз при показе, `on_hide` — один раз при закрытии любым способом.
+### Requirement: Events
+`on_show` SHALL be called once on show, `on_hide` once on closing by any means.
 
-#### Scenario: Порядок событий
-- **WHEN** панель показана и закрыта
-- **THEN** `on_show` вызван один раз до `on_hide`
+#### Scenario: Event order
+- **WHEN** the panel is shown and closed
+- **THEN** `on_show` is called once before `on_hide`
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) `Drawer` SHALL отрисовываться скрытым и не обращаться к `window` и `document`; гидратация SHALL не расходиться с серверной разметкой.
+### Requirement: Rendering without a browser
+Outside the browser (SSR) `Drawer` SHALL render hidden and not access `window` and `document`; hydration SHALL NOT diverge from the server markup.
 
 #### Scenario: SSR
-- **WHEN** страница с `Drawer` отрисована на сервере
-- **THEN** панели и маски в разметке нет
+- **WHEN** a page with `Drawer` is rendered on the server
+- **THEN** there are no panels and masks in the markup

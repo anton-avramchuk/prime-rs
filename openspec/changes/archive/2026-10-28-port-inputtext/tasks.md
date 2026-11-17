@@ -1,29 +1,29 @@
 # Tasks
 
-## 1. Крейт и логика
+## 1. Crate and logic
 
-- [x] 1.1 Создать крейт `crates/prime-inputtext` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `web-sys`) и добавить в workspace; проверить `cargo check -p prime-inputtext --all-features`
-- [x] 1.2 Реализовать `InputTextState`, `write_classes`, `data_p` по `inputtextstyle.ts` и `InputText.dataP`; проверить таблицей юнит-тестов сценарии спеки (размер, вариант, `invalid`, `fluid`, `filled`, порядок `data-p`)
+- [x] 1.1 Create the crate `crates/prime-inputtext` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `web-sys`) and add to the workspace; check `cargo check -p prime-inputtext --all-features`
+- [x] 1.2 Implement `InputTextState`, `write_classes`, `data_p` after `inputtextstyle.ts` and `InputText.dataP`; check the spec scenarios with a table of unit tests (size, variant, `invalid`, `fluid`, `filled`, `data-p` order)
 
-## 2. Компонент
+## 2. Component
 
-- [x] 2.1 Реализовать `InputText` (атрибуты, классы, `data-p`, вариант из `PrimeConfig`, `pt`, две ветви отрисовки); проверить SSR-тестами структуры, атрибутов, классов, значения в HTML и паритета ветвей
-- [x] 2.2 Реализовать двустороннюю привязку `value` и события `on_input`, `on_change`, `on_focus`, `on_blur`; проверить `wasm-bindgen-test` (ввод пишет в сигнал, сигнал обновляет поле, события, `disabled`/`readonly`)
-- [x] 2.3 Добавить rustdoc с примером; проверить `cargo test -p prime-inputtext --all-features` и doc-тесты
+- [x] 2.1 Implement `InputText` (attributes, classes, `data-p`, variant from `PrimeConfig`, `pt`, two rendering branches); check with SSR tests of structure, attributes, classes, the value in the HTML and branch parity
+- [x] 2.2 Implement the two-way `value` binding and the events `on_input`, `on_change`, `on_focus`, `on_blur`; check with `wasm-bindgen-test` (input writes to the signal, the signal updates the field, events, `disabled`/`readonly`)
+- [x] 2.3 Add rustdoc with an example; check `cargo test -p prime-inputtext --all-features` and doc tests
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Добавить страницу `/inputtext` (`basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`), пункт меню и CSS `inputtext`; проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
-- [x] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/inputtext.spec.ts` (ввод, классы, `invalid`, `disabled`); проверить `npx playwright test inputtext` локально
+- [x] 3.1 Add the `/inputtext` page (`basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`), a menu item and the `inputtext` CSS; check `cargo leptos build` and the page in Chrome without console errors
+- [x] 3.2 Add entries to `e2e/tests/pages.json` and `e2e/tests/inputtext.spec.ts` (input, classes, `invalid`, `disabled`); check `npx playwright test inputtext` locally
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Добавить сценарии `inputtext-1`, `inputtext-1000` в `benches/render`, `case-inputtext` в `benches/wasm-size`, бюджеты по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
+- [x] 4.1 Add scenarios `inputtext-1`, `inputtext-1000` to `benches/render`, `case-inputtext` to `benches/wasm-size`, budgets from measurement; check `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` and `cargo xtask wasm-size`
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 Написать `docs/inputtext.md` (соответствие PrimeNG, отличия, модель значения как образец для полей ввода); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-inputtext`; убедиться, что CI на `dev` зелёный
+- [x] 5.1 Write `docs/inputtext.md` (correspondence to PrimeNG, differences, the value model as a reference for input fields); run `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (except apps), `cargo deny check`, `openspec validate port-inputtext`; make sure CI on `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать change после прохождения CI; следующие компоненты волны 1: Checkbox, RadioButton, ToggleSwitch, Message, ProgressBar.
+- Archive the change after CI passes; next wave 1 components: Checkbox, RadioButton, ToggleSwitch, Message, ProgressBar.

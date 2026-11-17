@@ -1,11 +1,11 @@
-//! Checkbox — порт `p-checkbox` из PrimeNG 21.1.10.
+//! Checkbox — port of `p-checkbox` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-checkbox` (вместо хоста `<p-checkbox>`), внутри `input.p-checkbox-input`
-//! и `div.p-checkbox-box` с иконкой `check` или `minus`.
+//! Markup and classes as in PrimeNG: root `div.p-checkbox` (instead of the host `<p-checkbox>`), inside it `input.p-checkbox-input`
+//! and `div.p-checkbox-box` with a `check` or `minus` icon.
 //!
-//! Два режима значения: `binary` с `checked: RwSignal<bool>` и набор — `value` плюс `model: RwSignal<Vec<String>>`.
-//! Без сигналов поле неконтролируемое: начальное состояние берётся из `default_checked`, дальше его хранит DOM, а классы корня не отслеживаются.
-//! `indeterminate` — двусторонний сигнал: после изменения пользователем компонент сбрасывает его в `false`.
+//! Two value modes: `binary` with `checked: RwSignal<bool>`, and a set — `value` plus `model: RwSignal<Vec<String>>`.
+//! Without signals the field is uncontrolled: the initial state comes from `default_checked`, after that the DOM keeps it, and the root classes are not tracked.
+//! `indeterminate` is a two-way signal: after a change by the user the component resets it to `false`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -27,109 +27,109 @@ use std::sync::Arc;
 
 pub use state::{CheckboxState, data_p, write_classes};
 
-/// Событие изменения: новое состояние и исходное событие браузера.
+/// Change event: the new state and the original browser event.
 #[derive(Clone, Debug)]
 pub struct CheckboxChange {
-    /// Новое состояние (в режиме набора — входит ли `value` в набор).
+    /// New state (in set mode — whether `value` is in the set).
     pub checked: bool,
-    /// Исходное событие `change`.
+    /// Original `change` event.
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей Checkbox. Для `icon` учитывается только класс: иконка — отдельный компонент.
+/// Pass-through for the parts of Checkbox. For `icon` only the class is taken into account: the icon is a separate component.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CheckboxPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Нативный `<input>`.
+    /// Native `<input>`.
     pub input: Pt,
-    /// Рамка (`div.p-checkbox-box`).
+    /// Box (`div.p-checkbox-box`).
     pub box_: Pt,
-    /// Иконка (только класс).
+    /// Icon (class only).
     pub icon: Pt,
 }
 
-/// Флажок.
+/// Checkbox.
 ///
-/// Каждое свойство принимает значение или сигнал; `checked`, `model` и `indeterminate` — двусторонние сигналы.
+/// Each property accepts a value or a signal; `checked`, `model` and `indeterminate` are two-way signals.
 #[component]
 pub fn Checkbox(
-    /// Режим одного булева значения (`checked`); иначе — набор (`value` и `model`).
+    /// Single boolean value mode (`checked`); otherwise — set mode (`value` and `model`).
     #[prop(optional)]
     binary: bool,
-    /// Двусторонний сигнал состояния в режиме `binary`.
+    /// Two-way state signal in `binary` mode.
     #[prop(optional)]
     checked: Option<RwSignal<bool>>,
-    /// Значение этого флажка в режиме набора (и атрибут `value` у `<input>`).
+    /// Value of this checkbox in set mode (and the `value` attribute of `<input>`).
     #[prop(optional, into)]
     value: OptProp<String>,
-    /// Двусторонний набор отмеченных значений в режиме набора.
+    /// Two-way set of checked values in set mode.
     #[prop(optional)]
     model: Option<RwSignal<Vec<String>>>,
-    /// Начальное состояние неконтролируемого флажка.
+    /// Initial state of an uncontrolled checkbox.
     #[prop(optional)]
     default_checked: bool,
-    /// Неопределённое состояние; сбрасывается в `false` после изменения пользователем.
+    /// Indeterminate state; reset to `false` after a change by the user.
     #[prop(optional)]
     indeterminate: Option<RwSignal<bool>>,
-    /// Атрибут `id` у `<input>`.
+    /// `id` attribute of `<input>`.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Атрибут `name`.
+    /// `name` attribute.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Атрибут `tabindex`.
+    /// `tabindex` attribute.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Недоступен.
+    /// Unavailable.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Только для чтения.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Обязателен.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Вариант; если не задан, берётся `PrimeConfig.input_variant`.
+    /// Variant; if not set, `PrimeConfig.input_variant` is used.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Дополнительный класс `<input>`.
+    /// Extra class of `<input>`.
     #[prop(optional, into)]
     input_class: OptProp<String>,
-    /// Встроенный стиль `<input>`.
+    /// Inline style of `<input>`.
     #[prop(optional, into)]
     input_style: OptProp<String>,
-    /// Своя иконка вместо `check`/`minus`.
+    /// Custom icon instead of `check`/`minus`.
     #[prop(optional, into)]
     icon_template: Option<ViewFn>,
-    /// Вызывается после изменения состояния пользователем.
+    /// Called after a change of state by the user.
     #[prop(optional, into)]
     on_change: Option<Callback<CheckboxChange>>,
-    /// Вызывается при получении фокуса.
+    /// Called when focus is received.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса.
+    /// Called when focus is lost.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<CheckboxPt>,
 ) -> impl IntoView {
@@ -297,7 +297,7 @@ pub fn Checkbox(
     }
 }
 
-/// Разметка Checkbox: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// Checkbox markup: one for the static and reactive branches (only the attribute expressions differ).
 macro_rules! checkbox_markup {
     (
         $root_class:expr, $root_style:expr, $highlight:expr, $disabled_attr:expr, $data:expr, $id:expr, $value:expr, $name:expr,
@@ -343,7 +343,7 @@ macro_rules! checkbox_markup {
 }
 use checkbox_markup;
 
-/// Замыкание над свойствами экземпляра: клоны `Arc` и указатель на функцию без захвата.
+/// Closure over the instance properties: `Arc` clones and a function pointer without capture.
 fn rx<T>(
     props: &Arc<Props>,
     pt: &Arc<CheckboxPt>,
@@ -372,7 +372,7 @@ fn checked_of(props: &Props) -> bool {
     }
 }
 
-/// Записывает новое состояние в сигналы и сбрасывает `indeterminate`.
+/// Writes the new state to the signals and resets `indeterminate`.
 fn apply(props: &Props, now: bool) {
     if let Some(ind) = props.indeterminate {
         ind.set(false);
@@ -439,7 +439,7 @@ fn icon_of(props: &Props, pt: &CheckboxPt) -> impl IntoView + use<> {
     }
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     binary: bool,
     checked: Option<RwSignal<bool>>,

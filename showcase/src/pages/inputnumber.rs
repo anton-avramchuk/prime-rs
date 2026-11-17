@@ -1,6 +1,6 @@
-//! Страница InputNumber: демонстрации `locale`, `currency`, `numerals`, `prefixsuffix`, `buttons`, `vertical`, `clearicon`, `sizes`,
-//! `filled`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` из showcase PrimeNG (`apps/showcase/doc/inputnumber`).
-//! Демонстрации с Angular Forms не переносятся; «jp-JP» из исходника заменён корректным `ja-JP`.
+//! InputNumber page: the `locale`, `currency`, `numerals`, `prefixsuffix`, `buttons`, `vertical`, `clearicon`, `sizes`,
+//! `filled`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` demos from the PrimeNG showcase (`apps/showcase/doc/inputnumber`).
+//! Demos with Angular Forms are not ported; "jp-JP" from the source is replaced with the correct `ja-JP`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -21,7 +21,7 @@ fn minus() -> ViewFn {
     ViewFn::from(|| view! { <MinusIcon /> })
 }
 
-/// Страница `/inputnumber`.
+/// The `/inputnumber` page.
 #[component]
 pub fn InputNumberPage() -> impl IntoView {
     let (user, us, de, india) =

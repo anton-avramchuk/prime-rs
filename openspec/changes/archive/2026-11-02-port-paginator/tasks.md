@@ -1,31 +1,31 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `paginator` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился, что классы `p-paginator-*` есть и что `select`/`inputnumber` покрывают вложенные списки и поле
+- [x] 1.1 Add `paginator` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of other components did not change, that the `p-paginator-*` classes are present and that `select`/`inputnumber` cover the nested lists and field
 
-## 2. Крейт
+## 2. Crate
 
-- [x] 2.1 `crates/prime-paginator`: `state.rs` (`page_count`, `page`, `link_bounds`, `links`, `report`, `rows_items`, `page_items`, `clamp_first_after_total`, `next_first_for_rows`, классы) с табличными тестами
-- [x] 2.2 Компонент `Paginator`, `PaginatorState`, `RowsPerPage`, `PaginatorPt`: корень, кнопки, ссылки, отчёт, `template_left`/`template_right`, значки, скрытие, SSR-тесты, rustdoc
-- [x] 2.3 Поведение: `change_page`, кнопки и ссылки, `on_page_change`, двусторонние `first`/`rows`, отступ назад при уменьшении `total_records`
-- [x] 2.4 Списки и поле: переход к странице списком и полем, число строк со «Показать все», синхронизация с `first`/`rows`; браузерные `tests/web.rs`
+- [x] 2.1 `crates/prime-paginator`: `state.rs` (`page_count`, `page`, `link_bounds`, `links`, `report`, `rows_items`, `page_items`, `clamp_first_after_total`, `next_first_for_rows`, classes) with table-driven tests
+- [x] 2.2 `Paginator`, `PaginatorState`, `RowsPerPage`, `PaginatorPt` component: root, buttons, links, report, `template_left`/`template_right`, icons, hiding, SSR tests, rustdoc
+- [x] 2.3 Behaviour: `change_page`, buttons and links, `on_page_change`, two-way `first`/`rows`, stepping back when `total_records` shrinks
+- [x] 2.4 Lists and field: jumping to a page via list and field, rows count with "Show all", sync with `first`/`rows`; browser `tests/web.rs`
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/paginator` (`basic`, `currentpagereport`, `template`, `images`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `paginator.spec.ts` (разметка, кнопки и ссылки, окно ссылок, списки, отчёт); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test paginator`
+- [x] 3.1 `/paginator` page (`basic`, `currentpagereport`, `template`, `images`), menu, route, `stylesheet(&[..])`, the crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `paginator.spec.ts` (markup, buttons and links, link window, lists, report); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test paginator`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-paginator` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`; замер wasm — в фоне, с отдельным файлом бюджетов)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-paginator` and budgets (first `cargo bench -p render-bench --bench alloc`; wasm measurement — in the background, with a separate budgets file)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/paginator.md` (отличия от PrimeNG, что не проверялось); `prime-paginator` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с исключениями CI и `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-paginator`; CI `dev` зелёный
+- [x] 5.1 `docs/paginator.md` (differences from PrimeNG, what was not verified); `prime-paginator` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with CI exclusions and `--all-features` (and for the wasm target), tests, deny, machete, `openspec validate port-paginator`; CI `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: Stepper.
+- Archive after CI.
+- Next: Stepper.

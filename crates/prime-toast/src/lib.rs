@@ -1,8 +1,8 @@
-//! Toast и `MessageService` — порт `p-toast` и `MessageService` из PrimeNG 21.1.10.
+//! Toast and `MessageService` — port of `p-toast` and `MessageService` from PrimeNG 21.1.10.
 //!
-//! Уведомления в углу экрана. Приложение шлёт сообщения общему [`MessageService`] (он лежит в контексте), а компоненты [`Toast`]
-//! показывают те, что адресованы их `key`. Сообщения закрываются само через `life`, кнопкой и `clear`; наведение мыши приостанавливает
-//! таймер.
+//! Notifications in a screen corner. The app sends messages to the shared [`MessageService`] (kept in context), and [`Toast`] components
+//! show those addressed to their `key`. Messages close on their own via `life`, via the button and via `clear`; hovering pauses the
+//! timer.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -11,7 +11,7 @@
 //! Owner::new().with(|| {
 //!     let service = provide_message_service();
 //!     let html = view! { <Toast /> }.to_html();
-//!     // на сервере сообщений нет: выводится пустой контейнер
+//!     // no messages on the server: an empty container is rendered
 //!     assert!(html.contains("p-toast") && !html.contains("p-toast-message"));
 //!     service.add(ToastMessage::new(ToastSeverity::Success, "Saved", "Done"));
 //! });
@@ -39,43 +39,43 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Запасное время выхода: анимация идёт 250 мс, но без стилей или при отключённой анимации `animationend` не придёт.
+/// Fallback exit time: the animation lasts 250 ms, but without styles or with animation disabled `animationend` never fires.
 #[cfg(target_arch = "wasm32")]
 const LEAVE_FALLBACK: Duration = Duration::from_millis(600);
 
-/// Pass-through частей [`Toast`].
+/// Pass-through parts of [`Toast`].
 #[derive(Clone, Debug, Default)]
 pub struct ToastPt {
-    /// Контейнер.
+    /// Container.
     pub root: Pt,
-    /// Сообщение.
+    /// Message.
     pub message: Pt,
-    /// Содержимое сообщения.
+    /// Message content.
     pub message_content: Pt,
-    /// Значок сообщения.
+    /// Message icon.
     pub message_icon: Pt,
-    /// Блок текстов.
+    /// Text block.
     pub message_text: Pt,
-    /// Заголовок сообщения.
+    /// Message summary.
     pub summary: Pt,
-    /// Подробности сообщения.
+    /// Message detail.
     pub detail: Pt,
-    /// Кнопка закрытия.
+    /// Close button.
     pub close_button: Pt,
-    /// Значок кнопки закрытия.
+    /// Close button icon.
     pub close_icon: Pt,
 }
 
-/// Показанное сообщение.
+/// A displayed message.
 #[derive(Clone)]
 struct Item {
     key: u64,
     message: ToastMessage,
-    /// Ложь запускает анимацию выхода.
+    /// False starts the exit animation.
     visible: RwSignal<bool>,
 }
 
-/// Состояние `Toast`, общее для обработчиков.
+/// `Toast` state shared between handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: usize,
@@ -132,7 +132,7 @@ impl Core {
         }
     }
 
-    /// Назначает контейнеру `z-index`, пока есть сообщения.
+    /// Assigns the container a `z-index` while there are messages.
     fn raise(&self) {
         if !self.auto_z_index.get_untracked() || self.z_index.get_value().is_some() {
             return;
@@ -147,7 +147,7 @@ impl Core {
         }
     }
 
-    /// Освобождает `z-index`, когда сообщений не осталось.
+    /// Releases the `z-index` once no messages are left.
     fn lower(&self) {
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
             prime_core::zindex::revert(z);
@@ -159,7 +159,7 @@ impl Core {
         }
     }
 
-    /// Сообщение ушло (анимация выхода закончилась): убирается из списка, `on_close`, слой.
+    /// A message is gone (exit animation finished): it is removed from the list, `on_close` fires, the layer is released.
     fn remove(&self, key: u64) {
         let removed = self.items.try_update(|items| items.iter().position(|i| i.key == key).map(|index| items.remove(index)));
         if let Some(Some(item)) = removed {
@@ -173,48 +173,48 @@ impl Core {
     }
 }
 
-/// Контейнер уведомлений; сообщения приходят от [`MessageService`] из контекста.
+/// Notification container; messages come from the [`MessageService`] in context.
 ///
-/// Каждое свойство принимает значение или сигнал. `key` задаёт адресата: компонент показывает только сообщения с тем же ключом.
+/// Every property accepts a value or a signal. `key` sets the addressee: the component shows only messages with the same key.
 #[component]
 pub fn Toast(
-    /// Ключ адресата; сообщения с другим ключом игнорируются.
+    /// Addressee key; messages with another key are ignored.
     #[prop(optional, into)]
     key: Option<String>,
-    /// Положение на экране.
+    /// Position on screen.
     #[prop(optional, into)]
     position: Prop<ToastPosition>,
-    /// Время показа сообщений по умолчанию, мс.
+    /// Default message display time, ms.
     #[prop(optional, default = Prop::Static(3000), into)]
     life: Prop<u32>,
-    /// Автоматически назначать `z-index`.
+    /// Assign `z-index` automatically.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the config value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Не добавлять сообщение, если такое же уже показано.
+    /// Do not add a message if an identical one is already shown.
     #[prop(optional, into)]
     prevent_open_duplicates: Prop<bool>,
-    /// Показывать каждое сообщение один раз (не добавлять совпадающее с ранее добавленным).
+    /// Show each message once (do not add one matching a previously added message).
     #[prop(optional, into)]
     prevent_duplicates: Prop<bool>,
-    /// Стили контейнера по ширине экрана: пары «максимальная ширина — свойства CSS».
+    /// Container styles per screen width: pairs of "max width — CSS properties".
     #[prop(optional, into)]
     breakpoints: Vec<(String, Vec<(String, String)>)>,
-    /// Дополнительный класс контейнера.
+    /// Extra container class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Своё содержимое сообщения вместо значка и текстов (кнопка закрытия остаётся).
+    /// Custom message content instead of the icon and texts (the close button stays).
     #[prop(optional, into)]
     message: Option<Callback<ToastMessage, AnyView>>,
-    /// Заменяет всё внутри сообщения; получает сообщение и функцию его закрытия.
+    /// Replaces everything inside the message; receives the message and a function to close it.
     #[prop(optional, into)]
     headless: Option<Callback<(ToastMessage, Callback<()>), AnyView>>,
-    /// Вызывается, когда сообщение закрылось и убрано.
+    /// Called when the message has closed and been removed.
     #[prop(optional, into)]
     on_close: Option<Callback<ToastMessage>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<ToastPt>,
 ) -> impl IntoView {
@@ -235,7 +235,7 @@ pub fn Toast(
         on_close,
     });
 
-    // Подписка на сервис; снимается при размонтировании.
+    // Subscription to the service; dropped on unmount.
     let service = use_message_service();
     let subscription = {
         let core = core.clone();
@@ -249,7 +249,7 @@ pub fn Toast(
         });
     }
 
-    // Адаптивные правила в `head` — только в браузере.
+    // Responsive rules in `head` — browser only.
     #[cfg(target_arch = "wasm32")]
     if !breakpoints.is_empty() {
         let attr = format!("data-toast-{}", core.id);
@@ -311,7 +311,7 @@ pub fn Toast(
     }
 }
 
-/// Таймер жизни сообщения и признак закрытия.
+/// Message lifetime timer and the closing flag.
 #[derive(Clone, Copy)]
 struct Life {
     visible: RwSignal<bool>,
@@ -330,7 +330,7 @@ impl Life {
         }
     }
 
-    /// Запускает (заново) таймер закрытия по времени.
+    /// (Re)starts the time-based close timer.
     fn start(&self, sticky: bool, message_life: Option<u32>, toast_life: u32) {
         #[cfg(target_arch = "wasm32")]
         if !sticky {
@@ -350,7 +350,7 @@ impl Life {
         let _ = (sticky, message_life, toast_life);
     }
 
-    /// Останавливает таймер.
+    /// Stops the timer.
     fn clear(&self) {
         #[cfg(target_arch = "wasm32")]
         if let Some(handle) = self.timer.try_update_value(Option::take).flatten() {
@@ -358,7 +358,7 @@ impl Life {
         }
     }
 
-    /// Начинает закрытие: таймер остановлен, запущена анимация выхода.
+    /// Starts closing: the timer is stopped, the exit animation is started.
     fn close(&self) {
         self.closing.set_value(true);
         self.clear();
@@ -366,7 +366,7 @@ impl Life {
     }
 }
 
-/// Значок по серьёзности или по CSS-классу сообщения.
+/// Icon by severity or by the message CSS class.
 fn message_icon(message: &ToastMessage, pt: &ToastPt) -> AnyView {
     if let Some(icon) = &message.icon {
         let class = pt.message_icon.merge_class(&format!("p-toast-message-icon pi {icon}"));
@@ -381,7 +381,7 @@ fn message_icon(message: &ToastMessage, pt: &ToastPt) -> AnyView {
     }
 }
 
-/// Кнопка закрытия сообщения.
+/// Message close button.
 fn close_button(message: &ToastMessage, pt: &ToastPt, life: Life) -> AnyView {
     let label = use_prime_config().locale.text("aria.close").to_owned();
     let icon = match &message.close_icon {
@@ -410,7 +410,7 @@ fn close_button(message: &ToastMessage, pt: &ToastPt, life: Life) -> AnyView {
     .into_any()
 }
 
-/// Одно сообщение: разметка, таймер жизни, наведение, закрытие и анимация выхода.
+/// A single message: markup, lifetime timer, hover, closing and exit animation.
 fn build_item(
     core: &Arc<Core>,
     pt: &Arc<ToastPt>,
@@ -422,7 +422,7 @@ fn build_item(
     let life = Life::new(visible);
     let (sticky, message_life, toast_life) = (message.sticky, message.life, core.life.clone());
 
-    // Таймер жизни и выход — только в браузере.
+    // Lifetime timer and exit — browser only.
     #[cfg(target_arch = "wasm32")]
     {
         life.start(sticky, message_life, toast_life.get_untracked());
@@ -432,7 +432,7 @@ fn build_item(
                 life.closing.set_value(true);
                 life.clear();
                 let core = core.clone();
-                // Запасной выход: если `animationend` не придёт, сообщение всё равно уйдёт.
+                // Fallback exit: if `animationend` never fires, the message leaves anyway.
                 set_timeout(move || core.remove(key), LEAVE_FALLBACK);
             }
         });
@@ -500,7 +500,7 @@ fn build_item(
     .into_any()
 }
 
-/// `animationend` самого сообщения (не вложенных элементов) после начала выхода убирает его.
+/// `animationend` of the message itself (not nested elements) removes it after exit has started.
 fn animation_end(core: &Arc<Core>, key: u64, visible: RwSignal<bool>, event: &web_sys::AnimationEvent) {
     let own = event.target().is_some_and(|t| event.current_target().is_some_and(|c| t == c));
     if own && !visible.get_untracked() {

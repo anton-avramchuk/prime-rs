@@ -1,4 +1,4 @@
-//! Демо-приложение prime-rs: страница на компонент, общая тема и переключатель светлой и тёмной схемы.
+//! prime-rs demo app: one page per component, a shared theme and a light/dark scheme switch.
 #![recursion_limit = "512"]
 
 mod app;
@@ -9,7 +9,7 @@ mod pages;
 
 pub use app::{App, shell};
 
-/// Точка входа гидрации в браузере.
+/// Hydration entry point in the browser.
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
@@ -18,8 +18,8 @@ pub fn hydrate() {
     expose_wasm_memory();
 }
 
-/// Выставляет в `window.wasmMemoryBytes()` размер линейной памяти wasm: JS-куча не включает память Rust,
-/// поэтому e2e-замеры (`e2e/tests/memory.spec.ts`) читают её отсюда.
+/// Exposes the wasm linear memory size as `window.wasmMemoryBytes()`: the JS heap does not include Rust memory,
+/// so e2e measurements (`e2e/tests/memory.spec.ts`) read it from here.
 #[cfg(feature = "hydrate")]
 fn expose_wasm_memory() {
     use wasm_bindgen::JsCast;

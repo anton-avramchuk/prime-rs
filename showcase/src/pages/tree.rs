@@ -1,5 +1,5 @@
-//! Страница Tree: демонстрации `basic`, `single`, `multiple`, `checkbox`, `controlled`, `event`, `filter`, `lazy` и `template`
-//! из showcase PrimeNG (`apps/showcase/doc/tree`; перетаскивание, виртуальная прокрутка и контекстное меню не переносятся).
+//! Tree page: demos `basic`, `single`, `multiple`, `checkbox`, `controlled`, `event`, `filter`, `lazy` and `template`
+//! from the PrimeNG showcase (`apps/showcase/doc/tree`; drag and drop, virtual scroll and the context menu are not ported).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -41,7 +41,7 @@ fn MultipleDemo() -> impl IntoView {
     let sel = RwSignal::new(Vec::<String>::new());
     view! {
         <div style=width()>
-            <p style="margin: 0 0 0.5rem">"Выбор с Ctrl/Meta"</p>
+            <p style="margin: 0 0 0.5rem">"Selection with Ctrl/Meta"</p>
             <Tree id="multiple_tree" value=files() selection_mode=TreeSelectionMode::Multiple selection=sel meta_key_selection=true />
         </div>
     }
@@ -157,7 +157,7 @@ fn template_item(node: TreeNode) -> AnyView {
     }
 }
 
-/// Страница `/tree`.
+/// Tree page `/tree`.
 #[component]
 pub fn TreePage() -> impl IntoView {
     view! {

@@ -2,101 +2,101 @@
 
 ## Context
 
-Мотивация и состав изменения описаны в `proposal.md`, требования — в `specs/`. Что важно для реализации:
+The motivation and contents of the change are described in `proposal.md`, requirements are in `specs/`. What matters for the implementation:
 
-- Репозиторий пуст, кроме `openspec/`. Разработка на Windows 11 (MSVC), CI на ubuntu-latest. Установлены rustc/cargo 1.98, `trunk`, `cargo-leptos`, цель `wasm32-unknown-unknown`.
-- Исходники PrimeNG лежат в `C:\Projects\primeng` (v21.1.10): `packages/primeng/src/<component>` (≈117 каталогов, из них ≈80–90 компонентов), `packages/primeng/src/icons` (55 каталогов, 53 иконки, каждая — один `<svg:path d=… fill="currentColor"/>`), `apps/showcase`.
-- **Токены Aura и CSS компонентов не лежат в репозитории PrimeNG**: `packages/themes/src/presets/aura/*` лишь реэкспортирует `@primeuix/themes`, а `button/style/buttonstyle.ts` импортирует CSS из `@primeuix/styles/button`. `node_modules` в `C:\Projects\primeng` не установлен. Источник для `gen-theme` — npm-пакеты `@primeuix/themes` и `@primeuix/styles` нужных версий.
-- Классы компонентов определены в TS (`classes = { root: ({instance}) => [...] }`), то есть их можно разбирать скриптом, но не импортировать как данные.
+- The repository is empty apart from `openspec/`. Development on Windows 11 (MSVC), CI on ubuntu-latest. rustc/cargo 1.98, `trunk`, `cargo-leptos` and the `wasm32-unknown-unknown` target are installed.
+- The PrimeNG sources are in `C:\Projects\primeng` (v21.1.10): `packages/primeng/src/<component>` (≈117 directories, of which ≈80–90 are components), `packages/primeng/src/icons` (55 directories, 53 icons, each a single `<svg:path d=… fill="currentColor"/>`), `apps/showcase`.
+- **The Aura tokens and component CSS are not in the PrimeNG repository**: `packages/themes/src/presets/aura/*` only re-exports `@primeuix/themes`, and `button/style/buttonstyle.ts` imports CSS from `@primeuix/styles/button`. `node_modules` is not installed in `C:\Projects\primeng`. The source for `gen-theme` is the npm packages `@primeuix/themes` and `@primeuix/styles` at the needed versions.
+- Component classes are defined in TS (`classes = { root: ({instance}) => [...] }`), so they can be parsed with a script but not imported as data.
 
 ## Goals / Non-Goals
 
 **Goals:**
-- Волна 0: после изменения можно добавить первый компонент (Button) одним следующим change, не трогая инфраструктуру.
-- Обычная сборка и тесты не требуют Node и PrimeNG; они нужны только генераторам `xtask` и еженедельному CI.
-- Любая генерация детерминирована и повторяема.
+- Wave 0: after this change the first component (Button) can be added in one following change without touching the infrastructure.
+- A regular build and tests do not require Node or PrimeNG; they are needed only by the `xtask` generators and the weekly CI.
+- Any generation is deterministic and repeatable.
 
 **Non-Goals:**
-- Портирование компонентов (включая Button) и пресетов кроме Aura.
-- Интеграция с формами, публикация на crates.io, SSR-стриминг.
-- Рантайм-генерация тем (`updatePreset`, смена темы на лету, кроме светлой/тёмной схемы).
+- Porting components (including Button) and presets other than Aura.
+- Form integration, publishing to crates.io, SSR streaming.
+- Runtime theme generation (`updatePreset`, switching the theme on the fly other than the light/dark scheme).
 
 ## Decisions
 
-### D1. Раскладка workspace
+### D1. Workspace layout
 ```
 crates/prime-core  prime-dom  prime-theme  prime-icons  prime-<component>…
 showcase/   xtask/   benches/   .github/workflows/
 upstream.toml  rust-toolchain.toml  .cargo/config.toml  deny.toml  NOTICE
 ```
-`resolver = "3"`, `members = ["crates/*", "benches/*", "showcase", "xtask"]` (в `benches/` два крейта: `render` и `wasm-size`). Базовые классы PrimeNG (`basecomponent`, `baseinput`, `baseeditableholder`) становятся модулями `prime-core`, а не крейтами: в Rust это трейты и хелперы без собственного рантайма. Утилитарные каталоги (`dom`, `utils`, `classnames`, `focustrap`, `ripple`) делятся между `prime-core` и `prime-dom`.
-*Альтернатива*: крейт на каждый каталог PrimeNG — даёт ~117 крейтов, из которых треть пустые обёртки и лишние минуты на каждую проверку.
+`resolver = "3"`, `members = ["crates/*", "benches/*", "showcase", "xtask"]` (`benches/` has two crates: `render` and `wasm-size`). The PrimeNG base classes (`basecomponent`, `baseinput`, `baseeditableholder`) become `prime-core` modules rather than crates: in Rust these are traits and helpers without their own runtime. Utility directories (`dom`, `utils`, `classnames`, `focustrap`, `ripple`) are split between `prime-core` and `prime-dom`.
+*Alternative*: a crate per PrimeNG directory — gives ~117 crates, a third of which are empty wrappers, and extra minutes on every check.
 
-### D2. Один набор features
-Каждый крейт с Leptos: `default = []`, features `ssr = ["leptos/ssr"]`, `hydrate = ["leptos/hydrate"]`, CSR по умолчанию. Код, обращающийся к `web_sys::window()`, прячется за `#[cfg(feature = "hydrate")]`/`cfg(target_arch = "wasm32")` либо выполняется внутри `Effect`, который не запускается на сервере.
-*Альтернатива*: только CSR — проще, но SSR-бенчмарки (D8) и cargo-leptos showcase потеряли бы смысл, а добавить SSR позже означает переписать DOM-код всех компонентов.
+### D2. A single set of features
+Every crate with Leptos: `default = []`, features `ssr = ["leptos/ssr"]`, `hydrate = ["leptos/hydrate"]`, CSR by default. Code that touches `web_sys::window()` is hidden behind `#[cfg(feature = "hydrate")]`/`cfg(target_arch = "wasm32")` or runs inside an `Effect`, which does not run on the server.
+*Alternative*: CSR only — simpler, but the SSR benchmarks (D8) and the cargo-leptos showcase would lose their meaning, and adding SSR later means rewriting the DOM code of all components.
 
-### D3. CSS-классы
-`ClassNames` в `prime-core` — построитель, пишущий в один `String` с заранее выделенной ёмкостью (`with_capacity`), без промежуточных `Vec<String>`; в реактивной части результат оборачивается в `Memo<String>`, чтобы атрибут `class` обновлялся только при изменении. Имена классов копируются из `classes` PrimeNG дословно (спека `core-runtime`).
+### D3. CSS classes
+`ClassNames` in `prime-core` is a builder that writes into a single `String` with pre-allocated capacity (`with_capacity`), without intermediate `Vec<String>`; in the reactive part the result is wrapped in a `Memo<String>` so that the `class` attribute updates only on change. Class names are copied from PrimeNG's `classes` verbatim (the `core-runtime` spec).
 
 ### D4. Pass-through
-`pt` — структура `Pt { class: Option<…>, attrs: … }` на корень и именованные части (например, `PtRoot`); применяется через `.attr()` и объединение классов. Полный набор `pt:*`-хуков PrimeNG и unstyled-режим не входят в волну 0 (см. Non-Goals), но тип `Pt` проектируется расширяемым.
+`pt` is a `Pt { class: Option<…>, attrs: … }` struct for the root and named parts (for example, `PtRoot`); applied via `.attr()` and class merging. The full set of PrimeNG `pt:*` hooks and the unstyled mode are not part of wave 0 (see Non-Goals), but the `Pt` type is designed to be extensible.
 
-### D5. Генерация темы
+### D5. Theme generation
 `xtask gen-theme`:
-1. Устанавливает `@primeuix/themes`, `@primeuix/styles`, `@primeuix/styled`, `@primeuix/utils` закреплённых версий (`npm install --ignore-scripts`) в кэш **вне репозитория** (`~/.cache/prime-rs`, переопределяется `PRIME_RS_CACHE`) и запускает `xtask/theme/extract.mjs`.
-2. Скрипт строит CSS тем же кодом, что и PrimeNG (`Theme.getCommon`/`getComponent` из `@primeuix/styled`, разрешение `dt()`), и печатает JSON `{base, components}`. Rust-часть записывает `css/base.css` и `css/components/<name>.css`, список компонентов и селектор тёмного режима берутся из `upstream.toml` (`[theme]`).
-3. Результат **коммитится** в `crates/prime-theme/css/`. Обычная сборка и CI не требуют Node; регенерация нужна только при обновлении upstream.
-Размер: токены Aura и CSS компонентов — десятки–сотни КБ текста; в репозитории это приемлемо, а скриншоты и бинарники не коммитятся.
-*Альтернативы*: (a) генерация в `build.rs` — тянет Node в каждую сборку и ломается в офлайн-CI; (b) порт `@primeuix/styled` на Rust с рантайм-генерацией — соответствует PrimeNG, но противоречит цели нулевого рантайм-оверхеда (см. требования к памяти и производительности).
+1. Installs `@primeuix/themes`, `@primeuix/styles`, `@primeuix/styled`, `@primeuix/utils` at pinned versions (`npm install --ignore-scripts`) into a cache **outside the repository** (`~/.cache/prime-rs`, overridable with `PRIME_RS_CACHE`) and runs `xtask/theme/extract.mjs`.
+2. The script builds CSS with the same code as PrimeNG (`Theme.getCommon`/`getComponent` from `@primeuix/styled`, `dt()` resolution) and prints JSON `{base, components}`. The Rust part writes `css/base.css` and `css/components/<name>.css`; the component list and the dark mode selector come from `upstream.toml` (`[theme]`).
+3. The result is **committed** to `crates/prime-theme/css/`. A regular build and CI do not require Node; regeneration is needed only when upstream is updated.
+Size: the Aura tokens and component CSS are tens to hundreds of KB of text; that is acceptable in the repository, and screenshots and binaries are not committed.
+*Alternatives*: (a) generation in `build.rs` — pulls Node into every build and breaks in offline CI; (b) a Rust port of `@primeuix/styled` with runtime generation — matches PrimeNG but contradicts the goal of zero runtime overhead (see the memory and performance requirements).
 
-### D6. Иконки
-`xtask gen-icons` читает `packages/primeng/src/icons/*/<name>.ts`, достаёт `d` и `viewBox` (регулярным разбором шаблона `<svg:path … d="…"`; при несоответствии — ошибка, а не пропуск) и пишет `crates/prime-icons/src/<name>.rs` + features в `Cargo.toml`. Общий компонент `Icon` (размер, `spin`, a11y) вынесен в `prime-icons`, чтобы данные иконки были константами `&'static str`.
-*Альтернативы*: сторонний набор (Lucide) и шрифт отклонены пользователем; PrimeNG-иконок всего 53.
+### D6. Icons
+`xtask gen-icons` reads `packages/primeng/src/icons/*/<name>.ts`, extracts `d` and `viewBox` (by regex parsing of the `<svg:path … d="…"` template; on a mismatch — an error, not a skip) and writes `crates/prime-icons/src/<name>.rs` + features in `Cargo.toml`. The shared `Icon` component (size, `spin`, a11y) lives in `prime-icons`, so that icon data are `&'static str` constants.
+*Alternatives*: a third-party set (Lucide) and a font were rejected by the user; PrimeNG has only 53 icons.
 
-### D7. Overlay и DOM
-`prime-dom` напрямую использует `web-sys` (минимальный набор features `Window`, `Document`, `Element`, `DomRect`, `HtmlElement`, `EventTarget`, `KeyboardEvent`), без `leptos-use`. Позиционирование — порт `absolutePosition`/`relativePosition` из `DomHandler` с теми же правилами переворота. Портал — `leptos::portal::Portal`. Анимации — классы CSS и `transition`, как `p-motion`.
-*Альтернатива*: `leptos-use` — быстрее писать, но тащит большой граф зависимостей в wasm и в `target/`.
+### D7. Overlay and DOM
+`prime-dom` uses `web-sys` directly (a minimal feature set `Window`, `Document`, `Element`, `DomRect`, `HtmlElement`, `EventTarget`, `KeyboardEvent`), without `leptos-use`. Positioning is a port of `absolutePosition`/`relativePosition` from `DomHandler` with the same flip rules. The portal is `leptos::portal::Portal`. Animations are CSS classes and `transition`, like `p-motion`.
+*Alternative*: `leptos-use` — faster to write, but pulls a large dependency graph into wasm and `target/`.
 
-### D8. Бенчмарки
-- `benches/render` — крейт с `divan` (`render`), `dhat` (`alloc`) и медианой времени в JSON (`time`); компонент рендерится в строку через `leptos::ssr` (одна и та же функция для 1 и 1000 экземпляров).
-- Аллокации: `dhat` в тестовом режиме (`dhat::Profiler::builder().testing()`), результат пишется в JSON.
-- Размер wasm: `xtask wasm-size` собирает минимальное приложение с одним компонентом, считает вклад как разницу размера сырого `.wasm` (release, без `wasm-opt`) с пустым приложением `benches/wasm-size` и сравнивает с `benches/budgets.toml`.
-- Все отчёты — `target/bench/*.json` вида `{"metrics": {имя: число}}`. Базовая линия — артефакт `bench-baseline` последнего успешного прогона `dev`; `xtask bench-compare` сравнивает каталоги (порог 10 %, только комментарий в PR, `--fail-over` включает блокировку).
-- Браузерные замеры памяти — Playwright в еженедельном job (CDP `Performance.getMetrics`: `JSHeapUsedSize`, `Nodes`): время создания 1000 компонентов и рост кучи и DOM после 20 циклов создания и удаления.
+### D8. Benchmarks
+- `benches/render` — a crate with `divan` (`render`), `dhat` (`alloc`) and the median time in JSON (`time`); a component is rendered to a string via `leptos::ssr` (the same function for 1 and 1000 instances).
+- Allocations: `dhat` in test mode (`dhat::Profiler::builder().testing()`), the result is written to JSON.
+- wasm size: `xtask wasm-size` builds a minimal app with one component, computes the contribution as the difference in raw `.wasm` size (release, without `wasm-opt`) against the empty `benches/wasm-size` app and compares with `benches/budgets.toml`.
+- All reports are `target/bench/*.json` of the form `{"metrics": {name: number}}`. The baseline is the `bench-baseline` artifact of the last successful `dev` run; `xtask bench-compare` compares the directories (10 % threshold, PR comment only, `--fail-over` enables blocking).
+- Browser memory measurements — Playwright in the weekly job (CDP `Performance.getMetrics`: `JSHeapUsedSize`, `Nodes`): time to create 1000 components and heap and DOM growth after 20 create-and-remove cycles.
 
 ### D9. CI
-Файлы `.github/workflows/`:
-- `ci.yml` (PR и push): `fmt` → `clippy -D warnings` → `nextest` → `wasm-bindgen-test` (headless Chrome) → `cargo-deny` → `bench`. Определение затронутых крейтов — `xtask affected` (`cargo metadata` + `git diff`); изменения в `prime-core`, `prime-dom`, `Cargo.toml`, `Cargo.lock`, `xtask`, `.github/**` и др. включают полный прогон. Приложения (`showcase`, `wasm-size`, `render-bench`) проверяет отдельный job `apps`.
-- `weekly.yml` (`schedule`, `workflow_dispatch`, PR с меткой `run-e2e`): клон PrimeNG на коммите из `upstream.toml`, сборка его showcase, сборка нашего showcase, Playwright (e2e + сравнение скриншотов + браузерные бенчмарки), артефакты `retention-days: 7`.
-- Кэш — `Swatinem/rust-cache` с `cache-on-failure: false`, перед сохранением `cargo-sweep`; `cargo-machete` по расписанию.
-Стратегия кэша выбрана так, чтобы размер кэша был ограничен; `sccache` не используется.
+`.github/workflows/` files:
+- `ci.yml` (PR and push): `fmt` → `clippy -D warnings` → `nextest` → `wasm-bindgen-test` (headless Chrome) → `cargo-deny` → `bench`. Affected crates are determined by `xtask affected` (`cargo metadata` + `git diff`); changes in `prime-core`, `prime-dom`, `Cargo.toml`, `Cargo.lock`, `xtask`, `.github/**` and others trigger a full run. Applications (`showcase`, `wasm-size`, `render-bench`) are checked by a separate `apps` job.
+- `weekly.yml` (`schedule`, `workflow_dispatch`, PR with the `run-e2e` label): clone PrimeNG at the commit from `upstream.toml`, build its showcase, build our showcase, Playwright (e2e + screenshot comparison + browser benchmarks), artifacts `retention-days: 7`.
+- Cache — `Swatinem/rust-cache` with `cache-on-failure: false`, `cargo-sweep` before saving; `cargo-machete` on a schedule.
+The cache strategy is chosen so that the cache size is bounded; `sccache` is not used.
 
-### D10. Профили сборки
+### D10. Build profiles
 ```toml
 [profile.dev]            debug = "line-tables-only"  incremental = true
 [profile.dev.package."*"] debug = false opt-level = 1
 [profile.release]        lto = "thin"  codegen-units = 1  panic = "abort"  strip = true  incremental = false
 ```
-В `.cargo/config.toml`: `rust-lld` для `x86_64-pc-windows-msvc` и `x86_64-unknown-linux-gnu`; `CARGO_INCREMENTAL=0` в CI. Это снижает размер `target/` без потери отладки строк.
+In `.cargo/config.toml`: `rust-lld` for `x86_64-pc-windows-msvc` and `x86_64-unknown-linux-gnu`; `CARGO_INCREMENTAL=0` in CI. This reduces the size of `target/` without losing line-level debugging.
 
-### D11. upstream.toml и заготовки спек
-`upstream.toml` хранит `version`, `commit`, `path` (локальный клон; перекрывается `PRIMENG_PATH`) и версии `@primeuix/*`. `xtask upstream-diff` вызывает `git diff --name-only <pinned>..<target> -- packages/primeng/src/<component>` для портированных компонентов (список — крейты `crates/prime-<имя>` без инфраструктурных). `xtask gen-spec <name>` разбирает `<name>.ts` и `style/<name>style.ts` и заполняет шаблон спеки.
+### D11. upstream.toml and spec stubs
+`upstream.toml` stores `version`, `commit`, `path` (local clone; overridden by `PRIMENG_PATH`) and the `@primeuix/*` versions. `xtask upstream-diff` runs `git diff --name-only <pinned>..<target> -- packages/primeng/src/<component>` for the ported components (the list is the `crates/prime-<name>` crates excluding infrastructure ones). `xtask gen-spec <name>` parses `<name>.ts` and `style/<name>style.ts` and fills in the spec template.
 
 ## Risks / Trade-offs
 
-- [Парсинг TS регулярными выражениями хрупок] → генераторы падают с ошибкой при неожиданной форме исходника, на ключевых файлах есть snapshot-тесты (`insta`), версия upstream закреплена.
-- [`@primeuix/*` — внешние npm-пакеты, не часть репозитория PrimeNG] → версии закреплены в `upstream.toml`, результат коммитится, Node нужен только для регенерации.
-- [Рост репозитория из-за закоммиченного CSS и сгенерированных иконок] → только текст, повторная генерация детерминирована, дельты в git небольшие; бинарники не коммитятся.
-- [Тесты SSR не ловят баги DOM] → `wasm-bindgen-test` на PR и Playwright в еженедельном job.
-- [Еженедельный job зависит от сборки Angular showcase и может стать нестабильным] → его результат не блокирует PR, артефакты хранятся 7 дней.
-- [Бюджеты wasm и порог 10 % выбраны без измерений] → первая версия бюджетов записывается после появления первого компонента и пересматривается.
+- [Parsing TS with regular expressions is brittle] → generators fail with an error on an unexpected source shape, key files have snapshot tests (`insta`), the upstream version is pinned.
+- [`@primeuix/*` are external npm packages, not part of the PrimeNG repository] → versions are pinned in `upstream.toml`, the result is committed, Node is needed only for regeneration.
+- [Repository growth from committed CSS and generated icons] → text only, regeneration is deterministic, git deltas are small; binaries are not committed.
+- [SSR tests do not catch DOM bugs] → `wasm-bindgen-test` on PRs and Playwright in the weekly job.
+- [The weekly job depends on building the Angular showcase and may become flaky] → its result does not block PRs, artifacts are kept for 7 days.
+- [The wasm budgets and the 10 % threshold were chosen without measurements] → the first version of the budgets is recorded after the first component appears and is revisited.
 
 ## Migration Plan
 
-Миграции нет: репозиторий создаётся с нуля. Откат — `git revert` соответствующего коммита. Ветка `dev` защищается проверкой `ci.yml` после первого зелёного прогона.
+No migration: the repository is created from scratch. Rollback — `git revert` of the corresponding commit. The `dev` branch is protected by the `ci.yml` check after the first green run.
 
 ## Open Questions
 
-- Нужно ли подключать `cargo-leptos` к CI на PR (сборка showcase) или достаточно сборки в еженедельном job? Решается после замера времени сборки; на спеки не влияет.
-- Точные значения бюджета размера wasm и срока устаревания для `cargo-sweep` — определяются по первым измерениям.
+- Whether to hook `cargo-leptos` into PR CI (showcase build) or whether a build in the weekly job is enough? Decided after measuring build time; does not affect the specs.
+- The exact wasm size budget values and the `cargo-sweep` expiry period — determined from the first measurements.

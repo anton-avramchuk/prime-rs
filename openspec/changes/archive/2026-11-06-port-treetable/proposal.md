@@ -2,26 +2,26 @@
 
 ## Why
 
-TreeTable — иерархические данные в таблице: узлы с потомками, раскрытие, сортировка по уровням, выбор. Последний компонент волны 7. По решению пользователя — **этап 1** на общей основе с Table (`prime_table::Column`, `prime_table::model`): без фильтров, правки, изменения и перестановки столбцов, заморозки и ленивой загрузки.
+TreeTable — hierarchical data in a table: nodes with descendants, expansion, per-level sorting, selection. The last component of wave 7. Per the user decision — **stage 1** on the shared basis with Table (`prime_table::Column`, `prime_table::model`): without filters, editing, column resizing and reordering, freezing and lazy loading.
 
 ## What Changes
 
-- Новый крейт `prime-treetable` (порт `p-treetable` из PrimeNG 21.1.10, этап 1): обобщённый `TreeTable<T>`, узел `TreeNode<T>` (ключ, данные, дети, `leaf`, начальное `expanded`).
-- Чистая модель `tree.rs`: `sort_nodes` (по уровням, устойчиво), `page_roots` (пагинатор считает корни), `flatten` (развёртка в строки с уровнем, позицией и признаками), `checkbox_toggle` (распространение вниз и вверх), `check_state` (выбран/частично/нет), `initial_expanded`; табличные тесты.
-- Разметка: `div.p-treetable.p-component` (`-gridlines`, `-hoverable-rows`, `-flex-scrollable`, `-sm`, `-lg`) > `p-treetable-mask`, `p-treetable-header`, пагинатор `p-treetable-paginator-top|bottom`, `p-treetable-table-container` > `table.p-treetable-table[role=treegrid]` (`thead`, `tbody`, `tfoot`), `p-treetable-footer`; кнопка раскрытия `p-treetable-toggler` с отступом `уровень × 16px`, флажок узла `p-treetable-node-checkbox`.
-- Поведение: раскрытие и сворачивание кликом (`expanded_keys` или флаги узлов), сортировка (одиночная и многоуровневая, значки, счётчики, `aria-sort`), пагинатор по корневым узлам, выбор кликом (`single`, `multiple`, `meta_key_selection`) и флажками с частичным состоянием, пустое сообщение, индикатор загрузки; события узлов.
-- Страница `/treetable`, e2e, бенчмарки и бюджеты, `docs/treetable.md`; `treetable` в `theme.components` и `primeng_extra`.
-- **Не входит (этапы 2+):** фильтры, правка ячеек, изменение размера и перестановка столбцов, заморозка, виртуальная прокрутка, ленивая загрузка, флажок в заголовке, диапазон выбора Shift, контекстное меню, клавиатурная навигация по строкам.
+- New crate `prime-treetable` (port of `p-treetable` from PrimeNG 21.1.10, stage 1): generic `TreeTable<T>`, node `TreeNode<T>` (key, data, children, `leaf`, initial `expanded`).
+- Pure model `tree.rs`: `sort_nodes` (per level, stable), `page_roots` (the paginator counts roots), `flatten` (flattening into rows with level, position and flags), `checkbox_toggle` (propagation down and up), `check_state` (selected/partial/none), `initial_expanded`; table-driven tests.
+- Markup: `div.p-treetable.p-component` (`-gridlines`, `-hoverable-rows`, `-flex-scrollable`, `-sm`, `-lg`) > `p-treetable-mask`, `p-treetable-header`, paginator `p-treetable-paginator-top|bottom`, `p-treetable-table-container` > `table.p-treetable-table[role=treegrid]` (`thead`, `tbody`, `tfoot`), `p-treetable-footer`; expand button `p-treetable-toggler` with indent `level × 16px`, node checkbox `p-treetable-node-checkbox`.
+- Behavior: expanding and collapsing by click (`expanded_keys` or node flags), sorting (single and multi-level, icons, counters, `aria-sort`), paginator over root nodes, selection by click (`single`, `multiple`, `meta_key_selection`) and by checkboxes with a partial state, empty message, loading indicator; node events.
+- Page `/treetable`, e2e, benchmarks and budgets, `docs/treetable.md`; `treetable` in `theme.components` and `primeng_extra`.
+- **Out of scope (stages 2+):** filters, cell editing, column resizing and reordering, freezing, virtual scroll, lazy loading, header checkbox, Shift range selection, context menu, keyboard navigation over rows.
 
 ## Capabilities
 
 ### New Capabilities
-- `treetable`: иерархическая таблица с раскрытием, сортировкой, пагинатором и выбором.
+- `treetable`: a hierarchical table with expansion, sorting, a paginator and selection.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-treetable` (`publish = false`); зависимости: `prime-core`, `prime-table` (столбцы и модель), `prime-dataview` (`clamp_first`), `prime-paginator`, `prime-checkbox`, `prime-badge`, `prime-icons`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.
+- New crate `crates/prime-treetable` (`publish = false`); dependencies: `prime-core`, `prime-table` (columns and model), `prime-dataview` (`clamp_first`), `prime-paginator`, `prime-checkbox`, `prime-badge`, `prime-icons`.
+- Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.
