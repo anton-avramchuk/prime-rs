@@ -17,6 +17,7 @@
 //! // while the panel is not shown, it is absent from the markup
 //! assert!(!html.contains("p-drawer") && !html.contains("Body"));
 //! ```
+#![recursion_limit = "512"]
 
 mod state;
 

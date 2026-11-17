@@ -6,7 +6,7 @@ async fn main() {
     use axum::Router;
     use leptos::prelude::*;
     use leptos_axum::{LeptosRoutes, generate_route_list};
-    use showcase::{App, shell};
+    use showcase_app::{App, shell};
 
     let conf = get_configuration(None).expect("Leptos configuration");
     let addr = conf.leptos_options.site_addr;
@@ -26,5 +26,10 @@ async fn main() {
     axum::serve(listener, app.into_make_service()).await.expect("server stopped");
 }
 
-#[cfg(not(feature = "ssr"))]
+#[cfg(all(feature = "csr", not(feature = "ssr")))]
+fn main() {
+    showcase_app::mount_csr();
+}
+
+#[cfg(not(any(feature = "ssr", feature = "csr")))]
 fn main() {}

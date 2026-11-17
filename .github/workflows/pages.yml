@@ -1,0 +1,57 @@
+name: Pages
+
+# Publishes the static showcase (client-only wasm built with trunk) to GitHub Pages.
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: trunk
+      - name: Build showcase
+        working-directory: showcase
+        env:
+          # Base path under which Pages serves the site, e.g. /prime-rs for https://<user>.github.io/prime-rs/.
+          # Read at compile time by the router (SHOWCASE_BASE) and used for asset URLs (--public-url).
+          SHOWCASE_BASE: /${{ github.event.repository.name }}
+        run: |
+          trunk build --release --public-url "$SHOWCASE_BASE/" --dist ../target/pages
+          # GitHub Pages serves 404.html for unknown paths; the SPA router needs the shell there too.
+          cp ../target/pages/index.html ../target/pages/404.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: target/pages
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

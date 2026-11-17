@@ -18,9 +18,27 @@ pub fn hydrate() {
     expose_wasm_memory();
 }
 
+/// Client-only entry for the static (GitHub Pages) build: injects the theme styles into `<head>`, then mounts the app.
+#[cfg(feature = "csr")]
+pub fn mount_csr() {
+    console_error_panic_hook::set_once();
+    if let Some(document) = web_sys::window().and_then(|w| w.document()) {
+        if let Some(head) = document.head() {
+            for css in [app::theme_css(), doc::DOC_CSS.to_string()] {
+                if let Ok(style) = document.create_element("style") {
+                    style.set_text_content(Some(&css));
+                    let _ = head.append_child(&style);
+                }
+            }
+        }
+    }
+    leptos::mount::mount_to_body(App);
+    expose_wasm_memory();
+}
+
 /// Exposes the wasm linear memory size as `window.wasmMemoryBytes()`: the JS heap does not include Rust memory,
 /// so e2e measurements (`e2e/tests/memory.spec.ts`) read it from here.
-#[cfg(feature = "hydrate")]
+#[cfg(any(feature = "hydrate", feature = "csr"))]
 fn expose_wasm_memory() {
     use wasm_bindgen::JsCast;
     let measure = wasm_bindgen::closure::Closure::<dyn Fn() -> f64>::new(|| {

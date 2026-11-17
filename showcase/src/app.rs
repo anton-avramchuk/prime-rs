@@ -20,9 +20,15 @@ use leptos_router::components::{Route, Router, Routes};
 
 const DARK_CLASS: &str = "p-dark";
 
-/// HTML shell: the theme is included via an inline `<style>` (base CSS and component CSS).
-pub fn shell(options: LeptosOptions) -> impl IntoView {
-    let css = prime_theme::stylesheet(&[
+/// Base path the app is served under (set at build time, e.g. `/prime-rs` for GitHub Pages); empty by default.
+const ROUTER_BASE: &str = match option_env!("SHOWCASE_BASE") {
+    Some(base) => base,
+    None => "",
+};
+
+/// Theme CSS: base styles plus the components used by the showcase.
+pub fn theme_css() -> String {
+    prime_theme::stylesheet(&[
         "button",
         "badge",
         "tag",
@@ -105,7 +111,12 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         "dataview",
         "datatable",
         "treetable",
-    ]);
+    ])
+}
+
+/// HTML shell: the theme is included via an inline `<style>` (base CSS and component CSS).
+pub fn shell(options: LeptosOptions) -> impl IntoView {
+    let css = theme_css();
     view! {
             <!DOCTYPE html>
             <html lang="en">
@@ -136,7 +147,7 @@ fn toggle_dark() {
 #[component]
 pub fn App() -> impl IntoView {
     view! {
-            <Router>
+            <Router base=ROUTER_BASE>
                 <div data-testid="app" style="font-family: sans-serif; padding: 1.5rem; background: var(--p-content-background); color: var(--p-text-color); min-height: 100vh">
                     <header style="display: flex; align-items: center; justify-content: space-between">
                         <h1>"prime-rs"</h1>
