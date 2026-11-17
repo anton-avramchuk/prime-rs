@@ -1812,6 +1812,20 @@ pub static PAGES: &[PageDoc] = &[
         a11y: "",
     },
     PageDoc {
+        name: "install",
+        description: "",
+        imports: "use prime_button::{Button, ButtonSeverity};",
+        demos: &[
+        ],
+        comps: &[
+        ],
+        pt: &[
+        ],
+        classes: &[],
+        notes: "",
+        a11y: "",
+    },
+    PageDoc {
         name: "knob",
         description: "Knob - port of PrimeNG 21.1.10 `p-knob`.",
         imports: "use prime_button::Button;\nuse prime_icons::{MinusIcon, PlusIcon};\nuse prime_knob::Knob;",

@@ -1,6 +1,7 @@
 //! Page shell, menu and routes.
 
 use crate::doc::{DOC_CSS, DocNav, DocPage};
+use crate::pages::InstallPage;
 use crate::pages::{
     AccordionPage, AutoCompletePage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage,
     CarouselPage, CascadeSelectPage, CheckboxPage, ChipPage, ColorPickerPage, ConfirmDialogPage, ConfirmPopupPage, ContextMenuPage,
@@ -166,6 +167,7 @@ pub fn App() -> impl IntoView {
     <main>
                         <Routes fallback=|| "Page not found">
                             <Route path=StaticSegment("") view=HomePage />
+                            <Route path=StaticSegment("install") view=InstallPage />
                             <Route path=StaticSegment("button") view=|| view! { <DocPage name="button"><ButtonPage /></DocPage> } />
                             <Route path=StaticSegment("badge") view=|| view! { <DocPage name="badge"><BadgePage /></DocPage> } />
                             <Route path=StaticSegment("tag") view=|| view! { <DocPage name="tag"><TagPage /></DocPage> } />

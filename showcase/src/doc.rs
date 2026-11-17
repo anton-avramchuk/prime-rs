@@ -7,6 +7,7 @@ use leptos_router::components::A;
 
 /// Menu sections: name and components (path, label).
 pub const MENU: &[(&str, &[(&str, &str)])] = &[
+    ("Start", &[("install", "Install")]),
     (
         "Form",
         &[
