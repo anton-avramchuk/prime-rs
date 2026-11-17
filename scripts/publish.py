@@ -20,6 +20,8 @@ import urllib.request
 USER_AGENT = "prime-rs-publish (github actions)"
 RETRIES = 12
 WAIT_SECONDS = 60
+# Pause after each successful publish, so crates.io's new-crate rate limit is not hit.
+PUBLISH_DELAY_SECONDS = int(os.environ.get("PUBLISH_DELAY_SECONDS", "120"))
 
 
 def workspace_packages():
@@ -113,6 +115,8 @@ def main():
             continue
         print(f"publishing {name} {version}", flush=True)
         publish(name)
+        print(f"waiting {PUBLISH_DELAY_SECONDS}s before the next crate", flush=True)
+        time.sleep(PUBLISH_DELAY_SECONDS)
     print("done", flush=True)
 
 

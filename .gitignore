@@ -26,3 +26,4 @@ nul
 node_modules/
 .idea
 *.log
+__pycache__/
