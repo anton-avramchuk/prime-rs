@@ -245,7 +245,10 @@ async fn labels_buttons_focus_and_visibility() {
     svc(&shared).confirm(Confirmation::new().message("m").target(t.clone()).default_focus(ConfirmFocus::Accept).reject_visible_flag(false));
     settle().await;
     assert!(find(".p-confirmpopup-reject-button").is_none() && find(".p-confirmpopup-accept-button").is_some());
-    assert!(doc().active_element().unwrap().class_list().contains("p-confirmpopup-accept-button"), "the confirmation default_focus takes precedence");
+    assert!(
+        doc().active_element().unwrap().class_list().contains("p-confirmpopup-accept-button"),
+        "the confirmation default_focus takes precedence"
+    );
     svc(&shared).close();
     settle().await;
 

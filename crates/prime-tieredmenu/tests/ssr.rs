@@ -46,7 +46,10 @@ fn groups_carry_aria_and_an_arrow_but_no_submenu_until_opened() {
     assert!(html.contains("aria-haspopup=\"menu\"") && html.contains("aria-expanded=\"false\""), "{html}");
     assert_eq!(html.matches("aria-haspopup=\"menu\"").count(), 1, "only File is a group: {html}");
     assert!(html.contains("p-tieredmenu-submenu-icon"), "{html}");
-    assert!(!html.contains("p-tieredmenu-submenu\"") && !html.contains("Share"), "a submenu is rendered only for an expanded group: {html}");
+    assert!(
+        !html.contains("p-tieredmenu-submenu\"") && !html.contains("Share"),
+        "a submenu is rendered only for an expanded group: {html}"
+    );
 }
 
 #[test]

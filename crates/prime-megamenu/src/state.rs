@@ -9,25 +9,25 @@ use prime_menu::MenuItem;
 /// Orientation of the root list.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum MegaMenuOrientation {
-        /// Root items in a row, overlay below the item.
+    /// Root items in a row, overlay below the item.
     #[default]
     Horizontal,
-        /// Root items in a column, overlay to the right of the item.
+    /// Root items in a column, overlay to the right of the item.
     Vertical,
 }
 
 /// Submenu in a column: a header and a flat list of items.
 #[derive(Clone)]
 pub struct MegaMenuSubmenu {
-        /// Header.
+    /// Header.
     pub label: Option<String>,
-        /// Visible (default yes).
+    /// Visible (default yes).
     pub visible: bool,
-        /// Additional class of the header.
+    /// Additional class of the header.
     pub style_class: Option<String>,
-        /// Inline style of the header.
+    /// Inline style of the header.
     pub style: Option<String>,
-        /// Items.
+    /// Items.
     pub items: Vec<MenuItem>,
 }
 
@@ -38,24 +38,24 @@ impl Default for MegaMenuSubmenu {
 }
 
 impl MegaMenuSubmenu {
-        /// Submenu with a header.
+    /// Submenu with a header.
     pub fn new(label: impl Into<String>) -> Self {
         Self { label: Some(label.into()), ..Self::default() }
     }
 
-        /// Submenu items.
+    /// Submenu items.
     pub fn items(mut self, items: Vec<MenuItem>) -> Self {
         self.items = items;
         self
     }
 
-        /// Shows or hides the submenu.
+    /// Shows or hides the submenu.
     pub fn visible(mut self, visible: bool) -> Self {
         self.visible = visible;
         self
     }
 
-        /// Additional class of the header.
+    /// Additional class of the header.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
@@ -65,9 +65,9 @@ impl MegaMenuSubmenu {
 /// Root item: a plain [`MenuItem`] (without `items`) and submenu columns.
 #[derive(Clone, Default)]
 pub struct MegaMenuItem {
-        /// Item properties (`items` is ignored).
+    /// Item properties (`items` is ignored).
     pub item: MenuItem,
-        /// Columns: each is a list of submenus.
+    /// Columns: each is a list of submenus.
     pub columns: Vec<Vec<MegaMenuSubmenu>>,
 }
 
@@ -78,42 +78,42 @@ impl From<MenuItem> for MegaMenuItem {
 }
 
 impl MegaMenuItem {
-        /// Item without properties.
+    /// Item without properties.
     pub fn new() -> Self {
         Self::default()
     }
 
-        /// Label.
+    /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.item = self.item.label(label);
         self
     }
 
-        /// Icon.
+    /// Icon.
     pub fn icon(mut self, icon: impl Into<leptos::prelude::ViewFn>) -> Self {
         self.item = self.item.icon(icon);
         self
     }
 
-        /// Disables the item.
+    /// Disables the item.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.item = self.item.disabled(disabled);
         self
     }
 
-        /// Shows or hides the item.
+    /// Shows or hides the item.
     pub fn visible(mut self, visible: bool) -> Self {
         self.item = self.item.visible(visible);
         self
     }
 
-        /// Command on press.
+    /// Command on press.
     pub fn command(mut self, command: impl Into<leptos::prelude::Callback<prime_menu::MenuCommand>>) -> Self {
         self.item = self.item.command(command);
         self
     }
 
-        /// Submenu columns.
+    /// Submenu columns.
     pub fn columns(mut self, columns: Vec<Vec<MegaMenuSubmenu>>) -> Self {
         self.columns = columns;
         self
@@ -123,38 +123,38 @@ impl MegaMenuItem {
 /// Kind of tree node.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Kind {
-        /// Root item.
+    /// Root item.
     Root,
-        /// Submenu in a column.
+    /// Submenu in a column.
     Submenu,
-        /// Submenu item.
+    /// Submenu item.
     Item,
 }
 
 /// Node of the tree of "processed items".
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Node {
-        /// Key.
+    /// Key.
     pub key: String,
-        /// Parent key (empty for roots).
+    /// Parent key (empty for roots).
     pub parent_key: String,
-        /// Key of the root item.
+    /// Key of the root item.
     pub root_key: String,
-        /// Kind.
+    /// Kind.
     pub kind: Kind,
-        /// Index among siblings.
+    /// Index among siblings.
     pub index: usize,
-        /// Column number (for roots, their index).
+    /// Column number (for roots, their index).
     pub column: usize,
-        /// Root item with a submenu.
+    /// Root item with a submenu.
     pub group: bool,
-        /// Visible (the item itself and its submenu).
+    /// Visible (the item itself and its submenu).
     pub shown: bool,
-        /// Focusable: visible, not disabled, not a separator, not a header.
+    /// Focusable: visible, not disabled, not a separator, not a header.
     pub valid: bool,
-        /// Label (for search).
+    /// Label (for search).
     pub label: String,
-        /// Column number of an item is the number of root columns (for the `col-N` class).
+    /// Column number of an item is the number of root columns (for the `col-N` class).
     pub columns: usize,
 }
 
@@ -231,50 +231,50 @@ pub fn column_class(columns: usize, mobile: bool) -> &'static str {
 /// Transition state.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct State {
-        /// Key of the expanded root item.
+    /// Key of the expanded root item.
     pub active: Option<String>,
-        /// Key of the focused item.
+    /// Key of the focused item.
     pub focus: Option<String>,
-        /// After a click or mouse press on the menu, hover expands groups.
+    /// After a click or mouse press on the menu, hover expands groups.
     pub dirty: bool,
 }
 
 /// Click result.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Click {
-        /// The expanded item collapsed.
+    /// The expanded item collapsed.
     Closed,
-        /// The group expanded.
+    /// The group expanded.
     Opened,
-        /// Leaf: the menu must be closed.
+    /// Leaf: the menu must be closed.
     Leaf,
 }
 
 /// Tree with orientation: all transitions.
 pub struct Menu<'a> {
-        /// Nodes.
+    /// Nodes.
     pub nodes: &'a [Node],
-        /// Vertical orientation.
+    /// Vertical orientation.
     pub vertical: bool,
 }
 
 impl Menu<'_> {
-        /// Node by key.
+    /// Node by key.
     pub fn node(&self, key: &str) -> Option<&Node> {
         self.nodes.iter().find(|n| n.key == key)
     }
 
-        /// Visible root items.
+    /// Visible root items.
     pub fn roots(&self) -> Vec<&Node> {
         self.nodes.iter().filter(|n| n.kind == Kind::Root && n.shown).collect()
     }
 
-        /// Visible submenu items of a root (flat list).
+    /// Visible submenu items of a root (flat list).
     pub fn items(&self, root: &str) -> Vec<&Node> {
         self.nodes.iter().filter(|n| n.kind == Kind::Item && n.shown && n.root_key == root).collect()
     }
 
-        /// List the focus walks over.
+    /// List the focus walks over.
     pub fn list(&self, st: &State) -> Vec<&Node> {
         match st.focus.as_deref().and_then(|f| self.node(f)) {
             Some(n) if n.kind == Kind::Item => self.items(&n.root_key),
@@ -290,7 +290,7 @@ impl Menu<'_> {
         list.iter().rev().find(|n| n.valid).map(|n| n.key.clone())
     }
 
-        /// First item for focus: the selected root, otherwise the first focusable one.
+    /// First item for focus: the selected root, otherwise the first focusable one.
     pub fn first_focused(&self, st: &State) -> Option<String> {
         let roots = self.roots();
         st.active
@@ -307,14 +307,14 @@ impl Menu<'_> {
         Some(found.map_or_else(|| list[pos].key.clone(), |n| n.key.clone()))
     }
 
-        /// Focus entered from outside and the menu is idle: first item.
+    /// Focus entered from outside and the menu is idle: first item.
     pub fn focus_in(&self, st: &mut State) {
         if st.focus.is_none() && st.active.is_none() && !st.dirty {
             st.focus = self.first_focused(st);
         }
     }
 
-        /// Closes everything.
+    /// Closes everything.
     pub fn hide(&self, st: &mut State) {
         *st = State::default();
     }
@@ -345,7 +345,7 @@ impl Menu<'_> {
         self.items(root).into_iter().find(|n| n.column == column && n.valid).map(|n| n.key.clone())
     }
 
-        /// Item click (after the disabled check and command call).
+    /// Item click (after the disabled check and command call).
     pub fn click(&self, st: &mut State, key: &str) -> Click {
         let Some(node) = self.node(key) else { return Click::Leaf };
         if st.active.as_deref() == Some(key) {
@@ -363,7 +363,7 @@ impl Menu<'_> {
         }
     }
 
-        /// Hover over an item.
+    /// Hover over an item.
     pub fn hover(&self, st: &mut State, key: &str, mobile: bool) {
         if mobile || !st.dirty {
             return;
@@ -393,7 +393,7 @@ impl Menu<'_> {
         }
     }
 
-        /// Up (`alt` in horizontal orientation returns from the overlay to the root item).
+    /// Up (`alt` in horizontal orientation returns from the overlay to the root item).
     pub fn arrow_up(&self, st: &mut State, alt: bool) {
         let Some(node) = st.focus.as_deref().and_then(|f| self.node(f)) else {
             st.focus = Self::last_valid(&self.roots());
@@ -457,26 +457,26 @@ impl Menu<'_> {
         }
     }
 
-        /// `Escape`: closes the overlay, focus on its root item.
+    /// `Escape`: closes the overlay, focus on its root item.
     pub fn escape(&self, st: &mut State) {
         if let Some(active) = st.active.take() {
             st.focus = Some(active);
         }
     }
 
-        /// `Tab`: closes everything.
+    /// `Tab`: closes everything.
     pub fn tab(&self, st: &mut State) {
         self.hide(st);
     }
 
-        /// After `Enter`/`Space` on a leaf, focus returns to the first root item.
+    /// After `Enter`/`Space` on a leaf, focus returns to the first root item.
     pub fn after_enter(&self, st: &mut State, was_group: bool) {
         if !was_group {
             st.focus = self.first_focused(st);
         }
     }
 
-        /// Search by label prefix: from the current item (inclusive), circularly.
+    /// Search by label prefix: from the current item (inclusive), circularly.
     pub fn search(&self, st: &mut State, text: &str) {
         let needle = text.to_lowercase();
         let list = self.list(st);
@@ -530,7 +530,7 @@ mod tests {
         let get = |k: &str| nodes.iter().find(|n| n.key == k).unwrap();
         assert!(get("0").group && !get("1").group && !get("2").valid && get("1").valid);
         assert_eq!((get("0_1_1_0").column, get("0_2_0_0").column, get("0").columns), (1, 2, 3));
-                assert!(!get("0_1_0_1").valid && !get("0_1_0").valid, "disabled and header are not focusable");
+        assert!(!get("0_1_0_1").valid && !get("0_1_0").valid, "disabled and header are not focusable");
         assert_eq!(get("0_1_0_0").root_key, "0");
     }
 
@@ -551,7 +551,7 @@ mod tests {
         assert_eq!(m.click(&mut s, "0"), Click::Opened);
         assert_eq!((s.active.as_deref(), s.focus.as_deref(), s.dirty), (Some("0"), Some("0"), true));
         assert_eq!(m.click(&mut s, "0"), Click::Closed);
-                assert_eq!((s.active.as_deref(), s.dirty), (None, false), "repeated click on root closes");
+        assert_eq!((s.active.as_deref(), s.dirty), (None, false), "repeated click on root closes");
         assert_eq!(m.click(&mut s, "1"), Click::Leaf);
         assert_eq!(m.click(&mut s, "0_0_0_0"), Click::Leaf);
     }
@@ -562,20 +562,16 @@ mod tests {
         let m = Menu { nodes: &nodes, vertical: false };
         let mut s = State::default();
         m.hover(&mut s, "0", false);
-                assert_eq!(s, State::default(), "without a click hover does nothing");
+        assert_eq!(s, State::default(), "without a click hover does nothing");
         let mut s = State { dirty: true, ..State::default() };
         m.hover(&mut s, "0", true);
-                assert_eq!(s.active, None, "on a narrow window the path does not change");
+        assert_eq!(s.active, None, "on a narrow window the path does not change");
         m.hover(&mut s, "0", false);
         assert_eq!(s.active.as_deref(), Some("0"));
         m.hover(&mut s, "0_0_0_1", false);
-        assert_eq!(
-            (s.active.as_deref(), s.focus.as_deref()),
-            (Some("0"), Some("0_0_0_1")),
-                        "hover over an overlay item keeps it open"
-        );
+        assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_1")), "hover over an overlay item keeps it open");
         m.hover(&mut s, "1", false);
-                assert_eq!((s.active, s.focus.as_deref()), (None, Some("1")), "hover over a plain root closes the overlay");
+        assert_eq!((s.active, s.focus.as_deref()), (None, Some("1")), "hover over a plain root closes the overlay");
     }
 
     #[test]
@@ -586,30 +582,30 @@ mod tests {
         m.focus_in(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0"));
         m.arrow_down(&mut s);
-                assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_0")), "Down expands and enters the first column");
+        assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_0")), "Down expands and enters the first column");
         m.arrow_down(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0_0_0_1"));
         m.arrow_down(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("0_1_0_0"), "the flat list moves to the next column");
+        assert_eq!(s.focus.as_deref(), Some("0_1_0_0"), "the flat list moves to the next column");
         m.arrow_down(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("0_1_1_0"), "disabled is skipped");
+        assert_eq!(s.focus.as_deref(), Some("0_1_1_0"), "disabled is skipped");
         m.arrow_right(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "Right goes to the first item of the next column");
+        assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "Right goes to the first item of the next column");
         m.arrow_right(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "no more columns beyond");
+        assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "no more columns beyond");
         m.arrow_left(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0_1_0_0"));
         m.arrow_left(&mut s);
         m.arrow_left(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Left stays at the first column");
+        assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Left stays at the first column");
         m.arrow_up(&mut s, false);
-                assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Up on the first item does not leave");
+        assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Up on the first item does not leave");
         m.end(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0_2_0_0"));
         m.home(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0_0_0_0"));
         m.arrow_up(&mut s, true);
-                assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")), "Alt+Up returns to the root");
+        assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")), "Alt+Up returns to the root");
     }
 
     #[test]
@@ -618,9 +614,9 @@ mod tests {
         let m = Menu { nodes: &nodes, vertical: false };
         let mut s = st(Some("0"), Some("0"));
         m.arrow_right(&mut s);
-                assert_eq!((s.active.clone(), s.focus.as_deref()), (None, Some("1")), "Right onto a plain root closes the overlay");
+        assert_eq!((s.active.clone(), s.focus.as_deref()), (None, Some("1")), "Right onto a plain root closes the overlay");
         m.arrow_right(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("3"), "disabled root is skipped");
+        assert_eq!(s.focus.as_deref(), Some("3"), "disabled root is skipped");
         m.arrow_left(&mut s);
         m.arrow_left(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0"));
@@ -631,10 +627,10 @@ mod tests {
         let mut s = st(Some("0"), Some("0"));
         m.arrow_down(&mut s);
         m.escape(&mut s);
-                assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")), "Escape returns to the root");
+        assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")), "Escape returns to the root");
         let mut s = st(None, Some("1"));
         m.arrow_down(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("3"), "Down on a plain root goes to the next one (as in PrimeNG)");
+        assert_eq!(s.focus.as_deref(), Some("3"), "Down on a plain root goes to the next one (as in PrimeNG)");
     }
 
     #[test]
@@ -645,17 +641,17 @@ mod tests {
         m.arrow_down(&mut s);
         assert_eq!(s.focus.as_deref(), Some("0"));
         m.arrow_down(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("1"), "in vertical orientation Down walks the roots");
+        assert_eq!(s.focus.as_deref(), Some("1"), "in vertical orientation Down walks the roots");
         m.arrow_up(&mut s, false);
         assert_eq!(s.focus.as_deref(), Some("0"));
         m.arrow_right(&mut s);
-                assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_0")), "Right expands and enters");
+        assert_eq!((s.active.as_deref(), s.focus.as_deref()), (Some("0"), Some("0_0_0_0")), "Right expands and enters");
         m.arrow_left(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("0"), "Left from the first column goes to the root");
+        assert_eq!(s.focus.as_deref(), Some("0"), "Left from the first column goes to the root");
         assert_eq!(s.active, None);
         let mut s = st(Some("0"), Some("0_1_0_0"));
         m.arrow_left(&mut s);
-                assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Left to the column on the left");
+        assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "Left to the column on the left");
         m.arrow_left(&mut s);
         assert_eq!((s.active, s.focus.as_deref()), (None, Some("0")));
         let mut s = st(None, Some("1"));
@@ -669,14 +665,14 @@ mod tests {
         let m = Menu { nodes: &nodes, vertical: false };
         let mut s = st(None, Some("0"));
         m.search(&mut s, "t");
-                assert_eq!(s.focus.as_deref(), Some("3"), "search among roots");
+        assert_eq!(s.focus.as_deref(), Some("3"), "search among roots");
         m.search(&mut s, "z");
-                assert_eq!(s.focus.as_deref(), Some("3"), "without matches focus stays");
+        assert_eq!(s.focus.as_deref(), Some("3"), "without matches focus stays");
         let mut s = st(Some("0"), Some("0_0_0_0"));
         m.search(&mut s, "cu");
-                assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "search among overlay items");
+        assert_eq!(s.focus.as_deref(), Some("0_2_0_0"), "search among overlay items");
         m.search(&mut s, "ar");
-                assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "circularly");
+        assert_eq!(s.focus.as_deref(), Some("0_0_0_0"), "circularly");
         m.tab(&mut s);
         assert_eq!(s, State::default());
         let mut s = st(None, None);

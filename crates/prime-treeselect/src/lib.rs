@@ -45,37 +45,37 @@ use std::time::Duration;
 /// How to show selected nodes in the label.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TreeSelectDisplay {
-        /// Comma-separated captions.
+    /// Comma-separated captions.
     #[default]
     Comma,
-        /// Chips.
+    /// Chips.
     Chip,
 }
 
 /// Pass-through parts of [`TreeSelect`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TreeSelectPt {
-        /// Root.
+    /// Root.
     pub root: Pt,
-        /// Hidden field container.
+    /// Hidden field container.
     pub hidden_input_container: Pt,
-        /// Hidden field.
+    /// Hidden field.
     pub hidden_input: Pt,
-        /// Label container.
+    /// Label container.
     pub label_container: Pt,
-        /// Label.
+    /// Label.
     pub label: Pt,
-        /// Chip element.
+    /// Chip element.
     pub chip_item: Pt,
-        /// Clear icon.
+    /// Clear icon.
     pub clear_icon: Pt,
-        /// Dropdown button.
+    /// Dropdown button.
     pub dropdown: Pt,
-        /// Button arrow.
+    /// Button arrow.
     pub dropdown_icon: Pt,
-        /// Panel.
+    /// Panel.
     pub panel: Pt,
-        /// Tree container.
+    /// Tree container.
     pub tree_container: Pt,
 }
 
@@ -115,7 +115,7 @@ impl Core {
         }
     }
 
-        /// `show()`: expands the ancestors of selected nodes and opens the panel.
+    /// `show()`: expands the ancestors of selected nodes and opens the panel.
     fn show(&self) {
         if self.open.get_untracked() {
             return;
@@ -126,7 +126,7 @@ impl Core {
         self.open.set(true);
     }
 
-        /// `hide()`: closes the panel.
+    /// `hide()`: closes the panel.
     fn hide(&self) {
         self.open.try_set(false);
     }
@@ -144,7 +144,7 @@ impl Core {
         }
     }
 
-        /// Click on the root: opens or closes the panel, except clicks inside the panel.
+    /// Click on the root: opens or closes the panel, except clicks inside the panel.
     fn root_click(&self, e: &web_sys::MouseEvent) {
         if self.disabled.get_untracked() {
             return;
@@ -162,7 +162,7 @@ impl Core {
         self.focus_input();
     }
 
-        /// The first tree node in the panel gets focus (on the next tick, while the panel is being drawn).
+    /// The first tree node in the panel gets focus (on the next tick, while the panel is being drawn).
     fn focus_first_node(self: &Arc<Self>) {
         #[cfg(target_arch = "wasm32")]
         {
@@ -209,7 +209,7 @@ impl Core {
         }
     }
 
-        /// Node selection: in `Single` the panel closes, focus returns to the field.
+    /// Node selection: in `Single` the panel closes, focus returns to the field.
     fn node_select(&self, e: TreeNodeEvent) {
         if let Some(cb) = self.on_node_select {
             cb.run(e);
@@ -220,7 +220,7 @@ impl Core {
         }
     }
 
-        /// The panel has just opened: z-index, position, window listeners, `on_show`.
+    /// The panel has just opened: z-index, position, window listeners, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         if let (Some(overlay), Some(root)) = (self.overlay_ref.get_untracked(), self.root_ref.get_untracked()) {
@@ -253,7 +253,7 @@ impl Core {
         }
     }
 
-        /// The panel has just closed: listeners and z-index are released, `on_hide`.
+    /// The panel has just closed: listeners and z-index are released, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -271,7 +271,7 @@ impl Core {
         }
     }
 
-        /// Recomputes the panel position after a node is expanded.
+    /// Recomputes the panel position after a node is expanded.
     fn realign(self: &Arc<Self>) {
         #[cfg(target_arch = "wasm32")]
         {
@@ -301,127 +301,127 @@ impl Core {
 /// Properties accept a value or a signal.
 #[component]
 pub fn TreeSelect(
-        /// Tree nodes.
+    /// Tree nodes.
     #[prop(optional, into)]
     options: Prop<Vec<TreeNode>>,
-        /// Selected keys (two-way signal).
+    /// Selected keys (two-way signal).
     #[prop(optional)]
     value: Option<RwSignal<Vec<String>>>,
-        /// Selection mode (default `Single`).
+    /// Selection mode (default `Single`).
     #[prop(optional, default = TreeSelectionMode::Single)]
     selection_mode: TreeSelectionMode,
-        /// Label kind.
+    /// Label kind.
     #[prop(optional, into)]
     display: Prop<TreeSelectDisplay>,
-        /// Placeholder of the empty field.
+    /// Placeholder of the empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-        /// Height of the tree container (default `400px`).
+    /// Height of the tree container (default `400px`).
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-        /// Selection with Ctrl/Meta (`Multiple`).
+    /// Selection with Ctrl/Meta (`Multiple`).
     #[prop(optional, into)]
     meta_key_selection: Prop<bool>,
-        /// Propagate selection to ancestors (`Checkbox`).
+    /// Propagate selection to ancestors (`Checkbox`).
     #[prop(optional, default = Prop::Static(true), into)]
     propagate_selection_up: Prop<bool>,
-        /// Propagate selection to descendants (`Checkbox`).
+    /// Propagate selection to descendants (`Checkbox`).
     #[prop(optional, default = Prop::Static(true), into)]
     propagate_selection_down: Prop<bool>,
-        /// Show the clear icon.
+    /// Show the clear icon.
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-        /// Disabled.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-        /// Invalid value.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-        /// Styling variant.
+    /// Styling variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-        /// Size.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-        /// Full width.
+    /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-        /// Filter field in the panel.
+    /// Filter field in the panel.
     #[prop(optional, into)]
     filter: Prop<bool>,
-        /// Comma-separated filter fields.
+    /// Comma-separated filter fields.
     #[prop(optional, default = Prop::Static("label".to_owned()), into)]
     filter_by: Prop<String>,
-        /// Filter mode.
+    /// Filter mode.
     #[prop(optional, into)]
     filter_mode: Prop<TreeFilterMode>,
-        /// Placeholder of the filter field.
+    /// Placeholder of the filter field.
     #[prop(optional, into)]
     filter_placeholder: OptProp<String>,
-        /// Message for an empty tree.
+    /// Message for an empty tree.
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-        /// The tree is loading.
+    /// The tree is loading.
     #[prop(optional, into)]
     loading: Prop<bool>,
-        /// `id` attribute of the root (basis of the panel identifier).
+    /// `id` attribute of the root (basis of the panel identifier).
     #[prop(optional, into)]
     id: OptProp<String>,
-        /// `id` attribute of the hidden field.
+    /// `id` attribute of the hidden field.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-        /// Tab order.
+    /// Tab order.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-        /// `aria-label` attribute.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-        /// `aria-labelledby` attribute.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-        /// Inline style of the root.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-        /// Additional class of the root.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-        /// Additional class of the panel.
+    /// Additional class of the panel.
     #[prop(optional, into)]
     panel_style_class: OptProp<String>,
-        /// Pass-through parts.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<TreeSelectPt>,
-        /// Custom view of the selection (instead of the label).
+    /// Custom view of the selection (instead of the label).
     #[prop(optional)]
     value_view: Option<Callback<Vec<TreeNode>, AnyView>>,
-        /// Custom content of the tree node label.
+    /// Custom content of the tree node label.
     #[prop(optional)]
     node: Option<Callback<TreeNode, AnyView>>,
-        /// Node selected.
+    /// Node selected.
     #[prop(optional)]
     on_node_select: Option<Callback<TreeNodeEvent>>,
-        /// Node unselected.
+    /// Node unselected.
     #[prop(optional)]
     on_node_unselect: Option<Callback<TreeNodeEvent>>,
-        /// Node expanded.
+    /// Node expanded.
     #[prop(optional)]
     on_node_expand: Option<Callback<TreeNodeEvent>>,
-        /// Node collapsed.
+    /// Node collapsed.
     #[prop(optional)]
     on_node_collapse: Option<Callback<TreeNodeEvent>>,
-        /// Value cleared.
+    /// Value cleared.
     #[prop(optional)]
     on_clear: Option<Callback<()>>,
-        /// Panel shown.
+    /// Panel shown.
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-        /// Panel hidden.
+    /// Panel hidden.
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
-        /// The hidden field received focus.
+    /// The hidden field received focus.
     #[prop(optional)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-        /// The hidden field lost focus.
+    /// The hidden field lost focus.
     #[prop(optional)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
 ) -> impl IntoView {

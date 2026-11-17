@@ -29,7 +29,8 @@ pub fn parse_output(json: &str, wanted: &[String]) -> Result<Css, String> {
     let obj = v["components"].as_object().ok_or("no components in the output")?;
     let mut components = BTreeMap::new();
     for name in wanted {
-        let css = obj.get(name).and_then(Value::as_str).filter(|s| !s.is_empty()).ok_or_else(|| format!("no CSS for component `{name}`"))?;
+        let css =
+            obj.get(name).and_then(Value::as_str).filter(|s| !s.is_empty()).ok_or_else(|| format!("no CSS for component `{name}`"))?;
         components.insert(name.clone(), css.to_owned());
     }
     // An unresolved `dt('...')` in the CSS means the token values were not substituted and the style will not work.
@@ -157,7 +158,10 @@ fn extra_component_css(up: &Upstream) -> Result<serde_json::Map<String, Value>, 
         let file = up.src_dir().join(format!("{dir}/style/{dir}style.ts"));
         let src = std::fs::read_to_string(&file).map_err(|e| format!("{}: {e}", file.display()))?;
         let block = primeng_extra_block(&src).or_else(|| block_after_style_interpolation(&src)).ok_or_else(|| {
-            format!("{} has no `/* For PrimeNG */` block (an explanation in parentheses is allowed) and no rules after `${{..._style}}`", file.display())
+            format!(
+                "{} has no `/* For PrimeNG */` block (an explanation in parentheses is allowed) and no rules after `${{..._style}}`",
+                file.display()
+            )
         })?;
         map.insert(name.clone(), Value::String(block));
     }

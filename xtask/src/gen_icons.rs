@@ -32,7 +32,8 @@ fn between<'a>(s: &'a str, start: &str, end: &str) -> Option<&'a str> {
 /// Parses an icon source.
 pub fn parse_icon(feature: &str, source: &str) -> Result<Icon, String> {
     let err = |m: &str| format!("{feature}: {m}");
-    let class = between(source, "export class ", " extends BaseIcon").ok_or_else(|| err("`export class ... extends BaseIcon` not found"))?;
+    let class =
+        between(source, "export class ", " extends BaseIcon").ok_or_else(|| err("`export class ... extends BaseIcon` not found"))?;
     let template = between(source, "template: `", "`").ok_or_else(|| err("template not found"))?;
 
     let mut rest = template;

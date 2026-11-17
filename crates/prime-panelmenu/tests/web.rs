@@ -28,11 +28,7 @@ fn host() -> HtmlElement {
 }
 
 fn by_id(host: &HtmlElement, id: &str) -> HtmlElement {
-    host.query_selector(&format!("[id=\"{id}\"]"))
-        .unwrap()
-        .unwrap_or_else(|| panic!("no #{id}: {}", host.outer_html()))
-        .dyn_into()
-        .unwrap()
+    host.query_selector(&format!("[id=\"{id}\"]")).unwrap().unwrap_or_else(|| panic!("no #{id}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 async fn sleep(ms: i32) {

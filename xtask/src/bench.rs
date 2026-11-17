@@ -83,11 +83,7 @@ pub fn wasm_size(root: &Path, budgets: &Path) -> Result<(), String> {
     let json = serde_json::to_string_pretty(&serde_json::json!({ "metrics": metrics })).map_err(|e| e.to_string())?;
     std::fs::write(dir.join("wasm.json"), json).map_err(|e| e.to_string())?;
     let violations = check_budgets(baseline, &measured, &cases);
-    if violations.is_empty() {
-        Ok(())
-    } else {
-        Err(format!("wasm size budget exceeded:\n  {}", violations.join("\n  ")))
-    }
+    if violations.is_empty() { Ok(()) } else { Err(format!("wasm size budget exceeded:\n  {}", violations.join("\n  "))) }
 }
 
 /// A metric comparison row.
@@ -199,11 +195,7 @@ pub fn alloc_budget(root: &Path, budgets: &Path) -> Result<(), String> {
         }
     }
     let violations = check_alloc_budgets(&all, &cases)?;
-    if violations.is_empty() {
-        Ok(())
-    } else {
-        Err(format!("allocation budget exceeded:\n  {}", violations.join("\n  ")))
-    }
+    if violations.is_empty() { Ok(()) } else { Err(format!("allocation budget exceeded:\n  {}", violations.join("\n  "))) }
 }
 
 #[cfg(test)]

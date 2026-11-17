@@ -37,52 +37,52 @@ use wasm_bindgen::JsCast;
 /// Pass-through parts of [`MegaMenu`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct MegaMenuPt {
-        /// Root.
+    /// Root.
     pub root: Pt,
-        /// `start` slot.
+    /// `start` slot.
     pub start: Pt,
-        /// Menu button.
+    /// Menu button.
     pub button: Pt,
-        /// Button icon.
+    /// Button icon.
     pub button_icon: Pt,
-        /// Root list.
+    /// Root list.
     pub root_list: Pt,
-        /// `li` item.
+    /// `li` item.
     pub item: Pt,
-        /// Item content.
+    /// Item content.
     pub item_content: Pt,
-        /// Item link.
+    /// Item link.
     pub item_link: Pt,
-        /// Item icon.
+    /// Item icon.
     pub item_icon: Pt,
-        /// Item label.
+    /// Item label.
     pub item_label: Pt,
-        /// Group arrow.
+    /// Group arrow.
     pub submenu_icon: Pt,
-        /// Overlay.
+    /// Overlay.
     pub overlay: Pt,
-        /// Column grid.
+    /// Column grid.
     pub grid: Pt,
-        /// Column.
+    /// Column.
     pub column: Pt,
-        /// Submenu.
+    /// Submenu.
     pub submenu: Pt,
-        /// Submenu header.
+    /// Submenu header.
     pub submenu_label: Pt,
-        /// Separator.
+    /// Separator.
     pub separator: Pt,
-        /// `end` slot.
+    /// `end` slot.
     pub end: Pt,
 }
 
 /// Context of the `item` view.
 #[derive(Clone)]
 pub struct MegaMenuItemContext {
-        /// Item.
+    /// Item.
     pub item: MenuItem,
-        /// Whether the item has an overlay with a submenu.
+    /// Whether the item has an overlay with a submenu.
     pub has_submenu: bool,
-        /// Item at the root level.
+    /// Item at the root level.
     pub root: bool,
 }
 
@@ -99,7 +99,7 @@ struct Core {
     mobile_active: RwSignal<bool>,
     auto_z_index: Prop<bool>,
     base_z_index: Prop<i32>,
-        /// `z-index` of the root list while the mobile panel is open.
+    /// `z-index` of the root list while the mobile panel is open.
     z: RwSignal<Option<i32>>,
     root_el: NodeRef<leptos::html::Div>,
     list: NodeRef<leptos::html::Ul>,
@@ -166,7 +166,7 @@ impl Core {
         }
     }
 
-        /// Closes everything; with the mobile panel open, closes it and returns focus to the button (`hide`).
+    /// Closes everything; with the mobile panel open, closes it and returns focus to the button (`hide`).
     fn hide_menu(&self) {
         if self.mobile_active.get_untracked() {
             self.mobile_active.set(false);
@@ -201,7 +201,7 @@ impl Core {
         self.release_z();
     }
 
-        /// Menu button: opens or closes the mobile panel (`toggle`).
+    /// Menu button: opens or closes the mobile panel (`toggle`).
     fn toggle(self: &Arc<Self>) {
         if self.mobile_active.get_untracked() {
             self.mobile_active.set(false);
@@ -223,13 +223,13 @@ impl Core {
         }
     }
 
-        /// Focus on the first item and on the list (`show`).
+    /// Focus on the first item and on the list (`show`).
     fn show(&self) {
         self.update(|t, st| st.focus = t.first_focused(st));
         self.focus_list();
     }
 
-        /// Click on item content.
+    /// Click on item content.
     fn item_click(&self, event: web_sys::MouseEvent, key: &str) {
         let Some(item) = self.item(key) else { return };
         if should_prevent_default(&item) || item.disabled {
@@ -258,7 +258,7 @@ impl Core {
         }
     }
 
-        /// Hover over item content.
+    /// Hover over item content.
     fn item_hover(&self, key: &str) {
         let mobile = self.mobile_active.get_untracked();
         self.update(|t, st| t.hover(st, key, mobile));
@@ -276,7 +276,7 @@ impl Core {
         }
     }
 
-        /// `Enter`/`Space`: click on the link of the focused item.
+    /// `Enter`/`Space`: click on the link of the focused item.
     fn enter(&self) {
         let Some(key) = self.state.get_untracked().focus else { return };
         let was_group = self.tree(|t| t.node(&key).is_some_and(|n| n.group));
@@ -290,7 +290,7 @@ impl Core {
         self.update(|t, st| t.after_enter(st, was_group));
     }
 
-        /// Printable character: search by label prefix; the search string is reset after 500 ms.
+    /// Printable character: search by label prefix; the search string is reset after 500 ms.
     fn type_char(&self, ch: &str) {
         self.search.update_value(|s| s.push_str(ch));
         let text = self.search.get_value();
@@ -364,7 +364,7 @@ impl Core {
         }
     }
 
-        /// Focus in the list: from outside, focus the first item (`onMenuFocus`).
+    /// Focus in the list: from outside, focus the first item (`onMenuFocus`).
     fn list_focus(&self, e: web_sys::FocusEvent) {
         self.focused.set(true);
         #[cfg(target_arch = "wasm32")]
@@ -380,7 +380,7 @@ impl Core {
         }
     }
 
-        /// Focus left the list: if it stayed inside the menu, nothing; otherwise reset (`onMenuBlur`).
+    /// Focus left the list: if it stayed inside the menu, nothing; otherwise reset (`onMenuBlur`).
     fn list_blur(self: &Arc<Self>, e: web_sys::FocusEvent) {
         #[cfg(target_arch = "wasm32")]
         {
@@ -422,7 +422,7 @@ impl Core {
         });
     }
 
-        /// Outside-click and `resize` listeners.
+    /// Outside-click and `resize` listeners.
     #[cfg(target_arch = "wasm32")]
     fn bind_outside(self: &Arc<Self>) {
         let this = self.clone();
@@ -461,64 +461,64 @@ struct Ctx {
 /// Properties accept a value or a signal.
 #[component]
 pub fn MegaMenu(
-        /// Items.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<MegaMenuItem>>,
-        /// Orientation of the root list.
+    /// Orientation of the root list.
     #[prop(optional, into)]
     orientation: Prop<MegaMenuOrientation>,
-        /// Inline style of the root.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-        /// Additional class of the root.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-        /// Window width up to which mobile mode is enabled (default `960px`).
+    /// Window width up to which mobile mode is enabled (default `960px`).
     #[prop(optional, into)]
     breakpoint: OptProp<String>,
-        /// Height of the root list after which it scrolls.
+    /// Height of the root list after which it scrolls.
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-        /// Automatically assign `z-index` to the open mobile panel.
+    /// Automatically assign `z-index` to the open mobile panel.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-        /// Base `z-index` on top of the config value.
+    /// Base `z-index` on top of the config value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-        /// Disables focus of the root list.
+    /// Disables focus of the root list.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-        /// `id` attribute.
+    /// `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-        /// `aria-label` attribute of the root list.
+    /// `aria-label` attribute of the root list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-        /// `aria-labelledby` attribute of the root list.
+    /// `aria-labelledby` attribute of the root list.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-        /// Pass-through parts.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<MegaMenuPt>,
-        /// Slot at the start of the bar.
+    /// Slot at the start of the bar.
     #[prop(optional, into)]
     start: Option<ViewFn>,
-        /// Slot at the end of the bar.
+    /// Slot at the end of the bar.
     #[prop(optional, into)]
     end: Option<ViewFn>,
-        /// Custom item content instead of a link.
+    /// Custom item content instead of a link.
     #[prop(optional)]
     item: Option<Callback<MegaMenuItemContext, AnyView>>,
-        /// Custom group arrow.
+    /// Custom group arrow.
     #[prop(optional, into)]
     submenu_icon: Option<ViewFn>,
-        /// Custom menu button icon.
+    /// Custom menu button icon.
     #[prop(optional, into)]
     menu_icon: Option<ViewFn>,
-        /// Focus entered the list.
+    /// Focus entered the list.
     #[prop(optional)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-        /// Focus left the menu.
+    /// Focus left the menu.
     #[prop(optional)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
 ) -> impl IntoView {

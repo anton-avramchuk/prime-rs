@@ -382,8 +382,7 @@ async fn column_and_global_filters() {
     assert_eq!(filters.get_untracked().len(), 1);
     assert_eq!(*log.lock().unwrap(), 1);
     // the clear button appears and clears the filter
-    let clear =
-        host.query_selector(".p-datatable-filter-clear-button").unwrap().expect("clear button").dyn_into::<HtmlElement>().unwrap();
+    let clear = host.query_selector(".p-datatable-filter-clear-button").unwrap().expect("clear button").dyn_into::<HtmlElement>().unwrap();
     clear.click();
     settle().await;
     assert!(filters.get_untracked().is_empty());

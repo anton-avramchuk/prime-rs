@@ -440,7 +440,11 @@ mod tests {
         let mut m = mask("9999");
         type_all(&mut m, "1234");
         let t = m.key_press('5', 1, 3);
-        assert_eq!(t.text.as_deref(), Some("154_"), "the selection is removed, the rest shifts left, then right under the inserted character");
+        assert_eq!(
+            t.text.as_deref(),
+            Some("154_"),
+            "the selection is removed, the rest shifts left, then right under the inserted character"
+        );
     }
 
     #[test]
@@ -448,7 +452,11 @@ mod tests {
         let mut m = mask("99-99");
         type_all(&mut m, "1234");
         let d = m.delete(4, 4, false);
-        assert_eq!((d.text.as_deref(), d.caret), (Some("12-4_"), Some(3)), "Backspace removes the character left of the caret, the rest shifts");
+        assert_eq!(
+            (d.text.as_deref(), d.caret),
+            (Some("12-4_"), Some(3)),
+            "Backspace removes the character left of the caret, the rest shifts"
+        );
         let d = m.delete(1, 1, true);
         assert_eq!(d.text.as_deref(), Some("14-__"), "Delete removes the character to the right and shifts the rest");
         let d = m.delete(0, 5, false);
@@ -503,7 +511,11 @@ mod tests {
     fn focus_selects_everything_in_a_full_mask() {
         let mut m = mask("99-99");
         let f = m.focus("");
-        assert_eq!((f.text.as_str(), f.buffer_text.as_str(), f.begin, f.end), ("", "__-__", 0, 0), "an empty mask — the caret at the start");
+        assert_eq!(
+            (f.text.as_str(), f.buffer_text.as_str(), f.begin, f.end),
+            ("", "__-__", 0, 0),
+            "an empty mask — the caret at the start"
+        );
         let f = m.focus("12-34");
         assert_eq!((f.buffer_text.as_str(), f.begin, f.end), ("12-34", 0, 5), "a full mask is selected entirely");
         let mut m = Mask::new("99-99", "_", false, false, ascii_letters());

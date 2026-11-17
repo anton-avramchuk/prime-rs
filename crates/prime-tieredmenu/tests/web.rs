@@ -291,11 +291,11 @@ async fn typing_searches_by_prefix_and_resets() {
     assert_eq!(focused(&host).as_deref(), Some("s_1"), "Edit");
     press(&list, "KeyU", "u", false);
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("s_1"), ""eu" not found: stay on Edit");
+    assert_eq!(focused(&host).as_deref(), Some("s_1"), "'eu' not found: stay on Edit");
     sleep(600).await;
     press(&list, "KeyU", "u", false);
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("s_2"), "after the buffer reset, "u" → Users");
+    assert_eq!(focused(&host).as_deref(), Some("s_2"), "after the buffer reset, 'u' → Users");
     sleep(600).await;
     press(&list, "KeyF", "f", true);
     settle().await;

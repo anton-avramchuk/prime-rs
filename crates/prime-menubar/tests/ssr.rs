@@ -160,6 +160,6 @@ fn style_class_style_and_pt() {
         "p-menubar-submenu-icon s",
         "p-menubar-separator sep",
     ] {
-    assert!(html.contains(needle), "no {needle}: {html}");
+        assert!(html.contains(needle), "no {needle}: {html}");
     }
 }

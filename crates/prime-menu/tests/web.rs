@@ -26,7 +26,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-        host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {

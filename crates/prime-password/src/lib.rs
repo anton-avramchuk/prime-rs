@@ -30,23 +30,23 @@ pub use state::{PasswordStrength, Phase, RootState, root_classes, strength};
 /// Pass-through parts of [`Password`].
 #[derive(Clone, Debug, Default)]
 pub struct PasswordPt {
-        /// Root.
+    /// Root.
     pub root: Pt,
-        /// Clear icon.
+    /// Clear icon.
     pub clear_icon: Pt,
-        /// "Hide password" icon.
+    /// "Hide password" icon.
     pub mask_icon: Pt,
-        /// "Show password" icon.
+    /// "Show password" icon.
     pub unmask_icon: Pt,
-        /// Panel.
+    /// Panel.
     pub overlay: Pt,
-        /// Panel content.
+    /// Panel content.
     pub content: Pt,
-        /// Meter.
+    /// Meter.
     pub meter: Pt,
-        /// Meter label.
+    /// Meter label.
     pub meter_label: Pt,
-        /// Text below the meter.
+    /// Text below the meter.
     pub meter_text: Pt,
 }
 
@@ -55,109 +55,109 @@ pub struct PasswordPt {
 /// Each property accepts a value or a signal; `value` is a two-way signal.
 #[component]
 pub fn Password(
-        /// Two-way value signal; without it the value is stored internally.
+    /// Two-way value signal; without it the value is stored internally.
     #[prop(optional)]
     value: Option<RwSignal<String>>,
-        /// Show the panel with the strength meter (default yes).
+    /// Show the panel with the strength meter (default yes).
     #[prop(default = Prop::Static(true), into)]
     feedback: Prop<bool>,
-        /// Show-password icon.
+    /// Show-password icon.
     #[prop(optional, into)]
     toggle_mask: Prop<bool>,
-        /// Clear icon (visible when the value is non-empty).
+    /// Clear icon (visible when the value is non-empty).
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-        /// Custom strength estimate; an empty value need not be estimated (it counts as a prompt).
+    /// Custom strength estimate; an empty value need not be estimated (it counts as a prompt).
     #[prop(optional, into)]
     strength: Option<Callback<String, Option<PasswordStrength>>>,
-        /// Prompt for an empty value; from the locale by default (`passwordPrompt`).
+    /// Prompt for an empty value; from the locale by default (`passwordPrompt`).
     #[prop(optional, into)]
     prompt_label: OptProp<String>,
-        /// Label of a weak password; from the locale by default (`weak`).
+    /// Label of a weak password; from the locale by default (`weak`).
     #[prop(optional, into)]
     weak_label: OptProp<String>,
-        /// Label of a medium password; from the locale by default (`medium`).
+    /// Label of a medium password; from the locale by default (`medium`).
     #[prop(optional, into)]
     medium_label: OptProp<String>,
-        /// Label of a strong password; from the locale by default (`strong`).
+    /// Label of a strong password; from the locale by default (`strong`).
     #[prop(optional, into)]
     strong_label: OptProp<String>,
-        /// Placeholder in an empty field.
+    /// Placeholder in an empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-        /// `autocomplete` attribute of the field.
+    /// `autocomplete` attribute of the field.
     #[prop(optional, into)]
     autocomplete: OptProp<String>,
-        /// `id` attribute of the field.
+    /// `id` attribute of the field.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-        /// `aria-label` attribute of the field.
+    /// `aria-label` attribute of the field.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-        /// Maximum length.
+    /// Maximum length.
     #[prop(optional, into)]
     max_length: OptProp<i32>,
-        /// Disabled.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-        /// Read-only.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-        /// Required.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-        /// Invalid value.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-        /// Styling variant.
+    /// Styling variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-        /// Size.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-        /// Full width.
+    /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-        /// Inline style of the root.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-        /// Additional class of the root.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-        /// Inline style of the field.
+    /// Inline style of the field.
     #[prop(optional, into)]
     input_style: OptProp<String>,
-        /// Additional class of the field.
+    /// Additional class of the field.
     #[prop(optional, into)]
     input_style_class: OptProp<String>,
-        /// Panel header.
+    /// Panel header.
     #[prop(optional, into)]
     header: Option<ViewFn>,
-        /// Panel footer.
+    /// Panel footer.
     #[prop(optional, into)]
     footer: Option<ViewFn>,
-        /// Custom panel content instead of the meter.
+    /// Custom panel content instead of the meter.
     #[prop(optional, into)]
     content: Option<ViewFn>,
-        /// "Show password" icon.
+    /// "Show password" icon.
     #[prop(optional, into)]
     show_icon: Option<ViewFn>,
-        /// "Hide password" icon.
+    /// "Hide password" icon.
     #[prop(optional, into)]
     hide_icon: Option<ViewFn>,
-        /// Clear icon.
+    /// Clear icon.
     #[prop(optional, into)]
     clear_icon: Option<ViewFn>,
-        /// Called when the field receives focus.
+    /// Called when the field receives focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-        /// Called when the field loses focus.
+    /// Called when the field loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-        /// Called after the icon is cleared.
+    /// Called after the icon is cleared.
     #[prop(optional, into)]
     on_clear: Option<Callback<()>>,
-        /// Pass-through parts.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<PasswordPt>,
 ) -> impl IntoView {

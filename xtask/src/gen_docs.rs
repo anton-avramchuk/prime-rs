@@ -684,9 +684,7 @@ mod tests {
         let pt = parse_pt(LIB);
         assert_eq!(
             pt,
-            vec![PtStruct {
-                name: "ButtonPt".into(), fields: vec![("root".into(), "Root.".into()), ("icon".into(), String::new())]
-            }]
+            vec![PtStruct { name: "ButtonPt".into(), fields: vec![("root".into(), "Root.".into()), ("icon".into(), String::new())] }]
         );
         assert_eq!(crate_description(LIB), "Button - port. Second line.");
     }

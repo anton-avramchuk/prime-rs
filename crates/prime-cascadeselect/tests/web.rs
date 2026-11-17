@@ -185,7 +185,10 @@ async fn cascade_and_leaf_selection() {
     assert_eq!(log.lock().unwrap().as_slice(), ["show", "change:w", "hide"]);
     q(&host, ".p-cascadeselect").click();
     settle().await;
-    assert!(option(&host, "0_0_2").class_name().contains("p-cascadeselect-option-selected"), "on open the path to the selected one is expanded");
+    assert!(
+        option(&host, "0_0_2").class_name().contains("p-cascadeselect-option-selected"),
+        "on open the path to the selected one is expanded"
+    );
     assert_eq!(option(&host, "0_0_2").get_attribute("aria-selected").as_deref(), Some("true"));
     mouse(&doc().body().unwrap().into(), "click", true);
     settle().await;
@@ -286,7 +289,11 @@ async fn keyboard_walks_the_cascade() {
     key(&input, "KeyP", "p").await;
     settle().await;
     assert!(has(&host, ".p-cascadeselect-overlay"), "a printable character opens the panel");
-    assert_eq!(focused(&host).as_deref(), Some("0_1_0"), "search goes over the list of the selected level, no matches — focus stays on the selected one");
+    assert_eq!(
+        focused(&host).as_deref(),
+        Some("0_1_0"),
+        "search goes over the list of the selected level, no matches — focus stays on the selected one"
+    );
     key(&input, "KeyB", "b").await;
     assert_eq!(focused(&host).as_deref(), Some("0_1_0"), "search by label prefix finds Brisbane");
     key(&input, "Tab", "Tab").await;

@@ -795,7 +795,11 @@ mod tests {
         // disabled items are not found
         let file = State { active: vec!["0".into()], focus: Focus { index: None, parent_key: "0".into() }, dirty: true };
         let sub = tree.visible(&file);
-        assert_eq!(tree.search(&file, &sub, "p"), (Some(0), false), "Print is disabled: not counted as found, focus on the expanded/first item");
+        assert_eq!(
+            tree.search(&file, &sub, "p"),
+            (Some(0), false),
+            "Print is disabled: not counted as found, focus on the expanded/first item"
+        );
         assert!(is_printable("a", false) && !is_printable("a", true) && !is_printable("Enter", false) && !is_printable("", false));
     }
 

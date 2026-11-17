@@ -6,46 +6,46 @@ use leptos::prelude::*;
 /// Item press: the event and the item.
 #[derive(Clone)]
 pub struct MenuCommand {
-        /// Source event.
+    /// Source event.
     pub event: web_sys::MouseEvent,
-        /// Pressed item.
+    /// Pressed item.
     pub item: MenuItem,
 }
 
 /// Menu item (instead of PrimeNG `MenuItem`, without Angular router fields).
 #[derive(Clone)]
 pub struct MenuItem {
-        /// Identifier of the `li` element; by default `<menu id>_<i>[_<j>]`.
+    /// Identifier of the `li` element; by default `<menu id>_<i>[_<j>]`.
     pub id: Option<String>,
-        /// Label.
+    /// Label.
     pub label: Option<String>,
-        /// Icon (for example, an icon from `prime-icons`).
+    /// Icon (for example, an icon from `prime-icons`).
     pub icon: Option<ViewFn>,
-        /// Link address; without it, following the link is cancelled.
+    /// Link address; without it, following the link is cancelled.
     pub url: Option<String>,
-        /// Link `target`.
+    /// Link `target`.
     pub target: Option<String>,
-        /// Link `title`.
+    /// Link `title`.
     pub title: Option<String>,
-        /// Disabled: pressing does nothing.
+    /// Disabled: pressing does nothing.
     pub disabled: bool,
-        /// Visible (default yes).
+    /// Visible (default yes).
     pub visible: bool,
-        /// Separator instead of an item.
+    /// Separator instead of an item.
     pub separator: bool,
-        /// Subitems: the item becomes a group header.
+    /// Subitems: the item becomes a group header.
     pub items: Vec<MenuItem>,
-        /// Group initially expanded (PanelMenu only).
+    /// Group initially expanded (PanelMenu only).
     pub expanded: bool,
-        /// Additional class of `li`.
+    /// Additional class of `li`.
     pub style_class: Option<String>,
-        /// Inline style of `li`.
+    /// Inline style of `li`.
     pub style: Option<String>,
-        /// Additional class of the link.
+    /// Additional class of the link.
     pub link_class: Option<String>,
-        /// Additional class of the icon.
+    /// Additional class of the icon.
     pub icon_class: Option<String>,
-        /// Command called on press.
+    /// Command called on press.
     pub command: Option<Callback<MenuCommand>>,
 }
 
@@ -73,101 +73,101 @@ impl Default for MenuItem {
 }
 
 impl MenuItem {
-        /// Item without properties.
+    /// Item without properties.
     pub fn new() -> Self {
         Self::default()
     }
 
-        /// Separator.
+    /// Separator.
     pub fn separator() -> Self {
         Self { separator: true, ..Self::default() }
     }
 
-        /// Identifier of `li`.
+    /// Identifier of `li`.
     pub fn id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self
     }
 
-        /// Label.
+    /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
     }
 
-        /// Icon.
+    /// Icon.
     pub fn icon(mut self, icon: impl Into<ViewFn>) -> Self {
         self.icon = Some(icon.into());
         self
     }
 
-        /// Link address.
+    /// Link address.
     pub fn url(mut self, url: impl Into<String>) -> Self {
         self.url = Some(url.into());
         self
     }
 
-        /// Link `target`.
+    /// Link `target`.
     pub fn target(mut self, target: impl Into<String>) -> Self {
         self.target = Some(target.into());
         self
     }
 
-        /// Link `title`.
+    /// Link `title`.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = Some(title.into());
         self
     }
 
-        /// Disables the item.
+    /// Disables the item.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 
-        /// Shows or hides the item.
+    /// Shows or hides the item.
     pub fn visible(mut self, visible: bool) -> Self {
         self.visible = visible;
         self
     }
 
-        /// Subitems (group).
+    /// Subitems (group).
     pub fn items(mut self, items: Vec<MenuItem>) -> Self {
         self.items = items;
         self
     }
 
-        /// Expands the group initially (PanelMenu only).
+    /// Expands the group initially (PanelMenu only).
     pub fn expanded(mut self, expanded: bool) -> Self {
         self.expanded = expanded;
         self
     }
 
-        /// Command on press.
+    /// Command on press.
     pub fn command(mut self, command: impl Into<Callback<MenuCommand>>) -> Self {
         self.command = Some(command.into());
         self
     }
 
-        /// Additional class of `li`.
+    /// Additional class of `li`.
     pub fn style_class(mut self, class: impl Into<String>) -> Self {
         self.style_class = Some(class.into());
         self
     }
 
-        /// Inline style of `li`.
+    /// Inline style of `li`.
     pub fn style(mut self, style: impl Into<String>) -> Self {
         self.style = Some(style.into());
         self
     }
 
-        /// Additional class of the link.
+    /// Additional class of the link.
     pub fn link_class(mut self, class: impl Into<String>) -> Self {
         self.link_class = Some(class.into());
         self
     }
 
-        /// Additional class of the icon.
+    /// Additional class of the icon.
     pub fn icon_class(mut self, class: impl Into<String>) -> Self {
         self.icon_class = Some(class.into());
         self
@@ -177,15 +177,15 @@ impl MenuItem {
 /// List row after expanding the model.
 #[derive(Clone)]
 pub enum Row {
-        /// Separator.
+    /// Separator.
     Separator,
-        /// Group header.
+    /// Group header.
     Header(MenuItem),
-        /// Item with a computed identifier.
+    /// Item with a computed identifier.
     Item {
-                /// Identifier of `li`.
+        /// Identifier of `li`.
         id: String,
-                /// Item.
+        /// Item.
         item: MenuItem,
     },
 }

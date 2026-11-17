@@ -39,21 +39,21 @@ impl Panel {
         }
     }
 
-        /// Shows the panel (if it is hidden or leaving).
+    /// Shows the panel (if it is hidden or leaving).
     pub fn open(&self) {
         if matches!(self.phase.get_untracked(), Phase::Hidden | Phase::Leaving) {
             self.enter();
         }
     }
 
-        /// Hides the panel (if it is shown or appearing).
+    /// Hides the panel (if it is shown or appearing).
     pub fn close(&self) {
         if self.phase.get_untracked().is_visible() {
             self.leave();
         }
     }
 
-        /// Releases the z-index when the component is destroyed.
+    /// Releases the z-index when the component is destroyed.
     pub fn on_cleanup(&self) {
         let z_index = self.z_index;
         on_cleanup(move || {
@@ -121,7 +121,7 @@ impl Panel {
         );
     }
 
-        /// Issues a z-index and aligns the panel below the field.
+    /// Issues a z-index and aligns the panel below the field.
     #[cfg(target_arch = "wasm32")]
     fn position(&self) {
         let (Some(panel), Some(root)) = (self.panel_ref.get_untracked(), self.root_ref.get_untracked()) else { return };

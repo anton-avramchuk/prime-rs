@@ -181,10 +181,7 @@ async fn checkbox_propagation() {
     assert_eq!(selection.get_untracked(), ["0-0-0"]);
     let rows = all(&host, "tbody .p-treetable-node-checkbox");
     assert!(!rows[1].class_name().contains("p-checkbox-checked"), "Work: partial");
-    assert!(
-        host.query_selector("tbody tr:nth-child(2) .p-checkbox-icon").unwrap().is_some(),
-        "partially selected Work has a state icon"
-    );
+    assert!(host.query_selector("tbody tr:nth-child(2) .p-checkbox-icon").unwrap().is_some(), "partially selected Work has a state icon");
     boxes()[3].click(); // Resume.doc
     settle().await;
     assert_eq!(selection.get_untracked(), ["0-0-0", "0-0-1", "0-0"], "when both children are selected, Work is selected");

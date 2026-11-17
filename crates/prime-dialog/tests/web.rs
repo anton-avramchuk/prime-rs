@@ -338,7 +338,8 @@ async fn breakpoints_add_media_rules_and_remove_them_on_close() {
     });
     settle().await;
     let panel = q(".p-dialog");
-    let attr = panel.get_attribute_names().iter().filter_map(|n| n.as_string()).find(|n| n.starts_with("data-dlg-")).expect("window attribute");
+    let attr =
+        panel.get_attribute_names().iter().filter_map(|n| n.as_string()).find(|n| n.starts_with("data-dlg-")).expect("window attribute");
     let rules = doc().head().unwrap().inner_html();
     assert!(
         rules.contains(&format!(".p-dialog[{attr}]:not(.p-dialog-maximized)"))

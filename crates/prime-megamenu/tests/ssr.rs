@@ -36,11 +36,11 @@ fn markup_has_button_root_list_and_items() {
     assert!(html.contains("aria-orientation=\"horizontal\"") && html.contains("tabindex=\"0\""), "{html}");
     assert!(html.contains("p-megamenu-button") && html.contains("role=\"button\"") && html.contains("aria-expanded=\"false\""), "{html}");
     assert!(html.contains("aria-controls=\"mm\"") && html.contains("aria-label=\"Navigation\""), "{html}");
-        assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "Furniture, Off, Quit: hidden and separator are not counted: {html}");
+    assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "Furniture, Off, Quit: hidden and separator are not counted: {html}");
     assert_eq!(html.matches("role=\"separator\"").count(), 1, "{html}");
     assert!(html.contains("p-megamenu-separator") && !html.contains("Hidden"), "{html}");
     assert!(html.contains("id=\"mm_0\"") && html.contains("id=\"mm_3\"") && html.contains("id=\"mm_4\""), "{html}");
-        assert!(!html.contains("p-megamenu-overlay"), "overlay only for an expanded item: {html}");
+    assert!(!html.contains("p-megamenu-overlay"), "overlay only for an expanded item: {html}");
 }
 
 #[test]

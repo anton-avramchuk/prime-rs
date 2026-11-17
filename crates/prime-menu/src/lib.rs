@@ -39,27 +39,27 @@ use std::time::Duration;
 /// Pass-through parts of [`Menu`].
 #[derive(Clone, Debug, Default)]
 pub struct MenuPt {
-        /// Root.
+    /// Root.
     pub root: Pt,
-        /// `start` block.
+    /// `start` block.
     pub start: Pt,
-        /// `ul` list.
+    /// `ul` list.
     pub list: Pt,
-        /// Group header.
+    /// Group header.
     pub submenu_label: Pt,
-        /// Separator.
+    /// Separator.
     pub separator: Pt,
-        /// `end` block.
+    /// `end` block.
     pub end: Pt,
-        /// Item `li` element.
+    /// Item `li` element.
     pub item: Pt,
-        /// Item content.
+    /// Item content.
     pub item_content: Pt,
-        /// Item link.
+    /// Item link.
     pub item_link: Pt,
-        /// Item icon.
+    /// Item icon.
     pub item_icon: Pt,
-        /// Item label.
+    /// Item label.
     pub item_label: Pt,
 }
 
@@ -85,40 +85,40 @@ fn event_target(event: &web_sys::Event) -> Option<web_sys::HtmlElement> {
 }
 
 impl MenuRef {
-        /// Creates a hidden menu. Call inside a component (the signal owner).
+    /// Creates a hidden menu. Call inside a component (the signal owner).
     pub fn new() -> Self {
         Self { visible: RwSignal::new(false), target: StoredValue::new_local(None) }
     }
 
-        /// The menu is currently shown (with subscription).
+    /// The menu is currently shown (with subscription).
     pub fn visible(&self) -> bool {
         self.visible.get()
     }
 
-        /// The menu is currently shown (without subscription).
+    /// The menu is currently shown (without subscription).
     pub fn visible_untracked(&self) -> bool {
         self.visible.get_untracked()
     }
 
-        /// Shows the menu at the event's `currentTarget`.
+    /// Shows the menu at the event's `currentTarget`.
     pub fn show(&self, event: &web_sys::Event) {
         if let Some(target) = event_target(event) {
             self.show_at(&target);
         }
     }
 
-        /// Shows the menu at an explicit target.
+    /// Shows the menu at an explicit target.
     pub fn show_at(&self, target: &web_sys::HtmlElement) {
         self.target.set_value(Some(target.clone()));
         self.visible.set(true);
     }
 
-        /// Toggles the menu; the target is the event's `currentTarget`.
+    /// Toggles the menu; the target is the event's `currentTarget`.
     pub fn toggle(&self, event: &web_sys::Event) {
         if self.visible.get_untracked() { self.hide() } else { self.show(event) }
     }
 
-        /// Hides the menu.
+    /// Hides the menu.
     pub fn hide(&self) {
         self.visible.try_set(false);
     }
@@ -159,7 +159,7 @@ impl Core {
         enabled_ids(&self.rows_untracked())
     }
 
-        /// Removes window subscriptions and releases the z-index.
+    /// Removes window subscriptions and releases the z-index.
     fn release(&self) {
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
             cleanup();
@@ -285,7 +285,7 @@ impl Core {
         (inside_panel, inside_target)
     }
 
-        /// The menu has just been shown: z-index, alignment, focus, subscriptions, `on_show`.
+    /// The menu has just been shown: z-index, alignment, focus, subscriptions, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let (Some(panel), Some(target)) = (self.panel.get_untracked(), self.r.target.get_value()) else { return };
@@ -319,7 +319,7 @@ impl Core {
         }
     }
 
-        /// An outside click, window resize and scrolling of a target ancestor hide the menu.
+    /// An outside click, window resize and scrolling of a target ancestor hide the menu.
     #[cfg(target_arch = "wasm32")]
     fn bind_window(self: &Arc<Self>) {
         let this = self.clone();
@@ -353,7 +353,7 @@ impl Core {
         }
     }
 
-        /// The menu has just been hidden: subscriptions removed, focus and target forgotten, `on_hide`.
+    /// The menu has just been hidden: subscriptions removed, focus and target forgotten, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -465,64 +465,64 @@ fn render_item(core: &Arc<Core>, parts: &Parts, id: String, item: MenuItem) -> A
 /// (not in `body`), so for alignment the parent must be `position: relative`, not `overflow: hidden`.
 #[component]
 pub fn Menu(
-        /// Menu items; items with subitems become groups.
+    /// Menu items; items with subitems become groups.
     #[prop(optional, into)]
     model: Prop<Vec<MenuItem>>,
-        /// Popup mode: the menu is shown via [`MenuRef`].
+    /// Popup mode: the menu is shown via [`MenuRef`].
     #[prop(optional, into)]
     popup: Prop<bool>,
-        /// Control object of the popup menu.
+    /// Control object of the popup menu.
     #[prop(optional)]
     menu_ref: Option<MenuRef>,
-        /// Automatically assign `z-index`.
+    /// Automatically assign `z-index`.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-        /// Base `z-index` on top of the config value.
+    /// Base `z-index` on top of the config value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-        /// `aria-label` attribute of the list.
+    /// `aria-label` attribute of the list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-        /// `aria-labelledby` attribute of the list.
+    /// `aria-labelledby` attribute of the list.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-        /// `id` attribute of the root; a unique one is created by default.
+    /// `id` attribute of the root; a unique one is created by default.
     #[prop(optional, into)]
     id: OptProp<String>,
-        /// `tabindex` of the list.
+    /// `tabindex` of the list.
     #[prop(optional, default = Prop::Static(0), into)]
     tabindex: Prop<i32>,
-        /// Inline style of the root.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-        /// Additional class of the root.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-        /// Called after the popup menu is shown and aligned.
+    /// Called after the popup menu is shown and aligned.
     #[prop(optional, into)]
     on_show: Option<Callback<()>>,
-        /// Called after the popup menu is hidden.
+    /// Called after the popup menu is hidden.
     #[prop(optional, into)]
     on_hide: Option<Callback<()>>,
-        /// Called when the list receives focus.
+    /// Called when the list receives focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<()>>,
-        /// Called when the list loses focus.
+    /// Called when the list loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<()>>,
-        /// View of the item content instead of a link with icon and label.
+    /// View of the item content instead of a link with icon and label.
     #[prop(optional, into)]
     item: Option<Callback<MenuItem, AnyView>>,
-        /// View of the group header instead of a label.
+    /// View of the group header instead of a label.
     #[prop(optional, into)]
     submenu_header: Option<Callback<MenuItem, AnyView>>,
-        /// Content before the list.
+    /// Content before the list.
     #[prop(optional, into)]
     start: Option<ViewFn>,
-        /// Content after the list.
+    /// Content after the list.
     #[prop(optional, into)]
     end: Option<ViewFn>,
-        /// Pass-through parts.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<MenuPt>,
 ) -> impl IntoView {

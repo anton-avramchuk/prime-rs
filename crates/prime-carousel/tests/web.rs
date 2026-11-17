@@ -68,10 +68,7 @@ fn show(n: i32) -> AnyView {
 }
 
 fn page_of(host: &HtmlElement) -> usize {
-    all(host, ".p-carousel-indicator")
-        .iter()
-        .position(|li| li.class_name().contains("p-carousel-indicator-active"))
-        .expect("active dot")
+    all(host, ".p-carousel-indicator").iter().position(|li| li.class_name().contains("p-carousel-indicator-active")).expect("active dot")
 }
 
 fn transform(host: &HtmlElement) -> String {
@@ -97,7 +94,10 @@ async fn buttons_dots_borders_and_events() {
     settle().await;
     assert_eq!(page_of(&host), 1);
     assert_eq!(transform(&host), translate(-1, 2, false));
-    assert!(q(&host, ".p-carousel-item-list").style().get_property_value("transition").unwrap().contains("transform"), "transition enabled");
+    assert!(
+        q(&host, ".p-carousel-item-list").style().get_property_value("transition").unwrap().contains("transform"),
+        "transition enabled"
+    );
     assert!(!prev.class_name().contains("p-disabled"));
     after_transition().await;
     assert!(q(&host, ".p-carousel-item-list").class_name().contains("p-items-hidden"), "after the transition — p-items-hidden");

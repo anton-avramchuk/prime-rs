@@ -3,16 +3,16 @@
 /// Password strength level.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PasswordStrength {
-        /// Weak.
+    /// Weak.
     Weak,
-        /// Medium.
+    /// Medium.
     Medium,
-        /// Strong.
+    /// Strong.
     Strong,
 }
 
 impl PasswordStrength {
-        /// Level name: part of the class `p-password-meter-<name>` and the `data-p` value.
+    /// Level name: part of the class `p-password-meter-<name>` and the `data-p` value.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Weak => "weak",
@@ -21,7 +21,7 @@ impl PasswordStrength {
         }
     }
 
-        /// Meter label class.
+    /// Meter label class.
     pub fn meter_class(self) -> &'static str {
         match self {
             Self::Weak => "p-password-meter-label p-password-meter-weak",
@@ -30,7 +30,7 @@ impl PasswordStrength {
         }
     }
 
-        /// Meter label width.
+    /// Meter label width.
     pub fn width(self) -> &'static str {
         match self {
             Self::Weak => "33.33%",
@@ -63,18 +63,18 @@ pub fn strength(value: &str) -> Option<PasswordStrength> {
 /// Panel show phase.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Phase {
-        /// Not shown.
+    /// Not shown.
     Hidden,
-        /// Appearing (enter animation).
+    /// Appearing (enter animation).
     Entering,
-        /// Shown.
+    /// Shown.
     Shown,
-        /// Disappearing (leave animation).
+    /// Disappearing (leave animation).
     Leaving,
 }
 
 impl Phase {
-        /// Animation class (the theme's `/* For PrimeNG */` block).
+    /// Animation class (the theme's `/* For PrimeNG */` block).
     pub fn animation_class(self) -> &'static str {
         match self {
             Self::Entering => "p-password-enter",
@@ -83,7 +83,7 @@ impl Phase {
         }
     }
 
-        /// The panel is in the DOM.
+    /// The panel is in the DOM.
     pub fn is_visible(self) -> bool {
         matches!(self, Self::Entering | Self::Shown)
     }
@@ -92,13 +92,13 @@ impl Phase {
 /// Snapshot of properties affecting the root classes.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct RootState {
-        /// The value is non-empty.
+    /// The value is non-empty.
     pub filled: bool,
-        /// The field is focused.
+    /// The field is focused.
     pub focused: bool,
-        /// The `filled` variant.
+    /// The `filled` variant.
     pub variant_filled: bool,
-        /// Full width.
+    /// Full width.
     pub fluid: bool,
 }
 
