@@ -24,5 +24,5 @@ Table (DataTable) is the main PrimeNG data component: a table with sorting, sele
 
 ## Impact
 
-- New crate `crates/prime-table` (`publish = false`); dependencies: `prime-core`, `prime-dataview` (page slice), `prime-paginator`, `prime-checkbox`, `prime-radiobutton`, `prime-badge`, `prime-button`, `prime-icons`.
+- New crate `crates/prime-table` (`publish = false`); dependencies: `prime-rs-core`, `prime-dataview` (page slice), `prime-paginator`, `prime-checkbox`, `prime-radiobutton`, `prime-badge`, `prime-button`, `prime-icons`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `xtask/src/gen_theme.rs`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

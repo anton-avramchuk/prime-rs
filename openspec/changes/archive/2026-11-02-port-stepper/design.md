@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/stepper`. PrimeNG 21.1.10 sources: `stepper/stepper.ts` (all parts in one file), `stepper/style/*.ts`; styles `@primeuix/styles/stepper`; demos `apps/showcase/doc/stepper/*-doc.ts`. Models in the project: `prime-tabs` (a compound component: `Tabs` + context, string values, identifiers `<id>_tab_<value>`), `prime-accordion` (vertical expansion via `prime_core::collapsible::bind_region_with`, `NodeRef` only on the client).
+Requirements are in `specs/stepper`. PrimeNG 21.1.10 sources: `stepper/stepper.ts` (all parts in one file), `stepper/style/*.ts`; styles `@primeuix/styles/stepper`; demos `apps/showcase/doc/stepper/*-doc.ts`. Models in the project: `prime-tabs` (a compound component: `Tabs` + context, string values, identifiers `<id>_tab_<value>`), `prime-accordion` (vertical expansion via `prime_rs_core::collapsible::bind_region_with`, `NodeRef` only on the client).
 
 Observations about the source:
 - `Stepper.value` is a number (model); `Step.value`/`StepPanel.value` are numbers; inside a `StepItem` the value is handed to the nested `Step` and `StepPanel` by effects.
@@ -36,7 +36,7 @@ A panel knows it is vertical by the presence of `ItemCtx` in the context. Vertic
 `StepContext { value: u32, active: Signal<bool>, activate: Callback<u32> }` (`Copy`/`Clone`). `Step.content: Option<Callback<StepContext, AnyView>>` replaces the button; `StepPanel.content` is the content of `p-steppanel-content`. Child elements (`children`) are regular content; if both are set, `content` wins.
 
 ### D6. Identifiers
-`Stepper.id` is a property or `pn_id_<N>` via `prime_core::ids::next_unique`. Step: `<id>_step_<value>`, panel: `<id>_steppanel_<value>`.
+`Stepper.id` is a property or `pn_id_<N>` via `prime_rs_core::ids::next_unique`. Step: `<id>_step_<value>`, panel: `<id>_steppanel_<value>`.
 
 ### D7. CSS
 `stepper` is added to `theme.components`. Check whether the preset has `p-steppanel`, `p-stepitem`, `p-stepper-separator`; `stepperstyle.ts` has a separate `/* For PrimeNG */` block - `.p-steppanel .p-motion { display: grid; grid-template-rows: 1fr }`, so `stepper` is added to `primeng_extra` too (`xtask gen-theme` reads the block); check that the rule made it into the CSS.

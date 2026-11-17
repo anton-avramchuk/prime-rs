@@ -26,5 +26,5 @@ TieredMenu is the last component of wave 4: a menu with nested submenus that exp
 
 ## Impact
 
-- New crate `crates/prime-tieredmenu` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-menu`, `prime-icons` (angleright), `web-sys`.
+- New crate `crates/prime-tieredmenu` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-menu`, `prime-icons` (angleright), `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places: `prime-tieredmenu`).

@@ -631,7 +631,7 @@ pub fn run(root: &Path, check: bool) -> Result<(), String> {
 mod tests {
     use super::*;
 
-    const PAGE: &str = "use prime_button::Button;\nuse prime_core::Size;\n\n#[component]\nfn Basic() -> impl IntoView {\n    view! { <Button label=\"x\" /> }\n}\n\n#[component]\nfn Other() -> impl IntoView {\n    view! { <b>\"o\"</b> }\n}\n\n#[component]\npub fn ButtonPage() -> impl IntoView {\n    view! {\n        <Demo name=\"basic\" title=\"Basic\">\n            <Basic />\n        </Demo>\n        <Demo\n            name=\"other\"\n            title=\"Other\"\n        >\n            <Other />\n        </Demo>\n    }\n}\n";
+    const PAGE: &str = "use prime_button::Button;\nuse prime_rs_core::Size;\n\n#[component]\nfn Basic() -> impl IntoView {\n    view! { <Button label=\"x\" /> }\n}\n\n#[component]\nfn Other() -> impl IntoView {\n    view! { <b>\"o\"</b> }\n}\n\n#[component]\npub fn ButtonPage() -> impl IntoView {\n    view! {\n        <Demo name=\"basic\" title=\"Basic\">\n            <Basic />\n        </Demo>\n        <Demo\n            name=\"other\"\n            title=\"Other\"\n        >\n            <Other />\n        </Demo>\n    }\n}\n";
 
     #[test]
     fn demos_and_code() {
@@ -663,7 +663,7 @@ mod tests {
         assert!(code.starts_with("#[component]\nfn Basic()") && code.ends_with('}') && code.contains("<Button"), "{code}");
         assert!(!code.contains("Other"));
         assert!(extract_fn(PAGE, "Missing").is_none());
-        assert_eq!(page_imports(PAGE), "use prime_button::Button;\nuse prime_core::Size;");
+        assert_eq!(page_imports(PAGE), "use prime_button::Button;\nuse prime_rs_core::Size;");
     }
 
     const LIB: &str = "//! Button - port.\n//! Second line.\n//!\n//! Next.\n\n/// Pass-through of the parts.\n#[derive(Clone)]\npub struct ButtonPt {\n    /// Root.\n    pub root: Pt,\n    pub icon: Pt,\n}\n\n/// Button.\n#[component]\npub fn Button(\n    /// Label.\n    #[prop(optional, into)]\n    label: Prop<String>,\n    /// Order.\n    #[prop(optional, default = Prop::Static(5), into)]\n    page_links: Prop<usize>,\n    /// Required.\n    key: Callback<Vec<(String, u8)>, String>,\n    /// Click.\n    #[prop(optional, into)]\n    on_click: Option<Callback<MouseEvent>>,\n    /// Parts.\n    #[prop(optional)]\n    pt: Option<ButtonPt>,\n    children: Children,\n) -> impl IntoView {\n}\n";

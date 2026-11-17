@@ -3,8 +3,8 @@
 ## 1. Stubs and the shared helper
 
 - [x] 1.1 Generate the stubs `cargo xtask gen-spec badge` and `gen-spec button` into a temporary directory and check that all their properties, events and classes are covered by the specs of this change; write the result of the check into `design.md` in the "Context" section if gaps are found
-- [x] 1.2 Add the `DataP` helper (flags separated by spaces, like `cn({...})`) to `prime-core` and the `style` field to `Pt`; check the order, empty values and `Pt::merge_style` with unit tests
-- [x] 1.3 Document `DataP` and `Pt::style` in rustdoc with examples and check `cargo test --doc -p prime-core`
+- [x] 1.2 Add the `DataP` helper (flags separated by spaces, like `cn({...})`) to `prime-rs-core` and the `style` field to `Pt`; check the order, empty values and `Pt::merge_style` with unit tests
+- [x] 1.3 Document `DataP` and `Pt::style` in rustdoc with examples and check `cargo test --doc -p prime-rs-core`
 
 ## 2. Badge
 

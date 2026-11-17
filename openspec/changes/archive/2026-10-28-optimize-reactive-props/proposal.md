@@ -16,7 +16,7 @@ Every `Signal<T>` or `MaybeProp<T>` property creates an entry in the Leptos aren
 
 ## What Changes
 
-- A property type `Prop<T>` appears in `prime-core`: either a value (`Static`) or a signal (`Reactive`). A static value creates no reactive primitives; default values are static.
+- A property type `Prop<T>` appears in `prime-rs-core`: either a value (`Static`) or a signal (`Reactive`). A static value creates no reactive primitives; default values are static.
 - `Badge` and `Button` accept `Prop<T>` instead of `Signal<T>`/`MaybeProp<T>`: calling code does not change (`value="5"`, `loading=signal`, `severity=ButtonSeverity::Danger` keep working).
 - The `Memo` for state and `class_memo` are removed from the components: classes and attributes are computed in reactive attribute closures (during SSR each runs once, in the browser — when dependencies change).
 - Verifiable allocation-per-instance targets are added for `badge-1000` and `button-1000` (a budget in `benches`), the comparison in CI already exists (`bench-compare`).
@@ -35,6 +35,6 @@ Every `Signal<T>` or `MaybeProp<T>` property creates an entry in the Leptos aren
 
 ## Impact
 
-- Changed: `crates/prime-core` (the new `Prop`), `crates/prime-badge`, `crates/prime-button`, `benches/render`, `benches/budgets.toml` (or a separate allocation budget), `docs/benchmarks.md`, `docs/button.md`.
+- Changed: `crates/prime-rs-core` (the new `Prop`), `crates/prime-badge`, `crates/prime-button`, `benches/render`, `benches/budgets.toml` (or a separate allocation budget), `docs/benchmarks.md`, `docs/button.md`.
 - The public API of the components is compatible at the call-site source level (`#[prop(into)]` accepts the same expressions); property types in signatures change to `Prop<T>`.
 - Risk: building `showcase` and the demos; covered by building them and e2e (`button.spec.ts`).

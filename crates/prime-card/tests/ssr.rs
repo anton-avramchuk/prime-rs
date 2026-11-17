@@ -3,7 +3,7 @@
 
 use leptos::prelude::*;
 use prime_card::{Card, CardPt};
-use prime_core::Pt;
+use prime_rs_core::Pt;
 
 fn slot(text: &'static str) -> ViewFn {
     ViewFn::from(move || view! { <b>{text}</b> })

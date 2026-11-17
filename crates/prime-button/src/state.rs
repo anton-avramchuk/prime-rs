@@ -1,6 +1,6 @@
 //! Pure Button logic: from properties to classes and `data-p*` (based on `buttonstyle.ts` and `Button.dataP*` in PrimeNG).
 
-use prime_core::{ClassNames, DataP, Size};
+use prime_rs_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
 /// Button severity (`p-button-<severity>`).

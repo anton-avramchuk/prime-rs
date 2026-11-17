@@ -4,8 +4,8 @@
 use leptos::prelude::*;
 use prime_badge::BadgeSeverity;
 use prime_button::{Button, ButtonPt, ButtonSeverity, ButtonVariant, IconPos};
-use prime_core::{Pt, Size};
 use prime_icons::CheckIcon;
+use prime_rs_core::{Pt, Size};
 
 fn icon() -> ViewFn {
     ViewFn::from(|| view! { <CheckIcon /> })
@@ -168,7 +168,7 @@ fn ssr_with_ripple_and_autofocus_never_touches_the_browser() {
     // Effects do not run during SSR: no window, focus or p-ink; the test would panic with a web-sys error on a native target.
     let owner = Owner::new();
     owner.with(|| {
-        prime_core::provide_prime_config(prime_core::PrimeConfig { ripple: true, ..Default::default() });
+        prime_rs_core::provide_prime_config(prime_rs_core::PrimeConfig { ripple: true, ..Default::default() });
         let html = view! { <Button label="x" autofocus=true /> }.to_html();
         assert!(html.contains("p-ripple") && !html.contains("p-ink"), "{html}");
     });
@@ -179,7 +179,7 @@ fn fluid_inherited_from_context() {
     let outside = view! { <Button label="x"/> }.to_html();
     assert!(!outside.contains("p-button-fluid"), "{outside}");
     Owner::new().with(|| {
-        prime_core::fluid::provide_fluid();
+        prime_rs_core::fluid::provide_fluid();
         let inherited = view! { <Button label="x"/> }.to_html();
         assert!(inherited.contains("p-button-fluid"), "{inherited}");
         let forced_off = view! { <Button label="x" fluid=false/> }.to_html();

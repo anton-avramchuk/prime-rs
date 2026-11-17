@@ -41,7 +41,7 @@ On a schedule, browser measurements of the time to create N components and of he
 - **THEN** a report on time and memory is produced for the scenarios "1000 components" and "creation and removal in a loop"
 
 ### Requirement: Building class and data-p without allocation
-The common building of the `class` and `data-p` strings in `prime-core` SHALL perform no heap allocations for strings composed only of component constants (without user `style_class` and `pt`): such strings SHALL be returned as `&'static str` from a bounded interning table. Strings with user classes SHALL be assembled in a stack buffer and returned as a single `String`.
+The common building of the `class` and `data-p` strings in `prime-rs-core` SHALL perform no heap allocations for strings composed only of component constants (without user `style_class` and `pt`): such strings SHALL be returned as `&'static str` from a bounded interning table. Strings with user classes SHALL be assembled in a stack buffer and returned as a single `String`.
 
 #### Scenario: Repeated render of the same state
 - **WHEN** the same component in the same state is rendered a second time

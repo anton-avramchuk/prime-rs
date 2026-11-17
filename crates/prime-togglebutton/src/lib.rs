@@ -19,7 +19,7 @@
 mod state;
 
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size};
 use std::borrow::Cow;
 use std::sync::Arc;
 

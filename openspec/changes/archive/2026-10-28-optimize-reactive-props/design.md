@@ -22,7 +22,7 @@ The motivation and the measurement table are in `proposal.md`, the requirements 
 
 ## Decisions
 
-### D1. The `Prop<T>` type in `prime-core`
+### D1. The `Prop<T>` type in `prime-rs-core`
 ```rust
 pub enum Prop<T> { Static(T), Reactive(Signal<T>) }
 ```

@@ -1,6 +1,6 @@
 //! Pure SpeedDial logic: classes, layout, delays, keys and focus steps (from PrimeNG's `speeddial.ts` and `speeddialstyle.ts`).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::borrow::Cow;
 use std::f64::consts::PI;
 

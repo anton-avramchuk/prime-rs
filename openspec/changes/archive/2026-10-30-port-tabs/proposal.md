@@ -23,5 +23,5 @@ Tabs is the third component of wave 3: switching between views with tabs, with k
 
 ## Impact
 
-- New crate `crates/prime-tabs` (`publish = false`); dependencies: `prime-core`, `prime-icons` (`chevronleft`, `chevronright`), `web-sys` (`ResizeObserver`, `Element`, `HtmlElement`, `KeyboardEvent`, `ScrollIntoViewOptions`).
+- New crate `crates/prime-tabs` (`publish = false`); dependencies: `prime-rs-core`, `prime-icons` (`chevronleft`, `chevronright`), `web-sys` (`ResizeObserver`, `Element`, `HtmlElement`, `KeyboardEvent`, `ScrollIntoViewOptions`).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

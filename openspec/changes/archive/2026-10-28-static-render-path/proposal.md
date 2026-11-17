@@ -10,7 +10,7 @@ A prototype in the previous change showed that "a string or a closure" cannot be
 
 - `Badge` and `Button`: if all properties are static (`Prop::is_static`), the component renders the markup with ready attribute and block values (without closures and `RenderEffect`); otherwise the current reactive path. The choice is made once, when the instance is created.
 - The markup is written once in a `macro_rules!` and substituted into both branches, so that the branches do not diverge; both branches are covered by the same tests.
-- `prime-core`: a helper for checking "all properties are static" (`all_static!`/a function) and the common building of the static attribute values.
+- `prime-rs-core`: a helper for checking "all properties are static" (`all_static!`/a function) and the common building of the static attribute values.
 - Benchmarks: the browser memory scenario is split into "static buttons" and "reactive buttons" (`loading` is a signal); a wasm memory budget for 1000 static buttons is added (it does not block PRs, it is recorded by the weekly job).
 - The behaviour of the components does not change: classes, attributes, events, `pt`, reactivity when a signal is passed.
 - **Not included:** optimization of the wasm binary size, the other components.
@@ -27,6 +27,6 @@ A prototype in the previous change showed that "a string or a closure" cannot be
 
 ## Impact
 
-- Changes to `crates/prime-core` (the helper), `crates/prime-badge`, `crates/prime-button`, `showcase` (the "reactive buttons" scenario), `e2e/tests/memory.spec.ts`, `docs/benchmarks.md`, `docs/button.md`.
+- Changes to `crates/prime-rs-core` (the helper), `crates/prime-badge`, `crates/prime-button`, `showcase` (the "reactive buttons" scenario), `e2e/tests/memory.spec.ts`, `docs/benchmarks.md`, `docs/button.md`.
 - Growth of the wasm size: the markup code exists in two branches (expected +5–15 % to the component's contribution); the budget in `benches/budgets.toml` is revised by the measurement.
 - Risk: the two branches diverging in behaviour. It is covered by a single source of markup (a macro) and by parameterized tests that run each scenario in both branches.

@@ -27,6 +27,6 @@ ContextMenu is the first of the remaining menus of wave 5 (after `Steps`). It sh
 
 ## Impact
 
-- A new crate `crates/prime-contextmenu` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-menu`, `prime-tieredmenu`, `prime-icons` (angleright), `web-sys`.
+- A new crate `crates/prime-contextmenu` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-menu`, `prime-tieredmenu`, `prime-icons` (angleright), `web-sys`.
 - The public export of `prime-tieredmenu` may be extended (`pub use model::…`) without a behaviour change.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

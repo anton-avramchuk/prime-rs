@@ -21,10 +21,10 @@ use files::{FileInfo, Rejection, SIZE_UNITS, basic_label, choose_disabled, forma
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgeSeverity};
 use prime_button::{Button, ButtonSeverity};
-use prime_core::{OptProp, Prop, Pt};
 use prime_icons::{PlusIcon, TimesIcon, UploadIcon};
 use prime_message::{Message, MessageSeverity};
 use prime_progressbar::ProgressBar;
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 use wasm_bindgen::JsCast;
 
@@ -746,7 +746,7 @@ struct Extras {
 }
 
 fn text(key: &str) -> String {
-    prime_core::use_prime_config().locale.text(key).to_owned()
+    prime_rs_core::use_prime_config().locale.text(key).to_owned()
 }
 
 fn class_with(base: &str, extra: &OptProp<String>) -> String {

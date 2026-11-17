@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Create the `crates/prime-slider` crate (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`, `web-sys` with the needed events and geometry, wasm dev-dependencies as in `prime-scrollpanel`), add to the workspace; check `cargo check -p prime-slider --all-features`
+- [x] 1.1 Create the `crates/prime-slider` crate (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`, `web-sys` with the needed events and geometry, wasm dev-dependencies as in `prime-scrollpanel`), add to the workspace; check `cargo check -p prime-slider --all-features`
 - [x] 1.2 `state.rs`: `percent`, `value_from_percent`, `normalize`, `step_change`, `key_target`, `bar_percent`, `touch_percent`, root classes and `data-p` per `sliderstyle.ts` and `Slider.dataP`; table-driven tests
 - [x] 1.3 Implement `Slider`, `SliderPt`, `SliderChange`, `SliderSlideEnd`, `SliderOrientation` (value and range, markup and handle position, `aria-*`, keyboard, value update, events); SSR tests (structure, position, `aria-*`, orientations, classes, `data-p`, `disabled`, `pt`, branch parity)
 - [x] 1.4 Pointer input: click on the track, mouse dragging with `window` listeners only for the duration of dragging, touch, `animate`, `data-p-sliding`, RTL

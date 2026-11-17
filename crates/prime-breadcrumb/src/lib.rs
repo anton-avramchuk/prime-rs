@@ -17,8 +17,8 @@ mod state;
 
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgePt};
-use prime_core::{OptProp, Prop, Pt};
 use prime_icons::{ChevronRightIcon, HomeIcon};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{BreadcrumbClick, BreadcrumbItem, ClickPlan, click_plan};
@@ -86,7 +86,7 @@ pub fn Breadcrumb(
     let class = {
         let (pt, style_class) = (pt.clone(), style_class);
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-breadcrumb p-component");
             style_class.with(|c| cn.add_user(c.as_deref()));
             cn.add_user(pt.root.extra_class());
@@ -137,7 +137,7 @@ struct Ctx {
 }
 
 fn part_class(pt: &Pt, base: &str, extra: Option<&str>) -> String {
-    let mut cn = prime_core::ClassNames::new();
+    let mut cn = prime_rs_core::ClassNames::new();
     cn.add(base);
     cn.add_user(extra);
     cn.add_user(pt.extra_class());
@@ -161,7 +161,7 @@ fn separator_view(ctx: &Ctx) -> AnyView {
 fn item_view(ctx: &Ctx, it: &BreadcrumbItem, home: bool, aria_label: Option<String>) -> AnyView {
     let pt = &ctx.pt;
     let (part, base) = if home { (&pt.home_item, "p-breadcrumb-home-item") } else { (&pt.item, "p-breadcrumb-item") };
-    let mut cn = prime_core::ClassNames::new();
+    let mut cn = prime_rs_core::ClassNames::new();
     cn.add(base);
     cn.add_if(!home && it.disabled, "p-disabled");
     cn.add_user(it.style_class.as_deref());

@@ -1,6 +1,6 @@
 //! Pure Skeleton logic: shapes, animation, classes, `data-p` and the inline style (from PrimeNG's `skeleton.ts` and `skeletonstyle.ts`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 use std::fmt::Write;
 

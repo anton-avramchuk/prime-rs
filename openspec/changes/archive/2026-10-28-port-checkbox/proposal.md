@@ -22,5 +22,5 @@ Checkbox is the next component of wave 1 and the first field with a boolean or m
 
 ## Impact
 
-- A new crate `crates/prime-checkbox` (`publish = false`); dependencies `prime-core`, `prime-icons` (`check`, `minus`), `web-sys`.
+- A new crate `crates/prime-checkbox` (`publish = false`); dependencies `prime-rs-core`, `prime-icons` (`check`, `minus`), `web-sys`.
 - Changes to `showcase`, `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`, the CI browser job.

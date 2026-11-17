@@ -14,8 +14,8 @@
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::wrapper::{root_class, root_style};
-use prime_core::{OptProp, Pt, all_static};
+use prime_rs_core::wrapper::{root_class, root_style};
+use prime_rs_core::{OptProp, Pt, all_static};
 use std::sync::Arc;
 
 /// Pass-through for ButtonGroup.

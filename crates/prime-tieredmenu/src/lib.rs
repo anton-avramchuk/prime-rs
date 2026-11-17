@@ -18,9 +18,9 @@
 mod model;
 
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Pt};
 use prime_icons::AngleRightIcon;
 use prime_menu::{MenuCommand, MenuItem, can_run_command, should_prevent_default};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -32,9 +32,9 @@ pub use model::{
 #[cfg(target_arch = "wasm32")]
 use leptos::leptos_dom::helpers::{TimeoutHandle, set_timeout_with_handle};
 #[cfg(target_arch = "wasm32")]
-use prime_core::{ZGroup, use_prime_config};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::dom::{AlignMode, align_overlay};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::{ZGroup, use_prime_config};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -217,7 +217,7 @@ impl Core {
             cleanup();
         }
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
     }
 
@@ -436,7 +436,7 @@ impl Core {
         let panel: web_sys::HtmlElement = panel.unchecked_into();
         if self.auto_z_index.get_untracked() {
             let base = use_prime_config().z_index.base(ZGroup::Menu) + self.base_z_index.get_untracked();
-            let z = prime_core::zindex::generate(ZGroup::Menu, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Menu, base);
             self.z_index.set_value(Some(z));
             let _ = panel.style().set_property("z-index", &z.to_string());
         }
@@ -587,7 +587,7 @@ pub fn TieredMenu(
     on_hide: Option<Callback<()>>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let menu_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let menu_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let nodes = Memo::new({
         let model = model.clone();
         move |_| model.with(|items| build(items))
@@ -690,7 +690,7 @@ pub fn TieredMenu(
             let class = {
                 let (pt, style_class) = (pt.clone(), style_class.clone());
                 move || {
-                    let mut cn = prime_core::ClassNames::new();
+                    let mut cn = prime_rs_core::ClassNames::new();
                     cn.add("p-tieredmenu p-component").add_if(is_popup, "p-tieredmenu-overlay").add_if(mobile.get(), "p-tieredmenu-mobile");
                     let extra = style_class.with(|c| c.clone());
                     cn.add_user(extra.as_deref());
@@ -803,7 +803,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
     let class = {
         let (pt, item, active, focused) = (pt.clone(), item.clone(), active.clone(), focused.clone());
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-tieredmenu-item")
                 .add_if(active(), "p-tieredmenu-item-active")
                 .add_if(focused(), "p-focus")

@@ -23,5 +23,5 @@ InputGroup groups an input with text, an icon or buttons next to it (prefix and 
 
 ## Impact
 
-- New crate `crates/prime-inputgroup` (`publish = false`); dependencies `prime-core`.
+- New crate `crates/prime-inputgroup` (`publish = false`); dependencies `prime-rs-core`.
 - Changed: workspace `Cargo.toml`, `upstream.toml` (`inputgroup` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`.

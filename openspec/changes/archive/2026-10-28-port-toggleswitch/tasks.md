@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-toggleswitch` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `web-sys`), add it to the workspace; check `cargo check -p prime-toggleswitch --all-features`
+- [x] 1.1 Create the crate `crates/prime-toggleswitch` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `web-sys`), add it to the workspace; check `cargo check -p prime-toggleswitch --all-features`
 - [x] 1.2 Implement `ToggleSwitchState`, `write_classes`, `data_p` per `toggleswitchstyle.ts` and `ToggleSwitch.dataP`; check with a table of unit tests
 
 ## 2. Component

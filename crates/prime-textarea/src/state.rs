@@ -1,6 +1,6 @@
 //! Pure Textarea logic: classes (based on PrimeNG `textareastyle.ts`) and height calculation for auto-resize.
 
-use prime_core::{ClassNames, Size, Variant};
+use prime_rs_core::{ClassNames, Size, Variant};
 
 /// Snapshot of the properties that affect classes.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]

@@ -4,9 +4,9 @@
 use super::Demo;
 use leptos::prelude::*;
 use prime_button::Button;
-use prime_core::Size;
 use prime_icons::{CheckIcon, HomeIcon, StarIcon};
 use prime_message::{Message, MessageSeverity, MessageVariant};
+use prime_rs_core::Size;
 use std::time::Duration;
 
 const SEVERITIES: [(MessageSeverity, &str); 6] = [

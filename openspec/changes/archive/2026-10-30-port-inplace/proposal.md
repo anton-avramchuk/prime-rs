@@ -23,5 +23,5 @@ Inplace is the first component of wave 3 and the simplest in it: an area that on
 
 ## Impact
 
-- A new crate `crates/prime-inplace` (`publish = false`); dependencies: `prime-core`, `prime-button`, `prime-icons` (`times`), `web-sys`.
+- A new crate `crates/prime-inplace` (`publish = false`); dependencies: `prime-rs-core`, `prime-button`, `prime-icons` (`times`), `web-sys`.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places, if `tests/web.rs` appears).

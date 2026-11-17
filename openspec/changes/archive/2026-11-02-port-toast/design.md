@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/toast`. PrimeNG 21.1.10 sources: `toast/toast.ts`, `toast/style/toaststyle.ts`, `api/messageservice.ts`, `api/toastmessage.ts`; demos `apps/showcase/doc/toast/*-doc.ts`. Reference implementations in the project: `prime-message` (severities, icons, `data-p`), `prime-dialog` (exit animation via `animationend` with a fallback timer, `<style>` with `@media` in `head`, `ZGroup::Modal` layers), `prime-core::zindex`.
+Requirements are in `specs/toast`. PrimeNG 21.1.10 sources: `toast/toast.ts`, `toast/style/toaststyle.ts`, `api/messageservice.ts`, `api/toastmessage.ts`; demos `apps/showcase/doc/toast/*-doc.ts`. Reference implementations in the project: `prime-message` (severities, icons, `data-p`), `prime-dialog` (exit animation via `animationend` with a fallback timer, `<style>` with `@media` in `head`, `ZGroup::Modal` layers), `prime-rs-core::zindex`.
 
 Observations about the source:
 - Toast has two levels: `Toast` (container, service subscriptions, message list) and `ToastItem` (a single message: timer, visibility, animation, closing).
@@ -22,7 +22,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crate
-`prime-toast` with `Toast`, `ToastMessage`, `ToastSeverity`, `ToastPosition`, `MessageService`, `ToastPt`. Depends on `prime-core`, `prime-dom`, `prime-icons`, `web-sys`.
+`prime-toast` with `Toast`, `ToastMessage`, `ToastSeverity`, `ToastPosition`, `MessageService`, `ToastPt`. Depends on `prime-rs-core`, `prime-dom`, `prime-icons`, `web-sys`.
 
 ### D2. Service
 `MessageService` is a `Copy` handle over `StoredValue<Vec<(usize, Callback<ServiceEvent>)>>` (subscribers) and a subscription counter. `provide_message_service() -> MessageService` creates it and puts it into context; `use_message_service()` takes it from context and panics with a clear message outside it (like the `Accordion` parts). Events: `ServiceEvent::Add(Vec<ToastMessage>)` and `ServiceEvent::Clear(Option<String>)`. `subscribe(callback) -> usize`, `unsubscribe(id)`; `Toast` subscribes in the component body (in the browser and on the server — on the server no events arrive) and unsubscribes in `on_cleanup`. Subscribers are called synchronously, outside reactive tracking.

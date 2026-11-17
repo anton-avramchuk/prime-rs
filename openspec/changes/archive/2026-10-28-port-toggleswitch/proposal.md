@@ -22,5 +22,5 @@ ToggleSwitch is the next component of wave 1 after RadioButton: a switch of a bo
 
 ## Impact
 
-- A new crate `crates/prime-toggleswitch` (`publish = false`); dependencies `prime-core`, `web-sys`.
+- A new crate `crates/prime-toggleswitch` (`publish = false`); dependencies `prime-rs-core`, `web-sys`.
 - Changes to `showcase`, `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`, the CI browser job.

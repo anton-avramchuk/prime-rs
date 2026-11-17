@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/inputotp`. PrimeNG 21.1.10 sources: `inputotp/inputotp.ts`, `inputotp/style/inputotpstyle.ts`; demos `apps/showcase/doc/inputotp/{basic,mask,integeronly,sizes,template}-doc.ts`. Reference implementations in the project: `crates/prime-inputtext` (value model `RwSignal<String>`, `write_classes`/`InputTextState`), `crates/prime-rating` and `prime-slider` (focus and keys, `Effect` only under `cfg(wasm32)`), `prime_core::Pt`.
+Requirements are in `specs/inputotp`. PrimeNG 21.1.10 sources: `inputotp/inputotp.ts`, `inputotp/style/inputotpstyle.ts`; demos `apps/showcase/doc/inputotp/{basic,mask,integeronly,sizes,template}-doc.ts`. Reference implementations in the project: `crates/prime-inputtext` (value model `RwSignal<String>`, `write_classes`/`InputTextState`), `crates/prime-rating` and `prime-slider` (focus and keys, `Effect` only under `cfg(wasm32)`), `prime_rs_core::Pt`.
 
 Observations about the source:
 - State is an array of tokens; `updateModel` joins it into a string. A single cell reads its token by index.
@@ -14,7 +14,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crate and dependencies
-`prime-inputotp` with `InputOtp`, `InputOtpPt { root, input }`, `InputOtpSlot { token, index, events }`, `InputOtpEvents`. Depends on `prime-core`, `prime-inputtext` (for `write_classes`/`InputTextState`) and `web-sys`. The cells themselves are drawn as `<input>` with InputText classes plus `p-inputotp-input`, not as a nested `InputText`: the cell shares a value, and the handlers it needs are different.
+`prime-inputotp` with `InputOtp`, `InputOtpPt { root, input }`, `InputOtpSlot { token, index, events }`, `InputOtpEvents`. Depends on `prime-rs-core`, `prime-inputtext` (for `write_classes`/`InputTextState`) and `web-sys`. The cells themselves are drawn as `<input>` with InputText classes plus `p-inputotp-input`, not as a nested `InputText`: the cell shares a value, and the handlers it needs are different.
 
 ### D2. Pure logic (`state.rs`)
 - `tokens_of(value: &str, length) -> Vec<String>`: characters of the value in order, trimmed to `length`.

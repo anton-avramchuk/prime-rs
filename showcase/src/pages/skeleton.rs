@@ -15,9 +15,9 @@ pub fn SkeletonPage() -> impl IntoView {
         view! {
             <li style="margin-bottom: 1rem">
                 <div style="display: flex">
-                    <Skeleton shape=SkeletonShape::Circle size="4rem" pt=prime_core::Pt::new().style("margin-right: 0.5rem") />
+                    <Skeleton shape=SkeletonShape::Circle size="4rem" pt=prime_rs_core::Pt::new().style("margin-right: 0.5rem") />
                     <div style="flex: 1; align-self: center">
-                        <Skeleton width="100%" pt=prime_core::Pt::new().style(MB2) />
+                        <Skeleton width="100%" pt=prime_rs_core::Pt::new().style(MB2) />
                         <Skeleton width="75%" />
                     </div>
                 </div>
@@ -29,18 +29,18 @@ pub fn SkeletonPage() -> impl IntoView {
             <div style="display: flex; flex-wrap: wrap; width: 100%">
                 <div style="width: 50%; padding: 1rem; box-sizing: border-box">
                     <h5>"Rectangle"</h5>
-                    <Skeleton pt=prime_core::Pt::new().style(MB2) />
-                    <Skeleton width="10rem" pt=prime_core::Pt::new().style(MB2) />
-                    <Skeleton width="5rem" pt=prime_core::Pt::new().style(MB2) />
-                    <Skeleton height="2rem" pt=prime_core::Pt::new().style(MB2) />
+                    <Skeleton pt=prime_rs_core::Pt::new().style(MB2) />
+                    <Skeleton width="10rem" pt=prime_rs_core::Pt::new().style(MB2) />
+                    <Skeleton width="5rem" pt=prime_rs_core::Pt::new().style(MB2) />
+                    <Skeleton height="2rem" pt=prime_rs_core::Pt::new().style(MB2) />
                     <Skeleton width="10rem" height="4rem" />
                 </div>
                 <div style="width: 50%; padding: 1rem; box-sizing: border-box">
                     <h5>"Rounded"</h5>
-                    <Skeleton border_radius="16px" pt=prime_core::Pt::new().style(MB2) />
-                    <Skeleton width="10rem" border_radius="16px" pt=prime_core::Pt::new().style(MB2) />
-                    <Skeleton width="5rem" border_radius="16px" pt=prime_core::Pt::new().style(MB2) />
-                    <Skeleton height="2rem" border_radius="16px" pt=prime_core::Pt::new().style(MB2) />
+                    <Skeleton border_radius="16px" pt=prime_rs_core::Pt::new().style(MB2) />
+                    <Skeleton width="10rem" border_radius="16px" pt=prime_rs_core::Pt::new().style(MB2) />
+                    <Skeleton width="5rem" border_radius="16px" pt=prime_rs_core::Pt::new().style(MB2) />
+                    <Skeleton height="2rem" border_radius="16px" pt=prime_rs_core::Pt::new().style(MB2) />
                     <Skeleton width="10rem" height="4rem" border_radius="16px" />
                 </div>
                 <div style="width: 50%; padding: 1rem; box-sizing: border-box">
@@ -66,10 +66,10 @@ pub fn SkeletonPage() -> impl IntoView {
         <Demo name="card" title="Card">
             <div style="width: 100%; border: 1px solid var(--p-content-border-color); border-radius: 6px; padding: 1.5rem; box-sizing: border-box">
                 <div style="display: flex; margin-bottom: 1rem">
-                    <Skeleton shape=SkeletonShape::Circle size="4rem" pt=prime_core::Pt::new().style("margin-right: 0.5rem") />
+                    <Skeleton shape=SkeletonShape::Circle size="4rem" pt=prime_rs_core::Pt::new().style("margin-right: 0.5rem") />
                     <div>
-                        <Skeleton width="10rem" pt=prime_core::Pt::new().style(MB2) />
-                        <Skeleton width="5rem" pt=prime_core::Pt::new().style(MB2) />
+                        <Skeleton width="10rem" pt=prime_rs_core::Pt::new().style(MB2) />
+                        <Skeleton width="5rem" pt=prime_rs_core::Pt::new().style(MB2) />
                         <Skeleton height=".5rem" />
                     </div>
                 </div>

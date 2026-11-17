@@ -19,7 +19,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crate
-`prime-popover` with `Popover`, `PopoverRef`, `PopoverPt`. Depends on `prime-core`, `prime-dom`, `web-sys`.
+`prime-popover` with `Popover`, `PopoverRef`, `PopoverPt`. Depends on `prime-rs-core`, `prime-dom`, `web-sys`.
 
 ### D2. Control object `PopoverRef`
 `#[derive(Clone, Copy)] struct PopoverRef { visible: RwSignal<bool>, target: StoredValue<Option<SendWrapper<HtmlElement>>, LocalStorage> }`. `new()` creates the signals; methods `show(&MouseEvent)`, `show_at(&MouseEvent, &HtmlElement)`, `toggle`, `toggle_at`, `hide()`, `visible() -> bool`. For calling from a Leptos handler (`on:click=move |e| op.toggle(&e)`) the target is taken from `e.current_target()`. `Popover` reads `PopoverRef` from the `popover_ref` property; without it, its own one is created and is inaccessible (the component is useless — `popover_ref` is required, the `PopoverRef` type without `Option`).
@@ -35,7 +35,7 @@ Alternative — a trigger `NodeRef` and an `open` signal: simpler, but does not 
 Table tests for each.
 
 ### D4. Show
-`Popover` renders the panel under `Show when=visible`. After insertion into the DOM (`request_animation_frame`, `wasm32` only): `align_overlay(panel, target, Relative, false)` → `arrow_left`/`flipped` from the `getBoundingClientRect` of the panel and the target, `z-index` from `prime_core::zindex::generate(ZGroup::Overlay, base)` (if `auto_z_index`), `autofocus`, then `on_show`. `window` listeners: `click` (with `outside_click` checks via `contains`), `resize`, `keydown` (Escape), `scroll` in the capture phase on the target's ancestors — removed in `on_cleanup` and on hide (as in `Select`).
+`Popover` renders the panel under `Show when=visible`. After insertion into the DOM (`request_animation_frame`, `wasm32` only): `align_overlay(panel, target, Relative, false)` → `arrow_left`/`flipped` from the `getBoundingClientRect` of the panel and the target, `z-index` from `prime_rs_core::zindex::generate(ZGroup::Overlay, base)` (if `auto_z_index`), `autofocus`, then `on_show`. `window` listeners: `click` (with `outside_click` checks via `contains`), `resize`, `keydown` (Escape), `scroll` in the capture phase on the target's ancestors — removed in `on_cleanup` and on hide (as in `Select`).
 
 ### D5. The same click
 `show`/`toggle` from the target's click handler call `event.stop_propagation()` only when the window/document events are subscribed after the click: the outside listener is attached after `request_animation_frame`, so the click that opened the panel does not reach it. A click on the target with a visible panel is handled by `outside_click` (the target counts as "inside") — closing happens through the target handler's `toggle`, not the window.

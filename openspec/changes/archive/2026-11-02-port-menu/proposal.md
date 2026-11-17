@@ -26,5 +26,5 @@ Menu is the ninth component of wave 3: a list of commands and links, static or p
 
 ## Impact
 
-- New crate `crates/prime-menu` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `web-sys`.
+- New crate `crates/prime-menu` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

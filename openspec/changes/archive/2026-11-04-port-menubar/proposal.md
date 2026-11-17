@@ -25,6 +25,6 @@ Menubar — the second menu of wave 5 (after ContextMenu): a horizontal panel wi
 
 ## Impact
 
-- A new crate `crates/prime-menubar` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-menu`, `prime-tieredmenu`, `prime-icons` (angleright, angledown, bars).
+- A new crate `crates/prime-menubar` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-menu`, `prime-tieredmenu`, `prime-icons` (angleright, angledown, bars).
 - Possibly a change to `prime-tieredmenu::model` (the functions of the horizontal root) — without changing the behaviour of `TieredMenu` and `ContextMenu`; their tests stay green.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places).

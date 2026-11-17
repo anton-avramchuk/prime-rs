@@ -7,7 +7,7 @@ static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
 /// Next unique number: from the shared hydration context (the same on the server and in the browser), and outside it from the global counter.
 ///
 /// ```
-/// use prime_core::ids::next_unique;
+/// use prime_rs_core::ids::next_unique;
 ///
 /// assert_ne!(next_unique(), next_unique());
 /// ```
@@ -24,7 +24,7 @@ pub fn next_unique() -> usize {
 /// Next unique number from the global counter.
 ///
 /// ```
-/// use prime_core::ids::next_unique;
+/// use prime_rs_core::ids::next_unique;
 ///
 /// assert_ne!(next_unique(), next_unique());
 /// ```

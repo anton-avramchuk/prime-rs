@@ -18,8 +18,8 @@ mod state;
 
 use leptos::either::{Either, EitherOf3};
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, all_static, use_prime_config};
 use prime_icons::TimesIcon;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, all_static, use_prime_config};
 use std::borrow::Cow;
 use std::sync::Arc;
 

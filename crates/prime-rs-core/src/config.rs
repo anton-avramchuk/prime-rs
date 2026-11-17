@@ -99,7 +99,7 @@ impl Default for PrimeConfig {
 ///
 /// ```
 /// use leptos::prelude::*;
-/// use prime_core::{PrimeConfig, provide_prime_config, use_prime_config};
+/// use prime_rs_core::{PrimeConfig, provide_prime_config, use_prime_config};
 ///
 /// Owner::new().with(|| {
 ///     provide_prime_config(PrimeConfig { ripple: true, ..Default::default() });

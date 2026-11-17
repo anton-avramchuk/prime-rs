@@ -6,7 +6,7 @@
 //!
 //! The value is a two-way `RwSignal<Vec<String>>` signal: in single mode it holds 0 or 1 value, with `multiple` — any number.
 //! Expanding and collapsing animate the `p-collapsible-enter-active`/`p-collapsible-leave-active` classes via
-//! [`prime_core::collapsible`], as in Panel and Fieldset.
+//! [`prime_rs_core::collapsible`], as in Panel and Fieldset.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -32,9 +32,9 @@ mod state;
 
 use leptos::either::EitherOf3;
 use leptos::prelude::*;
-use prime_core::collapsible::{CollapseIds, hidden_style};
-use prime_core::{ClassNames, OptProp, Prop, Pt};
 use prime_icons::{ChevronDownIcon, ChevronUpIcon};
+use prime_rs_core::collapsible::{CollapseIds, hidden_style};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{Nav, nav_target, toggle_value};
@@ -355,7 +355,7 @@ pub fn AccordionContent(
     #[cfg(target_arch = "wasm32")]
     let region = {
         let region = NodeRef::<leptos::html::Div>::new();
-        prime_core::collapsible::bind_region_with(region, move || !active.get(), None);
+        prime_rs_core::collapsible::bind_region_with(region, move || !active.get(), None);
         leptos::tachys::html::node_ref::node_ref::<leptos::html::Div, _>(region)
     };
     #[cfg(not(target_arch = "wasm32"))]

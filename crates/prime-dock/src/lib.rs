@@ -20,7 +20,7 @@ use leptos::attr::any_attribute::{AnyAttribute, IntoAnyAttribute};
 use leptos::attr::custom::custom_attribute;
 use leptos::prelude::*;
 use prime_badge::Badge;
-use prime_core::{OptProp, Prop, Pt};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{Action, DockPosition, item_classes, item_id, key_action, orientation, root_classes, step};
@@ -212,7 +212,7 @@ pub fn Dock(
     pt: Option<DockPt>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let list_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let list_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let mobile = RwSignal::new(false);
     #[cfg(target_arch = "wasm32")]
     client::bind_media(breakpoint.get_untracked().unwrap_or_else(|| "960px".to_owned()), mobile);
@@ -371,14 +371,14 @@ fn item_view(
         }
     };
     let link_class = {
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         cn.add("p-dock-item-link").add_user(entry.link_class.as_deref()).add_user(pt.item_link.extra_class());
         cn.finish_cow().into_owned()
     };
     let icon = match (&template, &entry.icon) {
         (Some(template), _) => Some(template.run(entry.clone())),
         (None, Some(icon)) => {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-dock-item-icon").add_user(entry.icon_class.as_deref()).add_user(pt.item_icon.extra_class());
             let (class, icon_attrs) = (cn.finish_cow().into_owned(), pt.item_icon.attrs());
             let inner = icon.run();

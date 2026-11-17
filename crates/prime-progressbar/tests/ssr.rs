@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_progressbar::{ProgressBar, ProgressBarMode, ProgressBarPt};
+use prime_rs_core::Pt;
 
 fn strip(s: &str) -> String {
     let mut out = s.replace("<!>", "");

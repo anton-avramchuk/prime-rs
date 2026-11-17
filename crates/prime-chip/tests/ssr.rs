@@ -3,7 +3,7 @@
 
 use leptos::prelude::*;
 use prime_chip::{Chip, ChipPt};
-use prime_core::{Locale, PrimeConfig, Pt, provide_prime_config};
+use prime_rs_core::{Locale, PrimeConfig, Pt, provide_prime_config};
 
 fn icon() -> ViewFn {
     ViewFn::from(|| view! { <svg data-testid="i"></svg> })

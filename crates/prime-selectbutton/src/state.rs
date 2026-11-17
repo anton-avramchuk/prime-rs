@@ -1,6 +1,6 @@
 //! Pure SelectButton logic: options, selection and root classes (from PrimeNG's `selectbutton.ts` and `selectbuttonstyle.ts`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Selection option.

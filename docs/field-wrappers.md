@@ -28,7 +28,7 @@ All five are containers without logic: `children`, `style`, `style_class` and `p
 | Difference | Reason |
 |---|---|
 | Roots are `<span>`/`<div>`, not `<p-…>` hosts | The host in Angular is a framework detail. |
-| The `Fluid` context is `prime_core::fluid` (`provide_fluid`, `in_fluid`, `resolve_fluid`, `fluid_prop`); consumers read it once at creation | The ancestor does not change during the descendant's lifetime. Replaces `inject(Fluid)` in PrimeNG. |
+| The `Fluid` context is `prime_rs_core::fluid` (`provide_fluid`, `in_fluid`, `resolve_fluid`, `fluid_prop`); consumers read it once at creation | The ancestor does not change during the descendant's lifetime. Replaces `inject(Fluid)` in PrimeNG. |
 | `Fluid` puts the context into a child owner and keeps it until the parent is cleaned up | Otherwise `provide_context` in the component would leak to siblings that follow `Fluid` in the same owner. |
 | `fluid` on `Button`, `InputText`, `Textarea`, `InputNumber`, `Select` is `OptProp<bool>`, not `Prop<bool>` | "Not set" must be distinguished from `false`. Calls with `fluid=true` and `fluid=signal_Option` are compatible; a `bool` signal is now wrapped in `Some`. `ToggleButton` and `SelectButton` do not change: they have no inheritance in PrimeNG. |
 | `/* For PrimeNG */` blocks are not carried over | They target the `p-button` hosts (`.p-buttongroup p-button …`) and the Angular Forms class `.ng-invalid.ng-dirty`; the theme base CSS already contains `.p-buttongroup .p-button …` and `:has(.p-invalid) label`. |

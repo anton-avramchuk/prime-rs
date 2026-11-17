@@ -1,6 +1,6 @@
 //! Pure Image logic: classes, zoom bounds and steps, `transform` (after PrimeNG's `image.ts` and `imagestyle.ts`).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::borrow::Cow;
 
 /// Zoom step.

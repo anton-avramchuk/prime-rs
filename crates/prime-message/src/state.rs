@@ -1,6 +1,6 @@
 //! Pure Message logic: classes and `data-p` (from `messagestyle.ts` and PrimeNG `Message.dataP`).
 
-use prime_core::{ClassNames, DataP, Size};
+use prime_rs_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
 /// Message severity (`p-message-<severity>`).

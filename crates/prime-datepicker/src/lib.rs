@@ -26,17 +26,17 @@ use leptos::attr::any_attribute::{AnyAttribute, IntoAnyAttribute};
 use leptos::attr::custom::custom_attribute;
 use leptos::prelude::*;
 use prime_button::{Button, ButtonPt, ButtonSeverity, ButtonVariant};
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use prime_icons::{CalendarIcon, ChevronLeftIcon, ChevronRightIcon, TimesIcon};
 use prime_inputtext::{InputTextState, write_classes as input_classes};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use std::sync::Arc;
 
 #[cfg(target_arch = "wasm32")]
 use leptos::leptos_dom::helpers::set_timeout_with_handle;
 #[cfg(target_arch = "wasm32")]
-use prime_core::ZGroup;
-#[cfg(target_arch = "wasm32")]
 use prime_dom::dom::{AlignMode, align_overlay};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::ZGroup;
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -425,7 +425,7 @@ impl Core {
             cleanup();
         }
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
     }
 
@@ -436,7 +436,7 @@ impl Core {
         let (panel, root): (web_sys::HtmlElement, web_sys::HtmlElement) = (panel.unchecked_into(), root.unchecked_into());
         if self.auto_z_index.get_untracked() {
             let base = use_prime_config().z_index.base(ZGroup::Overlay);
-            let z = prime_core::zindex::generate(ZGroup::Overlay, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Overlay, base);
             self.z_index.set_value(Some(z));
             let _ = panel.style().set_property("z-index", &z.to_string());
         }
@@ -740,7 +740,7 @@ pub fn DatePicker(
         move || {
             let mut cn = ClassNames::new();
             cn.add("p-datepicker p-component p-inputwrapper");
-            let fluid = prime_core::fluid::fluid_prop(fluid.clone());
+            let fluid = prime_rs_core::fluid::fluid_prop(fluid.clone());
             cn.add_if(invalid.get(), "p-invalid")
                 .add_if(fluid.get(), "p-datepicker-fluid")
                 .add_if(core.value.with(|v| !v.is_empty()), "p-inputwrapper-filled")
@@ -832,7 +832,7 @@ fn field_view(core: &Arc<Core>, pt: &Arc<DatePickerPt>, p: &FieldProps) -> impl 
         let (invalid, variant, size, fluid) = (p.invalid.clone(), p.variant.clone(), p.size.clone(), p.fluid.clone());
         move || {
             let variant = variant.get().or(use_prime_config().input_variant);
-            let fluid = prime_core::fluid::fluid_prop(fluid.clone());
+            let fluid = prime_rs_core::fluid::fluid_prop(fluid.clone());
             let mut cn = ClassNames::new();
             input_classes(
                 &mut cn,

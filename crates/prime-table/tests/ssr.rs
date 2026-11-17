@@ -3,7 +3,7 @@
 #![recursion_limit = "512"]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size};
+use prime_rs_core::{Pt, Size};
 use prime_table::model::{SelectionMode, SortMeta, SortMode};
 use prime_table::{Column, PaginatorPosition, Table, TablePt};
 

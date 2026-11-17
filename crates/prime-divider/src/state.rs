@@ -1,6 +1,6 @@
 //! Pure Divider logic: classes, the inline alignment style and `data-p` (after PrimeNG `dividerstyle.ts` and `Divider.dataP`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Divider direction.

@@ -25,5 +25,5 @@ CascadeSelect is a field for picking a value from a nested structure: a panel wi
 
 ## Impact
 
-- New crate `crates/prime-cascadeselect` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-icons` (chevrondown, angleright, times, spinner).
+- New crate `crates/prime-cascadeselect` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-icons` (chevrondown, angleright, times, spinner).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

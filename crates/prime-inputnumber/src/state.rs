@@ -1,6 +1,6 @@
 //! Pure InputNumber logic: button layout, classes and `data-p` (after PrimeNG's `inputnumberstyle.ts` and `InputNumber.dataP`).
 
-use prime_core::{ClassNames, DataP, Size};
+use prime_rs_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
 /// Layout of the increment/decrement buttons.

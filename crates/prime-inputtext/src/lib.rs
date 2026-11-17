@@ -10,7 +10,7 @@
 //!
 //! ```
 //! use leptos::prelude::*;
-//! use prime_core::Size;
+//! use prime_rs_core::Size;
 //! use prime_inputtext::InputText;
 //!
 //! let value = RwSignal::new("abc".to_owned());
@@ -22,7 +22,7 @@ mod state;
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, all_static, use_prime_config};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, all_static, use_prime_config};
 use std::borrow::Cow;
 use std::sync::Arc;
 
@@ -104,7 +104,7 @@ pub fn InputText(
     pt: Option<Pt>,
 ) -> impl IntoView {
     let pt = pt.unwrap_or_default();
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let is_static = all_static!(
         input_type,
         id,

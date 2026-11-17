@@ -4,7 +4,7 @@
 use leptos::prelude::*;
 use prime_colorpicker::color::Hsb;
 use prime_colorpicker::{ColorFormat, ColorPicker, ColorPickerPt, ColorValue};
-use prime_core::Pt;
+use prime_rs_core::Pt;
 
 fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)

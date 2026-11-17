@@ -5,10 +5,10 @@
 
 use super::Demo;
 use leptos::prelude::*;
-use prime_core::{Size, Variant};
 use prime_floatlabel::FloatLabel;
 use prime_iftalabel::IftaLabel;
 use prime_multiselect::{MultiSelect, MultiSelectDisplay, MultiSelectGroup, MultiSelectOption};
+use prime_rs_core::{Size, Variant};
 
 const FIELD: &str = "width: 20rem";
 

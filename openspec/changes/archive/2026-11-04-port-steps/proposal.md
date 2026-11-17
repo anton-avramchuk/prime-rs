@@ -25,5 +25,5 @@ Steps is the first wave 5 component: a wizard step indicator (numbered items in 
 
 ## Impact
 
-- New crate `crates/prime-steps` (`publish = false`); dependencies: `prime-core`, `web-sys`.
+- New crate `crates/prime-steps` (`publish = false`); dependencies: `prime-rs-core`, `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places: `prime-steps`).

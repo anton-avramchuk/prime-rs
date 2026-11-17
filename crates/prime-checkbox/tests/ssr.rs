@@ -3,7 +3,7 @@
 
 use leptos::prelude::*;
 use prime_checkbox::{Checkbox, CheckboxPt};
-use prime_core::{Pt, Size, Variant};
+use prime_rs_core::{Pt, Size, Variant};
 
 fn strip(s: &str) -> String {
     s.split("<!--").next().unwrap_or(s).to_owned()
@@ -67,7 +67,7 @@ fn modifiers_and_data_p() {
 #[test]
 fn variant_comes_from_config() {
     Owner::new().with(|| {
-        prime_core::provide_prime_config(prime_core::PrimeConfig { input_variant: Some(Variant::Filled), ..Default::default() });
+        prime_rs_core::provide_prime_config(prime_rs_core::PrimeConfig { input_variant: Some(Variant::Filled), ..Default::default() });
         let html = view! { <Checkbox /> }.to_html();
         assert!(html.contains("p-variant-filled"), "{html}");
     });

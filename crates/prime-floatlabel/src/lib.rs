@@ -16,8 +16,8 @@
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::wrapper::root_style;
-use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use prime_rs_core::wrapper::root_style;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 

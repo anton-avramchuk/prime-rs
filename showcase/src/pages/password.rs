@@ -5,11 +5,11 @@
 
 use super::Demo;
 use leptos::prelude::*;
-use prime_core::{Size, Variant};
 use prime_divider::Divider;
 use prime_floatlabel::{FloatLabel, FloatLabelVariant};
 use prime_iftalabel::IftaLabel;
 use prime_password::Password;
+use prime_rs_core::{Size, Variant};
 
 /// Page `/password`.
 #[component]

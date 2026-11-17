@@ -26,5 +26,5 @@ PickList — two lists (source and target) and buttons for moving items between 
 
 ## Impact
 
-- New crate `crates/prime-picklist` (`publish = false`); dependencies: `prime-core`, `prime-listbox`, `prime-orderlist` (reordering), `prime-button`, `prime-icons`.
+- New crate `crates/prime-picklist` (`publish = false`); dependencies: `prime-rs-core`, `prime-listbox`, `prime-orderlist` (reordering), `prime-button`, `prime-icons`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `prime-listbox`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

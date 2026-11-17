@@ -25,5 +25,5 @@ TreeSelect is a field for selecting a tree node (or nodes) in a dropdown panel. 
 
 ## Impact
 
-- New crate `crates/prime-treeselect` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-tree`, `prime-chip`, `prime-icons` (chevrondown, times).
+- New crate `crates/prime-treeselect` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-tree`, `prime-chip`, `prime-icons` (chevrondown, times).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`. The behavior of existing crates does not change.

@@ -4,8 +4,8 @@
 use leptos::prelude::*;
 use prime_badge::BadgeSeverity;
 use prime_button::{Button, ButtonPt, ButtonSeverity, ButtonVariant, IconPos};
-use prime_core::{OptProp, Prop, Pt, Size};
 use prime_icons::CheckIcon;
+use prime_rs_core::{OptProp, Prop, Pt, Size};
 
 fn icon() -> ViewFn {
     ViewFn::from(|| view! { <CheckIcon /> })

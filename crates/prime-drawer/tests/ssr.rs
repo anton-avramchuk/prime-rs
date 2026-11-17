@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_drawer::{Drawer, DrawerPosition, DrawerPt};
+use prime_rs_core::Pt;
 
 #[test]
 fn hidden_by_default() {

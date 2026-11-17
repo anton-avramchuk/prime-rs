@@ -7,7 +7,7 @@ The requirements are in `specs/fieldset`. PrimeNG 21.1.10 sources: `packages/pri
 ## Decisions
 
 ### D1. Only the markup and the binding
-`Fieldset` creates `CollapseState::new(collapsed, default_collapsed)` and `CollapseIds::new(id)`, calls `bind_region` (only `wasm32` and `toggleable`), and takes the ARIA attributes from the functions of `prime_core::collapsible`. There are no copies of the animation, `tabindex` or identifiers in the crate.
+`Fieldset` creates `CollapseState::new(collapsed, default_collapsed)` and `CollapseIds::new(id)`, calls `bind_region` (only `wasm32` and `toggleable`), and takes the ARIA attributes from the functions of `prime_rs_core::collapsible`. There are no copies of the animation, `tabindex` or identifiers in the crate.
 
 ### D2. Identifiers
 `{id}_header` is the `id` of the button, to which the `aria-labelledby` of the region points; `{id}_content` is the identifier of the region. Without `toggleable` there is no button, so `aria-labelledby` is not rendered (in PrimeNG it remains a dangling reference). `{id}-titlebar` is not used.
@@ -29,7 +29,7 @@ SSR: structure, classes, ARIA, slots, `pt`, parity. Browser: click, signal, `ari
 ## Risks / Trade-offs
 
 - [The `<button>` inside `<legend>` depends on the theme styles] → checked in e2e by visibility and click.
-- [The markup of Panel and Fieldset is similar] → only the logic is shared (`prime-core`), the markup differs; extracting a common component is premature.
+- [The markup of Panel and Fieldset is similar] → only the logic is shared (`prime-rs-core`), the markup differs; extracting a common component is premature.
 
 ## Migration Plan
 

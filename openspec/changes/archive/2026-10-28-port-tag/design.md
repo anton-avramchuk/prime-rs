@@ -27,7 +27,7 @@ Pure functions `write_classes`/`data_p` over a borrowed `TagState`; the branch i
 
 ## Risks / Trade-offs
 
-- [Duplicating the severity enum with Badge] → deliberate: components are independent; a shared type may appear in `prime-core` when there are more than three of them.
+- [Duplicating the severity enum with Badge] → deliberate: components are independent; a shared type may appear in `prime-rs-core` when there are more than three of them.
 - [Branch divergence] → a parameterized parity test.
 
 ## Migration Plan

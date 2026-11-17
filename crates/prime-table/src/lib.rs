@@ -31,13 +31,13 @@ use model::{
 use prime_badge::{Badge, BadgeSize};
 use prime_button::{Button, ButtonSeverity, ButtonVariant};
 use prime_checkbox::Checkbox;
-use prime_core::{OptProp, Prop, Pt, Size, use_prime_config};
 use prime_dataview::data::{clamp_first, page};
 use prime_icons::{
     CheckIcon, ChevronDownIcon, ChevronRightIcon, PencilIcon, SortAltIcon, SortAmountDownIcon, SortAmountUpAltIcon, SpinnerIcon, TimesIcon,
 };
 use prime_paginator::{Paginator, PaginatorPt, PaginatorState, RowsPerPage};
 use prime_radiobutton::{RadioButton, RadioButtonClick};
+use prime_rs_core::{OptProp, Prop, Pt, Size, use_prime_config};
 use std::cmp::Ordering;
 use std::sync::Arc;
 

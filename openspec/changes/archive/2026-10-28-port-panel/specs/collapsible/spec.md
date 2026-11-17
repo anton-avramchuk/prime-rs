@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Collapse state
-The shared collapsing logic in `prime-core` SHALL keep a `collapsed` flag, accepting an optional external `RwSignal<bool>` (a two-way binding) or an initial value for an internal state. Toggling SHALL write the new value to the external signal, if it is set.
+The shared collapsing logic in `prime-rs-core` SHALL keep a `collapsed` flag, accepting an optional external `RwSignal<bool>` (a two-way binding) or an initial value for an internal state. Toggling SHALL write the new value to the external signal, if it is set.
 
 #### Scenario: External signal
 - **WHEN** an `RwSignal<bool>` is passed and a toggle is called

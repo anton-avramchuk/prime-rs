@@ -1,6 +1,6 @@
 //! Pure ToggleButton logic: classes and `data-p` (per `togglebuttonstyle.ts` and `ToggleButton.dataP` of PrimeNG).
 
-use prime_core::{ClassNames, DataP, Size};
+use prime_rs_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
 /// Icon position relative to the label.

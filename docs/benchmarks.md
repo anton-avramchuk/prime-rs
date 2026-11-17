@@ -95,7 +95,7 @@ Conclusions:
 
 ## Optimization of reactive properties (`optimize-reactive-props`)
 
-Component properties are `prime_core::Prop`/`OptProp` (a value does not create a signal), without `Memo` and with one `Arc<Props>` per instance.
+Component properties are `prime_rs_core::Prop`/`OptProp` (a value does not create a signal), without `Memo` and with one `Arc<Props>` per instance.
 
 SSR, release, allocations per instance (1000 instances), budgets — `benches/alloc-budgets.toml`:
 

@@ -4,17 +4,17 @@ description = "prime-rs: FloatLabel component (port of PrimeNG)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 
 [dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }

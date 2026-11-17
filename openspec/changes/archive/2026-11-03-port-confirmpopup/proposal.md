@@ -28,5 +28,5 @@ ConfirmPopup is the sixth component of wave 4: a popup confirmation at the eleme
 
 ## Impact
 
-- New crates `crates/prime-confirmation` (native tests only) and `crates/prime-confirmpopup` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-button`, `prime-confirmation`, `web-sys`.
+- New crates `crates/prime-confirmation` (native tests only) and `crates/prime-confirmpopup` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-button`, `prime-confirmation`, `web-sys`.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places: `prime-confirmpopup`).

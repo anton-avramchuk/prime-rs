@@ -1,7 +1,7 @@
 //! Pure ConfirmPopup logic: classes, arrow, flip, outside clicks, keys and focus (per `confirmpopup.ts` of PrimeNG).
 
 use prime_confirmation::ConfirmFocus;
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::borrow::Cow;
 
 /// Root classes: `p-confirmpopup p-component`; above the target, `p-confirm-popup-flipped` (as in PrimeNG) and

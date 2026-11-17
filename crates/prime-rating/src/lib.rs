@@ -21,9 +21,9 @@ mod state;
 use leptos::html;
 use leptos::prelude::*;
 use leptos::wasm_bindgen::JsCast;
-use prime_core::ids::next_unique;
-use prime_core::{ClassNames, OptProp, Prop, Pt, use_prime_config};
 use prime_icons::{StarFillIcon, StarIcon};
+use prime_rs_core::ids::next_unique;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, use_prime_config};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 

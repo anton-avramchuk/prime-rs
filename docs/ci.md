@@ -15,7 +15,7 @@ benchmarks is moved to `cargo xtask` and checked by tests; the YAML files themse
 | `apps` | showcase (clippy for ssr and hydrate), the wasm size budget, benchmarks, comparison with the baseline and a comment in the PR |
 
 Rules for selecting crates (`xtask/src/affected.rs`):
-- if `prime-core` or `prime-dom`, `Cargo.toml`, `Cargo.lock`, `rust-toolchain.toml`, `.cargo/`, `.github/`, `xtask/`, `deny.toml`, `rustfmt.toml`,
+- if `prime-rs-core` or `prime-dom`, `Cargo.toml`, `Cargo.lock`, `rust-toolchain.toml`, `.cargo/`, `.github/`, `xtask/`, `deny.toml`, `rustfmt.toml`,
   `benches/budgets.toml` changed → the whole workspace is checked;
 - otherwise the changed crates and all crates depending on them (transitively);
 - changes only in documentation and `openspec/` run nothing except `fmt` and `deny`.

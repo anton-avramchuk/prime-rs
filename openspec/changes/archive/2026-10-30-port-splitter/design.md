@@ -15,7 +15,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crate and dependencies
-`prime-splitter` with `Splitter`, `SplitterLayout { Horizontal, Vertical }`, `SplitterStorage { Session, Local }`, `SplitterResizeEvent { sizes }`, `SplitterPt { root, panel, gutter, gutter_handle }`. Depends on `prime-core` and `web-sys`.
+`prime-splitter` with `Splitter`, `SplitterLayout { Horizontal, Vertical }`, `SplitterStorage { Session, Local }`, `SplitterResizeEvent { sizes }`, `SplitterPt { root, panel, gutter, gutter_handle }`. Depends on `prime-rs-core` and `web-sys`.
 
 ### D2. Pure logic (`state.rs`)
 - `initial_sizes(panel_sizes, n) -> Vec<f64>` - given non-zero ones or `100/n`.

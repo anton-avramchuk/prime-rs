@@ -3,7 +3,7 @@
 
 use leptos::prelude::*;
 use prime_carousel::{Carousel, CarouselOrientation, CarouselPt, Responsive};
-use prime_core::Pt;
+use prime_rs_core::Pt;
 
 fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)

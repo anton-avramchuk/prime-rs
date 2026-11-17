@@ -22,8 +22,8 @@ mod service;
 mod state;
 
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Pt, ZGroup, use_prime_config};
 use prime_icons::{CheckIcon, ExclamationTriangleIcon, InfoCircleIcon, TimesCircleIcon, TimesIcon};
+use prime_rs_core::{OptProp, Prop, Pt, ZGroup, use_prime_config};
 use std::sync::Arc;
 
 pub use message::{ToastMessage, ToastSeverity};
@@ -138,7 +138,7 @@ impl Core {
             return;
         }
         let base = use_prime_config().z_index.base(ZGroup::Modal) + self.base_z_index.get_untracked();
-        let z = prime_core::zindex::generate(ZGroup::Modal, base);
+        let z = prime_rs_core::zindex::generate(ZGroup::Modal, base);
         self.z_index.set_value(Some(z));
         #[cfg(target_arch = "wasm32")]
         if let Some(root) = self.root.get_untracked() {
@@ -150,7 +150,7 @@ impl Core {
     /// Releases the `z-index` once no messages are left.
     fn lower(&self) {
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
             #[cfg(target_arch = "wasm32")]
             if let Some(root) = self.root.get_untracked() {
                 let root: web_sys::HtmlElement = root.unchecked_into();
@@ -220,7 +220,7 @@ pub fn Toast(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let core = Arc::new(Core {
-        id: prime_core::ids::next_unique(),
+        id: prime_rs_core::ids::next_unique(),
         key,
         life,
         auto_z_index,

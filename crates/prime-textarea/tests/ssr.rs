@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size, Variant};
+use prime_rs_core::{Pt, Size, Variant};
 use prime_textarea::Textarea;
 
 fn strip(s: &str) -> String {
@@ -84,7 +84,7 @@ fn leading_newline_survives_the_html_parser() {
 #[test]
 fn variant_comes_from_config() {
     Owner::new().with(|| {
-        prime_core::provide_prime_config(prime_core::PrimeConfig { input_variant: Some(Variant::Filled), ..Default::default() });
+        prime_rs_core::provide_prime_config(prime_rs_core::PrimeConfig { input_variant: Some(Variant::Filled), ..Default::default() });
         let html = view! { <Textarea /> }.to_html();
         assert!(html.contains("p-variant-filled"), "{html}");
     });
@@ -119,7 +119,7 @@ fn fluid_inherited_from_context() {
     let outside = view! { <Textarea/> }.to_html();
     assert!(!outside.contains("p-textarea-fluid"), "{outside}");
     Owner::new().with(|| {
-        prime_core::fluid::provide_fluid();
+        prime_rs_core::fluid::provide_fluid();
         let inherited = view! { <Textarea/> }.to_html();
         assert!(inherited.contains("p-textarea-fluid"), "{inherited}");
         let forced_off = view! { <Textarea fluid=false/> }.to_html();

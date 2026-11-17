@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Create the crate `crates/prime-toolbar` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`), add it to the workspace; check `cargo check -p prime-toolbar --all-features`
+- [x] 1.1 Create the crate `crates/prime-toolbar` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`), add it to the workspace; check `cargo check -p prime-toolbar --all-features`
 - [x] 1.2 Implement `Toolbar` and `ToolbarPt` (slots, `role`, `aria-labelledby`, two branches, `children` before the areas); check with SSR tests (structure, order, empty areas, attributes, `style`, `pt`) and branch parity
 - [x] 1.3 rustdoc with an example; `cargo test -p prime-toolbar --all-features`
 

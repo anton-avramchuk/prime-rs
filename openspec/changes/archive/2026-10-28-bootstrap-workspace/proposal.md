@@ -7,7 +7,7 @@ The prime-rs project is a port of PrimeNG components (21.1.10, commit `fe82b291d
 ## What Changes
 
 - Cargo workspace: `crates/`, `showcase/`, `xtask/`, `benches/`, a shared `[workspace.dependencies]`, `rust-toolchain.toml` (stable, wasm32).
-- Crate `prime-core`: config (`PrimeConfig` via Leptos context), `ClassNames`, z-index manager, locale, base props (`disabled`, `invalid`, `variant`, `size`), a shared `pt` (pass-through) helper for the root element.
+- Crate `prime-rs-core`: config (`PrimeConfig` via Leptos context), `ClassNames`, z-index manager, locale, base props (`disabled`, `invalid`, `variant`, `size`), a shared `pt` (pass-through) helper for the root element.
 - Crate `prime-dom`: a port of the needed part of `DomHandler` (positioning, focus, scroll), `focustrap`, `ripple`, portal; `web-sys` only, no `leptos-use`.
 - Crate `prime-theme` and `xtask gen-theme`: generating static CSS from the Aura preset tokens and component styles (the npm packages `@primeuix/themes` and `@primeuix/styles` used by PrimeNG) with an `xtask` command; the result is committed.
 - Crate `prime-icons` and `xtask gen-icons`: 53 PrimeNG SVG icons, one component per icon behind a feature flag.
@@ -23,7 +23,7 @@ The prime-rs project is a port of PrimeNG components (21.1.10, commit `fe82b291d
 
 ### New Capabilities
 - `workspace-layout`: Cargo workspace structure, `prime-<name>` crate naming, `ssr`/`hydrate` feature flags, toolchain, license and `NOTICE`.
-- `core-runtime`: `prime-core` and `prime-dom` — config, context, ClassNames, z-index, pass-through, DOM helpers.
+- `core-runtime`: `prime-rs-core` and `prime-dom` — config, context, ClassNames, z-index, pass-through, DOM helpers.
 - `theme-css`: generating static CSS from the Aura tokens and including it.
 - `icon-set`: the `prime-icons` crate and generating icons from PrimeNG.
 - `upstream-tracking`: pinning the PrimeNG version, `upstream-diff`, generating spec stubs.

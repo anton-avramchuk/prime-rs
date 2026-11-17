@@ -2,9 +2,9 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_menu::MenuItem;
 use prime_menubar::{Menubar, MenubarItemContext, MenubarPt};
+use prime_rs_core::Pt;
 
 fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)

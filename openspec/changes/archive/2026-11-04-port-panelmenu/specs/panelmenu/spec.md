@@ -17,7 +17,7 @@ The `PanelMenu` of the `prime-panelmenu` crate SHALL accept `prime_menu::MenuIte
 - **THEN** it is absent from the markup
 
 ### Requirement: Expansion
-A click on a group header or on a group item SHALL toggle its expansion. The initial state SHALL come from the items' `expanded`. With `multiple = false` (default) expanding a root panel SHALL collapse the previously expanded root panel; with `multiple = true` panels are independent. Nested branches SHALL be independent: expanding one does not collapse siblings. Expanding and collapsing SHALL be animated via `prime_core::collapsible`.
+A click on a group header or on a group item SHALL toggle its expansion. The initial state SHALL come from the items' `expanded`. With `multiple = false` (default) expanding a root panel SHALL collapse the previously expanded root panel; with `multiple = true` panels are independent. Nested branches SHALL be independent: expanding one does not collapse siblings. Expanding and collapsing SHALL be animated via `prime_rs_core::collapsible`.
 
 #### Scenario: Single mode
 - **WHEN** panel A is expanded, the user clicks the header of B

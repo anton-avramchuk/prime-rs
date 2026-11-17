@@ -3,8 +3,8 @@
 
 use leptos::prelude::*;
 use prime_button::ButtonSeverity;
-use prime_core::{Pt, Size};
 use prime_menu::MenuItem;
+use prime_rs_core::{Pt, Size};
 use prime_splitbutton::{SplitButton, SplitButtonPt};
 
 fn render(f: impl FnOnce() -> String) -> String {

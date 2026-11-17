@@ -4,11 +4,11 @@
 
 use super::Demo;
 use leptos::prelude::*;
-use prime_core::{Size, Variant};
 use prime_floatlabel::FloatLabel;
 use prime_icons::{MinusIcon, PlusIcon};
 use prime_iftalabel::IftaLabel;
 use prime_inputnumber::{ButtonLayout, CurrencyDisplay, InputNumber, InputNumberMode};
+use prime_rs_core::{Size, Variant};
 
 const ROW: &str = "display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end";
 const CELL: &str = "display: flex; flex-direction: column; gap: 0.5rem; width: 12rem";

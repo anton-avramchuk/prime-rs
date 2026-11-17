@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_inplace::{Inplace, InplacePt};
+use prime_rs_core::Pt;
 
 fn display() -> ViewFn {
     ViewFn::from(|| view! { <span>"View"</span> })

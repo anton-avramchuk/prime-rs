@@ -2,7 +2,7 @@
 
 ## 1. Helper and spike (go/no-go)
 
-- [x] 1.1 Add to `prime-core` a check "all properties are static" (a function or a macro over several `Prop`s) and check the scenarios of the `core-runtime` spec (all static, a signal is present) with unit tests, and the absence of allocations (dhat)
+- [x] 1.1 Add to `prime-rs-core` a check "all properties are static" (a function or a macro over several `Prop`s) and check the scenarios of the `core-runtime` spec (all static, a signal is present) with unit tests, and the absence of allocations (dhat)
 - [x] 1.2 A spike on `Badge`: a static branch with ready attributes and `Either`; build the showcase, measure in the browser (`memory.spec.ts`, 1000 badges) the growth of wasm memory before and after and record it in `docs/benchmarks.md`; **go** if the growth per instance is ≥ 40 % lower, otherwise stop and record the conclusion, without continuing groups 2–5
 
 ## 2. Badge

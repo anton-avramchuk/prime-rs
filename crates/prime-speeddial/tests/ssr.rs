@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_icons::PlusIcon;
+use prime_rs_core::Pt;
 use prime_speeddial::{SpeedDial, SpeedDialDirection, SpeedDialItem, SpeedDialPt, SpeedDialType};
 use prime_tooltip::TooltipOptions;
 

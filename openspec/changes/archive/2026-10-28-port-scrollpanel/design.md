@@ -2,12 +2,12 @@
 
 ## Context
 
-Requirements are in `specs/scrollpanel`. PrimeNG 21.1.10 sources: `packages/primeng/src/scrollpanel/scrollpanel.ts`, `scrollpanel/style/scrollpanelstyle.ts`, demos `apps/showcase/doc/scrollpanel` (`basic`, `custom`). The `scrollpanel` CSS will be added via `cargo xtask gen-theme` (`upstream.toml`); the `/* For PrimeNG */` block is not needed, but `.p-scrollpanel { display: block }` from `scrollpanelstyle.ts` should be checked: if it is missing from the generated CSS, add the component to `primeng_extra`. The crate template is `prime-toolbar` (two branches, `macro_rules!`, `Props`), the client part follows `prime-core::collapsible` (code under `cfg(target_arch = "wasm32")`, empty SSR path).
+Requirements are in `specs/scrollpanel`. PrimeNG 21.1.10 sources: `packages/primeng/src/scrollpanel/scrollpanel.ts`, `scrollpanel/style/scrollpanelstyle.ts`, demos `apps/showcase/doc/scrollpanel` (`basic`, `custom`). The `scrollpanel` CSS will be added via `cargo xtask gen-theme` (`upstream.toml`); the `/* For PrimeNG */` block is not needed, but `.p-scrollpanel { display: block }` from `scrollpanelstyle.ts` should be checked: if it is missing from the generated CSS, add the component to `primeng_extra`. The crate template is `prime-toolbar` (two branches, `macro_rules!`, `Props`), the client part follows `prime-rs-core::collapsible` (code under `cfg(target_arch = "wasm32")`, empty SSR path).
 
 ## Decisions
 
 ### D1. Markup and branches
-The static branch is used when `style` and `style_class` are static; otherwise the reactive one. The markup is a `macro_rules!`, the root attribute expressions vary. The content `id` is `pn_id_{n}_content` from a `CollapseIds`-like counter of `prime-core` (the same `next_unique`, deterministic in SSR/hydration); if needed, expose a small public function `unique_id(suffix)` in `collapsible` rather than duplicating the counter.
+The static branch is used when `style` and `style_class` are static; otherwise the reactive one. The markup is a `macro_rules!`, the root attribute expressions vary. The content `id` is `pn_id_{n}_content` from a `CollapseIds`-like counter of `prime-rs-core` (the same `next_unique`, deterministic in SSR/hydration); if needed, expose a small public function `unique_id(suffix)` in `collapsible` rather than duplicating the counter.
 
 ### D2. State lives in handlers, not signals
 `lastScrollLeft/Top`, `orientation`, `scrollXRatio/YRatio`, `lastPageX/Y`, drag flags are mutable instance state. Stored in `Rc<RefCell<State>>`/`StoredValue`, not in signals: recalculation must not trigger a Leptos re-render. The exception is `aria-valuenow`: PrimeNG updates it via change detection; we write the attribute directly to the DOM (`set_attribute`) from the `scroll` handler, so reactivity is not needed.

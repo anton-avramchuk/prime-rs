@@ -6,7 +6,7 @@ One component, one crate (`crates/prime-<name>`). The port is synced with PrimeN
 ## Structure
 
 ```
-crates/prime-core    config, ClassNames, z-index, pass-through
+crates/prime-rs-core    config, ClassNames, z-index, pass-through
 crates/prime-dom     positioning, focus trap, portal, ripple
 crates/prime-theme   static theme CSS (Aura)
 crates/prime-icons   PrimeNG SVG icons

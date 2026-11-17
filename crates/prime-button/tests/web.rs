@@ -6,7 +6,7 @@
 
 use leptos::prelude::*;
 use prime_button::Button;
-use prime_core::{OptProp, PrimeConfig, Prop, provide_prime_config};
+use prime_rs_core::{OptProp, PrimeConfig, Prop, provide_prime_config};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use wasm_bindgen::JsCast;

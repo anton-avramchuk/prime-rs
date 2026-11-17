@@ -22,8 +22,8 @@ mod state;
 
 use leptos::prelude::*;
 use prime_button::{Button, ButtonPt, ButtonSeverity};
-use prime_core::{ClassNames, OptProp, Prop, Pt, ZGroup, use_prime_config};
 use prime_icons::ChevronUpIcon;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, ZGroup, use_prime_config};
 
 pub use state::{Phase, ScrollTopBehavior, ScrollTopTarget, enter_classes, is_visible, leave_classes, root_classes};
 
@@ -74,7 +74,7 @@ pub fn ScrollTop(
     #[prop(optional)]
     pt: Option<ScrollTopPt>,
 ) -> impl IntoView {
-    let id = prime_core::ids::next_unique();
+    let id = prime_rs_core::ids::next_unique();
     let config = use_prime_config();
     let aria_label = match aria_label {
         Prop::Static(None) => Prop::Static(Some(config.locale.text("aria.scrollTop").to_owned())),

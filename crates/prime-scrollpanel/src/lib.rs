@@ -21,8 +21,8 @@ mod client;
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::collapsible::CollapseIds;
-use prime_core::{ClassNames, OptProp, Pt, all_static};
+use prime_rs_core::collapsible::CollapseIds;
+use prime_rs_core::{ClassNames, OptProp, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 

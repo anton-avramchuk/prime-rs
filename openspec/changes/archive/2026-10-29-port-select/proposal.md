@@ -19,9 +19,9 @@ Select is a single-value choice from a list in a dropdown panel; the most in-dem
 - `select`: the Select component: value and label, panel with options, selection by mouse and keyboard, search, groups, clear, structure and accessibility, `pt`, performance.
 
 ### Modified Capabilities
-<!-- None: `prime-core` only gets a public constant of translation keys if needed; the behaviour of existing components does not change. -->
+<!-- None: `prime-rs-core` only gets a public constant of translation keys if needed; the behaviour of existing components does not change. -->
 
 ## Impact
 
-- New crate `crates/prime-select` (`publish = false`); dependencies `prime-core`, `prime-dom`, `prime-icons` (`chevrondown`, `search`, `times`, `check`, `spinner`).
+- New crate `crates/prime-select` (`publish = false`); dependencies `prime-rs-core`, `prime-dom`, `prime-icons` (`chevrondown`, `search`, `times`, `check`, `spinner`).
 - Changed: workspace `Cargo.toml`, `upstream.toml` (`select`, `iconfield` in `theme.components`, `select` in `primeng_extra`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (browser job for `tests/web.rs`).

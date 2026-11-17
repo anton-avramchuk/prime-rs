@@ -7,9 +7,9 @@ use super::Demo;
 use leptos::prelude::*;
 use prime_avatar::Avatar;
 use prime_button::{Button, ButtonSeverity};
-use prime_core::Size;
 use prime_icons::{PlusIcon, SearchIcon, TrashIcon, UploadIcon};
 use prime_inputtext::InputText;
+use prime_rs_core::Size;
 use prime_toolbar::Toolbar;
 
 /// `/toolbar` page.

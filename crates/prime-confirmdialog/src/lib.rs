@@ -22,8 +22,8 @@ mod state;
 use leptos::prelude::*;
 use prime_button::Button;
 use prime_confirmation::{ConfirmButtonProps, ConfirmEvent, ConfirmEventType, ConfirmFocus, Confirmation, use_confirmation_service};
-use prime_core::{OptProp, Prop, Pt};
 use prime_dialog::{Dialog, DialogPosition, DialogPt};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{button_class, button_label, pick, position_of, root_class};
@@ -519,7 +519,7 @@ fn footer_button(core: &Arc<Core>, defaults: &Arc<Defaults>, confirmation: &Conf
             defaults.reject_aria_label.get(),
         )
     };
-    let default = prime_core::use_prime_config().locale.text(if accept { "accept" } else { "reject" }).to_owned();
+    let default = prime_rs_core::use_prime_config().locale.text(if accept { "accept" } else { "reject" }).to_owned();
     let label = button_label(own_label.or(comp_label).as_deref(), props.label.as_deref(), &default);
     let base = if accept { "p-confirmdialog-accept-button" } else { "p-confirmdialog-reject-button" };
     let class = button_class(base, own_class.or(comp_class).as_deref());

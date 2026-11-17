@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size, Variant};
 use prime_multiselect::{MultiSelect, MultiSelectDisplay, MultiSelectGroup, MultiSelectOption, MultiSelectPt};
+use prime_rs_core::{Pt, Size, Variant};
 
 fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)

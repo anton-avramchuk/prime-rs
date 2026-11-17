@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/dialog`. PrimeNG 21.1.10 sources: `dialog/dialog.ts`, `dialog/style/dialogstyle.ts`; demos `apps/showcase/doc/dialog/*-doc.ts`. Models in the project: `prime-drawer` (`visible`/`rendered`/`leaving` state, `Portal` with markup built inside a closure, `Core` with cleanup closures, `FocusTrap`, `block_body_scroll`, Escape on the topmost window, leave on `animationend` with a fallback timer), `prime-popover` (window listeners), `prime-core::zindex`.
+Requirements are in `specs/dialog`. PrimeNG 21.1.10 sources: `dialog/dialog.ts`, `dialog/style/dialogstyle.ts`; demos `apps/showcase/doc/dialog/*-doc.ts`. Models in the project: `prime-drawer` (`visible`/`rendered`/`leaving` state, `Portal` with markup built inside a closure, `Core` with cleanup closures, `FocusTrap`, `block_body_scroll`, Escape on the topmost window, leave on `animationend` with a fallback timer), `prime-popover` (window listeners), `prime-rs-core::zindex`.
 
 Observations from the source:
 - The `div.p-dialog-mask` mask is present **always** (also for a non-modal dialog): `position: fixed`, full screen, `display: flex`; window alignment via `justify-content` / `align-items` by `position`; `pointer-events: none` for a non-modal one, `pointer-events: auto` on the window root. In PrimeNG these rules are inline styles from `dialogstyle.ts`, they are not in the theme CSS: we write them inline ourselves.
@@ -24,7 +24,7 @@ Observations from the source:
 ## Decisions
 
 ### D1. Crate
-`prime-dialog` with `Dialog`, `DialogPosition`, `DialogPt`. Depends on `prime-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`, `windowmaximize`, `windowminimize`), `web-sys`.
+`prime-dialog` with `Dialog`, `DialogPosition`, `DialogPt`. Depends on `prime-rs-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`, `windowmaximize`, `windowminimize`), `web-sys`.
 
 ### D2. State
 As in `Drawer`: `visible` (desired), `rendered` (in DOM), `leaving` (leave playing); additionally `maximized: RwSignal<bool>`. A single `Effect` on `(visible, panel mounted)` triggers `opened()` / `begin_leave()`; `finish_leave()` — on the window's `animationend` or the fallback timer (700 ms; the animation is 150–300 ms, we take a common margin). Re-showing during leave returns the window to the "open" state.

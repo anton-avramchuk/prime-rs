@@ -10,7 +10,7 @@ use std::borrow::Cow;
 /// The component's own classes are not overwritten: the `class` from `Pt` is appended after them.
 ///
 /// ```
-/// use prime_core::Pt;
+/// use prime_rs_core::Pt;
 ///
 /// let pt = Pt::new().class("custom").attr("data-testid", "root");
 /// assert_eq!(pt.merge_class("p-button"), "p-button custom");
@@ -68,7 +68,7 @@ impl Pt {
     /// The component's own style plus the style from `Pt`; empty parts are skipped, trailing `;` are normalized.
     ///
     /// ```
-    /// use prime_core::Pt;
+    /// use prime_rs_core::Pt;
     ///
     /// let pt = Pt::new().style("color: red;");
     /// assert_eq!(pt.merge_style("margin: 4px"), "margin: 4px; color: red");

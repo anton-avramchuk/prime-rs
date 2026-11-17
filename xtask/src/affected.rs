@@ -1,7 +1,7 @@
 //! `affected`: which crates are affected by changes (for selective checks in CI).
 //!
 //! Rules:
-//! - a change to the shared core (`prime-core`, `prime-dom`), dependencies (`Cargo.toml`, `Cargo.lock`), the toolchain, `xtask`
+//! - a change to the shared core (`prime-rs-core`, `prime-dom`), dependencies (`Cargo.toml`, `Cargo.lock`), the toolchain, `xtask`
 //!   or CI/build configuration means a full run of the whole workspace;
 //! - otherwise, the changed crates and all crates that depend on them;
 //! - changes outside crates (docs, `openspec/`) affect nothing.
@@ -31,7 +31,7 @@ pub enum Affected {
 }
 
 /// Shared core crates: changing them affects everything.
-const CORE: &[&str] = &["prime-core", "prime-dom"];
+const CORE: &[&str] = &["prime-rs-core", "prime-dom"];
 /// Files and directories whose change requires a full run.
 const GLOBAL: &[&str] = &[
     "Cargo.toml",
@@ -173,12 +173,12 @@ mod tests {
 
     fn workspace() -> Vec<Pkg> {
         vec![
-            pkg("prime-core", "crates/prime-core", &[]),
+            pkg("prime-rs-core", "crates/prime-rs-core", &[]),
             pkg("prime-dom", "crates/prime-dom", &[]),
-            pkg("prime-icons", "crates/prime-icons", &["prime-core"]),
-            pkg("prime-button", "crates/prime-button", &["prime-core", "prime-dom", "prime-icons"]),
-            pkg("prime-badge", "crates/prime-badge", &["prime-core"]),
-            pkg("prime-chip", "crates/prime-chip", &["prime-core", "prime-icons"]),
+            pkg("prime-icons", "crates/prime-icons", &["prime-rs-core"]),
+            pkg("prime-button", "crates/prime-button", &["prime-rs-core", "prime-dom", "prime-icons"]),
+            pkg("prime-badge", "crates/prime-badge", &["prime-rs-core"]),
+            pkg("prime-chip", "crates/prime-chip", &["prime-rs-core", "prime-icons"]),
             pkg("showcase", "showcase", &["prime-button"]),
         ]
     }
@@ -207,7 +207,7 @@ mod tests {
 
     #[test]
     fn core_change_checks_everything() {
-        assert_eq!(affected(&workspace(), &files(&["crates/prime-core/src/lib.rs"])), Affected::All);
+        assert_eq!(affected(&workspace(), &files(&["crates/prime-rs-core/src/lib.rs"])), Affected::All);
         assert_eq!(affected(&workspace(), &files(&["crates/prime-dom/src/focus.rs"])), Affected::All);
     }
 
@@ -282,6 +282,6 @@ apps=true
         let pkgs = read_packages(Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap()).unwrap();
         let icons = pkgs.iter().find(|p| p.name == "prime-icons").unwrap();
         assert_eq!(icons.dir, "crates/prime-icons");
-        assert!(icons.deps.contains(&"prime-core".to_owned()));
+        assert!(icons.deps.contains(&"prime-rs-core".to_owned()));
     }
 }

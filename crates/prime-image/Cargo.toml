@@ -4,17 +4,17 @@ description = "prime-rs: Image component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr", "prime-dom/ssr", "prime-icons/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-dom/hydrate", "prime-icons/hydrate"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr", "prime-dom/ssr", "prime-icons/ssr"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate", "prime-dom/hydrate", "prime-icons/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 prime-dom = { workspace = true }
 prime-icons = { workspace = true, features = ["eye", "refresh", "undo", "searchminus", "searchplus", "times"] }
 wasm-bindgen = { workspace = true }

@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_fluid::{Fluid, FluidPt};
+use prime_rs_core::Pt;
 
 fn has(html: &str, wants: &[&str]) {
     for want in wants {

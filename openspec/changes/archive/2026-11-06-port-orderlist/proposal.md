@@ -24,5 +24,5 @@ OrderList — a list with a changeable order: the user selects items and moves t
 
 ## Impact
 
-- A new crate `crates/prime-orderlist` (`publish = false`); dependencies: `prime-core`, `prime-listbox`, `prime-button`, `prime-icons`.
+- A new crate `crates/prime-orderlist` (`publish = false`); dependencies: `prime-rs-core`, `prime-listbox`, `prime-button`, `prime-icons`.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

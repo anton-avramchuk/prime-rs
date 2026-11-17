@@ -1,6 +1,6 @@
 //! Pure Dock logic: position, classes, identifiers, keys and focus steps (based on PrimeNG `dock.ts` and `dockstyle.ts`).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::borrow::Cow;
 
 /// Dock position.

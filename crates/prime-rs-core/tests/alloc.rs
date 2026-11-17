@@ -1,6 +1,6 @@
 //! ClassNames: one allocation in `finish()`, zero in `finish_cow()` for constant strings (after the first interning).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;

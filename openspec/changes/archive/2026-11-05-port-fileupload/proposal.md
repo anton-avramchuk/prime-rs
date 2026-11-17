@@ -23,5 +23,5 @@ FileUpload — file upload: choosing with a button or drag and drop, type/size/c
 
 ## Impact
 
-- New crate `crates/prime-fileupload` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-button`, `prime-message`, `prime-progressbar`, `prime-badge`, `prime-icons`.
+- New crate `crates/prime-fileupload` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-button`, `prime-message`, `prime-progressbar`, `prime-badge`, `prime-icons`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

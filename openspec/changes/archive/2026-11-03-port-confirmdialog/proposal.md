@@ -25,5 +25,5 @@ ConfirmDialog is the seventh component of wave 4: a modal confirmation window ("
 
 ## Impact
 
-- New crate `crates/prime-confirmdialog` (`publish = false`); dependencies: `prime-core`, `prime-dialog`, `prime-button`, `prime-confirmation`, `web-sys`.
+- New crate `crates/prime-confirmdialog` (`publish = false`); dependencies: `prime-rs-core`, `prime-dialog`, `prime-button`, `prime-confirmation`, `web-sys`.
 - Changed: `prime-confirmation` (event type), workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places: `prime-confirmdialog`).

@@ -23,9 +23,9 @@ use leptos::html;
 use leptos::leptos_dom::helpers::{TimeoutHandle, WindowListenerHandle};
 use leptos::prelude::*;
 use prime_chip::Chip;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use prime_icons::{ChevronDownIcon, SpinnerIcon, TimesIcon};
 use prime_inputtext::{InputTextState, write_classes as input_classes};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use std::sync::Arc;
 
 pub use state::{
@@ -38,9 +38,9 @@ use leptos::ev;
 #[cfg(target_arch = "wasm32")]
 use leptos::wasm_bindgen::JsCast;
 #[cfg(target_arch = "wasm32")]
-use prime_core::ZGroup;
-#[cfg(target_arch = "wasm32")]
 use prime_dom::dom::{AlignMode, align_overlay};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::ZGroup;
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
@@ -599,7 +599,7 @@ impl Core {
         self.realign();
         if let Some(overlay) = self.overlay_ref.get_untracked() {
             let base = use_prime_config().z_index.base(ZGroup::Overlay);
-            let z = prime_core::zindex::generate(ZGroup::Overlay, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Overlay, base);
             self.z_index.set_value(Some(z));
             let overlay: web_sys::HtmlElement = overlay.unchecked_into();
             let _ = overlay.style().set_property("z-index", &z.to_string());
@@ -639,7 +639,7 @@ impl Core {
             handle.remove();
         }
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
         self.cancel_search();
     }
@@ -833,8 +833,8 @@ pub fn AutoComplete(
     on_blur: Option<Callback<web_sys::FocusEvent>>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let root_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let root_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let rows = Memo::new({
         let (suggestions, group) = (suggestions.clone(), group.clone());
         move |_| suggestions.with(|s| flatten(s, group.get()))

@@ -25,5 +25,5 @@ Dock is the fourth component of wave 4: a quick-launch panel of icons, pinned to
 
 ## Impact
 
-- A new crate `crates/prime-dock` (`publish = false`); dependencies: `prime-core`, `prime-badge`, `web-sys`.
+- A new crate `crates/prime-dock` (`publish = false`); dependencies: `prime-rs-core`, `prime-badge`, `web-sys`.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places).

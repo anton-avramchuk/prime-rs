@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/scrolltop`. PrimeNG 21.1.10 sources: `scrolltop/scrolltop.ts`, `scrolltop/style/scrolltopstyle.ts`; demos `apps/showcase/doc/scrolltop/{basic,element}-doc.ts`. Models in the project: `prime-button` (button), `prime-slider` (a `window` subscription from a handler, the handle in `StoredValue<_, LocalStorage>`, removal in `on_cleanup`), `prime-select` (`Overlay` group z-index, an `is_disposed()` check in timer closures), `prime_core::zindex`.
+Requirements are in `specs/scrolltop`. PrimeNG 21.1.10 sources: `scrolltop/scrolltop.ts`, `scrolltop/style/scrolltopstyle.ts`; demos `apps/showcase/doc/scrolltop/{basic,element}-doc.ts`. Models in the project: `prime-button` (button), `prime-slider` (a `window` subscription from a handler, the handle in `StoredValue<_, LocalStorage>`, removal in `on_cleanup`), `prime-select` (`Overlay` group z-index, an `is_disposed()` check in timer closures), `prime_rs_core::zindex`.
 
 Observations on the source:
 - The root is `p-button` itself with `styleClass = cn(cx('root'), styleClass)`; `buttonProps` default to `{ rounded: true }`. Icon: a custom class (`icon`), otherwise `ChevronUpIcon` with the `p-scrolltop-icon` class.
@@ -14,7 +14,7 @@ Observations on the source:
 ## Decisions
 
 ### D1. Crate and dependencies
-`prime-scrolltop` with `ScrollTop`, `ScrollTopTarget { Window, Parent }`, `ScrollTopBehavior { Smooth, Auto }`, `ScrollTopPt`. Depends on `prime-core`, `prime-button`, `prime-icons` (feature `chevronup`) and `web-sys`. The button is a `Button` with `rounded` (default `true`), `severity` and `raised` from props; root classes are added via `style_class`.
+`prime-scrolltop` with `ScrollTop`, `ScrollTopTarget { Window, Parent }`, `ScrollTopBehavior { Smooth, Auto }`, `ScrollTopPt`. Depends on `prime-rs-core`, `prime-button`, `prime-icons` (feature `chevronup`) and `web-sys`. The button is a `Button` with `rounded` (default `true`), `severity` and `raised` from props; root classes are added via `style_class`.
 
 ### D2. Pure logic (`state.rs`)
 - `is_visible(scroll: f64, threshold: f64) -> bool` — strict `>`.

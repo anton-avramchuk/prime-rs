@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-radiobutton` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `web-sys`), add it to the workspace; check `cargo check -p prime-radiobutton --all-features`
+- [x] 1.1 Create the crate `crates/prime-radiobutton` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `web-sys`), add it to the workspace; check `cargo check -p prime-radiobutton --all-features`
 - [x] 1.2 Implement `RadioButtonState`, `write_classes`, `data_p` per `radiobuttonstyle.ts` and `RadioButton.dataP`; check with a table of unit tests
 
 ## 2. Component

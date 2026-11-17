@@ -23,5 +23,5 @@ TreeTable — hierarchical data in a table: nodes with descendants, expansion, p
 
 ## Impact
 
-- New crate `crates/prime-treetable` (`publish = false`); dependencies: `prime-core`, `prime-table` (columns and model), `prime-dataview` (`clamp_first`), `prime-paginator`, `prime-checkbox`, `prime-badge`, `prime-icons`.
+- New crate `crates/prime-treetable` (`publish = false`); dependencies: `prime-rs-core`, `prime-table` (columns and model), `prime-dataview` (`clamp_first`), `prime-paginator`, `prime-checkbox`, `prime-badge`, `prime-icons`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

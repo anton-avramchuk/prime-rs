@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-divider` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`) and add it to the workspace; check `cargo check -p prime-divider --all-features`
+- [x] 1.1 Create the crate `crates/prime-divider` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`) and add it to the workspace; check `cargo check -p prime-divider --all-features`
 - [x] 1.2 Implement `DividerLayout`, `DividerType`, `DividerAlign`, `DividerState`, `write_classes`, `align_style`, `data_p` after `dividerstyle.ts` and `Divider.dataP`; verify with unit test tables all `layout` x `align` combinations (classes, style) and `data-p`
 
 ## 2. Component

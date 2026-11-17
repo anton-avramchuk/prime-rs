@@ -4,7 +4,7 @@
 
 use leptos::prelude::*;
 use prime_autocomplete::{AutoComplete, AutoCompleteOption, AutoCompletePt};
-use prime_core::{Pt, Size, Variant};
+use prime_rs_core::{Pt, Size, Variant};
 
 fn options() -> Vec<AutoCompleteOption> {
     vec![AutoCompleteOption::new("Apple"), AutoCompleteOption::new("Banana").value("b")]

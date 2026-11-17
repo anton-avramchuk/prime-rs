@@ -29,9 +29,9 @@ use leptos::either::Either;
 use leptos::html;
 use leptos::leptos_dom::helpers::TimeoutHandle;
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use prime_icons::{AngleDownIcon, AngleUpIcon, TimesIcon};
 use prime_inputtext::{InputTextState, write_classes as input_classes};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -243,7 +243,7 @@ pub fn InputNumber(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let value = value.unwrap_or_else(|| RwSignal::new(default_value));
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let props = Arc::new(Props {
         value,
         display: RwSignal::new(String::new()),

@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-message` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-icons` (`times`), `web-sys`), add to the workspace; check `cargo check -p prime-message --all-features`
+- [x] 1.1 Create the crate `crates/prime-message` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `prime-icons` (`times`), `web-sys`), add to the workspace; check `cargo check -p prime-message --all-features`
 - [x] 1.2 Implement `MessageSeverity`, `MessageVariant`, `MessageState`, `write_classes`, `data_p` per `messagestyle.ts` and `Message.dataP`; verify with a table of unit tests
 
 ## 2. Component

@@ -4,7 +4,7 @@
 
 use super::Demo;
 use leptos::prelude::*;
-use prime_core::Size;
+use prime_rs_core::Size;
 use prime_selectbutton::{SelectButton, SelectButtonOption};
 
 fn state_options() -> Vec<SelectButtonOption> {

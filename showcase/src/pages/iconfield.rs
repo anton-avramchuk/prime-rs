@@ -4,12 +4,12 @@
 
 use super::Demo;
 use leptos::prelude::*;
-use prime_core::Size;
 use prime_floatlabel::FloatLabel;
 use prime_iconfield::{IconField, IconPosition, InputIcon};
 use prime_icons::{CheckIcon, EyeIcon, SearchIcon, SpinnerIcon};
 use prime_iftalabel::IftaLabel;
 use prime_inputtext::InputText;
+use prime_rs_core::Size;
 
 /// `/iconfield` page.
 #[component]

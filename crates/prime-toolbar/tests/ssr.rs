@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 use prime_toolbar::{Toolbar, ToolbarPt};
 
 fn has(html: &str, wants: &[&str]) {

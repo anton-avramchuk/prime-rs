@@ -25,5 +25,5 @@ Listbox is the tenth component of wave 3: a list of options from which one or se
 
 ## Impact
 
-- New crate `crates/prime-listbox` (`publish = false`); dependencies: `prime-core`, `prime-icons`, `prime-checkbox` (only `CheckboxState`, classes and `data-p` of the checkbox), `web-sys`.
+- New crate `crates/prime-listbox` (`publish = false`); dependencies: `prime-rs-core`, `prime-icons`, `prime-checkbox` (only `CheckboxState`, classes and `data-p` of the checkbox), `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

@@ -24,17 +24,17 @@ use leptos::either::Either;
 use leptos::prelude::*;
 use prime_button::Button;
 use prime_confirmation::{ConfirmButtonProps, ConfirmEvent, ConfirmFocus, Confirmation, use_confirmation_service};
-use prime_core::props::Size;
-use prime_core::{OptProp, Prop, Pt};
 use prime_dom::Portal;
+use prime_rs_core::props::Size;
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{accepts_key, arrow_left, button_label, focus_target, is_flipped, outside_click, root_classes};
 
 #[cfg(target_arch = "wasm32")]
-use prime_core::{ZGroup, use_prime_config};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::{AlignMode, align_overlay};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::{ZGroup, use_prime_config};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -101,7 +101,7 @@ impl Core {
             cleanup();
         }
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
     }
 
@@ -173,7 +173,7 @@ impl Core {
         let confirmation = self.confirmation.get_value().unwrap_or_default();
         if self.auto_z_index.get_untracked() {
             let base = use_prime_config().z_index.base(ZGroup::Overlay) + self.base_z_index.get_untracked();
-            let z = prime_core::zindex::generate(ZGroup::Overlay, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Overlay, base);
             self.z_index.set_value(Some(z));
             let _ = panel.style().set_property("z-index", &z.to_string());
         }
@@ -403,7 +403,7 @@ fn footer_button(confirmation: &Confirmation, accept: bool, icon: Option<ViewFn>
         if accept { confirmation.accept_button_props.clone() } else { confirmation.reject_button_props.clone() }.unwrap_or_default();
     let (label, default_key) =
         if accept { (confirmation.accept_label.clone(), "accept") } else { (confirmation.reject_label.clone(), "reject") };
-    let default = prime_core::use_prime_config().locale.text(default_key).to_owned();
+    let default = prime_rs_core::use_prime_config().locale.text(default_key).to_owned();
     let label = button_label(props.label.as_deref(), label.as_deref(), &default);
     let extra = if accept { confirmation.accept_button_style_class.clone() } else { confirmation.reject_button_style_class.clone() };
     let base = if accept { "p-confirmpopup-accept-button" } else { "p-confirmpopup-reject-button" };

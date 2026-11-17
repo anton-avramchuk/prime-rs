@@ -18,7 +18,7 @@ impl CollapseState {
     ///
     /// ```
     /// use leptos::prelude::*;
-    /// use prime_core::collapsible::CollapseState;
+    /// use prime_rs_core::collapsible::CollapseState;
     ///
     /// let own = CollapseState::new(None, true);
     /// assert!(own.get_untracked());
@@ -78,7 +78,7 @@ impl CollapseIds {
     /// and outside it from the global counter.
     ///
     /// ```
-    /// use prime_core::collapsible::CollapseIds;
+    /// use prime_rs_core::collapsible::CollapseIds;
     ///
     /// let ids = CollapseIds::new(Some("p1"));
     /// assert_eq!((ids.header.as_str(), ids.content.as_str(), ids.titlebar.as_str()), ("p1_header", "p1_content", "p1-titlebar"));

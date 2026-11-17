@@ -1,6 +1,6 @@
 //! Pure SplitButton logic: root classes and menu-opening keys (after `splitbuttonstyle.ts` and `onDropdownButtonKeydown`).
 
-use prime_core::{ClassNames, Size};
+use prime_rs_core::{ClassNames, Size};
 use std::borrow::Cow;
 
 /// Root classes: `p-splitbutton p-component` and modifiers `raised`, `rounded`, `outlined`, `text`, size (`small → sm`, otherwise `lg`).

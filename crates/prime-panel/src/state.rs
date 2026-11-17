@@ -1,6 +1,6 @@
 //! Pure Panel logic: classes and `data-p` (based on `panelstyle.ts` and `Panel.dataP` in PrimeNG).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Icon position in the header (`iconPos`).

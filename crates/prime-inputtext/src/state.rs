@@ -1,6 +1,6 @@
 //! Pure InputText logic: classes and `data-p` (after PrimeNG `inputtextstyle.ts` and `InputText.dataP`).
 
-use prime_core::{ClassNames, DataP, Size, Variant};
+use prime_rs_core::{ClassNames, DataP, Size, Variant};
 use std::borrow::Cow;
 
 /// Snapshot of the properties that affect classes and `data-p`.

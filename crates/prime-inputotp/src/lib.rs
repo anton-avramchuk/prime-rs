@@ -18,8 +18,8 @@
 mod state;
 
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use prime_inputtext::{InputTextState, data_p, write_classes};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use std::sync::Arc;
 use web_sys::wasm_bindgen::JsCast;
 

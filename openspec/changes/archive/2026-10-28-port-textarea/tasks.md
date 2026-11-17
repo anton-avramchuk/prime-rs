@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-textarea` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `web-sys`), add it to the workspace; check `cargo check -p prime-textarea --all-features`
+- [x] 1.1 Create the crate `crates/prime-textarea` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `web-sys`), add it to the workspace; check `cargo check -p prime-textarea --all-features`
 - [x] 1.2 Implement `TextareaState`, `write_classes` per `textareastyle.ts` and the pure function `fit_height` for the auto-resize; check with a table of unit tests
 
 ## 2. Component

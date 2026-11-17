@@ -2,7 +2,7 @@
 
 ## 1. Crate
 
-- [x] 1.1 Create the crate `crates/prime-card` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`) and add it to the workspace; check `cargo check -p prime-card --all-features`
+- [x] 1.1 Create the crate `crates/prime-card` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`) and add it to the workspace; check `cargo check -p prime-card --all-features`
 
 ## 2. Component
 

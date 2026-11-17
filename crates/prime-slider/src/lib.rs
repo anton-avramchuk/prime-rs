@@ -23,7 +23,7 @@ use leptos::ev;
 use leptos::html;
 use leptos::prelude::*;
 use leptos::wasm_bindgen::JsCast;
-use prime_core::{ClassNames, OptProp, Prop, Pt};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 

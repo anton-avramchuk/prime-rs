@@ -17,9 +17,9 @@
 mod state;
 
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Pt};
 use prime_dom::Portal;
 use prime_icons::{EyeIcon, RefreshIcon, SearchMinusIcon, SearchPlusIcon, TimesIcon, UndoIcon};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{
@@ -30,9 +30,9 @@ pub use state::{
 #[cfg(target_arch = "wasm32")]
 use leptos::leptos_dom::helpers::{TimeoutHandle, set_timeout_with_handle};
 #[cfg(target_arch = "wasm32")]
-use prime_core::{ZGroup, use_prime_config};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::{FocusTrap, block_body_scroll, unblock_body_scroll};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::{ZGroup, use_prime_config};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -130,7 +130,7 @@ impl Core {
     /// Releases the layer and the scroll lock.
     fn release_layer(&self) {
         if let Some(z) = self.z_index.try_update(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
         if self.scroll_blocked.try_update_value(std::mem::take).unwrap_or(false) {
             #[cfg(target_arch = "wasm32")]
@@ -174,7 +174,7 @@ impl Core {
     fn opened(self: &Arc<Self>) {
         if self.z_index.get_untracked().is_none() {
             let base = use_prime_config().z_index.base(ZGroup::Modal);
-            self.z_index.set(Some(prime_core::zindex::generate(ZGroup::Modal, base)));
+            self.z_index.set(Some(prime_rs_core::zindex::generate(ZGroup::Modal, base)));
         }
         if !self.scroll_blocked.get_value() {
             block_body_scroll();
@@ -191,7 +191,7 @@ impl Core {
             }
             // Another layer (for example, a dialog) may lie over the preview: only the topmost one is closed.
             let own = this.z_index.get_untracked().unwrap_or(0);
-            if own >= prime_core::zindex::current() {
+            if own >= prime_rs_core::zindex::current() {
                 e.prevent_default();
                 this.close();
                 this.focus_preview_button();
@@ -520,7 +520,7 @@ pub fn Image(
 
 /// Translation for the label: in SSR it is taken from the configuration the same way as in the browser.
 fn use_prime_config_text(key: &str) -> String {
-    prime_core::use_prime_config().locale.text(key).to_owned()
+    prime_rs_core::use_prime_config().locale.text(key).to_owned()
 }
 
 /// Properties needed only when rendering the preview.

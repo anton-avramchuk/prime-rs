@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Variant};
 use prime_password::{Password, PasswordPt};
+use prime_rs_core::{Pt, Variant};
 
 #[test]
 fn default_markup() {

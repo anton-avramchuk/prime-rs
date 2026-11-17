@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_divider::{Divider, DividerAlign, DividerLayout, DividerPt, DividerType};
+use prime_rs_core::Pt;
 
 #[test]
 fn defaults() {

@@ -3,9 +3,9 @@
 #![recursion_limit = "512"]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_listbox::ListboxOption;
 use prime_orderlist::{ControlsPosition, OrderList, OrderListPt};
+use prime_rs_core::Pt;
 
 fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)

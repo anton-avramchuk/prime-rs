@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-checkbox` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-icons`, `web-sys`), add it to the workspace; check `cargo check -p prime-checkbox --all-features`
+- [x] 1.1 Create the crate `crates/prime-checkbox` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `prime-icons`, `web-sys`), add it to the workspace; check `cargo check -p prime-checkbox --all-features`
 - [x] 1.2 Implement `CheckboxState`, `write_classes`, `data_p` per `checkboxstyle.ts` and `Checkbox.dataP`; check with a table of unit tests
 
 ## 2. Component

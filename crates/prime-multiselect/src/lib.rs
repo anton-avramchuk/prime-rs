@@ -30,10 +30,10 @@ use leptos::prelude::*;
 use leptos::wasm_bindgen::JsCast;
 use prime_checkbox::CheckboxState;
 use prime_chip::Chip;
-use prime_core::ids::next_unique;
-use prime_core::{ClassNames, DataP, OptProp, Prop, Pt, Size, Variant, ZGroup, use_prime_config};
 use prime_dom::dom::{AlignMode, align_overlay};
 use prime_icons::{CheckIcon, ChevronDownIcon, SearchIcon, SpinnerIcon, TimesIcon};
+use prime_rs_core::ids::next_unique;
+use prime_rs_core::{ClassNames, DataP, OptProp, Prop, Pt, Size, Variant, ZGroup, use_prime_config};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -327,7 +327,7 @@ pub fn MultiSelect(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let locale = use_prime_config().locale;
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let dom_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", next_unique()));
     let props = Arc::new(Props {
         options,
@@ -1274,7 +1274,7 @@ impl Props {
     fn opened(self: &Arc<Self>) {
         if let (Some(overlay), Some(root)) = (self.overlay_ref.get_untracked(), self.root_ref.get_untracked()) {
             let base = use_prime_config().z_index.base(ZGroup::Overlay);
-            let z = prime_core::zindex::generate(ZGroup::Overlay, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Overlay, base);
             self.z_index.set_value(Some(z));
             let overlay: web_sys::HtmlElement = overlay.unchecked_into();
             let _ = overlay.style().set_property("z-index", &z.to_string());
@@ -1310,7 +1310,7 @@ impl Props {
             handle.remove();
         }
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
         if let Some(handle) = self.search_timer.try_update_value(Option::take).flatten() {
             handle.clear();

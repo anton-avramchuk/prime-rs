@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_panel::{IconPos, Panel, PanelPt};
+use prime_rs_core::Pt;
 
 fn has(html: &str, wants: &[&str]) {
     for want in wants {

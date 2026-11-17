@@ -341,12 +341,12 @@ pub struct RootState {
     /// Full width.
     pub fluid: bool,
     /// Size.
-    pub size: Option<prime_core::Size>,
+    pub size: Option<prime_rs_core::Size>,
 }
 
 /// Root classes in the order of `multiselectstyle.ts`.
-pub fn write_root_classes(cn: &mut prime_core::ClassNames, s: &RootState) {
-    use prime_core::Size;
+pub fn write_root_classes(cn: &mut prime_rs_core::ClassNames, s: &RootState) {
+    use prime_rs_core::Size;
     cn.add("p-multiselect p-component p-inputwrapper")
         .add_if(s.chip, "p-multiselect-display-chip")
         .add_if(s.disabled, "p-disabled")
@@ -363,23 +363,23 @@ pub fn write_root_classes(cn: &mut prime_core::ClassNames, s: &RootState) {
 
 /// Root `data-p` value: `invalid`, `disabled`, `focus`, `fluid`, `filled`, size.
 pub fn data_p(s: &RootState) -> std::borrow::Cow<'static, str> {
-    let mut d = prime_core::DataP::new();
+    let mut d = prime_rs_core::DataP::new();
     d.add_if(s.invalid, "invalid")
         .add_if(s.disabled, "disabled")
         .add_if(s.focused, "focus")
         .add_if(s.fluid, "fluid")
         .add_if(s.variant_filled, "filled")
-        .add_opt(s.size.map(prime_core::Size::as_str));
+        .add_opt(s.size.map(prime_rs_core::Size::as_str));
     d.finish_cow()
 }
 
 /// Label classes: `p-placeholder` for the hint, `p-multiselect-label-empty` with no hint and no selection.
-pub fn write_label_classes(cn: &mut prime_core::ClassNames, placeholder_shown: bool, empty: bool) {
+pub fn write_label_classes(cn: &mut prime_rs_core::ClassNames, placeholder_shown: bool, empty: bool) {
     cn.add("p-multiselect-label").add_if(placeholder_shown, "p-placeholder").add_if(empty, "p-multiselect-label-empty");
 }
 
 /// Option classes.
-pub fn write_option_classes(cn: &mut prime_core::ClassNames, highlighted: bool, focused: bool, disabled: bool) {
+pub fn write_option_classes(cn: &mut prime_rs_core::ClassNames, highlighted: bool, focused: bool, disabled: bool) {
     cn.add("p-multiselect-option")
         .add_if(highlighted, "p-multiselect-option-selected")
         .add_if(focused, "p-focus")
@@ -583,7 +583,7 @@ mod tests {
 
     #[test]
     fn root_classes_and_data_p() {
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_root_classes(&mut cn, &RootState::default());
         assert_eq!(cn.finish(), "p-multiselect p-component p-inputwrapper");
         let full = RootState {
@@ -595,9 +595,9 @@ mod tests {
             filled: true,
             open: true,
             fluid: true,
-            size: Some(prime_core::Size::Large),
+            size: Some(prime_rs_core::Size::Large),
         };
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_root_classes(&mut cn, &full);
         assert_eq!(
             cn.finish(),
@@ -606,20 +606,20 @@ mod tests {
         assert_eq!(data_p(&full), "invalid disabled focus fluid filled large");
         assert_eq!(data_p(&RootState::default()), "");
         let focus_only = RootState { open: true, ..RootState::default() };
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_root_classes(&mut cn, &focus_only);
         assert!(cn.finish().contains("p-inputwrapper-focus"), "an open panel gives p-inputwrapper-focus");
     }
 
     #[test]
     fn label_and_option_classes() {
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_label_classes(&mut cn, true, false);
         assert_eq!(cn.finish(), "p-multiselect-label p-placeholder");
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_label_classes(&mut cn, false, true);
         assert_eq!(cn.finish(), "p-multiselect-label p-multiselect-label-empty");
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_option_classes(&mut cn, true, true, true);
         assert_eq!(cn.finish(), "p-multiselect-option p-multiselect-option-selected p-focus p-disabled");
     }

@@ -21,9 +21,9 @@ pub mod data;
 
 use data::{clamp_first, page, prepare, total};
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Pt, use_prime_config};
 use prime_icons::SpinnerIcon;
 use prime_paginator::{Paginator, PaginatorPt, PaginatorState, RowsPerPage};
+use prime_rs_core::{OptProp, Prop, Pt, use_prime_config};
 use std::cmp::Ordering;
 use std::sync::Arc;
 

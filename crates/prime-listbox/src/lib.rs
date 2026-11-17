@@ -27,9 +27,9 @@ use leptos::leptos_dom::helpers::TimeoutHandle;
 use leptos::prelude::*;
 use leptos::wasm_bindgen::JsCast;
 use prime_checkbox::CheckboxState;
-use prime_core::ids::next_unique;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Variant, use_prime_config};
 use prime_icons::{BlankIcon, CheckIcon, SearchIcon};
+use prime_rs_core::ids::next_unique;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Variant, use_prime_config};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -245,7 +245,7 @@ pub fn Listbox(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let locale = use_prime_config().locale;
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let dom_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", next_unique()));
     let props = Arc::new(Props {
         options,

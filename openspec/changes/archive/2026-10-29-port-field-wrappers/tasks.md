@@ -2,7 +2,7 @@
 
 ## 1. Fluid context and consumers
 
-- [x] 1.1 `prime-core::fluid`: `FluidContext`, `provide_fluid`, `in_fluid`, `resolve_fluid`; tests (outside the context, inside, nesting, explicit value takes precedence)
+- [x] 1.1 `prime-rs-core::fluid`: `FluidContext`, `provide_fluid`, `in_fluid`, `resolve_fluid`; tests (outside the context, inside, nesting, explicit value takes precedence)
 - [x] 1.2 `Button`, `InputText`, `Textarea`, `InputNumber`, `Select`: `fluid: OptProp<bool>` and resolution via `resolve_fluid` (static and reactive branches); existing tests stay green, new SSR tests for inheritance in each crate
 
 ## 2. New crates

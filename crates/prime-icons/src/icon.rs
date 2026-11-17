@@ -1,7 +1,7 @@
 //! Shared icon rendering.
 
 use leptos::prelude::*;
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::borrow::Cow;
 
 /// `viewBox` of all PrimeNG icons.

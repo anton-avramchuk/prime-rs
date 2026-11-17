@@ -1,6 +1,6 @@
 //! Pure Timeline logic: from properties to classes and `data-p` (after PrimeNG `timelinestyle.ts` and `Timeline.dataP`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Line position relative to the content.

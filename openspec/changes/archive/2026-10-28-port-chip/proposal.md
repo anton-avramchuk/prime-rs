@@ -22,5 +22,5 @@ Chip is the next component of wave 1 (Tag has been ported). Unlike Badge and Tag
 
 ## Impact
 
-- A new crate `crates/prime-chip` (`publish = false`); depends on `prime-core` and `prime-icons` (feature `timescircle`).
+- A new crate `crates/prime-chip` (`publish = false`); depends on `prime-rs-core` and `prime-icons` (feature `timescircle`).
 - Changes to `showcase`, `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.

@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Create the crate `crates/prime-selectbutton` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core` and `prime-togglebutton`, dev dependencies for wasm as in `prime-togglebutton`), add it to the workspace; check `cargo check -p prime-selectbutton --all-features`
+- [x] 1.1 Create the crate `crates/prime-selectbutton` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core` and `prime-togglebutton`, dev dependencies for wasm as in `prime-togglebutton`), add it to the workspace; check `cargo check -p prime-selectbutton --all-features`
 - [x] 1.2 `state.rs`: `SelectButtonOption`, `SelectButtonValue`, pure selection logic (single and multiple modes, `allow_empty`, `getAllowEmpty`), root classes and `data-p` per `selectbuttonstyle.ts` and `SelectButton.dataP`; table-driven tests
 - [x] 1.3 Implement `SelectButton`, `SelectButtonPt`, `SelectButtonChange`, `SelectButtonOptionClick` (options, value, button signal synchronization, the `item_template` slot, attributes, events); SSR tests (structure, labels, selected option, `disabled`, classes, `data-p`, `size`/`fluid`/`style_class`, slot, `pt`)
 - [x] 1.4 Browser tests `tests/web.rs`: select and deselect, `allow_empty`, multiple selection, `disabled`, Enter and Space, one `on_change` per press, `aria-pressed` synchronization after a rejected click, external signal and `options` change

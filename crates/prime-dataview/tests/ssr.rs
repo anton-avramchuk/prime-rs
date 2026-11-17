@@ -3,8 +3,8 @@
 #![recursion_limit = "512"]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_dataview::{DataView, DataViewLayout, DataViewPt, PaginatorPosition};
+use prime_rs_core::Pt;
 
 fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)

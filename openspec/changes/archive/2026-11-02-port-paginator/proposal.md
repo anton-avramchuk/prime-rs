@@ -25,5 +25,5 @@ Paginator is the twelfth wave 3 component: pagination (first/previous/next/last 
 
 ## Impact
 
-- New crate `crates/prime-paginator` (`publish = false`); dependencies: `prime-core`, `prime-icons`, `prime-select`, `prime-inputnumber`, `web-sys`.
+- New crate `crates/prime-paginator` (`publish = false`); dependencies: `prime-rs-core`, `prime-icons`, `prime-select`, `prime-inputnumber`, `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

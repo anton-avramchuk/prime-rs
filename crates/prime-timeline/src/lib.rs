@@ -16,7 +16,7 @@
 mod state;
 
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{TimelineAlign, TimelineLayout, data_p, write_classes};

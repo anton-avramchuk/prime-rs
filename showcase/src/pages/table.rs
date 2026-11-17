@@ -6,7 +6,7 @@
 
 use super::Demo;
 use leptos::prelude::*;
-use prime_core::Size;
+use prime_rs_core::Size;
 use prime_table::model::{FilterMeta, MatchMode, SelectionMode, SortMode};
 use prime_table::{Column, EditEvent, EditMode, LazyLoadEvent, Table};
 

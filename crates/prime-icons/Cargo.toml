@@ -4,13 +4,13 @@ description = "prime-rs: PrimeNG SVG icons"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate"]
 # Icons: one feature per icon (PrimeNG directory name), `all-icons` enables all of them.
 # BEGIN GENERATED FEATURES
 angledoubledown = []
@@ -72,7 +72,7 @@ all-icons = ["blank", "angledoubledown", "angledoubleleft", "angledoubleright", 
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 
 [dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }

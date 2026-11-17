@@ -235,7 +235,7 @@ pub fn all_selected(entries: &[Entry], selected: &[String]) -> bool {
 }
 
 /// Root classes in the order of `listboxstyle.ts`.
-pub fn write_root_classes(cn: &mut prime_core::ClassNames, striped: bool, disabled: bool, invalid: bool, fluid: bool) {
+pub fn write_root_classes(cn: &mut prime_rs_core::ClassNames, striped: bool, disabled: bool, invalid: bool, fluid: bool) {
     cn.add("p-listbox p-component")
         .add_if(striped, "p-listbox-striped")
         .add_if(disabled, "p-disabled")
@@ -244,13 +244,13 @@ pub fn write_root_classes(cn: &mut prime_core::ClassNames, striped: bool, disabl
 }
 
 /// Option classes.
-pub fn write_option_classes(cn: &mut prime_core::ClassNames, highlighted: bool, focused: bool, disabled: bool) {
+pub fn write_option_classes(cn: &mut prime_rs_core::ClassNames, highlighted: bool, focused: bool, disabled: bool) {
     cn.add("p-listbox-option").add_if(highlighted, "p-listbox-option-selected").add_if(focused, "p-focus").add_if(disabled, "p-disabled");
 }
 
 /// Value of the root `data-p`: `invalid`, `disabled`.
 pub fn data_p(invalid: bool, disabled: bool) -> std::borrow::Cow<'static, str> {
-    let mut d = prime_core::DataP::new();
+    let mut d = prime_rs_core::DataP::new();
     d.add_if(invalid, "invalid").add_if(disabled, "disabled");
     d.finish_cow()
 }
@@ -434,13 +434,13 @@ mod tests {
 
     #[test]
     fn classes_and_data_p() {
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_root_classes(&mut cn, true, true, true, true);
         assert_eq!(cn.finish(), "p-listbox p-component p-listbox-striped p-disabled p-invalid p-listbox-fluid");
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_root_classes(&mut cn, false, false, false, false);
         assert_eq!(cn.finish(), "p-listbox p-component");
-        let mut cn = prime_core::ClassNames::new();
+        let mut cn = prime_rs_core::ClassNames::new();
         write_option_classes(&mut cn, true, true, true);
         assert_eq!(cn.finish(), "p-listbox-option p-listbox-option-selected p-focus p-disabled");
         assert_eq!(data_p(true, true), "invalid disabled");

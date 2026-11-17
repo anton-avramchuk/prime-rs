@@ -18,10 +18,10 @@
 mod state;
 
 use leptos::prelude::*;
-use prime_core::collapsible::hidden_style;
-use prime_core::{OptProp, Prop, Pt};
 use prime_icons::{ChevronDownIcon, ChevronRightIcon};
 use prime_menu::{MenuCommand, MenuItem, can_run_command, should_prevent_default};
+use prime_rs_core::collapsible::hidden_style;
+use prime_rs_core::{OptProp, Prop, Pt};
 use prime_tieredmenu::{Node, aria_pos_inset, aria_set_size, build, is_printable, item_at, item_id};
 use std::collections::HashSet;
 use std::sync::Arc;
@@ -603,7 +603,7 @@ fn bind_collapse(region: NodeRef<leptos::html::Div>, collapsed: impl Fn() -> boo
             && p != now
         {
             let el: web_sys::HtmlElement = (*el).clone();
-            prime_core::collapsible::animate(&el, !now, || {});
+            prime_rs_core::collapsible::animate(&el, !now, || {});
         }
         now
     });
@@ -653,7 +653,7 @@ pub fn PanelMenu(
     header_icon: Option<ViewFn>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let menu_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let menu_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let nodes = Memo::new({
         let model = model.clone();
         move |_| model.with(|items| build(items))
@@ -671,7 +671,7 @@ pub fn PanelMenu(
     let class = {
         let (pt, style_class) = (pt.clone(), style_class.clone());
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-panelmenu p-component");
             let extra = style_class.with(|c| c.clone());
             cn.add_user(extra.as_deref());
@@ -723,7 +723,7 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
     let header_class = {
         let (pt, item, active) = (pt.clone(), item.clone(), active.clone());
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-panelmenu-header").add_if(active() && group, "p-panelmenu-header-active").add_if(item.disabled, "p-disabled");
             cn.add_user(item.style_class.as_deref());
             pt.header.merge_class(&cn.finish_cow()).into_owned()
@@ -736,7 +736,7 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
     let container_class = {
         let (pt, active) = (pt.clone(), active.clone());
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-panelmenu-content-container").add_if(active(), "p-panelmenu-expanded");
             pt.content_container.merge_class(&cn.finish_cow()).into_owned()
         }
@@ -934,7 +934,7 @@ fn item_view(ctx: &Ctx, panel: PanelFocus, root_key: &str, node: &Node, item: &M
     let class = {
         let (pt, item, key) = (pt.clone(), item.clone(), key.clone());
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-panelmenu-item").add_if(focused(&key) && !item.disabled, "p-focus").add_if(item.disabled, "p-disabled");
             cn.add_user(item.style_class.as_deref());
             pt.item.merge_class(&cn.finish_cow()).into_owned()
@@ -959,7 +959,7 @@ fn item_view(ctx: &Ctx, panel: PanelFocus, root_key: &str, node: &Node, item: &M
         let container_class = {
             let (pt, active) = (pt.clone(), active.clone());
             move || {
-                let mut cn = prime_core::ClassNames::new();
+                let mut cn = prime_rs_core::ClassNames::new();
                 cn.add("p-panelmenu-content-container").add_if(active(), "p-panelmenu-expanded");
                 pt.content_container.merge_class(&cn.finish_cow()).into_owned()
             }

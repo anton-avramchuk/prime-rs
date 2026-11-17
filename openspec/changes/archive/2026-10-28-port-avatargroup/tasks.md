@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Create the crate `crates/prime-avatargroup` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`), add it to the workspace; check `cargo check -p prime-avatargroup --all-features`
+- [x] 1.1 Create the crate `crates/prime-avatargroup` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`), add it to the workspace; check `cargo check -p prime-avatargroup --all-features`
 - [x] 1.2 Implement `AvatarGroup` (root, classes, `style`, `style_class`, `pt`, two branches) and rustdoc with an example; check with SSR tests, parity and `cargo test -p prime-avatargroup --all-features`
 
 ## 2. Showcase and e2e

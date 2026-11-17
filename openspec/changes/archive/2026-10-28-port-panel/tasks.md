@@ -2,12 +2,12 @@
 
 ## 1. Shared collapsing logic
 
-- [x] 1.1 The module `prime-core::collapsible`: `CollapseState` (an external `RwSignal<bool>` or an internal one), `CollapseIds`, the ARIA attribute functions; check with unit tests (a state table, identifiers)
+- [x] 1.1 The module `prime-rs-core::collapsible`: `CollapseState` (an external `RwSignal<bool>` or an internal one), `CollapseIds`, the ARIA attribute functions; check with unit tests (a state table, identifiers)
 - [x] 1.2 The client `animate` (the classes `p-collapsible-*-active`, `animationend` + a fallback timer, completion) and setting `tabindex` on the descendants; check with `wasm-bindgen-test`
 
 ## 2. Crate and component
 
-- [x] 2.1 Create the crate `crates/prime-panel` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-icons` with `minus`, `plus`), add it to the workspace; check `cargo check -p prime-panel --all-features`
+- [x] 2.1 Create the crate `crates/prime-panel` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `prime-icons` with `minus`, `plus`), add it to the workspace; check `cargo check -p prime-panel --all-features`
 - [x] 2.2 Implement `PanelPt`, the classes per `panelstyle.ts`, the markup (`macro_rules!`), two branches, slots; check with SSR tests (structure, classes, ARIA, `show_header`, `icon_pos`, `pt`) and branch parity
 - [x] 2.3 Toggling (`toggler = icon|header`), `on_before_toggle`, `on_after_toggle`, the icon change; check with `wasm-bindgen-test` (click, keyboard, no double toggle, `aria-expanded`, `tabindex`)
 - [x] 2.4 rustdoc with an example; `cargo test -p prime-panel --all-features`
@@ -28,4 +28,4 @@
 
 ## Workflow follow-up
 
-- Archive after CI; the next change is `port-fieldset` on top of `prime-core::collapsible`.
+- Archive after CI; the next change is `port-fieldset` on top of `prime-rs-core::collapsible`.

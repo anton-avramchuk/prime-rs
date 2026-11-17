@@ -2,8 +2,8 @@
 
 ## 1. The `Prop<T>` property type
 
-- [x] 1.1 Implement `Prop<T>`/`OptProp<T>` in `prime-core` (`From` constructors, `Default`, `get`, `with`, `get_untracked`, `is_static`); verify the `core-runtime` spec scenarios with unit tests (a static value creates no primitives, a signal reacts, the default value) and by compiling the calls `value="5"`, `RwSignal`, `Memo`
-- [x] 1.2 Document `Prop` in rustdoc with examples and check `cargo test --doc -p prime-core`; if the `Prop<Option<T>>` coercions do not compile — move `OptProp<T>` into a separate type and record the decision in `design.md`
+- [x] 1.1 Implement `Prop<T>`/`OptProp<T>` in `prime-rs-core` (`From` constructors, `Default`, `get`, `with`, `get_untracked`, `is_static`); verify the `core-runtime` spec scenarios with unit tests (a static value creates no primitives, a signal reacts, the default value) and by compiling the calls `value="5"`, `RwSignal`, `Memo`
+- [x] 1.2 Document `Prop` in rustdoc with examples and check `cargo test --doc -p prime-rs-core`; if the `Prop<Option<T>>` coercions do not compile — move `OptProp<T>` into a separate type and record the decision in `design.md`
 
 ## 2. Badge
 

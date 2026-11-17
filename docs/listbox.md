@@ -34,7 +34,7 @@ Spec: `openspec/specs/listbox`.
 | The focused option on `mousedown` and hover moves without scrolling and without `select_on_focus` | Selection happens at that moment anyway by the click; otherwise with `select_on_focus` the click would select the option twice. |
 | The "select all" checkbox label for screen readers is `aria.selectAll`/`aria.unselectAll` of the translation by state | In PrimeNG `toggleAllAriaLabel` is taken the same way, but from `config.translation`. |
 | The `fluid` property is `OptProp<bool>`: without a value it is taken from the `Fluid` context | Like `hasFluid = fluid() ?? !!pcFluid` in PrimeNG; see `docs/field-wrappers.md`. |
-| The identifier `pn_id_<n>` comes from the shared helper `prime_core::ids::next_unique`, or the `id` property | The same on the server and in the browser. |
+| The identifier `pn_id_<n>` comes from the shared helper `prime_rs_core::ids::next_unique`, or the `id` property | The same on the server and in the browser. |
 | No `reactiveforms`, `templatedrivenforms`, `virtualscroll`, `dragdrop` demos; in `template` country codes instead of CDN flags | Scope of the change and independence from the CDN. |
 
 The list (`ul` and options) is rebuilt only when options, groups or the search string change; selection, focus and highlight are separate reactive option attributes, so elements are not recreated on navigation and click.

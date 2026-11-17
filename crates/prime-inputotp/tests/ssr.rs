@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size};
 use prime_inputotp::{InputOtp, InputOtpPt, InputOtpSlot};
+use prime_rs_core::{Pt, Size};
 
 fn count(html: &str, needle: &str) -> usize {
     html.matches(needle).count()
@@ -67,7 +67,7 @@ fn size_invalid_variant_classes() {
     let html = view! { <InputOtp size=Size::Small invalid=true /> }.to_html();
     assert_eq!(count(&html, "p-inputtext-sm"), 4, "{html}");
     assert_eq!(count(&html, "p-invalid"), 4, "{html}");
-    let html = view! { <InputOtp size=Size::Large variant=prime_core::Variant::Filled /> }.to_html();
+    let html = view! { <InputOtp size=Size::Large variant=prime_rs_core::Variant::Filled /> }.to_html();
     assert_eq!(count(&html, "p-inputtext-lg"), 4, "{html}");
     assert_eq!(count(&html, "p-variant-filled"), 4, "{html}");
 }

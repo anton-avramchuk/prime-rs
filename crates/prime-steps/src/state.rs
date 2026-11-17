@@ -1,6 +1,6 @@
 //! Pure Steps logic: classes, disabled state, `tabindex`, `aria-disabled`, click and key outcome (after PrimeNG `steps.ts`).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::borrow::Cow;
 
 /// Root classes: `p-steps p-component`, `p-readonly`, the user class.

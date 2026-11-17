@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Class and data-p assembly without allocation
-The shared assembly of `class` and `data-p` strings in `prime-core` SHALL NOT perform heap allocations for strings composed only of component constants (without user `style_class` and `pt`): such strings SHALL be returned as `&'static str` from a bounded interning table. Strings with user classes SHALL be assembled on a stack buffer and handed out as a single `String`.
+The shared assembly of `class` and `data-p` strings in `prime-rs-core` SHALL NOT perform heap allocations for strings composed only of component constants (without user `style_class` and `pt`): such strings SHALL be returned as `&'static str` from a bounded interning table. Strings with user classes SHALL be assembled on a stack buffer and handed out as a single `String`.
 
 #### Scenario: Re-render of the same state
 - **WHEN** the same component in the same state is rendered a second time

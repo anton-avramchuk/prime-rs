@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-inputtext` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `web-sys`) and add to the workspace; check `cargo check -p prime-inputtext --all-features`
+- [x] 1.1 Create the crate `crates/prime-inputtext` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `web-sys`) and add to the workspace; check `cargo check -p prime-inputtext --all-features`
 - [x] 1.2 Implement `InputTextState`, `write_classes`, `data_p` after `inputtextstyle.ts` and `InputText.dataP`; check the spec scenarios with a table of unit tests (size, variant, `invalid`, `fluid`, `filled`, `data-p` order)
 
 ## 2. Component

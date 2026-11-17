@@ -13,7 +13,7 @@
 
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgePt};
-use prime_core::{OptProp, Prop, Pt};
+use prime_rs_core::{OptProp, Prop, Pt};
 
 pub use prime_badge::{BadgeSeverity, BadgeSize};
 

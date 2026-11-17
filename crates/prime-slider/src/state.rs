@@ -1,7 +1,7 @@
 //! Pure Slider logic: percentages, step, normalization, keys, pointer coordinates, classes and `data-p`
 //! (after PrimeNG's `slider.ts` and `sliderstyle.ts`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Track orientation.

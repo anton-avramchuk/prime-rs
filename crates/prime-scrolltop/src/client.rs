@@ -2,7 +2,7 @@
 
 use crate::state::{Phase, ScrollTopTarget, enter_classes, is_visible, leave_classes};
 use leptos::prelude::*;
-use prime_core::{Prop, ZGroup};
+use prime_rs_core::{Prop, ZGroup};
 use std::time::Duration;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::Closure;
@@ -46,7 +46,7 @@ impl Setup {
 
     fn enter(&self) {
         if self.z_index.get_untracked().is_none() {
-            self.z_index.set(Some(prime_core::zindex::generate(ZGroup::Overlay, self.overlay_base)));
+            self.z_index.set(Some(prime_rs_core::zindex::generate(ZGroup::Overlay, self.overlay_base)));
         }
         self.phase.set(Phase::Entering);
         self.animation.set(enter_classes(false));
@@ -92,7 +92,7 @@ impl Setup {
 
     fn release_z(&self) {
         if let Some(z) = self.z_index.try_update(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
     }
 
@@ -136,7 +136,7 @@ pub fn setup(s: Setup) {
             remove();
         }
         if let Some(z) = s.z_index.try_get_untracked().flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
     });
 }

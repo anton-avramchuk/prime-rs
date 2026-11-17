@@ -26,5 +26,5 @@ SpeedDial is the eighth component of wave 4: a floating action button that revea
 
 ## Impact
 
-- New crate `crates/prime-speeddial` (`publish = false`); dependencies: `prime-core`, `prime-button`, `prime-tooltip`, `prime-icons` (plus), `web-sys`.
+- New crate `crates/prime-speeddial` (`publish = false`); dependencies: `prime-rs-core`, `prime-button`, `prime-tooltip`, `prime-icons` (plus), `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places: `prime-speeddial`).

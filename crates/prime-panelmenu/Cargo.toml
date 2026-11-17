@@ -4,17 +4,17 @@ description = "prime-rs: PanelMenu component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr", "prime-menu/ssr", "prime-icons/ssr", "prime-tieredmenu/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-menu/hydrate", "prime-icons/hydrate", "prime-tieredmenu/hydrate"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr", "prime-menu/ssr", "prime-icons/ssr", "prime-tieredmenu/ssr"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate", "prime-menu/hydrate", "prime-icons/hydrate", "prime-tieredmenu/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 prime-menu = { workspace = true }
 prime-tieredmenu = { workspace = true }
 prime-icons = { workspace = true, features = ["chevronright", "chevrondown"] }

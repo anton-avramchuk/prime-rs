@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 use prime_tabs::{Tab, TabList, TabListPt, TabPanel, TabPanels, Tabs};
 
 fn count(html: &str, needle: &str) -> usize {

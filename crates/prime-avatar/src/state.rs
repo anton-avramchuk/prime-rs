@@ -1,6 +1,6 @@
 //! Pure Avatar logic: classes and `data-p` (per `avatarstyle.ts` and `Avatar.dataP` of PrimeNG).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Avatar size.

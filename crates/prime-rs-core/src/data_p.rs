@@ -6,7 +6,7 @@ use std::borrow::Cow;
 /// Builds the `data-p` value: without empty or duplicate flags.
 ///
 /// ```
-/// use prime_core::DataP;
+/// use prime_rs_core::DataP;
 ///
 /// let mut d = DataP::new();
 /// d.add_opt(Some("small")).add_if(true, "icon-only").add_if(false, "loading");

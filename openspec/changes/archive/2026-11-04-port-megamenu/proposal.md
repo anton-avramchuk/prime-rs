@@ -25,5 +25,5 @@ MegaMenu is the fourth menu of wave 5: a root bar (horizontal or vertical) where
 
 ## Impact
 
-- New crate `crates/prime-megamenu` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-menu`, `prime-icons` (angledown, angleright, bars), possibly `prime-tieredmenu` after D1 (shared helper functions only).
+- New crate `crates/prime-megamenu` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-menu`, `prime-icons` (angledown, angleright, bars), possibly `prime-tieredmenu` after D1 (shared helper functions only).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places). The behavior of existing crates does not change.
