@@ -5,7 +5,7 @@ use std::path::Path;
 use std::process::Command;
 
 /// Crates that are not component ports.
-const INFRA: &[&str] = &["core", "dom", "theme", "icons"];
+const INFRA: &[&str] = &["rs-core", "dom", "theme", "icons"];
 
 /// Names of ported components: `crates/prime-<name>` without infrastructure crates.
 pub fn ported_components(root: &Path) -> Vec<String> {
