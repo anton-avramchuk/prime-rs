@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
 use prime_rating::{Rating, RatingIcon, RatingPt};
+use prime_rs_core::Pt;
 
 fn count(html: &str, needle: &str) -> usize {
     html.matches(needle).count()

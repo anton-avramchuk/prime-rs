@@ -5,7 +5,7 @@ Port of `p-fieldset` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.to
 | Our component | PrimeNG sources |
 |---|---|
 | `prime-fieldset::Fieldset` | `packages/primeng/src/fieldset/fieldset.ts`, `fieldset/style/fieldsetstyle.ts` |
-| Collapsing logic | `prime-core::collapsible` (shared with Panel, see `docs/panel.md`) |
+| Collapsing logic | `prime-rs-core::collapsible` (shared with Panel, see `docs/panel.md`) |
 | CSS | `@primeuix/styles/fieldset`, the base `p-collapsible-*` and the Aura preset (`cargo xtask gen-theme`) |
 | Demos | `apps/showcase/doc/fieldset/*-doc.ts` (`basic`, `toggleable`, `template`) |
 

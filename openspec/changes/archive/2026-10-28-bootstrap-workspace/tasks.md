@@ -4,7 +4,7 @@
 
 - [x] 1.1 Create the root `Cargo.toml` (workspace, `resolver = "3"`, `[workspace.dependencies]`, `[workspace.lints]`) and `rust-toolchain.toml` (stable 1.98, wasm32, rustfmt, clippy); check that `cargo metadata` has no errors
 - [x] 1.2 Add `.cargo/config.toml` (rust-lld for windows-msvc and linux-gnu) and the profiles from design D10; check `cargo build -p xtask` and the size of `target/` after the build
-- [x] 1.3 Create empty crates `prime-core`, `prime-dom`, `prime-theme`, `prime-icons` with the `ssr`/`hydrate` features; check `cargo check --workspace` and `cargo check -p prime-core --target wasm32-unknown-unknown --features hydrate`
+- [x] 1.3 Create empty crates `prime-rs-core`, `prime-dom`, `prime-theme`, `prime-icons` with the `ssr`/`hydrate` features; check `cargo check --workspace` and `cargo check -p prime-rs-core --target wasm32-unknown-unknown --features hydrate`
 - [x] 1.4 Add `LICENSE` (MIT), `NOTICE` (PrimeNG 21.1.10), a `nul` line in `.gitignore`, `deny.toml`; check `cargo deny check`
 - [x] 1.5 Write `README.md` and `docs/build.md` (structure, `CARGO_TARGET_DIR` for Windows and Linux, xtask commands); check that the described commands run as written
 
@@ -16,13 +16,13 @@
 - [x] 2.4 Implement `xtask gen-spec <name>` with a section template (props, events, DOM/classes, a11y, keyboard, performance, link to the source and commit); check with a snapshot test (`insta`) on `button` and with an error for a nonexistent component
 - [x] 2.5 Implement `xtask clean` (cargo-sweep + a report of the freed size) and document it in `docs/build.md`; check by running on a real `target/`
 
-## 3. prime-core
+## 3. prime-rs-core
 
 - [x] 3.1 Implement `PrimeConfig` and a provider via Leptos context with defaults; check the "not set" and "overridden" scenarios with unit tests
 - [x] 3.2 Implement `ClassNames` (one allocation, no empty or repeated classes) and a `Memo` wrapper; check with unit tests and an allocation count assertion via `dhat`
 - [x] 3.3 Implement the shared props `disabled`, `invalid`, `variant`, `size` (values as in PrimeNG) and the `Pt` type for the root; check with a root render test with `pt`
 - [x] 3.4 Implement a z-index manager by groups with release; check with a "two overlays in a row" unit test and a release test
-- [x] 3.5 Document the public `prime-core` API (rustdoc with examples) and check `cargo test --doc -p prime-core`
+- [x] 3.5 Document the public `prime-rs-core` API (rustdoc with examples) and check `cargo test --doc -p prime-rs-core`
 
 ## 4. prime-dom
 

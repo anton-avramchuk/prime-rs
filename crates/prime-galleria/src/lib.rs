@@ -22,9 +22,9 @@ use model::{
     effective_num_visible, item_backward_disabled, item_forward_disabled, next_index, prev_index, root_classes, shifted_items,
     thumb_backward_disabled, thumb_forward_disabled, thumbnail_item_classes, thumbnails_transform,
 };
-use prime_core::{OptProp, Prop, Pt};
 use prime_dom::Portal;
 use prime_icons::{ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, TimesIcon};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 #[cfg(target_arch = "wasm32")]
@@ -32,9 +32,9 @@ use leptos::leptos_dom::helpers::WindowListenerHandle;
 #[cfg(target_arch = "wasm32")]
 use leptos::leptos_dom::helpers::{IntervalHandle, TimeoutHandle, set_interval_with_handle, set_timeout_with_handle};
 #[cfg(target_arch = "wasm32")]
-use prime_core::{ZGroup, use_prime_config};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::{FocusTrap, block_body_scroll, unblock_body_scroll};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::{ZGroup, use_prime_config};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -349,7 +349,7 @@ impl Core {
 
     fn release_layer(&self) {
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
         if self.scroll_blocked.try_update_value(std::mem::take).unwrap_or(false) {
             #[cfg(target_arch = "wasm32")]
@@ -363,7 +363,7 @@ impl Core {
         let (Some(panel), Some(mask)) = (self.panel.get_untracked(), self.mask.get_untracked()) else { return };
         let (panel, mask): (web_sys::HtmlElement, web_sys::HtmlElement) = (panel.unchecked_into(), mask.unchecked_into());
         let base = use_prime_config().z_index.base(ZGroup::Modal) + self.base_z_index.get_untracked();
-        let z = prime_core::zindex::generate(ZGroup::Modal, base);
+        let z = prime_rs_core::zindex::generate(ZGroup::Modal, base);
         self.z_index.set_value(Some(z));
         let _ = mask.style().set_property("z-index", &z.to_string());
         block_body_scroll();
@@ -515,7 +515,7 @@ pub fn Galleria(
     pt: Option<GalleriaPt>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let id = id.unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let id = id.unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let base_nv = num_visible.get_untracked();
     let core = Arc::new(Core {
         value,
@@ -756,7 +756,7 @@ fn push_class(cn: &mut String, extra: Option<&str>) {
 fn body_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
     let close = core.full_screen.then(|| {
         let visible = core.visible;
-        let label = prime_core::use_prime_config().locale.text("aria.close").to_owned();
+        let label = prime_rs_core::use_prime_config().locale.text("aria.close").to_owned();
         view! {
             <button
                 type="button"
@@ -839,8 +839,9 @@ fn items_container_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView
         move || {
             let active = core.active.get();
             let image = core.value.with(|v| v.get(active).cloned())?;
-            let label = prime_core::use_prime_config().locale.text("aria.slideNumber").replace("{slideNumber}", &(active + 1).to_string());
-            let roledescription = prime_core::use_prime_config().locale.text("aria.slide").to_owned();
+            let label =
+                prime_rs_core::use_prime_config().locale.text("aria.slideNumber").replace("{slideNumber}", &(active + 1).to_string());
+            let roledescription = prime_rs_core::use_prime_config().locale.text("aria.slide").to_owned();
             let inner = match core.item {
                 Some(render) => render.run(image.clone()),
                 None => view! { <img src={image.item_image_src.clone()} alt={image.alt.clone()} style="width: 100%; display: block" /> }
@@ -889,7 +890,7 @@ fn indicators_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + us
                     let (c_class, c_click, c_hover, c_key, c_sel, c_aria) =
                         (core.clone(), core.clone(), core.clone(), core.clone(), core.clone(), core.clone());
                     let pt = pt.clone();
-                    let label = prime_core::use_prime_config().locale.text("aria.pageLabel").replace("{page}", &(index + 1).to_string());
+                    let label = prime_rs_core::use_prime_config().locale.text("aria.pageLabel").replace("{page}", &(index + 1).to_string());
                     let class = {
                         let pt = pt.clone();
                         move || {
@@ -977,7 +978,7 @@ fn thumbnails_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + us
                     <button
                         type="button"
                         class={class}
-                        aria-label={prime_core::use_prime_config().locale.text(label_key).to_owned()}
+                        aria-label={prime_rs_core::use_prime_config().locale.text(label_key).to_owned()}
                         data-pc-group-section="thumbnailnavigator"
                         on:click=move |e: web_sys::MouseEvent| click_core.step_thumbnails(forward, &e)
                         {..button_pt.attrs()}
@@ -1052,7 +1053,7 @@ fn thumbnail_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>, index: usize) -> impl 
             view! { <img src={src} alt={image.alt.clone()} style="display: block" /> }.into_any()
         }
     };
-    let label = prime_core::use_prime_config().locale.text("aria.pageLabel").replace("{page}", &(index + 1).to_string());
+    let label = prime_rs_core::use_prime_config().locale.text("aria.pageLabel").replace("{page}", &(index + 1).to_string());
     let class = {
         let pt = pt.clone();
         move || {

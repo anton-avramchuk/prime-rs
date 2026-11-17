@@ -1,6 +1,6 @@
 //! Pure ProgressBar logic: mode, classes and `data-p` (after PrimeNG `progressbarstyle.ts` and `ProgressBar.dataP`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Indicator mode.

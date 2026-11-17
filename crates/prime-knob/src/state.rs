@@ -1,6 +1,6 @@
 //! Pure Knob logic: angles, values, arc paths, keys and classes (after PrimeNG `knob.ts` and `knobstyle.ts`).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::f64::consts::PI;
 
 /// Arc radius in `viewBox` units (100 x 100).

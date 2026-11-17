@@ -23,8 +23,8 @@ use leptos::html;
 use leptos::leptos_dom::helpers::WindowListenerHandle;
 use leptos::prelude::*;
 use prime_chip::Chip;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use prime_icons::{ChevronDownIcon, TimesIcon};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use prime_tree::{Tree, TreeFilterMode, TreeNode, TreeNodeEvent, TreeSelectionMode, flatten};
 use std::collections::HashSet;
 use std::sync::Arc;
@@ -36,9 +36,9 @@ use leptos::ev;
 #[cfg(target_arch = "wasm32")]
 use leptos::wasm_bindgen::JsCast;
 #[cfg(target_arch = "wasm32")]
-use prime_core::ZGroup;
-#[cfg(target_arch = "wasm32")]
 use prime_dom::dom::{AlignMode, align_overlay};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::ZGroup;
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
@@ -225,7 +225,7 @@ impl Core {
     fn opened(self: &Arc<Self>) {
         if let (Some(overlay), Some(root)) = (self.overlay_ref.get_untracked(), self.root_ref.get_untracked()) {
             let base = use_prime_config().z_index.base(ZGroup::Overlay);
-            let z = prime_core::zindex::generate(ZGroup::Overlay, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Overlay, base);
             self.z_index.set_value(Some(z));
             let overlay: web_sys::HtmlElement = overlay.unchecked_into();
             let _ = overlay.style().set_property("z-index", &z.to_string());
@@ -267,7 +267,7 @@ impl Core {
             handle.remove();
         }
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
     }
 
@@ -426,8 +426,8 @@ pub fn TreeSelect(
     on_blur: Option<Callback<web_sys::FocusEvent>>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let value = value.unwrap_or_else(|| RwSignal::new(Vec::new()));
     let core = Arc::new(Core {
         id: id.clone(),

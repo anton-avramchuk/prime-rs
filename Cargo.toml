@@ -6,6 +6,7 @@ members = ["crates/*", "benches/*", "showcase", "xtask"]
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+repository = "https://github.com/anton-avramchuk/prime-rs"
 rust-version = "1.98"
 
 [workspace.dependencies]
@@ -16,95 +17,95 @@ web-sys = { version = "0.3", default-features = false }
 js-sys = "0.3"
 dhat = "0.3"
 
-prime-core = { path = "crates/prime-core" }
-prime-dom = { path = "crates/prime-dom" }
-prime-theme = { path = "crates/prime-theme" }
-prime-icons = { path = "crates/prime-icons" }
-prime-badge = { path = "crates/prime-badge" }
-prime-button = { path = "crates/prime-button" }
-prime-tag = { path = "crates/prime-tag" }
-prime-chip = { path = "crates/prime-chip" }
-prime-avatar = { path = "crates/prime-avatar" }
-prime-divider = { path = "crates/prime-divider" }
-prime-card = { path = "crates/prime-card" }
-prime-inputtext = { path = "crates/prime-inputtext" }
-prime-inputotp = { path = "crates/prime-inputotp" }
-prime-scrolltop = { path = "crates/prime-scrolltop" }
-prime-password = { path = "crates/prime-password" }
-prime-inplace = { path = "crates/prime-inplace" }
-prime-splitter = { path = "crates/prime-splitter" }
-prime-tabs = { path = "crates/prime-tabs" }
-prime-textarea = { path = "crates/prime-textarea" }
-prime-checkbox = { path = "crates/prime-checkbox" }
-prime-radiobutton = { path = "crates/prime-radiobutton" }
-prime-togglebutton = { path = "crates/prime-togglebutton" }
-prime-selectbutton = { path = "crates/prime-selectbutton" }
-prime-rating = { path = "crates/prime-rating" }
-prime-slider = { path = "crates/prime-slider" }
-prime-knob = { path = "crates/prime-knob" }
-prime-inputnumber = { path = "crates/prime-inputnumber" }
-prime-select = { path = "crates/prime-select" }
-prime-toggleswitch = { path = "crates/prime-toggleswitch" }
-prime-avatargroup = { path = "crates/prime-avatargroup" }
-prime-skeleton = { path = "crates/prime-skeleton" }
-prime-progressbar = { path = "crates/prime-progressbar" }
-prime-message = { path = "crates/prime-message" }
-prime-panel = { path = "crates/prime-panel" }
-prime-fieldset = { path = "crates/prime-fieldset" }
-prime-accordion = { path = "crates/prime-accordion" }
-prime-toolbar = { path = "crates/prime-toolbar" }
-prime-inputgroup = { path = "crates/prime-inputgroup" }
-prime-scrollpanel = { path = "crates/prime-scrollpanel" }
-prime-progressspinner = { path = "crates/prime-progressspinner" }
-prime-buttongroup = { path = "crates/prime-buttongroup" }
-prime-fluid = { path = "crates/prime-fluid" }
-prime-iconfield = { path = "crates/prime-iconfield" }
-prime-floatlabel = { path = "crates/prime-floatlabel" }
-prime-iftalabel = { path = "crates/prime-iftalabel" }
-prime-overlaybadge = { path = "crates/prime-overlaybadge" }
-prime-breadcrumb = { path = "crates/prime-breadcrumb" }
-prime-timeline = { path = "crates/prime-timeline" }
-prime-metergroup = { path = "crates/prime-metergroup" }
-prime-popover = { path = "crates/prime-popover" }
-prime-drawer = { path = "crates/prime-drawer" }
-prime-dialog = { path = "crates/prime-dialog" }
-prime-tooltip = { path = "crates/prime-tooltip" }
-prime-toast = { path = "crates/prime-toast" }
-prime-menu = { path = "crates/prime-menu" }
-prime-listbox = { path = "crates/prime-listbox" }
-prime-multiselect = { path = "crates/prime-multiselect" }
-prime-paginator = { path = "crates/prime-paginator" }
-prime-stepper = { path = "crates/prime-stepper" }
-prime-imagecompare = { path = "crates/prime-imagecompare" }
-prime-blockui = { path = "crates/prime-blockui" }
-prime-splitbutton = { path = "crates/prime-splitbutton" }
-prime-dock = { path = "crates/prime-dock" }
-prime-image = { path = "crates/prime-image" }
-prime-confirmation = { path = "crates/prime-confirmation" }
-prime-confirmpopup = { path = "crates/prime-confirmpopup" }
-prime-confirmdialog = { path = "crates/prime-confirmdialog" }
-prime-speeddial = { path = "crates/prime-speeddial" }
-prime-carousel = { path = "crates/prime-carousel" }
-prime-tieredmenu = { path = "crates/prime-tieredmenu" }
-prime-steps = { path = "crates/prime-steps" }
-prime-contextmenu = { path = "crates/prime-contextmenu" }
-prime-menubar = { path = "crates/prime-menubar" }
-prime-panelmenu = { path = "crates/prime-panelmenu" }
-prime-megamenu = { path = "crates/prime-megamenu" }
-prime-tree = { path = "crates/prime-tree" }
-prime-treeselect = { path = "crates/prime-treeselect" }
-prime-cascadeselect = { path = "crates/prime-cascadeselect" }
-prime-autocomplete = { path = "crates/prime-autocomplete" }
-prime-inputmask = { path = "crates/prime-inputmask" }
-prime-colorpicker = { path = "crates/prime-colorpicker" }
-prime-galleria = { path = "crates/prime-galleria" }
-prime-fileupload = { path = "crates/prime-fileupload" }
-prime-orderlist = { path = "crates/prime-orderlist" }
-prime-picklist = { path = "crates/prime-picklist" }
-prime-datepicker = { path = "crates/prime-datepicker" }
-prime-dataview = { path = "crates/prime-dataview" }
-prime-table = { path = "crates/prime-table" }
-prime-treetable = { path = "crates/prime-treetable" }
+prime-rs-core = { version = "0.1.0", path = "crates/prime-rs-core" }
+prime-dom = { version = "0.1.0", path = "crates/prime-dom" }
+prime-theme = { version = "0.1.0", path = "crates/prime-theme" }
+prime-icons = { version = "0.1.0", path = "crates/prime-icons" }
+prime-badge = { version = "0.1.0", path = "crates/prime-badge" }
+prime-button = { version = "0.1.0", path = "crates/prime-button" }
+prime-tag = { version = "0.1.0", path = "crates/prime-tag" }
+prime-chip = { version = "0.1.0", path = "crates/prime-chip" }
+prime-avatar = { version = "0.1.0", path = "crates/prime-avatar" }
+prime-divider = { version = "0.1.0", path = "crates/prime-divider" }
+prime-card = { version = "0.1.0", path = "crates/prime-card" }
+prime-inputtext = { version = "0.1.0", path = "crates/prime-inputtext" }
+prime-inputotp = { version = "0.1.0", path = "crates/prime-inputotp" }
+prime-scrolltop = { version = "0.1.0", path = "crates/prime-scrolltop" }
+prime-password = { version = "0.1.0", path = "crates/prime-password" }
+prime-inplace = { version = "0.1.0", path = "crates/prime-inplace" }
+prime-splitter = { version = "0.1.0", path = "crates/prime-splitter" }
+prime-tabs = { version = "0.1.0", path = "crates/prime-tabs" }
+prime-textarea = { version = "0.1.0", path = "crates/prime-textarea" }
+prime-checkbox = { version = "0.1.0", path = "crates/prime-checkbox" }
+prime-radiobutton = { version = "0.1.0", path = "crates/prime-radiobutton" }
+prime-togglebutton = { version = "0.1.0", path = "crates/prime-togglebutton" }
+prime-selectbutton = { version = "0.1.0", path = "crates/prime-selectbutton" }
+prime-rating = { version = "0.1.0", path = "crates/prime-rating" }
+prime-slider = { version = "0.1.0", path = "crates/prime-slider" }
+prime-knob = { version = "0.1.0", path = "crates/prime-knob" }
+prime-inputnumber = { version = "0.1.0", path = "crates/prime-inputnumber" }
+prime-select = { version = "0.1.0", path = "crates/prime-select" }
+prime-toggleswitch = { version = "0.1.0", path = "crates/prime-toggleswitch" }
+prime-avatargroup = { version = "0.1.0", path = "crates/prime-avatargroup" }
+prime-skeleton = { version = "0.1.0", path = "crates/prime-skeleton" }
+prime-progressbar = { version = "0.1.0", path = "crates/prime-progressbar" }
+prime-message = { version = "0.1.0", path = "crates/prime-message" }
+prime-panel = { version = "0.1.0", path = "crates/prime-panel" }
+prime-fieldset = { version = "0.1.0", path = "crates/prime-fieldset" }
+prime-accordion = { version = "0.1.0", path = "crates/prime-accordion" }
+prime-toolbar = { version = "0.1.0", path = "crates/prime-toolbar" }
+prime-inputgroup = { version = "0.1.0", path = "crates/prime-inputgroup" }
+prime-scrollpanel = { version = "0.1.0", path = "crates/prime-scrollpanel" }
+prime-progressspinner = { version = "0.1.0", path = "crates/prime-progressspinner" }
+prime-buttongroup = { version = "0.1.0", path = "crates/prime-buttongroup" }
+prime-fluid = { version = "0.1.0", path = "crates/prime-fluid" }
+prime-iconfield = { version = "0.1.0", path = "crates/prime-iconfield" }
+prime-floatlabel = { version = "0.1.0", path = "crates/prime-floatlabel" }
+prime-iftalabel = { version = "0.1.0", path = "crates/prime-iftalabel" }
+prime-overlaybadge = { version = "0.1.0", path = "crates/prime-overlaybadge" }
+prime-breadcrumb = { version = "0.1.0", path = "crates/prime-breadcrumb" }
+prime-timeline = { version = "0.1.0", path = "crates/prime-timeline" }
+prime-metergroup = { version = "0.1.0", path = "crates/prime-metergroup" }
+prime-popover = { version = "0.1.0", path = "crates/prime-popover" }
+prime-drawer = { version = "0.1.0", path = "crates/prime-drawer" }
+prime-dialog = { version = "0.1.0", path = "crates/prime-dialog" }
+prime-tooltip = { version = "0.1.0", path = "crates/prime-tooltip" }
+prime-toast = { version = "0.1.0", path = "crates/prime-toast" }
+prime-menu = { version = "0.1.0", path = "crates/prime-menu" }
+prime-listbox = { version = "0.1.0", path = "crates/prime-listbox" }
+prime-multiselect = { version = "0.1.0", path = "crates/prime-multiselect" }
+prime-paginator = { version = "0.1.0", path = "crates/prime-paginator" }
+prime-stepper = { version = "0.1.0", path = "crates/prime-stepper" }
+prime-imagecompare = { version = "0.1.0", path = "crates/prime-imagecompare" }
+prime-blockui = { version = "0.1.0", path = "crates/prime-blockui" }
+prime-splitbutton = { version = "0.1.0", path = "crates/prime-splitbutton" }
+prime-dock = { version = "0.1.0", path = "crates/prime-dock" }
+prime-image = { version = "0.1.0", path = "crates/prime-image" }
+prime-confirmation = { version = "0.1.0", path = "crates/prime-confirmation" }
+prime-confirmpopup = { version = "0.1.0", path = "crates/prime-confirmpopup" }
+prime-confirmdialog = { version = "0.1.0", path = "crates/prime-confirmdialog" }
+prime-speeddial = { version = "0.1.0", path = "crates/prime-speeddial" }
+prime-carousel = { version = "0.1.0", path = "crates/prime-carousel" }
+prime-tieredmenu = { version = "0.1.0", path = "crates/prime-tieredmenu" }
+prime-steps = { version = "0.1.0", path = "crates/prime-steps" }
+prime-contextmenu = { version = "0.1.0", path = "crates/prime-contextmenu" }
+prime-menubar = { version = "0.1.0", path = "crates/prime-menubar" }
+prime-panelmenu = { version = "0.1.0", path = "crates/prime-panelmenu" }
+prime-megamenu = { version = "0.1.0", path = "crates/prime-megamenu" }
+prime-tree = { version = "0.1.0", path = "crates/prime-tree" }
+prime-treeselect = { version = "0.1.0", path = "crates/prime-treeselect" }
+prime-cascadeselect = { version = "0.1.0", path = "crates/prime-cascadeselect" }
+prime-autocomplete = { version = "0.1.0", path = "crates/prime-autocomplete" }
+prime-inputmask = { version = "0.1.0", path = "crates/prime-inputmask" }
+prime-colorpicker = { version = "0.1.0", path = "crates/prime-colorpicker" }
+prime-galleria = { version = "0.1.0", path = "crates/prime-galleria" }
+prime-fileupload = { version = "0.1.0", path = "crates/prime-fileupload" }
+prime-orderlist = { version = "0.1.0", path = "crates/prime-orderlist" }
+prime-picklist = { version = "0.1.0", path = "crates/prime-picklist" }
+prime-datepicker = { version = "0.1.0", path = "crates/prime-datepicker" }
+prime-dataview = { version = "0.1.0", path = "crates/prime-dataview" }
+prime-table = { version = "0.1.0", path = "crates/prime-table" }
+prime-treetable = { version = "0.1.0", path = "crates/prime-treetable" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

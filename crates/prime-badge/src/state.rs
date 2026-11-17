@@ -1,6 +1,6 @@
 //! Pure Badge logic: from properties to classes and `data-p` (after PrimeNG `badgestyle.ts` and `Badge.dataP`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Badge severity.

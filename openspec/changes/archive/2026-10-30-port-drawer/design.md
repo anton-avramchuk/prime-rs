@@ -20,7 +20,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crate
-`prime-drawer` with `Drawer`, `DrawerPosition`, `DrawerPt`. Depends on `prime-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`), `web-sys`.
+`prime-drawer` with `Drawer`, `DrawerPosition`, `DrawerPt`. Depends on `prime-rs-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`), `web-sys`.
 
 ### D2. State: `visible` and `rendered`
 `visible: RwSignal<bool>` is the desired state (a two-way signal or its own). `rendered: RwSignal<bool>` - the panel is in the DOM. `Effect`: `visible` became true -> `rendered=true`; became false and `rendered` -> the leave starts: the root class changes to `p-drawer-leave-*`, the mask's to `p-overlay-mask-leave-active`, then `rendered=false` after the root's `animationend` or via a fallback timer (`set_timeout` 700 ms - the animation lasts 500 ms; needed if styles are not loaded or `prefers-reduced-motion` is on), with an `is_disposed()` check.
@@ -36,7 +36,7 @@ Table-driven tests for each.
 `Portal` from `prime-dom` moves the panel and mask into `body` as one block: first the mask, then the panel (DOM order for overlap; `z-index` is set explicitly). The mask is a separate `div`, not a descendant of the panel, so a click on the panel does not reach it. Outside the browser (SSR) `Portal` renders nothing.
 
 ### D5. Layers and the effect side (`wasm32` only)
-After the panel is inserted (an `Effect` tracking the panel's `NodeRef`, as in Popover): `z-index` from `prime_core::zindex::generate(ZGroup::Modal, base)` (with `auto_z_index`), the mask gets `z-index - 1`; `FocusTrap::attach(&panel)`; `block_body_scroll()` with `block_scroll`; a `keydown` subscription on `window` with `close_on_escape` (on the next tick, as in Popover); `on_show`. On close: the listener, the trap, `unblock_body_scroll()`, `revert(z)`, `on_hide`.
+After the panel is inserted (an `Effect` tracking the panel's `NodeRef`, as in Popover): `z-index` from `prime_rs_core::zindex::generate(ZGroup::Modal, base)` (with `auto_z_index`), the mask gets `z-index - 1`; `FocusTrap::attach(&panel)`; `block_body_scroll()` with `block_scroll`; a `keydown` subscription on `window` with `close_on_escape` (on the next tick, as in Popover); `on_show`. On close: the listener, the trap, `unblock_body_scroll()`, `revert(z)`, `on_hide`.
 
 ### D6. Closing
 A single `close()`: `visible.set(false)`. Sources: a click on the mask with `dismissible` (the click is on the mask, not the panel - the mask is a separate element), the close button, `Escape` on the topmost panel (`is_topmost` by `zindex::current()`). `on_hide` is called on any transition of `visible` to false (in PrimeNG only on user actions; the difference is recorded in the docs).

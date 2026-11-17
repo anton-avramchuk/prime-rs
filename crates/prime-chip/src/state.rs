@@ -1,6 +1,6 @@
 //! Pure Chip logic: classes, `data-p` and the remove key (based on `chipstyle.ts` and `Chip` in PrimeNG).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Snapshot of the properties that affect classes and `data-p`.

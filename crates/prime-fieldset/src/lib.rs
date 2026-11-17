@@ -4,7 +4,7 @@
 //! and content container `p-fieldset-content-container` (wrapper `p-fieldset-content-wrapper`, content `p-fieldset-content`).
 //! With `toggleable`, a toggle button `p-fieldset-toggle-button` with a plus/minus icon and a label sits inside the legend.
 //!
-//! Collapsing is built on [`prime_core::collapsible`], the same as in Panel: the state is a two-way `collapsed` signal
+//! Collapsing is built on [`prime_rs_core::collapsible`], the same as in Panel: the state is a two-way `collapsed` signal
 //! (without it, an own state with the initial value `default_collapsed`), the button gets `aria-controls` and `aria-expanded`,
 //! the region gets `role="region"`, `aria-labelledby`, `aria-hidden`; expanding and collapsing animate the classes
 //! `p-collapsible-enter-active`/`p-collapsible-leave-active`, and `on_after_toggle` is called when the animation ends.
@@ -22,9 +22,9 @@ mod state;
 
 use leptos::either::{Either, EitherOf3};
 use leptos::prelude::*;
-use prime_core::collapsible::{CollapseIds, CollapseState, aria_expanded, aria_hidden, region_tabindex};
-use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
 use prime_icons::{MinusIcon, PlusIcon};
+use prime_rs_core::collapsible::{CollapseIds, CollapseState, aria_expanded, aria_hidden, region_tabindex};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
@@ -137,7 +137,7 @@ pub fn Fieldset(
         let region = NodeRef::<leptos::html::Div>::new();
         if props.toggleable.get_untracked() {
             let after = on_after_toggle.map(|cb| Callback::new(move |collapsed| cb.run(FieldsetAfterToggle { collapsed })));
-            prime_core::collapsible::bind_region(region, state, after);
+            prime_rs_core::collapsible::bind_region(region, state, after);
         }
         leptos::tachys::html::node_ref::node_ref::<leptos::html::Div, _>(region)
     };

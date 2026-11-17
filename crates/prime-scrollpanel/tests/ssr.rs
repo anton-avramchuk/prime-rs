@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 use prime_scrollpanel::{ScrollPanel, ScrollPanelPt, ScrollPanelRef};
 
 fn has(html: &str, wants: &[&str]) {

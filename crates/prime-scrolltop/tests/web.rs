@@ -66,11 +66,11 @@ async fn window_shows_above_threshold_and_hides_on_return() {
     assert!(b.query_selector(".p-scrolltop-icon").unwrap().is_some());
     let z: i32 = b.style().get_property_value("z-index").unwrap().parse().expect("z-index assigned");
     assert!(z > 1000, "z-index {z} is above the Overlay base");
-    assert_eq!(prime_core::zindex::current(), z);
+    assert_eq!(prime_rs_core::zindex::current(), z);
     scroll_window(0);
     sleep(800).await;
     assert!(window_button().is_none(), "after returning the button is hidden");
-    assert_eq!(prime_core::zindex::current(), 0, "z-index returned");
+    assert_eq!(prime_rs_core::zindex::current(), 0, "z-index returned");
     tall.remove();
     host.remove();
 }
@@ -143,7 +143,7 @@ async fn parent_target_follows_parent_scroll() {
     sleep(800).await;
     assert_eq!(scroller.scroll_top(), 0, "the click scrolled the parent");
     assert_eq!(style_of(&b, "display"), "none");
-    assert_eq!(prime_core::zindex::current(), 0);
+    assert_eq!(prime_rs_core::zindex::current(), 0);
     scroller.remove();
 }
 
@@ -156,10 +156,10 @@ async fn unmount_removes_listener_and_releases_z_index() {
     scroll_window(600);
     sleep(250).await;
     assert!(window_button().is_some());
-    assert_ne!(prime_core::zindex::current(), 0);
+    assert_ne!(prime_rs_core::zindex::current(), 0);
     drop(handle);
     sleep(20).await;
-    assert_eq!(prime_core::zindex::current(), 0, "z-index returned on destruction");
+    assert_eq!(prime_rs_core::zindex::current(), 0, "z-index returned on destruction");
     scroll_window(0);
     sleep(50).await;
     scroll_window(700);

@@ -4,7 +4,7 @@
 use super::Demo;
 use leptos::prelude::*;
 use prime_checkbox::Checkbox;
-use prime_core::{Size, Variant};
+use prime_rs_core::{Size, Variant};
 
 /// `/checkbox` page.
 #[component]

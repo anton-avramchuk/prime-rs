@@ -3,7 +3,7 @@
 
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgePt, BadgeSeverity, BadgeSize};
-use prime_core::Pt;
+use prime_rs_core::Pt;
 
 #[test]
 fn value_is_rendered_as_text_in_a_span() {

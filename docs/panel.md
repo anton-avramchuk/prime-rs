@@ -5,7 +5,7 @@ Port of `p-panel` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`
 | Our component | PrimeNG sources |
 |---|---|
 | `prime-panel::Panel` | `packages/primeng/src/panel/panel.ts`, `panel/style/panelstyle.ts` |
-| Collapsing logic | `prime-core::collapsible` (shared with Fieldset) |
+| Collapsing logic | `prime-rs-core::collapsible` (shared with Fieldset) |
 | CSS | `@primeuix/styles/panel`, the base `p-collapsible-*` and the Aura preset (`cargo xtask gen-theme`) |
 | Demos | `apps/showcase/doc/panel/*-doc.ts` (`basic`, `toggleable`, `template`); `header-toggler` — from the `toggleable-doc` text |
 

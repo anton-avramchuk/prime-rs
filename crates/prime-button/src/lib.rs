@@ -19,11 +19,11 @@ use leptos::either::{Either, EitherOf4};
 use leptos::prelude::*;
 use prime_badge::{Badge, BadgePt, BadgeSeverity};
 #[cfg(target_arch = "wasm32")]
-use prime_core::use_prime_config;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, all_static};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::Ripple;
 use prime_icons::SpinnerIcon;
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::use_prime_config;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
@@ -88,7 +88,7 @@ fn badge_severity_or_default(p: &OptProp<BadgeSeverity>) -> OptProp<BadgeSeverit
 /// ```
 /// use leptos::prelude::*;
 /// use prime_button::{Button, ButtonPt, IconPos};
-/// use prime_core::Pt;
+/// use prime_rs_core::Pt;
 /// use prime_icons::CheckIcon;
 ///
 /// // icon on the right, badge and pass-through for the label
@@ -198,7 +198,7 @@ pub fn Button(
     let has_children = children.is_some();
     let content = children.map(|c| c());
     let badge_severity = badge_severity_or_default(&badge_severity);
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let is_static = all_static!(
         label,
         badge,

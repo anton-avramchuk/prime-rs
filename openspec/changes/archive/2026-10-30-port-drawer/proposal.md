@@ -24,5 +24,5 @@ Drawer - the fifth component of wave 3: a panel at the screen edge with a mask, 
 
 ## Impact
 
-- New crate `crates/prime-drawer` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`), `web-sys`.
+- New crate `crates/prime-drawer` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`), `web-sys`.
 - Changed: `prime-dom` (scroll lock), `xtask` (marker), workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

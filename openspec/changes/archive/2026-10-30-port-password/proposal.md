@@ -24,5 +24,5 @@ Password is the last component of the wave 2 plan: a password input field with a
 
 ## Impact
 
-- New crate `crates/prime-password` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-inputtext`, `prime-icons` (`eye`, `eyeslash`, `times`), `web-sys`.
+- New crate `crates/prime-password` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-inputtext`, `prime-icons` (`eye`, `eyeslash`, `times`), `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

@@ -14,7 +14,7 @@ Spec: `openspec/specs/rating`.
 
 - Structure: root `div.p-rating`, for each star a `div.p-rating-option` with a hidden radio button (`span.p-hidden-accessible > input[type=radio]`) and the icon `p-rating-icon p-rating-on-icon` / `p-rating-off-icon`.
 - Classes of the root, option and icons and their order: `p-rating`, `p-readonly`, `p-disabled`; `p-rating-option`, `p-rating-option-active`, `p-focus-visible`; `p-invalid` on the icons. The root's `data-p` is `readonly disabled`.
-- A group of native radio buttons with a shared `name`: the keyboard arrows work without any code of our own. The default name is `pn_id_<n>_name`, the number from the hydration context (the shared helper `prime_core::ids::next_unique`, extracted from `collapsible`).
+- A group of native radio buttons with a shared `name`: the keyboard arrows work without any code of our own. The default name is `pn_id_<n>_name`, the number from the hydration context (the shared helper `prime_rs_core::ids::next_unique`, extracted from `collapsible`).
 - A click on a star selects it, a repeated click on the current value resets it; after a click focus moves to the star's radio button and is not considered visible.
 - A star's `aria-label` comes from the locale: `aria.star` for the first, `aria.stars` with `{star}` substituted for the rest.
 - Default icons are `StarFillIcon` and `StarIcon`; the `on_icon_template` and `off_icon_template` templates receive the star number and the icon class (`{ $implicit, class }`).

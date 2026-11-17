@@ -20,7 +20,7 @@ mod state;
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size};
 use prime_togglebutton::{ToggleButton, ToggleButtonChange, ToggleButtonPt};
 use std::sync::Arc;
 

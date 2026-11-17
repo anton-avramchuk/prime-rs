@@ -1,6 +1,6 @@
 //! Pure MeterGroup logic: percentages, classes and `data-p` (per `metergroup.ts` and `metergroupstyle.ts` of PrimeNG).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 
 /// Meter orientation.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]

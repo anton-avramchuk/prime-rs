@@ -4,8 +4,8 @@ The toolchain is pinned in `rust-toolchain.toml` (Rust 1.98.0, target `wasm32-un
 
 ```sh
 cargo check --workspace
-cargo check -p prime-core --target wasm32-unknown-unknown --features hydrate   # client
-cargo check -p prime-core --features ssr                                       # server
+cargo check -p prime-rs-core --target wasm32-unknown-unknown --features hydrate   # client
+cargo check -p prime-rs-core --features ssr                                       # server
 cargo deny check
 cargo xtask --help
 ```

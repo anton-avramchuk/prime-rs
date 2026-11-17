@@ -16,7 +16,7 @@ mod state;
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, all_static};
 use std::borrow::Cow;
 use std::fmt::Write;
 use std::sync::Arc;

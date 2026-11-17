@@ -20,5 +20,5 @@ Card — a container with optional areas (a header with an image, a title, a sub
 
 ## Impact
 
-- New crate `crates/prime-card` (`publish = false`); dependency `prime-core`.
+- New crate `crates/prime-card` (`publish = false`); dependency `prime-rs-core`.
 - Changed: `showcase` (the page uses Button), `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.

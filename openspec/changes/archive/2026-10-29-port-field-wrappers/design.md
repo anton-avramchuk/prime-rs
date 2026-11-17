@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/{buttongroup,fluid,iconfield,floatlabel,iftalabel}`. PrimeNG 21.1.10 sources: `buttongroup/buttongroup.ts`, `fluid/fluid.ts`, `iconfield/iconfield.ts`, `inputicon/inputicon.ts`, `floatlabel/floatlabel.ts`, `iftalabel/iftalabel.ts` and their `style/*style.ts`. Models: `crates/prime-inputgroup` (a container with a slot and `pt.root`, two components in one crate), `crates/prime-toolbar`/`prime-card` (a container with `style_class`), `prime_core::config` (context via `provide_context`).
+Requirements are in `specs/{buttongroup,fluid,iconfield,floatlabel,iftalabel}`. PrimeNG 21.1.10 sources: `buttongroup/buttongroup.ts`, `fluid/fluid.ts`, `iconfield/iconfield.ts`, `inputicon/inputicon.ts`, `floatlabel/floatlabel.ts`, `iftalabel/iftalabel.ts` and their `style/*style.ts`. Models: `crates/prime-inputgroup` (a container with a slot and `pt.root`, two components in one crate), `crates/prime-toolbar`/`prime-card` (a container with `style_class`), `prime_rs_core::config` (context via `provide_context`).
 
 Observations about the source that affect decisions:
 - All six are "dumb" containers: an `<ng-content>` template, root classes and `pt`; no logic except choosing a class by `variant` and `iconPosition`.
@@ -14,9 +14,9 @@ Observations about the source that affect decisions:
 ## Decisions
 
 ### D1. Crates
-`prime-buttongroup`, `prime-fluid`, `prime-iconfield` (`IconField`, `InputIcon`), `prime-floatlabel`, `prime-iftalabel`. Each depends only on `prime-core` (`ClassNames`, `Pt`, `OptProp`/`Prop`); each has `ssr`/`hydrate` features, rustdoc with an example, SSR tests. Components follow `InputGroup`: `children: Children`, `style_class: OptProp<String>`, `style: OptProp<String>`, `pt: Option<…Pt>`, where `…Pt { root: Pt }`; single properties (`variant`, `icon_position`) are `Prop<…>`. All five have no static branch: markup of a single element with closures only where a property can be a signal (the root `class`).
+`prime-buttongroup`, `prime-fluid`, `prime-iconfield` (`IconField`, `InputIcon`), `prime-floatlabel`, `prime-iftalabel`. Each depends only on `prime-rs-core` (`ClassNames`, `Pt`, `OptProp`/`Prop`); each has `ssr`/`hydrate` features, rustdoc with an example, SSR tests. Components follow `InputGroup`: `children: Children`, `style_class: OptProp<String>`, `style: OptProp<String>`, `pt: Option<…Pt>`, where `…Pt { root: Pt }`; single properties (`variant`, `icon_position`) are `Prop<…>`. All five have no static branch: markup of a single element with closures only where a property can be a signal (the root `class`).
 
-### D2. Fluid context (`prime-core::fluid`)
+### D2. Fluid context (`prime-rs-core::fluid`)
 `FluidContext` (a marker type), `provide_fluid()` (`provide_context(FluidContext)`), `in_fluid() -> bool` (`use_context::<FluidContext>().is_some()`), `resolve_fluid(explicit: Option<bool>) -> bool` (`explicit.unwrap_or_else(in_fluid)`). `Fluid` calls `provide_fluid()` on creation and renders `div.p-fluid`. Consumers read the context **once on creation** (`let inherited = in_fluid()`), because the ancestor does not change.
 
 ### D3. Fluid consumers

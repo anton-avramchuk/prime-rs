@@ -5,8 +5,8 @@
 
 use super::Demo;
 use leptos::prelude::*;
-use prime_core::Size;
 use prime_inputotp::{InputOtp, InputOtpSlot};
+use prime_rs_core::Size;
 
 /// Page `/inputotp`.
 #[component]

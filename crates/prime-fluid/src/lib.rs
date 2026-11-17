@@ -1,6 +1,6 @@
 //! Fluid — port of `p-fluid` from PrimeNG 21.1.10.
 //!
-//! Renders `<div class="p-fluid">` and provides descendants with the context [`prime_core::fluid`]: `Button`, `InputText`,
+//! Renders `<div class="p-fluid">` and provides descendants with the context [`prime_rs_core::fluid`]: `Button`, `InputText`,
 //! `Textarea`, `InputNumber` and `Select` without an explicit `fluid` stretch to the full width. An explicit `fluid` (including `false`)
 //! takes precedence over the context. `Fluid` has no styles of its own (there is no `@primeuix/styles/fluid` module).
 //!
@@ -14,8 +14,8 @@
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::wrapper::{root_class, root_style};
-use prime_core::{OptProp, Pt, all_static};
+use prime_rs_core::wrapper::{root_class, root_style};
+use prime_rs_core::{OptProp, Pt, all_static};
 use std::sync::Arc;
 
 /// Pass-through for Fluid.
@@ -50,7 +50,7 @@ pub fn Fluid(
         Some(parent) => {
             let owner = parent.child();
             let content = owner.with(|| {
-                prime_core::fluid::provide_fluid();
+                prime_rs_core::fluid::provide_fluid();
                 c()
             });
             on_cleanup(move || drop(owner));

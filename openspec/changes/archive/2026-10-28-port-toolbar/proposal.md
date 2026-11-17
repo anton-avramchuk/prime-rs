@@ -21,5 +21,5 @@ Toolbar is a simple grouping container for buttons and other content with three 
 
 ## Impact
 
-- A new crate `crates/prime-toolbar` (`publish = false`); dependencies `prime-core`.
+- A new crate `crates/prime-toolbar` (`publish = false`); dependencies `prime-rs-core`.
 - Changes to the workspace `Cargo.toml`, `upstream.toml` (`toolbar` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`.

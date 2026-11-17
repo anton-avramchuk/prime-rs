@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-chip` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-icons/timescircle`, `web-sys`) and add it to the workspace; check `cargo check -p prime-chip --all-features`
+- [x] 1.1 Create the crate `crates/prime-chip` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `prime-icons/timescircle`, `web-sys`) and add it to the workspace; check `cargo check -p prime-chip --all-features`
 - [x] 1.2 Implement `ChipState`, `write_classes`, `data_p` and the parsing of the remove key (`is_remove_key`: Enter, Backspace); check the spec scenarios (classes, `data-p`, keys) with unit tests
 
 ## 2. Component

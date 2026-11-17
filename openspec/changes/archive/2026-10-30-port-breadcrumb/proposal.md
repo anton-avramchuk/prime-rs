@@ -24,5 +24,5 @@
 
 ## Impact
 
-- New crate `crates/prime-breadcrumb` (`publish = false`); dependencies: `prime-core`, `prime-badge`, `prime-icons` (`chevronright`, `home`), `web-sys`.
+- New crate `crates/prime-breadcrumb` (`publish = false`); dependencies: `prime-rs-core`, `prime-badge`, `prime-icons` (`chevronright`, `home`), `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`.

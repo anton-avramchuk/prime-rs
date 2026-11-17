@@ -16,15 +16,15 @@ name = "showcase"
 path = "src/main.rs"
 
 [features]
-hydrate = ["leptos/hydrate", "prime-core/hydrate", "dep:wasm-bindgen", "dep:js-sys", "dep:console_error_panic_hook"]
-ssr = ["leptos/ssr", "prime-core/ssr", "leptos_router/ssr", "dep:axum", "dep:tokio", "dep:leptos_axum"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate", "dep:wasm-bindgen", "dep:js-sys", "dep:console_error_panic_hook"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr", "leptos_router/ssr", "dep:axum", "dep:tokio", "dep:leptos_axum"]
 # Client-only build for static hosting (GitHub Pages), built with trunk.
-csr = ["leptos/csr", "prime-core/hydrate", "dep:wasm-bindgen", "dep:js-sys", "dep:console_error_panic_hook"]
+csr = ["leptos/csr", "prime-rs-core/hydrate", "dep:wasm-bindgen", "dep:js-sys", "dep:console_error_panic_hook"]
 
 [dependencies]
 leptos = { workspace = true }
 leptos_router = "0.8"
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 prime-badge = { workspace = true }
 prime-button = { workspace = true }
 prime-tag = { workspace = true }

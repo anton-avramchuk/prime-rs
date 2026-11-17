@@ -21,5 +21,5 @@ InputText is the base of all text fields and the first component that accepts in
 
 ## Impact
 
-- New crate `crates/prime-inputtext` (`publish = false`); dependencies `prime-core`, `web-sys`.
+- New crate `crates/prime-inputtext` (`publish = false`); dependencies `prime-rs-core`, `web-sys`.
 - Changed: `showcase`, `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.

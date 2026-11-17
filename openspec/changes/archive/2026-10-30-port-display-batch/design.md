@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/{overlaybadge,timeline,metergroup}`. PrimeNG 21.1.10 sources: `overlaybadge/overlaybadge.ts`, `timeline/timeline.ts`, `metergroup/metergroup.ts` and their `style/*style.ts`. Reference implementations in the project: `crates/prime-badge` (nested component, `state.rs` with pure class and `data_p` logic), `crates/prime-avatargroup` (container with a slot), `prime-accordion` (templates as `Callback<_, AnyView>`), `prime_core::Pt`/`OptProp`/`Prop`/`all_static!`.
+Requirements are in `specs/{overlaybadge,timeline,metergroup}`. PrimeNG 21.1.10 sources: `overlaybadge/overlaybadge.ts`, `timeline/timeline.ts`, `metergroup/metergroup.ts` and their `style/*style.ts`. Reference implementations in the project: `crates/prime-badge` (nested component, `state.rs` with pure class and `data_p` logic), `crates/prime-avatargroup` (container with a slot), `prime-accordion` (templates as `Callback<_, AnyView>`), `prime_rs_core::Pt`/`OptProp`/`Prop`/`all_static!`.
 
 Observations about the source:
 - `OverlayBadge` is a `div.p-overlaybadge` with a slot and a `p-badge`; `styleClass`/`style` go to the badge, not the root; all positioning is in CSS.
@@ -13,7 +13,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crates and dependencies
-`prime-overlaybadge` (depends on `prime-core`, `prime-badge`), `prime-timeline`, `prime-metergroup` (only `prime-core`). Each with `ssr`/`hydrate`, rustdoc with an example, SSR tests; public `…Pt { … }` structured by PrimeNG parts: `OverlayBadgePt { root, pc_badge: BadgePt }`, `TimelinePt { root, event, event_opposite, event_separator, event_marker, event_connector, event_content }`, `MeterGroupPt { root, meters, meter, label_list, label, label_icon, label_marker, label_text }`.
+`prime-overlaybadge` (depends on `prime-rs-core`, `prime-badge`), `prime-timeline`, `prime-metergroup` (only `prime-rs-core`). Each with `ssr`/`hydrate`, rustdoc with an example, SSR tests; public `…Pt { … }` structured by PrimeNG parts: `OverlayBadgePt { root, pc_badge: BadgePt }`, `TimelinePt { root, event, event_opposite, event_separator, event_marker, event_connector, event_content }`, `MeterGroupPt { root, meters, meter, label_list, label, label_icon, label_marker, label_text }`.
 
 ### D2. OverlayBadge
 A simple container: `children: Children` and a `Badge` with property forwarding. Properties are `OptProp`/`Prop`, as in `Badge`; to avoid duplicating types, `BadgeSeverity` and `BadgeSize` are re-exported. There is no static branch: the root is a single element, the badge decides for itself whether it is reactive.

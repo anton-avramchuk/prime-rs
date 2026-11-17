@@ -1,6 +1,6 @@
 //! Pure Paginator logic: page count, link window, report, lists, step back (after PrimeNG `paginator.ts`).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 
 /// Option of the "rows per page" list.
 #[derive(Clone, Debug, PartialEq, Eq)]

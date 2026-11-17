@@ -21,9 +21,9 @@ use leptos::attr::custom::custom_attribute;
 use leptos::html;
 use leptos::prelude::*;
 use prime_button::{Button, ButtonSeverity, ButtonState, IconPos, root_classes as button_classes, root_data_p as button_data_p};
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size};
 use prime_icons::ChevronDownIcon;
 use prime_menu::{Menu, MenuItem, MenuRef};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size};
 use std::sync::Arc;
 
 pub use state::{is_toggle_key, root_classes};
@@ -133,7 +133,7 @@ pub fn SplitButton(
     pt: Option<SplitButtonPt>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let menu_id = format!("pn_id_{}", prime_core::ids::next_unique());
+    let menu_id = format!("pn_id_{}", prime_rs_core::ids::next_unique());
     let menu_ref = MenuRef::new();
     let expanded = RwSignal::new(false);
     let root = NodeRef::<html::Div>::new();
@@ -410,7 +410,7 @@ fn dropdown_button(
     #[cfg(target_arch = "wasm32")]
     let node = {
         let node = NodeRef::<html::Button>::new();
-        if prime_core::use_prime_config().ripple {
+        if prime_rs_core::use_prime_config().ripple {
             let ripple = StoredValue::new_local(None::<prime_dom::ripple::Ripple>);
             Effect::new(move |_| {
                 if let Some(el) = node.get()

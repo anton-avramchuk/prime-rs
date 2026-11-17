@@ -23,5 +23,5 @@ InputNumber is a numeric input field with formatting (group separators, fraction
 
 ## Impact
 
-- A new crate `crates/prime-inputnumber` (`publish = false`); dependencies `prime-core`, `prime-inputtext` (classes of the inner field), `prime-icons` (`angleup`, `angledown`, `times`).
+- A new crate `crates/prime-inputnumber` (`publish = false`); dependencies `prime-rs-core`, `prime-inputtext` (classes of the inner field), `prime-icons` (`angleup`, `angledown`, `times`).
 - Changed: workspace `Cargo.toml`, `upstream.toml` (`inputnumber` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (browser job for `tests/web.rs`).

@@ -23,5 +23,5 @@ Splitter - the second component of wave 3: a set of panels whose sizes change by
 
 ## Impact
 
-- New crate `crates/prime-splitter` (`publish = false`); dependencies: `prime-core`, `web-sys` (`Window`, `Storage`, `MouseEvent`, `TouchEvent`, `KeyboardEvent`, `Element`, `DomRect`).
+- New crate `crates/prime-splitter` (`publish = false`); dependencies: `prime-rs-core`, `web-sys` (`Window`, `Storage`, `MouseEvent`, `TouchEvent`, `KeyboardEvent`, `Element`, `DomRect`).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

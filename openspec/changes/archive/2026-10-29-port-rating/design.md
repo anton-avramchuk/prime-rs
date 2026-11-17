@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/rating`. PrimeNG 21.1.10 sources: `packages/primeng/src/rating/rating.ts`, `rating/style/ratingstyle.ts`, the demos in `apps/showcase/doc/rating`. Models: `crates/prime-radiobutton` (a native `<input>` in a group, `docs/radiobutton.md`) and `crates/prime-selectbutton`/`prime-togglebutton` (reactive `rx` closures, tracking rules). `prime-icons` has `StarIcon` and `StarFillIcon`, `prime-core` has the `aria.star` and `aria.stars` translations, and `p-hidden-accessible` is already in the theme's base CSS.
+Requirements are in `specs/rating`. PrimeNG 21.1.10 sources: `packages/primeng/src/rating/rating.ts`, `rating/style/ratingstyle.ts`, the demos in `apps/showcase/doc/rating`. Models: `crates/prime-radiobutton` (a native `<input>` in a group, `docs/radiobutton.md`) and `crates/prime-selectbutton`/`prime-togglebutton` (reactive `rx` closures, tracking rules). `prime-icons` has `StarIcon` and `StarFillIcon`, `prime-rs-core` has the `aria.star` and `aria.stars` translations, and `p-hidden-accessible` is already in the theme's base CSS.
 
 Observations about the source that affected the decisions:
 - Rating has no cancel button (in the `withoutcancel` demo nothing differs from `basic`); a reset is selecting the current value again.
@@ -24,7 +24,7 @@ The root is a `<div>`; the stars are built once by a closure over `stars` (the s
 In PrimeNG visible focus is determined by `sourceCapabilities.firesTouchEvents`, which is absent from `web-sys` and Firefox. Instead, the `focus` handler checks `input.matches(":focus-visible")` and stores the star number in `visible_focus: RwSignal<Option<u32>>`; `blur` resets it. Focus after a mouse click (programmatic) is not considered visible by the browser, so `p-focus-visible` does not appear on such a star, as in PrimeNG. `on_focus`/`on_blur` are called on the radio button's `focus`/`blur` (`on_focus` only if not `readonly` and not `disabled`).
 
 ### D5. Group name
-`name: OptProp<String>`, otherwise `pn_id_<n>_name`, where `<n>` is a number from the shared hydration context (identical on the server and in the browser). The logic already exists in `prime-core::collapsible` (`next_unique`); we move it to `prime-core::ids` (`pub fn next_unique`) and use it in `collapsible` and `Rating`. The behaviour of `Panel`/`Fieldset`/`Accordion` does not change (their tests and snapshots stay as they are).
+`name: OptProp<String>`, otherwise `pn_id_<n>_name`, where `<n>` is a number from the shared hydration context (identical on the server and in the browser). The logic already exists in `prime-rs-core::collapsible` (`next_unique`); we move it to `prime-rs-core::ids` (`pub fn next_unique`) and use it in `collapsible` and `Rating`. The behaviour of `Panel`/`Fieldset`/`Accordion` does not change (their tests and snapshots stay as they are).
 
 ### D6. Icons and slots
 By default `StarFillIcon`/`StarIcon` with the icon classes and `pt`. `on_icon`/`off_icon: Option<ViewFn>` replace the star; `on_icon_template`/`off_icon_template: Callback<RatingIcon, AnyView>` (`RatingIcon { star: u32, class: String }`, like PrimeNG's `{ $implicit, class }` context) replace the icon entirely, priority: the template, then `on_icon`/`off_icon`, then the star. The class-based `icon_on_class` and the like are not ported: there is no icon font.
@@ -45,7 +45,7 @@ SSR: structure, star count, classes and `data-p`, `checked`, labels, the `name`/
 
 - [Five stars with four nodes and several closures each cost more than one button] → budget by measurement; if exceeded, collapse the star's closures (a shared `rx` per star).
 - [Divergence from PrimeNG on arrows (D2) and in determining visible focus (D4)] → recorded in `docs/rating.md`; the spec describes predictable behaviour.
-- [Extracting `next_unique` affects `collapsible`] → a purely mechanical move, the existing `prime-core` and component tests (Panel, Fieldset, Accordion) must stay green without edits.
+- [Extracting `next_unique` affects `collapsible`] → a purely mechanical move, the existing `prime-rs-core` and component tests (Panel, Fieldset, Accordion) must stay green without edits.
 
 ## Migration Plan
 

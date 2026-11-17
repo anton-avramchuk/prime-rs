@@ -7,7 +7,7 @@ use std::borrow::Cow;
 ///
 /// ```
 /// use leptos::prelude::*;
-/// use prime_core::{OptProp, Pt, wrapper::root_class};
+/// use prime_rs_core::{OptProp, Pt, wrapper::root_class};
 ///
 /// Owner::new().with(|| {
 ///     let extra: OptProp<String> = "mine".into();

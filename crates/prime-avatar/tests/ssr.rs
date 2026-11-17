@@ -3,7 +3,7 @@
 
 use leptos::prelude::*;
 use prime_avatar::{Avatar, AvatarPt, AvatarShape, AvatarSize};
-use prime_core::Pt;
+use prime_rs_core::Pt;
 
 fn icon() -> ViewFn {
     ViewFn::from(|| view! { <svg data-testid="i"></svg> })

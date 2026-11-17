@@ -24,5 +24,5 @@ BlockUI is the second component of wave 4: a semi-transparent mask that blocks e
 
 ## Impact
 
-- A new crate `crates/prime-blockui` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `web-sys`.
+- A new crate `crates/prime-blockui` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `web-sys`.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places).

@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Create the crate `crates/prime-knob` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`, `web-sys` with mouse and touch events, `DomRect`, wasm dev-dependencies as in `prime-slider`), add it to the workspace; check `cargo check -p prime-knob --all-features`
+- [x] 1.1 Create the crate `crates/prime-knob` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`, `web-sys` with mouse and touch events, `DomRect`, wasm dev-dependencies as in `prime-slider`), add it to the workspace; check `cargo check -p prime-knob --all-features`
 - [x] 1.2 `state.rs`: `map_range`, `value_from_angle`, `zero_radians`, `value_radians`, `range_path`, `value_path`, `key_target`, `display_text`, root classes after `knobstyle.ts`; table-driven tests
 - [x] 1.3 Implement `Knob`, `KnobPt` (value, SVG and arcs, text and template, colors and size, `aria-*`, `tabindex`, keyboard, `on_change`); SSR tests (structure, `aria-*`, size, paths at key points, template and colors, `show_value`, `disabled`/`readonly`, `pt`, branch parity)
 - [x] 1.4 Pointer input: click, dragging with mouse and touch with `window` listeners only while pressed, focus on press, skipping `click` after dragging

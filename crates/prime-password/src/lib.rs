@@ -20,9 +20,9 @@ mod state;
 use leptos::either::Either;
 use leptos::prelude::*;
 use panel::Panel;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use prime_icons::{EyeIcon, EyeSlashIcon, TimesIcon};
 use prime_inputtext::InputText;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use std::sync::Arc;
 
 pub use state::{PasswordStrength, Phase, RootState, root_classes, strength};
@@ -171,7 +171,7 @@ pub fn Password(
         config.locale.text("strong").to_owned(),
     ]);
     let value = value.unwrap_or_default();
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let focused = RwSignal::new(false);
     let unmasked = RwSignal::new(false);
     let panel = Panel::new();

@@ -2,7 +2,7 @@
 
 ## Why
 
-The next batch of wave 2 is display components without input and without the `MenuItem` model: `OverlayBadge` (a badge over arbitrary content), `Timeline` (a chain of events) and `MeterGroup` (a composite scale with labels). They rely only on the existing `Badge`, `prime-core` and the theme CSS, so they can be built as one package following the established cycle. `Breadcrumb` and `Steps` depend on a shared menu item model (`MenuItem`: links, `routerLink`, `command`, visibility, disabling) that the project does not have yet; it is more sensible to move them to a separate batch together with this model.
+The next batch of wave 2 is display components without input and without the `MenuItem` model: `OverlayBadge` (a badge over arbitrary content), `Timeline` (a chain of events) and `MeterGroup` (a composite scale with labels). They rely only on the existing `Badge`, `prime-rs-core` and the theme CSS, so they can be built as one package following the established cycle. `Breadcrumb` and `Steps` depend on a shared menu item model (`MenuItem`: links, `routerLink`, `command`, visibility, disabling) that the project does not have yet; it is more sensible to move them to a separate batch together with this model.
 
 ## What Changes
 
@@ -26,5 +26,5 @@ The next batch of wave 2 is display components without input and without the `Me
 
 ## Impact
 
-- New crates `crates/prime-overlaybadge`, `prime-timeline`, `prime-metergroup` (`publish = false`); dependencies: `prime-core`, `prime-badge` (for OverlayBadge).
+- New crates `crates/prime-overlaybadge`, `prime-timeline`, `prime-metergroup` (`publish = false`); dependencies: `prime-rs-core`, `prime-badge` (for OverlayBadge).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`.

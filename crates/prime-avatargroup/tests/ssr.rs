@@ -3,7 +3,7 @@
 
 use leptos::prelude::*;
 use prime_avatargroup::AvatarGroup;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 
 fn strip(s: &str) -> String {
     let mut out = s.replace("<!>", "");

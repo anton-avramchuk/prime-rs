@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 
 #[test]
 fn root_keeps_own_classes_and_adds_pt() {

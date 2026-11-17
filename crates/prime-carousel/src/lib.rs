@@ -19,8 +19,8 @@ mod model;
 
 use leptos::prelude::*;
 use prime_button::{Button, ButtonPt, ButtonSeverity};
-use prime_core::{ClassNames, OptProp, Prop, Pt};
 use prime_icons::{ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use model::{
@@ -362,7 +362,7 @@ where
     T: Clone + Send + Sync + 'static,
 {
     let pt = Arc::new(pt.unwrap_or_default());
-    let root_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let root_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let len = Memo::new({
         let value = value.clone();
         move |_| value.with(Vec::len)
@@ -458,7 +458,7 @@ where
             (!merged.is_empty()).then_some(merged)
         }
     };
-    let locale_text = |key: &str| prime_core::use_prime_config().locale.text(key).to_owned();
+    let locale_text = |key: &str| prime_rs_core::use_prime_config().locale.text(key).to_owned();
     let (slide_label, slide_number, page_label) =
         (locale_text("aria.slide"), locale_text("aria.slideNumber"), locale_text("aria.pageLabel"));
 

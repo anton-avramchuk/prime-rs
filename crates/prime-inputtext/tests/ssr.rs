@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size, Variant};
 use prime_inputtext::InputText;
+use prime_rs_core::{Pt, Size, Variant};
 
 #[test]
 fn renders_input_with_default_type() {
@@ -48,7 +48,7 @@ fn value_is_rendered_and_marks_filled() {
 #[test]
 fn variant_comes_from_config() {
     Owner::new().with(|| {
-        prime_core::provide_prime_config(prime_core::PrimeConfig { input_variant: Some(Variant::Filled), ..Default::default() });
+        prime_rs_core::provide_prime_config(prime_rs_core::PrimeConfig { input_variant: Some(Variant::Filled), ..Default::default() });
         let html = view! { <InputText /> }.to_html();
         assert!(html.contains("p-variant-filled"), "{html}");
     });
@@ -81,7 +81,7 @@ fn fluid_inherited_from_context() {
     let outside = view! { <InputText/> }.to_html();
     assert!(!outside.contains("p-inputtext-fluid"), "{outside}");
     Owner::new().with(|| {
-        prime_core::fluid::provide_fluid();
+        prime_rs_core::fluid::provide_fluid();
         let inherited = view! { <InputText/> }.to_html();
         assert!(inherited.contains("p-inputtext-fluid"), "{inherited}");
         let forced_off = view! { <InputText fluid=false/> }.to_html();

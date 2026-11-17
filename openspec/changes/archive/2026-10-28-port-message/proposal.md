@@ -22,5 +22,5 @@ Message is a component for displaying messages (information, success, warning, e
 
 ## Impact
 
-- New crate `crates/prime-message` (`publish = false`); dependencies `prime-core`, `prime-icons` (`times`), `web-sys`.
+- New crate `crates/prime-message` (`publish = false`); dependencies `prime-rs-core`, `prime-icons` (`times`), `web-sys`.
 - Changed: `showcase`, `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`; the CI browser job is unchanged (browser tests for `life` and closing are added to it).

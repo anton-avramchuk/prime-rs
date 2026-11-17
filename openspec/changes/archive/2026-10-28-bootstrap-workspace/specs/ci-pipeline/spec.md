@@ -19,7 +19,7 @@ CI SHALL determine the changed crates and the crates that depend on them and run
 - **THEN** tests run for `prime-button` and the crates depending on it, the rest are skipped
 
 #### Scenario: Core changed
-- **WHEN** a PR changes `crates/prime-core`
+- **WHEN** a PR changes `crates/prime-rs-core`
 - **THEN** the whole workspace is checked
 
 ### Requirement: Weekly and manual checks

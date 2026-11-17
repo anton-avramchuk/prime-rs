@@ -12,7 +12,7 @@ Observations on the source:
 ## Decisions
 
 ### D1. Crate and dependencies
-`prime-inplace` with `Inplace` and `InplacePt { root, display, content, close_button }`. It depends on `prime-core`, `prime-button`, `prime-icons` (`times`), `web-sys`.
+`prime-inplace` with `Inplace` and `InplacePt { root, display, content, close_button }`. It depends on `prime-rs-core`, `prime-button`, `prime-icons` (`times`), `web-sys`.
 
 ### D2. Pure logic (`state.rs`)
 `display_classes(disabled)` — `p-inplace-display` and `p-disabled`; `next_state(active, action, disabled, prevent_click) -> bool` — a table-driven decision for `Click`, `Enter`, `Close`. The table test covers all combinations.

@@ -18,8 +18,8 @@ mod state;
 
 use leptos::prelude::*;
 use prime_checkbox::CheckboxState;
-use prime_core::{OptProp, Prop, Pt};
 use prime_icons::{CheckIcon, ChevronDownIcon, ChevronRightIcon, MinusIcon, SearchIcon, SpinnerIcon};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::collections::HashSet;
 use std::sync::Arc;
 
@@ -418,7 +418,7 @@ pub fn Tree(
     on_filter: Option<Callback<String>>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let tree_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let tree_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let filter_text = RwSignal::new(String::new());
     let shown = Memo::new_with_compare(
         {
@@ -477,7 +477,7 @@ pub fn Tree(
         let (pt, loading) = (pt.clone(), loading.clone());
         let (style_class, scroll_height) = (style_class.clone(), scroll_height.clone());
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-tree p-component")
                 .add_if(selection_mode.is_some(), "p-tree-selectable")
                 .add_if(loading.get(), "p-tree-loading")
@@ -565,7 +565,7 @@ pub fn Tree(
         move || {
             let none = core.shown.with(|n| n.is_empty());
             (!loading.get() && none).then(|| {
-                let text = empty_message.get().filter(|m| !m.is_empty()).unwrap_or_else(|| prime_core::use_prime_config().locale.text("emptyMessage").to_owned());
+                let text = empty_message.get().filter(|m| !m.is_empty()).unwrap_or_else(|| prime_rs_core::use_prime_config().locale.text("emptyMessage").to_owned());
                 view! { <div class={pt.empty_message.merge_class("p-tree-empty-message").into_owned()} {..pt.empty_message.attrs()}>{text}</div> }
             })
         }
@@ -635,7 +635,7 @@ fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView 
         let (pt, is_selected, highlight) = (pt.clone(), is_selected.clone(), ctx.highlight_on_select.clone());
         let selectable = mode.is_some() && node.selectable;
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             let selected = if mode == Some(TreeSelectionMode::Checkbox) { highlight.get() && is_selected() } else { is_selected() };
             cn.add("p-tree-node-content").add_if(selectable, "p-tree-node-selectable").add_if(selected, "p-tree-node-selected");
             pt.node_content.merge_class(&cn.finish_cow()).into_owned()
@@ -797,7 +797,7 @@ fn checkbox_view(
     let root_class = {
         let (state, extra) = (state.clone(), pt.node_checkbox.merge_class("p-tree-node-checkbox").into_owned());
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             prime_checkbox::write_classes(&mut cn, &state());
             format!("{} {extra}", cn.finish())
         }

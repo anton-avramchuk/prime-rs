@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/tooltip`. PrimeNG 21.1.10 sources: `tooltip/tooltip.ts`, `tooltip/style/tooltipstyle.ts`; demos `apps/showcase/doc/tooltip/*-doc.ts`. Project references: `prime-popover` (positioning, window listeners, `scroll` capture, cleanup closures), `prime-core::zindex` (`ZGroup::Tooltip` already exists), `prime_dom::dom::{viewport, scroll}`.
+Requirements are in `specs/tooltip`. PrimeNG 21.1.10 sources: `tooltip/tooltip.ts`, `tooltip/style/tooltipstyle.ts`; demos `apps/showcase/doc/tooltip/*-doc.ts`. Project references: `prime-popover` (positioning, window listeners, `scroll` capture, cleanup closures), `prime-rs-core::zindex` (`ZGroup::Tooltip` already exists), `prime_dom::dom::{viewport, scroll}`.
 
 Observations about the source:
 - It is a **directive** (`[pTooltip]`), not a component: no host markup, everything works on the target `ElementRef`; the `mouseenter`/`mouseleave`/`click`/`touchstart`/`touchend` (hover) and `focus`/`blur` (focus) listeners are attached to the target; for `focus` a `.p-component` inside is looked up, and for `p-inputwrapper` the nested `input`.

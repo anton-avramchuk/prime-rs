@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 use prime_tree::{Tree, TreeFilterMode, TreeLoadingMode, TreeNode, TreePt, TreeSelectionMode};
 use std::collections::HashSet;
 

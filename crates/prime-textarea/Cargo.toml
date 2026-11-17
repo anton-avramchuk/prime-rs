@@ -4,17 +4,17 @@ description = "prime-rs: Textarea component (port of PrimeNG)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "FocusEvent", "HtmlTextAreaElement", "CssStyleDeclaration", "HtmlElement", "Window"] }
 
 # ssr only for native tests: on wasm it breaks the client event handlers.

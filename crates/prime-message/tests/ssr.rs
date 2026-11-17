@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size};
 use prime_message::{Message, MessagePt, MessageSeverity, MessageVariant};
+use prime_rs_core::{Pt, Size};
 
 /// Strips hydration markers (`<!>` and `<!--…-->`): their number depends on the branch, not on the markup.
 fn strip(s: &str) -> String {

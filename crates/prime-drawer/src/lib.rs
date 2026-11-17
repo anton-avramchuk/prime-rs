@@ -23,9 +23,9 @@ mod state;
 
 use leptos::prelude::*;
 use prime_button::{Button, ButtonPt, ButtonSeverity};
-use prime_core::{OptProp, Prop, Pt};
 use prime_dom::Portal;
 use prime_icons::TimesIcon;
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{DrawerPosition, animation_class, data_p, is_topmost, mask_classes, mask_z, root_classes};
@@ -33,9 +33,9 @@ pub use state::{DrawerPosition, animation_class, data_p, is_topmost, mask_classe
 #[cfg(target_arch = "wasm32")]
 use leptos::leptos_dom::helpers::{TimeoutHandle, set_timeout_with_handle};
 #[cfg(target_arch = "wasm32")]
-use prime_core::{ZGroup, use_prime_config};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::{FocusTrap, block_body_scroll, unblock_body_scroll};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::{ZGroup, use_prime_config};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -109,7 +109,7 @@ impl Core {
     /// Releases the layer and the scroll lock.
     fn release_layer(&self) {
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
         if self.scroll_blocked.try_update_value(std::mem::take).unwrap_or(false) {
             #[cfg(target_arch = "wasm32")]
@@ -134,7 +134,7 @@ impl Core {
         let panel: web_sys::HtmlElement = panel.unchecked_into();
         if self.auto_z_index.get_untracked() {
             let base = use_prime_config().z_index.base(ZGroup::Modal) + self.base_z_index.get_untracked();
-            let z = prime_core::zindex::generate(ZGroup::Modal, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Modal, base);
             self.z_index.set_value(Some(z));
             let _ = panel.style().set_property("z-index", &z.to_string());
             if let Some(mask) = self.mask.get_untracked() {
@@ -154,7 +154,7 @@ impl Core {
                     return;
                 }
                 let own = this.z_index.get_value().unwrap_or(0);
-                if is_topmost(own, prime_core::zindex::current()) {
+                if is_topmost(own, prime_rs_core::zindex::current()) {
                     this.visible.set(false);
                 }
             });
@@ -423,7 +423,8 @@ fn build_panel(core: &Arc<Core>, pt: &Arc<DrawerPt>, parts: &Arc<Parts>) -> AnyV
     } else {
         let close_button = parts.closable.get_untracked().then(|| {
             let icon = parts.close_icon.clone().unwrap_or_else(|| ViewFn::from(|| view! { <TimesIcon /> }));
-            let label = parts.aria_close_label.get().unwrap_or_else(|| prime_core::use_prime_config().locale.text("aria.close").to_owned());
+            let label =
+                parts.aria_close_label.get().unwrap_or_else(|| prime_rs_core::use_prime_config().locale.text("aria.close").to_owned());
             let visible = core.visible;
             view! {
                 <Button

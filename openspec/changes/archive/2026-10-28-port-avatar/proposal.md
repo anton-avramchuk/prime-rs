@@ -20,5 +20,5 @@ Avatar is the next component of wave 1 (after Button, Badge, Tag, Chip). It repr
 
 ## Impact
 
-- A new crate `crates/prime-avatar` (`publish = false`); dependencies `prime-core`, `web-sys`.
+- A new crate `crates/prime-avatar` (`publish = false`); dependencies `prime-rs-core`, `web-sys`.
 - Changes to `showcase`, `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.

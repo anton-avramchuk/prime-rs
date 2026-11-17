@@ -25,11 +25,11 @@ The motivation and contents of the change are described in `proposal.md`, requir
 
 ### D1. Workspace layout
 ```
-crates/prime-core  prime-dom  prime-theme  prime-icons  prime-<component>…
+crates/prime-rs-core  prime-dom  prime-theme  prime-icons  prime-<component>…
 showcase/   xtask/   benches/   .github/workflows/
 upstream.toml  rust-toolchain.toml  .cargo/config.toml  deny.toml  NOTICE
 ```
-`resolver = "3"`, `members = ["crates/*", "benches/*", "showcase", "xtask"]` (`benches/` has two crates: `render` and `wasm-size`). The PrimeNG base classes (`basecomponent`, `baseinput`, `baseeditableholder`) become `prime-core` modules rather than crates: in Rust these are traits and helpers without their own runtime. Utility directories (`dom`, `utils`, `classnames`, `focustrap`, `ripple`) are split between `prime-core` and `prime-dom`.
+`resolver = "3"`, `members = ["crates/*", "benches/*", "showcase", "xtask"]` (`benches/` has two crates: `render` and `wasm-size`). The PrimeNG base classes (`basecomponent`, `baseinput`, `baseeditableholder`) become `prime-rs-core` modules rather than crates: in Rust these are traits and helpers without their own runtime. Utility directories (`dom`, `utils`, `classnames`, `focustrap`, `ripple`) are split between `prime-rs-core` and `prime-dom`.
 *Alternative*: a crate per PrimeNG directory — gives ~117 crates, a third of which are empty wrappers, and extra minutes on every check.
 
 ### D2. A single set of features
@@ -37,7 +37,7 @@ Every crate with Leptos: `default = []`, features `ssr = ["leptos/ssr"]`, `hydra
 *Alternative*: CSR only — simpler, but the SSR benchmarks (D8) and the cargo-leptos showcase would lose their meaning, and adding SSR later means rewriting the DOM code of all components.
 
 ### D3. CSS classes
-`ClassNames` in `prime-core` is a builder that writes into a single `String` with pre-allocated capacity (`with_capacity`), without intermediate `Vec<String>`; in the reactive part the result is wrapped in a `Memo<String>` so that the `class` attribute updates only on change. Class names are copied from PrimeNG's `classes` verbatim (the `core-runtime` spec).
+`ClassNames` in `prime-rs-core` is a builder that writes into a single `String` with pre-allocated capacity (`with_capacity`), without intermediate `Vec<String>`; in the reactive part the result is wrapped in a `Memo<String>` so that the `class` attribute updates only on change. Class names are copied from PrimeNG's `classes` verbatim (the `core-runtime` spec).
 
 ### D4. Pass-through
 `pt` is a `Pt { class: Option<…>, attrs: … }` struct for the root and named parts (for example, `PtRoot`); applied via `.attr()` and class merging. The full set of PrimeNG `pt:*` hooks and the unstyled mode are not part of wave 0 (see Non-Goals), but the `Pt` type is designed to be extensible.
@@ -67,7 +67,7 @@ Size: the Aura tokens and component CSS are tens to hundreds of KB of text; that
 
 ### D9. CI
 `.github/workflows/` files:
-- `ci.yml` (PR and push): `fmt` → `clippy -D warnings` → `nextest` → `wasm-bindgen-test` (headless Chrome) → `cargo-deny` → `bench`. Affected crates are determined by `xtask affected` (`cargo metadata` + `git diff`); changes in `prime-core`, `prime-dom`, `Cargo.toml`, `Cargo.lock`, `xtask`, `.github/**` and others trigger a full run. Applications (`showcase`, `wasm-size`, `render-bench`) are checked by a separate `apps` job.
+- `ci.yml` (PR and push): `fmt` → `clippy -D warnings` → `nextest` → `wasm-bindgen-test` (headless Chrome) → `cargo-deny` → `bench`. Affected crates are determined by `xtask affected` (`cargo metadata` + `git diff`); changes in `prime-rs-core`, `prime-dom`, `Cargo.toml`, `Cargo.lock`, `xtask`, `.github/**` and others trigger a full run. Applications (`showcase`, `wasm-size`, `render-bench`) are checked by a separate `apps` job.
 - `weekly.yml` (`schedule`, `workflow_dispatch`, PR with the `run-e2e` label): clone PrimeNG at the commit from `upstream.toml`, build its showcase, build our showcase, Playwright (e2e + screenshot comparison + browser benchmarks), artifacts `retention-days: 7`.
 - Cache — `Swatinem/rust-cache` with `cache-on-failure: false`, `cargo-sweep` before saving; `cargo-machete` on a schedule.
 The cache strategy is chosen so that the cache size is bounded; `sccache` is not used.

@@ -1,9 +1,10 @@
 name: Pages
 
 # Publishes the static showcase (client-only wasm built with trunk) to GitHub Pages.
+# Runs only for the tag `pages` (or manually).
 on:
   push:
-    branches: [dev]
+    tags: ['pages']
   workflow_dispatch:
 
 concurrency:

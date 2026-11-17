@@ -29,8 +29,8 @@ mod state;
 
 use leptos::prelude::*;
 use leptos::tachys::reactive_graph::OwnedView;
-use prime_core::collapsible::hidden_style;
-use prime_core::{ClassNames, OptProp, Prop, Pt};
+use prime_rs_core::collapsible::hidden_style;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{is_active, item_classes, panel_classes, panel_id, root_classes, separator_after, step_classes, step_disabled, step_id};
@@ -153,7 +153,7 @@ pub fn Stepper(
     children: Children,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let id = id.unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let id = id.unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let ctx = StepperCtx {
         id: id.clone(),
         value: value.unwrap_or_else(|| RwSignal::new(default_value)),
@@ -394,7 +394,7 @@ pub fn StepPanel(
         #[cfg(target_arch = "wasm32")]
         let region = {
             let region = NodeRef::<leptos::html::Div>::new();
-            prime_core::collapsible::bind_region_with(region, move || !active.get(), None);
+            prime_rs_core::collapsible::bind_region_with(region, move || !active.get(), None);
             leptos::tachys::html::node_ref::node_ref::<leptos::html::Div, _>(region)
         };
         #[cfg(not(target_arch = "wasm32"))]

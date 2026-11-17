@@ -21,8 +21,8 @@ mod state;
 
 use leptos::prelude::*;
 use prime_button::{Button, ButtonPt};
-use prime_core::{ClassNames, OptProp, Prop, Pt};
 use prime_icons::TimesIcon;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{Action, display_classes, next_state};

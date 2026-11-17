@@ -1,6 +1,6 @@
 //! Pure Stepper logic: identifiers, step states, separator, classes (after PrimeNG `stepper.ts` and `style/*`).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::borrow::Cow;
 
 /// Step button identifier: `<id>_step_<value>`.

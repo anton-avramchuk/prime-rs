@@ -34,7 +34,7 @@ Spec: `openspec/specs/select`. Scope of the first change: core, filter and group
 | The last hidden boundary of the panel closes it and returns focus to the label | In PrimeNG it hands focus back through a complex `getFirstFocusableElement` chain; in practice the result is the same. |
 | The label, placeholder and clear icon read the value directly from the option list; a value that is not among the options counts as unselected | In PrimeNG such a value stays in the model and is shown as an empty label. |
 | The `fluid` property is `OptProp<bool>`: without a value it is taken from the `Fluid` context | Like `hasFluid = fluid() ?? !!pcFluid` in PrimeNG; see `docs/field-wrappers.md`. |
-| The `pn_id_<n>` identifier comes from the shared helper `prime_core::ids::next_unique` | Identical on the server and in the browser. |
+| The `pn_id_<n>` identifier comes from the shared helper `prime_rs_core::ids::next_unique` | Identical on the server and in the browser. |
 | No `customfilter`, `editable`, `virtualscroll`, `lazyvirtualscroll`, `reactiveforms`, `templatedrivenforms` demos; in `template`, country codes instead of CDN flags | Change scope and independence from the CDN. |
 
 The list is rebuilt only when options, groups or the search string change; option focus, selection and label state are separate closures, so the label and search field elements are not recreated during navigation.

@@ -54,7 +54,7 @@ impl Buf {
 /// returns an interned `&'static str` without allocation.
 ///
 /// ```
-/// use prime_core::ClassNames;
+/// use prime_rs_core::ClassNames;
 ///
 /// let mut cn = ClassNames::new();
 /// cn.add("p-button p-component").add_if(true, "p-button-sm").add_if(false, "p-disabled");

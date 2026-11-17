@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 use prime_steps::{Steps, StepsItem, StepsPt};
 
 fn render(f: impl FnOnce() -> String) -> String {

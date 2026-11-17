@@ -1,6 +1,6 @@
 //! Pure Tag logic: from properties to classes and `data-p` (after PrimeNG `tagstyle.ts` and `Tag.dataP`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Tag severity (`p-tag-<severity>`).

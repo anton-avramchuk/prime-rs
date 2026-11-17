@@ -19,9 +19,9 @@ use leptos::attr::any_attribute::{AnyAttribute, IntoAnyAttribute};
 use leptos::attr::custom::custom_attribute;
 use leptos::html;
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use prime_icons::TimesIcon;
 use prime_inputtext::{InputTextState, write_classes as input_classes};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, Size, Variant, use_prime_config};
 use std::sync::Arc;
 
 pub use mask::{CharTest, Deleted, Focused, Mask, Typed, ascii_letters};
@@ -392,7 +392,7 @@ pub fn InputMask(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let alpha = character_pattern.unwrap_or_else(ascii_letters);
-    let fluid = prime_core::fluid::fluid_prop(fluid);
+    let fluid = prime_rs_core::fluid::fluid_prop(fluid);
     let value = value.unwrap_or_else(|| RwSignal::new(String::new()));
     let mut engine = Mask::new(
         &mask.get_untracked(),

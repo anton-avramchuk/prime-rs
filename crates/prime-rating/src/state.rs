@@ -1,6 +1,6 @@
 //! Pure Rating logic: value selection, classes and `data-p` (after PrimeNG's `ratingstyle.ts` and `Rating.dataP`).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Value after selecting a star: selecting the current value again resets it (like PrimeNG's `onOptionSelect`).

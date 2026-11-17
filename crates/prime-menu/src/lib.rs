@@ -18,7 +18,7 @@
 mod state;
 
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Pt};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 use wasm_bindgen::JsCast;
 
@@ -30,9 +30,9 @@ pub use state::{
 #[cfg(target_arch = "wasm32")]
 use leptos::leptos_dom::helpers::set_timeout_with_handle;
 #[cfg(target_arch = "wasm32")]
-use prime_core::{ZGroup, use_prime_config};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::dom::{AlignMode, align_overlay};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::{ZGroup, use_prime_config};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
@@ -165,7 +165,7 @@ impl Core {
             cleanup();
         }
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
     }
 
@@ -292,7 +292,7 @@ impl Core {
         let panel: web_sys::HtmlElement = panel.unchecked_into();
         if self.auto_z_index.get_untracked() {
             let base = use_prime_config().z_index.base(ZGroup::Menu) + self.base_z_index.get_untracked();
-            let z = prime_core::zindex::generate(ZGroup::Menu, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Menu, base);
             self.z_index.set_value(Some(z));
             let _ = panel.style().set_property("z-index", &z.to_string());
         }
@@ -528,7 +528,7 @@ pub fn Menu(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let r = menu_ref.unwrap_or_default();
-    let menu_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let menu_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let core = Arc::new(Core {
         r,
         popup: popup.clone(),

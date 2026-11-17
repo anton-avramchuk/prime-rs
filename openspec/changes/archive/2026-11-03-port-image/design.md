@@ -30,7 +30,7 @@ Observations on the source:
 `RwSignal` for `open` (showing requested), `rendered` (the layer is in the DOM while the exit is in progress), `rotate`, `scale`, the flag `preview_click` (not a signal). The core structure follows the sample of `prime-dialog`: `StoredValue` for the layer `z-index`, the focus trap and the blocking flag; repeated closing and double scroll blocking are guarded by flags (a lesson from BlockUI).
 
 ### D4. Showing
-`Portal` is built anew on each showing (the ready views are not `Send + Sync`). The mask gets the classes `p-overlay-mask-enter-active`/`-leave-active`; the exit waits for `animationend` with a fallback timer, as in `Dialog`. The layer — `prime_core::zindex::generate(ZGroup::Modal, ..)`.
+`Portal` is built anew on each showing (the ready views are not `Send + Sync`). The mask gets the classes `p-overlay-mask-enter-active`/`-leave-active`; the exit waits for `animationend` with a fallback timer, as in `Dialog`. The layer — `prime_rs_core::zindex::generate(ZGroup::Modal, ..)`.
 
 ### D5. Keys and focus
 `Escape` — a `keydown` listener on the mask and on `document` (while open): close and return the focus to the preview button via `set_timeout(25)`. `FocusTrap` on the mask; the focus on the close button via `set_timeout(25)`.

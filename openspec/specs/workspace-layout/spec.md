@@ -6,7 +6,7 @@ Structure of the prime-rs Cargo workspace: one crate per PrimeNG component, CSR/
 ## Requirements
 
 ### Requirement: One component, one crate
-Each PrimeNG component SHALL be ported into a separate crate `crates/prime-<name>`, where `<name>` matches the component's directory name in PrimeNG. Shared code SHALL live in `prime-core`, `prime-dom`, `prime-theme` and `prime-icons`, not in component crates.
+Each PrimeNG component SHALL be ported into a separate crate `crates/prime-<name>`, where `<name>` matches the component's directory name in PrimeNG. Shared code SHALL live in `prime-rs-core`, `prime-dom`, `prime-theme` and `prime-icons`, not in component crates.
 
 #### Scenario: Component crate naming
 - **WHEN** a port of the `button` component is added
@@ -14,7 +14,7 @@ Each PrimeNG component SHALL be ported into a separate crate `crates/prime-<name
 
 #### Scenario: A component does not duplicate shared code
 - **WHEN** a component needs ClassNames, z-index or positioning
-- **THEN** it depends on `prime-core` or `prime-dom` and does not contain its own copy
+- **THEN** it depends on `prime-rs-core` or `prime-dom` and does not contain its own copy
 
 ### Requirement: A single workspace and dependency versions
 The repository SHALL be a single Cargo workspace in which external dependency versions are declared once in `[workspace.dependencies]` and crates refer to them.

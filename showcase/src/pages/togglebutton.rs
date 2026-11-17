@@ -4,8 +4,8 @@
 
 use super::Demo;
 use leptos::prelude::*;
-use prime_core::Size;
 use prime_icons::{CheckIcon, TimesIcon};
+use prime_rs_core::Size;
 use prime_togglebutton::ToggleButton;
 
 fn on_icon() -> ViewFn {

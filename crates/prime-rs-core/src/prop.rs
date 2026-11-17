@@ -11,7 +11,7 @@ use leptos::prelude::*;
 ///
 /// ```
 /// use leptos::prelude::*;
-/// use prime_core::Prop;
+/// use prime_rs_core::Prop;
 ///
 /// Owner::new().with(|| {
 ///     let fixed: Prop<bool> = true.into();
@@ -137,7 +137,7 @@ impl From<&str> for Prop<Option<String>> {
 ///
 /// ```
 /// use leptos::prelude::*;
-/// use prime_core::{OptProp, Prop, all_static};
+/// use prime_rs_core::{OptProp, Prop, all_static};
 ///
 /// Owner::new().with(|| {
 ///     let label: OptProp<String> = "Save".into();

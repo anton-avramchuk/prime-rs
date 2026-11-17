@@ -25,6 +25,6 @@ MultiSelect is the eleventh component of wave 3: selecting several values from a
 
 ## Impact
 
-- New crate `crates/prime-multiselect` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-icons`, `prime-checkbox` (checkbox classes), `prime-chip`, `web-sys`.
+- New crate `crates/prime-multiselect` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-icons`, `prime-checkbox` (checkbox classes), `prime-chip`, `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).
 - The list logic (flat list, filter, indices, selection, ranges) is copied from `prime-listbox` into `logic.rs` in the first version; extraction into a shared module is deferred until a third consumer (following the Drawer/Dialog example).

@@ -29,8 +29,8 @@ mod state;
 use leptos::html;
 use leptos::prelude::*;
 use leptos::web_sys;
-use prime_core::{ClassNames, OptProp, Prop, Pt, use_prime_config};
 use prime_icons::{ChevronLeftIcon, ChevronRightIcon};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, use_prime_config};
 use std::sync::Arc;
 
 pub use state::{
@@ -116,7 +116,7 @@ pub fn Tabs(
     children: Children,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let id = id.unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let id = id.unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     provide_context(TabsCtx {
         id: id.clone(),
         value: value.unwrap_or_else(|| RwSignal::new(default_value)),

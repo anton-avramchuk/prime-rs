@@ -2,7 +2,7 @@
 
 ## 1. Crate, format and text editing
 
-- [x] 1.1 Create the crate `crates/prime-inputnumber` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-inputtext`, `prime-icons` with `angleup`, `angledown`, `times`, `web-sys` with `InputEvent`, `HtmlInputElement`, `ClipboardEvent`/`DataTransfer`, wasm dev-dependencies as in `prime-slider`), add it to the workspace; verify `cargo check -p prime-inputnumber --all-features`
+- [x] 1.1 Create the crate `crates/prime-inputnumber` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `prime-inputtext`, `prime-icons` with `angleup`, `angledown`, `times`, `web-sys` with `InputEvent`, `HtmlInputElement`, `ClipboardEvent`/`DataTransfer`, wasm dev-dependencies as in `prime-slider`), add it to the workspace; verify `cargo check -p prime-inputnumber --all-features`
 - [x] 1.2 `locale.rs` and `format.rs`: the table of locales and currencies, `resolve_locale`, `format_number`, rounding on the shortest decimal representation, grouping (including 3-2-2), the currency and its position, `prefix`/`suffix`; table tests over all locales and currencies
 - [x] 1.3 Parsing `parse_text` (prefix, suffix, currency, groups, minus, decimal separator, the "only a minus" state) and `parse(format(x)) == x` round-trip tests
 - [x] 1.4 `edit.rs`: `insert`, `delete_back`, `delete_forward`, `delete_range`, `paste`, `commit`, `clamp_caret`, keeping the typed fraction "tail" and the caret by the number of significant characters; table tests (typing, minus, separator, fraction limit, Backspace/Delete over separators and the fraction, ranges, paste, prefix and suffix)

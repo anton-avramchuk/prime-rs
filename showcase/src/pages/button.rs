@@ -7,10 +7,10 @@ use super::Demo;
 use leptos::prelude::*;
 use prime_badge::BadgeSeverity;
 use prime_button::{Button, ButtonSeverity, ButtonVariant, IconPos};
-use prime_core::{PrimeConfig, Size, provide_prime_config};
 use prime_icons::{
     CheckIcon, ExclamationTriangleIcon, HomeIcon, InfoCircleIcon, PlusIcon, RefreshIcon, SearchIcon, StarFillIcon, StarIcon, TimesIcon,
 };
+use prime_rs_core::{PrimeConfig, Size, provide_prime_config};
 use std::time::Duration;
 
 fn icon<V: IntoView + 'static>(f: impl Fn() -> V + Send + Sync + 'static) -> ViewFn {

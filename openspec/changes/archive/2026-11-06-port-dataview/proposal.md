@@ -23,5 +23,5 @@ DataView is data as a list or a grid with a paginator, sorting and a filter. The
 
 ## Impact
 
-- New crate `crates/prime-dataview` (`publish = false`); dependencies: `prime-core`, `prime-paginator`, `prime-icons`.
+- New crate `crates/prime-dataview` (`publish = false`); dependencies: `prime-rs-core`, `prime-paginator`, `prime-icons`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

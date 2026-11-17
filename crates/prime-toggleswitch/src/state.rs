@@ -1,6 +1,6 @@
 //! Pure ToggleSwitch logic: classes and `data-p` (based on `toggleswitchstyle.ts` and `ToggleSwitch.dataP` in PrimeNG).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Snapshot of the properties that affect classes and `data-p`.

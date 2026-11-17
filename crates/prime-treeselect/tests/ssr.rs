@@ -3,7 +3,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size, Variant};
+use prime_rs_core::{Pt, Size, Variant};
 use prime_tree::{TreeNode, TreeSelectionMode};
 use prime_treeselect::{TreeSelect, TreeSelectDisplay, TreeSelectPt};
 

@@ -20,5 +20,5 @@ Divider - the next component of wave 1 (after Button, Badge, Tag, Chip, Avatar).
 
 ## Impact
 
-- New crate `crates/prime-divider` (`publish = false`); dependency `prime-core`.
+- New crate `crates/prime-divider` (`publish = false`); dependency `prime-rs-core`.
 - Changed: `showcase`, `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.

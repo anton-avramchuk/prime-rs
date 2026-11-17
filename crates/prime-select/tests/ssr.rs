@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size, Variant};
+use prime_rs_core::{Pt, Size, Variant};
 use prime_select::{Select, SelectGroup, SelectOption, SelectPt};
 
 fn cities() -> Vec<SelectOption> {
@@ -305,7 +305,7 @@ fn fluid_inherited_from_context() {
     let outside = view! { <Select options=cities()/> }.to_html();
     assert!(!outside.contains("p-select-fluid"), "{outside}");
     Owner::new().with(|| {
-        prime_core::fluid::provide_fluid();
+        prime_rs_core::fluid::provide_fluid();
         let inherited = view! { <Select options=cities()/> }.to_html();
         assert!(inherited.contains("p-select-fluid"), "{inherited}");
         let forced_off = view! { <Select options=cities() fluid=false/> }.to_html();

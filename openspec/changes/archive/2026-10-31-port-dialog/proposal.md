@@ -23,5 +23,5 @@ Dialog is the sixth component of wave 3 and PrimeNG's main modal component: a wi
 
 ## Impact
 
-- New crate `crates/prime-dialog` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`, `windowmaximize`, `windowminimize`), `web-sys`.
+- New crate `crates/prime-dialog` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`, `windowmaximize`, `windowminimize`), `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

@@ -25,6 +25,6 @@ The infrastructure is ready (`bootstrap-workspace` is archived), but there is no
 ## Impact
 
 - New crates `crates/prime-badge`, `crates/prime-button` (`publish = false`).
-- Changed: `prime-core` (an extension of `Pt`, without changing the requirements), `upstream.toml` (the list of CSS components already includes `button` and `badge`), `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `showcase`, `e2e/tests/pages.json`.
-- Dependencies: `prime-core`, `prime-dom` (ripple, autofocus), `prime-icons` (`spinner`), `prime-theme` (`button`, `badge`), `prime-badge`. No new external dependencies.
+- Changed: `prime-rs-core` (an extension of `Pt`, without changing the requirements), `upstream.toml` (the list of CSS components already includes `button` and `badge`), `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `showcase`, `e2e/tests/pages.json`.
+- Dependencies: `prime-rs-core`, `prime-dom` (ripple, autofocus), `prime-icons` (`spinner`), `prime-theme` (`button`, `badge`), `prime-badge`. No new external dependencies.
 - Components that depend on it in the future: `Chip`, `Tag`, `SplitButton` etc. will take from here the `pt` scheme, the work with icons and the tests.

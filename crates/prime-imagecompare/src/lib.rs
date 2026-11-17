@@ -17,7 +17,7 @@ mod state;
 
 use leptos::prelude::*;
 use leptos::wasm_bindgen::JsCast;
-use prime_core::{OptProp, Pt};
+use prime_rs_core::{OptProp, Pt};
 use std::sync::Arc;
 
 pub use state::clip_path;
@@ -65,7 +65,7 @@ pub fn ImageCompare(
     let class = {
         let pt = pt.clone();
         move || {
-            let mut cn = prime_core::ClassNames::new();
+            let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-imagecompare");
             style_class.with(|c| cn.add_user(c.as_deref()));
             cn.add_user(pt.root.extra_class());

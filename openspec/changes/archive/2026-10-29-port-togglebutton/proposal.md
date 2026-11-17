@@ -2,7 +2,7 @@
 
 ## Why
 
-ToggleButton is a button with a boolean state (on/off), the first step towards SelectButton, which is built from such buttons. The value model and the events are the same as for Checkbox and ToggleSwitch, there is no native `<input>`, no shared logic in `prime-core` is required, so the component suits well as the next small port.
+ToggleButton is a button with a boolean state (on/off), the first step towards SelectButton, which is built from such buttons. The value model and the events are the same as for Checkbox and ToggleSwitch, there is no native `<input>`, no shared logic in `prime-rs-core` is required, so the component suits well as the next small port.
 
 ## What Changes
 
@@ -22,5 +22,5 @@ ToggleButton is a button with a boolean state (on/off), the first step towards S
 
 ## Impact
 
-- A new crate `crates/prime-togglebutton` (`publish = false`); dependencies `prime-core`.
+- A new crate `crates/prime-togglebutton` (`publish = false`); dependencies `prime-rs-core`.
 - Changes to the workspace `Cargo.toml`, `upstream.toml` (`togglebutton` in `theme.components` and `primeng_extra`), `xtask/src/gen_theme.rs`, `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (the browser job for `tests/web.rs`).

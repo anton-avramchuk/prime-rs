@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Create the crate `crates/prime-progressspinner` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`), add it to the workspace; check `cargo check -p prime-progressspinner --all-features`
+- [x] 1.1 Create the crate `crates/prime-progressspinner` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`), add it to the workspace; check `cargo check -p prime-progressspinner --all-features`
 - [x] 1.2 Implement `ProgressSpinner` and `ProgressSpinnerPt` (markup, SVG, ARIA, `stroke_width`, `fill`, `animation_duration`, two branches); SSR tests: structure, default values, custom values, `aria-label`, `style`, `pt`, branch parity, reactive update
 - [x] 1.3 rustdoc with an example; `cargo test -p prime-progressspinner --all-features`
 

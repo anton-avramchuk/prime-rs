@@ -22,5 +22,5 @@ Textarea is a multi-line input field, the second component of wave 2. It reuses 
 
 ## Impact
 
-- A new crate `crates/prime-textarea` (`publish = false`); dependencies `prime-core`, `web-sys`.
+- A new crate `crates/prime-textarea` (`publish = false`); dependencies `prime-rs-core`, `web-sys`.
 - Changes to `showcase`, `benches/*`, `e2e/tests`, the CI browser job.

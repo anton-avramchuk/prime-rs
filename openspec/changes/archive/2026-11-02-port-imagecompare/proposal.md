@@ -24,5 +24,5 @@ ImageCompare is the first component of wave 4: a comparison of two images with a
 
 ## Impact
 
-- A new crate `crates/prime-imagecompare` (`publish = false`); dependencies: `prime-core`, `web-sys`.
+- A new crate `crates/prime-imagecompare` (`publish = false`); dependencies: `prime-rs-core`, `web-sys`.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places).

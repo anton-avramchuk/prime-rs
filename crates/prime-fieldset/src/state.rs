@@ -1,6 +1,6 @@
 //! Pure Fieldset logic: classes and `data-p` (based on `fieldsetstyle.ts` and `Fieldset.dataP` in PrimeNG).
 
-use prime_core::{ClassNames, DataP};
+use prime_rs_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
 /// Adds the root classes in the order of `fieldsetstyle.ts`.

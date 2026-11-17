@@ -23,4 +23,4 @@ Tag is the next wave 1 component after Button and Badge: it categorizes content 
 
 - New crate `crates/prime-tag` (`publish = false`).
 - Changed: `showcase` (page, menu), `benches/render` (scenarios), `benches/wasm-size` (`case-tag`), `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests/pages.json`, `e2e/tests` (Tag spec), `crates/prime-theme` (the `tag` CSS is already generated).
-- Dependencies: `prime-core`; no new external ones.
+- Dependencies: `prime-rs-core`; no new external ones.

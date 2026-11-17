@@ -22,7 +22,7 @@ use leptos::either::Either;
 use leptos::html;
 use leptos::prelude::*;
 use leptos::wasm_bindgen::JsCast;
-use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 

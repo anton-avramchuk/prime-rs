@@ -1,6 +1,6 @@
 //! Pure BlockUI logic: mask classes, `aria-busy`, inline style (based on `blockuistyle.ts` and `block`/`unblock` in PrimeNG).
 
-use prime_core::ClassNames;
+use prime_rs_core::ClassNames;
 use std::borrow::Cow;
 
 /// Mask classes: `p-blockui p-blockui-mask`, for the document `p-blockui-mask-document`, then `p-overlay-mask` and the enter or leave animation class.

@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/password`. PrimeNG 21.1.10 sources: `password/password.ts`, `password/style/passwordstyle.ts`; demos `apps/showcase/doc/password/*-doc.ts`. Models in the project: `prime-inputtext` (the field and value model), `prime-select` (panel inside the root, `align_overlay(Relative)`, z-index `ZGroup::Overlay`, `is_disposed()` check in timers), `prime-slider` (`window` listeners), `prime_core::fluid`.
+Requirements are in `specs/password`. PrimeNG 21.1.10 sources: `password/password.ts`, `password/style/passwordstyle.ts`; demos `apps/showcase/doc/password/*-doc.ts`. Models in the project: `prime-inputtext` (the field and value model), `prime-select` (panel inside the root, `align_overlay(Relative)`, z-index `ZGroup::Overlay`, `is_disposed()` check in timers), `prime-slider` (`window` listeners), `prime_rs_core::fluid`.
 
 Observations about the source:
 - This is `p-password` (the component); we do not port the `pPassword` directive.
@@ -14,7 +14,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crate and dependencies
-`prime-password` with `Password`, `PasswordStrength { Weak, Medium, Strong }`, `PasswordPt`. Depends on `prime-core`, `prime-dom`, `prime-inputtext`, `prime-icons` (`eye`, `eyeslash`, `times`), `web-sys`.
+`prime-password` with `Password`, `PasswordStrength { Weak, Medium, Strong }`, `PasswordPt`. Depends on `prime-rs-core`, `prime-dom`, `prime-inputtext`, `prime-icons` (`eye`, `eyeslash`, `times`), `web-sys`.
 
 ### D2. Pure logic (`state.rs`)
 - `strength(value: &str) -> Option<PasswordStrength>` — `None` for an empty string; medium: length ≥ 6 (in characters) and at least two kinds; strong: length ≥ 8 and three kinds. Kinds: ASCII `a-z`, `A-Z`, `0-9` (as in the PrimeNG regular expressions).

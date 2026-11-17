@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: "Value or signal" property
-`prime-core` SHALL provide a component property type that accepts either a ready value or a signal (`Signal`, `ReadSignal`, `RwSignal`, `Memo`). Passing a ready value SHALL NOT create reactive primitives (entries in the Leptos arena); the default value SHALL be static. Reading the property SHALL be reactive if a signal is passed, and SHALL subscribe the reading closure to it.
+`prime-rs-core` SHALL provide a component property type that accepts either a ready value or a signal (`Signal`, `ReadSignal`, `RwSignal`, `Memo`). Passing a ready value SHALL NOT create reactive primitives (entries in the Leptos arena); the default value SHALL be static. Reading the property SHALL be reactive if a signal is passed, and SHALL subscribe the reading closure to it.
 
 #### Scenario: Static value
 - **WHEN** the value `"5"` or an enum constant is passed to a component

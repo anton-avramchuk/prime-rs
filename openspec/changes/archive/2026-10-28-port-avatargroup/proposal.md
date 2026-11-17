@@ -21,5 +21,5 @@ AvatarGroup combines several Avatars into an overlapping group. In PrimeNG it is
 
 ## Impact
 
-- A new crate `crates/prime-avatargroup` (`publish = false`); the only dependency is `prime-core`.
+- A new crate `crates/prime-avatargroup` (`publish = false`); the only dependency is `prime-rs-core`.
 - Changes to `showcase` (the Avatar page), `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`, `docs/avatar.md`.

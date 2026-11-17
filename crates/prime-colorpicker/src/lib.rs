@@ -18,15 +18,15 @@ pub mod color;
 use color::{Hsb, Rgb, field_handle, hex_to_hsb, hsb_to_hex, hsb_to_rgb, hue_handle, pick_field, pick_hue, rgb_to_hsb, validate_hsb};
 use leptos::leptos_dom::helpers::WindowListenerHandle;
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Pt};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 #[cfg(target_arch = "wasm32")]
 use leptos::leptos_dom::helpers::set_timeout_with_handle;
 #[cfg(target_arch = "wasm32")]
-use prime_core::{ZGroup, use_prime_config};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::dom::{AlignMode, align_overlay};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::{ZGroup, use_prime_config};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -300,7 +300,7 @@ impl Core {
             cleanup();
         }
         if let Some(z) = self.z_index.try_update_value(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
     }
 
@@ -311,7 +311,7 @@ impl Core {
         let (panel, root): (web_sys::HtmlElement, web_sys::HtmlElement) = (panel.unchecked_into(), root.unchecked_into());
         if self.auto_z_index.get_untracked() {
             let base = use_prime_config().z_index.base(ZGroup::Overlay);
-            let z = prime_core::zindex::generate(ZGroup::Overlay, base);
+            let z = prime_rs_core::zindex::generate(ZGroup::Overlay, base);
             self.z_index.set_value(Some(z));
             let _ = panel.style().set_property("z-index", &z.to_string());
         }

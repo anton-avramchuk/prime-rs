@@ -2,8 +2,8 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size, Variant};
 use prime_inputnumber::{ButtonLayout, CurrencyDisplay, InputNumber, InputNumberMode, InputNumberPt};
+use prime_rs_core::{Pt, Size, Variant};
 
 fn count(html: &str, needle: &str) -> usize {
     html.matches(needle).count()
@@ -258,7 +258,7 @@ fn fluid_inherited_from_context() {
     let outside = view! { <InputNumber/> }.to_html();
     assert!(!outside.contains("p-inputnumber-fluid"), "{outside}");
     Owner::new().with(|| {
-        prime_core::fluid::provide_fluid();
+        prime_rs_core::fluid::provide_fluid();
         let inherited = view! { <InputNumber/> }.to_html();
         assert!(inherited.contains("p-inputnumber-fluid"), "{inherited}");
         let forced_off = view! { <InputNumber fluid=false/> }.to_html();

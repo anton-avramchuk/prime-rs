@@ -26,5 +26,5 @@
 
 ## Impact
 
-- New crate `crates/prime-inputotp` (`publish = false`); dependencies: `prime-core`, `prime-inputtext` (cell classes), `web-sys` (`HtmlInputElement`, `KeyboardEvent`, `ClipboardEvent`, `DataTransfer`, `InputEvent`, `FocusEvent`, `Element`).
+- New crate `crates/prime-inputotp` (`publish = false`); dependencies: `prime-rs-core`, `prime-inputtext` (cell classes), `web-sys` (`HtmlInputElement`, `KeyboardEvent`, `ClipboardEvent`, `DataTransfer`, `InputEvent`, `FocusEvent`, `Element`).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, and with browser tests `tests/web.rs` a job in `ci.yml` (three places).

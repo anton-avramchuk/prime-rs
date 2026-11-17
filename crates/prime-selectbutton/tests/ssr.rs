@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size};
+use prime_rs_core::{Pt, Size};
 use prime_selectbutton::{SelectButton, SelectButtonOption, SelectButtonPt};
 use prime_togglebutton::ToggleButtonPt;
 

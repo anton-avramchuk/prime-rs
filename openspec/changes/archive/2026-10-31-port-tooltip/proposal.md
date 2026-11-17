@@ -24,5 +24,5 @@ Tooltip is the seventh component of wave 3 and the only one in it that is not a 
 
 ## Impact
 
-- New crate `crates/prime-tooltip` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `web-sys`.
+- New crate `crates/prime-tooltip` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

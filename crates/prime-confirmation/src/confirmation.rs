@@ -2,7 +2,7 @@
 
 use leptos::prelude::*;
 use prime_button::ButtonSeverity;
-use prime_core::props::Size;
+use prime_rs_core::props::Size;
 use wasm_bindgen::JsCast;
 
 /// How the confirmation window was closed (PrimeNG `ConfirmEventType`).

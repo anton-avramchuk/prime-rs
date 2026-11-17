@@ -23,5 +23,5 @@ Popover is the fourth component of wave 3: a floating panel with arbitrary conte
 
 ## Impact
 
-- New crate `crates/prime-popover` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `web-sys` (`Element`, `HtmlElement`, `MouseEvent`, `KeyboardEvent`).
+- New crate `crates/prime-popover` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `web-sys` (`Element`, `HtmlElement`, `MouseEvent`, `KeyboardEvent`).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

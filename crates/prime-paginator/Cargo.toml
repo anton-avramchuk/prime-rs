@@ -4,17 +4,17 @@ description = "prime-rs: Paginator component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr", "prime-icons/ssr", "prime-select/ssr", "prime-inputnumber/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-icons/hydrate", "prime-select/hydrate", "prime-inputnumber/hydrate"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr", "prime-icons/ssr", "prime-select/ssr", "prime-inputnumber/ssr"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate", "prime-icons/hydrate", "prime-select/hydrate", "prime-inputnumber/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 prime-icons = { workspace = true, features = ["angledoubleleft", "angledoubleright", "angleleft", "angleright"] }
 prime-select = { workspace = true }
 prime-inputnumber = { workspace = true }

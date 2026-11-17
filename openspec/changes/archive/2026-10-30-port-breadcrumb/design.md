@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/breadcrumb`. PrimeNG 21.1.10 sources: `breadcrumb/breadcrumb.ts`, `breadcrumb/style/breadcrumbstyle.ts`; demos `apps/showcase/doc/breadcrumb/{basic,template,router}-doc.ts`. Models in the project: `crates/prime-chip` (click, `ViewFn` icon, `web-sys` events), `crates/prime-badge` (nested `Badge`), `crates/prime-timeline` (callback templates, a list from `Prop<Vec<_>>`), `prime_core::Pt`.
+Requirements are in `specs/breadcrumb`. PrimeNG 21.1.10 sources: `breadcrumb/breadcrumb.ts`, `breadcrumb/style/breadcrumbstyle.ts`; demos `apps/showcase/doc/breadcrumb/{basic,template,router}-doc.ts`. Models in the project: `crates/prime-chip` (click, `ViewFn` icon, `web-sys` events), `crates/prime-badge` (nested `Badge`), `crates/prime-timeline` (callback templates, a list from `Prop<Vec<_>>`), `prime_rs_core::Pt`.
 
 Observations about the source:
 - The template has two nearly identical link blocks - with `href` and with `routerLink`; without Angular Router only the first remains.
@@ -14,7 +14,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crate and contents
-`prime-breadcrumb` with `Breadcrumb`, `BreadcrumbItem`, `BreadcrumbPt`. Dependencies: `prime-core`, `prime-badge`, `prime-icons` (`chevronright`, `home`), `web-sys` (`Event`, `MouseEvent`). A shared `MenuItem` is not introduced until a second consumer.
+`prime-breadcrumb` with `Breadcrumb`, `BreadcrumbItem`, `BreadcrumbPt`. Dependencies: `prime-rs-core`, `prime-badge`, `prime-icons` (`chevronright`, `home`), `web-sys` (`Event`, `MouseEvent`). A shared `MenuItem` is not introduced until a second consumer.
 
 ### D2. Model
 `BreadcrumbItem { id, label, icon: Option<ViewFn>, url, target, title, disabled, visible (true by default), tabindex, style_class, style, link_class, badge, command: Option<Callback<BreadcrumbClick>> }` with a builder (`BreadcrumbItem::new().label("...")`), `Clone`. `BreadcrumbClick { event: MouseEvent, item: BreadcrumbItem }` is also the argument of `on_item_click`. `model: Prop<Vec<BreadcrumbItem>>`, `home: OptProp<BreadcrumbItem>`.

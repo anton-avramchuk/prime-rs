@@ -26,5 +26,5 @@ Carousel is the ninth component of wave 4: a scrollable row of items with "previ
 
 ## Impact
 
-- New crate `crates/prime-carousel` (`publish = false`); dependencies: `prime-core`, `prime-button`, `prime-icons` (chevronleft/right/up/down), `web-sys`.
+- New crate `crates/prime-carousel` (`publish = false`); dependencies: `prime-rs-core`, `prime-button`, `prime-icons` (chevronleft/right/up/down), `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places: `prime-carousel`).

@@ -22,5 +22,5 @@ Slider — choosing a number or a range by dragging a handle; one of the basic f
 
 ## Impact
 
-- New crate `crates/prime-slider` (`publish = false`); dependencies `prime-core`.
+- New crate `crates/prime-slider` (`publish = false`); dependencies `prime-rs-core`.
 - Changed: workspace `Cargo.toml`, `upstream.toml` (`slider` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (browser job for `tests/web.rs`).

@@ -22,5 +22,5 @@ Knob - numeric input as a circular scale dragged by mouse and touch; by design i
 
 ## Impact
 
-- New crate `crates/prime-knob` (`publish = false`); dependencies `prime-core`.
+- New crate `crates/prime-knob` (`publish = false`); dependencies `prime-rs-core`.
 - Changed: workspace `Cargo.toml`, `upstream.toml` (`knob` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (browser job for `tests/web.rs`).

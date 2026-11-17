@@ -25,5 +25,5 @@ DatePicker - date selection: an input with a calendar in a popup panel, or an in
 
 ## Impact
 
-- New crate `crates/prime-datepicker` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-button`, `prime-inputtext`, `prime-icons`, `js-sys`.
+- New crate `crates/prime-datepicker` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-button`, `prime-inputtext`, `prime-icons`, `js-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

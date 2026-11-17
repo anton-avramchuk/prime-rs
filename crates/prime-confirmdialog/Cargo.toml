@@ -4,17 +4,17 @@ description = "prime-rs: ConfirmDialog component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr", "prime-dialog/ssr", "prime-button/ssr", "prime-confirmation/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-dialog/hydrate", "prime-button/hydrate", "prime-confirmation/hydrate"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr", "prime-dialog/ssr", "prime-button/ssr", "prime-confirmation/ssr"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate", "prime-dialog/hydrate", "prime-button/hydrate", "prime-confirmation/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 prime-dialog = { workspace = true }
 prime-button = { workspace = true }
 prime-confirmation = { workspace = true }

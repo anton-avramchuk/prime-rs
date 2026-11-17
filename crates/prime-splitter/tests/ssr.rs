@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 use prime_splitter::{Splitter, SplitterLayout, SplitterPt};
 
 fn panels(n: usize) -> Vec<ViewFn> {

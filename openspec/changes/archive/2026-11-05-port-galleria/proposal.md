@@ -24,5 +24,5 @@ Galleria — an image gallery: a large frame, scrollable thumbnails, indicators,
 
 ## Impact
 
-- A new crate `crates/prime-galleria` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-icons`.
+- A new crate `crates/prime-galleria` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-icons`.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

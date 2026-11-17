@@ -6,7 +6,7 @@
 use super::Demo;
 use leptos::prelude::*;
 use prime_button::Button;
-use prime_core::Size;
+use prime_rs_core::Size;
 use prime_table::Column;
 use prime_treetable::{TreeNode, TreeSelectionMode, TreeTable};
 

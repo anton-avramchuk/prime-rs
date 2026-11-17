@@ -24,5 +24,5 @@ ScrollTop is a "back to top" button that appears after scrolling to a given dept
 
 ## Impact
 
-- New crate `crates/prime-scrolltop` (`publish = false`); dependencies: `prime-core`, `prime-button`, `prime-icons` (`chevronup`), `web-sys` (`Window`, `Element`, `HtmlElement`, `ScrollToOptions`, `ScrollBehavior`).
+- New crate `crates/prime-scrolltop` (`publish = false`); dependencies: `prime-rs-core`, `prime-button`, `prime-icons` (`chevronup`), `web-sys` (`Window`, `Element`, `HtmlElement`, `ScrollToOptions`, `ScrollBehavior`).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

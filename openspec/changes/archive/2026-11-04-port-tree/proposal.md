@@ -27,5 +27,5 @@ Tree is the next wave 5 component: hierarchical data with expansion, selection (
 
 ## Impact
 
-- New crate `crates/prime-tree` (`publish = false`); dependencies: `prime-core`, `prime-icons` (chevronright, chevrondown, spinner, search, check, minus), `prime-iconfield`, `prime-inputtext`, `prime-checkbox` (classes) if needed.
+- New crate `crates/prime-tree` (`publish = false`); dependencies: `prime-rs-core`, `prime-icons` (chevronright, chevrondown, spinner, search, check, minus), `prime-iconfield`, `prime-inputtext`, `prime-checkbox` (classes) if needed.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`. The behaviour of existing crates does not change.

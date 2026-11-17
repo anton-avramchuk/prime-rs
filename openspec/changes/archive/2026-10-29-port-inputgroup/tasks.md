@@ -2,7 +2,7 @@
 
 ## 1. Crate and components
 
-- [x] 1.1 Create the crate `crates/prime-inputgroup` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`), add it to the workspace; check `cargo check -p prime-inputgroup --all-features`
+- [x] 1.1 Create the crate `crates/prime-inputgroup` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`), add it to the workspace; check `cargo check -p prime-inputgroup --all-features`
 - [x] 1.2 Implement `InputGroup`, `InputGroupPt`, `InputGroupAddon`, `InputGroupAddonPt` (two branches, `children`, `style_class`, `style`); verify with SSR tests (structure, classes, `style`, `pt`, nesting) and branch parity
 - [x] 1.3 rustdoc with an example; `cargo test -p prime-inputgroup --all-features`
 

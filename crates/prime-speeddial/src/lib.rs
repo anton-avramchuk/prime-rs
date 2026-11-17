@@ -21,9 +21,9 @@ use leptos::attr::any_attribute::{AnyAttribute, IntoAnyAttribute};
 use leptos::attr::custom::custom_attribute;
 use leptos::prelude::*;
 use prime_button::{ButtonSeverity, ButtonState, root_classes as button_classes, root_data_p as button_data_p};
-use prime_core::props::Size;
-use prime_core::{ClassNames, OptProp, Prop, Pt};
 use prime_icons::PlusIcon;
+use prime_rs_core::props::Size;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt};
 use prime_tooltip::{TooltipContent, TooltipOptions, tooltip};
 use std::sync::Arc;
 
@@ -408,7 +408,7 @@ pub fn SpeedDial(
     on_hide: Option<Callback<()>>,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
-    let list_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_core::ids::next_unique()));
+    let list_id = id.get_untracked().unwrap_or_else(|| format!("pn_id_{}", prime_rs_core::ids::next_unique()));
     let core = Arc::new(Core {
         id: list_id.clone(),
         model: model.clone(),

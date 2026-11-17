@@ -18,7 +18,7 @@
 mod state;
 
 use leptos::prelude::*;
-use prime_core::Prop;
+use prime_rs_core::Prop;
 
 pub use state::{
     ArrowStyle, Size, TooltipEvent, TooltipPosition, activation_delay, arrow_style, has_ellipsis, leave_keeps_open, out_of_bounds, place,
@@ -233,7 +233,7 @@ pub fn tooltip(el: web_sys::Element, options: TooltipOptions) {
 mod imp {
     use super::*;
     use leptos::leptos_dom::helpers::{TimeoutHandle, set_timeout_with_handle};
-    use prime_core::{ZGroup, use_prime_config};
+    use prime_rs_core::{ZGroup, use_prime_config};
     use std::any::Any;
     use std::cell::{Cell, RefCell};
     use std::collections::HashMap;
@@ -575,7 +575,7 @@ mod imp {
                         let _ = style.set_property("z-index", &z.to_string());
                     }
                     None => {
-                        let z = prime_core::zindex::generate(ZGroup::Tooltip, use_prime_config().z_index.base(ZGroup::Tooltip));
+                        let z = prime_rs_core::zindex::generate(ZGroup::Tooltip, use_prime_config().z_index.base(ZGroup::Tooltip));
                         self.z.set(Some(z));
                         let _ = style.set_property("z-index", &z.to_string());
                     }
@@ -724,7 +724,7 @@ mod imp {
 
         fn hide(&self) {
             if let Some(z) = self.z.take() {
-                prime_core::zindex::revert(z);
+                prime_rs_core::zindex::revert(z);
             }
             self.remove();
         }

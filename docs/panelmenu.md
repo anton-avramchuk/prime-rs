@@ -25,7 +25,7 @@ view! {
 - Single mode: a click on a header collapses the other root panels (including via a leaf header); nested branches are independent. `multiple` lifts the restriction.
 - Header keyboard: ↓ on an expanded one — into the tree, otherwise to the next header (wraps around, disabled ones are skipped); ↑ — to the previous one (into its tree if expanded); `Home` `End`; `Enter` `Space` — a click on the header link. Tree keyboard: ↓ ↑ over visible items (at the edges — to the adjacent header / its own header), → expands a branch, and on an expanded one goes down, ← collapses or goes to the parent, `Home` `End`, `Enter` `Space`, search by label prefix with a 500 ms buffer.
 - Root lists get `tabindex="-1"` (like the resulting PrimeNG DOM, where a host binding overrides the `tabindex` property); item links get `tabindex="0"` while all ancestors are expanded, otherwise `-1`.
-- Expanding and collapsing use the `p-collapsible-enter-active` / `-leave-active` animation from `prime_core::collapsible`.
+- Expanding and collapsing use the `p-collapsible-enter-active` / `-leave-active` animation from `prime_rs_core::collapsible`.
 
 ## Differences
 
@@ -41,7 +41,7 @@ view! {
 | The `item` template applies to headers too (`PanelMenuItemContext::root`), `header_icon` is the header chevron | Like PrimeNG `#item` and `#headericon`. |
 | The `router` and `accessibility` demos are not ported; icons without an analog in `prime-icons` are replaced with similar ones | No router or PrimeIcons. |
 
-Along the way `prime_core::collapsible::animate` got a race guard: a late completion of the previous animation (the 400 ms fallback timer) no longer hides an already expanded area on a quick re-toggle; this affects Panel, Fieldset, Accordion.
+Along the way `prime_rs_core::collapsible::animate` got a race guard: a late completion of the previous animation (the 400 ms fallback timer) no longer hides an already expanded area on a quick re-toggle; this affects Panel, Fieldset, Accordion.
 
 ## Not verified
 

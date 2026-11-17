@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/inputtext`. PrimeNG 21.1.10 sources: `packages/primeng/src/inputtext/inputtext.ts` (the `pInputText` directive on a native `<input>`), `inputtext/style/inputtextstyle.ts`, demos `apps/showcase/doc/inputtext`. The directive puts classes and `data-p` on the native `<input>`; the value lives in the element itself and is synced with `ngModel`. `p-filled` is determined by whether the model is filled; the variant is `variant || config.inputStyle || config.inputVariant`. The component template is `docs/button.md`; `PrimeConfig.input_variant`, `Variant` and `Size` already exist in `prime-core`.
+Requirements are in `specs/inputtext`. PrimeNG 21.1.10 sources: `packages/primeng/src/inputtext/inputtext.ts` (the `pInputText` directive on a native `<input>`), `inputtext/style/inputtextstyle.ts`, demos `apps/showcase/doc/inputtext`. The directive puts classes and `data-p` on the native `<input>`; the value lives in the element itself and is synced with `ngModel`. `p-filled` is determined by whether the model is filled; the variant is `variant || config.inputStyle || config.inputVariant`. The component template is `docs/button.md`; `PrimeConfig.input_variant`, `Variant` and `Size` already exist in `prime-rs-core`.
 
 ## Goals / Non-Goals
 

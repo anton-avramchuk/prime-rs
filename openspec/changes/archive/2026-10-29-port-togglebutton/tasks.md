@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Create the crate `crates/prime-togglebutton` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`, the dev-dependencies for wasm as in `prime-toggleswitch`), add it to the workspace; check `cargo check -p prime-togglebutton --all-features`
+- [x] 1.1 Create the crate `crates/prime-togglebutton` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`, the dev-dependencies for wasm as in `prime-toggleswitch`), add it to the workspace; check `cargo check -p prime-togglebutton --all-features`
 - [x] 1.2 `state.rs`: the root classes and `data-p` per `togglebuttonstyle.ts` and `ToggleButton.dataP`, a table test
 - [x] 1.3 Implement `ToggleButton`, `ToggleButtonPt`, `ToggleButtonChange`, `IconPos` (state, labels and icons, slots, attributes, click and keys, `allow_empty`); SSR tests (structure, classes, `data-p`, attributes, `tabindex`, slots, `pt`)
 - [x] 1.4 Browser tests `tests/web.rs`: click, Enter and Space, `disabled`, `allow_empty`, one `on_change` per press, `on_focus` and `on_blur`

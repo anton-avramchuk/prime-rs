@@ -24,5 +24,5 @@ SplitButton is the third component of wave 4: a button with a default action and
 
 ## Impact
 
-- New crate `crates/prime-splitbutton` (`publish = false`); dependencies: `prime-core`, `prime-button`, `prime-menu`, `prime-icons`, `web-sys`.
+- New crate `crates/prime-splitbutton` (`publish = false`); dependencies: `prime-rs-core`, `prime-button`, `prime-menu`, `prime-icons`, `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

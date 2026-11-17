@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-fieldset` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-icons` with `minus`, `plus`, `web-sys`), add it to the workspace; check `cargo check -p prime-fieldset --all-features`
+- [x] 1.1 Create the crate `crates/prime-fieldset` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `prime-icons` with `minus`, `plus`, `web-sys`), add it to the workspace; check `cargo check -p prime-fieldset --all-features`
 - [x] 1.2 Implement `write_root_classes`, `data_p` (`state.rs`) with a table of unit tests
 
 ## 2. Component

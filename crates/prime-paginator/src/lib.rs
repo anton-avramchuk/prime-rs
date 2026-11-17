@@ -20,9 +20,9 @@ mod state;
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::{ClassNames, OptProp, Prop, Pt, use_prime_config};
 use prime_icons::{AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIcon};
 use prime_inputnumber::InputNumber;
+use prime_rs_core::{ClassNames, OptProp, Prop, Pt, use_prime_config};
 use prime_select::{Select, SelectChange, SelectOption};
 use std::sync::Arc;
 

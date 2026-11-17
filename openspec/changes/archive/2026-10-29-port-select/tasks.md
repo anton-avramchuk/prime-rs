@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Create the crate `crates/prime-select` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-dom`, `prime-icons` with `chevrondown`, `search`, `times`, `check`, `spinner`, `web-sys` with the needed events and geometry, wasm dev-dependencies as in `prime-inputnumber`), add to the workspace; check `cargo check -p prime-select --all-features`
+- [x] 1.1 Create the crate `crates/prime-select` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `prime-dom`, `prime-icons` with `chevrondown`, `search`, `times`, `check`, `spinner`, `web-sys` with the needed events and geometry, wasm dev-dependencies as in `prime-inputnumber`), add to the workspace; check `cargo check -p prime-select --all-features`
 - [x] 1.2 `options.rs`: `SelectOption`, `SelectGroup`, `Entry`, `visible_entries` (filter and groups), indices (`first_valid`, `last_valid`, `next_valid`, `prev_valid`, `selected_index`, `first_focused`), `search_match`, `set_size`, `pos_in_set`; table-driven tests
 - [x] 1.3 `state.rs`: root, label and option classes, root and label `data-p` per `selectstyle.ts` and `Select.dataP`; table-driven tests
 - [x] 1.4 Implement `Select`, `SelectPt`, `SelectChange` (label and placeholder, clear icon, button and icons, panel markup with options, groups, empty message, search field and hidden boundaries, `aria-*`, templates); SSR tests of the closed and open (via `open`) states

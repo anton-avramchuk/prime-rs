@@ -4,7 +4,7 @@ use crate::state::Phase;
 use leptos::html;
 use leptos::prelude::*;
 #[cfg(target_arch = "wasm32")]
-use prime_core::ZGroup;
+use prime_rs_core::ZGroup;
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -35,7 +35,7 @@ impl Panel {
             epoch: StoredValue::new(0),
             z_index: RwSignal::new(None),
             #[cfg(target_arch = "wasm32")]
-            overlay_base: prime_core::use_prime_config().z_index.base(ZGroup::Overlay),
+            overlay_base: prime_rs_core::use_prime_config().z_index.base(ZGroup::Overlay),
         }
     }
 
@@ -58,7 +58,7 @@ impl Panel {
         let z_index = self.z_index;
         on_cleanup(move || {
             if let Some(z) = z_index.try_get_untracked().flatten() {
-                prime_core::zindex::revert(z);
+                prime_rs_core::zindex::revert(z);
             }
         });
     }
@@ -113,7 +113,7 @@ impl Panel {
                 if this.alive() && epoch.get_value() == me {
                     this.phase.set(Phase::Hidden);
                     if let Some(z) = this.z_index.try_update(Option::take).flatten() {
-                        prime_core::zindex::revert(z);
+                        prime_rs_core::zindex::revert(z);
                     }
                 }
             },
@@ -128,7 +128,7 @@ impl Panel {
         let z = match self.z_index.get_untracked() {
             Some(z) => z,
             None => {
-                let z = prime_core::zindex::generate(ZGroup::Overlay, self.overlay_base);
+                let z = prime_rs_core::zindex::generate(ZGroup::Overlay, self.overlay_base);
                 self.z_index.set(Some(z));
                 z
             }

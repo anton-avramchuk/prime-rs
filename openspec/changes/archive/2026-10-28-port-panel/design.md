@@ -6,8 +6,8 @@ The requirements are in `specs/panel` and `specs/collapsible`. PrimeNG 21.1.10 s
 
 ## Decisions
 
-### D1. The shared module `prime-core::collapsible`
-Not a separate crate: the logic is small and pulls in no dependencies except `leptos` and `web-sys` (already present in `prime-core`). Contents:
+### D1. The shared module `prime-rs-core::collapsible`
+Not a separate crate: the logic is small and pulls in no dependencies except `leptos` and `web-sys` (already present in `prime-rs-core`). Contents:
 - `CollapseState { collapsed: Signal<bool>, toggle() }` — over an external `Option<RwSignal<bool>>` or an internal `RwSignal` created from the initial value;
 - `CollapseIds::new(id)` — `{id}_header`, `{id}_content`, `{id}-titlebar`; `id` is either the one given by the user or a unique one from a counter (deterministic during SSR and on the client, as in the existing components; check against the practice of Checkbox/RadioButton when applying);
 - the pure functions `aria_expanded`, `aria_hidden`, `region_tabindex` for the attributes;
@@ -36,13 +36,13 @@ On the client, when the state changes (not on the first render): expanding — r
 `tabindex="-1"` on the focusable descendants: a client `Effect` on a change of `collapsed` walks `input, button, select, a, textarea, [tabindex]` inside `p-panel-content`, as PrimeNG does. In SSR the collapsed panel is hidden with `display:none`, so the focus is unavailable even without this.
 
 ### D8. Branches and classes
-The static branch — not `toggleable` and all properties static; otherwise reactive. The markup is in a `macro_rules!`; `Arc` only in the reactive branch. The order of the classes is as in `panelstyle.ts`. `data-p` — by `dataP` (`toggleable`), in the same way as `prime-core::data_p`.
+The static branch — not `toggleable` and all properties static; otherwise reactive. The markup is in a `macro_rules!`; `Arc` only in the reactive branch. The order of the classes is as in `panelstyle.ts`. `data-p` — by `dataP` (`toggleable`), in the same way as `prime-rs-core::data_p`.
 
 ## Risks / Trade-offs
 
 - [The animation of `grid-template-rows` depends on the theme CSS] → checked by e2e by the class change and the final visibility, not by pixels.
 - [A double toggle with `toggler = header`] → a separate scenario in the browser test.
-- [The module in `prime-core` grows] → it holds only the collapsing logic; when Accordion appears it is split off, if needed.
+- [The module in `prime-rs-core` grows] → it holds only the collapsing logic; when Accordion appears it is split off, if needed.
 - [`default_collapsed` diverges from Angular `[collapsed]`] → recorded in `docs/panel.md` in the table of differences.
 
 ## Migration Plan

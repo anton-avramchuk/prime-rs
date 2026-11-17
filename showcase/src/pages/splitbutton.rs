@@ -6,9 +6,9 @@
 use super::Demo;
 use leptos::prelude::*;
 use prime_button::ButtonSeverity;
-use prime_core::Size;
 use prime_icons::{CheckIcon, RefreshIcon};
 use prime_menu::{MenuCommand, MenuItem};
+use prime_rs_core::Size;
 use prime_splitbutton::SplitButton;
 use prime_toast::{Toast, ToastMessage, ToastSeverity, provide_message_service};
 

@@ -2,7 +2,7 @@
 
 ## 1. Crate and component
 
-- [x] 1.1 Add `skeleton` and `textarea` to `[theme] components` (`upstream.toml`) and run `cargo xtask gen-theme`; create the crate `crates/prime-skeleton` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`), add it to the workspace; check `cargo check -p prime-skeleton --all-features`
+- [x] 1.1 Add `skeleton` and `textarea` to `[theme] components` (`upstream.toml`) and run `cargo xtask gen-theme`; create the crate `crates/prime-skeleton` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`), add it to the workspace; check `cargo check -p prime-skeleton --all-features`
 - [x] 1.2 Implement `Skeleton`, `SkeletonShape`, `SkeletonAnimation`, the classes, the style, `data-p`, `pt`, two branches, rustdoc with an example and a unit test of the class table; check with SSR tests and parity
 
 ## 2. Showcase and e2e

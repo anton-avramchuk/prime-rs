@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-avatar` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `web-sys`) and add it to the workspace; check `cargo check -p prime-avatar --all-features`
+- [x] 1.1 Create the crate `crates/prime-avatar` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-rs-core`, `web-sys`) and add it to the workspace; check `cargo check -p prime-avatar --all-features`
 - [x] 1.2 Implement `AvatarSize`, `AvatarShape` (with `Default`), `AvatarState`, `write_classes`, `data_p` per `avatarstyle.ts` and `Avatar.dataP`; check with a table of unit tests following the spec scenarios (sizes, shapes, `p-avatar-image`, default `data-p`)
 
 ## 2. Component

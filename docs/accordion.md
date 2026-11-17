@@ -5,7 +5,7 @@ Port of PrimeNG 21.1.10 `p-accordion` (commit `fe82b291d6`, see `upstream.toml`)
 | Our component | PrimeNG sources |
 |---|---|
 | `prime-accordion::{Accordion, AccordionPanel, AccordionHeader, AccordionContent}` | `packages/primeng/src/accordion/accordion.ts`, `accordion/style/accordionstyle.ts` |
-| Animation | `prime-core::collapsible::bind_region_with` (shared with Panel and Fieldset) |
+| Animation | `prime-rs-core::collapsible::bind_region_with` (shared with Panel and Fieldset) |
 | CSS | `@primeuix/styles/accordion`, the `/* For PrimeNG */` block from `accordionstyle.ts` (`primeng_extra` in `upstream.toml`), base `p-collapsible-*` |
 | Demos | `apps/showcase/doc/accordion/*-doc.ts` (`basic`, `multiple`, `disabled`, `controlled`, `dynamic`, `template`) |
 

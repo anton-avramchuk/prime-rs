@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-tag` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`) and add it to the workspace; check `cargo check -p prime-tag --all-features`
+- [x] 1.1 Create the crate `crates/prime-tag` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`) and add it to the workspace; check `cargo check -p prime-tag --all-features`
 - [x] 1.2 Implement `TagSeverity`, `TagState`, `write_classes`, `data_p` after `tagstyle.ts` and `Tag.dataP`; verify with a table of unit tests for the spec scenarios (severities, `rounded`, `data-p`)
 
 ## 2. Component

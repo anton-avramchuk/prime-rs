@@ -4,7 +4,7 @@
 #![recursion_limit = "512"]
 
 use leptos::prelude::*;
-use prime_core::{Pt, Size};
+use prime_rs_core::{Pt, Size};
 use prime_table::Column;
 use prime_table::model::SortMeta;
 use prime_treetable::{TreeNode, TreeSelectionMode, TreeTable, TreeTablePt};

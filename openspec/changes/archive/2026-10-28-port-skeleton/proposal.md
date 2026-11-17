@@ -21,5 +21,5 @@ Skeleton is a loading placeholder; the first component of wave 2. It is purely p
 
 ## Impact
 
-- A new crate `crates/prime-skeleton` (`publish = false`); the only dependency is `prime-core`.
+- A new crate `crates/prime-skeleton` (`publish = false`); the only dependency is `prime-rs-core`.
 - Changes to `upstream.toml`, `crates/prime-theme` (the generated CSS and features), `showcase`, `benches/*`, `e2e/tests`.

@@ -4,17 +4,17 @@ description = "prime-rs: TreeTable component (PrimeNG port), stage 1"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
 default = []
-ssr = ["leptos/ssr", "prime-core/ssr", "prime-table/ssr", "prime-paginator/ssr", "prime-checkbox/ssr", "prime-badge/ssr", "prime-icons/ssr"]
-hydrate = ["leptos/hydrate", "prime-core/hydrate", "prime-table/hydrate", "prime-paginator/hydrate", "prime-checkbox/hydrate", "prime-badge/hydrate", "prime-icons/hydrate"]
+ssr = ["leptos/ssr", "prime-rs-core/ssr", "prime-table/ssr", "prime-paginator/ssr", "prime-checkbox/ssr", "prime-badge/ssr", "prime-icons/ssr"]
+hydrate = ["leptos/hydrate", "prime-rs-core/hydrate", "prime-table/hydrate", "prime-paginator/hydrate", "prime-checkbox/hydrate", "prime-badge/hydrate", "prime-icons/hydrate"]
 
 [dependencies]
 leptos = { workspace = true }
-prime-core = { workspace = true }
+prime-rs-core = { workspace = true }
 prime-table = { workspace = true }
 prime-dataview = { workspace = true }
 prime-paginator = { workspace = true }

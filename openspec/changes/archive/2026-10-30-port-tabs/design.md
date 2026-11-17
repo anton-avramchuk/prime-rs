@@ -13,7 +13,7 @@ Observations about the source:
 ## Decisions
 
 ### D1. Crate and dependencies
-`prime-tabs` with `Tabs`, `TabList`, `Tab`, `TabPanels`, `TabPanel`, `TabListPt`. Depends on `prime-core`, `prime-icons` (`chevronleft`, `chevronright`), `web-sys`.
+`prime-tabs` with `Tabs`, `TabList`, `Tab`, `TabPanels`, `TabPanel`, `TabListPt`. Depends on `prime-rs-core`, `prime-icons` (`chevronleft`, `chevronright`), `web-sys`.
 
 ### D2. Context
 `TabsCtx { id, value: RwSignal<Option<String>>, lazy, select_on_focus, show_navigators, tabindex, ink: RwSignal<Ink>, tabs_ref }` is introduced in `Tabs` via `provide_context` (as in `Accordion`); the parts take it with `use_context` and panic with a clear message outside `Tabs`. `TabList` puts a reference to the tab list element into the context via `RwSignal<Option<...>>`/`NodeRef`, so that `Tab` can find the first and last tabs.

@@ -21,5 +21,5 @@ ProgressSpinner is an indicator of an indeterminate wait: one SVG with a rotatin
 
 ## Impact
 
-- A new crate `crates/prime-progressspinner` (`publish = false`); dependency `prime-core`.
+- A new crate `crates/prime-progressspinner` (`publish = false`); dependency `prime-rs-core`.
 - Changes to the workspace `Cargo.toml`, `upstream.toml` (`progressspinner` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`. There are no browser tests, the `ci.yml` job does not change.

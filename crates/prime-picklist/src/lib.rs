@@ -21,13 +21,13 @@ pub mod transfer;
 
 use leptos::prelude::*;
 use prime_button::{Button, ButtonPt, ButtonSeverity};
-use prime_core::{OptProp, Prop, Pt};
 use prime_icons::{
     AngleDoubleDownIcon, AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleDoubleUpIcon, AngleDownIcon, AngleLeftIcon, AngleRightIcon,
     AngleUpIcon,
 };
 use prime_listbox::{Listbox, ListboxChange, ListboxFilter, ListboxOption, ListboxPt, matches_filter};
 use prime_orderlist::reorder;
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 /// Pass-through of the [`PickList`] parts.
@@ -284,7 +284,7 @@ pub fn PickList(
         on_source_reorder,
         on_target_reorder,
     });
-    let locale = prime_core::use_prime_config().locale;
+    let locale = prime_rs_core::use_prime_config().locale;
     let label = |key: &str| locale.text(key).to_owned();
 
     // Button: label, icon, disabled condition, action.

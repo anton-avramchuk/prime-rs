@@ -18,7 +18,7 @@ mod state;
 use leptos::attr::any_attribute::{AnyAttribute, IntoAnyAttribute};
 use leptos::attr::custom::custom_attribute;
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Pt};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{

@@ -25,5 +25,5 @@ AutoComplete is an input field with suggestions: the user types, the component r
 
 ## Impact
 
-- New crate `crates/prime-autocomplete` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-inputtext` (classes), `prime-chip`, `prime-icons` (chevrondown, times, timescircle, spinner).
+- New crate `crates/prime-autocomplete` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-inputtext` (classes), `prime-chip`, `prime-icons` (chevrondown, times, timescircle, spinner).
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

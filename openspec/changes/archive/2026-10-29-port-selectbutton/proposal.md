@@ -22,6 +22,6 @@ SelectButton — selection of one or several options from a list with buttons; i
 
 ## Impact
 
-- New crate `crates/prime-selectbutton` (`publish = false`); dependencies `prime-core`, `prime-togglebutton`.
+- New crate `crates/prime-selectbutton` (`publish = false`); dependencies `prime-rs-core`, `prime-togglebutton`.
 - Changed: workspace `Cargo.toml`, `upstream.toml` (`selectbutton` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (browser job for `tests/web.rs`).
 - `ToggleButton` does not change.

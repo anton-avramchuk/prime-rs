@@ -25,5 +25,5 @@ Image is the fifth component of wave 4: a picture with an optional preview in a 
 
 ## Impact
 
-- A new crate `crates/prime-image` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-icons` (eye, refresh, undo, searchminus, searchplus, times), `web-sys`.
+- A new crate `crates/prime-image` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-icons` (eye, refresh, undo, searchminus, searchplus, times), `web-sys`.
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places).

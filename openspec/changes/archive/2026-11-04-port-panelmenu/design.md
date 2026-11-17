@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/panelmenu`. PrimeNG 21.1.10 sources: `panelmenu/panelmenu.ts` (`PanelMenuSub` — the list of a level's items, `PanelMenuList` — the tree inside a panel, `PanelMenu` — header panels), `panelmenu/style/panelmenustyle.ts`; demos `apps/showcase/doc/panelmenu/{basic,multiple,controlled,command,template}-doc.ts` (`router-doc` and `accessibility-doc` are not ported). Models in the project — `prime-accordion` (panels and collapse), `prime-tieredmenu` (item model, focus, search), `prime-core::collapsible`.
+Requirements are in `specs/panelmenu`. PrimeNG 21.1.10 sources: `panelmenu/panelmenu.ts` (`PanelMenuSub` — the list of a level's items, `PanelMenuList` — the tree inside a panel, `PanelMenu` — header panels), `panelmenu/style/panelmenustyle.ts`; demos `apps/showcase/doc/panelmenu/{basic,multiple,controlled,command,template}-doc.ts` (`router-doc` and `accessibility-doc` are not ported). Models in the project — `prime-accordion` (panels and collapse), `prime-tieredmenu` (item model, focus, search), `prime-rs-core::collapsible`.
 
 Differences from the earlier menus: no popup levels and `z-index` layers, no outside click and `resize`; "visible" items are the expanded branches, the active path is a set of expanded keys rather than a single chain.
 
@@ -21,7 +21,7 @@ The set of expanded keys is `RwSignal<HashSet<String>>` (key = the item's `key` 
 A small flat model of our own in the crate (`nodes`, `visible(expanded)`, `next/prev/first/last`, `arrow_left/right`) after the source's `flatItems`/`onArrow*Key`; `prime-tieredmenu::model` is not reused, since its "visibility" is tied to popup paths. If `Node`/`build`/`item_at` turn out to fit without changes — take them (check during apply), otherwise do not complicate. Pure logic without `web_sys` — with table tests.
 
 ### D3. Markup
-A recursive level function; a root item is drawn as a panel with a header (and its own tree inside `content`), nested ones — as `li.p-panelmenu-item`. Collapse areas — `prime_core::collapsible::bind_region_with`, `CollapseIds` for `aria-controls`. Header buttons in PrimeNG are a `div` with an `a`; `ButtonPt` is not needed.
+A recursive level function; a root item is drawn as a panel with a header (and its own tree inside `content`), nested ones — as `li.p-panelmenu-item`. Collapse areas — `prime_rs_core::collapsible::bind_region_with`, `CollapseIds` for `aria-controls`. Header buttons in PrimeNG are a `div` with an `a`; `ButtonPt` is not needed.
 
 ### D4. Focus and keyboard
 A single `keydown`/`focus`/`blur` handler on the root list of the active panel; the focused key is a signal; when moving to the header of another panel, focus is moved into its list (`focus_no_scroll`). `scroll_into_view` for the focused `li` is under `cfg(wasm32)`; effects only under `cfg(wasm32)` (otherwise an executor panic in nextest).

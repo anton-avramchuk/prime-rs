@@ -1,7 +1,7 @@
 //! A static `Prop` creates no arena entries and does not allocate; a signal does.
 
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Size, all_static};
+use prime_rs_core::{OptProp, Prop, Size, all_static};
 
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;

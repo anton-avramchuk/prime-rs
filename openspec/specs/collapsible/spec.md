@@ -6,7 +6,7 @@ TBD - created by archiving change port-panel. Update Purpose after archiving.
 ## Requirements
 
 ### Requirement: Collapse state
-The shared collapse logic in `prime-core` SHALL keep a `collapsed` flag, accepting an optional external `RwSignal<bool>` (a two-way binding) or an initial value for the internal state. Toggling SHALL write the new value to the external signal, if it is set.
+The shared collapse logic in `prime-rs-core` SHALL keep a `collapsed` flag, accepting an optional external `RwSignal<bool>` (a two-way binding) or an initial value for the internal state. Toggling SHALL write the new value to the external signal, if it is set.
 
 #### Scenario: External signal
 - **WHEN** an `RwSignal<bool>` is passed and a toggle is called

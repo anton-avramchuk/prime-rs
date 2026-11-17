@@ -2,7 +2,7 @@
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 use prime_toast::{MessageService, ServiceEvent, Toast, ToastMessage, ToastPosition, ToastPt, ToastSeverity, provide_message_service};
 use std::sync::{Arc, Mutex};
 

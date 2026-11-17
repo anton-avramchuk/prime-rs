@@ -6,7 +6,7 @@ Shared component core: configuration via context, class building, shared props, 
 ## Requirements
 
 ### Requirement: Global configuration via context
-`prime-core` SHALL provide a configuration (locale, ripple, base z-index, input field variant, theme name) that components obtain from the Leptos context. If no configuration is provided, components SHALL work with default values, as in PrimeNG.
+`prime-rs-core` SHALL provide a configuration (locale, ripple, base z-index, input field variant, theme name) that components obtain from the Leptos context. If no configuration is provided, components SHALL work with default values, as in PrimeNG.
 
 #### Scenario: Configuration not set
 - **WHEN** a component is rendered outside a configuration provider
@@ -17,14 +17,14 @@ Shared component core: configuration via context, class building, shared props, 
 - **THEN** components inside the provider get this value
 
 ### Requirement: CSS class list building
-`prime-core` SHALL provide a way to assemble a list of `p-*` classes from base classes, conditional modifiers and user classes without extra allocations if the set of classes has not changed.
+`prime-rs-core` SHALL provide a way to assemble a list of `p-*` classes from base classes, conditional modifiers and user classes without extra allocations if the set of classes has not changed.
 
 #### Scenario: Conditional classes
 - **WHEN** a component is in the `disabled` state
 - **THEN** the resulting class string contains the base class and `p-disabled`, without empty or duplicate items
 
 ### Requirement: Base input props
-`prime-core` SHALL define the shared props `disabled`, `invalid`, `variant`, `size` with the same values as in PrimeNG, for reuse by input components.
+`prime-rs-core` SHALL define the shared props `disabled`, `invalid`, `variant`, `size` with the same values as in PrimeNG, for reuse by input components.
 
 #### Scenario: Variant values
 - **WHEN** `variant = filled`
@@ -38,7 +38,7 @@ Each component SHALL accept `pt` for the root element and main parts, allowing a
 - **THEN** the root element contains both `custom` and the component's own classes
 
 ### Requirement: z-index manager
-`prime-core` SHALL issue increasing z-index values for overlays by group (`modal`, `overlay`, `menu`, `tooltip`) and release them on close.
+`prime-rs-core` SHALL issue increasing z-index values for overlays by group (`modal`, `overlay`, `menu`, `tooltip`) and release them on close.
 
 #### Scenario: Two overlays in a row
 - **WHEN** a second overlay of the same group opens
@@ -60,7 +60,7 @@ Each component SHALL accept `pt` for the root element and main parts, allowing a
 - **THEN** it finishes without panicking and without touching `window`
 
 ### Requirement: "Value or signal" property
-`prime-core` SHALL provide a component property type that accepts either a ready-made value or a signal (`Signal`, `ReadSignal`, `RwSignal`, `Memo`). Passing a ready-made value SHALL NOT create reactive primitives (Leptos arena entries); the default value SHALL be static. Reading the property SHALL be reactive if a signal is passed, and SHALL subscribe the reading closure to it.
+`prime-rs-core` SHALL provide a component property type that accepts either a ready-made value or a signal (`Signal`, `ReadSignal`, `RwSignal`, `Memo`). Passing a ready-made value SHALL NOT create reactive primitives (Leptos arena entries); the default value SHALL be static. Reading the property SHALL be reactive if a signal is passed, and SHALL subscribe the reading closure to it.
 
 #### Scenario: Static value
 - **WHEN** a component is passed the value `"5"` or an enum constant
@@ -82,7 +82,7 @@ The property type SHALL allow finding out that the value is static, so a compone
 - **THEN** the static check returns `true` for each of them
 
 ### Requirement: Static check of a property set
-`prime-core` SHALL provide a way to check that all of a component's properties are static (`Prop::Static`), so the component can choose a render path without reactive closures. The check SHALL be cheap (no allocations and no subscriptions) and performed once when an instance is created.
+`prime-rs-core` SHALL provide a way to check that all of a component's properties are static (`Prop::Static`), so the component can choose a render path without reactive closures. The check SHALL be cheap (no allocations and no subscriptions) and performed once when an instance is created.
 
 #### Scenario: All properties static
 - **WHEN** a set of `Prop::Static` values and default values is checked

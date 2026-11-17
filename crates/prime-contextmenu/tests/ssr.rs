@@ -3,8 +3,8 @@
 
 use leptos::prelude::*;
 use prime_contextmenu::{ContextMenu, ContextMenuItemContext, ContextMenuPt, ContextMenuRef};
-use prime_core::Pt;
 use prime_menu::MenuItem;
+use prime_rs_core::Pt;
 
 fn leaf(label: &str) -> MenuItem {
     MenuItem::new().label(label)

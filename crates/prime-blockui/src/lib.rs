@@ -18,8 +18,8 @@ mod state;
 
 use leptos::either::Either;
 use leptos::prelude::*;
-use prime_core::{OptProp, Prop, Pt};
 use prime_dom::Portal;
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 pub use state::{aria_busy, mask_classes, mask_style};
@@ -27,9 +27,9 @@ pub use state::{aria_busy, mask_classes, mask_style};
 #[cfg(target_arch = "wasm32")]
 use leptos::leptos_dom::helpers::{TimeoutHandle, set_timeout_with_handle};
 #[cfg(target_arch = "wasm32")]
-use prime_core::{ZGroup, use_prime_config};
-#[cfg(target_arch = "wasm32")]
 use prime_dom::{block_body_scroll, unblock_body_scroll};
+#[cfg(target_arch = "wasm32")]
+use prime_rs_core::{ZGroup, use_prime_config};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
@@ -86,7 +86,7 @@ impl Core {
     /// Releases the layer, the scroll block and the target position.
     fn release_layer(&self) {
         if let Some(z) = self.z_index.try_update(Option::take).flatten() {
-            prime_core::zindex::revert(z);
+            prime_rs_core::zindex::revert(z);
         }
         if self.scroll_blocked.try_update_value(std::mem::take).unwrap_or(false) {
             #[cfg(target_arch = "wasm32")]
@@ -119,7 +119,7 @@ impl Core {
     fn opened(&self) {
         if self.auto_z_index.get_untracked().unwrap_or(true) && self.z_index.get_untracked().is_none() {
             let base = use_prime_config().z_index.base(ZGroup::Modal) + self.base_z_index.get_untracked();
-            self.z_index.set(Some(prime_core::zindex::generate(ZGroup::Modal, base)));
+            self.z_index.set(Some(prime_rs_core::zindex::generate(ZGroup::Modal, base)));
         }
         match &self.target {
             Some(target) => {

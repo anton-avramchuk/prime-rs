@@ -3,7 +3,7 @@
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
-use prime_core::Pt;
+use prime_rs_core::Pt;
 use prime_scrollpanel::{ScrollPanel, ScrollPanelPt, ScrollPanelRef};
 use wasm_bindgen::JsCast;
 use wasm_bindgen_test::*;

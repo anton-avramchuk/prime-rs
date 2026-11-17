@@ -4,7 +4,7 @@
 
 use leptos::prelude::*;
 use prime_cascadeselect::{CascadeOption, CascadeSelect, CascadeSelectPt};
-use prime_core::{Pt, Size, Variant};
+use prime_rs_core::{Pt, Size, Variant};
 
 fn options() -> Vec<CascadeOption> {
     vec![

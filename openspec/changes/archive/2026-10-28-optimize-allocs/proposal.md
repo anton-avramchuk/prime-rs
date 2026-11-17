@@ -6,7 +6,7 @@
 
 ## What Changes
 
-- `prime-core`: `ClassNames` assembles the string on the stack (no allocation), a `finish_cow()` is added that returns an interned `&'static str` for strings without user classes (a global table of bounded size), and a `String` for strings with `style_class`/`pt`. `DataP` gets `finish_cow()`.
+- `prime-rs-core`: `ClassNames` assembles the string on the stack (no allocation), a `finish_cow()` is added that returns an interned `&'static str` for strings without user classes (a global table of bounded size), and a `String` for strings with `style_class`/`pt`. `DataP` gets `finish_cow()`.
 - In all components `class`/`data-p` are returned as `Cow<'static, str>`; in the static branch `Arc<Props>`/`Arc<Pt>` are not created if closures and handlers do not use them.
 - The budgets in `alloc-budgets.toml` are lowered according to the new measurements.
 - **Out of scope:** changing the public API of the components and the markup (HTML stays byte-for-byte the same), wasm size optimization.
@@ -21,4 +21,4 @@
 
 ## Impact
 
-- Changed: `crates/prime-core` and the states/components of all `prime-*` crates, `benches/alloc-budgets.toml`, `docs/benchmarks.md`.
+- Changed: `crates/prime-rs-core` and the states/components of all `prime-*` crates, `benches/alloc-budgets.toml`, `docs/benchmarks.md`.

@@ -38,16 +38,16 @@ Only the `<button>` is rendered. The `<p-button>`/`<p-badge>` host in PrimeNG is
 
 ### D4. Classes and `data-p`
 One pure function per component builds the set of modifiers from the structure "snapshot of properties" (`ButtonState`); both `class` and `data-p*` are derived from it. The classes are assembled by `ClassNames` inside `class_memo`, so `class` is updated only when the string changes. The functions are tested without rendering (a table "properties → classes"), and are easy to check against `buttonstyle.ts`.
-A common helper for `data-p` (flags separated by spaces, like `cn({...})`) is added to `prime-core` (`DataP`).
+A common helper for `data-p` (flags separated by spaces, like `cn({...})`) is added to `prime-rs-core` (`DataP`).
 
 ### D5. Pass-through
-`prime-core::Pt` gets `style`; the component defines the structure of its parts: `ButtonPt { root, label, icon, loading_icon, badge }` (each one is a `Pt`), `BadgePt { root }`. The classes from `Pt` are added after the own ones (`Pt::merge_class`), the attributes — through `Pt::attrs()` with `{..}`. The structure of the parts lives in the component crate, the common mechanism — in `prime-core`.
+`prime-rs-core::Pt` gets `style`; the component defines the structure of its parts: `ButtonPt { root, label, icon, loading_icon, badge }` (each one is a `Pt`), `BadgePt { root }`. The classes from `Pt` are added after the own ones (`Pt::merge_class`), the attributes — through `Pt::attrs()` with `{..}`. The structure of the parts lives in the component crate, the common mechanism — in `prime-rs-core`.
 
 ### D6. Ripple and autofocus
 The root always has the class `p-ripple`. `Ripple::attach` is called from an `Effect` (only in the browser, after mounting) when `PrimeConfig.ripple` is set; `Ripple` is kept and released through `on_cleanup`. Autofocus is the same `Effect`, with `NodeRef<Button>`; on the server the `Effect` does not run, so SSR is safe.
 
 ### D7. Crate dependencies
-`prime-button` → `prime-core`, `prime-dom`, `prime-icons` (feature `spinner`), `prime-badge`. `prime-badge` → `prime-core`. The theme is connected by the application (`prime-theme`, features `button`, `badge`); the component crates do not pull in `prime-theme`, so as not to impose CSS.
+`prime-button` → `prime-rs-core`, `prime-dom`, `prime-icons` (feature `spinner`), `prime-badge`. `prime-badge` → `prime-rs-core`. The theme is connected by the application (`prime-theme`, features `button`, `badge`); the component crates do not pull in `prime-theme`, so as not to impose CSS.
 
 ### D8. Tests
 1. Unit: a table "properties → classes and `data-p`" for both components (independent of SSR).

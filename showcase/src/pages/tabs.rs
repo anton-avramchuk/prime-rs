@@ -124,15 +124,15 @@ pub fn TabsPage() -> impl IntoView {
                     prev_icon=ViewFn::from(|| view! { <span>"−"</span> })
                     next_icon=ViewFn::from(|| view! { <span>"+"</span> })
                 >
-                    <Tab value="0" pt=prime_core::Pt::new().style(TAB_ROW)>
+                    <Tab value="0" pt=prime_rs_core::Pt::new().style(TAB_ROW)>
                         <Avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape=AvatarShape::Circle />
                         <span style="font-weight: 700; white-space: nowrap">"Amy Elsner"</span>
                     </Tab>
-                    <Tab value="1" pt=prime_core::Pt::new().style(TAB_ROW)>
+                    <Tab value="1" pt=prime_rs_core::Pt::new().style(TAB_ROW)>
                         <Avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png" shape=AvatarShape::Circle />
                         <span style="font-weight: 700; white-space: nowrap">"Onyama Limba"</span>
                     </Tab>
-                    <Tab value="2" pt=prime_core::Pt::new().style(TAB_ROW)>
+                    <Tab value="2" pt=prime_rs_core::Pt::new().style(TAB_ROW)>
                         <Avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/ionibowcher.png" shape=AvatarShape::Circle />
                         <span style="font-weight: 700; white-space: nowrap">"Ioni Bowcher"</span>
                         <Badge value="2" />

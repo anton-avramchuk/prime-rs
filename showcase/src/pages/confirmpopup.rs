@@ -7,8 +7,8 @@ use leptos::prelude::*;
 use prime_button::{Button, ButtonSeverity};
 use prime_confirmation::{ConfirmButtonProps, Confirmation, provide_confirmation_service};
 use prime_confirmpopup::{ConfirmPopup, ConfirmPopupHeadless};
-use prime_core::Size;
 use prime_icons::{ExclamationTriangleIcon, InfoCircleIcon};
+use prime_rs_core::Size;
 use prime_toast::{Toast, ToastMessage, ToastSeverity, provide_message_service};
 
 #[component]

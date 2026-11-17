@@ -22,4 +22,4 @@ After `optimize-allocs` Button (19 allocations per instance) and Chip (10, remov
 
 ## Impact
 
-- `crates/prime-button`, `crates/prime-chip`, `crates/prime-core` (`Pt::merge_style_parts`), `benches/alloc-budgets.toml`, `docs/benchmarks.md`.
+- `crates/prime-button`, `crates/prime-chip`, `crates/prime-rs-core` (`Pt::merge_style_parts`), `benches/alloc-budgets.toml`, `docs/benchmarks.md`.

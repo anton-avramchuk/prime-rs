@@ -23,5 +23,5 @@ ScrollPanel is a cross-browser themable replacement for the native scrollbar. It
 
 ## Impact
 
-- New crate `crates/prime-scrollpanel` (`publish = false`); dependencies `prime-core`, `web-sys` (elements, `MouseEvent`, `KeyboardEvent`).
+- New crate `crates/prime-scrollpanel` (`publish = false`); dependencies `prime-rs-core`, `web-sys` (elements, `MouseEvent`, `KeyboardEvent`).
 - Changed: workspace `Cargo.toml`, `upstream.toml` (`scrollpanel` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, the browser CI job.

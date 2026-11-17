@@ -34,7 +34,7 @@ Spec: `openspec/specs/multiselect`.
 | `autofocus_filter` is off by default | Same as `autofocusFilter = false` in PrimeNG. |
 | Removing a chip: a click on the icon calls `on_remove` and `on_change`, the panel does not open | `Chip` hides itself; the icon list is rebuilt from `values`. |
 | The `fluid` property is `OptProp<bool>`: without a value it is taken from the `Fluid` context | See `docs/field-wrappers.md`. |
-| The identifier `pn_id_<n>` comes from `prime_core::ids::next_unique`, or the `id` property | Same on the server and in the browser. |
+| The identifier `pn_id_<n>` comes from `prime_rs_core::ids::next_unique`, or the `id` property | Same on the server and in the browser. |
 | No `reactiveforms`, `templatedrivenforms`, `virtualscroll` demos; in `template`, country codes instead of CDN flags and no header and footer | Change scope and independence from the CDN. |
 
 ## What was not verified

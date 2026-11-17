@@ -22,7 +22,7 @@ pub fn in_fluid() -> bool {
 ///
 /// ```
 /// use leptos::prelude::*;
-/// use prime_core::fluid::{in_fluid, provide_fluid, resolve_fluid};
+/// use prime_rs_core::fluid::{in_fluid, provide_fluid, resolve_fluid};
 ///
 /// Owner::new().with(|| {
 ///     assert!(!resolve_fluid(None));
@@ -40,7 +40,7 @@ pub fn resolve_fluid(explicit: Option<bool>) -> bool {
 ///
 /// ```
 /// use leptos::prelude::*;
-/// use prime_core::{OptProp, fluid::{fluid_prop, provide_fluid}};
+/// use prime_rs_core::{OptProp, fluid::{fluid_prop, provide_fluid}};
 ///
 /// Owner::new().with(|| {
 ///     let unset: OptProp<bool> = OptProp::default();

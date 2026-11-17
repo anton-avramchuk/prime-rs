@@ -2,7 +2,7 @@
 
 ## Context
 
-Requirements are in `specs/accordion` and the `specs/collapsible` delta. PrimeNG 21.1.10 sources: `packages/primeng/src/accordion/accordion.ts` (four components in one file), `accordion/style/accordionstyle.ts`, demos `apps/showcase/doc/accordion`. References: `crates/prime-panel`, `crates/prime-fieldset`, `prime-core::collapsible`. In PrimeNG the animation runs on the `p-motion` element inside `p-accordioncontent`; the CSS `.p-accordioncontent .p-motion { display: grid; grid-template-rows: 1fr }` lives in the `/* For PrimeNG */` block of `accordionstyle.ts`, not in `@primeuix/styles`, so the theme generator does not pick it up yet.
+Requirements are in `specs/accordion` and the `specs/collapsible` delta. PrimeNG 21.1.10 sources: `packages/primeng/src/accordion/accordion.ts` (four components in one file), `accordion/style/accordionstyle.ts`, demos `apps/showcase/doc/accordion`. References: `crates/prime-panel`, `crates/prime-fieldset`, `prime-rs-core::collapsible`. In PrimeNG the animation runs on the `p-motion` element inside `p-accordioncontent`; the CSS `.p-accordioncontent .p-motion { display: grid; grid-template-rows: 1fr }` lives in the `/* For PrimeNG */` block of `accordionstyle.ts`, not in `@primeuix/styles`, so the theme generator does not pick it up yet.
 
 ## Decisions
 
@@ -16,7 +16,7 @@ Requirements are in `specs/accordion` and the `specs/collapsible` delta. PrimeNG
 A click on the header (and Enter/Space, `select_on_focus`) computes `was_active` and `is_active` before and after `toggle`, as in PrimeNG: opening gives `on_open`, closing — `on_close`. The event is `AccordionToggle { original_event: web_sys::Event, index: String }`.
 
 ### D4. Animation via shared logic
-`prime-core::collapsible` gets `bind_region_with(region, collapsed: impl Fn() -> bool + 'static, on_done)`; `bind_region` reduces to it (`move || state.get()`), behaviour unchanged. Content: `div.p-accordioncontent[role=region] > div.p-motion (NodeRef, animated) > div.wrapper > div.content`. Initial style `display: none` on `p-motion` if the panel is inactive (`hidden_style`). Hiding is `display: none`, not `visibility`, as in Panel and Fieldset (a difference from PrimeNG `hideStrategy="visibility"`; recorded in the docs).
+`prime-rs-core::collapsible` gets `bind_region_with(region, collapsed: impl Fn() -> bool + 'static, on_done)`; `bind_region` reduces to it (`move || state.get()`), behaviour unchanged. Content: `div.p-accordioncontent[role=region] > div.p-motion (NodeRef, animated) > div.wrapper > div.content`. Initial style `display: none` on `p-motion` if the panel is inactive (`hidden_style`). Hiding is `display: none`, not `visibility`, as in Panel and Fieldset (a difference from PrimeNG `hideStrategy="visibility"`; recorded in the docs).
 
 ### D5. Theme CSS
 `xtask gen-theme` reads from `<name>/style/<name>style.ts` the part after the `/* For PrimeNG */` marker up to the closing backtick, runs `dt('a.b.c')` through the same `resolved` and appends it to the component's CSS. For components without the marker nothing changes (the CSS of Panel, Fieldset and the rest stays byte-for-byte the same, checked with `git diff`). An unresolved `dt()` is still an error.
@@ -39,7 +39,7 @@ Activity depends on the shared signal, so there is no static branch: classes, `a
 
 ## Migration Plan
 
-No migration: a new crate, a function added to `prime-core`. Rollback — `git revert`.
+No migration: a new crate, a function added to `prime-rs-core`. Rollback — `git revert`.
 
 ## Open Questions
 

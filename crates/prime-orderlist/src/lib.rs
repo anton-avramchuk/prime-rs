@@ -20,9 +20,9 @@ pub mod reorder;
 
 use leptos::prelude::*;
 use prime_button::{Button, ButtonPt, ButtonSeverity};
-use prime_core::{OptProp, Prop, Pt};
 use prime_icons::{AngleDoubleDownIcon, AngleDoubleUpIcon, AngleDownIcon, AngleUpIcon};
 use prime_listbox::{Listbox, ListboxOption, ListboxPt};
+use prime_rs_core::{OptProp, Prop, Pt};
 use std::sync::Arc;
 
 /// Position of the buttons relative to the list.
@@ -132,7 +132,7 @@ pub fn OrderList(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
     let selection = selection.unwrap_or_default();
-    let locale = prime_core::use_prime_config().locale;
+    let locale = prime_rs_core::use_prime_config().locale;
     let labels = Arc::new([
         locale.text("aria.moveUp").to_owned(),
         locale.text("aria.moveTop").to_owned(),

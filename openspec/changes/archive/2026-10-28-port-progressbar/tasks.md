@@ -2,7 +2,7 @@
 
 ## 1. Crate and logic
 
-- [x] 1.1 Create the crate `crates/prime-progressbar` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`), add it to the workspace; check `cargo check -p prime-progressbar --all-features`
+- [x] 1.1 Create the crate `crates/prime-progressbar` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-rs-core`), add it to the workspace; check `cargo check -p prime-progressbar --all-features`
 - [x] 1.2 Implement `ProgressBarMode`, `ProgressBarState`, `write_classes`, `data_p` after `progressbarstyle.ts` and `ProgressBar.dataP`; verify with a table of unit tests
 
 ## 2. Component

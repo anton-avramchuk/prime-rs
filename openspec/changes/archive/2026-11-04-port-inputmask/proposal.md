@@ -24,5 +24,5 @@ InputMask — an input field with a mask (phone, date, serial number): the user 
 
 ## Impact
 
-- A new crate `crates/prime-inputmask` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-inputtext` (the classes), `prime-icons` (times).
+- A new crate `crates/prime-inputmask` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`, `prime-inputtext` (the classes), `prime-icons` (times).
 - Changes to `Cargo.toml` of the workspace, `upstream.toml`, `xtask/theme/extract.mjs` (a component without a styles module), `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

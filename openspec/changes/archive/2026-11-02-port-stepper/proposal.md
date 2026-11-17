@@ -26,5 +26,5 @@ Stepper is the last component of wave 3: a step-by-step wizard with numbered ste
 
 ## Impact
 
-- New crate `crates/prime-stepper` (`publish = false`); dependencies: `prime-core`, `web-sys`.
+- New crate `crates/prime-stepper` (`publish = false`); dependencies: `prime-rs-core`, `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

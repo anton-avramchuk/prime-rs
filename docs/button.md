@@ -69,7 +69,7 @@ Measurements and budgets — `docs/benchmarks.md`. After `optimize-reactive-prop
 (it was 41 and 67); in the browser a static button takes 2.0 KB of wasm linear memory (it was 9.4 KB), a static badge 0.4 KB (it was 3.4 KB); contribution to raw wasm +96 KB and +374 KB.
 
 Template for the next components:
-- properties — `Prop<T>`/`OptProp<T>` from `prime-core` (a value does not create a signal, a signal subscribes the attributes);
+- properties — `Prop<T>`/`OptProp<T>` from `prime-rs-core` (a value does not create a signal, a signal subscribes the attributes);
 - no `Memo`: the state borrows the values (`Option<&str>`) and is assembled inside the attribute closures;
 - the instance properties live in one `Arc<Props>`, the closures clone only the reference counter;
 - client effects (`Effect`, ripple, autofocus) are created only under `cfg(target_arch = "wasm32")`;

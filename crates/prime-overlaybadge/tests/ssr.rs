@@ -3,8 +3,8 @@
 
 use leptos::prelude::*;
 use prime_badge::BadgePt;
-use prime_core::Pt;
 use prime_overlaybadge::{BadgeSeverity, BadgeSize, OverlayBadge, OverlayBadgePt};
+use prime_rs_core::Pt;
 
 fn strip(s: &str) -> String {
     let mut out = s.replace("<!>", "");

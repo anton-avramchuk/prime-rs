@@ -25,5 +25,5 @@ ColorPicker — color selection: the user moves a pointer over the saturation/br
 
 ## Impact
 
-- New crate `crates/prime-colorpicker` (`publish = false`); dependencies: `prime-core`, `prime-dom`.
+- New crate `crates/prime-colorpicker` (`publish = false`); dependencies: `prime-rs-core`, `prime-dom`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

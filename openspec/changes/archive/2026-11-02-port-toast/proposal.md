@@ -26,5 +26,5 @@ Toast is the eighth component of wave 3: pop-up notifications in a screen corner
 
 ## Impact
 
-- New crate `crates/prime-toast` (`publish = false`); dependencies: `prime-core`, `prime-icons` (`check`, `infocircle`, `timescircle`, `exclamationtriangle`, `times`), `prime-dom`, `web-sys`.
+- New crate `crates/prime-toast` (`publish = false`); dependencies: `prime-rs-core`, `prime-icons` (`check`, `infocircle`, `timescircle`, `exclamationtriangle`, `times`), `prime-dom`, `web-sys`.
 - Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

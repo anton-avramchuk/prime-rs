@@ -1,6 +1,6 @@
 //! Pure Select logic: classes and `data-p` (from `selectstyle.ts` and PrimeNG `Select.*DataP`).
 
-use prime_core::{ClassNames, DataP, Size};
+use prime_rs_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
 /// Snapshot of properties affecting root classes and `data-p`.

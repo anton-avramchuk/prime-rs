@@ -21,5 +21,5 @@ ProgressBar is the last component of wave 1: a progress indicator (determinate a
 
 ## Impact
 
-- New crate `crates/prime-progressbar` (`publish = false`); the only dependency is `prime-core`.
+- New crate `crates/prime-progressbar` (`publish = false`); the only dependency is `prime-rs-core`.
 - Changed: `showcase`, `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`.

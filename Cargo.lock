@@ -1616,8 +1616,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1631,10 +1631,10 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-chip",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-inputtext",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1647,7 +1647,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1659,7 +1659,7 @@ name = "prime-avatargroup"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -1667,7 +1667,7 @@ name = "prime-badge"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -1676,8 +1676,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1690,8 +1690,8 @@ version = "0.1.0"
 dependencies = [
  "leptos",
  "prime-badge",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "web-sys",
 ]
 
@@ -1701,9 +1701,9 @@ version = "0.1.0"
 dependencies = [
  "leptos",
  "prime-badge",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -1714,7 +1714,7 @@ name = "prime-buttongroup"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -1722,7 +1722,7 @@ name = "prime-card"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -1732,8 +1732,8 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1746,9 +1746,9 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1760,8 +1760,8 @@ name = "prime-checkbox"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -1773,8 +1773,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1787,8 +1787,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1801,7 +1801,7 @@ version = "0.1.0"
 dependencies = [
  "leptos",
  "prime-button",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "web-sys",
 ]
@@ -1814,8 +1814,8 @@ dependencies = [
  "leptos",
  "prime-button",
  "prime-confirmation",
- "prime-core",
  "prime-dialog",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1830,8 +1830,8 @@ dependencies = [
  "leptos",
  "prime-button",
  "prime-confirmation",
- "prime-core",
  "prime-dom",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1844,23 +1844,14 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-menu",
+ "prime-rs-core",
  "prime-tieredmenu",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
- "web-sys",
-]
-
-[[package]]
-name = "prime-core"
-version = "0.1.0"
-dependencies = [
- "dhat",
- "leptos",
  "web-sys",
 ]
 
@@ -1870,9 +1861,9 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
  "prime-paginator",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1886,10 +1877,10 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-inputtext",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1903,9 +1894,9 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1917,7 +1908,7 @@ name = "prime-divider"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -1927,7 +1918,7 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-badge",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1953,9 +1944,9 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1968,8 +1959,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1984,10 +1975,10 @@ dependencies = [
  "leptos",
  "prime-badge",
  "prime-button",
- "prime-core",
  "prime-icons",
  "prime-message",
  "prime-progressbar",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -1999,7 +1990,7 @@ name = "prime-floatlabel"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2008,9 +1999,9 @@ version = "0.1.0"
 dependencies = [
  "leptos",
  "prime-button",
- "prime-core",
  "prime-inputnumber",
  "prime-inputtext",
+ "prime-rs-core",
  "prime-select",
  "prime-textarea",
 ]
@@ -2021,9 +2012,9 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2035,7 +2026,7 @@ name = "prime-iconfield"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2043,7 +2034,7 @@ name = "prime-icons"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2051,7 +2042,7 @@ name = "prime-iftalabel"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2060,9 +2051,9 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2075,7 +2066,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2089,8 +2080,8 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2102,7 +2093,7 @@ name = "prime-inputgroup"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2111,10 +2102,10 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-inputtext",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2127,9 +2118,9 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
  "prime-inputtext",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2142,8 +2133,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-inputtext",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -2154,7 +2145,7 @@ name = "prime-inputtext"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -2166,7 +2157,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -2179,8 +2170,8 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-checkbox",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2193,10 +2184,10 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-menu",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2209,8 +2200,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2223,10 +2214,10 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-menu",
+ "prime-rs-core",
  "prime-tieredmenu",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2240,8 +2231,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2253,7 +2244,7 @@ name = "prime-metergroup"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2264,9 +2255,9 @@ dependencies = [
  "leptos",
  "prime-checkbox",
  "prime-chip",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2280,9 +2271,9 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-icons",
  "prime-listbox",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2295,7 +2286,7 @@ version = "0.1.0"
 dependencies = [
  "leptos",
  "prime-badge",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2304,9 +2295,9 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
  "prime-inputnumber",
+ "prime-rs-core",
  "prime-select",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2320,8 +2311,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2334,9 +2325,9 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
  "prime-menu",
+ "prime-rs-core",
  "prime-tieredmenu",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2350,10 +2341,10 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-inputtext",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2367,10 +2358,10 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-icons",
  "prime-listbox",
  "prime-orderlist",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2383,8 +2374,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2396,7 +2387,7 @@ name = "prime-progressbar"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2404,7 +2395,7 @@ name = "prime-progressspinner"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2412,7 +2403,7 @@ name = "prime-radiobutton"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -2423,10 +2414,19 @@ name = "prime-rating"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
+name = "prime-rs-core"
+version = "0.1.0"
+dependencies = [
+ "dhat",
+ "leptos",
  "web-sys",
 ]
 
@@ -2436,7 +2436,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2450,8 +2450,8 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2464,9 +2464,9 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2478,7 +2478,7 @@ name = "prime-selectbutton"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "prime-togglebutton",
  "wasm-bindgen",
  "wasm-bindgen-test",
@@ -2490,7 +2490,7 @@ name = "prime-skeleton"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2499,7 +2499,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -2512,8 +2512,8 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "prime-tooltip",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2528,10 +2528,10 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-menu",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2544,7 +2544,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2557,7 +2557,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2570,7 +2570,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2586,11 +2586,11 @@ dependencies = [
  "prime-badge",
  "prime-button",
  "prime-checkbox",
- "prime-core",
  "prime-dataview",
  "prime-icons",
  "prime-paginator",
  "prime-radiobutton",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2603,8 +2603,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2616,7 +2616,7 @@ name = "prime-tag"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2624,7 +2624,7 @@ name = "prime-textarea"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -2640,10 +2640,10 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-dom",
  "prime-icons",
  "prime-menu",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2655,7 +2655,7 @@ name = "prime-timeline"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2664,8 +2664,8 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "leptos",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2677,7 +2677,7 @@ name = "prime-togglebutton"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -2688,7 +2688,7 @@ name = "prime-toggleswitch"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",
@@ -2699,7 +2699,7 @@ name = "prime-toolbar"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "prime-core",
+ "prime-rs-core",
 ]
 
 [[package]]
@@ -2709,9 +2709,9 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-button",
- "prime-core",
  "prime-dom",
  "prime-inputtext",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2725,8 +2725,8 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-checkbox",
- "prime-core",
  "prime-icons",
+ "prime-rs-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -2740,9 +2740,9 @@ dependencies = [
  "js-sys",
  "leptos",
  "prime-chip",
- "prime-core",
  "prime-dom",
  "prime-icons",
+ "prime-rs-core",
  "prime-tree",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2758,10 +2758,10 @@ dependencies = [
  "leptos",
  "prime-badge",
  "prime-checkbox",
- "prime-core",
  "prime-dataview",
  "prime-icons",
  "prime-paginator",
+ "prime-rs-core",
  "prime-table",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -3388,7 +3388,6 @@ dependencies = [
  "prime-confirmdialog",
  "prime-confirmpopup",
  "prime-contextmenu",
- "prime-core",
  "prime-dataview",
  "prime-datepicker",
  "prime-dialog",
@@ -3431,6 +3430,7 @@ dependencies = [
  "prime-progressspinner",
  "prime-radiobutton",
  "prime-rating",
+ "prime-rs-core",
  "prime-scrollpanel",
  "prime-scrolltop",
  "prime-select",
