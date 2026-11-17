@@ -26,6 +26,12 @@ const ROUTER_BASE: &str = match option_env!("SHOWCASE_BASE") {
     None => "",
 };
 
+/// Prefixes an app path with the router base, so links keep working under the Pages sub-path.
+/// `<A href>` only lets the router handle a click when the href already contains the base.
+pub(crate) fn route(path: &str) -> String {
+    format!("{ROUTER_BASE}{path}")
+}
+
 /// Theme CSS: base styles plus the components used by the showcase.
 pub fn theme_css() -> String {
     prime_theme::stylesheet(&[
