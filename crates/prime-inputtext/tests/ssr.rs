@@ -1,4 +1,4 @@
-//! Структура DOM, атрибуты, классы, `pt` и паритет ветвей InputText (SSR).
+//! DOM structure, attributes, classes, `pt` and branch parity of InputText (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

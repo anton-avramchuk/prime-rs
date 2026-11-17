@@ -1,8 +1,8 @@
-//! DatePicker — порт `p-datepicker` из PrimeNG 21.1.10 (этап 1).
+//! DatePicker - port of PrimeNG 21.1.10 `p-datepicker` (stage 1).
 //!
-//! Выбор даты, нескольких дат и диапазона в календаре: поле ввода с панелью-оверлеем либо встроенный календарь,
-//! виды «дни», «месяцы», «годы», ограничения, недоступные даты, форматы и кнопки «Сегодня»/«Очистить». Календарная
-//! логика — чистая [`calendar`]. Время и клавиатурная навигация по ячейкам — этап 2.
+//! Selecting a date, several dates, or a range in a calendar: an input with an overlay panel or an inline calendar,
+//! "days", "months", "years" views, constraints, disabled dates, formats and "Today"/"Clear" buttons. The calendar
+//! logic is pure ([`calendar`]). Time and keyboard navigation across cells are stage 2.
 //!
 //! ```
 //! #![recursion_limit = "512"]
@@ -42,63 +42,63 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Текущий вид календаря.
+/// Current calendar view.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum DatePickerView {
-    /// Дни (по умолчанию).
+    /// Days (default).
     #[default]
     Date,
-    /// Месяцы.
+    /// Months.
     Month,
-    /// Годы.
+    /// Years.
     Year,
 }
 
-/// Где показывать значок календаря.
+/// Where to show the calendar icon.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum IconDisplay {
-    /// Кнопка справа от поля (по умолчанию).
+    /// Button to the right of the field (default).
     #[default]
     Button,
-    /// Значок внутри поля.
+    /// Icon inside the field.
     Input,
 }
 
-/// Месяц и год (месяц 1–12), как в событиях PrimeNG.
+/// Month and year (month 1-12), as in PrimeNG events.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct MonthYear {
-    /// Месяц 1–12.
+    /// Month 1-12.
     pub month: u32,
-    /// Год.
+    /// Year.
     pub year: i32,
 }
 
-/// Pass-through частей [`DatePicker`].
+/// Pass-through for [`DatePicker`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct DatePickerPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Поле ввода.
+    /// Input field.
     pub input: Pt,
-    /// Панель.
+    /// Panel.
     pub panel: Pt,
-    /// Контейнер календарей.
+    /// Calendars container.
     pub calendar_container: Pt,
-    /// Календарь одного месяца.
+    /// Single-month calendar.
     pub calendar: Pt,
-    /// Шапка календаря.
+    /// Calendar header.
     pub header: Pt,
-    /// Таблица дней.
+    /// Days table.
     pub table: Pt,
-    /// Ячейка дня.
+    /// Day cell.
     pub day_cell: Pt,
-    /// День.
+    /// Day.
     pub day: Pt,
-    /// Панель кнопок.
+    /// Button bar.
     pub buttonbar: Pt,
 }
 
-/// Сегодняшняя дата.
+/// Today's date.
 pub fn today_now() -> CalDate {
     #[cfg(target_arch = "wasm32")]
     {
@@ -112,8 +112,8 @@ pub fn today_now() -> CalDate {
     }
 }
 
-/// Названия месяцев и дней: английские, с заменой через `Locale` (`monthNames`, `monthNamesShort`, `dayNames`,
-/// `dayNamesShort`, `dayNamesMin` — списки через запятую).
+/// Month and day names: English, overridable via `Locale` (`monthNames`, `monthNamesShort`, `dayNames`,
+/// `dayNamesShort`, `dayNamesMin` - comma-separated lists).
 pub fn names_from_locale() -> Names {
     let locale = use_prime_config().locale;
     let mut names = Names::default();
@@ -136,7 +136,7 @@ pub fn names_from_locale() -> Names {
     names
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     value: RwSignal<Vec<CalDate>>,
@@ -172,7 +172,7 @@ struct Core {
     auto_z_index: Prop<bool>,
     root: NodeRef<leptos::html::Div>,
     panel: NodeRef<leptos::html::Div>,
-    /// Значение, с которым текст поля уже согласован: внешнее изменение отличается от него.
+    /// Value the field text is already in sync with: an external change differs from it.
     synced: StoredValue<Vec<CalDate>>,
     cleanups: StoredValue<Vec<Box<dyn FnOnce()>>, LocalStorage>,
     z_index: StoredValue<Option<i32>>,
@@ -230,7 +230,7 @@ impl Core {
         format_date(date, &self.format.get_untracked(), &self.names)
     }
 
-    /// Текст поля по значению (`updateInputfield`).
+    /// Field text from the value (`updateInputfield`).
     fn format_value(&self, value: &[CalDate]) -> String {
         match self.mode.get_untracked() {
             SelectionMode::Single => value.first().map(|d| self.format_one(*d)).unwrap_or_default(),
@@ -249,7 +249,7 @@ impl Core {
         self.synced.set_value(value);
     }
 
-    /// Месяц и год, с которых открывается календарь (`value`, `default_date` или сегодня).
+    /// Month and year the calendar opens at (`value`, `default_date` or today).
     fn show_position(&self) {
         let base =
             self.value.with_untracked(|v| v.first().copied()).or_else(|| self.default_date.get_untracked()).unwrap_or_else(|| self.today());
@@ -304,7 +304,7 @@ impl Core {
         }
     }
 
-    /// Клик по дню (`onDateSelect`).
+    /// Click on a day (`onDateSelect`).
     fn select_day(self: &Arc<Self>, date: CalDate, selectable: bool) {
         if self.disabled.get_untracked() || !selectable {
             return;
@@ -381,7 +381,7 @@ impl Core {
         }
     }
 
-    /// Ввод текста: корректные доступные даты становятся значением (`onUserInput`).
+    /// Text input: valid available dates become the value (`onUserInput`).
     fn user_input(&self, text: &str) {
         let trimmed = text.trim();
         let mode = self.mode.get_untracked();
@@ -419,7 +419,7 @@ impl Core {
         self.value.set(dates);
     }
 
-    /// Снимает слушатели окна и освобождает z-index.
+    /// Removes window listeners and releases the z-index.
     fn release(&self) {
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
             cleanup();
@@ -429,7 +429,7 @@ impl Core {
         }
     }
 
-    /// Панель только что показана: z-index, выравнивание по корню, подписки, `on_show`.
+    /// The panel has just been shown: z-index, alignment to the root, subscriptions, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let (Some(panel), Some(root)) = (self.panel.get_untracked(), self.root.get_untracked()) else { return };
@@ -441,7 +441,7 @@ impl Core {
             let _ = panel.style().set_property("z-index", &z.to_string());
         }
         align_overlay(&panel, &root, AlignMode::Relative, false);
-        // Подписки — в следующем тике: клик, открывший панель, ещё всплывает к окну и закрыл бы её сам.
+        // Subscriptions happen on the next tick: the click that opened the panel is still bubbling to the window and would close it immediately.
         let this = self.clone();
         let handle = set_timeout_with_handle(
             move || {
@@ -466,7 +466,7 @@ impl Core {
         let click = window_event_listener(leptos::ev::click, move |e: web_sys::MouseEvent| {
             let node = e.target().and_then(|t| t.dyn_into::<web_sys::Node>().ok());
             let inside = this.root.get_untracked().is_some_and(|r| r.contains(node.as_ref()));
-            // Клик по ячейке, которая уже пересоздана перерисовкой, не считается внешним.
+            // A click on a cell already recreated by a re-render is not considered outside.
             let detached = node.as_ref().is_some_and(|n| !n.is_connected());
             if !inside && !detached {
                 this.hide();
@@ -494,160 +494,160 @@ impl Core {
     }
 }
 
-/// Поле ввода даты с календарём.
+/// Date input with a calendar.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` — двусторонний сигнал. Панель выводится внутри корня
-/// (не в `body`), поэтому у предков не должно быть `overflow: hidden`.
+/// Each property accepts a value or a signal; `value` is a two-way signal. The panel is rendered inside the root
+/// (not in `body`), so ancestors must not have `overflow: hidden`.
 #[component]
 pub fn DatePicker(
-    /// Двусторонний сигнал значения: пусто, одна дата, несколько или `[начало, конец]`.
+    /// Two-way value signal: empty, one date, several, or `[start, end]`.
     #[prop(optional)]
     value: Option<RwSignal<Vec<CalDate>>>,
-    /// Режим выбора.
+    /// Selection mode.
     #[prop(optional, into)]
     selection_mode: Prop<SelectionMode>,
-    /// Формат даты (`d dd o oo D DD m mm M MM y yy`).
+    /// Date format (`d dd o oo D DD m mm M MM y yy`).
     #[prop(optional, default = Prop::Static("mm/dd/yy".to_owned()), into)]
     date_format: Prop<String>,
-    /// Минимальная дата.
+    /// Minimum date.
     #[prop(optional, into)]
     min_date: OptProp<CalDate>,
-    /// Максимальная дата.
+    /// Maximum date.
     #[prop(optional, into)]
     max_date: OptProp<CalDate>,
-    /// Недоступные даты.
+    /// Disabled dates.
     #[prop(optional, into)]
     disabled_dates: Prop<Vec<CalDate>>,
-    /// Недоступные дни недели (0 — воскресенье).
+    /// Disabled weekdays (0 is Sunday).
     #[prop(optional, into)]
     disabled_days: Prop<Vec<u32>>,
-    /// Первый день недели (0 — воскресенье).
+    /// First day of the week (0 is Sunday).
     #[prop(optional, into)]
     first_day_of_week: Prop<u32>,
-    /// Показывать дни соседних месяцев.
+    /// Show days of adjacent months.
     #[prop(optional, default = Prop::Static(true), into)]
     show_other_months: Prop<bool>,
-    /// Разрешить выбор дней соседних месяцев.
+    /// Allow selecting days of adjacent months.
     #[prop(optional, into)]
     select_other_months: Prop<bool>,
-    /// Показывать номера недель.
+    /// Show week numbers.
     #[prop(optional, into)]
     show_week: Prop<bool>,
-    /// Нумеровать недели от первого дня года.
+    /// Number weeks from the first day of the year.
     #[prop(optional, into)]
     start_week_from_first_day_of_year: Prop<bool>,
-    /// Число одновременно показанных месяцев.
+    /// Number of months shown at once.
     #[prop(optional, default = Prop::Static(1), into)]
     number_of_months: Prop<usize>,
-    /// Начальный вид календаря: `Month` и `Year` — выбор месяца и года целиком.
+    /// Initial calendar view: `Month` and `Year` select a whole month and year.
     #[prop(optional, into)]
     view: Prop<DatePickerView>,
-    /// Встроенный календарь без поля.
+    /// Inline calendar without a field.
     #[prop(optional, into)]
     inline: Prop<bool>,
-    /// Показывать значок календаря.
+    /// Show the calendar icon.
     #[prop(optional, into)]
     show_icon: Prop<bool>,
-    /// Где показывать значок.
+    /// Where to show the icon.
     #[prop(optional, into)]
     icon_display: Prop<IconDisplay>,
-    /// Показывать кнопки «Сегодня» и «Очистить».
+    /// Show the "Today" and "Clear" buttons.
     #[prop(optional, into)]
     show_button_bar: Prop<bool>,
-    /// Показывать значок очистки в поле.
+    /// Show the clear icon in the field.
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-    /// Открывать панель при фокусе поля.
+    /// Open the panel on field focus.
     #[prop(optional, default = Prop::Static(true), into)]
     show_on_focus: Prop<bool>,
-    /// Закрывать панель после завершения выбора.
+    /// Close the panel after the selection is complete.
     #[prop(optional, default = Prop::Static(true), into)]
     hide_on_date_time_select: Prop<bool>,
-    /// Предел числа дат в режиме `Multiple`.
+    /// Limit on the number of dates in `Multiple` mode.
     #[prop(optional, into)]
     max_date_count: OptProp<usize>,
-    /// Дата, с которой открывается календарь без значения.
+    /// Date the calendar opens at when there is no value.
     #[prop(optional, into)]
     default_date: OptProp<CalDate>,
-    /// «Сегодня» (по умолчанию — системная дата); нужно для детерминированных тестов.
+    /// "Today" (system date by default); needed for deterministic tests.
     #[prop(optional, into)]
     today: OptProp<CalDate>,
-    /// Разделитель дат в режиме `Multiple`.
+    /// Date separator in `Multiple` mode.
     #[prop(optional, default = Prop::Static(",".to_owned()), into)]
     multiple_separator: Prop<String>,
-    /// Разделитель начала и конца диапазона.
+    /// Separator between range start and end.
     #[prop(optional, default = Prop::Static("-".to_owned()), into)]
     range_separator: Prop<String>,
-    /// Подсказка поля.
+    /// Field hint.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Поле только для чтения (дата выбирается в календаре).
+    /// Read-only field (the date is selected in the calendar).
     #[prop(optional, into)]
     readonly_input: Prop<bool>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Вариант поля.
+    /// Field variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Размер поля.
+    /// Field size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину контейнера.
+    /// Full container width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Атрибут `id` поля.
+    /// Field `id` attribute.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Атрибут `tabindex` поля.
+    /// Field `tabindex` attribute.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label` поля.
+    /// Field `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Автоматически назначать `z-index` панели.
+    /// Automatically assign the panel `z-index`.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при выборе даты.
+    /// Called when a date is selected.
     #[prop(optional, into)]
     on_select: Option<Callback<CalDate>>,
-    /// Вызывается при очистке значком в поле.
+    /// Called when cleared with the field icon.
     #[prop(optional, into)]
     on_clear: Option<Callback<()>>,
-    /// Вызывается после показа панели.
+    /// Called after the panel is shown.
     #[prop(optional, into)]
     on_show: Option<Callback<()>>,
-    /// Вызывается после скрытия панели.
+    /// Called after the panel is hidden.
     #[prop(optional, into)]
     on_hide: Option<Callback<()>>,
-    /// Вызывается при смене месяца.
+    /// Called when the month changes.
     #[prop(optional, into)]
     on_month_change: Option<Callback<MonthYear>>,
-    /// Вызывается при смене года.
+    /// Called when the year changes.
     #[prop(optional, into)]
     on_year_change: Option<Callback<MonthYear>>,
-    /// Вызывается по кнопке «Сегодня».
+    /// Called by the "Today" button.
     #[prop(optional, into)]
     on_today_click: Option<Callback<CalDate>>,
-    /// Вызывается по кнопке «Очистить».
+    /// Called by the "Clear" button.
     #[prop(optional, into)]
     on_clear_click: Option<Callback<()>>,
-    /// Вызывается при получении фокуса полем.
+    /// Called when the field gains focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса полем.
+    /// Called when the field loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Pass-through частей.
+    /// Pass-through for parts.
     #[prop(optional)]
     pt: Option<DatePickerPt>,
 ) -> impl IntoView {
@@ -708,7 +708,7 @@ pub fn DatePicker(
         on_cleanup(move || core.release());
     }
 
-    // Внешнее изменение значения обновляет текст; открытие и закрытие панели — только в браузере.
+    // An external value change updates the text; opening and closing the panel happen only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let c = core.clone();
@@ -755,7 +755,7 @@ pub fn DatePicker(
     let root_style = {
         let (pt, core) = (pt.clone(), core.clone());
         move || {
-            // Панель выравнивается относительно ближайшего предка с позиционированием: им должен быть корень.
+            // The panel is aligned to the nearest positioned ancestor: it must be the root.
             let base = if core.inline.get() { "" } else { "position: relative" };
             let user = style.with(|st| st.clone().unwrap_or_default());
             let merged = pt.root.merge_style_parts(&[base, &user]);
@@ -825,7 +825,7 @@ fn text_value(key: &str) -> String {
     use_prime_config().locale.text(key).to_owned()
 }
 
-/// Поле ввода, значок очистки и значок календаря.
+/// Input field, clear icon and calendar icon.
 fn field_view(core: &Arc<Core>, pt: &Arc<DatePickerPt>, p: &FieldProps) -> impl IntoView + use<> {
     let class = {
         let (core, pt) = (core.clone(), pt.clone());
@@ -972,7 +972,7 @@ fn field_view(core: &Arc<Core>, pt: &Arc<DatePickerPt>, p: &FieldProps) -> impl 
     }
 }
 
-/// Панель с календарями, видами месяцев и лет и панелью кнопок.
+/// Panel with calendars, month and year views, and the button bar.
 fn panel_view(core: &Arc<Core>, pt: &Arc<DatePickerPt>, button_bar: bool) -> impl IntoView + use<> {
     let panel = core.panel;
     let class = {
@@ -994,7 +994,7 @@ fn panel_view(core: &Arc<Core>, pt: &Arc<DatePickerPt>, button_bar: bool) -> imp
     let month_view = {
         let core = core.clone();
         move || {
-            // год и ограничения читаются внутри `month_picker` без подписки: перестраиваем при их смене
+            // year and constraints are read inside `month_picker` without subscribing: rebuild when they change
             core.year.track();
             (core.view.get() == DatePickerView::Month).then(|| month_picker(&core))
         }
@@ -1053,7 +1053,7 @@ fn panel_view(core: &Arc<Core>, pt: &Arc<DatePickerPt>, button_bar: bool) -> imp
     }
 }
 
-/// Календари месяцев: шапка и таблица дней.
+/// Month calendars: header and day grid.
 fn calendars_view(core: &Arc<Core>, pt: &Arc<DatePickerPt>) -> impl IntoView + use<> {
     let months = core.months();
     let count = months.len();
@@ -1174,7 +1174,7 @@ fn header_view(
     }
 }
 
-/// Классы дня (`day` и `dayCell` из `datepickerstyle.ts`).
+/// Day classes (`day` and `dayCell` from `datepickerstyle.ts`).
 fn day_class(mode: SelectionMode, value: &[CalDate], cell: &DayCell, disabled: bool) -> String {
     let mut cn = String::from("p-datepicker-day");
     let date = cell.date();

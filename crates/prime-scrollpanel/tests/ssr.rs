@@ -1,4 +1,4 @@
-//! Структура DOM, ARIA полос, слот содержимого, `style`, `pt` и паритет ветвей ScrollPanel (SSR).
+//! DOM structure, bar ARIA, content slot, `style`, `pt` and branch parity of ScrollPanel (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -18,16 +18,16 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
-/// Идентификатор содержимого из `aria-controls` первой полосы.
+/// Content identifier from `aria-controls` of the first bar.
 fn controls(html: &str) -> String {
     let start = pos(html, "aria-controls=\"") + "aria-controls=\"".len();
     html[start..].split('"').next().unwrap().to_owned()
 }
 
-/// Убирает маркеры гидрации и номера счётчика идентификаторов.
+/// Removes hydration markers and identifier counter numbers.
 fn norm(html: &str) -> String {
     let html = html.replace("<!>", "").replace("<!---->", "");
     let mut out = String::new();
@@ -41,9 +41,9 @@ fn norm(html: &str) -> String {
 
 #[test]
 fn structure_and_order() {
-    let html = view! { <ScrollPanel>"тело"</ScrollPanel> }.to_html();
+    let html = view! { <ScrollPanel>"body"</ScrollPanel> }.to_html();
     assert!(html.starts_with("<div"), "{html}");
-    has(&html, &["p-scrollpanel p-component", "p-scrollpanel-content-container", "p-scrollpanel-content", "тело"]);
+    has(&html, &["p-scrollpanel p-component", "p-scrollpanel-content-container", "p-scrollpanel-content", "body"]);
     let (container, content, bar_x, bar_y) = (
         pos(&html, "p-scrollpanel-content-container"),
         pos(&html, "p-scrollpanel-content\""),
@@ -76,10 +76,10 @@ fn content_ids_are_unique() {
 
 #[test]
 fn content_template_replaces_children() {
-    let slot = ViewFn::from(|| view! { <i>"слот"</i> });
-    let html = view! { <ScrollPanel content_template=slot>"дети"</ScrollPanel> }.to_html();
-    has(&html, &["<i>слот</i>"]);
-    lacks(&html, &["дети"]);
+    let slot = ViewFn::from(|| view! { <i>"slot"</i> });
+    let html = view! { <ScrollPanel content_template=slot>"children"</ScrollPanel> }.to_html();
+    has(&html, &["<i>slot</i>"]);
+    lacks(&html, &["children"]);
 }
 
 #[test]
@@ -114,10 +114,10 @@ fn pt_parts_extend_own_classes_and_attrs() {
 
 #[test]
 fn static_and_reactive_branches_render_the_same() {
-    let fixed = view! { <ScrollPanel style="height: 10px" style_class="m">"т"</ScrollPanel> }.to_html();
+    let fixed = view! { <ScrollPanel style="height: 10px" style_class="m">"txt"</ScrollPanel> }.to_html();
     let live = view! {
         <ScrollPanel style=RwSignal::new(Some("height: 10px".to_owned())) style_class=RwSignal::new(Some("m".to_owned()))>
-            "т"
+            "txt"
         </ScrollPanel>
     }
     .to_html();

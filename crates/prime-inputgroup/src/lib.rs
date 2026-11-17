@@ -1,10 +1,10 @@
-//! InputGroup и InputGroupAddon — порт `p-inputgroup` и `p-inputgroup-addon` из PrimeNG 21.1.10.
+//! InputGroup and InputGroupAddon - port of PrimeNG 21.1.10 `p-inputgroup` and `p-inputgroup-addon`.
 //!
-//! Структура и классы совпадают с PrimeNG: `div.p-inputgroup` и `div.p-inputgroupaddon` с проецируемым содержимым.
-//! Вместо хостов `<p-inputgroup>` и `<p-inputgroup-addon>` отрисовываются `<div class="…">`. Блок `/*For PrimeNG*/`
-//! из `inputgroupstyle.ts` (правила для Angular-обёрток `p-button`, `p-inputwrapper`, `p-inputmask`) не нужен.
+//! Structure and classes match PrimeNG: `div.p-inputgroup` and `div.p-inputgroupaddon` with projected content.
+//! Instead of the `<p-inputgroup>` and `<p-inputgroup-addon>` hosts, `<div class="...">` is rendered. The `/*For PrimeNG*/` block
+//! from `inputgroupstyle.ts` (rules for the Angular wrappers `p-button`, `p-inputwrapper`, `p-inputmask`) is not needed.
 //!
-//! Свойства — [`OptProp`]; если все они статические, компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! Properties are [`OptProp`]; if all of them are static, the component renders ready-made values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -23,60 +23,60 @@ use std::sync::Arc;
 /// Pass-through InputGroup.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct InputGroupPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
 /// Pass-through InputGroupAddon.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct InputGroupAddonPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
-/// Группа: поле ввода с текстом, иконками и кнопками рядом.
+/// Group: an input with text, icons and buttons next to it.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn InputGroup(
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<InputGroupPt>,
-    /// Содержимое группы.
+    /// Group content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
     group_view("p-inputgroup", style, style_class, pt.unwrap_or_default().root, children)
 }
 
-/// Аддон группы: текст, иконка или кнопка рядом с полем.
+/// Group addon: text, an icon or a button next to the input.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn InputGroupAddon(
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<InputGroupAddonPt>,
-    /// Содержимое аддона.
+    /// Addon content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
     group_view("p-inputgroupaddon", style, style_class, pt.unwrap_or_default().root, children)
 }
 
-/// Общая разметка обоих компонентов; различается только собственный класс.
+/// Markup shared by both components; only the own class differs.
 fn group_view(
     base: &'static str,
     style: OptProp<String>,
@@ -103,7 +103,7 @@ fn group_view(
     }
 }
 
-/// Разметка: одна для статической и реактивной ветвей (меняются только выражения атрибутов корня).
+/// Markup: one for the static and reactive branches (only the root attribute expressions differ).
 macro_rules! group_markup {
     ($class:expr, $style:expr, $attrs:expr, $content:expr) => {
         view! { <div class={$class} style={$style} {..$attrs}>{$content}</div> }
@@ -123,7 +123,7 @@ fn style_of(props: &Props, root: &Pt) -> Option<String> {
     props.style.with(|st| (st.is_some() || root.has_style()).then(|| root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     style: OptProp<String>,
     style_class: OptProp<String>,

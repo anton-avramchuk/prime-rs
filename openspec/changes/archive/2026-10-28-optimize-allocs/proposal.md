@@ -2,23 +2,23 @@
 
 ## Why
 
-Измерения `render-bench` показывают, что «пол» Leptos — 2 аллокации на `div` со `span`, а готовые компоненты тратят заметно больше: пустой `AvatarGroup` — 4, `Checkbox` — 34, `Message` — 36. Значимая часть — строки классов и `data-p`, которые собираются заново на каждый экземпляр, хотя состояний у компонента конечное число, и лишние `Arc<Props>`/`Arc<Pt>` в статической ветви. Бюджеты в `benches/alloc-budgets.toml` стоят с запасом над текущими значениями.
+`render-bench` measurements show that the Leptos "floor" is 2 allocations for a `div` with a `span`, while ready components spend noticeably more: an empty `AvatarGroup` — 4, `Checkbox` — 34, `Message` — 36. A significant part is class and `data-p` strings that are rebuilt for every instance although the component has a finite number of states, and superfluous `Arc<Props>`/`Arc<Pt>` in the static branch. The budgets in `benches/alloc-budgets.toml` are set with headroom over the current values.
 
 ## What Changes
 
-- `prime-core`: `ClassNames` собирает строку на стеке (без аллокации), добавлен `finish_cow()`, который для строк без пользовательских классов возвращает интернированный `&'static str` (глобальная таблица ограниченного размера), а для строк с `style_class`/`pt` — `String`. `DataP` получает `finish_cow()`.
-- Во всех компонентах `class`/`data-p` отдаются как `Cow<'static, str>`; в статической ветви не создаются `Arc<Props>`/`Arc<Pt>`, если замыкания и обработчики их не используют.
-- Бюджеты в `alloc-budgets.toml` снижаются по новым измерениям.
-- **Не входит:** изменение публичного API компонентов и разметки (HTML остаётся побайтно прежним), оптимизация размера wasm.
+- `prime-core`: `ClassNames` assembles the string on the stack (no allocation), a `finish_cow()` is added that returns an interned `&'static str` for strings without user classes (a global table of bounded size), and a `String` for strings with `style_class`/`pt`. `DataP` gets `finish_cow()`.
+- In all components `class`/`data-p` are returned as `Cow<'static, str>`; in the static branch `Arc<Props>`/`Arc<Pt>` are not created if closures and handlers do not use them.
+- The budgets in `alloc-budgets.toml` are lowered according to the new measurements.
+- **Out of scope:** changing the public API of the components and the markup (HTML stays byte-for-byte the same), wasm size optimization.
 
 ## Capabilities
 
 ### New Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ### Modified Capabilities
-- `benchmarking`: бюджеты аллокаций снижаются, добавляется требование, что общая сборка классов и `data-p` не аллоцирует для типичных состояний.
+- `benchmarking`: allocation budgets are lowered, and a requirement is added that the shared assembly of classes and `data-p` does not allocate for typical states.
 
 ## Impact
 
-- Изменяются `crates/prime-core` и состояния/компоненты всех крейтов `prime-*`, `benches/alloc-budgets.toml`, `docs/benchmarks.md`.
+- Changed: `crates/prime-core` and the states/components of all `prime-*` crates, `benches/alloc-budgets.toml`, `docs/benchmarks.md`.

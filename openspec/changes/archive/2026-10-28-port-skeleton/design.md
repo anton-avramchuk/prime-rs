@@ -2,33 +2,33 @@
 
 ## Context
 
-Требования — в `specs/skeleton`. Исходники PrimeNG 21.1.10: `packages/primeng/src/skeleton/skeleton.ts`, `skeleton/style/skeletonstyle.ts`, демонстрации `apps/showcase/doc/skeleton`. Шаблон крейта — `docs/progressbar.md`, `docs/avatargroup.md`.
+The requirements are in `specs/skeleton`. PrimeNG 21.1.10 sources: `packages/primeng/src/skeleton/skeleton.ts`, `skeleton/style/skeletonstyle.ts`, demos `apps/showcase/doc/skeleton`. The crate template is `docs/progressbar.md` and `docs/avatargroup.md`.
 
 ## Decisions
 
-### D1. Корень — `<div>`
-Вместо хоста `<p-skeleton>`; `aria-hidden="true"` и `data-p` — на корне.
+### D1. Root — `<div>`
+Instead of the `<p-skeleton>` host; `aria-hidden="true"` and `data-p` — on the root.
 
-### D2. Стиль
-Как `containerStyle` PrimeNG: `position: relative`, затем `width`/`height` (при заданном `size` оба равны ему) и `border-radius` (только при заданном `border_radius`). Строка собирается одним `String` через `write!`; завершающую `;` добавляет Leptos при выводе атрибута.
+### D2. Style
+As `containerStyle` in PrimeNG: `position: relative`, then `width`/`height` (when `size` is set, both equal it) and `border-radius` (only when `border_radius` is set). The string is assembled as one `String` through `write!`; the trailing `;` is added by Leptos when rendering the attribute.
 
-### D3. Классы и `data-p`
-`p-skeleton p-component`, `p-skeleton-circle` при `shape = circle`, `p-skeleton-animation-none` при `animation = none`; `data-p` — имя формы (`rectangle`/`circle`).
+### D3. Classes and `data-p`
+`p-skeleton p-component`, `p-skeleton-circle` when `shape = circle`, `p-skeleton-animation-none` when `animation = none`; `data-p` — the shape name (`rectangle`/`circle`).
 
-### D4. Ветви
-Статическая — при `all_static!`; иначе реактивная. Разметка — `macro_rules!`; `Props`/`Pt` без `Arc` в статической ветви.
+### D4. Branches
+Static — when `all_static!` holds; otherwise reactive. The markup is in a `macro_rules!`; `Props`/`Pt` without `Arc` in the static branch.
 
-### D5. Тесты
-SSR: структура, стиль, классы, `size`, `pt`, паритет ветвей. Браузерных тестов нет: поведения нет.
+### D5. Tests
+SSR: structure, style, classes, `size`, `pt`, branch parity. There are no browser tests: there is no behaviour.
 
 ## Risks / Trade-offs
 
-- [Строки `shape`/`animation` в PrimeNG — произвольные] → типизированные перечисления с теми же значениями.
+- [The `shape`/`animation` strings in PrimeNG are arbitrary] → typed enumerations with the same values.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

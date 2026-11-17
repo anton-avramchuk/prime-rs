@@ -1,6 +1,6 @@
-//! Страница SpeedDial: демонстрации `linear`, `circle`, `semicircle`, `quartercircle`, `mask`, `tooltip` и `template` из showcase
-//! PrimeNG (`apps/showcase/doc/speeddial`). У каждой демонстрации свой `MessageService`. Значки PrimeIcons заменены значками
-//! `prime-icons` (`pi-external-link` — стрелкой вправо); пункты с `routerLink` в PrimeNG здесь просто без команды.
+//! SpeedDial page: the `linear`, `circle`, `semicircle`, `quartercircle`, `mask`, `tooltip` and `template` demos from the PrimeNG
+//! showcase (`apps/showcase/doc/speeddial`). Each demo has its own `MessageService`. PrimeIcons icons are replaced by
+//! `prime-icons` icons (`pi-external-link` — a right arrow); items with `routerLink` in PrimeNG are simply without a command here.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -176,7 +176,7 @@ fn TemplateDemo() -> impl IntoView {
     }
 }
 
-/// Страница `/speeddial`.
+/// Page `/speeddial`.
 #[component]
 pub fn SpeedDialPage() -> impl IntoView {
     view! {

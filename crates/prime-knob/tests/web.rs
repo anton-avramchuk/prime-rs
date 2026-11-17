@@ -1,5 +1,5 @@
-//! Поведение Knob в реальном браузере (wasm-bindgen-test): клавиши, клик по характерным точкам и разрыву, шаг, перетаскивание с
-//! выходом за SVG, снятие слушателей, пропуск `click` после перетаскивания, `readonly`/`disabled`, внешний сигнал и границы.
+//! Knob behaviour in a real browser (wasm-bindgen-test): keys, clicks at characteristic points and in the gap, step, dragging with
+//! leaving the SVG, listener removal, skipping `click` after dragging, `readonly`/`disabled`, external signal and bounds.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn svg(host: &HtmlElement) -> web_sys::Element {
-    host.query_selector("svg").unwrap().expect("нет svg")
+    host.query_selector("svg").unwrap().expect("no svg")
 }
 
 fn path(host: &HtmlElement, class: &str) -> String {
@@ -50,7 +50,7 @@ fn window() -> EventTarget {
     web_sys::window().unwrap().into()
 }
 
-/// Точка на расстоянии `r` пикселей от центра SVG под углом `deg` градусов (0° — вправо, 90° — вверх).
+/// Point at distance `r` pixels from the SVG center at angle `deg` degrees (0 deg is right, 90 deg is up).
 fn at(svg: &web_sys::Element, deg: f64, r: f64) -> (f64, f64) {
     let rect = svg.get_bounding_client_rect();
     let (cx, cy) = (rect.left() + rect.width() / 2.0, rect.top() + rect.height() / 2.0);
@@ -75,7 +75,7 @@ async fn keys_change_value_prevent_default_and_clamp() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <Knob value=value on_change=on_change /> });
     leptos::task::tick().await;
     let s = svg(&host);
-    assert!(!key(&s, "ArrowRight"), "действие по умолчанию не отменено");
+    assert!(!key(&s, "ArrowRight"), "default action not prevented");
     leptos::task::tick().await;
     assert_eq!((value.get_untracked(), aria_now(&s).as_str()), (51.0, "51"));
     key(&s, "ArrowLeft");
@@ -86,11 +86,11 @@ async fn keys_change_value_prevent_default_and_clamp() {
     key(&s, "Home");
     assert_eq!(value.get_untracked(), 0.0);
     key(&s, "ArrowDown");
-    assert_eq!(value.get_untracked(), 0.0, "не ниже min");
+    assert_eq!(value.get_untracked(), 0.0, "not below min");
     key(&s, "End");
     key(&s, "ArrowUp");
-    assert_eq!(value.get_untracked(), 100.0, "не выше max");
-    assert!(key(&s, "KeyA"), "посторонняя клавиша не должна отменяться");
+    assert_eq!(value.get_untracked(), 100.0, "not above max");
+    assert!(key(&s, "KeyA"), "an unrelated key must not be prevented");
     assert_eq!(log.lock().unwrap().len(), 9);
     assert_eq!(log.lock().unwrap()[0], 51.0);
     host.remove();
@@ -111,7 +111,7 @@ async fn click_maps_angle_to_value_and_ignores_the_gap() {
         assert_eq!(value.get_untracked(), expected, "{deg}°");
     }
     assert_eq!(log.lock().unwrap().len(), 4);
-    // разрыв внизу: значение не меняется, событие не вызывается
+    // gap at the bottom: the value does not change, the event is not called
     let (x, y) = at(&s, -90.0, 40.0);
     mouse(&s, "click", x, y);
     assert_eq!(value.get_untracked(), 10.0);
@@ -126,7 +126,7 @@ async fn step_rounds_the_clicked_value() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <Knob value=value step=10.0 /> });
     leptos::task::tick().await;
     let s = svg(&host);
-    // угол 99° соответствует значению 47 из 0..100 (240° − 3·47)
+    // angle 99 deg corresponds to value 47 of 0..100 (240 deg - 3*47)
     let (x, y) = at(&s, 99.0, 40.0);
     mouse(&s, "click", x, y);
     assert_eq!(value.get_untracked(), 50.0);
@@ -142,9 +142,9 @@ async fn drag_follows_pointer_outside_svg_and_unbinds_on_mouseup() {
     leptos::task::tick().await;
     let s = svg(&host);
     let (x0, y0) = at(&s, 210.0, 40.0);
-    assert!(!mouse(&s, "mousedown", x0, y0), "mousedown не отменён");
-    assert!(s.is_same_node(doc().active_element().as_deref()), "после нажатия фокус на SVG");
-    // указатель далеко за пределами SVG, но на нужном угле
+    assert!(!mouse(&s, "mousedown", x0, y0), "mousedown not prevented");
+    assert!(s.is_same_node(doc().active_element().as_deref()), "after pressing, focus is on the SVG");
+    // the pointer is far outside the SVG, but at the required angle
     let (x, y) = at(&s, 90.0, 300.0);
     mouse(&window(), "mousemove", x, y);
     assert_eq!(value.get_untracked(), 50.0);
@@ -153,16 +153,16 @@ async fn drag_follows_pointer_outside_svg_and_unbinds_on_mouseup() {
     assert_eq!(value.get_untracked(), 80.0);
     mouse(&window(), "mouseup", x, y);
     leptos::task::tick().await;
-    // слушателей больше нет
+    // no listeners remain
     let (x, y) = at(&s, 180.0, 300.0);
     mouse(&window(), "mousemove", x, y);
     assert_eq!(value.get_untracked(), 80.0);
     assert_eq!(log.lock().unwrap().len(), 2);
-    // `click` после перетаскивания не повторяет изменение
+    // `click` after dragging does not repeat the change
     let (x, y) = at(&s, 0.0, 40.0);
     mouse(&s, "click", x, y);
     assert_eq!(log.lock().unwrap().len(), 2);
-    // а нажатие без перемещения завершается обычным кликом
+    // and a press without movement ends with a normal click
     mouse(&s, "mousedown", x, y);
     mouse(&window(), "mouseup", x, y);
     mouse(&s, "click", x, y);
@@ -216,6 +216,6 @@ async fn external_signal_and_reactive_bounds_update_dom() {
     max.set(Some(200.0));
     leptos::task::tick().await;
     assert_eq!(s.get_attribute("aria-valuemax").as_deref(), Some("200"));
-    assert_ne!(path(&host, "p-knob-value"), "M 30 84.641 A 40 40 0 0 1 50 10", "дуга пересчитана под новый max");
+    assert_ne!(path(&host, "p-knob-value"), "M 30 84.641 A 40 40 0 0 1 50 10", "the arc is recomputed for the new max");
     host.remove();
 }

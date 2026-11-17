@@ -1,7 +1,7 @@
-//! Страница Fluid: демонстрация `basic` по `apps/showcase/doc/fluid` PrimeNG.
+//! Fluid page: the `basic` demo from `apps/showcase/doc/fluid` in PrimeNG.
 //!
-//! Без `Fluid` рядом показан тот же набор полей, чтобы разница в ширине была видна; `AutoComplete`, `DatePicker` и `Password`
-//! (их нет в проекте) заменены на `InputNumber`, `Select` и `Textarea`.
+//! The same set of fields is shown next to a non-`Fluid` one, so the width difference is visible; `AutoComplete`, `DatePicker` and `Password`
+//! (they are not in the project) are replaced by `InputNumber`, `Select` and `Textarea`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -16,7 +16,7 @@ fn cities() -> Vec<SelectOption> {
     [("New York", "NY"), ("Rome", "RM"), ("London", "LDN")].into_iter().map(|(label, value)| SelectOption::new(label, value)).collect()
 }
 
-/// Страница `/fluid`.
+/// `/fluid` page.
 #[component]
 pub fn FluidPage() -> impl IntoView {
     view! {

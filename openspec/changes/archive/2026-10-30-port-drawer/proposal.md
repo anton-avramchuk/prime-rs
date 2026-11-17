@@ -2,27 +2,27 @@
 
 ## Why
 
-Drawer — пятый компонент волны 3: панель у края экрана с маской, блокировкой прокрутки и ловушкой фокуса. Это первый модальный оверлей проекта: на нём впервые используются `Portal` и `FocusTrap` из `prime-dom` (готовы, но без потребителей), маска и блокировка прокрутки `body`, которые затем понадобятся `Dialog`.
+Drawer - the fifth component of wave 3: a panel at the screen edge with a mask, scroll lock and a focus trap. This is the project's first modal overlay: it is the first user of `Portal` and `FocusTrap` from `prime-dom` (ready but without consumers), of the mask and of the `body` scroll lock, which `Dialog` will need next.
 
 ## What Changes
 
-- Новый крейт `prime-drawer` (порт `p-drawer` из PrimeNG 21.1.10): `Drawer` — корень `div.p-drawer.p-component[role=complementary]` (классы `p-drawer-<position>`, `p-drawer-full`, `p-drawer-open`) с `div.p-drawer-header` (заголовок `div.p-drawer-title`, кнопка закрытия `p-drawer-close-button`), `div.p-drawer-content` и необязательным `div.p-drawer-footer`; при `modal` за панелью выводится маска `div.p-drawer-mask.p-overlay-mask`. Панель и маска выносятся в `body` через `Portal`.
-- Свойства: `visible` (двусторонний `RwSignal<bool>`), `position` (`DrawerPosition`: `Left` по умолчанию, `Right`, `Top`, `Bottom`, `Full`), `full_screen`, `modal` (да), `dismissible` (да), `close_on_escape` (да), `closable` (да), `block_scroll` (нет), `auto_z_index` (да), `base_z_index` (0), `header`, `aria_close_label`, `mask_style`, `style`, `style_class`, `pt`; части-представления `header_content`, `footer`, `close_icon`, `headless` (`ViewFn`); обратные вызовы `on_show`, `on_hide`.
-- Поведение: при `visible` панель и маска появляются с анимацией входа (`p-drawer-enter-<position>`, маска — `p-overlay-mask-enter-active`); при скрытии играют анимации выхода и только после `animationend` убираются из DOM; клик по маске при `dismissible`, кнопка закрытия и `Escape` у верхнего по `z-index` окна закрывают панель; `z-index` по `ZGroup::Modal`, маска на единицу ниже панели; при `block_scroll` на `body` ставится `p-overflow-hidden` на время показа; `Tab` не покидает панель (`FocusTrap`).
-- Страница showcase `/drawer` с демонстрациями `basic`, `position`, `size`, `fullscreen`, `template`, `headless` (упрощённая); e2e с настоящей мышью и клавиатурой; бенчмарки и бюджеты; `docs/drawer.md`.
-- Стили: `drawer` добавляется в `theme.components` и в `primeng_extra`; `xtask gen-theme` учится распознавать маркер `/** For PrimeNG **/`, которым размечен блок у Drawer.
-- В `prime-dom` добавляются `block_body_scroll()` / `unblock_body_scroll()` (счётчик вложенных вызовов, порт `blockBodyScroll`).
-- **Не входит:** `appendTo` (панель всегда в `body`), `@primeuix/motion` и `motionOptions`/`transitionOptions` (анимации — CSS-классы), устаревший `showCloseIcon`, `closeButtonProps` (кнопка закрытия — `Button` с теми же свойствами по умолчанию: вторичная, текстовая, круглая), шаблон `content` (содержимое — `children`), `pt` с контекстом, демонстрация `headless` в полном виде (меню профиля с `Ripple` и `PanelMenu`).
+- New crate `prime-drawer` (port of `p-drawer` from PrimeNG 21.1.10): `Drawer` - root `div.p-drawer.p-component[role=complementary]` (classes `p-drawer-<position>`, `p-drawer-full`, `p-drawer-open`) with `div.p-drawer-header` (title `div.p-drawer-title`, close button `p-drawer-close-button`), `div.p-drawer-content` and an optional `div.p-drawer-footer`; with `modal` a mask `div.p-drawer-mask.p-overlay-mask` is rendered behind the panel. The panel and mask are moved into `body` via `Portal`.
+- Properties: `visible` (two-way `RwSignal<bool>`), `position` (`DrawerPosition`: `Left` by default, `Right`, `Top`, `Bottom`, `Full`), `full_screen`, `modal` (yes), `dismissible` (yes), `close_on_escape` (yes), `closable` (yes), `block_scroll` (no), `auto_z_index` (yes), `base_z_index` (0), `header`, `aria_close_label`, `mask_style`, `style`, `style_class`, `pt`; view parts `header_content`, `footer`, `close_icon`, `headless` (`ViewFn`); callbacks `on_show`, `on_hide`.
+- Behaviour: with `visible` the panel and mask appear with the enter animation (`p-drawer-enter-<position>`, the mask `p-overlay-mask-enter-active`); on hiding the leave animations play and only after `animationend` are they removed from the DOM; a click on the mask with `dismissible`, the close button and `Escape` on the topmost window by `z-index` close the panel; `z-index` via `ZGroup::Modal`, the mask one below the panel; with `block_scroll` `p-overflow-hidden` is set on `body` while shown; `Tab` does not leave the panel (`FocusTrap`).
+- Showcase page `/drawer` with demos `basic`, `position`, `size`, `fullscreen`, `template`, `headless` (simplified); e2e with a real mouse and keyboard; benchmarks and budgets; `docs/drawer.md`.
+- Styles: `drawer` is added to `theme.components` and `primeng_extra`; `xtask gen-theme` learns to recognize the `/** For PrimeNG **/` marker that delimits Drawer's block.
+- `prime-dom` gets `block_body_scroll()` / `unblock_body_scroll()` (a nested-call counter, a port of `blockBodyScroll`).
+- **Out of scope:** `appendTo` (the panel is always in `body`), `@primeuix/motion` and `motionOptions`/`transitionOptions` (animations are CSS classes), the deprecated `showCloseIcon`, `closeButtonProps` (the close button is a `Button` with the same defaults: secondary, text, rounded), the `content` template (content is `children`), `pt` with context, the full `headless` demo (a profile menu with `Ripple` and `PanelMenu`).
 
 ## Capabilities
 
 ### New Capabilities
-- `drawer`: модальная или встроенная панель у края экрана с анимацией, маской, блокировкой прокрутки и ловушкой фокуса.
+- `drawer`: a modal or inline panel at the screen edge with animation, mask, scroll lock and a focus trap.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-drawer` (`publish = false`); зависимости: `prime-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`), `web-sys`.
-- Изменяются `prime-dom` (блокировка прокрутки), `xtask` (маркер), `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (браузерный job, три места).
+- New crate `crates/prime-drawer` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-button`, `prime-icons` (`times`), `web-sys`.
+- Changed: `prime-dom` (scroll lock), `xtask` (marker), workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

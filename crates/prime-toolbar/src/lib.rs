@@ -1,16 +1,16 @@
-//! Toolbar — порт `p-toolbar` из PrimeNG 21.1.10.
+//! Toolbar — port of `p-toolbar` from PrimeNG 21.1.10.
 //!
-//! Структура и классы совпадают с PrimeNG: корень `div.p-toolbar` с `role="toolbar"`, внутри проецируемое содержимое
-//! и области `p-toolbar-start`, `p-toolbar-center`, `p-toolbar-end`, которые выводятся только при заданном слоте.
-//! Вместо хоста `<p-toolbar>` отрисовывается `<div class="p-toolbar …">`. Слоты — `ViewFn` (аналоги шаблонов `#start`, `#center`, `#end`).
+//! Structure and classes match PrimeNG: root `div.p-toolbar` with `role="toolbar"`, inside it the projected content
+//! and the areas `p-toolbar-start`, `p-toolbar-center`, `p-toolbar-end`, which are rendered only when a slot is set.
+//! Instead of the host `<p-toolbar>` a `<div class="p-toolbar …">` is rendered. Slots are `ViewFn` (analogues of the `#start`, `#center`, `#end` templates).
 //!
-//! Свойства — [`Prop`]/[`OptProp`]; если все они статические, компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! Properties are [`Prop`]/[`OptProp`]; if all of them are static, the component renders ready values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_toolbar::Toolbar;
 //!
-//! let html = view! { <Toolbar start_template=ViewFn::from(|| view! { "Начало" }) end_template=ViewFn::from(|| view! { "Конец" }) /> }.to_html();
+//! let html = view! { <Toolbar start_template=ViewFn::from(|| view! { "Start" }) end_template=ViewFn::from(|| view! { "End" }) /> }.to_html();
 //! assert!(html.contains(r#"role="toolbar""#) && html.contains("p-toolbar-start") && html.contains("p-toolbar-end") && !html.contains("p-toolbar-center"));
 //! ```
 
@@ -20,46 +20,46 @@ use prime_core::{ClassNames, OptProp, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
-/// Pass-through частей Toolbar.
+/// Pass-through for the parts of Toolbar.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ToolbarPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Область начала (`div.p-toolbar-start`).
+    /// Start area (`div.p-toolbar-start`).
     pub start: Pt,
-    /// Центральная область (`div.p-toolbar-center`).
+    /// Center area (`div.p-toolbar-center`).
     pub center: Pt,
-    /// Область конца (`div.p-toolbar-end`).
+    /// End area (`div.p-toolbar-end`).
     pub end: Pt,
 }
 
-/// Панель инструментов: начало, центр и конец.
+/// Toolbar: start, center and end.
 ///
-/// Свойства принимают значение или сигнал. `children` выводятся перед областями.
+/// Properties accept a value or a signal. `children` are rendered before the areas.
 #[component]
 pub fn Toolbar(
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Слот области начала (`p-toolbar-start`).
+    /// Start area slot (`p-toolbar-start`).
     #[prop(optional, into)]
     start_template: Option<ViewFn>,
-    /// Слот центральной области (`p-toolbar-center`).
+    /// Center area slot (`p-toolbar-center`).
     #[prop(optional, into)]
     center_template: Option<ViewFn>,
-    /// Слот области конца (`p-toolbar-end`).
+    /// End area slot (`p-toolbar-end`).
     #[prop(optional, into)]
     end_template: Option<ViewFn>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<ToolbarPt>,
-    /// Проецируемое содержимое: стоит перед областями.
+    /// Projected content: placed before the areas.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -90,7 +90,7 @@ pub fn Toolbar(
     }
 }
 
-/// Разметка Toolbar: одна для статической и реактивной ветвей (меняются только выражения атрибутов корня).
+/// Toolbar markup: one for the static and reactive branches (only the root attribute expressions differ).
 macro_rules! toolbar_markup {
     ($class:expr, $style:expr, $aria:expr, $attrs:expr, $content:expr, $start:expr, $center:expr, $end:expr) => {
         view! {
@@ -117,7 +117,7 @@ fn style_of(props: &Props, pt: &ToolbarPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Область: только при заданном слоте.
+/// Area: only when a slot is set.
 fn area(pt: &Pt, class: &'static str, slot: Option<ViewFn>) -> Option<AnyView> {
     slot.map(|slot| {
         let style = pt.has_style().then(|| pt.merge_style(""));
@@ -125,7 +125,7 @@ fn area(pt: &Pt, class: &'static str, slot: Option<ViewFn>) -> Option<AnyView> {
     })
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     aria_labelledby: OptProp<String>,
     style: OptProp<String>,

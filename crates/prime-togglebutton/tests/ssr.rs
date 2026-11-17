@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `data-p*`, атрибуты, `tabindex`, слоты и `pt` ToggleButton (SSR).
+//! DOM structure, classes, `data-p*`, attributes, `tabindex`, slots and `pt` of ToggleButton (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -103,7 +103,7 @@ fn icon_follows_state_and_position() {
         "{html}"
     );
     let html = view! { <ToggleButton on_icon=icon() /> }.to_html();
-    assert!(html.contains("p-togglebutton-icon"), "span без иконки выключенного состояния всё равно выводится: {html}");
+    assert!(html.contains("p-togglebutton-icon"), "span is still rendered without an off-state icon: {html}");
 }
 
 #[test]

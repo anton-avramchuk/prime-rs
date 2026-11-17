@@ -2,25 +2,25 @@
 
 ## Why
 
-Chip — следующий компонент волны 1 (Tag портирован). В отличие от Badge и Tag, он интерактивный: удаляемый (`removable`), реагирует на клавиатуру, имеет события и состояние «скрыт после удаления», локализуемую подпись, изображение с обработкой ошибки загрузки. Это первый компонент, где статическая ветвь отрисовки должна уживаться с внутренним состоянием, поэтому он проверяет шаблон `Prop` + две ветви на поведении, а не только на разметке.
+Chip is the next component of wave 1 (Tag has been ported). Unlike Badge and Tag, it is interactive: it is removable (`removable`), reacts to the keyboard, has events and a state "hidden after removal", a localizable label, and an image with loading-error handling. This is the first component where the static render branch must coexist with an internal state, so it tests the `Prop` + two-branch template on behaviour, not only on markup.
 
 ## What Changes
 
-- Новый крейт `prime-chip` с компонентом `Chip`: `label`, `icon`, `image`, `alt`, `disabled`, `removable`, `remove_icon`, `style`, `style_class`, `children`, `pt`, события `on_remove`, `on_image_error`; классы `p-chip*` и `data-p` как в PrimeNG 21.1.10.
-- Удаление по клику и по клавишам Enter и Backspace; после удаления Chip скрывается (`display: none`), как в PrimeNG; `aria-label` кнопки удаления берётся из `PrimeConfig.locale` (`aria.removeLabel`).
-- Статическая ветвь отрисовки используется, когда все свойства статические и Chip не удаляемый (удаляемому нужно внутреннее состояние видимости, поэтому он идёт реактивным путём).
-- Страница `/chip` в showcase (`basic`, `icon`, `image`, `template`), e2e, бенчмарки и бюджеты.
-- **Не входит:** `chipProps`, шрифтовые иконки, `unstyled`-режим.
+- A new crate `prime-chip` with the `Chip` component: `label`, `icon`, `image`, `alt`, `disabled`, `removable`, `remove_icon`, `style`, `style_class`, `children`, `pt`, the events `on_remove`, `on_image_error`; the classes `p-chip*` and `data-p` as in PrimeNG 21.1.10.
+- Removal by click and by the Enter and Backspace keys; after removal the Chip is hidden (`display: none`), as in PrimeNG; the `aria-label` of the remove button is taken from `PrimeConfig.locale` (`aria.removeLabel`).
+- The static render branch is used when all properties are static and the Chip is not removable (a removable one needs internal visibility state, so it takes the reactive path).
+- The `/chip` page in the showcase (`basic`, `icon`, `image`, `template`), e2e, benchmarks and budgets.
+- **Not included:** `chipProps`, icon fonts, the `unstyled` mode.
 
 ## Capabilities
 
 ### New Capabilities
-- `chip`: компонент Chip — метка, иконка, изображение, удаление, события, доступность, `pt`, производительность.
+- `chip`: the Chip component — label, icon, image, removal, events, accessibility, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-chip` (`publish = false`); зависит от `prime-core` и `prime-icons` (feature `timescircle`).
-- Изменяются `showcase`, `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.
+- A new crate `crates/prime-chip` (`publish = false`); depends on `prime-core` and `prime-icons` (feature `timescircle`).
+- Changes to `showcase`, `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.

@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('ImageCompare', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/imagecompare');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-imagecompare')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(2);
         const root = page.locator('[data-demo=basic] .p-imagecompare');
         await expect(root.locator('img')).toHaveCount(2);
@@ -17,12 +17,12 @@ test.describe('ImageCompare', () => {
         expect(await root.evaluate((el) => getComputedStyle(el).overflow)).toBe('hidden');
         const box = (await root.boundingBox())!;
         expect(Math.abs(box.width / box.height - 16 / 9)).toBeLessThan(0.05);
-        // правое изображение обрезано темой до 50 %
+        // the right image is clipped by the theme to 50 %
         const clip = await root.locator('img').nth(1).evaluate((el) => getComputedStyle(el).clipPath);
         expect(clip).toContain('polygon');
     });
 
-    test('клик по полосе двигает ручку и обрезает правое изображение', async ({ page }) => {
+    test('a click on the bar moves the handle and clips the right image', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-imagecompare');
         const box = (await root.boundingBox())!;
         await page.mouse.click(box.x + box.width * 0.25, box.y + box.height / 2);
@@ -35,9 +35,9 @@ test.describe('ImageCompare', () => {
         expect(left).toBe('');
     });
 
-    test('перетаскивание ручки меняет значение', async ({ page }) => {
+    test('dragging the handle changes the value', async ({ page }) => {
         const root = page.locator('[data-demo=responsive] .p-imagecompare');
-        // демонстрация ниже экрана: без прокрутки координаты мыши лежат вне окна
+        // the demo is below the fold: without scrolling the mouse coordinates are outside the window
         await root.scrollIntoViewIfNeeded();
         const box = (await root.boundingBox())!;
         await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -48,7 +48,7 @@ test.describe('ImageCompare', () => {
         expect(value).toBeGreaterThan(70);
     });
 
-    test('клавиши стрелок меняют значение ползунка', async ({ page }) => {
+    test('arrow keys change the slider value', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-imagecompare');
         const slider = root.locator('input[type=range]');
         await slider.focus();

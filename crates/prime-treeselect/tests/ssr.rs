@@ -1,5 +1,5 @@
-//! Разметка TreeSelect (SSR): корень, скрытое поле, метка (запятая, чипы, подсказка), классы состояния, очистка, кнопка, `pt`.
-//! Панель с деревом выводится только в открытом состоянии и проверяется в браузерных тестах.
+//! TreeSelect markup (SSR): root, hidden field, label (comma, chips, placeholder), state classes, clear, button, `pt`.
+//! The panel with the tree is rendered only when open and is checked in browser tests.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -86,7 +86,7 @@ fn clear_icon_requires_value_and_show_clear() {
     let html = render(|| {
         view! { <TreeSelect options=options() show_clear=true disabled=true value=RwSignal::new(vec!["1".to_owned()]) /> }.to_html()
     });
-    assert!(!html.contains("p-treeselect-clear-icon"), "у отключённого поля очистки нет: {html}");
+    assert!(!html.contains("p-treeselect-clear-icon"), "a disabled field has no clear icon: {html}");
 }
 
 #[test]
@@ -115,10 +115,10 @@ fn style_class_and_pt() {
 
 #[test]
 fn value_view_replaces_the_label() {
-    let view_cb = Callback::new(|nodes: Vec<TreeNode>| view! { <b class="custom">{format!("{} выбрано", nodes.len())}</b> }.into_any());
+    let view_cb = Callback::new(|nodes: Vec<TreeNode>| view! { <b class="custom">{format!("{} selected", nodes.len())}</b> }.into_any());
     let html = render(|| {
         let value = RwSignal::new(vec!["1".to_owned()]);
         view! { <TreeSelect options=options() value=value value_view=view_cb /> }.to_html()
     });
-    assert!(html.contains("class=\"custom\"") && html.contains("1 выбрано") && !html.contains(">Events<"), "{html}");
+    assert!(html.contains("class=\"custom\"") && html.contains("1 selected") && !html.contains(">Events<"), "{html}");
 }

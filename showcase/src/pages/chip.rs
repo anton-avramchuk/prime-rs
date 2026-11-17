@@ -1,6 +1,6 @@
-//! Страница Chip: демонстрации `basic`, `icon`, `image`, `template` из showcase PrimeNG (`apps/showcase/doc/chip`).
+//! Chip page: the `basic`, `icon`, `image`, `template` demos from the PrimeNG showcase (`apps/showcase/doc/chip`).
 //!
-//! Иконки брендов (`pi-apple`, `pi-facebook`, …) заменены иконками из `prime-icons`; изображения берутся с CDN PrimeNG, как в оригинале.
+//! Brand icons (`pi-apple`, `pi-facebook`, …) are replaced by icons from `prime-icons`; images are taken from the PrimeNG CDN, as in the original.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -13,7 +13,7 @@ fn icon<V: IntoView + 'static>(f: impl Fn() -> V + Send + Sync + 'static) -> Vie
 
 const AVATARS: &str = "https://primefaces.org/cdn/primeng/images/demo/avatar";
 
-/// Страница `/chip`.
+/// `/chip` page.
 #[component]
 pub fn ChipPage() -> impl IntoView {
     view! {

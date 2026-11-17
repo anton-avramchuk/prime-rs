@@ -1,13 +1,13 @@
-//! Страница FloatLabel: демонстрации `basic`, `variants`, `invalid` по `apps/showcase/doc/floatlabel` PrimeNG.
+//! FloatLabel page: the `basic`, `variants`, `invalid` demos from `apps/showcase/doc/floatlabel` in PrimeNG.
 //!
-//! Демонстрации с Angular Forms не переносятся; в `invalid` состояние следует за пустотой поля.
+//! Demos with Angular Forms are not ported; in `invalid` the state follows whether the field is empty.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_floatlabel::{FloatLabel, FloatLabelVariant};
 use prime_inputtext::InputText;
 
-/// Страница `/floatlabel`.
+/// `/floatlabel` page.
 #[component]
 pub fn FloatLabelPage() -> impl IntoView {
     let invalid_value = RwSignal::new(String::new());

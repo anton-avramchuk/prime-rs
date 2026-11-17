@@ -1,6 +1,6 @@
-//! Поведение Tree в реальном браузере (wasm-bindgen-test): раскрытие, выбор во всех режимах, флажки, фильтр, клавиатура и события.
+//! Tree behaviour in a real browser (wasm-bindgen-test): expansion, selection in all modes, checkboxes, filter, keyboard and events.
 //!
-//! Сценарии идут одним последовательным тестом: фокус общий на страницу. Стили темы не подключены.
+//! Scenarios run as one sequential test: focus is shared across the page. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -27,7 +27,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}: {}", host.outer_html())).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -45,7 +45,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться.
+/// Lets the effects apply.
 async fn settle() {
     sleep(40).await;
 }
@@ -70,7 +70,7 @@ fn active_key() -> Option<String> {
     doc().active_element().and_then(|e| e.get_attribute("data-id"))
 }
 
-/// Нажатие клавиши на узле и ожидание реактивных обновлений.
+/// Key press on a node and waiting for reactive updates.
 async fn key(el: &HtmlElement, code: &str, key: &str) {
     let init = KeyboardEventInit::new();
     init.set_code(code);
@@ -114,11 +114,11 @@ async fn toggling_expands_and_collapses() {
     assert!(has(&host, "li[data-id=\"a11\"]"));
     toggle(&host, "a").click();
     settle().await;
-    assert!(!has(&host, "li[data-id=\"a1\"]"), "свёрнутый узел скрывает детей");
+    assert!(!has(&host, "li[data-id=\"a1\"]"), "a collapsed node hides its children");
     assert_eq!(log.lock().unwrap().as_slice(), ["expand:a", "expand:a1", "collapse:a"]);
     toggle(&host, "a").click();
     settle().await;
-    assert!(has(&host, "li[data-id=\"a11\"]"), "раскрытие вложенного узла сохраняется");
+    assert!(has(&host, "li[data-id=\"a11\"]"), "expansion of a nested node is preserved");
     host.remove();
 }
 
@@ -135,14 +135,14 @@ async fn single_and_multiple_selection() {
     assert_eq!(sel.get_untracked(), ["b"]);
     assert_eq!(attr(&node(&host, "b"), "aria-selected").as_deref(), Some("true"));
     assert!(content(&host, "b").class_name().contains("p-tree-node-selected"));
-    assert_eq!(attr(&node(&host, "b"), "tabindex").as_deref(), Some("0"), "выбранный узел — точка входа");
+    assert_eq!(attr(&node(&host, "b"), "tabindex").as_deref(), Some("0"), "the selected node is the entry point");
     toggle(&host, "a").click();
     settle().await;
-    assert_eq!(sel.get_untracked(), ["b"], "клик по кнопке раскрытия выбор не меняет");
+    assert_eq!(sel.get_untracked(), ["b"], "click on the toggle button does not change the selection");
     content(&host, "a").click();
-    assert_eq!(sel.get_untracked(), ["a"], "единичный выбор заменяет");
+    assert_eq!(sel.get_untracked(), ["a"], "single selection replaces");
     content(&host, "a").click();
-    assert!(sel.get_untracked().is_empty(), "повторный клик снимает");
+    assert!(sel.get_untracked().is_empty(), "repeated click deselects");
     assert_eq!(log.lock().unwrap().as_slice(), ["select:b", "select:a", "unselect:a"]);
     host.remove();
 
@@ -174,18 +174,18 @@ async fn checkbox_selection_propagates() {
     assert_eq!(
         attr(&q(&host, "li[data-id=\"a1\"] .p-tree-node-checkbox"), "data-p-partialchecked").as_deref(),
         Some("true"),
-        "родитель частично выбран"
+        "parent is partially selected"
     );
     assert!(q(&host, "li[data-id=\"a1\"] .p-tree-node-checkbox").class_name().contains("p-checkbox-checked"));
     content(&host, "a12").click();
     settle().await;
-    assert_eq!(attr(&node(&host, "a1"), "aria-checked").as_deref(), Some("true"), "выбраны все дети — выбран родитель");
+    assert_eq!(attr(&node(&host, "a1"), "aria-checked").as_deref(), Some("true"), "all children selected — parent selected");
     content(&host, "a2").click();
     settle().await;
     assert_eq!(attr(&node(&host, "a"), "aria-checked").as_deref(), Some("true"));
     content(&host, "a").click();
     settle().await;
-    assert!(sel.get_untracked().is_empty(), "снятие предка снимает всё поддерево");
+    assert!(sel.get_untracked().is_empty(), "deselecting an ancestor deselects the whole subtree");
     host.remove();
 }
 
@@ -199,8 +199,8 @@ async fn filter_narrows_the_tree() {
     input.set_value("gre");
     input.dispatch_event(&web_sys::Event::new("input").unwrap()).unwrap();
     settle().await;
-    assert!(has(&host, "li[data-id=\"a12\"]"), "совпавший вложенный узел виден, предки раскрыты");
-    assert!(!has(&host, "li[data-id=\"b\"]") && !has(&host, "li[data-id=\"a11\"]"), "остальное скрыто");
+    assert!(has(&host, "li[data-id=\"a12\"]"), "matching nested node is visible, ancestors expanded");
+    assert!(!has(&host, "li[data-id=\"b\"]") && !has(&host, "li[data-id=\"a11\"]"), "the rest is hidden");
     assert_eq!(count(&host, ".p-tree-empty-message"), 0);
     input.set_value("zzz");
     input.dispatch_event(&web_sys::Event::new("input").unwrap()).unwrap();
@@ -209,7 +209,7 @@ async fn filter_narrows_the_tree() {
     input.set_value("");
     input.dispatch_event(&web_sys::Event::new("input").unwrap()).unwrap();
     settle().await;
-    assert!(has(&host, "li[data-id=\"b\"]") && has(&host, "li[data-id=\"c\"]"), "пустое поле возвращает дерево");
+    assert!(has(&host, "li[data-id=\"b\"]") && has(&host, "li[data-id=\"c\"]"), "empty field restores the tree");
     assert_eq!(log.lock().unwrap().as_slice(), ["gre", "zzz", ""]);
     host.remove();
 
@@ -223,7 +223,7 @@ async fn filter_narrows_the_tree() {
     input.set_value("apple");
     input.dispatch_event(&web_sys::Event::new("input").unwrap()).unwrap();
     settle().await;
-    assert!(has(&host, "li[data-id=\"a1\"]") && !has(&host, "li[data-id=\"a11\"]"), "strict: у совпавшего узла нет несовпавших детей");
+    assert!(has(&host, "li[data-id=\"a1\"]") && !has(&host, "li[data-id=\"a11\"]"), "strict: a matching node has no non-matching children");
     host.remove();
 }
 
@@ -240,8 +240,8 @@ async fn keyboard_walks_the_tree() {
     node(&host, "a").focus().unwrap();
     key(&node(&host, "a"), "ArrowRight", "ArrowRight").await;
     settle().await;
-    assert!(has(&host, "li[data-id=\"a1\"]"), "→ раскрывает узел");
-    assert_eq!(active_key().as_deref(), Some("a1"), "и переходит к первому ребёнку");
+    assert!(has(&host, "li[data-id=\"a1\"]"), "→ expands the node");
+    assert_eq!(active_key().as_deref(), Some("a1"), "and moves to the first child");
     assert_eq!(attr(&node(&host, "a1"), "tabindex").as_deref(), Some("0"), "roving tabindex");
     assert_eq!(attr(&node(&host, "a"), "tabindex").as_deref(), Some("-1"));
     key(&node(&host, "a1"), "ArrowDown", "ArrowDown").await;
@@ -250,18 +250,18 @@ async fn keyboard_walks_the_tree() {
     assert_eq!(active_key().as_deref(), Some("b"));
     key(&node(&host, "b"), "ArrowUp", "ArrowUp").await;
     key(&node(&host, "a2"), "ArrowLeft", "ArrowLeft").await;
-    assert_eq!(active_key().as_deref(), Some("a"), "← на листе — к родителю");
+    assert_eq!(active_key().as_deref(), Some("a"), "← on a leaf — to the parent");
     key(&node(&host, "a"), "ArrowLeft", "ArrowLeft").await;
     settle().await;
-    assert!(!has(&host, "li[data-id=\"a1\"]"), "← на раскрытом сворачивает");
+    assert!(!has(&host, "li[data-id=\"a1\"]"), "← on an expanded node collapses it");
     key(&node(&host, "a"), "End", "End").await;
     assert_eq!(active_key().as_deref(), Some("c"));
     key(&node(&host, "c"), "Home", "Home").await;
     assert_eq!(active_key().as_deref(), Some("a"));
     key(&node(&host, "a"), "Enter", "Enter").await;
-    assert_eq!(sel.get_untracked(), ["a"], "Enter выбирает");
+    assert_eq!(sel.get_untracked(), ["a"], "Enter selects");
     key(&node(&host, "a"), "Space", " ").await;
-    assert!(sel.get_untracked().is_empty(), "Space снимает");
+    assert!(sel.get_untracked().is_empty(), "Space deselects");
     assert_eq!(log.lock().unwrap().as_slice(), ["select:a"]);
     host.remove();
 }
@@ -283,7 +283,7 @@ async fn lazy_nodes_and_double_click() {
     settle().await;
     toggle(&host, "0").click();
     settle().await;
-    assert!(has(&host, "li[data-id=\"0-0\"]"), "дети, добавленные после раскрытия, появились");
+    assert!(has(&host, "li[data-id=\"0-0\"]"), "children added after expansion appeared");
     assert!(has(&host, "li[data-id=\"0-0\"]") && attr(&node(&host, "0"), "aria-expanded").as_deref() == Some("true"));
     content(&host, "1").dispatch_event(&web_sys::MouseEvent::new("dblclick").unwrap()).unwrap();
     assert_eq!(log.lock().unwrap().as_slice(), ["expand:0", "dbl:1"]);

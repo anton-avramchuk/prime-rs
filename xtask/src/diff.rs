@@ -1,13 +1,13 @@
-//! `upstream-diff`: какие портированные компоненты изменились в PrimeNG.
+//! `upstream-diff`: which ported components changed in PrimeNG.
 
 use std::collections::BTreeSet;
 use std::path::Path;
 use std::process::Command;
 
-/// Крейты, которые не являются портами компонентов.
+/// Crates that are not component ports.
 const INFRA: &[&str] = &["core", "dom", "theme", "icons"];
 
-/// Имена портированных компонентов: `crates/prime-<name>` без инфраструктурных крейтов.
+/// Names of ported components: `crates/prime-<name>` without infrastructure crates.
 pub fn ported_components(root: &Path) -> Vec<String> {
     let Ok(entries) = std::fs::read_dir(root.join("crates")) else {
         return Vec::new();
@@ -22,7 +22,7 @@ pub fn ported_components(root: &Path) -> Vec<String> {
     names
 }
 
-/// Компоненты из `ported`, у которых между `from` и `to` менялись файлы в `packages/primeng/src/<name>/`.
+/// Components from `ported` whose files changed between `from` and `to` in `packages/primeng/src/<name>/`.
 pub fn changed_components(repo: &Path, from: &str, to: &str, ported: &[String]) -> Result<Vec<String>, String> {
     let out = Command::new("git")
         .current_dir(repo)

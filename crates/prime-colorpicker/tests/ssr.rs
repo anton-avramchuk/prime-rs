@@ -1,4 +1,4 @@
-//! Разметка ColorPicker (SSR): образец, закрытая и встроенная панель, положение указателей, формат, блокировка, `pt`.
+//! ColorPicker markup (SSR): swatch, closed and embedded panel, pointer positions, format, disabled state, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -16,7 +16,7 @@ fn closed_picker_has_preview_and_no_panel() {
     assert!(html.contains("p-colorpicker p-component p-colorpicker-overlay"), "{html}");
     assert!(html.contains("class=\"p-colorpicker-preview\"") && html.contains("readonly") && html.contains("id=\"cp\""), "{html}");
     assert!(html.contains("aria-label=\"Select Color\"") && html.contains("tabindex=\"2\""), "{html}");
-    assert!(html.contains("background-color:#ff0000"), "по умолчанию красный: {html}");
+    assert!(html.contains("background-color:#ff0000"), "red by default: {html}");
     assert!(!html.contains("p-colorpicker-panel"), "{html}");
 }
 
@@ -33,7 +33,7 @@ fn inline_picker_has_panel_and_no_preview() {
         "p-colorpicker-hue",
         "p-colorpicker-hue-handle",
     ] {
-        assert!(html.contains(part), "нет {part}: {html}");
+        assert!(html.contains(part), "no {part}: {html}");
     }
 }
 
@@ -43,9 +43,9 @@ fn handles_follow_the_value() {
         let value = RwSignal::new(Some(ColorValue::Hex("#00ff00".into())));
         view! { <ColorPicker inline=true value=value /> }.to_html()
     });
-    // зелёный: h = 120, s = 100 (с точностью до округления), b = 100
-    assert!(html.contains("top: 0px") && html.contains("top: 100px"), "указатель шкалы на 120° → 100px: {html}");
-    assert!(html.contains("background-color:#00ff00"), "фон поля — чистый оттенок: {html}");
+    // green: h = 120, s = 100 (up to rounding), b = 100
+    assert!(html.contains("top: 0px") && html.contains("top: 100px"), "scale pointer at 120° → 100px: {html}");
+    assert!(html.contains("background-color:#00ff00"), "field background is the pure hue: {html}");
 }
 
 #[test]

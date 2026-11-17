@@ -1,10 +1,10 @@
-//! Chip — порт `p-chip` из PrimeNG 21.1.10.
+//! Chip — port of `p-chip` from PrimeNG 21.1.10.
 //!
-//! Разметка, классы и `data-p` совпадают с PrimeNG; вместо хост-элемента `<p-chip>` отрисовывается `<div class="p-chip …">`.
-//! Удаляемый Chip скрывается (`display: none`) по клику на элемент удаления и по клавишам Enter и Backspace и вызывает `on_remove`.
+//! Markup, classes and `data-p` match PrimeNG; instead of the host element `<p-chip>` a `<div class="p-chip …">` is rendered.
+//! A removable Chip is hidden (`display: none`) on a click on the remove element and on the Enter and Backspace keys, and calls `on_remove`.
 //!
-//! Свойства — [`Prop`]/[`OptProp`]; если все они статические и Chip не удаляемый, компонент рисует готовые значения
-//! без замыканий и `RenderEffect` (удаляемому нужно внутреннее состояние видимости, поэтому он идёт реактивным путём).
+//! Properties are [`Prop`]/[`OptProp`]; if all of them are static and the Chip is not removable, the component renders ready values
+//! without closures and `RenderEffect` (a removable one needs internal visibility state, so it takes the reactive path).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -25,63 +25,63 @@ use std::sync::Arc;
 
 pub use state::{ChipState, data_p, is_remove_key, write_classes};
 
-/// Pass-through частей Chip.
+/// Pass-through for the parts of Chip.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ChipPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Изображение (`img.p-chip-image`).
+    /// Image (`img.p-chip-image`).
     pub image: Pt,
-    /// Иконка (`span.p-chip-icon`).
+    /// Icon (`span.p-chip-icon`).
     pub icon: Pt,
-    /// Метка (`div.p-chip-label`).
+    /// Label (`div.p-chip-label`).
     pub label: Pt,
-    /// Элемент удаления (`span.p-chip-remove-icon`).
+    /// Remove element (`span.p-chip-remove-icon`).
     pub remove_icon: Pt,
 }
 
-/// Chip: метка, иконка или изображение, удаление.
+/// Chip: label, icon or image, removal.
 ///
-/// Каждое свойство принимает значение или сигнал. `children` выводятся первыми, как проецируемое содержимое в PrimeNG.
+/// Each property accepts a value or a signal. `children` are rendered first, like projected content in PrimeNG.
 #[component]
 pub fn Chip(
-    /// Текст метки.
+    /// Label text.
     #[prop(optional, into)]
     label: OptProp<String>,
-    /// Иконка; выводится в `span.p-chip-icon`, если нет `image`.
+    /// Icon; rendered in `span.p-chip-icon` if there is no `image`.
     #[prop(optional, into)]
     icon: Option<ViewFn>,
-    /// URL изображения; заменяет иконку.
+    /// Image URL; replaces the icon.
     #[prop(optional, into)]
     image: OptProp<String>,
-    /// Альтернативный текст изображения.
+    /// Image alternative text.
     #[prop(optional, into)]
     alt: OptProp<String>,
-    /// Недоступен (`p-disabled`, `tabindex=-1` у элемента удаления).
+    /// Unavailable (`p-disabled`, `tabindex=-1` on the remove element).
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Показывать элемент удаления.
+    /// Whether to show the remove element.
     #[prop(optional, into)]
     removable: Prop<bool>,
-    /// Своя иконка удаления (по умолчанию `TimesCircleIcon`).
+    /// Custom remove icon (default `TimesCircleIcon`).
     #[prop(optional, into)]
     remove_icon: Option<ViewFn>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при удалении (клик, Enter, Backspace) с исходным событием.
+    /// Called on removal (click, Enter, Backspace) with the original event.
     #[prop(optional, into)]
     on_remove: Option<Callback<web_sys::Event>>,
-    /// Вызывается при ошибке загрузки изображения.
+    /// Called when the image fails to load.
     #[prop(optional, into)]
     on_image_error: Option<Callback<web_sys::Event>>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<ChipPt>,
-    /// Содержимое перед изображением, меткой и элементом удаления.
+    /// Content before the image, label and remove element.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -92,7 +92,7 @@ pub fn Chip(
     let attrs = pt.root.attrs();
 
     if is_static {
-        // Статический путь: значения и блоки считаются один раз, замыканий и `RenderEffect` нет.
+        // Static path: values and blocks are computed once, there are no closures and no `RenderEffect`.
         let (class, style, data) = (class_of(&props, &pt), style_of(&props, &pt, true), data_of(&props));
         let (media, label) = (media_of(&props, &pt, on_image_error), label_of(&props, &pt));
         let remove: Option<()> = None;
@@ -125,7 +125,7 @@ pub fn Chip(
     }
 }
 
-/// Разметка Chip: одна для статической и реактивной ветвей (меняются только выражения атрибутов и блоков).
+/// Chip markup: one for the static and reactive branches (only the attribute and block expressions differ).
 macro_rules! chip_markup {
     ($class:expr, $style:expr, $data:expr, $attrs:expr, $content:expr, $media:expr, $label:expr, $remove:expr) => {
         view! {
@@ -152,7 +152,7 @@ fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&ChipState { disabled: props.disabled.get(), removable: props.removable.get() })
 }
 
-/// Встроенный стиль корня: `display: none` после удаления, затем `style` и стиль из `pt`.
+/// Inline style of the root: `display: none` after removal, then `style` and the style from `pt`.
 fn style_of(props: &Props, pt: &ChipPt, visible: bool) -> Option<String> {
     props.style.with(|st| {
         if st.is_none() && visible && !pt.root.has_style() {
@@ -163,7 +163,7 @@ fn style_of(props: &Props, pt: &ChipPt, visible: bool) -> Option<String> {
     })
 }
 
-/// Изображение, а при его отсутствии иконка.
+/// Image, or the icon if there is no image.
 fn media_of(props: &Props, pt: &ChipPt, on_image_error: Option<Callback<web_sys::Event>>) -> Option<impl IntoView + use<>> {
     if let Some(src) = props.image.get().filter(|s| !s.is_empty()) {
         let alt = props.alt.get();
@@ -188,7 +188,7 @@ fn media_of(props: &Props, pt: &ChipPt, on_image_error: Option<Callback<web_sys:
     }
 }
 
-/// Метка (`None`, если пуста).
+/// Label (`None` if empty).
 fn label_of(props: &Props, pt: &ChipPt) -> Option<impl IntoView + use<>> {
     props
         .label
@@ -197,7 +197,7 @@ fn label_of(props: &Props, pt: &ChipPt) -> Option<impl IntoView + use<>> {
         .map(|label| view! { <div class=pt.label.merge_class("p-chip-label") {..pt.label.attrs()}>{label}</div> })
 }
 
-/// Элемент удаления: `role="button"`, подпись из локали, клик и клавиши Enter и Backspace.
+/// Remove element: `role="button"`, label from the locale, click and the Enter and Backspace keys.
 fn remove_of(props: &Props, pt: &ChipPt, visible: RwSignal<bool>, on_remove: Option<Callback<web_sys::Event>>) -> impl IntoView + use<> {
     let aria = use_prime_config().locale.text("aria.removeLabel").to_owned();
     let tabindex = if props.disabled.get() { -1 } else { 0 };
@@ -232,7 +232,7 @@ fn remove_of(props: &Props, pt: &ChipPt, visible: RwSignal<bool>, on_remove: Opt
     }
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     label: OptProp<String>,
     image: OptProp<String>,

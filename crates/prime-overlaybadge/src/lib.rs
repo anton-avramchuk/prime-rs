@@ -1,7 +1,7 @@
-//! OverlayBadge — порт `p-overlaybadge` из PrimeNG 21.1.10.
+//! OverlayBadge — port of `p-overlaybadge` from PrimeNG 21.1.10.
 //!
-//! Корень `div.p-overlaybadge` (вместо хоста `<p-overlaybadge>`) с дочерним содержимым и вложенным [`Badge`].
-//! `style_class` и `style` относятся к бейджу, как в PrimeNG; положение бейджа в углу задаёт CSS темы.
+//! Root `div.p-overlaybadge` (instead of the host `<p-overlaybadge>`) with child content and a nested [`Badge`].
+//! `style_class` and `style` apply to the badge, as in PrimeNG; the corner position of the badge is set by the theme CSS.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -17,42 +17,42 @@ use prime_core::{OptProp, Prop, Pt};
 
 pub use prime_badge::{BadgeSeverity, BadgeSize};
 
-/// Pass-through частей OverlayBadge.
+/// Pass-through for the parts of OverlayBadge.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct OverlayBadgePt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Вложенный бейдж.
+    /// Nested badge.
     pub pc_badge: BadgePt,
 }
 
-/// Бейдж, наложенный на правый верхний угол содержимого.
+/// Badge overlaid on the top-right corner of the content.
 ///
-/// Каждое свойство принимает значение или сигнал; `style` читается один раз при создании.
+/// Each property accepts a value or a signal; `style` is read once at creation.
 #[component]
 pub fn OverlayBadge(
-    /// Значение бейджа; без значения бейдж — точка.
+    /// Badge value; without a value the badge is a dot.
     #[prop(optional, into)]
     value: OptProp<String>,
-    /// Серьёзность бейджа.
+    /// Badge severity.
     #[prop(optional, into)]
     severity: OptProp<BadgeSeverity>,
-    /// Размер бейджа.
+    /// Badge size.
     #[prop(optional, into)]
     badge_size: OptProp<BadgeSize>,
-    /// Скрыть бейдж, оставив содержимое.
+    /// Hide the badge, leaving the content.
     #[prop(optional, into)]
     badge_disabled: Prop<bool>,
-    /// Дополнительный класс бейджа.
+    /// Extra class of the badge.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Встроенный стиль бейджа.
+    /// Inline style of the badge.
     #[prop(optional, into)]
     style: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<OverlayBadgePt>,
-    /// Содержимое, на которое накладывается бейдж.
+    /// Content the badge is overlaid on.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {

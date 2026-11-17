@@ -1,15 +1,15 @@
-//! Button — порт `p-button` из PrimeNG 21.1.10.
+//! Button — port of `p-button` from PrimeNG 21.1.10.
 //!
-//! Классы, `data-p*` и порядок содержимого (`children`, иконка или индикатор загрузки, метка, бейдж) совпадают с PrimeNG.
-//! Вместо хост-элемента `<p-button>` отрисовывается только `<button>`: CSS темы привязан к классам, а не к тегу.
-//! Свойства — [`Prop`]/[`OptProp`]: значение не создаёт реактивных примитивов, сигнал подписывает атрибуты.
-//! Иконка передаётся как `ViewFn` (например, `<CheckIcon />` из `prime-icons`), а не именем класса шрифта.
+//! Classes, `data-p*` and content order (`children`, icon or loading indicator, label, badge) match PrimeNG.
+//! Instead of the host element `<p-button>`, only `<button>` is rendered: the theme CSS is bound to classes, not to the tag.
+//! Properties are [`Prop`]/[`OptProp`]: a static value creates no reactive primitives, a signal subscribes the attributes.
+//! The icon is passed as `ViewFn` (for example `<CheckIcon />` from `prime-icons`), not as a font class name.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_button::{Button, ButtonSeverity};
 //!
-//! let html = view! { <Button label="Сохранить" severity=ButtonSeverity::Success /> }.to_html();
+//! let html = view! { <Button label="Save" severity=ButtonSeverity::Success /> }.to_html();
 //! assert!(html.contains("p-button-success") && html.contains("p-button-label"));
 //! ```
 
@@ -32,27 +32,27 @@ pub use state::{
     write_root_classes,
 };
 
-/// Pass-through частей Button: классы и атрибуты добавляются к собственным, не заменяя их.
+/// Pass-through for the parts of Button: classes and attributes are added to the built-in ones, not replacing them.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ButtonPt {
-    /// Корневой `<button>`.
+    /// Root `<button>`.
     pub root: Pt,
-    /// Метка (`span.p-button-label`).
+    /// Label (`span.p-button-label`).
     pub label: Pt,
-    /// Оболочка иконки (`span.p-button-icon`).
+    /// Icon wrapper (`span.p-button-icon`).
     pub icon: Pt,
-    /// Индикатор загрузки (`.p-button-loading-icon`).
+    /// Loading indicator (`.p-button-loading-icon`).
     pub loading_icon: Pt,
-    /// Бейдж (корень `Badge`).
+    /// Badge (root of `Badge`).
     pub badge: Pt,
 }
 
-/// Автофокус и ripple: только в браузере (`wasm32`). На сервере DOM нет, поэтому `Effect` не создаётся вовсе
-/// (это также убирает лишние затраты при SSR и не зависит от набора features Leptos).
+/// Autofocus and ripple: browser only (`wasm32`). On the server there is no DOM, so no `Effect` is created at all
+/// (this also avoids extra cost during SSR and does not depend on the Leptos feature set).
 #[cfg(target_arch = "wasm32")]
 fn setup_client(node: NodeRef<leptos::html::Button>, autofocus: bool) {
     let ripple_enabled = use_prime_config().ripple;
-    // Без автофокуса и ripple эффект не нужен: не создаём его вовсе (экономия памяти на каждой кнопке).
+    // Without autofocus and ripple the effect is not needed: do not create it at all (saves memory on every button).
     if !autofocus && !ripple_enabled {
         return;
     }
@@ -69,7 +69,7 @@ fn setup_client(node: NodeRef<leptos::html::Button>, autofocus: bool) {
     on_cleanup(move || ripple.set_value(None));
 }
 
-/// Серьёзность бейджа по умолчанию — `secondary` (как в PrimeNG).
+/// Default badge severity is `secondary` (as in PrimeNG).
 fn badge_severity_or_default(p: &OptProp<BadgeSeverity>) -> OptProp<BadgeSeverity> {
     match p {
         Prop::Static(v) => Prop::Static(Some(v.unwrap_or(BadgeSeverity::Secondary))),
@@ -80,10 +80,10 @@ fn badge_severity_or_default(p: &OptProp<BadgeSeverity>) -> OptProp<BadgeSeverit
     }
 }
 
-/// Кнопка.
+/// Button.
 ///
-/// Каждое свойство принимает значение или сигнал; значение не создаёт реактивных примитивов. Если заданы `children`,
-/// метка и бейдж не выводятся, а `children` идут первыми, как проецируемое содержимое в PrimeNG.
+/// Each property accepts a value or a signal; a value creates no reactive primitives. If `children` are set,
+/// the label and badge are not rendered, and `children` come first, like projected content in PrimeNG.
 ///
 /// ```
 /// use leptos::prelude::*;
@@ -91,106 +91,106 @@ fn badge_severity_or_default(p: &OptProp<BadgeSeverity>) -> OptProp<BadgeSeverit
 /// use prime_core::Pt;
 /// use prime_icons::CheckIcon;
 ///
-/// // иконка справа, бейдж и pass-through метки
+/// // icon on the right, badge and pass-through for the label
 /// let pt = ButtonPt { label: Pt::new().class("my-label"), ..Default::default() };
 /// let html = view! {
-///     <Button label="Готово" icon=ViewFn::from(|| view! { <CheckIcon /> }) icon_pos=IconPos::Right badge="2" pt=pt />
+///     <Button label="Done" icon=ViewFn::from(|| view! { <CheckIcon /> }) icon_pos=IconPos::Right badge="2" pt=pt />
 /// }
 /// .to_html();
 /// assert!(html.contains("p-button-icon-right") && html.contains("my-label") && html.contains("p-badge"));
 ///
-/// // состояние загрузки меняется сигналом
+/// // loading state changed by a signal
 /// let loading = RwSignal::new(true);
-/// let html = view! { <Button label="Отправка" loading=loading /> }.to_html();
+/// let html = view! { <Button label="Sending" loading=loading /> }.to_html();
 /// assert!(html.contains("p-button-loading") && html.contains("disabled"));
 /// ```
 #[component]
 pub fn Button(
-    /// Текст метки.
+    /// Label text.
     #[prop(optional, into)]
     label: OptProp<String>,
-    /// Иконка; выводится в `span.p-button-icon`.
+    /// Icon; rendered in `span.p-button-icon`.
     #[prop(optional, into)]
     icon: Option<ViewFn>,
-    /// Положение иконки.
+    /// Icon position.
     #[prop(optional, into)]
     icon_pos: Prop<IconPos>,
-    /// Идёт загрузка: кнопка недоступна, вместо иконки индикатор.
+    /// Loading: the button is unavailable, an indicator is shown instead of the icon.
     #[prop(optional, into)]
     loading: Prop<bool>,
-    /// Свой индикатор загрузки (по умолчанию `SpinnerIcon`).
+    /// Custom loading indicator (default `SpinnerIcon`).
     #[prop(optional, into)]
     loading_icon: Option<ViewFn>,
-    /// Серьёзность.
+    /// Severity.
     #[prop(optional, into)]
     severity: OptProp<ButtonSeverity>,
-    /// Вид: с рамкой или текстовая.
+    /// Variant: outlined or text.
     #[prop(optional, into)]
     variant: OptProp<ButtonVariant>,
-    /// Текстовая кнопка.
+    /// Text button.
     #[prop(optional, into)]
     text: Prop<bool>,
-    /// Кнопка с рамкой.
+    /// Outlined button.
     #[prop(optional, into)]
     outlined: Prop<bool>,
-    /// Простой текст.
+    /// Plain text.
     #[prop(optional, into)]
     plain: Prop<bool>,
-    /// Ссылка.
+    /// Link.
     #[prop(optional, into)]
     link: Prop<bool>,
-    /// С тенью.
+    /// With shadow.
     #[prop(optional, into)]
     raised: Prop<bool>,
-    /// Скруглённая.
+    /// Rounded.
     #[prop(optional, into)]
     rounded: Prop<bool>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину контейнера.
+    /// Full width of the container.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Значение бейджа.
+    /// Badge value.
     #[prop(optional, into)]
     badge: OptProp<String>,
-    /// Серьёзность бейджа (по умолчанию `secondary`).
+    /// Badge severity (default `secondary`).
     #[prop(optional, into)]
     badge_severity: OptProp<BadgeSeverity>,
-    /// Недоступна.
+    /// Unavailable.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Атрибут `type` (по умолчанию `button`).
+    /// `type` attribute (default `button`).
     #[prop(optional, into)]
     button_type: OptProp<String>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `tabindex`.
+    /// `tabindex` attribute.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Получить фокус после монтирования в браузере (на сервере не выставляется).
+    /// Receive focus after mounting in the browser (not set on the server).
     #[prop(optional)]
     autofocus: bool,
-    /// Вызывается при клике на доступную кнопку.
+    /// Called on click of an available button.
     #[prop(optional, into)]
     on_click: Option<Callback<web_sys::MouseEvent>>,
-    /// Вызывается при получении фокуса.
+    /// Called when focus is received.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса.
+    /// Called when focus is lost.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<ButtonPt>,
-    /// Содержимое вместо метки и бейджа.
+    /// Content instead of the label and badge.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -224,7 +224,7 @@ pub fn Button(
     );
     let has_icon = icon.is_some() || loading_icon.is_some();
 
-    // Все свойства в одном `Arc`: замыкания атрибутов клонируют счётчик ссылок, а не строки значений.
+    // All properties in one `Arc`: attribute closures clone the reference counter, not the value strings.
     let props = Props {
         label,
         badge,
@@ -253,14 +253,14 @@ pub fn Button(
         has_children,
     };
 
-    // `NodeRef` нужен только клиенту (автофокус, ripple): при SSR его не создаём вовсе.
+    // `NodeRef` is needed only by the client (autofocus, ripple): it is not created at all during SSR.
     #[cfg(target_arch = "wasm32")]
     let node = {
         let node = NodeRef::<leptos::html::Button>::new();
         setup_client(node, autofocus);
         leptos::tachys::html::node_ref::node_ref::<leptos::html::Button, _>(node)
     };
-    // `()` — пустой атрибут вместо `node_ref`, чтобы разметка была общей для обеих целей.
+    // `()` — an empty attribute instead of `node_ref`, so the markup is shared by both targets.
     #[cfg(not(target_arch = "wasm32"))]
     #[allow(clippy::let_unit_value)]
     let node = {
@@ -280,7 +280,7 @@ pub fn Button(
     let attrs = pt.root.attrs();
 
     if is_static {
-        // Статический путь: значения и блоки считаются один раз, замыканий и `RenderEffect` нет.
+        // Static path: values and blocks are computed once, there are no closures and no `RenderEffect`.
         let off = props.is_disabled();
         let click = move |e: web_sys::MouseEvent| {
             if let (Some(cb), false) = (on_click, off) {
@@ -389,7 +389,7 @@ pub fn Button(
     }
 }
 
-/// Разметка Button: одна для статической и реактивной ветвей (меняются только выражения атрибутов и блоков).
+/// Button markup: one for the static and reactive branches (only the attribute and block expressions differ).
 macro_rules! button_markup {
     (
         $ty:expr, $class:expr, $style:expr, $aria:expr, $tab:expr, $disabled:expr, $node:expr, $click:expr, $focus:expr, $blur:expr,
@@ -443,7 +443,7 @@ fn type_of(props: &Props) -> Cow<'static, str> {
     props.button_type.with(|t| t.as_deref().map_or(Cow::Borrowed("button"), |s| Cow::Owned(s.to_owned())))
 }
 
-/// Иконка или индикатор загрузки.
+/// Icon or loading indicator.
 fn indicator_of(props: &Props, pt: &ButtonPt) -> impl IntoView + use<> {
     if props.loading.get() {
         match props.loading_icon.clone() {
@@ -468,7 +468,7 @@ fn indicator_of(props: &Props, pt: &ButtonPt) -> impl IntoView + use<> {
     }
 }
 
-/// Метка (`None`, если есть `children` или метка пуста).
+/// Label (`None` if there are `children` or the label is empty).
 fn label_of(props: &Props, pt: &ButtonPt) -> Option<impl IntoView + use<>> {
     if props.has_children {
         return None;
@@ -481,14 +481,14 @@ fn label_of(props: &Props, pt: &ButtonPt) -> Option<impl IntoView + use<>> {
     })
 }
 
-/// Бейдж (`None`, если есть `children` или бейдж пуст).
+/// Badge (`None` if there are `children` or the badge is empty).
 fn badge_of(props: &Props, pt: &ButtonPt) -> Option<impl IntoView + use<>> {
     let present = !props.has_children && props.with_state(|s| s.has_badge());
     present
         .then(|| view! { <Badge value=props.badge.clone() severity=props.badge_severity.clone() pt=BadgePt { root: pt.badge.clone() } /> })
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     label: OptProp<String>,
     badge: OptProp<String>,
@@ -518,12 +518,12 @@ struct Props {
 }
 
 impl Props {
-    /// Недоступна: `disabled` или идёт загрузка.
+    /// Unavailable: `disabled` or loading.
     fn is_disabled(&self) -> bool {
         self.disabled.get() || self.loading.get()
     }
 
-    /// Вызывает `f` с заимствованным снимком состояния (без копирования строк).
+    /// Calls `f` with a borrowed state snapshot (no string copies).
     fn with_state<R>(&self, f: impl FnOnce(&ButtonState) -> R) -> R {
         self.label.with(|l| {
             self.badge.with(|b| {

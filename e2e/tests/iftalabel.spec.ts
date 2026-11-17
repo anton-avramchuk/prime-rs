@@ -7,13 +7,13 @@ test.describe('IftaLabel', () => {
         await expect(page.locator('[data-demo=basic] .p-iftalabel')).toBeVisible();
     });
 
-    test('демонстрации и разметка', async ({ page }) => {
+    test('demos and markup', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(2);
         const root = page.locator('[data-demo=basic] .p-iftalabel');
         expect(await root.evaluate((el) => [...el.children].map((c) => c.tagName.toLowerCase()))).toEqual(['input', 'label']);
     });
 
-    test('метка внутри границ поля над значением', async ({ page }) => {
+    test('the label is inside the field bounds above the value', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         const label = (await demo.locator('label').boundingBox())!;
         const field = (await demo.locator('input').boundingBox())!;
@@ -22,7 +22,7 @@ test.describe('IftaLabel', () => {
         expect(label.x).toBeGreaterThanOrEqual(field.x);
     });
 
-    test('метка не двигается при фокусе', async ({ page }) => {
+    test('the label does not move on focus', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         const before = (await demo.locator('label').boundingBox())!.y;
         await demo.locator('input').focus();
@@ -30,7 +30,7 @@ test.describe('IftaLabel', () => {
         expect((await demo.locator('label').boundingBox())!.y).toBeCloseTo(before, 0);
     });
 
-    test('invalid: класс p-invalid следует за пустотой поля', async ({ page }) => {
+    test('invalid: the p-invalid class follows whether the field is empty', async ({ page }) => {
         const input = page.locator('[data-demo=invalid] input');
         await expect(input).toHaveClass(/p-invalid/);
         await input.fill('x');

@@ -1,4 +1,4 @@
-//! Разметка PickList (SSR): пять блоков, кнопки и их состояние, заголовки, поиск, `pt`.
+//! PickList markup (SSR): five blocks, buttons and their state, headers, search, `pt`.
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 
@@ -15,9 +15,9 @@ fn list(names: &[&str]) -> RwSignal<Vec<ListboxOption>> {
     RwSignal::new(names.iter().map(|n| ListboxOption::new(*n, n.to_lowercase())).collect())
 }
 
-/// Открывающий тег элемента, в котором встречается подстрока.
+/// Opening tag of the element that contains the substring.
 fn tag_of<'a>(html: &'a str, needle: &str) -> &'a str {
-    let at = html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"));
+    let at = html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"));
     let start = html[..at].rfind('<').unwrap();
     let end = at + html[at..].find('>').unwrap();
     &html[start..=end]
@@ -34,10 +34,10 @@ fn five_blocks_in_order() {
         "p-picklist-target-list-container",
         "p-picklist-target-controls",
     ];
-    let positions: Vec<usize> = order.iter().map(|c| html.find(c).unwrap_or_else(|| panic!("нет {c}: {html}"))).collect();
+    let positions: Vec<usize> = order.iter().map(|c| html.find(c).unwrap_or_else(|| panic!("no {c}: {html}"))).collect();
     assert!(positions.windows(2).all(|w| w[0] < w[1]), "{positions:?}");
     assert!(html.contains("Apple") && html.contains("Pear"), "{html}");
-    assert_eq!(html.matches("p-listbox p-component").count(), 2, "два списка: {html}");
+    assert_eq!(html.matches("p-listbox p-component").count(), 2, "two lists: {html}");
 }
 
 #[test]
@@ -47,9 +47,9 @@ fn button_states_without_selection() {
         assert_eq!(html.matches(&format!("aria-label=\"{label}\"")).count(), 2, "{label}: {html}");
     }
     for label in ["Move to Target", "Move to Source", "Move All to Source"] {
-        assert!(tag_of(&html, &format!("aria-label=\"{label}\"")).contains("disabled"), "{label} должна быть недоступна: {html}");
+        assert!(tag_of(&html, &format!("aria-label=\"{label}\"")).contains("disabled"), "{label} must be disabled: {html}");
     }
-    assert!(!tag_of(&html, "aria-label=\"Move All to Target\"").contains("disabled"), "в источнике есть элементы: {html}");
+    assert!(!tag_of(&html, "aria-label=\"Move All to Target\"").contains("disabled"), "the source has items: {html}");
 }
 
 #[test]

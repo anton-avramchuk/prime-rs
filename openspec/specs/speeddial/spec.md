@@ -1,57 +1,57 @@
 # speeddial Specification
 
 ## Purpose
-SpeedDial показывает плавающую кнопку, которая по нажатию раскрывает набор быстрых действий по прямой или по дуге вокруг неё.
+SpeedDial shows a floating button that reveals a set of quick actions on press, in a line or along an arc around it.
 
 ## Requirements
 
-### Requirement: Разметка
-`SpeedDial` крейта `prime-speeddial` SHALL выводить `div.p-speeddial.p-component.p-speeddial-<type>` (`type` — `linear`, `circle`, `semi-circle`, `quarter-circle`; для типов кроме `circle` — ещё `p-speeddial-direction-<direction>`; `p-speeddial-open` при показе; `p-disabled` при `disabled`; `style`, `style_class`, `pt`) с кнопкой переключения `button.p-button.p-button-icon-only.p-speeddial-button.p-button-rounded` (`p-speeddial-rotate`, если вращение включено и нет `hide_icon`; `aria-expanded`, `aria-haspopup="true"`, `aria-controls="<id>_list"`, `aria-label`, `aria-labelledby`, `disabled`) со значком «плюс» или `show_icon`/`hide_icon`, и списком `ul.p-speeddial-list[role=menu]` (`id="<id>_list"`, `tabindex="-1"`, `aria-activedescendant` пока список в фокусе и есть пункт под фокусом). Каждый пункт модели SHALL выводиться как `li.p-speeddial-item[role=menuitem]` с `id="<id>_<индекс>"`, `p-hidden` (у `visible = false`), `p-focus`, `data-p-active` и кнопкой `p-speeddial-action` (вторичная, круглая, малая) со значком, `aria-label` из `label` и `disabled`. Идентификатор `id` SHALL по умолчанию быть уникальным. При `mask` и показе SHALL выводиться `div.p-speeddial-mask.p-overlay-mask`.
+### Requirement: Markup
+`SpeedDial` of the `prime-speeddial` crate SHALL render `div.p-speeddial.p-component.p-speeddial-<type>` (`type` — `linear`, `circle`, `semi-circle`, `quarter-circle`; for types other than `circle` also `p-speeddial-direction-<direction>`; `p-speeddial-open` when shown; `p-disabled` with `disabled`; `style`, `style_class`, `pt`) with a toggle button `button.p-button.p-button-icon-only.p-speeddial-button.p-button-rounded` (`p-speeddial-rotate` if rotation is enabled and there is no `hide_icon`; `aria-expanded`, `aria-haspopup="true"`, `aria-controls="<id>_list"`, `aria-label`, `aria-labelledby`, `disabled`) with a "plus" icon or `show_icon`/`hide_icon`, and a list `ul.p-speeddial-list[role=menu]` (`id="<id>_list"`, `tabindex="-1"`, `aria-activedescendant` while the list has focus and an item is focused). Each model item SHALL be rendered as `li.p-speeddial-item[role=menuitem]` with `id="<id>_<index>"`, `p-hidden` (with `visible = false`), `p-focus`, `data-p-active` and a `p-speeddial-action` button (secondary, round, small) with an icon, `aria-label` from `label` and `disabled`. The `id` SHALL be unique by default. With `mask` and shown, `div.p-speeddial-mask.p-overlay-mask` SHALL be rendered.
 
-#### Scenario: Состав
-- **WHEN** отрисован `SpeedDial` с тремя пунктами
-- **THEN** выведены кнопка и список из трёх `li.p-speeddial-item`, у корня `p-speeddial-linear` и `p-speeddial-direction-up`
+#### Scenario: Composition
+- **WHEN** a `SpeedDial` with three items is rendered
+- **THEN** a button and a list of three `li.p-speeddial-item` are rendered, the root has `p-speeddial-linear` and `p-speeddial-direction-up`
 
-#### Scenario: Круг
-- **WHEN** задан `type = Circle`
-- **THEN** класса `p-speeddial-direction-*` нет
+#### Scenario: Circle
+- **WHEN** `type = Circle` is set
+- **THEN** there is no `p-speeddial-direction-*` class
 
-### Requirement: Раскладка
-Для `linear` SHALL выставляться только `flex-direction` корня и списка по направлению (`up` — `column-reverse`, `down` — `column`, `left` — `row-reverse`, `right` — `row`). Для `circle` каждый пункт SHALL получить `left` и `top` вида `calc(<x>px + var(--item-diff-x, 0px))` с углом `2π·i/n`; для `semi-circle` — шаг `π/(n-1)` и пару сторон по направлению (`up`: `left`/`bottom`, `down`: `left`/`top`, `left`: `right`/`top`, `right`: `left`/`top`); для `quarter-circle` — шаг `π/(2(n-1))` и пару сторон по диагональному направлению (`up-left`: `right`/`bottom`, `up-right`: `left`/`bottom`, `down-left`: `right`/`top`, `down-right`: `left`/`top`). Радиус SHALL быть `radius`, а при `0` — `20 × n`. Каждый пункт SHALL получать `transition-delay`: при показе `i · transition_delay` мс, при скрытии `(n − i − 1) · transition_delay`. После показа в браузере для типов кроме `linear` SHALL ставиться `--item-diff-x`/`--item-diff-y` списка — половина разницы ширины/высоты кнопки и первого пункта.
+### Requirement: Layout
+For `linear`, only the `flex-direction` of the root and list SHALL be set by direction (`up` — `column-reverse`, `down` — `column`, `left` — `row-reverse`, `right` — `row`). For `circle`, each item SHALL get `left` and `top` of the form `calc(<x>px + var(--item-diff-x, 0px))` with angle `2π·i/n`; for `semi-circle` — step `π/(n-1)` and a pair of sides by direction (`up`: `left`/`bottom`, `down`: `left`/`top`, `left`: `right`/`top`, `right`: `left`/`top`); for `quarter-circle` — step `π/(2(n-1))` and a pair of sides by diagonal direction (`up-left`: `right`/`bottom`, `up-right`: `left`/`bottom`, `down-left`: `right`/`top`, `down-right`: `left`/`top`). The radius SHALL be `radius`, or `20 × n` when it is `0`. Each item SHALL get a `transition-delay`: `i · transition_delay` ms when showing, `(n − i − 1) · transition_delay` when hiding. After showing in the browser, for types other than `linear` the list's `--item-diff-x`/`--item-diff-y` SHALL be set — half the difference between the width/height of the button and the first item.
 
-#### Scenario: Задержки
-- **WHEN** список показан, `transition_delay = 30`, пунктов три
-- **THEN** задержки равны 0, 30 и 60 мс
+#### Scenario: Delays
+- **WHEN** the list is shown, `transition_delay = 30`, three items
+- **THEN** the delays are 0, 30 and 60 ms
 
-#### Scenario: Полукруг вверх
-- **WHEN** `type = SemiCircle`, `direction = Up`, пунктов три, радиус 80
-- **THEN** у первого пункта `left` считается от `80·cos 0`, `bottom` — от `80·sin 0`
+#### Scenario: Semicircle up
+- **WHEN** `type = SemiCircle`, `direction = Up`, three items, radius 80
+- **THEN** for the first item `left` is computed from `80·cos 0`, `bottom` — from `80·sin 0`
 
-### Requirement: Показ, команды и закрытие
-Клик по кнопке SHALL переключать показ, вызывать `on_click`, `on_visible_change(bool)` и `on_show`/`on_hide`; свойство `visible` SHALL быть двусторонним. Клик по пункту SHALL вызывать `command` (если пункт не отключён), скрывать список и не скрывать его повторно кликом вне. При `hide_on_click_outside` (по умолчанию да) клик вне компонента при показе SHALL скрывать список; слушатель SHALL вешаться на время показа (в следующем тике) и сниматься при скрытии и размонтировании. `Escape` на кнопке и в списке SHALL скрывать список и возвращать фокус на кнопку. Отключённый компонент SHALL не реагировать на клик по кнопке.
+### Requirement: Showing, commands and closing
+Clicking the button SHALL toggle display and call `on_click`, `on_visible_change(bool)` and `on_show`/`on_hide`; the `visible` property SHALL be two-way. Clicking an item SHALL call `command` (if the item is not disabled), hide the list and not hide it again via the outside click. With `hide_on_click_outside` (yes by default) a click outside the component while shown SHALL hide the list; the listener SHALL be attached for the time it is shown (on the next tick) and removed on hide and unmount. `Escape` on the button and in the list SHALL hide the list and return focus to the button. A disabled component SHALL not react to a button click.
 
-#### Scenario: Команда пункта
-- **WHEN** показан список и нажат пункт с `command`
-- **THEN** `command` вызван, список скрыт
+#### Scenario: Item command
+- **WHEN** the list is shown and an item with `command` is clicked
+- **THEN** `command` is called, the list is hidden
 
-#### Scenario: Клик вне
-- **WHEN** список показан и пользователь кликает вне компонента
-- **THEN** список скрыт
+#### Scenario: Outside click
+- **WHEN** the list is shown and the user clicks outside the component
+- **THEN** the list is hidden
 
-### Requirement: Клавиатура
-На кнопке `ArrowDown` и `ArrowLeft` SHALL открывать список и переводить фокус на следующий пункт, `ArrowUp` и `ArrowRight` — на предыдущий (последний при пустом фокусе), с `preventDefault`. В списке стрелки SHALL вести по пунктам согласно направлению: для `up` ↑ — следующий, ↓ — предыдущий; для `down` наоборот; для `left`, `up-right`, `down-left` ← — следующий, → — предыдущий; для `right`, `up-left`, `down-right` наоборот; для остальных значений ↑ и → — следующий, ↓ и ← — предыдущий. `Home` SHALL вести к первому пункту, `End` — к последнему; `Enter` и `Space` SHALL активировать пункт под фокусом и возвращать фокус на кнопку. Отключённые и скрытые пункты SHALL пропускаться; на границах фокус SHALL оставаться.
+### Requirement: Keyboard
+On the button, `ArrowDown` and `ArrowLeft` SHALL open the list and move focus to the next item, `ArrowUp` and `ArrowRight` — to the previous (the last one when focus is empty), with `preventDefault`. In the list the arrows SHALL move through items according to the direction: for `up` ↑ is next, ↓ is previous; for `down` the opposite; for `left`, `up-right`, `down-left` ← is next, → is previous; for `right`, `up-left`, `down-right` the opposite; for the other values ↑ and → are next, ↓ and ← are previous. `Home` SHALL go to the first item, `End` — to the last; `Enter` and `Space` SHALL activate the focused item and return focus to the button. Disabled and hidden items SHALL be skipped; at the boundaries focus SHALL stay.
 
-#### Scenario: Открытие стрелкой
-- **WHEN** на кнопке нажата `ArrowDown`
-- **THEN** список показан, первый доступный пункт под фокусом (`p-focus`, `aria-activedescendant`)
+#### Scenario: Opening with an arrow
+- **WHEN** `ArrowDown` is pressed on the button
+- **THEN** the list is shown, the first available item is focused (`p-focus`, `aria-activedescendant`)
 
-#### Scenario: Направление вниз
-- **WHEN** `direction = Down` и в списке нажата `ArrowDown`
-- **THEN** фокус переходит на следующий пункт
+#### Scenario: Direction down
+- **WHEN** `direction = Down` and `ArrowDown` is pressed in the list
+- **THEN** focus moves to the next item
 
-### Requirement: Подсказки и шаблоны
-При `tooltip_options` каждый пункт SHALL получать подсказку с текстом `label` и параметрами шаблона. Представление `button_content` SHALL заменять кнопку и получать обратный вызов переключения; `item_content` SHALL заменять кнопку внутри `li` и получать пункт, индекс и обратный вызов клика; `icon_content` SHALL заменять значок кнопки.
+### Requirement: Tooltips and templates
+With `tooltip_options` each item SHALL get a tooltip with the `label` text and the template's parameters. The `button_content` view SHALL replace the button and receive the toggle callback; `item_content` SHALL replace the button inside `li` and receive the item, index and click callback; `icon_content` SHALL replace the button icon.
 
-#### Scenario: Свой пункт
-- **WHEN** задан `item_content`
-- **THEN** внутри каждого `li.p-speeddial-item` выведено своё представление вместо кнопки действия
+#### Scenario: Custom item
+- **WHEN** `item_content` is set
+- **THEN** inside each `li.p-speeddial-item` the custom view is rendered instead of the action button

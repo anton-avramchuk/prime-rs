@@ -1,20 +1,20 @@
-//! Обёртки над DOM для оверлеев. На сервере и вне браузера все функции ничего не делают.
+//! DOM wrappers for overlays. On the server and outside the browser all functions do nothing.
 
 use crate::position::{Input, Placement, Point, Size, absolute_position, relative_position};
 use wasm_bindgen::JsCast;
 use web_sys::{Document, HtmlElement, Window};
 
-/// Окно браузера; `None` на сервере (SSR) и в нативных тестах, где вызов web-sys привёл бы к панике.
+/// Browser window; `None` on the server (SSR) and in native tests, where a web-sys call would panic.
 pub fn window() -> Option<Window> {
     if cfg!(target_arch = "wasm32") { web_sys::window() } else { None }
 }
 
-/// Документ браузера; `None` вне браузера.
+/// Browser document; `None` outside the browser.
 pub fn document() -> Option<Document> {
     window().and_then(|w| w.document())
 }
 
-/// Размер видимой области окна (как `DomHandler.getViewport`).
+/// Size of the visible window area (as `DomHandler.getViewport`).
 pub fn viewport() -> Size {
     let Some(win) = window() else { return Size::default() };
     let inner = |v: Result<wasm_bindgen::JsValue, _>| v.ok().and_then(|v| v.as_f64()).unwrap_or(0.0);
@@ -30,13 +30,13 @@ pub fn viewport() -> Size {
     Size { width, height }
 }
 
-/// Прокрутка окна.
+/// Window scroll.
 pub fn scroll() -> Point {
     let Some(win) = window() else { return Point::default() };
     Point { top: win.page_y_offset().unwrap_or(0.0), left: win.page_x_offset().unwrap_or(0.0) }
 }
 
-/// Размер элемента; для скрытого (`offsetParent == null`) временно показывает его вне экрана и измеряет.
+/// Element size; for a hidden element (`offsetParent == null`) it is temporarily shown off-screen and measured.
 pub fn element_size(el: &HtmlElement) -> Size {
     if el.offset_parent().is_some() {
         return Size { width: f64::from(el.offset_width()), height: f64::from(el.offset_height()) };
@@ -52,12 +52,12 @@ pub fn element_size(el: &HtmlElement) -> Size {
     size
 }
 
-/// Режим позиционирования.
+/// Positioning mode.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum AlignMode {
-    /// Оверлей лежит внутри компонента (`appendTo = 'self'`).
+    /// The overlay lies inside the component (`appendTo = 'self'`).
     Relative,
-    /// Оверлей добавлен в `body` (`appendTo = 'body'`).
+    /// The overlay is appended to `body` (`appendTo = 'body'`).
     Absolute,
 }
 
@@ -85,9 +85,9 @@ fn measure(overlay: &HtmlElement, target: &HtmlElement) -> Input {
     }
 }
 
-/// Позиционирует `overlay` относительно `target` и записывает `top`, `left`, `transform-origin` в его стиль.
+/// Positions `overlay` relative to `target` and writes `top`, `left`, `transform-origin` to its style.
 ///
-/// Возвращает рассчитанную позицию; вне браузера ничего не делает и возвращает `None`.
+/// Returns the calculated position; outside the browser it does nothing and returns `None`.
 pub fn align_overlay(overlay: &HtmlElement, target: &HtmlElement, mode: AlignMode, calculate_min_width: bool) -> Option<Placement> {
     window()?;
     let style = overlay.style();
@@ -117,13 +117,13 @@ thread_local! {
     static SCROLL_LOCKS: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
 }
 
-/// Учитывает ещё одну блокировку; `true`, если она первая (класс нужно поставить).
+/// Counts one more lock; `true` if it is the first (the class must be set).
 fn lock_acquire(count: &mut usize) -> bool {
     *count += 1;
     *count == 1
 }
 
-/// Снимает одну блокировку; `true`, если она последняя (класс нужно убрать). Лишнее снятие ничего не меняет.
+/// Releases one lock; `true` if it is the last (the class must be removed). An extra release changes nothing.
 fn lock_release(count: &mut usize) -> bool {
     if *count == 0 {
         return false;
@@ -132,10 +132,10 @@ fn lock_release(count: &mut usize) -> bool {
     *count == 0
 }
 
-/// Блокирует прокрутку страницы (порт `blockBodyScroll`): `body` получает класс `p-overflow-hidden`,
-/// а `--p-scrollbar-width` — ширину полосы прокрутки, чтобы вёрстка не дёргалась.
+/// Blocks page scrolling (port of `blockBodyScroll`): `body` gets the class `p-overflow-hidden`,
+/// and `--p-scrollbar-width` — the width of the scrollbar, so the layout does not jump.
 ///
-/// Вызовы считаются: класс снимается, когда выполнено столько же [`unblock_body_scroll`]. Вне браузера ничего не делает.
+/// Calls are counted: the class is removed when [`unblock_body_scroll`] has been called as many times. Outside the browser it does nothing.
 pub fn block_body_scroll() {
     let Some(doc) = document() else { return };
     if !SCROLL_LOCKS.with(|c| {
@@ -153,7 +153,7 @@ pub fn block_body_scroll() {
     }
 }
 
-/// Снимает блокировку, поставленную [`block_body_scroll`]; класс убирается вместе с последней.
+/// Releases the lock set by [`block_body_scroll`]; the class is removed together with the last one.
 pub fn unblock_body_scroll() {
     let Some(doc) = document() else { return };
     if !SCROLL_LOCKS.with(|c| {
@@ -170,7 +170,7 @@ pub fn unblock_body_scroll() {
     }
 }
 
-/// Приводит `Element` к `HtmlElement`.
+/// Casts an `Element` to `HtmlElement`.
 pub fn as_html(el: &web_sys::Element) -> Option<HtmlElement> {
     el.clone().dyn_into::<HtmlElement>().ok()
 }
@@ -181,7 +181,7 @@ mod ssr_tests {
 
     #[test]
     fn scroll_lock_counter() {
-        // (операции: true = блокировка, false = снятие) → (первая/последняя на каждом шаге)
+        // (operations: true = lock, false = release) → (first/last at each step)
         let cases: [(&[bool], &[bool]); 4] = [
             (&[true], &[true]),
             (&[true, true, false, false], &[true, false, false, true]),

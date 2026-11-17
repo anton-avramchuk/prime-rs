@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `pt` и паритет статической и реактивной ветвей Tag (SSR).
+//! DOM structure, classes, `pt` and parity of the static and reactive branches of Tag (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -41,13 +41,13 @@ fn style_class_and_style_keep_own_classes() {
 #[test]
 fn children_come_first_then_icon_then_label() {
     let html = view! {
-        <Tag value="Текст" icon=icon()>
-            <i>"перед"</i>
+        <Tag value="Text" icon=icon()>
+            <i>"before"</i>
         </Tag>
     }
     .to_html();
-    let pos = |needle: &str| html.find(needle).unwrap_or_else(|| panic!("нет `{needle}`: {html}"));
-    assert!(pos("<i>перед</i>") < pos("p-tag-icon") && pos("p-tag-icon") < pos("p-tag-label"), "{html}");
+    let pos = |needle: &str| html.find(needle).unwrap_or_else(|| panic!("no `{needle}`: {html}"));
+    assert!(pos("<i>before</i>") < pos("p-tag-icon") && pos("p-tag-icon") < pos("p-tag-label"), "{html}");
 }
 
 #[test]
@@ -78,7 +78,7 @@ fn parity_table_static_vs_reactive() {
         (Some("New"), None, false, None, None),
         (Some("Success"), Some(TagSeverity::Success), true, None, None),
         (Some("x"), Some(TagSeverity::Contrast), false, Some("margin: 4px"), Some("a b")),
-        (Some("я"), Some(TagSeverity::Danger), true, Some("color: red;"), None),
+        (Some("é"), Some(TagSeverity::Danger), true, Some("color: red;"), None),
     ];
     let owner = Owner::new();
     owner.with(|| {

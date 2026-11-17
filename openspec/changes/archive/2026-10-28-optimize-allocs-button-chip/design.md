@@ -2,30 +2,30 @@
 
 ## Context
 
-`render-bench`: Button 19, полная Button 45, Chip 10, removable Chip 35 аллокаций на экземпляр. Основные статьи: `Arc<Props>` + `Arc<Pt>` (2), `NodeRef` (арена + сигнал), `.into_any()` на каждый блок, `Pt::new()` и временные строки в `style_of` Chip.
+`render-bench`: Button 19, full Button 45, Chip 10, removable Chip 35 allocations per instance. The main items: `Arc<Props>` + `Arc<Pt>` (2), `NodeRef` (arena + signal), `.into_any()` on every block, `Pt::new()` and temporary strings in Chip's `style_of`.
 
 ## Decisions
 
-### D1. `Arc` только в реактивной ветви
-`Props` и `Pt` живут на стеке до развилки. Статическая ветвь заимствует их; реактивная оборачивает в `Arc` для замыканий. Обработчик клика статической кнопки получает `off = props.is_disabled()` вместо `Arc<Props>`.
+### D1. `Arc` only in the reactive branch
+`Props` and `Pt` live on the stack up to the fork. The static branch borrows them; the reactive one wraps them in `Arc` for closures. The click handler of a static button gets `off = props.is_disabled()` instead of `Arc<Props>`.
 
-### D2. `NodeRef` только на клиенте
-Нужен для автофокуса и ripple (`setup_client`), которые существуют лишь на `wasm32`. Атрибут подключается спредом `{..node}`: на `wasm32` это `node_ref(...)`, на нативной цели — `()`.
+### D2. `NodeRef` only on the client
+Needed for autofocus and ripple (`setup_client`), which exist only on `wasm32`. The attribute is attached by the spread `{..node}`: on `wasm32` it is `node_ref(...)`, on the native target — `()`.
 
-### D3. Без `.into_any()`
-Индикатор Button — `EitherOf4`; метка, бейдж, изображение, иконка, метка и элемент удаления Chip — `Option<impl IntoView>`/`Either`.
+### D3. No `.into_any()`
+The Button indicator is `EitherOf4`; the label, badge, image, icon, label and remove element of Chip are `Option<impl IntoView>`/`Either`.
 
-### D4. Стиль Chip
-`Pt::merge_style_parts(&[...])` собирает части в одну строку; без `style`, `pt.style` и в видимом состоянии возвращается `None` без аллокаций.
+### D4. Chip style
+`Pt::merge_style_parts(&[...])` joins the parts into one string; without `style`, `pt.style` and in the visible state it returns `None` without allocations.
 
 ## Risks / Trade-offs
 
-- [Две формы обработчика клика] → покрыто SSR-, паритет- и браузерными тестами.
+- [Two forms of the click handler] → covered by SSR, parity and browser tests.
 
 ## Migration Plan
 
-Внутренний рефакторинг; откат — `git revert`.
+Internal refactoring; rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

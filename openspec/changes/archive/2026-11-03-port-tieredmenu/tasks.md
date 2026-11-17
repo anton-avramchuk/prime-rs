@@ -1,35 +1,35 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `tieredmenu` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился и что есть классы `p-tieredmenu*`
-- [x] 1.2 Свериться с `nestedPosition` из `@primeuix/utils` и с набором значков `prime-icons` (angleright и значки для демонстрации)
+- [x] 1.1 Add `tieredmenu` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of the other components did not change and that the `p-tieredmenu*` classes are present
+- [x] 1.2 Check against `nestedPosition` from `@primeuix/utils` and the `prime-icons` icon set (angleright and the icons for the demo)
 
-## 2. Крейт `prime-tieredmenu`
+## 2. Crate `prime-tieredmenu`
 
-- [x] 2.1 `model.rs`: узлы дерева, допустимость, поиск следующего/предыдущего/первого/последнего, поиск по символам, клик, смена пути, стрелки ←/→, `aria-setsize`/`aria-posinset`, сторона подменю, идентификаторы — с табличными тестами
-- [x] 2.2 Компонент `TieredMenu`, `TieredMenuPt`: корень, корневой список, уровни и пункты, разделители, группы со стрелкой, `item`/`submenu_icon`, SSR-тесты, rustdoc
-- [x] 2.3 Путь активных пунктов и фокус: клик, повторный клик, лист, наведение (`auto_display`, `dirty`, mobile), закрытие
-- [x] 2.4 Клавиатура: ↓/↑/→/←/`Home`/`End`/`Enter`/`Space`/`Escape`/`Tab`/`Alt+↑`, поиск по символам; `aria-activedescendant`
-- [x] 2.5 Положение подменю (сторона по месту), `matchMedia` для `p-tieredmenu-mobile`
-- [x] 2.6 Режим `popup`: `TieredMenuRef`, выравнивание, слой, клик вне, `resize`, прокрутка, возврат фокуса, `on_show`/`on_hide`
-- [x] 2.7 Браузерные `tests/web.rs` (один последовательный тест)
+- [x] 2.1 `model.rs`: tree nodes, validity, next/previous/first/last lookup, character search, click, path change, ←/→ arrows, `aria-setsize`/`aria-posinset`, submenu side, identifiers, with table-driven tests
+- [x] 2.2 `TieredMenu` component, `TieredMenuPt`: root, root list, levels and items, separators, groups with an arrow, `item`/`submenu_icon`, SSR tests, rustdoc
+- [x] 2.3 Path of active items and focus: click, repeated click, leaf, hover (`auto_display`, `dirty`, mobile), closing
+- [x] 2.4 Keyboard: ↓/↑/→/←/`Home`/`End`/`Enter`/`Space`/`Escape`/`Tab`/`Alt+↑`, character search; `aria-activedescendant`
+- [x] 2.5 Submenu position (side by available room), `matchMedia` for `p-tieredmenu-mobile`
+- [x] 2.6 `popup` mode: `TieredMenuRef`, alignment, layer, outside click, `resize`, scrolling, focus return, `on_show`/`on_hide`
+- [x] 2.7 Browser `tests/web.rs` (one sequential test)
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/tieredmenu` (`basic`, `popup`, `command`, `template`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `tieredmenu.spec.ts` (стили, раскрытие вправо, зеркалирование у края, клавиатура, popup, команда); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test tieredmenu`
+- [x] 3.1 Page `/tieredmenu` (`basic`, `popup`, `command`, `template`), menu, route, `stylesheet(&[..])`, the crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `tieredmenu.spec.ts` (styles, expanding to the right, mirroring at the edge, keyboard, popup, command); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test tieredmenu`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-tieredmenu` (с `dep:prime-menu`) и бюджеты (сначала `cargo bench -p render-bench --bench alloc`; замер wasm — в фоне, с отдельным файлом бюджетов)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-tieredmenu` (with `dep:prime-menu`) and budgets (first `cargo bench -p render-bench --bench alloc`; measure wasm in the background, with a separate budgets file)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/tieredmenu.md` (отличия от PrimeNG, что не проверялось); `prime-tieredmenu` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с исключениями CI и `--all-features` (и для wasm-цели), тесты (SSR по одному: `--exact`; эффекты только под `cfg(wasm32)`), deny, machete, `openspec validate port-tieredmenu`; CI `dev` зелёный
+- [x] 5.1 `docs/tieredmenu.md` (differences from PrimeNG, what was not verified); `prime-tieredmenu` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with the CI exclusions and `--all-features` (and for the wasm target), tests (SSR one by one: `--exact`; effects only under `cfg(wasm32)`), deny, machete, `openspec validate port-tieredmenu`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Волна 4 закончена; дальше — по плану следующей волны (остальные меню: ContextMenu, Menubar, MegaMenu, PanelMenu) и, отдельным изменением, `TieredMenu` внутри `SplitButton`.
+- Archive after CI.
+- Wave 4 is done; next is the plan for the next wave (the remaining menus: ContextMenu, Menubar, MegaMenu, PanelMenu) and, as a separate change, `TieredMenu` inside `SplitButton`.

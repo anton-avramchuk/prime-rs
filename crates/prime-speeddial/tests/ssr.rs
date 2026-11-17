@@ -1,4 +1,4 @@
-//! Разметка SpeedDial (SSR): корень по типу и направлению, кнопка, пункты, маска, шаблоны, `pt`.
+//! SpeedDial markup (SSR): root by type and direction, button, items, mask, templates, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -25,7 +25,7 @@ fn markup_has_root_button_list_and_items() {
     assert!(html.contains("p-speeddial p-component p-speeddial-linear p-speeddial-direction-up"), "{html}");
     assert!(html.contains("align-items: center") && html.contains("flex-direction: column-reverse"), "{html}");
     assert!(html.contains("p-speeddial-button") && html.contains("p-button-icon-only") && html.contains("p-button-rounded"), "{html}");
-    assert!(html.contains("p-speeddial-rotate"), "вращение по умолчанию: {html}");
+    assert!(html.contains("p-speeddial-rotate"), "rotation by default: {html}");
     assert!(
         html.contains("aria-expanded=\"false\"") && html.contains("aria-haspopup=\"true\"") && html.contains("aria-controls=\"sd_list\""),
         "{html}"
@@ -38,7 +38,7 @@ fn markup_has_root_button_list_and_items() {
             && html.contains("role=\"menu\""),
         "{html}"
     );
-    assert_eq!(html.matches("role=\"menuitem\"").count(), 6, "li и кнопка действия у каждого из трёх пунктов: {html}");
+    assert_eq!(html.matches("role=\"menuitem\"").count(), 6, "li and action button for each of the three items: {html}");
     assert!(html.contains("id=\"sd_0\"") && html.contains("id=\"sd_2\""), "{html}");
     assert!(!html.contains("aria-activedescendant") && !html.contains("p-speeddial-mask") && !html.contains("p-speeddial-open"), "{html}");
 }
@@ -47,12 +47,12 @@ fn markup_has_root_button_list_and_items() {
 fn items_carry_state_and_action_buttons() {
     let html = render(|| view! { <SpeedDial id="sd" model=items() /> }.to_html());
     assert_eq!(html.matches("p-speeddial-action").count(), 3, "{html}");
-    assert!(html.contains("p-hidden") && html.contains("extra"), "скрытый пункт: {html}");
+    assert!(html.contains("p-hidden") && html.contains("extra"), "hidden item: {html}");
     assert!(html.contains("aria-label=\"Add\"") && html.contains("aria-label=\"Delete\""), "{html}");
-    assert_eq!(html.matches("disabled=\"\"").count(), 1, "отключён один пункт: {html}");
+    assert_eq!(html.matches("disabled=\"\"").count(), 1, "one item is disabled: {html}");
     assert!(html.contains("p-button-secondary") && html.contains("p-button-sm"), "{html}");
     assert!(html.contains("transition-delay: 60ms") || html.contains("transition-delay: 0ms"), "{html}");
-    assert!(!html.contains("tabindex=\"0\""), "список скрыт: у действий нет tabindex");
+    assert!(!html.contains("tabindex=\"0\""), "list is hidden: the actions have no tabindex");
 }
 
 #[test]
@@ -85,7 +85,7 @@ fn open_disabled_and_mask_follow_props() {
     });
     assert!(html.contains("p-speeddial-open") && html.contains("p-disabled"), "{html}");
     assert!(html.contains("aria-expanded=\"true\"") && html.contains("p-speeddial-mask") && html.contains("my-mask"), "{html}");
-    assert!(html.contains("tabindex=\"0\""), "список показан: у доступных действий tabindex 0: {html}");
+    assert!(html.contains("tabindex=\"0\""), "list is shown: available actions have tabindex 0: {html}");
 }
 
 #[test]
@@ -107,14 +107,14 @@ fn icons_labels_severity_and_classes() {
         }
         .to_html()
     });
-    assert!(html.contains("hide-ico") && !html.contains("show-ico"), "открыт: значок скрытия: {html}");
-    assert!(!html.contains("p-speeddial-rotate"), "с hide_icon вращения нет: {html}");
+    assert!(html.contains("hide-ico") && !html.contains("show-ico"), "open: hide icon: {html}");
+    assert!(!html.contains("p-speeddial-rotate"), "no rotation with hide_icon: {html}");
     assert!(html.contains("aria-label=\"Actions\"") && html.contains("aria-labelledby=\"lbl\""), "{html}");
     assert!(html.contains("btn-extra") && html.contains("mine") && html.contains("position: absolute"), "{html}");
     let closed = render(|| view! { <SpeedDial model=items() show_icon=ViewFn::from(|| view! { <i class="show-ico" /> }) /> }.to_html());
     assert!(
         closed.contains("show-ico") && closed.matches("<svg").count() == 1,
-        "значок кнопки заменён, остался только значок пункта: {closed}"
+        "button icon is replaced, only the item icon remains: {closed}"
     );
 }
 
@@ -143,7 +143,7 @@ fn templates_replace_button_item_and_icon() {
 fn tooltip_template_does_not_change_the_markup() {
     let plain = render(|| view! { <SpeedDial id="a" model=items() /> }.to_html());
     let tipped = render(|| view! { <SpeedDial id="a" model=items() tooltip_options=TooltipOptions::text("") /> }.to_html());
-    assert_eq!(plain.replace("pn_id_", ""), tipped.replace("pn_id_", ""), "директива работает только в браузере");
+    assert_eq!(plain.replace("pn_id_", ""), tipped.replace("pn_id_", ""), "the directive works only in the browser");
 }
 
 #[test]

@@ -1,31 +1,31 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `dialog` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился и что `@keyframes` для `p-dialog-enter-active` / `p-dialog-leave-active` попали в CSS (иначе — решить вопрос из design.md)
+- [x] 1.1 Add `dialog` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of other components did not change and that `@keyframes` for `p-dialog-enter-active` / `p-dialog-leave-active` made it into the CSS (otherwise — resolve the question from design.md)
 
-## 2. Крейт
+## 2. Crate
 
-- [x] 2.1 `crates/prime-dialog`: `state.rs` (`DialogPosition`, `mask_classes`, `root_classes`, `mask_inline_style`, `root_inline_style`, `drag_position`, `drag_accept`, `resize_to`, `breakpoints_css`, `is_topmost`, `mask_z`) с табличными тестами
-- [x] 2.2 Компонент `Dialog` и `DialogPt`: разметка (маска > окно), `Portal`, заголовок и кнопки, подвал, `headless`, SSR-тесты, rustdoc
-- [x] 2.3 Показ и закрытие: `visible`/`rendered`/`leaving`, анимации, маска (`modal`, `dismissable_mask`), Escape верхнего окна, `block_scroll`, `FocusTrap`, фокус при показе, `z-index`, события; браузерные `tests/web.rs`
-- [x] 2.4 Указатель и размер: перетаскивание (`keep_in_viewport`, `min_x`, `min_y`, `on_drag_end`), изменение размера (`on_resize_init`, `on_resize_end`), максимизация (`on_maximize`), `breakpoints`; браузерные тесты
+- [x] 2.1 `crates/prime-dialog`: `state.rs` (`DialogPosition`, `mask_classes`, `root_classes`, `mask_inline_style`, `root_inline_style`, `drag_position`, `drag_accept`, `resize_to`, `breakpoints_css`, `is_topmost`, `mask_z`) with table-driven tests
+- [x] 2.2 The `Dialog` component and `DialogPt`: markup (mask > window), `Portal`, header and buttons, footer, `headless`, SSR tests, rustdoc
+- [x] 2.3 Showing and closing: `visible`/`rendered`/`leaving`, animations, mask (`modal`, `dismissable_mask`), Escape on the topmost window, `block_scroll`, `FocusTrap`, focus on show, `z-index`, events; browser `tests/web.rs`
+- [x] 2.4 Pointer and size: dragging (`keep_in_viewport`, `min_x`, `min_y`, `on_drag_end`), resizing (`on_resize_init`, `on_resize_end`), maximizing (`on_maximize`), `breakpoints`; browser tests
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/dialog` (`basic`, `position`, `modal`, `withoutmodal`, `maximizable`, `responsive`, `longcontent`, `template`, `headless`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `dialog.spec.ts` (открытие, закрытие кнопкой, маской, Escape, модальность, перетаскивание и размер настоящей мышью, максимизация, позиции, Tab-цикл); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test dialog`
+- [x] 3.1 The `/dialog` page (`basic`, `position`, `modal`, `withoutmodal`, `maximizable`, `responsive`, `longcontent`, `template`, `headless`), menu, route, `stylesheet(&[..])`, crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `dialog.spec.ts` (opening, closing via button, mask, Escape, modality, dragging and resizing with a real mouse, maximizing, positions, Tab cycle); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test dialog`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-dialog` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-dialog` and budgets (first `cargo bench -p render-bench --bench alloc`)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/dialog.md` (отличия от PrimeNG, что не проверялось); `prime-dialog` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-dialog`; CI `dev` зелёный
+- [x] 5.1 `docs/dialog.md` (differences from PrimeNG, what was not verified); `prime-dialog` in the `ci.yml` browser job (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with `--all-features` (and for the wasm target), tests, deny, machete, `openspec validate port-dialog`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: Tooltip.
+- Archive after CI.
+- Next: Tooltip.

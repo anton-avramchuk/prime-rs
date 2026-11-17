@@ -1,5 +1,5 @@
-//! Поведение Inplace в реальном браузере (wasm-bindgen-test): клик, `Enter`, `prevent_click`, `disabled`, закрытие,
-//! внешний сигнал и колбэки.
+//! Inplace behaviour in a real browser (wasm-bindgen-test): click, `Enter`, `prevent_click`, `disabled`, closing,
+//! external signal and callbacks.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,14 +22,14 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, selector: &str) -> HtmlElement {
-    host.query_selector(selector).unwrap().unwrap_or_else(|| panic!("нет {selector}")).dyn_into().unwrap()
+    host.query_selector(selector).unwrap().unwrap_or_else(|| panic!("no {selector}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, selector: &str) -> bool {
     host.query_selector(selector).unwrap().is_some()
 }
 
-/// Нажатие клавиши; `true`, если действие не отменено.
+/// Presses a key; `true` if the action was not cancelled.
 fn press(el: &HtmlElement, key: &str) -> bool {
     let init = KeyboardEventInit::new();
     init.set_bubbles(true);
@@ -68,7 +68,7 @@ async fn enter_activates_and_prevents_default() {
     let host = host();
     let _h = leptos::mount::mount_to(host.clone(), || view! { <Inplace display=display() content=content() /> });
     leptos::task::tick().await;
-    assert!(!press(&q(&host, ".p-inplace-display"), "Enter"), "Enter должен отменять действие по умолчанию");
+    assert!(!press(&q(&host, ".p-inplace-display"), "Enter"), "Enter must cancel the default action");
     leptos::task::tick().await;
     assert!(has(&host, ".p-inplace-content"));
 }
@@ -100,7 +100,7 @@ async fn prevent_click_blocks_click_and_close_but_not_enter() {
     q(&host, ".p-button").click();
     q(&host, ".inner-close").click();
     leptos::task::tick().await;
-    assert!(has(&host, ".p-inplace-content"), "закрытие при prevent_click не работает");
+    assert!(has(&host, ".p-inplace-content"), "closing with prevent_click does not work");
 }
 
 #[wasm_bindgen_test]

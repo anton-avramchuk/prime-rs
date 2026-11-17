@@ -1,5 +1,5 @@
-//! Страница BlockUI: демонстрации `basic` (маска над панелью) и `document` (маска над документом на три секунды) из showcase
-//! PrimeNG (`apps/showcase/doc/blockui`). Блокируемая панель оборачивается в `div`, на который указывает `NodeRef`.
+//! BlockUI page: the `basic` (mask over a panel) and `document` (mask over the document for three seconds) demos from the PrimeNG showcase
+//! (`apps/showcase/doc/blockui`). The blocked panel is wrapped in a `div` that `NodeRef` points to.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -13,7 +13,7 @@ const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, se
                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. \
                      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
 
-/// Страница `/blockui`.
+/// `/blockui` page.
 #[component]
 pub fn BlockUiPage() -> impl IntoView {
     let panel_blocked = RwSignal::new(false);

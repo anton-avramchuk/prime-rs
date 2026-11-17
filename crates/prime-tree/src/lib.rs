@@ -1,9 +1,9 @@
-//! Tree — порт `p-tree` из PrimeNG 21.1.10.
+//! Tree — port of PrimeNG 21.1.10 `p-tree`.
 //!
-//! Иерархические данные с раскрытием, выбором (`Single`, `Multiple`, `Checkbox`) и фильтром. Узлы — [`TreeNode`] с
-//! уникальным `key`: раскрытые и выбранные узлы хранятся как наборы ключей в сигналах ([`Tree`] принимает внешние
-//! `expanded_keys` и `selection`), сами узлы неизменяемы. Ленивую загрузку делает пользователь: в `on_node_expand` он
-//! обновляет сигнал `value`.
+//! Hierarchical data with expansion, selection (`Single`, `Multiple`, `Checkbox`) and a filter. Nodes are [`TreeNode`]
+//! with a unique `key`: expanded and selected nodes are stored as key sets in signals ([`Tree`] accepts external
+//! `expanded_keys` and `selection`), the nodes themselves are immutable. Lazy loading is up to the user: in
+//! `on_node_expand` they update the `value` signal.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -33,65 +33,65 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Как показывать загрузку дерева и узлов.
+/// How to show the loading of the tree and nodes.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TreeLoadingMode {
-    /// Маска поверх дерева.
+    /// Mask over the tree.
     #[default]
     Mask,
-    /// Спиннер вместо шеврона загружаемого узла.
+    /// Spinner instead of the chevron of the loading node.
     Icon,
 }
 
-/// Событие узла: исходное событие и узел.
+/// Node event: the original event and the node.
 #[derive(Clone)]
 pub struct TreeNodeEvent {
-    /// Исходное событие.
+    /// Original event.
     pub original_event: web_sys::Event,
-    /// Узел.
+    /// Node.
     pub node: TreeNode,
 }
 
-/// Pass-through частей [`Tree`].
+/// Pass-through parts of [`Tree`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TreePt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Маска загрузки.
+    /// Loading mask.
     pub mask: Pt,
-    /// Значок загрузки.
+    /// Loading icon.
     pub loading_icon: Pt,
-    /// Контейнер поля фильтра.
+    /// Filter field container.
     pub filter_container: Pt,
-    /// Поле фильтра.
+    /// Filter field.
     pub filter_input: Pt,
-    /// Значок фильтра.
+    /// Filter icon.
     pub filter_icon: Pt,
-    /// Обёртка со списком.
+    /// List wrapper.
     pub wrapper: Pt,
-    /// Корневой список.
+    /// Root list.
     pub root_children: Pt,
-    /// Узел `li`.
+    /// Node `li`.
     pub node: Pt,
-    /// Содержимое узла.
+    /// Node content.
     pub node_content: Pt,
-    /// Кнопка раскрытия.
+    /// Toggle button.
     pub node_toggle_button: Pt,
-    /// Шеврон кнопки.
+    /// Button chevron.
     pub node_toggle_icon: Pt,
-    /// Флажок узла.
+    /// Node checkbox.
     pub node_checkbox: Pt,
-    /// Значок узла.
+    /// Node icon.
     pub node_icon: Pt,
-    /// Подпись узла.
+    /// Node label.
     pub node_label: Pt,
-    /// Вложенный список.
+    /// Nested list.
     pub node_children: Pt,
-    /// Сообщение о пустом дереве.
+    /// Empty tree message.
     pub empty_message: Pt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 struct Core {
     value: Prop<Vec<TreeNode>>,
     filter_text: RwSignal<String>,
@@ -142,7 +142,7 @@ impl Core {
         self.flat_shown.with_untracked(|flat| f(&visible(flat, &expanded)))
     }
 
-    /// Фокус на `li` по ключу (только браузер).
+    /// Focus the `li` by key (browser only).
     fn focus_key(&self, key: &str) {
         #[cfg(target_arch = "wasm32")]
         if let Some(root) = self.root_el.get_untracked() {
@@ -171,14 +171,14 @@ impl Core {
         }
     }
 
-    /// Клик по кнопке раскрытия.
+    /// Click on the toggle button.
     fn toggle(&self, e: web_sys::MouseEvent, key: &str) {
         e.stop_propagation();
         let open = !self.expanded.with_untracked(|s| s.contains(key));
         self.set_expanded(&e, key, open);
     }
 
-    /// Клик по узлу или `Enter`/`Space`: выбор.
+    /// Click on the node or `Enter`/`Space`: selection.
     fn select(&self, e: &web_sys::Event, key: &str, meta_key: bool) {
         let Some(mode) = self.mode else { return };
         let opts = SelectOpts {
@@ -233,7 +233,7 @@ impl Core {
         }
     }
 
-    /// Клавиши на узле (только если событие пришло на сам `li`).
+    /// Keys on the node (only if the event arrived at the `li` itself).
     fn key_down(&self, e: &web_sys::KeyboardEvent, key: &str) {
         if e.target() != e.current_target() {
             return;
@@ -280,7 +280,7 @@ impl Core {
         }
     }
 
-    /// Ввод в поле фильтра.
+    /// Input in the filter field.
     fn filter_input(&self, e: &web_sys::Event) {
         #[cfg(target_arch = "wasm32")]
         let text = e.target().and_then(|t| t.dyn_into::<web_sys::HtmlInputElement>().ok()).map(|i| i.value()).unwrap_or_default();
@@ -306,7 +306,7 @@ impl Core {
     }
 }
 
-/// Всё, что нужно для вывода узлов.
+/// Everything needed to render the nodes.
 #[derive(Clone)]
 struct Ctx {
     core: Arc<Core>,
@@ -318,102 +318,102 @@ struct Ctx {
     loading_mode: Prop<TreeLoadingMode>,
 }
 
-/// Дерево с раскрытием, выбором и фильтром.
+/// Tree with expansion, selection and a filter.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn Tree(
-    /// Узлы.
+    /// Nodes.
     #[prop(optional, into)]
     value: Prop<Vec<TreeNode>>,
-    /// Режим выбора.
+    /// Selection mode.
     #[prop(optional)]
     selection_mode: Option<TreeSelectionMode>,
-    /// Выбранные ключи (двусторонний сигнал; в `Single` — 0 или 1 ключ).
+    /// Selected keys (two-way signal; in `Single` — 0 or 1 key).
     #[prop(optional)]
     selection: Option<RwSignal<Vec<String>>>,
-    /// Раскрытые ключи (двусторонний сигнал).
+    /// Expanded keys (two-way signal).
     #[prop(optional)]
     expanded_keys: Option<RwSignal<HashSet<String>>>,
-    /// Выбор с Ctrl/Meta (иначе клик заменяет выбор).
+    /// Selection with Ctrl/Meta (otherwise a click replaces the selection).
     #[prop(optional, into)]
     meta_key_selection: Prop<bool>,
-    /// Распространять выбор на предков (`Checkbox`).
+    /// Propagate selection to ancestors (`Checkbox`).
     #[prop(optional, default = Prop::Static(true), into)]
     propagate_selection_up: Prop<bool>,
-    /// Распространять выбор на потомков (`Checkbox`).
+    /// Propagate selection to descendants (`Checkbox`).
     #[prop(optional, default = Prop::Static(true), into)]
     propagate_selection_down: Prop<bool>,
-    /// Подсвечивать выбранные узлы в режиме `Checkbox`.
+    /// Highlight selected nodes in `Checkbox` mode.
     #[prop(optional, into)]
     highlight_on_select: Prop<bool>,
-    /// Идёт загрузка дерева.
+    /// The tree is loading.
     #[prop(optional, into)]
     loading: Prop<bool>,
-    /// Как показывать загрузку.
+    /// How to show loading.
     #[prop(optional, into)]
     loading_mode: Prop<TreeLoadingMode>,
-    /// Сообщение о пустом дереве (по умолчанию — из `locale`).
+    /// Empty tree message (defaults to the one from `locale`).
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-    /// Атрибут `aria-label` списка.
+    /// `aria-label` attribute of the list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` списка.
+    /// `aria-labelledby` attribute of the list.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Показывать поле фильтра.
+    /// Show the filter field.
     #[prop(optional, into)]
     filter: Prop<bool>,
-    /// Поля фильтра через запятую (`label`, `key`).
+    /// Comma-separated filter fields (`label`, `key`).
     #[prop(optional, default = Prop::Static("label".to_owned()), into)]
     filter_by: Prop<String>,
-    /// Режим фильтра.
+    /// Filter mode.
     #[prop(optional, into)]
     filter_mode: Prop<TreeFilterMode>,
-    /// Подсказка поля фильтра.
+    /// Filter field placeholder.
     #[prop(optional, into)]
     filter_placeholder: OptProp<String>,
-    /// Высота обёртки, после которой список прокручивается (`flex` — по высоте родителя).
+    /// Wrapper height after which the list scrolls (`flex` — by parent height).
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-    /// Отступ уровня в rem.
+    /// Level indent in rem.
     #[prop(optional, default = Prop::Static(1.5), into)]
     indentation: Prop<f64>,
-    /// Атрибут `id`.
+    /// `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<TreePt>,
-    /// Своё содержимое подписи узла (по `type_` можно выбирать вид).
+    /// Custom node label content (`type_` can be used to pick the look).
     #[prop(optional)]
     node: Option<Callback<TreeNode, AnyView>>,
-    /// Свой шеврон.
+    /// Custom chevron.
     #[prop(optional, into)]
     toggler_icon: Option<ViewFn>,
-    /// Узел выбран.
+    /// Node selected.
     #[prop(optional)]
     on_node_select: Option<Callback<TreeNodeEvent>>,
-    /// Выбор узла снят.
+    /// Node deselected.
     #[prop(optional)]
     on_node_unselect: Option<Callback<TreeNodeEvent>>,
-    /// Узел раскрыт.
+    /// Node expanded.
     #[prop(optional)]
     on_node_expand: Option<Callback<TreeNodeEvent>>,
-    /// Узел свёрнут.
+    /// Node collapsed.
     #[prop(optional)]
     on_node_collapse: Option<Callback<TreeNodeEvent>>,
-    /// Двойной клик по узлу.
+    /// Double click on a node.
     #[prop(optional)]
     on_node_double_click: Option<Callback<TreeNodeEvent>>,
-    /// Изменён текст фильтра.
+    /// Filter text changed.
     #[prop(optional)]
     on_filter: Option<Callback<String>>,
 ) -> impl IntoView {
@@ -588,19 +588,19 @@ fn join(base: &str, extra: Option<&str>) -> String {
     }
 }
 
-/// Узлы одного уровня. Весь вид строится один раз на смену дерева: состояние читается из замыканий в атрибутах.
+/// Nodes of one level. The whole view is built once per tree change: state is read from closures in attributes.
 fn nodes_view(ctx: &Ctx, nodes: &[TreeNode], level: usize) -> AnyView {
     nodes.iter().enumerate().map(|(index, node)| node_view(ctx, node, level, index)).collect_view().into_any()
 }
 
-#[allow(clippy::clone_on_copy)] // замыкание над `Memo` — `Copy`, `clone()` оставлен для единообразия с остальными замыканиями
+#[allow(clippy::clone_on_copy)] // a closure over `Memo` is `Copy`, `clone()` is kept for consistency with the other closures
 fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
     let key = node.key.clone();
     let leaf = node.is_leaf();
     let mode = core.mode;
     let (expanded, selection, focus) = (core.expanded, core.selection, core.focus);
-    // Memo: поддерево перестраивается только при смене раскрытия этого узла, а не любого другого.
+    // Memo: the subtree is rebuilt only when this node's expansion changes, not any other's.
     let is_expanded = {
         let key = key.clone();
         let memo = Memo::new(move |_| expanded.with(|s| s.contains(&key)));
@@ -722,7 +722,7 @@ fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView 
     .into_any()
 }
 
-/// Кнопка раскрытия: шеврон или спиннер загружаемого узла.
+/// Toggle button: chevron or spinner of the loading node.
 fn toggle_view(ctx: &Ctx, node: &TreeNode, is_expanded: impl Fn() -> bool + Clone + Send + Sync + 'static) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
     let key = node.key.clone();
@@ -759,7 +759,7 @@ fn toggle_view(ctx: &Ctx, node: &TreeNode, is_expanded: impl Fn() -> bool + Clon
     .into_any()
 }
 
-/// Значок узла: собственный либо раскрытый/свёрнутый.
+/// Node icon: custom or expanded/collapsed.
 fn icon_view(ctx: &Ctx, node: &TreeNode, is_expanded: impl Fn() -> bool + Clone + Send + Sync + 'static) -> Option<AnyView> {
     let class = ctx.pt.node_icon.merge_class("p-tree-node-icon").into_owned();
     if let Some(icon) = node.icon.clone() {
@@ -782,7 +782,7 @@ fn icon_view(ctx: &Ctx, node: &TreeNode, is_expanded: impl Fn() -> bool + Clone 
     )
 }
 
-/// Флажок узла: разметка `Checkbox`, состояние из замыканий; частичный выбор — минус.
+/// Node checkbox: `Checkbox` markup, state from closures; partial selection is a minus.
 fn checkbox_view(
     ctx: &Ctx,
     checked: impl Fn() -> bool + Clone + Send + Sync + 'static,

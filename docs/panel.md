@@ -1,39 +1,39 @@
 # Panel
 
-Порт `p-panel` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-panel` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-panel::Panel` | `packages/primeng/src/panel/panel.ts`, `panel/style/panelstyle.ts` |
-| Логика сворачивания | `prime-core::collapsible` (общая с будущим Fieldset) |
-| CSS | `@primeuix/styles/panel`, базовые `p-collapsible-*` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/panel/*-doc.ts` (`basic`, `toggleable`, `template`); `header-toggler` — по тексту `toggleable-doc` |
+| Collapsing logic | `prime-core::collapsible` (shared with Fieldset) |
+| CSS | `@primeuix/styles/panel`, the base `p-collapsible-*` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/panel/*-doc.ts` (`basic`, `toggleable`, `template`); `header-toggler` — from the `toggleable-doc` text |
 
-Спека: `openspec/specs/panel`, `openspec/specs/collapsible`.
+Spec: `openspec/specs/panel`, `openspec/specs/collapsible`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы `p-panel p-component`, `p-panel-toggleable`, `p-panel-expanded`/`p-panel-collapsed`, `p-panel-header`, `p-panel-title`, `p-panel-header-actions` (+ `p-panel-icons-start|end|center`), `p-panel-toggle-button`, `p-panel-content-container`, `p-panel-content-wrapper`, `p-panel-content`, `p-panel-footer`; `data-p="toggleable"`.
-- Кнопка-переключатель: классы `p-button` как у `<p-button severity="secondary" text rounded>` с иконкой, иконки «минус» (развёрнута) и «плюс» (свёрнута).
-- ARIA: кнопка — `aria-label` (текст заголовка), `aria-controls`, `aria-expanded`; область — `role="region"`, `aria-labelledby`, `aria-hidden`, `tabindex="-1"` при сворачивании; фокусируемые потомки свёрнутой области получают `tabindex="-1"`.
-- Анимация: классы `p-collapsible-enter-active`/`p-collapsible-leave-active`, как у `pMotion="p-collapsible"`; `on_after_toggle` — по окончании анимации.
-- `toggler = header` переключает щелчком по шапке, `icon_pos`, `show_header`, `collapsed` как двусторонняя привязка.
+- Classes `p-panel p-component`, `p-panel-toggleable`, `p-panel-expanded`/`p-panel-collapsed`, `p-panel-header`, `p-panel-title`, `p-panel-header-actions` (+ `p-panel-icons-start|end|center`), `p-panel-toggle-button`, `p-panel-content-container`, `p-panel-content-wrapper`, `p-panel-content`, `p-panel-footer`; `data-p="toggleable"`.
+- The toggle button: `p-button` classes as for `<p-button severity="secondary" text rounded>` with an icon, the "minus" icon (expanded) and the "plus" icon (collapsed).
+- ARIA: the button has `aria-label` (the header text), `aria-controls`, `aria-expanded`; the region has `role="region"`, `aria-labelledby`, `aria-hidden`, `tabindex="-1"` when collapsed; focusable descendants of a collapsed region get `tabindex="-1"`.
+- Animation: classes `p-collapsible-enter-active`/`p-collapsible-leave-active`, as for `pMotion="p-collapsible"`; `on_after_toggle` — when the animation ends.
+- `toggler = header` toggles on a click on the header; `icon_pos`, `show_header`, `collapsed` as a two-way binding.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-panel>` | Хост в Angular — деталь фреймворка. |
-| `collapsed` — `RwSignal<bool>`; начальное значение без сигнала — `default_collapsed` | Двусторонняя привязка в Leptos делается сигналом (как `value` у InputText); одно свойство не может быть и сигналом, и литералом. |
-| Слоты — `ViewFn` (`header_template`, `icons_template`, `footer_template`), `header_icons_template` получает `collapsed` | Вместо `ng-template` и фасетов `<p-header>`/`<p-footer>`. |
-| Кнопка рисуется самим Panel, а не компонентом Button | `aria-expanded` меняется реактивно, а `pt` у Button принимает только статические атрибуты. Классы и `data-p` совпадают. |
-| Идентификатор `{id}_header` есть у заголовка, а при его отсутствии — у кнопки | В PrimeNG он и у заголовка, и у кнопки (повтор `id`); `aria-labelledby` указывает на единственный элемент. |
-| Свёрнутая область скрыта встроенным `display: none` (при первом рендере сразу), анимация идёт только при смене | Нет анимации при SSR и гидратации; без `animationend` (отключённые анимации, скрытая вкладка) завершение наступает по запасному таймеру 400 мс. |
-| Обработчик `keydown` для Enter/Space не нужен | Нативная `<button>` превращает их в `click`. |
-| Нет `BlockableUI`, `toggleButtonProps`, `motionOptions`, `transitionOptions` | Вне объёма change; анимация настраивается CSS темы. |
-| Меню шестерёнки из демонстрации `template` не перенесено | Menu ещё не портирован; иконки — SVG из `prime-icons` вместо шрифта PrimeIcons. |
+| The root is a `<div>`, not the host `<p-panel>` | The Angular host is a framework detail. |
+| `collapsed` is `RwSignal<bool>`; the initial value without a signal is `default_collapsed` | A two-way binding in Leptos is done with a signal (like `value` of InputText); one property cannot be both a signal and a literal. |
+| Slots are `ViewFn` (`header_template`, `icons_template`, `footer_template`); `header_icons_template` receives `collapsed` | Instead of `ng-template` and the `<p-header>`/`<p-footer>` facets. |
+| The button is drawn by Panel itself, not by the Button component | `aria-expanded` changes reactively, and the `pt` of Button accepts only static attributes. The classes and `data-p` match. |
+| The identifier `{id}_header` is on the title, and on the button if there is no title | In PrimeNG it is on both the title and the button (a duplicate `id`); `aria-labelledby` points to a single element. |
+| The collapsed region is hidden with an inline `display: none` (right away on the first render); the animation runs only on a change | No animation during SSR and hydration; without `animationend` (disabled animations, a hidden tab) completion happens by the fallback timer of 400 ms. |
+| No keydown handler for Enter/Space is needed | The native `<button>` turns them into `click`. |
+| No `BlockableUI`, `toggleButtonProps`, `motionOptions`, `transitionOptions` | Outside the scope of the change; the animation is configured by the theme CSS. |
+| The gear menu of the `template` demo is not ported | Menu is not ported yet; the icons are SVG from `prime-icons` instead of the PrimeIcons font. |
 
-## Производительность
+## Performance
 
-SSR: 63 аллокации на сворачиваемую панель (бюджет 70), 44 на простую (бюджет 48); вклад в сырой wasm +234 КБ (бюджет 270 КБ) — основная часть это привязки `web-sys` и обработчики событий.
-Шаблон — как у Card (`docs/card.md`) и ToggleSwitch (`docs/toggleswitch.md`).
+SSR: 63 allocations per collapsible panel (budget 70), 44 per simple one (budget 48); contribution to raw wasm +234 KB (budget 270 KB) — most of it is the `web-sys` bindings and event handlers.
+Template — as for Card (`docs/card.md`) and ToggleSwitch (`docs/toggleswitch.md`).

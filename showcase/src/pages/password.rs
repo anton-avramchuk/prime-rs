@@ -1,7 +1,7 @@
-//! Страница Password: демонстрации `basic`, `meter`, `locale`, `template`, `floatlabel`, `iftalabel`, `togglemask`, `clearicon`,
-//! `sizes`, `fluid`, `filled`, `invalid`, `disabled` по `apps/showcase/doc/password` PrimeNG.
+//! Password page: the `basic`, `meter`, `locale`, `template`, `floatlabel`, `iftalabel`, `togglemask`, `clearicon`,
+//! `sizes`, `fluid`, `filled`, `invalid`, `disabled` demos after PrimeNG `apps/showcase/doc/password`.
 //!
-//! Демонстрации с Angular Forms (`reactiveforms`, `templatedrivenforms`) не переносятся. В `sizes` у поля нет `type="text"`.
+//! Demos with Angular Forms (`reactiveforms`, `templatedrivenforms`) are not ported. In `sizes` the field has no `type="text"`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -11,7 +11,7 @@ use prime_floatlabel::{FloatLabel, FloatLabelVariant};
 use prime_iftalabel::IftaLabel;
 use prime_password::Password;
 
-/// Страница `/password`.
+/// Page `/password`.
 #[component]
 pub fn PasswordPage() -> impl IntoView {
     let basic = RwSignal::new(String::new());

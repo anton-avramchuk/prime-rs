@@ -2,30 +2,30 @@
 
 ## Context
 
-Требования — в `specs/treetable`. Исходники PrimeNG 21.1.10: `treetable/treetable.ts` (`serializeNodes`, `serializePageNodes`, `sortNodes`, `toggleNodeWithCheckbox`, `propagateSelectionUp/Down`, `TreeTableToggler`, `TTCheckbox`), `style/treetablestyle.ts` (весь CSS — в блоке `For PrimeNG`; модуль `@primeuix/styles/treetable` даёт токены). Основа — Table (`prime_table::Column`, `prime_table::model`).
+Requirements are in `specs/treetable`. PrimeNG 21.1.10 sources: `treetable/treetable.ts` (`serializeNodes`, `serializePageNodes`, `sortNodes`, `toggleNodeWithCheckbox`, `propagateSelectionUp/Down`, `TreeTableToggler`, `TTCheckbox`), `style/treetablestyle.ts` (all the CSS is in the `For PrimeNG` block; the `@primeuix/styles/treetable` module provides tokens). The basis is Table (`prime_table::Column`, `prime_table::model`).
 
 ## Decisions
 
-### D1. Узлы и ключи
-`TreeNode<T>` с ключом; выбор и раскрытие — векторы ключей (как у Table). Начальное раскрытие — из флагов `expanded`, если `expanded_keys` не передан.
+### D1. Nodes and keys
+`TreeNode<T>` with a key; selection and expansion are key vectors (as in Table). The initial expansion comes from the `expanded` flags if `expanded_keys` is not passed.
 
-### D2. Чистая модель (`tree.rs`)
-`sort_nodes` рекурсивно применяет `prime_table::model::sort_rows` к соседям; `page_roots` + `flatten` дают видимые строки; `checkbox_toggle` и `check_state` реализуют распространение выбора вниз/вверх и частичное состояние. Табличные тесты.
+### D2. Pure model (`tree.rs`)
+`sort_nodes` recursively applies `prime_table::model::sort_rows` to siblings; `page_roots` + `flatten` produce the visible rows; `checkbox_toggle` and `check_state` implement selection propagation down/up and the partial state. Table-driven tests.
 
-### D3. Компонент
-Столбцы — `prime_table::Column<T>`; в столбце `toggler_column` перед содержимым выводятся кнопка раскрытия и (в режиме `checkbox`) флажок узла — `Checkbox` с `checked` и `indeterminate`, которые согласуются с `selection` эффектом на каждую строку под `cfg(wasm32)`. Заголовки, строки и подвал строятся в реактивных замыканиях; классы выбора и значки сортировки читают сигналы внутри ячеек.
+### D3. Component
+Columns are `prime_table::Column<T>`; in the `toggler_column` column the expand button and (in `checkbox` mode) the node checkbox are rendered before the content — a `Checkbox` with `checked` and `indeterminate`, kept in sync with `selection` by an effect per row under `cfg(wasm32)`. Headers, rows and the footer are built in reactive closures; selection classes and sort icons read signals inside cells.
 
-### D4. Тема
-`treetable` в `theme.components` и `primeng_extra`.
+### D4. Theme
+`treetable` in `theme.components` and `primeng_extra`.
 
-### D5. Тесты
-Модель — таблицы. SSR: свёрнутое дерево, кнопки и отступы, сортировка, пагинатор по корням, выбор, флажки, пусто/загрузка/подвал. Браузерные: раскрытие/сворачивание, сортировка по уровням, выбор кликом и Ctrl, флажки с распространением, пагинатор. e2e: стили и клики.
+### D5. Tests
+Model — tables. SSR: collapsed tree, buttons and indents, sorting, root paginator, selection, checkboxes, empty/loading/footer. Browser: expand/collapse, per-level sorting, selection by click and Ctrl, checkboxes with propagation, paginator. e2e: styles and clicks.
 
 ## Risks / Trade-offs
 
-- [Объём] Этап 1 — основа; фильтры, правка и ленивая загрузка добавляются новыми свойствами без смены модели.
-- [Размер] Около 1,7 МБ wasm из-за Paginator, Checkbox, Badge и общей части Table.
+- [Scope] Stage 1 is the foundation; filters, editing and lazy loading are added as new properties without changing the model.
+- [Size] About 1.7 MB of wasm because of Paginator, Checkbox, Badge and the shared part of Table.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

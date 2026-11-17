@@ -1,6 +1,6 @@
-//! Страница Listbox: демонстрации `basic`, `multiple`, `group`, `filter`, `checkbox`, `checkmark`, `disabled`, `invalid`,
-//! `template` из showcase PrimeNG (`apps/showcase/doc/listbox`). Демонстрации с Angular Forms, виртуальной прокруткой и
-//! `dragdrop` не переносятся; в `template` вместо флагов с CDN — коды стран.
+//! Listbox page: demos `basic`, `multiple`, `group`, `filter`, `checkbox`, `checkmark`, `disabled`, `invalid`,
+//! `template` from the PrimeNG showcase (`apps/showcase/doc/listbox`). Demos with Angular Forms, virtual scroll and
+//! `dragdrop` are not ported; in `template` country codes instead of CDN flags.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -42,7 +42,7 @@ fn countries() -> Vec<ListboxOption> {
     .collect()
 }
 
-/// Страница `/listbox`.
+/// Page `/listbox`.
 #[component]
 pub fn ListboxPage() -> impl IntoView {
     let single = || RwSignal::new(None::<String>);

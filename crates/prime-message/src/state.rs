@@ -1,14 +1,14 @@
-//! Чистая логика Message: классы и `data-p` (по `messagestyle.ts` и `Message.dataP` PrimeNG).
+//! Pure Message logic: classes and `data-p` (from `messagestyle.ts` and PrimeNG `Message.dataP`).
 
 use prime_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
-/// Серьёзность сообщения (`p-message-<severity>`).
+/// Message severity (`p-message-<severity>`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum MessageSeverity {
     /// `success`.
     Success,
-    /// `info` (по умолчанию).
+    /// `info` (default).
     #[default]
     Info,
     /// `warn`.
@@ -22,7 +22,7 @@ pub enum MessageSeverity {
 }
 
 impl MessageSeverity {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Success => "success",
@@ -46,7 +46,7 @@ impl MessageSeverity {
     }
 }
 
-/// Вариант оформления (`p-message-<variant>`).
+/// Styling variant (`p-message-<variant>`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum MessageVariant {
     /// `outlined`.
@@ -58,7 +58,7 @@ pub enum MessageVariant {
 }
 
 impl MessageVariant {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Outlined => "outlined",
@@ -76,24 +76,24 @@ impl MessageVariant {
     }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of properties affecting classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct MessageState {
-    /// Серьёзность.
+    /// Severity.
     pub severity: MessageSeverity,
-    /// Вариант.
+    /// Variant.
     pub variant: Option<MessageVariant>,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
 }
 
-/// Добавляет классы корня в порядке `messagestyle.ts`.
+/// Appends root classes in `messagestyle.ts` order.
 pub fn write_classes(cn: &mut ClassNames, s: &MessageState) {
     cn.add("p-message p-component").add(s.severity.class()).add_opt(s.variant.map(MessageVariant::class));
     cn.add_if(s.size == Some(Size::Small), "p-message-sm").add_if(s.size == Some(Size::Large), "p-message-lg");
 }
 
-/// Значение `data-p`: `outlined`, `simple`, серьёзность, размер.
+/// `data-p` value: `outlined`, `simple`, severity, size.
 pub fn data_p(s: &MessageState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.variant == Some(MessageVariant::Outlined), "outlined")

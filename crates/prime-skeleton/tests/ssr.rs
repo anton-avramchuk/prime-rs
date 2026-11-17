@@ -1,4 +1,4 @@
-//! Структура DOM, классы, стиль, `size`, `pt` и паритет ветвей Skeleton (SSR).
+//! DOM structure, classes, style, `size`, `pt` and branch parity of Skeleton (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

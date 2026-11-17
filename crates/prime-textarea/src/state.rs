@@ -1,25 +1,25 @@
-//! Чистая логика Textarea: классы (по `textareastyle.ts` PrimeNG) и расчёт высоты при автоподгонке.
+//! Pure Textarea logic: classes (based on PrimeNG `textareastyle.ts`) and height calculation for auto-resize.
 
 use prime_core::{ClassNames, Size, Variant};
 
-/// Снимок свойств, влияющих на классы.
+/// Snapshot of the properties that affect classes.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct TextareaState {
-    /// Значение не пусто.
+    /// The value is not empty.
     pub filled: bool,
-    /// Включена автоподгонка высоты.
+    /// Automatic height adjustment is enabled.
     pub auto_resize: bool,
-    /// Итоговый вариант (свойство или `PrimeConfig.input_variant`).
+    /// Effective variant (the property or `PrimeConfig.input_variant`).
     pub variant: Option<Variant>,
-    /// На всю ширину контейнера.
+    /// Full width of the container.
     pub fluid: bool,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
 }
 
-/// Добавляет классы корня в порядке `textareastyle.ts`.
+/// Adds the root classes in the order of `textareastyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &TextareaState) {
     cn.add("p-textarea p-component")
         .add_if(s.filled, "p-filled")
@@ -31,16 +31,16 @@ pub fn write_classes(cn: &mut ClassNames, s: &TextareaState) {
         .add_if(s.invalid, "p-invalid");
 }
 
-/// Результат автоподгонки высоты.
+/// Result of the automatic height adjustment.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Fit {
-    /// Высота в пикселях.
+    /// Height in pixels.
     pub height: f64,
-    /// Вертикальная прокрутка (иначе `overflow: hidden`).
+    /// Vertical scrolling (otherwise `overflow: hidden`).
     pub scroll: bool,
 }
 
-/// Высота при автоподгонке: `scroll_height`, но не больше `max_height` (если он задан); при достижении предела включается прокрутка.
+/// Height for auto-resize: `scroll_height`, but no more than `max_height` (if set); when the limit is reached, scrolling is enabled.
 pub fn fit_height(scroll_height: f64, max_height: Option<f64>) -> Fit {
     match max_height {
         Some(max) if scroll_height >= max => Fit { height: max, scroll: true },

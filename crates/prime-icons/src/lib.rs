@@ -1,13 +1,13 @@
-//! SVG-иконки PrimeNG: по компоненту Leptos на иконку, каждая за своим feature-флагом.
+//! PrimeNG SVG icons: one Leptos component per icon, each behind its own feature flag.
 //!
-//! Данные контуров (`d`) и `viewBox` совпадают с `packages/primeng/src/icons`; код создаётся командой
-//! `cargo xtask gen-icons`. Не включённые иконки не попадают в сборку.
+//! Path data (`d`) and `viewBox` match `packages/primeng/src/icons`; the code is produced by the command
+//! `cargo xtask gen-icons`. Icons that are not enabled do not end up in the build.
 //!
-//! Общие свойства: `class`, `spin` (класс `p-icon-spin`), `size` (по умолчанию 14), `aria_label`.
-//! Без `aria_label` иконка декоративная (`aria-hidden="true"`), с ним — `role="img"` и `aria-label`.
+//! Common properties: `class`, `spin` (class `p-icon-spin`), `size` (14 by default), `aria_label`.
+//! Without `aria_label` the icon is decorative (`aria-hidden="true"`); with it, `role="img"` and `aria-label` are set.
 //!
-//! Одно отличие от PrimeNG: иконки с обёрткой `<g clip-path>` и `clipPath` на весь `viewBox` рисуются
-//! без неё, так как она ничего не обрезает; это сокращает DOM иконки примерно втрое.
+//! One difference from PrimeNG: icons with a `<g clip-path>` wrapper and a `clipPath` over the whole `viewBox` are drawn
+//! without it, since it clips nothing; this cuts the icon DOM by about a third.
 
 #[macro_use]
 mod icon;

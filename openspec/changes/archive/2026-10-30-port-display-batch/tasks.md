@@ -1,27 +1,27 @@
 # Tasks
 
-## 1. Новые крейты
+## 1. New crates
 
-- [x] 1.1 `crates/prime-overlaybadge` (`OverlayBadge`, `OverlayBadgePt`): крейт, компонент, SSR-тесты, rustdoc
-- [x] 1.2 `crates/prime-timeline` (`Timeline`, `TimelineAlign`, `TimelineLayout`, `TimelinePt`): `state.rs` с классами и `data_p` (табличный тест), компонент с шаблонами, SSR-тесты, rustdoc
-- [x] 1.3 `crates/prime-metergroup` (`MeterGroup`, `MeterItem`, `MeterGroupPt`, перечисления): `state.rs` с `percent`/`total_percent`/`cumulative` (табличные тесты), компонент с подписями и шаблонами, SSR-тесты, rustdoc
+- [x] 1.1 `crates/prime-overlaybadge` (`OverlayBadge`, `OverlayBadgePt`): crate, component, SSR tests, rustdoc
+- [x] 1.2 `crates/prime-timeline` (`Timeline`, `TimelineAlign`, `TimelineLayout`, `TimelinePt`): `state.rs` with classes and `data_p` (table-driven test), component with templates, SSR tests, rustdoc
+- [x] 1.3 `crates/prime-metergroup` (`MeterGroup`, `MeterItem`, `MeterGroupPt`, enums): `state.rs` with `percent`/`total_percent`/`cumulative` (table-driven tests), component with labels and templates, SSR tests, rustdoc
 
-## 2. Тема, showcase, e2e
+## 2. Theme, showcase, e2e
 
-- [x] 2.1 Добавить `overlaybadge`, `timeline`, `metergroup` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, убедиться, что CSS других компонентов не изменился
-- [x] 2.2 Страницы `/overlaybadge`, `/timeline`, `/metergroup`, меню, маршруты, `stylesheet(&[..])`; новые крейты в workspace
-- [x] 2.3 `e2e/tests/pages.json` и spec-файлы (угол бейджа, направление и позиции таймлайна, ширина отрезков и подписи); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test`
+- [x] 2.1 Add `overlaybadge`, `timeline`, `metergroup` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, make sure the CSS of other components has not changed
+- [x] 2.2 Pages `/overlaybadge`, `/timeline`, `/metergroup`, menu, routes, `stylesheet(&[..])`; new crates in the workspace
+- [x] 2.3 `e2e/tests/pages.json` and spec files (badge corner, timeline direction and positions, segment width and labels); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test`
 
-## 3. Бенчмарки и бюджеты
+## 3. Benchmarks and budgets
 
-- [x] 3.1 Сценарии `-1` и `-1000`, `case-*` и бюджеты для трёх крейтов (сначала `cargo bench -p render-bench --bench alloc`)
+- [x] 3.1 Scenarios `-1` and `-1000`, `case-*` and budgets for the three crates (first `cargo bench -p render-bench --bench alloc`)
 
-## 4. Интеграция
+## 4. Integration
 
-- [x] 4.1 `docs/display-batch.md` (отличия от PrimeNG: перечисление `align`, шаблоны-колбэки, иконки `MeterItem`, демонстрации без недостающих иконок)
-- [x] 4.2 `cargo fmt --all -- --check`, clippy с исключениями CI и с `--all-features`, тесты, deny, machete, `openspec validate port-display-batch`; CI `dev` зелёный
+- [x] 4.1 `docs/display-batch.md` (differences from PrimeNG: the `align` enum, callback templates, `MeterItem` icons, demos without the missing icons)
+- [x] 4.2 `cargo fmt --all -- --check`, clippy with the CI exceptions and with `--all-features`, tests, deny, machete, `openspec validate port-display-batch`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующая партия: модель `MenuItem` + `Breadcrumb` + `Steps`, затем InputOtp, ScrollTop, Password.
+- Archive after CI.
+- Next batch: the `MenuItem` model + `Breadcrumb` + `Steps`, then InputOtp, ScrollTop, Password.

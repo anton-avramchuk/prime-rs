@@ -1,86 +1,86 @@
 # menu Specification
 
 ## Purpose
-Menu показывает список команд и ссылок с группами и разделителями, статичный или всплывающий у элемента-цели, и управляется мышью и клавишами.
+Menu shows a list of commands and links with groups and separators, static or popping up at a target element, and is controlled by mouse and keys.
 
 ## Requirements
 
-### Requirement: Разметка списка
-`Menu` крейта `prime-menu` SHALL выводить `div.p-menu.p-component` с `data-p`, внутри — `ul.p-menu-list[role=menu]` с `tabindex`, `aria-label`, `aria-labelledby`, `aria-activedescendant` (пока есть фокус) и пунктами `li.p-menu-item[role=menuitem]` с `id`, `aria-label`, `aria-disabled` и `data-p-disabled`, в которых `div.p-menu-item-content` > `a.p-menu-item-link` (`tabindex=-1`, `href` из `url`, `target`, `title`) со значком `span.p-menu-item-icon` (если есть `icon`) и `span.p-menu-item-label`. `style_class`, `style` и `pt` SHALL применяться к корню; `style_class`/`style` пункта — к `li`.
+### Requirement: List markup
+`Menu` of the `prime-menu` crate SHALL render `div.p-menu.p-component` with `data-p`, containing `ul.p-menu-list[role=menu]` with `tabindex`, `aria-label`, `aria-labelledby`, `aria-activedescendant` (while focused) and items `li.p-menu-item[role=menuitem]` with `id`, `aria-label`, `aria-disabled` and `data-p-disabled`, in which `div.p-menu-item-content` > `a.p-menu-item-link` (`tabindex=-1`, `href` from `url`, `target`, `title`) with an icon `span.p-menu-item-icon` (if `icon` is set) and `span.p-menu-item-label`. `style_class`, `style` and `pt` SHALL apply to the root; the item's `style_class`/`style` — to `li`.
 
-#### Scenario: Простая модель
-- **WHEN** отрисован `Menu` с пунктами «New» и «Search»
-- **THEN** выведены два `li.p-menu-item` с подписями в `.p-menu-item-label`
+#### Scenario: Simple model
+- **WHEN** a `Menu` with the items "New" and "Search" is rendered
+- **THEN** two `li.p-menu-item` are rendered with labels in `.p-menu-item-label`
 
-#### Scenario: Пункт со ссылкой
-- **WHEN** у пункта задан `url`
-- **THEN** `a.p-menu-item-link` имеет этот `href`
+#### Scenario: Item with a link
+- **WHEN** an item has `url` set
+- **THEN** `a.p-menu-item-link` has this `href`
 
-### Requirement: Группы и разделители
-Пункт с `items` SHALL выводить `li.p-menu-submenu-label[role=none]` с подписью и затем свои подпункты; пункт с `separator` SHALL выводиться как `li.p-menu-separator[role=separator]`. Невидимые (`visible=false`) пункты и группы SHALL не выводиться.
+### Requirement: Groups and separators
+An item with `items` SHALL render `li.p-menu-submenu-label[role=none]` with the label and then its subitems; an item with `separator` SHALL be rendered as `li.p-menu-separator[role=separator]`. Invisible (`visible=false`) items and groups SHALL NOT be rendered.
 
-#### Scenario: Группа
-- **WHEN** модель содержит группу «Documents» с двумя пунктами
-- **THEN** выведены заголовок «Documents» и два `li.p-menu-item`
+#### Scenario: Group
+- **WHEN** the model contains a group "Documents" with two items
+- **THEN** the header "Documents" and two `li.p-menu-item` are rendered
 
-#### Scenario: Невидимый пункт
-- **WHEN** у пункта `visible=false`
-- **THEN** его нет в разметке
+#### Scenario: Invisible item
+- **WHEN** an item has `visible=false`
+- **THEN** it is absent from the markup
 
-### Requirement: Команда пункта
-Клик по пункту SHALL вызывать его `command` с событием и пунктом; у пункта без `url` переход по ссылке SHALL отменяться. Клик по отключённому пункту SHALL отменять переход и не вызывать `command`. Пункт с `disabled` SHALL иметь `p-disabled`.
+### Requirement: Item command
+A click on an item SHALL call its `command` with the event and the item; for an item without `url`, following the link SHALL be cancelled. A click on a disabled item SHALL cancel navigation and not call `command`. An item with `disabled` SHALL have `p-disabled`.
 
-#### Scenario: Команда
-- **WHEN** пользователь кликает по пункту с `command`
-- **THEN** `command` вызван один раз с этим пунктом
+#### Scenario: Command
+- **WHEN** the user clicks an item with `command`
+- **THEN** `command` is called once with this item
 
-#### Scenario: Отключённый пункт
-- **WHEN** пользователь кликает по пункту с `disabled`
-- **THEN** `command` не вызван
+#### Scenario: Disabled item
+- **WHEN** the user clicks an item with `disabled`
+- **THEN** `command` is not called
 
-### Requirement: Навигация клавишами
-Список SHALL принимать фокус; в статичном режиме при получении фокуса фокусируется первый доступный пункт (`p-focus`, `aria-activedescendant`). ↓/↑ SHALL переходить к следующему/предыдущему доступному пункту (отключённые пропускаются), Home/End — к первому/последнему, Enter и Space — активировать пункт (клик по его ссылке). При потере фокуса `p-focus` и `aria-activedescendant` SHALL сниматься. Вызывать `on_focus`/`on_blur`.
+### Requirement: Keyboard navigation
+The list SHALL accept focus; in static mode, when it receives focus the first available item is focused (`p-focus`, `aria-activedescendant`). Down/Up SHALL move to the next/previous available item (disabled ones are skipped), Home/End — to the first/last, Enter and Space — activate the item (a click on its link). When focus is lost, `p-focus` and `aria-activedescendant` SHALL be removed. `on_focus`/`on_blur` SHALL be called.
 
-#### Scenario: Стрелка вниз
-- **WHEN** список в фокусе на первом пункте и нажата ↓
-- **THEN** `p-focus` у второго доступного пункта
+#### Scenario: Down arrow
+- **WHEN** the list is focused on the first item and Down is pressed
+- **THEN** `p-focus` is on the second available item
 
 #### Scenario: Enter
-- **WHEN** сфокусирован пункт с `command` и нажат Enter
-- **THEN** `command` вызван
+- **WHEN** an item with `command` is focused and Enter is pressed
+- **THEN** `command` is called
 
-### Requirement: Всплывающий режим
-При `popup` меню SHALL не выводиться, пока оно не показано; `MenuRef::toggle(event)`/`show(event)` SHALL показывать его у `currentTarget` события (`position: absolute`, класс `p-menu-overlay`, выравнивание по цели), фокусировать список и вызывать `on_show`; `hide()`, клик по пункту, клик вне меню и цели, resize окна (кроме сенсорных устройств) и прокрутка вложенного предка цели SHALL скрывать его с вызовом `on_hide`. Escape и Tab SHALL скрывать меню и возвращать фокус на цель; Alt+↑ — то же.
+### Requirement: Popup mode
+With `popup` the menu SHALL NOT be rendered until it is shown; `MenuRef::toggle(event)`/`show(event)` SHALL show it at the event's `currentTarget` (`position: absolute`, class `p-menu-overlay`, aligned to the target), focus the list and call `on_show`; `hide()`, a click on an item, a click outside the menu and the target, a window resize (except on touch devices) and scrolling of a nested ancestor of the target SHALL hide it, calling `on_hide`. Escape and Tab SHALL hide the menu and return focus to the target; Alt+Up — the same.
 
-#### Scenario: Показ
-- **WHEN** вызван `toggle` от клика по кнопке
-- **THEN** появился `.p-menu.p-menu-overlay` рядом с кнопкой, список в фокусе
+#### Scenario: Show
+- **WHEN** `toggle` is called from a button click
+- **THEN** `.p-menu.p-menu-overlay` appears next to the button, the list is focused
 
-#### Scenario: Клик вне
-- **WHEN** меню показано, пользователь кликает вне него и вне цели
-- **THEN** меню скрыто
+#### Scenario: Outside click
+- **WHEN** the menu is shown and the user clicks outside it and outside the target
+- **THEN** the menu is hidden
 
 #### Scenario: Escape
-- **WHEN** меню показано и нажат Escape
-- **THEN** меню скрыто, фокус на цели
+- **WHEN** the menu is shown and Escape is pressed
+- **THEN** the menu is hidden, focus is on the target
 
-### Requirement: Слой
-При `auto_z_index` показанное всплывающее меню SHALL получать `z-index` группы `Menu` со смещением `base_z_index`; после скрытия индекс SHALL освобождаться.
+### Requirement: Layer
+With `auto_z_index` the shown popup menu SHALL get the `z-index` of the `Menu` group offset by `base_z_index`; after hiding the index SHALL be released.
 
-#### Scenario: Слой
-- **WHEN** меню показано, затем скрыто
-- **THEN** `z-index` был задан и освобождён
+#### Scenario: Layer
+- **WHEN** the menu is shown, then hidden
+- **THEN** `z-index` was set and released
 
-### Requirement: Свои представления
-`item` SHALL заменять содержимое `div.p-menu-item-content` пункта и получать пункт; `submenu_header` — содержимое заголовка группы; `start` и `end` — выводиться в `div.p-menu-start` до списка и `div.p-menu-end` после.
+### Requirement: Custom views
+`item` SHALL replace the content of the item's `div.p-menu-item-content` and receive the item; `submenu_header` — the content of the group header; `start` and `end` — be rendered in `div.p-menu-start` before the list and `div.p-menu-end` after it.
 
-#### Scenario: Шаблон пункта
-- **WHEN** задан `item`
-- **THEN** внутри `.p-menu-item-content` только переданное представление
+#### Scenario: Item template
+- **WHEN** `item` is set
+- **THEN** inside `.p-menu-item-content` there is only the passed view
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) статичный `Menu` SHALL отрисовываться полностью, всплывающий — не выводиться; `window` и `document` SHALL не использоваться.
+### Requirement: Rendering without a browser
+Outside the browser (SSR) a static `Menu` SHALL be rendered fully, a popup one SHALL NOT be rendered; `window` and `document` SHALL NOT be used.
 
 #### Scenario: SSR
-- **WHEN** страница со статичным `Menu` отрисована на сервере
-- **THEN** в разметке есть `ul.p-menu-list` с пунктами
+- **WHEN** a page with a static `Menu` is rendered on the server
+- **THEN** the markup contains `ul.p-menu-list` with items

@@ -1,9 +1,9 @@
-//! Avatar — порт `p-avatar` из PrimeNG 21.1.10.
+//! Avatar: a port of `p-avatar` from PrimeNG 21.1.10.
 //!
-//! Разметка, классы и `data-p` совпадают с PrimeNG; вместо хост-элемента `<p-avatar>` отрисовывается `<div class="p-avatar …">`.
-//! Содержимое: `children`, затем метка, иначе иконка, иначе изображение.
+//! Markup, classes and `data-p` match PrimeNG; instead of the host element `<p-avatar>` a `<div class="p-avatar …">` is rendered.
+//! Content: `children`, then the label, otherwise the icon, otherwise the image.
 //!
-//! Свойства — [`Prop`]/[`OptProp`]; если все они статические, компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! Properties are [`Prop`]/[`OptProp`]; if all of them are static, the component renders ready-made values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -23,58 +23,58 @@ use std::sync::Arc;
 
 pub use state::{AvatarShape, AvatarSize, AvatarState, data_p, write_classes};
 
-/// Pass-through частей Avatar.
+/// Pass-through parts of Avatar.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct AvatarPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Метка (`span.p-avatar-label`).
+    /// Label (`span.p-avatar-label`).
     pub label: Pt,
-    /// Иконка (`span.p-avatar-icon`).
+    /// Icon (`span.p-avatar-icon`).
     pub icon: Pt,
-    /// Изображение (`img`).
+    /// Image (`img`).
     pub image: Pt,
 }
 
-/// Аватар: метка, иконка или изображение.
+/// Avatar: a label, an icon or an image.
 ///
-/// Каждое свойство принимает значение или сигнал. Приоритет блоков: метка, иконка, изображение.
+/// Every property accepts a value or a signal. Block priority: label, icon, image.
 #[component]
 pub fn Avatar(
-    /// Текст метки.
+    /// Label text.
     #[prop(optional, into)]
     label: OptProp<String>,
-    /// Иконка; выводится в `span.p-avatar-icon`, если нет метки.
+    /// Icon; rendered in `span.p-avatar-icon` when there is no label.
     #[prop(optional, into)]
     icon: Option<ViewFn>,
-    /// URL изображения; выводится, если нет метки и иконки.
+    /// Image URL; rendered when there is neither a label nor an icon.
     #[prop(optional, into)]
     image: OptProp<String>,
-    /// Размер (по умолчанию `normal`).
+    /// Size (`normal` by default).
     #[prop(optional, into)]
     size: Prop<AvatarSize>,
-    /// Форма (по умолчанию `square`).
+    /// Shape (`square` by default).
     #[prop(optional, into)]
     shape: Prop<AvatarShape>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Additional class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Атрибут `aria-label` корня и изображения.
+    /// `aria-label` attribute of the root and the image.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` корня.
+    /// `aria-labelledby` attribute of the root.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Вызывается при ошибке загрузки изображения.
+    /// Called when the image fails to load.
     #[prop(optional, into)]
     on_image_error: Option<Callback<web_sys::Event>>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<AvatarPt>,
-    /// Содержимое перед меткой, иконкой и изображением.
+    /// Content before the label, icon and image.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -116,7 +116,7 @@ pub fn Avatar(
     }
 }
 
-/// Разметка Avatar: одна для статической и реактивной ветвей (меняются только выражения атрибутов и блока).
+/// Avatar markup: shared by the static and reactive branches (only the attribute and block expressions differ).
 macro_rules! avatar_markup {
     ($class:expr, $style:expr, $data:expr, $aria:expr, $labelledby:expr, $attrs:expr, $content:expr, $block:expr) => {
         view! {
@@ -149,7 +149,7 @@ fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 
-/// Один из блоков: метка, иначе иконка, иначе изображение.
+/// One of the blocks: label, otherwise icon, otherwise image.
 fn block_of(props: &Props, pt: &AvatarPt, on_image_error: Option<Callback<web_sys::Event>>) -> Option<AnyView> {
     let data = data_of(props);
     if let Some(label) = props.label.get().filter(|s| !s.is_empty()) {
@@ -184,7 +184,7 @@ fn block_of(props: &Props, pt: &AvatarPt, on_image_error: Option<Callback<web_sy
     )
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     label: OptProp<String>,
     image: OptProp<String>,

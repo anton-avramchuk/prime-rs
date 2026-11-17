@@ -1,4 +1,4 @@
-//! Разметка DataView (SSR): список и сетка, пагинатор, пустое состояние, загрузка, заголовок и подвал, сортировка, фильтр, `pt`.
+//! DataView markup (SSR): list and grid, paginator, empty state, loading, header and footer, sorting, filter, `pt`.
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 
@@ -53,12 +53,12 @@ fn paginator_slices_the_page() {
         let first = RwSignal::new(20usize);
         view! { <DataView value=items(25) list=list() paginator=true default_rows=10usize first=first /> }.to_html()
     });
-    assert_eq!(html.matches("class=\"item\"").count(), 5, "последняя страница: {html}");
+    assert_eq!(html.matches("class=\"item\"").count(), 5, "last page: {html}");
     let html = render(|| {
         let first = RwSignal::new(90usize);
         view! { <DataView value=items(25) list=list() paginator=true default_rows=10usize first=first /> }.to_html()
     });
-    assert_eq!(html.matches("class=\"item\"").count(), 5, "first за пределами возвращается на последнюю страницу: {html}");
+    assert_eq!(html.matches("class=\"item\"").count(), 5, "first beyond the range returns to the last page: {html}");
 }
 
 #[test]
@@ -84,7 +84,7 @@ fn sort_and_filter() {
     let cmp = Callback::new(|(a, b): (i32, i32)| a.cmp(&b));
     let html = render(|| view! { <DataView value=vec![3, 1, 2] list=list() compare=cmp sort_order=-1 /> }.to_html());
     let order: Vec<usize> = ["class=\"item\">3", "class=\"item\">2", "class=\"item\">1"].iter().map(|n| html.find(n).unwrap()).collect();
-    assert!(order.windows(2).all(|w| w[0] < w[1]), "по убыванию: {html}");
+    assert!(order.windows(2).all(|w| w[0] < w[1]), "descending: {html}");
     let only_odd = Callback::new(|n: i32| n % 2 == 1);
     let html = render(|| view! { <DataView value=items(6) list=list() filter=only_odd /> }.to_html());
     assert_eq!(html.matches("class=\"item\"").count(), 3, "{html}");
@@ -101,7 +101,7 @@ fn empty_loading_header_footer() {
     assert!(html.contains("<i>Custom</i>"), "{html}");
     let html = render(|| view! { <DataView value={Vec::<i32>::new()} list=list() loading=true /> }.to_html());
     assert!(html.contains("p-dataview-loading-overlay p-overlay-mask") && html.contains("p-dataview-loading-icon"), "{html}");
-    assert!(!html.contains("p-dataview-empty-message"), "при загрузке сообщения нет: {html}");
+    assert!(!html.contains("p-dataview-empty-message"), "no message while loading: {html}");
     let html = render(|| {
         view! {
             <DataView
@@ -125,7 +125,7 @@ fn lazy_shows_value_as_is() {
         view! { <DataView value=items(10) list=list() paginator=true lazy=true total_records=100usize default_rows=10usize /> }.to_html()
     });
     assert_eq!(html.matches("class=\"item\"").count(), 10, "{html}");
-    assert!(html.contains(">10<"), "страницы считаются по total_records: {html}");
+    assert!(html.contains(">10<"), "pages are counted by total_records: {html}");
 }
 
 #[test]

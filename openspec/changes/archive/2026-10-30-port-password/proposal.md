@@ -2,27 +2,27 @@
 
 ## Why
 
-Password — последний компонент плана волны 2: поле ввода пароля с индикатором надёжности и переключателем показа. Он собирается из уже портированных `InputText`, иконок и оверлейного механизма `Select` (выравнивание, z-index группы `Overlay`, закрытие по клику снаружи).
+Password is the last component of the wave 2 plan: a password input field with a strength indicator and a show toggle. It is assembled from the already ported `InputText`, icons and the overlay mechanism of `Select` (alignment, `Overlay` group z-index, closing on an outside click).
 
 ## What Changes
 
-- Новый крейт `prime-password` с компонентом `Password` (порт `p-password` из PrimeNG 21.1.10): корень `span.p-password.p-component.p-inputwrapper` с полем `InputText` (`p-password-input`, `type=password`), необязательными значками очистки и показа/скрытия и панелью-подсказкой `div.p-password-overlay` с шкалой надёжности (`p-password-meter`, `p-password-meter-label`, `p-password-meter-text`).
-- Свойства: `value` (`RwSignal<String>`), `feedback` (по умолчанию `true`), `toggle_mask`, `show_clear`, `prompt_label`, `weak_label`, `medium_label`, `strong_label` (по умолчанию из локали), `strength` (своя оценка надёжности), `placeholder`, `autocomplete`, `input_id`, `input_style`, `input_style_class`, `max_length`, `disabled`, `readonly`, `invalid`, `required`, `variant`, `size`, `fluid`, `aria_label`, `style`, `style_class`, `pt`; шаблоны `header`, `footer`, `content`, `show_icon`, `hide_icon`, `clear_icon` — `ViewFn`; обратные вызовы `on_focus`, `on_blur`, `on_clear`.
-- Надёжность: пусто → подсказка; непусто → слабая; «средняя» — не менее 6 символов и два вида из {строчные, прописные, цифры}; «сильная» — не менее 8 символов и все три вида (то же, что регулярные выражения PrimeNG по умолчанию, но без `mediumRegex`/`strongRegex`).
-- Панель: открывается по фокусу и вводу, закрывается по `Escape`, потере фокуса; выравнивается под полем (`align_overlay`), z-index группы `Overlay`, анимация классами `p-password-enter`/`p-password-leave`.
-- Страница showcase `/password` с демонстрациями `basic`, `meter`, `togglemask`, `clearicon`, `template`, `locale`, `filled`, `sizes`, `fluid`, `disabled`, `invalid`, `floatlabel`, `iftalabel`; e2e; бенчмарки и бюджеты; `docs/password.md`.
-- Стили: `password` добавляется в `theme.components` и `primeng_extra` (блок `/* For PrimeNG */` с анимациями и `min-width`).
-- **Не входит:** `tabindex` и `aria-labelledby` поля (их нет у `InputText`), директива `pPassword` (рядом с `InputText` она не нужна), `mediumRegex`/`strongRegex` (вместо них `strength`), `appendTo` кроме `self`, `overlayOptions`, `motionOptions` и устаревшие `showTransitionOptions`/`hideTransitionOptions`, привязки Angular Forms (`ngModel`, reactive forms), `pt` по частям с контекстом.
+- New crate `prime-password` with the `Password` component (port of `p-password` from PrimeNG 21.1.10): root `span.p-password.p-component.p-inputwrapper` with an `InputText` field (`p-password-input`, `type=password`), optional clear and show/hide icons and a hint panel `div.p-password-overlay` with a strength meter (`p-password-meter`, `p-password-meter-label`, `p-password-meter-text`).
+- Properties: `value` (`RwSignal<String>`), `feedback` (`true` by default), `toggle_mask`, `show_clear`, `prompt_label`, `weak_label`, `medium_label`, `strong_label` (from the locale by default), `strength` (custom strength estimate), `placeholder`, `autocomplete`, `input_id`, `input_style`, `input_style_class`, `max_length`, `disabled`, `readonly`, `invalid`, `required`, `variant`, `size`, `fluid`, `aria_label`, `style`, `style_class`, `pt`; templates `header`, `footer`, `content`, `show_icon`, `hide_icon`, `clear_icon` — `ViewFn`; callbacks `on_focus`, `on_blur`, `on_clear`.
+- Strength: empty → prompt; non-empty → weak; "medium" — at least 6 characters and two kinds of {lowercase, uppercase, digits}; "strong" — at least 8 characters and all three kinds (same as the default PrimeNG regular expressions, but without `mediumRegex`/`strongRegex`).
+- Panel: opens on focus and input, closes on `Escape` and focus loss; aligned below the field (`align_overlay`), `Overlay` group z-index, animation by the classes `p-password-enter`/`p-password-leave`.
+- Showcase page `/password` with the demos `basic`, `meter`, `togglemask`, `clearicon`, `template`, `locale`, `filled`, `sizes`, `fluid`, `disabled`, `invalid`, `floatlabel`, `iftalabel`; e2e; benchmarks and budgets; `docs/password.md`.
+- Styles: `password` is added to `theme.components` and `primeng_extra` (the `/* For PrimeNG */` block with animations and `min-width`).
+- **Out of scope:** the field's `tabindex` and `aria-labelledby` (`InputText` does not have them), the `pPassword` directive (not needed next to `InputText`), `mediumRegex`/`strongRegex` (`strength` instead), `appendTo` other than `self`, `overlayOptions`, `motionOptions` and the deprecated `showTransitionOptions`/`hideTransitionOptions`, Angular Forms bindings (`ngModel`, reactive forms), per-part `pt` with context.
 
 ## Capabilities
 
 ### New Capabilities
-- `password`: поле пароля с индикатором надёжности, переключателем показа и очисткой.
+- `password`: a password field with a strength indicator, show toggle and clearing.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-password` (`publish = false`); зависимости: `prime-core`, `prime-dom`, `prime-inputtext`, `prime-icons` (`eye`, `eyeslash`, `times`), `web-sys`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (браузерный job, три места).
+- New crate `crates/prime-password` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-inputtext`, `prime-icons` (`eye`, `eyeslash`, `times`), `web-sys`.
+- Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

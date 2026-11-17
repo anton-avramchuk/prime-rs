@@ -1,37 +1,37 @@
 # Accordion
 
-Порт `p-accordion` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10 `p-accordion` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-accordion::{Accordion, AccordionPanel, AccordionHeader, AccordionContent}` | `packages/primeng/src/accordion/accordion.ts`, `accordion/style/accordionstyle.ts` |
-| Анимация | `prime-core::collapsible::bind_region_with` (общая с Panel и Fieldset) |
-| CSS | `@primeuix/styles/accordion`, блок `/* For PrimeNG */` из `accordionstyle.ts` (`primeng_extra` в `upstream.toml`), базовые `p-collapsible-*` |
-| Демонстрации | `apps/showcase/doc/accordion/*-doc.ts` (`basic`, `multiple`, `disabled`, `controlled`, `dynamic`, `template`) |
+| Animation | `prime-core::collapsible::bind_region_with` (shared with Panel and Fieldset) |
+| CSS | `@primeuix/styles/accordion`, the `/* For PrimeNG */` block from `accordionstyle.ts` (`primeng_extra` in `upstream.toml`), base `p-collapsible-*` |
+| Demos | `apps/showcase/doc/accordion/*-doc.ts` (`basic`, `multiple`, `disabled`, `controlled`, `dynamic`, `template`) |
 
-Спека: `openspec/specs/accordion`, `openspec/specs/collapsible`.
+Spec: `openspec/specs/accordion`, `openspec/specs/collapsible`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы и атрибуты: `p-accordion p-component`, `p-accordionpanel` (+ `p-accordionpanel-active`, `p-disabled`), `p-accordionheader`, `p-accordionheader-toggle-icon`, `p-accordioncontent`, `p-accordioncontent-wrapper`, `p-accordioncontent-content`, `data-p-active`, `data-p-disabled`, `data-p="active"`.
-- Заголовок: `role="button"`, `aria-expanded`, `aria-controls`, `aria-disabled`, `tabindex` `0`/`-1`; содержимое: `role="region"`, `aria-labelledby`; идентификаторы `{id}_accordionheader_{value}` и `{id}_accordioncontent_{value}`.
-- Клавиатура: Enter/Space/NumpadEnter переключают, ArrowDown/ArrowUp/Home/End переносят фокус с пропуском отключённых панелей и переходом по кругу; `select_on_focus`.
-- События `on_open` и `on_close` только при клике по заголовку (как в PrimeNG: переключение с клавиатуры их не вызывает) и только для той панели, по которой кликнули.
+- Classes and attributes: `p-accordion p-component`, `p-accordionpanel` (+ `p-accordionpanel-active`, `p-disabled`), `p-accordionheader`, `p-accordionheader-toggle-icon`, `p-accordioncontent`, `p-accordioncontent-wrapper`, `p-accordioncontent-content`, `data-p-active`, `data-p-disabled`, `data-p="active"`.
+- Header: `role="button"`, `aria-expanded`, `aria-controls`, `aria-disabled`, `tabindex` `0`/`-1`; content: `role="region"`, `aria-labelledby`; identifiers `{id}_accordionheader_{value}` and `{id}_accordioncontent_{value}`.
+- Keyboard: Enter/Space/NumpadEnter toggle, ArrowDown/ArrowUp/Home/End move focus skipping disabled panels and wrapping around; `select_on_focus`.
+- The `on_open` and `on_close` events fire only on a header click (as in PrimeNG: toggling from the keyboard does not call them) and only for the panel that was clicked.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| `value` — `RwSignal<Vec<String>>` для обоих режимов; начальное значение без сигнала — `default_value` | В PrimeNG `value` — `string \| number \| array`; один тип проще для Rust. Числа приводятся через `to_string`. |
-| Четыре компонента связаны контекстом Leptos (`provide_context`/`use_context`), а не DI Angular | Аналог `inject(forwardRef(() => Accordion))`. Части вне `Accordion`/`AccordionPanel` паникуют с понятным сообщением. |
-| Шеврон «вниз» тоже получает класс `p-accordionheader-toggle-icon` | В PrimeNG он есть только у шеврона «вверх» и у иконок из CSS-классов. |
-| Слот `toggle_icon_template` вместо `expandIcon`/`collapseIcon` (CSS-классы иконок) | Шрифтов иконок в порте нет, слот принимает любой SVG. |
-| Неактивное содержимое скрывается `display: none`, а не `visibility` | Как у Panel и Fieldset; общий механизм `collapsible`. |
-| Корень анимации — `div.p-motion` внутри `p-accordioncontent` | Повторяет место `p-motion` PrimeNG, чтобы работало правило `.p-accordioncontent .p-motion` из его CSS. |
-| Без ripple, `BlockableUI`, `transitionOptions`, `motionOptions` | Вне объёма change; анимация настраивается CSS темы. |
-| Нет демонстрации `accessibility` | Это текстовая справка PrimeNG без интерактивного примера. |
+| `value` is `RwSignal<Vec<String>>` for both modes; the initial value without a signal is `default_value` | In PrimeNG `value` is `string \| number \| array`; a single type is simpler for Rust. Numbers are converted via `to_string`. |
+| The four components are linked by the Leptos context (`provide_context`/`use_context`), not by Angular DI | An analogue of `inject(forwardRef(() => Accordion))`. Parts outside `Accordion`/`AccordionPanel` panic with a clear message. |
+| The "down" chevron also gets the class `p-accordionheader-toggle-icon` | In PrimeNG only the "up" chevron and icons from CSS classes have it. |
+| The `toggle_icon_template` slot instead of `expandIcon`/`collapseIcon` (CSS icon classes) | The port has no icon fonts, the slot accepts any SVG. |
+| Inactive content is hidden with `display: none`, not `visibility` | As in Panel and Fieldset; the shared `collapsible` mechanism. |
+| The animation root is `div.p-motion` inside `p-accordioncontent` | Repeats PrimeNG's `p-motion` placement so that the `.p-accordioncontent .p-motion` rule from its CSS works. |
+| Without ripple, `BlockableUI`, `transitionOptions`, `motionOptions` | Out of the change's scope; animation is configured by the theme CSS. |
+| No `accessibility` demo | It is PrimeNG's text reference without an interactive example. |
 
-## Производительность
+## Performance
 
-SSR: 235 аллокаций на аккордеон из трёх панелей (бюджет 260), около 78 на панель; вклад в сырой wasm +231 КБ (бюджет 265 КБ) — основная часть это привязки `web-sys`, обработчики событий и две иконки-шеврона.
-Статической ветви нет: активность каждой панели зависит от общего сигнала.
+SSR: 235 allocations for an accordion of three panels (budget 260), about 78 per panel; contribution to raw wasm +231 KB (budget 265 KB) — most of it is `web-sys` bindings, event handlers and two chevron icons.
+There is no static branch: the activity of each panel depends on the shared signal.

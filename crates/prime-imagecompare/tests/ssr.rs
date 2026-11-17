@@ -1,4 +1,4 @@
-//! Разметка ImageCompare (SSR): состав и порядок, атрибуты ползунка, доступность, `style`/`pt`.
+//! ImageCompare markup (SSR): composition and order, slider attributes, accessibility, `style`/`pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -19,12 +19,12 @@ fn markup_has_both_views_and_a_range_slider_in_order() {
     let html = render(|| view! { <ImageCompare left=left right=right /> }.to_html());
     assert!(html.contains("class=\"p-imagecompare\""), "{html}");
     let (l, r, s) = (html.find("left.jpg").unwrap(), html.find("right.jpg").unwrap(), html.find("p-imagecompare-slider").unwrap());
-    assert!(l < r && r < s, "порядок: левый, правый, ползунок: {html}");
+    assert!(l < r && r < s, "order: left, right, slider: {html}");
     assert!(
         html.contains("type=\"range\"") && html.contains("min=\"0\"") && html.contains("max=\"100\"") && html.contains("value=\"50\""),
         "{html}"
     );
-    // представления без обёрток: оба <img> — непосредственные дети корня
+    // views without wrappers: both <img> are direct children of the root
     let inner = html.split_once("p-imagecompare\">").unwrap().1;
     assert!(inner.starts_with("<img src=\"left.jpg\"><img src=\"right.jpg\"><input"), "{html}");
 }
@@ -55,5 +55,5 @@ fn style_class_and_pt() {
 fn no_clip_path_is_rendered_before_the_first_input() {
     let (left, right) = two_images();
     let html = render(|| view! { <ImageCompare left=left right=right /> }.to_html());
-    assert!(!html.contains("clip-path"), "до ввода обрезку задаёт только тема: {html}");
+    assert!(!html.contains("clip-path"), "before input the clipping is set only by the theme: {html}");
 }

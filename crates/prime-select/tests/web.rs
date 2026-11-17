@@ -1,5 +1,5 @@
-//! Поведение Select в реальном браузере (wasm-bindgen-test): открытие и закрытие, выбор мышью и клавишей, пропуск отключённых,
-//! набор символов, поиск, группы, очистка, блокировки, фокус, внешние сигналы, положение и z-index панели.
+//! Select behaviour in a real browser (wasm-bindgen-test): open and close, selection by mouse and key, skipping disabled,
+//! type-ahead, search, groups, clear, locks, focus, external signals, panel position and z-index.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -23,7 +23,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -38,7 +38,7 @@ fn li(host: &HtmlElement, i: u32) -> HtmlElement {
     host.query_selector_all(".p-select-option, .p-select-option-group")
         .unwrap()
         .item(i)
-        .unwrap_or_else(|| panic!("нет элемента {i}"))
+        .unwrap_or_else(|| panic!("no element {i}"))
         .dyn_into()
         .unwrap()
 }
@@ -100,7 +100,7 @@ async fn click_opens_and_closes_the_panel_and_reports_show_and_hide() {
     assert!(has(&host, ".p-select-overlay"));
     assert_eq!(label(&host).get_attribute("aria-expanded").as_deref(), Some("true"));
     assert!(root.class_name().contains("p-select-open"));
-    assert!(active_is(&label(&host)), "после клика фокус на метке");
+    assert!(active_is(&label(&host)), "focus is on the label after the click");
     root.click();
     leptos::task::tick().await;
     assert!(!has(&host, ".p-select-overlay"));
@@ -118,8 +118,8 @@ async fn panel_gets_a_z_index_and_position_while_open() {
     leptos::task::tick().await;
     let overlay = q(&host, ".p-select-overlay");
     let z: i32 = overlay.style().get_property_value("z-index").unwrap().parse().unwrap();
-    assert!(z >= 1000, "z-index группы оверлеев: {z}");
-    assert!(!overlay.style().get_property_value("top").unwrap().is_empty(), "положение не рассчитано");
+    assert!(z >= 1000, "overlay group z-index: {z}");
+    assert!(!overlay.style().get_property_value("top").unwrap().is_empty(), "position not computed");
     assert!(!overlay.style().get_property_value("min-width").unwrap().is_empty());
     host.remove();
 }
@@ -134,14 +134,14 @@ async fn outside_click_escape_and_tab_close_the_panel() {
     leptos::task::tick().await;
     doc().body().unwrap().click();
     leptos::task::tick().await;
-    assert!(!has(&host, ".p-select-overlay"), "клик снаружи не закрыл панель");
-    // Escape возвращает фокус на метку и не меняет значение
+    assert!(!has(&host, ".p-select-overlay"), "click outside did not close the panel");
+    // Escape returns focus to the label and does not change the value
     q(&host, ".p-select").click();
     leptos::task::tick().await;
     press(&host, "Escape");
     leptos::task::tick().await;
     assert!(!has(&host, ".p-select-overlay") && value.get_untracked().is_none() && active_is(&label(&host)));
-    // Tab выбирает вариант под фокусом и закрывает панель
+    // Tab selects the focused option and closes the panel
     q(&host, ".p-select").click();
     leptos::task::tick().await;
     li(&host, 2).dispatch_event(&Event::new("mouseenter").unwrap()).unwrap();
@@ -163,15 +163,15 @@ async fn clicking_an_option_selects_it_once_and_skips_disabled_ones() {
     leptos::task::tick().await;
     li(&host, 1).click();
     leptos::task::tick().await;
-    assert_eq!(value.get_untracked(), None, "отключённый вариант выбран");
-    assert!(has(&host, ".p-select-overlay"), "панель закрылась от клика по отключённому");
+    assert_eq!(value.get_untracked(), None, "disabled option was selected");
+    assert!(has(&host, ".p-select-overlay"), "the panel closed on a click on a disabled option");
     li(&host, 2).click();
     leptos::task::tick().await;
     assert_eq!(value.get_untracked().as_deref(), Some("LDN"));
     assert!(!has(&host, ".p-select-overlay"));
     assert_eq!(label(&host).text_content().unwrap(), "London");
     assert!(active_is(&label(&host)));
-    // повторный выбор того же варианта только закрывает панель
+    // selecting the same option again only closes the panel
     q(&host, ".p-select").click();
     leptos::task::tick().await;
     li(&host, 2).click();
@@ -188,15 +188,15 @@ async fn keyboard_navigation_selects_with_enter_and_skips_disabled() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <Select options=cities() value=value on_change=on_change /> });
     leptos::task::tick().await;
     label(&host).focus().unwrap();
-    assert!(!key(&label(&host), "ArrowDown", "ArrowDown", false), "стрелка не отменена");
+    assert!(!key(&label(&host), "ArrowDown", "ArrowDown", false), "arrow was not cancelled");
     leptos::task::tick().await;
-    assert!(has(&host, ".p-select-overlay"), "стрелка вниз должна открывать панель");
+    assert!(has(&host, ".p-select-overlay"), "arrow down should open the panel");
     press(&host, "ArrowDown");
     leptos::task::tick().await;
-    assert!(li(&host, 0).class_name().contains("p-focus"), "первая стрелка фокусирует первый вариант");
+    assert!(li(&host, 0).class_name().contains("p-focus"), "the first arrow focuses the first option");
     press(&host, "ArrowDown");
     leptos::task::tick().await;
-    assert!(li(&host, 2).class_name().contains("p-focus"), "отключённый вариант должен быть пропущен");
+    assert!(li(&host, 2).class_name().contains("p-focus"), "the disabled option should be skipped");
     let id = li(&host, 2).id();
     assert_eq!(label(&host).get_attribute("aria-activedescendant").as_deref(), Some(id.as_str()));
     press(&host, "ArrowUp");
@@ -213,11 +213,11 @@ async fn keyboard_navigation_selects_with_enter_and_skips_disabled() {
     leptos::task::tick().await;
     assert_eq!(value.get_untracked().as_deref(), Some("LDN"));
     assert!(!has(&host, ".p-select-overlay") && active_is(&label(&host)));
-    // Space открывает, а при открытой панели выбирает; фокус сразу на выбранном
+    // Space opens, and with the panel open it selects; focus goes straight to the selected one
     press(&host, "Space");
     leptos::task::tick().await;
-    assert!(has(&host, ".p-select-overlay") && li(&host, 2).class_name().contains("p-focus"), "при открытии фокус на выбранном");
-    // Alt+ArrowUp выбирает вариант под фокусом и закрывает панель
+    assert!(has(&host, ".p-select-overlay") && li(&host, 2).class_name().contains("p-focus"), "on open focus is on the selected one");
+    // Alt+ArrowUp selects the focused option and closes the panel
     press(&host, "ArrowDown");
     key(&label(&host), "ArrowUp", "ArrowUp", true);
     leptos::task::tick().await;
@@ -235,15 +235,15 @@ async fn typing_characters_opens_the_panel_and_focuses_the_match() {
     key(&label(&host), "KeyL", "l", false);
     sleep(30).await;
     assert!(has(&host, ".p-select-overlay"));
-    assert!(li(&host, 2).class_name().contains("p-focus"), "фокус должен перейти на London");
+    assert!(li(&host, 2).class_name().contains("p-focus"), "focus should move to London");
     key(&label(&host), "KeyO", "o", false);
     sleep(30).await;
     assert!(li(&host, 2).class_name().contains("p-focus"));
-    // набор не находит «Lox», фокус остаётся
+    // typing does not find "Lox", focus stays
     key(&label(&host), "KeyX", "x", false);
     sleep(30).await;
     assert!(li(&host, 2).class_name().contains("p-focus"));
-    // через 500 мс буфер сбрасывается: «p» ищет заново
+    // after 500 ms the buffer resets: "p" searches anew
     sleep(600).await;
     key(&label(&host), "KeyP", "p", false);
     sleep(30).await;
@@ -267,18 +267,18 @@ async fn filter_narrows_the_list_and_shows_the_empty_message() {
     q(&host, ".p-select").click();
     leptos::task::tick().await;
     let input: HtmlInputElement = q(&host, ".p-select-filter").dyn_into().unwrap();
-    assert!(input.is_same_node(doc().active_element().as_deref()), "при открытии фокус в поле поиска");
+    assert!(input.is_same_node(doc().active_element().as_deref()), "on open focus is in the search field");
     input.set_value("or");
     input.dispatch_event(&Event::new("input").unwrap()).unwrap();
     leptos::task::tick().await;
     assert_eq!(host.query_selector_all(".p-select-option").unwrap().length(), 1);
-    assert!(has(&host, ".p-select-filter") && input.is_same_node(Some(&q(&host, ".p-select-filter"))), "поле поиска пересоздано");
+    assert!(has(&host, ".p-select-filter") && input.is_same_node(Some(&q(&host, ".p-select-filter"))), "search field was recreated");
     input.set_value("zzz");
     input.dispatch_event(&Event::new("input").unwrap()).unwrap();
     leptos::task::tick().await;
     assert_eq!(q(&host, ".p-select-empty-message").text_content().unwrap(), "No results found");
     assert_eq!(*log.lock().unwrap(), ["or", "zzz"]);
-    // закрытие сбрасывает строку
+    // closing resets the string
     q(&host, ".p-select-label").focus().unwrap();
     press(&host, "Escape");
     leptos::task::tick().await;
@@ -305,18 +305,18 @@ async fn groups_filter_and_keyboard_skip_headers() {
     let input: HtmlInputElement = q(&host, ".p-select-filter").dyn_into().unwrap();
     key(&input.clone().into(), "ArrowDown", "ArrowDown", false);
     leptos::task::tick().await;
-    assert!(li(&host, 1).class_name().contains("p-focus"), "заголовок группы пропущен");
+    assert!(li(&host, 1).class_name().contains("p-focus"), "group header skipped");
     key(&input.clone().into(), "ArrowDown", "ArrowDown", false);
     key(&input.clone().into(), "ArrowDown", "ArrowDown", false);
     leptos::task::tick().await;
-    assert!(li(&host, 4).class_name().contains("p-focus") && li(&host, 4).text_content().unwrap() == "Chicago", "заголовок USD пропущен");
-    // Home и End в поле поиска двигают курсор, а не фокус варианта
+    assert!(li(&host, 4).class_name().contains("p-focus") && li(&host, 4).text_content().unwrap() == "Chicago", "USD header skipped");
+    // Home and End in the search field move the cursor, not the option focus
     input.set_value("abc");
     key(&input.clone().into(), "Home", "Home", false);
     assert_eq!(input.selection_start().unwrap(), Some(0));
     leptos::task::tick().await;
-    assert!(!li(&host, 4).class_name().contains("p-focus"), "Home в поле поиска сбрасывает фокус варианта");
-    // фильтр оставляет только группу с совпадением
+    assert!(!li(&host, 4).class_name().contains("p-focus"), "Home in the search field resets option focus");
+    // the filter keeps only the group with a match
     input.set_value("chi");
     input.dispatch_event(&Event::new("input").unwrap()).unwrap();
     leptos::task::tick().await;
@@ -347,7 +347,7 @@ async fn clear_icon_and_delete_key_reset_the_value() {
     host.query_selector(".p-select-clear-icon").unwrap().unwrap().dispatch_event(&click).unwrap();
     leptos::task::tick().await;
     assert_eq!(value.get_untracked(), None);
-    assert!(!has(&host, ".p-select-overlay"), "очистка не должна открывать панель");
+    assert!(!has(&host, ".p-select-overlay"), "clear must not open the panel");
     assert!(label(&host).class_name().contains("p-placeholder") && !has(&host, ".p-select-clear-icon"));
     assert_eq!((*cleared.lock().unwrap(), log.lock().unwrap().clone()), (1, vec!["-".to_owned()]));
     value.set(Some("PRS".to_owned()));
@@ -393,7 +393,7 @@ async fn label_element_and_focus_survive_selection_and_navigation() {
     press(&host, "Enter");
     leptos::task::tick().await;
     assert_eq!(value.get_untracked().as_deref(), Some("NY"));
-    assert!(before.is_same_node(Some(&label(&host))), "метка пересоздана");
+    assert!(before.is_same_node(Some(&label(&host))), "label was recreated");
     assert!(active_is(&label(&host)));
     host.remove();
 }
@@ -417,11 +417,11 @@ async fn external_value_open_signal_and_options_update_the_dom() {
     options.update(|o| o.push(SelectOption::new("Oslo", "OSL")));
     leptos::task::tick().await;
     assert_eq!(host.query_selector_all(".p-select-option").unwrap().length(), 6);
-    assert!(has(&host, ".p-select-overlay"), "панель закрылась при смене вариантов");
+    assert!(has(&host, ".p-select-overlay"), "the panel closed when options changed");
     open.set(false);
     leptos::task::tick().await;
     assert!(!has(&host, ".p-select-overlay"));
-    // значение вне списка — снова подсказка
+    // a value outside the list: the hint again
     value.set(Some("zzz".to_owned()));
     leptos::task::tick().await;
     assert_eq!(label(&host).text_content().unwrap(), "Pick");
@@ -440,7 +440,7 @@ async fn hover_moves_focus_and_select_on_focus_selects_without_closing() {
     leptos::task::tick().await;
     assert!(li(&host, 3).class_name().contains("p-focus"));
     assert_eq!(value.get_untracked().as_deref(), Some("IST"));
-    assert!(has(&host, ".p-select-overlay"), "select_on_focus не должен закрывать панель");
+    assert!(has(&host, ".p-select-overlay"), "select_on_focus must not close the panel");
     host.remove();
 }
 

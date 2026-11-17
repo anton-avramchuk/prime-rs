@@ -1,39 +1,39 @@
 # orderlist Specification
 
 ## Purpose
-OrderList — список с изменяемым порядком элементов.
+OrderList — a list with a changeable order of items.
 
 ## ADDED Requirements
 
-### Requirement: Перестановка
-Модель SHALL переставлять выбранные элементы, сохраняя их взаимный порядок и порядок остальных: `move_up` сдвигает каждый выбранный на одну позицию вверх, если выше не выбранный элемент; `move_down` — вниз; `move_top` и `move_bottom` переносят все выбранные в начало и в конец. Элемент, уже стоящий у края (или упирающийся в выбранный блок у края), SHALL оставаться на месте.
+### Requirement: Reordering
+The model SHALL move the selected items while keeping their mutual order and the order of the rest: `move_up` shifts each selected item one position up, if the item above is not selected; `move_down` — down; `move_top` and `move_bottom` move all selected items to the top and to the bottom. An item that already stands at the edge (or runs into the selected block at the edge) SHALL stay in place.
 
-#### Scenario: Вверх
-- **WHEN** список `A B C D`, выбраны `C`
-- **THEN** результат `A C B D`
+#### Scenario: Up
+- **WHEN** the list is `A B C D`, `C` is selected
+- **THEN** the result is `A C B D`
 
-#### Scenario: Блок у края
-- **WHEN** список `A B C`, выбраны `A B`, `move_up`
-- **THEN** порядок не меняется
+#### Scenario: Block at the edge
+- **WHEN** the list is `A B C`, `A B` are selected, `move_up`
+- **THEN** the order does not change
 
-#### Scenario: Несколько
-- **WHEN** список `A B C D E`, выбраны `B D`, `move_up`
-- **THEN** результат `B A D C E`
+#### Scenario: Several items
+- **WHEN** the list is `A B C D E`, `B D` are selected, `move_up`
+- **THEN** the result is `B A D C E`
 
-#### Scenario: В конец
-- **WHEN** список `A B C D`, выбраны `A C`, `move_bottom`
-- **THEN** результат `B D A C`
+#### Scenario: To the bottom
+- **WHEN** the list is `A B C D`, `A C` are selected, `move_bottom`
+- **THEN** the result is `B D A C`
 
-### Requirement: Разметка
-`OrderList` SHALL выводить `div.p-orderlist.p-component` (`p-orderlist-controls-left` или `-right` по `controls_position`) с `div.p-orderlist-controls` (четыре кнопки в порядке «вверх», «в начало», «вниз», «в конец» с `aria-label` «Move Up», «Move Top», «Move Down», «Move Bottom») и списком `Listbox` с множественным выбором. Кнопки SHALL быть недоступны, если нет выбранных элементов или `disabled`.
+### Requirement: Markup
+`OrderList` SHALL render `div.p-orderlist.p-component` (`p-orderlist-controls-left` or `-right` according to `controls_position`) with `div.p-orderlist-controls` (four buttons in the order "up", "to the top", "down", "to the bottom" with the `aria-label`s "Move Up", "Move Top", "Move Down", "Move Bottom") and a `Listbox` with multiple selection. The buttons SHALL be unavailable if no items are selected or `disabled`.
 
-#### Scenario: Без выбора
-- **WHEN** ничего не выбрано
-- **THEN** все четыре кнопки `disabled`
+#### Scenario: No selection
+- **WHEN** nothing is selected
+- **THEN** all four buttons are `disabled`
 
-### Requirement: Действия
-Клик по кнопке SHALL менять порядок значения `value` и вызывать `on_reorder` с выбранными элементами; выбор SHALL сохраняться; поиск `filter` SHALL фильтровать только отображение, перестановка идёт по полному списку.
+### Requirement: Actions
+A click on a button SHALL change the order of the `value` and call `on_reorder` with the selected items; the selection SHALL be kept; the `filter` search SHALL filter only the display, the reordering works on the full list.
 
-#### Scenario: Клик
-- **WHEN** выбран второй элемент, клик «вверх»
-- **THEN** он первый в `value`, выбор прежний, вызван `on_reorder`
+#### Scenario: Click
+- **WHEN** the second item is selected, the "up" click
+- **THEN** it is first in `value`, the selection is the same, `on_reorder` is called

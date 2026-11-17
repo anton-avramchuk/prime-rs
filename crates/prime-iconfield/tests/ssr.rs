@@ -1,4 +1,4 @@
-//! Структура DOM, положения значка, `style`, `pt` и паритет ветвей IconField и InputIcon (SSR).
+//! DOM structure, icon positions, `style`, `pt` and static/reactive parity of IconField and InputIcon (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -19,7 +19,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 fn norm(s: &str) -> String {

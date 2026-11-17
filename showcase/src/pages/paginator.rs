@@ -1,5 +1,5 @@
-//! Страница Paginator: демонстрации `basic`, `currentpagereport`, `template`, `images` из showcase PrimeNG
-//! (`apps/showcase/doc/paginator`). В `images` вместо фотографий с CDN — цветные блоки с номером страницы.
+//! Paginator page: demos `basic`, `currentpagereport`, `template`, `images` from the PrimeNG showcase
+//! (`apps/showcase/doc/paginator`). In `images`, instead of photos from a CDN — coloured blocks with the page number.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn rows_options() -> Vec<RowsPerPage> {
     vec![RowsPerPage::Rows(10), RowsPerPage::Rows(20), RowsPerPage::Rows(30)]
 }
 
-/// Страница `/paginator`.
+/// Page `/paginator`.
 #[component]
 pub fn PaginatorPage() -> impl IntoView {
     let (first, rows) = (RwSignal::new(0usize), RwSignal::new(10usize));

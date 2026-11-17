@@ -2,23 +2,23 @@
 
 ## Why
 
-Card — контейнер с необязательными областями (шапка с изображением, заголовок, подзаголовок, содержимое, подвал). Это первый компонент волны 1 со слотами `ViewFn`, то есть он проверяет, как шаблон `Prop` + две ветви отрисовки работает для компонента, чья разметка — в основном вложенные необязательные блоки. Демонстрация `advanced` использует Button (уже портирован), так что Card показывает композицию компонентов.
+Card — a container with optional areas (a header with an image, a title, a subtitle, content, a footer). It is the first wave 1 component with `ViewFn` slots, i.e. it checks how the `Prop` template + two render branches work for a component whose markup is mostly nested optional blocks. The `advanced` demo uses Button (already ported), so Card shows component composition.
 
 ## What Changes
 
-- Новый крейт `prime-card` с компонентом `Card`: `header` и `subheader` (текст), слоты `header_template`, `title_template`, `subtitle_template`, `footer_template` (`ViewFn`), `children` (содержимое), `style`, `style_class`, `pt`; классы `p-card*` как в PrimeNG 21.1.10.
-- Страница `/card` в showcase (`basic`, `advanced`), e2e, бенчмарки и бюджеты.
-- **Не входит:** `BlockableUI` (интерфейс блокировки Angular), `unstyled`-режим.
+- New crate `prime-card` with the `Card` component: `header` and `subheader` (text), slots `header_template`, `title_template`, `subtitle_template`, `footer_template` (`ViewFn`), `children` (content), `style`, `style_class`, `pt`; `p-card*` classes as in PrimeNG 21.1.10.
+- Page `/card` in showcase (`basic`, `advanced`), e2e, benchmarks and budgets.
+- **Out of scope:** `BlockableUI` (an Angular blocking interface), `unstyled` mode.
 
 ## Capabilities
 
 ### New Capabilities
-- `card`: компонент Card — области, слоты, содержимое, `pt`, производительность.
+- `card`: the Card component — areas, slots, content, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-card` (`publish = false`); зависимость `prime-core`.
-- Изменяются `showcase` (страница использует Button), `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.
+- New crate `crates/prime-card` (`publish = false`); dependency `prime-core`.
+- Changed: `showcase` (the page uses Button), `benches/render`, `benches/wasm-size`, `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests`.

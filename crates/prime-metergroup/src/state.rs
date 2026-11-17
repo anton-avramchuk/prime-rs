@@ -1,11 +1,11 @@
-//! Чистая логика MeterGroup: проценты, классы и `data-p` (по `metergroup.ts` и `metergroupstyle.ts` PrimeNG).
+//! Pure MeterGroup logic: percentages, classes and `data-p` (per `metergroup.ts` and `metergroupstyle.ts` of PrimeNG).
 
 use prime_core::ClassNames;
 
-/// Ориентация шкалы.
+/// Meter orientation.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum MeterOrientation {
-    /// `horizontal` (по умолчанию).
+    /// `horizontal` (default).
     #[default]
     Horizontal,
     /// `vertical`.
@@ -13,7 +13,7 @@ pub enum MeterOrientation {
 }
 
 impl MeterOrientation {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Horizontal => "horizontal",
@@ -22,17 +22,17 @@ impl MeterOrientation {
     }
 }
 
-/// Положение подписей относительно шкалы.
+/// Label position relative to the meter.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum LabelPosition {
-    /// Перед шкалой.
+    /// Before the meter.
     Start,
-    /// После шкалы (по умолчанию).
+    /// After the meter (default).
     #[default]
     End,
 }
 
-/// Процент значения в диапазоне `min`–`max`: округлённый, в пределах 0–100; при `min == max` — 100.
+/// Percentage of a value in the `min`–`max` range: rounded, clamped to 0–100; when `min == max` it is 100.
 pub fn percent(value: f64, min: f64, max: f64) -> u32 {
     if max == min {
         return 100;
@@ -41,12 +41,12 @@ pub fn percent(value: f64, min: f64, max: f64) -> u32 {
     p.clamp(0.0, 100.0).round() as u32
 }
 
-/// Процент суммы всех значений.
+/// Percentage of the sum of all values.
 pub fn total_percent(values: impl IntoIterator<Item = f64>, min: f64, max: f64) -> u32 {
     percent(values.into_iter().sum(), min, max)
 }
 
-/// Накопленные суммы значений (как `percentages()` в PrimeNG).
+/// Cumulative sums of the values (like `percentages()` in PrimeNG).
 pub fn cumulative(values: impl IntoIterator<Item = f64>) -> Vec<f64> {
     let mut sum = 0.0;
     values
@@ -58,7 +58,7 @@ pub fn cumulative(values: impl IntoIterator<Item = f64>) -> Vec<f64> {
         .collect()
 }
 
-/// Дописывает классы корня.
+/// Appends the root classes.
 pub fn write_classes(cn: &mut ClassNames, orientation: MeterOrientation) {
     cn.add("p-metergroup p-component");
     cn.add(match orientation {
@@ -67,7 +67,7 @@ pub fn write_classes(cn: &mut ClassNames, orientation: MeterOrientation) {
     });
 }
 
-/// Классы списка подписей.
+/// Label list classes.
 pub fn label_list_classes(cn: &mut ClassNames, orientation: MeterOrientation) {
     cn.add("p-metergroup-label-list");
     cn.add(match orientation {
@@ -95,7 +95,7 @@ mod tests {
             (0.5, 0.0, 100.0, 1),
         ];
         for (v, min, max, want) in table {
-            assert_eq!(percent(v, min, max), want, "{v} в {min}..{max}");
+            assert_eq!(percent(v, min, max), want, "{v} in {min}..{max}");
         }
     }
 

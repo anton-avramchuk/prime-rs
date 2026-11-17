@@ -2,38 +2,38 @@
 
 ## Context
 
-Требования — в `specs/divider`. Исходники PrimeNG 21.1.10: `packages/primeng/src/divider/divider.ts`, `divider/style/dividerstyle.ts` (классы и `inlineStyles`), демонстрации `apps/showcase/doc/divider`. Хост `<p-divider>` несёт классы, `role=separator`, `aria-orientation`, inline-стиль и `data-p`; внутри всегда `<div class="p-divider-content">`. `data-p` строится из `align`, `layout`, `type` (порядок именно такой, `align` только если задан). Шаблон — `docs/button.md`.
+Requirements are in `specs/divider`. PrimeNG 21.1.10 sources: `packages/primeng/src/divider/divider.ts`, `divider/style/dividerstyle.ts` (classes and `inlineStyles`), demos `apps/showcase/doc/divider`. The `<p-divider>` host carries the classes, `role=separator`, `aria-orientation`, the inline style and `data-p`; inside there is always `<div class="p-divider-content">`. `data-p` is built from `align`, `layout`, `type` (exactly in this order, `align` only if set). Template - `docs/button.md`.
 
 ## Goals / Non-Goals
 
-**Goals:** Divider с теми же классами, стилем и атрибутами; статическая ветвь без `RenderEffect`; бюджеты.
+**Goals:** Divider with the same classes, style and attributes; a static branch without `RenderEffect`; budgets.
 **Non-Goals:** `unstyled`.
 
 ## Decisions
 
-### D1. Корень — `<div>`
-Хост `<p-divider>` — деталь Angular.
+### D1. The root is a `<div>`
+The `<p-divider>` host is an Angular detail.
 
-### D2. Имя свойства `type`
-В Rust свойство называется `divider_type` (как `button_type` у Button): `type` — ключевое слово. Атрибута в DOM нет, поэтому на разметку это не влияет.
+### D2. The `type` property name
+In Rust the property is called `divider_type` (like `button_type` on Button): `type` is a keyword. There is no such attribute in the DOM, so markup is not affected.
 
-### D3. Перечисления
-`DividerLayout` (`Horizontal`, `Vertical`), `DividerType` (`Solid`, `Dashed`, `Dotted`), `DividerAlign` (`Left`, `Center`, `Right`, `Top`, `Bottom`); у первых двух `Default` (`Horizontal`, `Solid`), `align` — `OptProp`.
+### D3. Enums
+`DividerLayout` (`Horizontal`, `Vertical`), `DividerType` (`Solid`, `Dashed`, `Dotted`), `DividerAlign` (`Left`, `Center`, `Right`, `Top`, `Bottom`); the first two have `Default` (`Horizontal`, `Solid`), `align` is an `OptProp`.
 
-### D4. Классы и стиль — чистые функции
-`write_classes(cn, &state)` и `align_style(&state) -> Option<(&str, &str)>` (имя свойства и значение) покрываются таблицами юнит-тестов по `dividerstyle.ts` (все 2 × 5 сочетаний); `data_p` — отдельная функция.
+### D4. Classes and style are pure functions
+`write_classes(cn, &state)` and `align_style(&state) -> Option<(&str, &str)>` (property name and value) are covered by unit test tables following `dividerstyle.ts` (all 2 x 5 combinations); `data_p` is a separate function.
 
-### D5. Ветви
-`all_static!(layout, divider_type, align, style, style_class)`; блок содержимого — одно значение `Option<AnyView>` (`children`), общее для ветвей.
+### D5. Branches
+`all_static!(layout, divider_type, align, style, style_class)`; the content block is a single `Option<AnyView>` value (`children`) shared by the branches.
 
 ## Risks / Trade-offs
 
-- [Таблица классов выравнивания легко ошибиться] → таблица тестов на все сочетания и сравнение скриншотов с PrimeNG.
+- [The alignment class table is easy to get wrong] -> a test table over all combinations and a screenshot comparison with PrimeNG.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback is `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

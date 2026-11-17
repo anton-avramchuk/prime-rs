@@ -2,30 +2,30 @@
 
 ## Context
 
-Требования — в `specs/table`. Исходники PrimeNG 21.1.10: `table/table.ts` (6613 строк; этап 1 берёт `sort`, `sortSingle`, `sortMultiple`, `handleRowClick`, `toggleRowWithCheckbox`, `toggleRowsWithCheckbox`, `toggleRow`, `SortableColumn`, `SortIcon`), `table/style/tablestyle.ts` (классы и блок `For PrimeNG`), `@primeuix/styles/datatable`.
+Requirements are in `specs/table`. PrimeNG 21.1.10 sources: `table/table.ts` (6613 lines; stage 1 takes `sort`, `sortSingle`, `sortMultiple`, `handleRowClick`, `toggleRowWithCheckbox`, `toggleRowsWithCheckbox`, `toggleRow`, `SortableColumn`, `SortIcon`), `table/style/tablestyle.ts` (classes and the `For PrimeNG` block), `@primeuix/styles/datatable`.
 
 ## Decisions
 
-### D1. Столбцы — данные, не шаблоны
-В PrimeNG заголовок и тело собираются шаблонами `ng-template` с директивами. У нас `Column<T>` (поле, заголовок, ячейка-функция, сортировка с `compare`, вид столбца); таблица строит заголовок, строки и подвал сама. Обобщённый `Table<T: Clone + Send + Sync + 'static>`.
+### D1. Columns are data, not templates
+In PrimeNG the header and body are assembled by `ng-template` templates with directives. Here we have `Column<T>` (field, header, cell function, sorting with `compare`, column kind); the table builds the header, rows and footer itself. Generic `Table<T: Clone + Send + Sync + 'static>`.
 
-### D2. Чистая модель (`model.rs`)
-Сортировка (`toggle_sort`, `sort_rows`), выбор (`row_click`, `toggle_all`, `all_selected`) и раскрытие (`toggle_expanded`) — функции над ключами `String`. Ключ строки задаёт приложение (`row_key`), как `dataKey`.
+### D2. Pure model (`model.rs`)
+Sorting (`toggle_sort`, `sort_rows`), selection (`row_click`, `toggle_all`, `all_selected`) and expansion (`toggle_expanded`) are functions over `String` keys. The row key is set by the application (`row_key`), like `dataKey`.
 
-### D3. Состояние
-Сигналы `selection`, `expanded_keys`, `sort`, `first`, `rows` (внешние или внутренние). Заголовки, строки и подвал строятся в реактивных замыканиях; классы и значки сортировки читают сигнал внутри ячейки, поэтому клик по заголовку не перестраивает таблицу, меняется только порядок строк. Флажок в заголовке и радиокнопки согласуются с `selection` эффектами под `cfg(wasm32)`; флажки строк — `Checkbox` с `model` = `selection` и `value` = ключ.
+### D3. State
+Signals `selection`, `expanded_keys`, `sort`, `first`, `rows` (external or internal). Headers, rows and the footer are built in reactive closures; sort classes and icons read the signal inside the cell, so a click on a header does not rebuild the table, only the row order changes. The header checkbox and radio buttons are synced with `selection` by effects under `cfg(wasm32)`; row checkboxes are `Checkbox` with `model` = `selection` and `value` = the key.
 
-### D4. Тема
-`datatable` в `theme.components` и `primeng_extra` (блок `For PrimeNG` даёт отступы ячеек заголовка, полосатость и сортировку). `xtask gen-theme` получил `primeng_dir`: каталог исходников `table` вместо `datatable`.
+### D4. Theme
+`datatable` in `theme.components` and `primeng_extra` (the `For PrimeNG` block gives header cell padding, stripes and sorting). `xtask gen-theme` gained `primeng_dir`: the `table` sources directory instead of `datatable`.
 
-### D5. Тесты
-Модель — таблицы. SSR: классы, заголовки и значки, порядок строк, пагинатор, выбор, флажки/радио, раскрытие, пусто/загрузка/подвал. Браузерные: сортировка, выбор, флажки, радио, Ctrl, раскрытие, страницы. e2e: стили темы и клики.
+### D5. Tests
+Model: tables. SSR: classes, headers and icons, row order, paginator, selection, checkboxes/radio, expansion, empty/loading/footer. Browser: sorting, selection, checkboxes, radio, Ctrl, expansion, pages. e2e: theme styles and clicks.
 
 ## Risks / Trade-offs
 
-- [Объём] Этап 1 — основа; расширения (фильтры, правка и т. д.) добавляются новыми столбцами/свойствами без смены модели.
-- [Размер] Таблица тянет Paginator (Select, InputNumber), Checkbox, RadioButton, Badge, Button: около 1,9 МБ wasm.
+- [Scope] Stage 1 is the foundation; extensions (filters, editing, etc.) are added as new columns/properties without changing the model.
+- [Size] The table pulls in Paginator (Select, InputNumber), Checkbox, RadioButton, Badge, Button: about 1.9 MB of wasm.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback is `git revert`.

@@ -1,32 +1,32 @@
-//! Чистая логика Tabs: идентификаторы, классы, `tabindex`, клавиши, поиск соседней вкладки и прокрутка кнопок
-//! (по `tabs.ts`, `tab.ts`, `tablist.ts`, `tabpanel.ts` и `style/*` PrimeNG).
+//! Pure Tabs logic: identifiers, classes, `tabindex`, keys, adjacent tab lookup and button scrolling
+//! (from PrimeNG `tabs.ts`, `tab.ts`, `tablist.ts`, `tabpanel.ts` and `style/*`).
 
-/// `id` вкладки.
+/// Tab `id`.
 pub fn tab_id(tabs_id: &str, value: &str) -> String {
     format!("{tabs_id}_tab_{value}")
 }
 
-/// `id` панели.
+/// Panel `id`.
 pub fn panel_id(tabs_id: &str, value: &str) -> String {
     format!("{tabs_id}_tabpanel_{value}")
 }
 
-/// Активна ли вкладка или панель со значением `value`.
+/// Whether the tab or panel with value `value` is active.
 pub fn is_active(current: Option<&str>, value: &str) -> bool {
     current == Some(value)
 }
 
-/// `tabindex` вкладки: у активной доступной — `tabindex` группы, у остальных −1.
+/// Tab `tabindex`: the group's `tabindex` for the active enabled tab, -1 for the others.
 pub fn tabindex_for(disabled: bool, active: bool, tabs_tabindex: i32) -> i32 {
     if !disabled && active { tabs_tabindex } else { -1 }
 }
 
-/// Классы корня `Tabs`.
+/// `Tabs` root classes.
 pub fn root_classes(scrollable: bool) -> &'static str {
     if scrollable { "p-tabs p-component p-tabs-scrollable" } else { "p-tabs p-component" }
 }
 
-/// Классы вкладки.
+/// Tab classes.
 pub fn tab_classes(active: bool, disabled: bool) -> &'static str {
     match (active, disabled) {
         (false, false) => "p-tab",
@@ -36,31 +36,31 @@ pub fn tab_classes(active: bool, disabled: bool) -> &'static str {
     }
 }
 
-/// Классы панели.
+/// Panel classes.
 pub fn panel_classes(active: bool) -> &'static str {
     if active { "p-tabpanel p-tabpanel-active" } else { "p-tabpanel" }
 }
 
-/// Действие по клавише на вкладке.
+/// Action for a key on a tab.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum KeyAction {
-    /// Фокус на следующую доступную вкладку (по кругу).
+    /// Focus the next enabled tab (wrapping around).
     Next,
-    /// Фокус на предыдущую доступную вкладку (по кругу).
+    /// Focus the previous enabled tab (wrapping around).
     Prev,
-    /// Фокус на первую доступную вкладку.
+    /// Focus the first enabled tab.
     First,
-    /// Фокус на последнюю доступную вкладку.
+    /// Focus the last enabled tab.
     Last,
-    /// Прокрутить к первой доступной вкладке без фокуса.
+    /// Scroll to the first enabled tab without focus.
     ScrollFirst,
-    /// Прокрутить к последней доступной вкладке без фокуса.
+    /// Scroll to the last enabled tab without focus.
     ScrollLast,
-    /// Активировать вкладку.
+    /// Activate the tab.
     Activate,
 }
 
-/// Действие по `KeyboardEvent.code`.
+/// Action for a `KeyboardEvent.code`.
 pub fn key_action(code: &str) -> Option<KeyAction> {
     Some(match code {
         "ArrowRight" => KeyAction::Next,
@@ -74,9 +74,9 @@ pub fn key_action(code: &str) -> Option<KeyAction> {
     })
 }
 
-/// Индекс вкладки, к которой переходит действие, среди вкладок с признаками доступности `enabled`.
+/// Index of the tab the action moves to, among tabs with the `enabled` availability flags.
 ///
-/// `Next`/`Prev` ищут ближайшую доступную и, не найдя, берут первую/последнюю (по кругу). `Activate` цели не имеет.
+/// `Next`/`Prev` look for the nearest enabled one and, if none is found, take the first/last (wrapping around). `Activate` has no target.
 pub fn wrap_target(current: usize, enabled: &[bool], action: KeyAction) -> Option<usize> {
     let first = || enabled.iter().position(|&e| e);
     let last = || enabled.iter().rposition(|&e| e);
@@ -89,27 +89,27 @@ pub fn wrap_target(current: usize, enabled: &[bool], action: KeyAction) -> Optio
     }
 }
 
-/// Выводить ли содержимое панели.
+/// Whether to render the panel content.
 pub fn should_render(lazy: bool, has_rendered: bool, active: bool) -> bool {
     !lazy || has_rendered || active
 }
 
-/// Нужна ли кнопка «назад»: содержимое прокручено от начала.
+/// Whether the "back" button is needed: the content is scrolled from the start.
 pub fn prev_visible(scroll_left: f64) -> bool {
     scroll_left.abs() != 0.0
 }
 
-/// Нужна ли кнопка «вперёд»: справа есть скрытая часть.
+/// Whether the "forward" button is needed: there is a hidden part on the right.
 pub fn next_visible(list_width: f64, content_width: f64, scroll_left: f64, scroll_width: f64, width: f64) -> bool {
     list_width >= content_width && (scroll_left.abs() - scroll_width + width).abs() > 1.0
 }
 
-/// Новая прокрутка по кнопке «назад».
+/// New scroll position for the "back" button.
 pub fn prev_scroll(scroll_left: f64, width: f64) -> f64 {
     (scroll_left.abs() - width).max(0.0)
 }
 
-/// Новая прокрутка по кнопке «вперёд»; `buttons` — суммарная ширина видимых кнопок.
+/// New scroll position for the "forward" button; `buttons` is the total width of the visible buttons.
 pub fn next_scroll(scroll_left: f64, width: f64, buttons: f64, scroll_width: f64) -> f64 {
     let step = width - buttons;
     let pos = scroll_left + step;
@@ -117,7 +117,7 @@ pub fn next_scroll(scroll_left: f64, width: f64, buttons: f64, scroll_width: f64
     if pos >= last { last } else { pos }
 }
 
-/// Стиль полосы-индикатора.
+/// Indicator bar style.
 pub fn ink_style(width: f64, left: f64) -> String {
     format!("width: {width}px; left: {left}px")
 }
@@ -132,7 +132,7 @@ mod tests {
         assert_eq!(tab_id("pn_id_1", "a"), "pn_id_1_tab_a");
         assert_eq!(panel_id("pn_id_1", "a"), "pn_id_1_tabpanel_a");
         assert!(is_active(Some("a"), "a") && !is_active(Some("b"), "a") && !is_active(None, "a"));
-        // (disabled, active, tabs_tabindex, ожидается)
+        // (disabled, active, tabs_tabindex, expected)
         let cases = [(false, true, 0, 0), (false, true, 3, 3), (false, false, 0, -1), (true, true, 0, -1), (true, false, 0, -1)];
         for (disabled, active, tabindex, expected) in cases {
             assert_eq!(tabindex_for(disabled, active, tabindex), expected, "{disabled} {active} {tabindex}");
@@ -177,7 +177,7 @@ mod tests {
         let all = [true, true, true];
         let gap = [true, false, true];
         let ends_off = [false, true, true, false];
-        // (current, enabled, action, ожидается)
+        // (current, enabled, action, expected)
         let cases: Vec<(usize, &[bool], KeyAction, Option<usize>)> = vec![
             (0, &all, Next, Some(1)),
             (2, &all, Next, Some(0)),
@@ -207,7 +207,7 @@ mod tests {
 
     #[test]
     fn should_render_table() {
-        // (lazy, has_rendered, active, ожидается)
+        // (lazy, has_rendered, active, expected)
         let cases = [
             (false, false, false, true),
             (false, true, true, true),
@@ -224,7 +224,7 @@ mod tests {
     #[test]
     fn navigator_table() {
         assert!(!prev_visible(0.0) && prev_visible(10.0) && prev_visible(-10.0));
-        // (список, содержимое, scrollLeft, scrollWidth, ширина, ожидается)
+        // (list, content, scrollLeft, scrollWidth, width, expected)
         let cases = [
             (500.0, 500.0, 0.0, 1000.0, 500.0, true),
             (500.0, 500.0, 500.0, 1000.0, 500.0, false),
@@ -246,7 +246,7 @@ mod tests {
         assert_eq!(prev_scroll(-300.0, 200.0), 100.0);
         assert_eq!(next_scroll(0.0, 400.0, 80.0, 2000.0), 320.0);
         assert_eq!(next_scroll(1500.0, 400.0, 80.0, 2000.0), 1680.0);
-        assert_eq!(next_scroll(1500.0, 400.0, 0.0, 1800.0), 1400.0, "не дальше конца: scrollWidth − шаг");
+        assert_eq!(next_scroll(1500.0, 400.0, 0.0, 1800.0), 1400.0, "no further than the end: scrollWidth - step");
         assert_eq!(ink_style(120.0, 8.5), "width: 120px; left: 8.5px");
     }
 }

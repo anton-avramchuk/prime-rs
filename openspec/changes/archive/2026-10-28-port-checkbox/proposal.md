@@ -2,25 +2,25 @@
 
 ## Why
 
-Checkbox — следующий компонент волны 1 и первое поле с булевым или множественным значением. Модель значения InputText (двусторонний сигнал, события с исходным `web_sys::Event`) здесь расширяется на режим `binary` и набор значений, как в PrimeNG; решения станут образцом для RadioButton и ToggleSwitch.
+Checkbox is the next component of wave 1 and the first field with a boolean or multiple value. The value model of InputText (a two-way signal, events with the original `web_sys::Event`) is extended here with the `binary` mode and a set of values, as in PrimeNG; the decisions will become the example for RadioButton and ToggleSwitch.
 
 ## What Changes
 
-- Новый крейт `prime-checkbox` с компонентом `Checkbox`: режим `binary` (значение `RwSignal<bool>`) и режим набора (`value` + `RwSignal<Vec<String>>`); `indeterminate`, `disabled`, `readonly`, `required`, `invalid`, `size`, `variant`, `input_id`, `name`, `tabindex`, `aria_label`, `aria_labelledby`, `input_class`, `input_style`, `style_class`, `style`, слот `icon_template`, `pt` (`root`, `input`, `box`, `icon`).
-- События `on_change` (новое значение `checked` и исходное событие), `on_focus`, `on_blur`.
-- Разметка и классы как в PrimeNG 21.1.10: `p-checkbox p-component` и модификаторы `p-checkbox-checked p-highlight`, `p-disabled`, `p-invalid`, `p-variant-filled`, `p-checkbox-sm p-inputfield-sm`, `p-checkbox-lg p-inputfield-lg`; `<input type="checkbox" class="p-checkbox-input">`, `<div class="p-checkbox-box">` с иконкой `check` или `minus`; атрибуты `data-p`, `data-p-checked`, `data-p-highlight`, `data-p-disabled`.
-- Страница `/checkbox` (`basic`, `multiple`, `filled`, `sizes`, `indeterminate`, `invalid`, `disabled`), e2e, бенчмарки, бюджеты.
-- **Не входит:** интеграция с формами, `trueValue`/`falseValue` произвольных типов (только `bool`), `checkboxIcon` как CSS-класс (есть `icon_template`).
+- A new crate `prime-checkbox` with the `Checkbox` component: the `binary` mode (value `RwSignal<bool>`) and the set mode (`value` + `RwSignal<Vec<String>>`); `indeterminate`, `disabled`, `readonly`, `required`, `invalid`, `size`, `variant`, `input_id`, `name`, `tabindex`, `aria_label`, `aria_labelledby`, `input_class`, `input_style`, `style_class`, `style`, the `icon_template` slot, `pt` (`root`, `input`, `box`, `icon`).
+- The events `on_change` (the new `checked` value and the original event), `on_focus`, `on_blur`.
+- Markup and classes as in PrimeNG 21.1.10: `p-checkbox p-component` and the modifiers `p-checkbox-checked p-highlight`, `p-disabled`, `p-invalid`, `p-variant-filled`, `p-checkbox-sm p-inputfield-sm`, `p-checkbox-lg p-inputfield-lg`; `<input type="checkbox" class="p-checkbox-input">`, `<div class="p-checkbox-box">` with the `check` or `minus` icon; the attributes `data-p`, `data-p-checked`, `data-p-highlight`, `data-p-disabled`.
+- The `/checkbox` page (`basic`, `multiple`, `filled`, `sizes`, `indeterminate`, `invalid`, `disabled`), e2e, benchmarks, budgets.
+- **Not included:** form integration, arbitrary types for `trueValue`/`falseValue` (only `bool`), `checkboxIcon` as a CSS class (there is `icon_template`).
 
 ## Capabilities
 
 ### New Capabilities
-- `checkbox`: компонент Checkbox — состояние, события, атрибуты, классы, `pt`, производительность.
+- `checkbox`: the Checkbox component — state, events, attributes, classes, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-checkbox` (`publish = false`); зависимости `prime-core`, `prime-icons` (`check`, `minus`), `web-sys`.
-- Изменяются `showcase`, `benches/render`, `benches/wasm-size`, бюджеты, `e2e/tests`, браузерный job CI.
+- A new crate `crates/prime-checkbox` (`publish = false`); dependencies `prime-core`, `prime-icons` (`check`, `minus`), `web-sys`.
+- Changes to `showcase`, `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`, the CI browser job.

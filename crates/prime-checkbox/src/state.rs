@@ -1,24 +1,24 @@
-//! Чистая логика Checkbox: классы и `data-p` (по `checkboxstyle.ts` и `Checkbox.dataP` PrimeNG).
+//! Pure Checkbox logic: classes and `data-p` (based on `checkboxstyle.ts` and `Checkbox.dataP` in PrimeNG).
 
 use prime_core::{ClassNames, DataP, Size, Variant};
 use std::borrow::Cow;
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct CheckboxState {
-    /// Отмечен (с учётом `indeterminate`).
+    /// Checked (taking `indeterminate` into account).
     pub checked: bool,
-    /// Недоступен.
+    /// Unavailable.
     pub disabled: bool,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// Итоговый вариант (свойство или `PrimeConfig.input_variant`).
+    /// Effective variant (the property or `PrimeConfig.input_variant`).
     pub variant: Option<Variant>,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
 }
 
-/// Добавляет классы корня в порядке `checkboxstyle.ts`.
+/// Adds the root classes in the order of `checkboxstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &CheckboxState) {
     cn.add("p-checkbox p-component")
         .add_if(s.checked, "p-checkbox-checked p-highlight")
@@ -29,7 +29,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &CheckboxState) {
         .add_if(s.size == Some(Size::Large), "p-checkbox-lg p-inputfield-lg");
 }
 
-/// Значение `data-p`: `invalid`, `checked`, `disabled`, `filled` (при варианте `filled`), размер.
+/// `data-p` value: `invalid`, `checked`, `disabled`, `filled` (with the `filled` variant), size.
 pub fn data_p(s: &CheckboxState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.invalid, "invalid")

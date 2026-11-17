@@ -2,26 +2,26 @@
 
 ## Context
 
-Требования — в `specs/dataview`. Исходники PrimeNG 21.1.10: `dataview/dataview.ts` (`paginate`, `sort`, `filter`, `isEmpty`), `style/dataviewstyle.ts`, `@primeuix/styles/dataview`. Пагинатор — готовый `prime-paginator`.
+Requirements are in `specs/dataview`. PrimeNG 21.1.10 sources: `dataview/dataview.ts` (`paginate`, `sort`, `filter`, `isEmpty`), `style/dataviewstyle.ts`, `@primeuix/styles/dataview`. The paginator is the ready-made `prime-paginator`.
 
 ## Decisions
 
-### D1. Чистая логика (`data.rs`)
-`prepare(items, filter, compare, order)` — фильтр и устойчивая сортировка; `page(...)` — срез страницы (в `lazy` — всё); `total(...)`; `clamp_first(...)`. Табличные тесты.
+### D1. Pure logic (`data.rs`)
+`prepare(items, filter, compare, order)` - filter and stable sort; `page(...)` - page slice (everything in `lazy`); `total(...)`; `clamp_first(...)`. Table-driven tests.
 
-### D2. Обобщённый компонент
-`DataView<T: Clone + Send + Sync + 'static>`; `list` и `grid` — `Callback<Vec<T>, AnyView>` (элементы страницы). Сортировка — `compare: Callback<(T, T), Ordering>` и `sort_order`; фильтр — `Callback<T, bool>` (читает свои сигналы, поэтому реактивен).
+### D2. Generic component
+`DataView<T: Clone + Send + Sync + 'static>`; `list` and `grid` are `Callback<Vec<T>, AnyView>` (page items). Sorting is `compare: Callback<(T, T), Ordering>` and `sort_order`; the filter is `Callback<T, bool>` (reads its own signals, hence reactive).
 
-### D3. Состояние
-`first` и `rows` — сигналы (внешние или внутренние). Под `cfg(wasm32)` эффекты: возврат `first` в допустимый диапазон, начальный `on_lazy_load`, сброс на первую страницу и `on_lazy_load` при смене порядка.
+### D3. State
+`first` and `rows` are signals (external or internal). Effects under `cfg(wasm32)`: returning `first` to the valid range, the initial `on_lazy_load`, reset to the first page and `on_lazy_load` on order change.
 
-### D4. Тесты
-Логика — таблицы. SSR: списки, сетка, страницы и позиции пагинатора, сортировка, фильтр, пусто, загрузка, `lazy`. Браузерные: переключение страниц, возврат `first`, сортировка и фильтр, `lazy`, пустое состояние. e2e: стили и клики.
+### D4. Tests
+Logic: tables. SSR: lists, grid, pages and paginator positions, sorting, filter, empty, loading, `lazy`. Browser: page switching, `first` returning, sorting and filter, `lazy`, empty state. e2e: styles and clicks.
 
 ## Risks / Trade-offs
 
-- [Нормализация first] Пагинатор может повторно сообщить о странице при возврате `first`.
+- [first normalization] The paginator may report a page again when `first` is returned.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback is `git revert`.

@@ -1,24 +1,24 @@
-//! Чистая логика RadioButton: классы и `data-p` (по `radiobuttonstyle.ts` и `RadioButton.dataP` PrimeNG).
+//! Pure RadioButton logic: classes and `data-p` (based on `radiobuttonstyle.ts` and `RadioButton.dataP` in PrimeNG).
 
 use prime_core::{ClassNames, DataP, Size, Variant};
 use std::borrow::Cow;
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct RadioButtonState {
-    /// Отмечен (с учётом `indeterminate`).
+    /// Checked (taking `indeterminate` into account).
     pub checked: bool,
-    /// Недоступен.
+    /// Unavailable.
     pub disabled: bool,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// Итоговый вариант (свойство или `PrimeConfig.input_variant`).
+    /// Effective variant (the property or `PrimeConfig.input_variant`).
     pub variant: Option<Variant>,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
 }
 
-/// Добавляет классы корня в порядке `radiobuttonstyle.ts`.
+/// Adds the root classes in the order of `radiobuttonstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &RadioButtonState) {
     cn.add("p-radiobutton p-component")
         .add_if(s.checked, "p-radiobutton-checked")
@@ -29,7 +29,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &RadioButtonState) {
         .add_if(s.size == Some(Size::Large), "p-radiobutton-lg p-inputfield-lg");
 }
 
-/// Значение `data-p`: `invalid`, `checked`, `disabled`, `filled` (при варианте `filled`), размер.
+/// `data-p` value: `invalid`, `checked`, `disabled`, `filled` (with the `filled` variant), size.
 pub fn data_p(s: &RadioButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.invalid, "invalid")

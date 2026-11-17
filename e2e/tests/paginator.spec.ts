@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('Paginator', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/paginator');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-paginator')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(4);
         const root = page.locator('[data-demo=basic] .p-paginator');
         await expect(root.locator('.p-paginator-page')).toHaveCount(5);
@@ -22,7 +22,7 @@ test.describe('Paginator', () => {
         expect(selected).not.toBe(plain);
     });
 
-    test('кнопки и ссылки переключают страницы', async ({ page }) => {
+    test('buttons and links switch pages', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-paginator');
         await expect(root.locator('.p-paginator-prev')).toBeDisabled();
         await root.locator('.p-paginator-next').click();
@@ -38,7 +38,7 @@ test.describe('Paginator', () => {
         await expect(page.getByTestId('echo')).toHaveText('first=0 rows=10');
     });
 
-    test('клавиатура: Tab и Enter по кнопкам', async ({ page }) => {
+    test('keyboard: Tab and Enter on the buttons', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-paginator');
         await root.locator('.p-paginator-page', { hasText: /^2$/ }).focus();
         await page.keyboard.press('Enter');
@@ -49,7 +49,7 @@ test.describe('Paginator', () => {
         await expect(page.getByTestId('echo')).toHaveText('first=20 rows=10');
     });
 
-    test('список числа строк пересчитывает страницы', async ({ page }) => {
+    test('the rows list recalculates the pages', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-paginator');
         await root.locator('.p-paginator-page', { hasText: /^3$/ }).click();
         await expect(page.getByTestId('echo')).toHaveText('first=20 rows=10');
@@ -62,7 +62,7 @@ test.describe('Paginator', () => {
         await expect(rpp.locator('.p-select-label')).toHaveText('30');
     });
 
-    test('отчёт о странице показывает диапазон записей', async ({ page }) => {
+    test('the page report shows the record range', async ({ page }) => {
         const root = page.locator('[data-demo=currentpagereport] .p-paginator');
         await expect(root.locator('.p-paginator-current')).toHaveText('Showing 1 to 10 of 120');
         await expect(root.locator('.p-paginator-page')).toHaveCount(0);
@@ -72,7 +72,7 @@ test.describe('Paginator', () => {
         await expect(root.locator('.p-paginator-current')).toHaveText('Showing 111 to 120 of 120');
     });
 
-    test('список перехода к странице меняет картинку', async ({ page }) => {
+    test('the jump-to-page list changes the picture', async ({ page }) => {
         const root = page.locator('[data-demo=images] .p-paginator');
         await expect(page.getByTestId('image')).toHaveText('Image 1');
         const jtp = root.locator('.p-paginator-jtp-dropdown');
@@ -85,7 +85,7 @@ test.describe('Paginator', () => {
         await expect(page.getByTestId('image')).toHaveText('Image 8');
     });
 
-    test('шаблонные области и ползунок', async ({ page }) => {
+    test('template areas and the slider', async ({ page }) => {
         const demo = page.locator('[data-demo=template]');
         await expect(demo.locator('.p-button')).toHaveCount(2);
         const second = demo.locator('.p-paginator').nth(1);

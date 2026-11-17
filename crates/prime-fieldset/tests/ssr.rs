@@ -1,4 +1,4 @@
-//! Структура DOM, классы, ARIA, слоты, `pt` и паритет ветвей Fieldset (SSR).
+//! DOM structure, classes, ARIA, slots, `pt` and static/reactive parity of Fieldset (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 #[test]
@@ -81,7 +81,7 @@ fn toggleable_classes_and_aria() {
         ],
     );
     lacks(&expanded, &["p-fieldset-collapsed", "display: none", "tabindex"]);
-    assert_eq!(expanded.matches(r#"data-p="toggleable""#).count(), 2, "корень и легенда: {expanded}");
+    assert_eq!(expanded.matches(r#"data-p="toggleable""#).count(), 2, "root and legend: {expanded}");
 
     let collapsed = view! { <Fieldset id="f1" legend="L" toggleable=true collapsed=RwSignal::new(true)>"x"</Fieldset> }.to_html();
     has(&collapsed, &["p-fieldset-collapsed", r#"aria-expanded="false""#, r#"aria-hidden="true""#, r#"tabindex="-1""#, "display: none"]);
@@ -120,7 +120,7 @@ fn plus_and_minus_differ() {
     let open = view! { <Fieldset legend="L" toggleable=true>"x"</Fieldset> }.to_html();
     let icon = |s: &str| s.split("<svg").nth(1).and_then(|r| r.split("</svg>").next()).map(str::to_owned);
     assert!(icon(&closed).is_some() && icon(&open).is_some());
-    assert_ne!(icon(&closed), icon(&open), "плюс и минус различаются");
+    assert_ne!(icon(&closed), icon(&open), "plus and minus differ");
 }
 
 #[test]

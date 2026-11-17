@@ -1,4 +1,4 @@
-//! Форматы, структура DOM, классы и `data-p`, раскладки кнопок, значок очистки, атрибуты и `pt` InputNumber (SSR).
+//! Formats, DOM structure, classes and `data-p`, button layouts, clear icon, attributes and `pt` of InputNumber (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -29,7 +29,7 @@ fn default_structure() {
     {
         assert!(!html.contains(unwanted), "{unwanted}: {html}");
     }
-    // пустое поле
+    // empty field
     let html = view! { <InputNumber /> }.to_html();
     assert!(html.contains(r#"value="""#) && !html.contains("p-filled") && !html.contains("aria-valuenow"), "{html}");
     assert!(html.contains(r#"data-p="empty""#), "{html}");
@@ -98,7 +98,7 @@ fn horizontal_and_vertical_buttons_are_not_grouped() {
         assert_eq!(count(&html, "<button"), 2, "{html}");
         assert!(html.contains(&format!("{}\"", layout.as_str())) || html.contains(layout.as_str()), "{html}");
     }
-    // без `show_buttons` раскладка не влияет
+    // without `show_buttons` the layout has no effect
     let html = view! { <InputNumber button_layout=ButtonLayout::Vertical /> }.to_html();
     assert!(!html.contains("p-inputnumber-vertical") && !html.contains("<button"), "{html}");
 }
@@ -153,7 +153,7 @@ fn modifiers_classes_and_data_p() {
     }
     let html = view! { <InputNumber disabled=true show_buttons=true /> }.to_html();
     assert!(html.contains(r#"data-p="disabled empty stacked""#), "{html}");
-    assert_eq!(count(&html, r#"disabled="""#), 3, "поле и две кнопки: {html}");
+    assert_eq!(count(&html, r#"disabled="""#), 3, "field and two buttons: {html}");
 }
 
 #[test]

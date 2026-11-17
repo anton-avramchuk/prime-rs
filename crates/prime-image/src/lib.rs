@@ -1,10 +1,10 @@
-//! Image — порт `p-image` из PrimeNG 21.1.10.
+//! Image — port of `p-image` from PrimeNG 21.1.10.
 //!
-//! Корень `div.p-image.p-component` с обычным `<img>`. При `preview` поверх картинки лежит кнопка
-//! `button.p-image-preview-mask` (по наведению — значок глаза); клик по ней открывает в `Portal` модальный просмотр:
-//! маска `div.p-image-mask.p-overlay-mask[role=dialog]`, панель действий (поворот на ±90°, масштаб с шагом 0.1, закрытие) и
-//! увеличенная картинка `img.p-image-original`. Просмотр закрывается кнопкой, кликом по маске и клавишей `Escape`, блокирует
-//! прокрутку страницы, держит фокус внутри и занимает слой группы `Modal`. Просмотр выводится только в браузере.
+//! Root `div.p-image.p-component` with a regular `<img>`. With `preview`, a button
+//! `button.p-image-preview-mask` (an eye icon on hover) lies over the image; a click on it opens a modal preview in a `Portal`:
+//! the mask `div.p-image-mask.p-overlay-mask[role=dialog]`, an action toolbar (rotation by ±90°, zoom in steps of 0.1, close) and
+//! the enlarged image `img.p-image-original`. The preview is closed by the button, a click on the mask and the `Escape` key; it blocks
+//! page scrolling, keeps focus inside and takes a layer of the `Modal` group. The preview is rendered only in the browser.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -38,67 +38,67 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Запасное время выхода: без стилей или при отключённой анимации `animationend` не придёт.
+/// Fallback exit time: without styles or with animation disabled, `animationend` will never arrive.
 #[cfg(target_arch = "wasm32")]
 const LEAVE_FALLBACK: Duration = Duration::from_millis(400);
-/// Задержка фокуса после показа и после `Escape` (как в PrimeNG).
+/// Focus delay after showing and after `Escape` (as in PrimeNG).
 #[cfg(target_arch = "wasm32")]
 const FOCUS_DELAY: Duration = Duration::from_millis(25);
 
-/// Контекст представления `preview_content`.
+/// Context of the `preview_content` view.
 #[derive(Clone)]
 pub struct ImagePreviewContext {
-    /// Класс увеличенной картинки (`p-image-original` и состояние анимации).
+    /// Class of the enlarged image (`p-image-original` and the animation state).
     pub class: String,
-    /// Стиль с `transform` (поворот и масштаб), меняется при действиях панели.
+    /// Style with `transform` (rotation and scale); it changes on toolbar actions.
     pub style: Signal<String>,
-    /// Вызывается при клике по картинке: такой клик не закрывает просмотр.
+    /// Called on a click on the image: such a click does not close the preview.
     pub preview_callback: Callback<()>,
 }
 
-/// Pass-through частей Image.
+/// Pass-through of the Image parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ImagePt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Основная картинка.
+    /// Main image.
     pub image: Pt,
-    /// Кнопка просмотра.
+    /// Preview button.
     pub preview_mask: Pt,
-    /// Значок кнопки просмотра (только класс).
+    /// Preview button icon (class only).
     pub preview_icon: Pt,
-    /// Маска просмотра.
+    /// Preview mask.
     pub mask: Pt,
-    /// Панель действий.
+    /// Action toolbar.
     pub toolbar: Pt,
-    /// Кнопка поворота вправо.
+    /// Rotate right button.
     pub rotate_right_button: Pt,
-    /// Кнопка поворота влево.
+    /// Rotate left button.
     pub rotate_left_button: Pt,
-    /// Кнопка уменьшения.
+    /// Zoom out button.
     pub zoom_out_button: Pt,
-    /// Кнопка увеличения.
+    /// Zoom in button.
     pub zoom_in_button: Pt,
-    /// Кнопка закрытия.
+    /// Close button.
     pub close_button: Pt,
-    /// Увеличенная картинка.
+    /// Enlarged image.
     pub original: Pt,
 }
 
-/// Состояние, общее для обработчиков просмотра.
+/// State shared by the preview handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
-    /// Просмотр запрошен.
+    /// Preview requested.
     open: RwSignal<bool>,
-    /// Маска в DOM (пока играет анимация выхода, она ещё в DOM).
+    /// The mask is in the DOM (it stays in the DOM while the exit animation plays).
     rendered: RwSignal<bool>,
-    /// Идёт анимация выхода.
+    /// The exit animation is running.
     leaving: RwSignal<bool>,
     rotate: RwSignal<i32>,
     scale: RwSignal<f64>,
-    /// Последний клик пришёл с увеличенной картинки: маску он не закрывает.
+    /// The last click came from the enlarged image: it does not close the mask.
     preview_click: StoredValue<bool>,
-    /// Выданный маске слой.
+    /// The layer assigned to the mask.
     z_index: RwSignal<Option<i32>>,
     scroll_blocked: StoredValue<bool>,
     was_open: StoredValue<bool>,
@@ -116,7 +116,7 @@ struct Core {
 }
 
 impl Core {
-    /// Снимает слушатель `Escape` и ловушку фокуса.
+    /// Removes the `Escape` listener and the focus trap.
     fn release_input(&self) {
         #[cfg(target_arch = "wasm32")]
         {
@@ -127,7 +127,7 @@ impl Core {
         }
     }
 
-    /// Освобождает слой и блокировку прокрутки.
+    /// Releases the layer and the scroll lock.
     fn release_layer(&self) {
         if let Some(z) = self.z_index.try_update(Option::take).flatten() {
             prime_core::zindex::revert(z);
@@ -138,7 +138,7 @@ impl Core {
         }
     }
 
-    /// Полное освобождение при размонтировании компонента.
+    /// Full release when the component is unmounted.
     fn teardown(&self) {
         self.release_input();
         self.release_layer();
@@ -148,12 +148,12 @@ impl Core {
         }
     }
 
-    /// Просмотр запрошен закрыть.
+    /// The preview was requested to close.
     fn close(&self) {
         self.open.set(false);
     }
 
-    /// Фокус на кнопку просмотра (после `Escape`).
+    /// Focus the preview button (after `Escape`).
     #[cfg(target_arch = "wasm32")]
     fn focus_preview_button(self: &Arc<Self>) {
         let this = self.clone();
@@ -167,9 +167,9 @@ impl Core {
         );
     }
 
-    /// Маска только что попала в DOM: слой, блокировка прокрутки, ловушка фокуса, `Escape`, фокус, `on_show`.
+    /// The mask has just entered the DOM: layer, scroll lock, focus trap, `Escape`, focus, `on_show`.
     ///
-    /// Повторное открытие во время выхода вызывает это снова, пока слой и блокировка ещё удерживаются: второй раз их не берём.
+    /// Reopening during exit calls this again while the layer and lock are still held: we do not take them a second time.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         if self.z_index.get_untracked().is_none() {
@@ -189,7 +189,7 @@ impl Core {
             if e.key() != "Escape" || !this.open.get_untracked() {
                 return;
             }
-            // Поверх просмотра может лежать другой слой (например, диалог): закрывается только верхний.
+            // Another layer (for example, a dialog) may lie over the preview: only the topmost one is closed.
             let own = this.z_index.get_untracked().unwrap_or(0);
             if own >= prime_core::zindex::current() {
                 e.prevent_default();
@@ -212,7 +212,7 @@ impl Core {
         }
     }
 
-    /// Просмотр закрыт: играет анимация выхода.
+    /// The preview is closed: the exit animation plays.
     #[cfg(target_arch = "wasm32")]
     fn begin_leave(self: &Arc<Self>) {
         self.release_input();
@@ -223,7 +223,7 @@ impl Core {
         }
     }
 
-    /// Анимация выхода закончилась: маска убирается из DOM, слой и блокировка освобождаются, поворот и масштаб сброшены.
+    /// The exit animation has finished: the mask is removed from the DOM, the layer and lock are released, rotation and scale are reset.
     #[cfg(target_arch = "wasm32")]
     fn finish_leave(&self) {
         if self.rendered.is_disposed() || !self.leaving.get_untracked() {
@@ -243,91 +243,91 @@ impl Core {
     }
 }
 
-/// Картинка с необязательным просмотром в модальном слое.
+/// An image with an optional preview in a modal layer.
 ///
-/// Свойства принимают значение или сигнал. Представления (`image`, `indicator`, `preview_content`, значки панели) строятся заново
-/// при каждом показе.
+/// Properties accept a value or a signal. Views (`image`, `indicator`, `preview_content`, toolbar icons) are rebuilt
+/// on every show.
 #[component]
 pub fn Image(
-    /// Адрес картинки.
+    /// Image address.
     #[prop(optional, into)]
     src: OptProp<String>,
-    /// `srcset` картинки.
+    /// Image `srcset`.
     #[prop(optional, into)]
     srcset: OptProp<String>,
-    /// `sizes` картинки.
+    /// Image `sizes`.
     #[prop(optional, into)]
     sizes: OptProp<String>,
-    /// Адрес картинки в просмотре (по умолчанию `src`).
+    /// Image address in the preview (`src` by default).
     #[prop(optional, into)]
     preview_image_src: OptProp<String>,
-    /// `srcset` картинки в просмотре.
+    /// Image `srcset` in the preview.
     #[prop(optional, into)]
     preview_image_srcset: OptProp<String>,
-    /// `sizes` картинки в просмотре.
+    /// Image `sizes` in the preview.
     #[prop(optional, into)]
     preview_image_sizes: OptProp<String>,
-    /// Атрибут `alt`.
+    /// The `alt` attribute.
     #[prop(optional, into)]
     alt: OptProp<String>,
-    /// Атрибут `width` (число — в пикселях; задаёт и размер кнопки просмотра).
+    /// The `width` attribute (a number is in pixels; it also sets the preview button size).
     #[prop(optional, into)]
     width: OptProp<String>,
-    /// Атрибут `height`.
+    /// The `height` attribute.
     #[prop(optional, into)]
     height: OptProp<String>,
-    /// Атрибут `loading`.
+    /// The `loading` attribute.
     #[prop(optional, into)]
     loading: OptProp<ImageLoading>,
-    /// Включает просмотр.
+    /// Enables the preview.
     #[prop(optional, into)]
     preview: Prop<bool>,
-    /// Класс картинки.
+    /// Image class.
     #[prop(optional, into)]
     image_class: OptProp<String>,
-    /// Встроенный стиль картинки.
+    /// Inline style of the image.
     #[prop(optional, into)]
     image_style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through of the parts.
     #[prop(optional)]
     pt: Option<ImagePt>,
-    /// Своя картинка вместо `img`; получает обратный вызов ошибки загрузки.
+    /// Custom image instead of `img`; receives the load error callback.
     #[prop(optional)]
     image: Option<Callback<Callback<web_sys::Event>, AnyView>>,
-    /// Свой значок кнопки просмотра вместо глаза.
+    /// Custom preview button icon instead of the eye.
     #[prop(optional, into)]
     indicator: Option<ViewFn>,
-    /// Своя увеличенная картинка вместо `img.p-image-original`.
+    /// Custom enlarged image instead of `img.p-image-original`.
     #[prop(optional)]
     preview_content: Option<Callback<ImagePreviewContext, AnyView>>,
-    /// Значок поворота вправо.
+    /// Rotate right icon.
     #[prop(optional, into)]
     rotate_right_icon: Option<ViewFn>,
-    /// Значок поворота влево.
+    /// Rotate left icon.
     #[prop(optional, into)]
     rotate_left_icon: Option<ViewFn>,
-    /// Значок уменьшения.
+    /// Zoom out icon.
     #[prop(optional, into)]
     zoom_out_icon: Option<ViewFn>,
-    /// Значок увеличения.
+    /// Zoom in icon.
     #[prop(optional, into)]
     zoom_in_icon: Option<ViewFn>,
-    /// Значок закрытия.
+    /// Close icon.
     #[prop(optional, into)]
     close_icon: Option<ViewFn>,
-    /// Просмотр показан.
+    /// The preview is shown.
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-    /// Просмотр скрыт (после анимации выхода).
+    /// The preview is hidden (after the exit animation).
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
-    /// Ошибка загрузки основной картинки.
+    /// Main image load error.
     #[prop(optional)]
     on_image_error: Option<Callback<web_sys::Event>>,
 ) -> impl IntoView {
@@ -358,20 +358,20 @@ pub fn Image(
         let core = core.clone();
         on_cleanup(move || core.teardown());
     }
-    // Показ, выход и побочные эффекты (слой, прокрутка, ловушка фокуса, `Escape`) — только в браузере.
+    // Showing, exit and side effects (layer, scrolling, focus trap, `Escape`) happen only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
         Effect::new(move |_| {
             let shown = core.open.get();
-            // Маска попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
+            // The mask enters the DOM after this effect, so we also track the reference to it.
             let mounted = core.mask.get().is_some();
             let was_open = core.was_open.get_value();
             if shown {
                 if let Some(handle) = core.timer.try_update_value(Option::take).flatten() {
                     handle.clear();
                 }
-                // Повторное открытие во время выхода: маска ещё в DOM, возвращаем её в состояние «открыта».
+                // Reopening during exit: the mask is still in the DOM, so we return it to the "open" state.
                 if core.leaving.get_untracked() {
                     core.leaving.set(false);
                 }
@@ -386,7 +386,7 @@ pub fn Image(
                 core.was_open.set_value(false);
                 core.begin_leave();
             } else if core.rendered.get_untracked() && !core.leaving.get_untracked() {
-                // Закрыли, не дождавшись появления маски в DOM: ждать нечего.
+                // Closed before the mask appeared in the DOM: nothing to wait for.
                 core.rendered.set(false);
             }
         });
@@ -518,12 +518,12 @@ pub fn Image(
     }
 }
 
-/// Перевод для подписи: в SSR берётся из конфигурации так же, как в браузере.
+/// Translation for the label: in SSR it is taken from the configuration the same way as in the browser.
 fn use_prime_config_text(key: &str) -> String {
     prime_core::use_prime_config().locale.text(key).to_owned()
 }
 
-/// Свойства, нужные только при выводе просмотра.
+/// Properties needed only when rendering the preview.
 struct Parts {
     src: OptProp<String>,
     srcset: OptProp<String>,
@@ -539,7 +539,7 @@ struct Parts {
     close_icon: Option<ViewFn>,
 }
 
-/// Маска просмотра с панелью действий и увеличенной картинкой.
+/// Preview mask with the action toolbar and the enlarged image.
 fn build_preview(core: &Arc<Core>, pt: &Arc<ImagePt>, parts: &Arc<Parts>) -> impl IntoView + use<> {
     let (leaving, z_index, rotate, scale) = (core.leaving, core.z_index, core.rotate, core.scale);
     let mask_class = {
@@ -652,7 +652,7 @@ fn build_preview(core: &Arc<Core>, pt: &Arc<ImagePt>, parts: &Arc<Parts>) -> imp
     }
 }
 
-/// Увеличенная картинка (или представление `preview_content`).
+/// Enlarged image (or the `preview_content` view).
 fn build_original(core: &Arc<Core>, pt: &Arc<ImagePt>, parts: &Arc<Parts>) -> impl IntoView + use<> {
     let (leaving, rotate, scale) = (core.leaving, core.rotate, core.scale);
     let state = move || if leaving.get() { "p-image-original-leave-active" } else { "p-image-original-enter-active" };
@@ -689,7 +689,7 @@ fn build_original(core: &Arc<Core>, pt: &Arc<ImagePt>, parts: &Arc<Parts>) -> im
     view! { <img src=src srcset=srcset sizes=sizes class=class style=style_attr on:click=move |_| mark.run(()) {..attrs} /> }.into_any()
 }
 
-/// Кнопка панели действий.
+/// Toolbar action button.
 fn action_button(
     kind: ActionKind,
     disabled: Signal<bool>,
@@ -714,7 +714,7 @@ fn action_button(
     }
 }
 
-/// `animationend` самой маски (не вложенных элементов) завершает выход.
+/// `animationend` of the mask itself (not of nested elements) finishes the exit.
 fn animation_end(core: &Arc<Core>, e: &web_sys::AnimationEvent) {
     #[cfg(target_arch = "wasm32")]
     {

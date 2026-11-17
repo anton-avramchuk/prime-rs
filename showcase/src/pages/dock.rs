@@ -1,5 +1,5 @@
-//! Страница Dock: демонстрация `basic` (выбор положения) из showcase PrimeNG (`apps/showcase/doc/dock`). Картинки с CDN заменены
-//! цветными плитками с эмодзи, подсказка — директивой `use:tooltip`; демонстрация `advanced` (Terminal, Galleria) не переносится.
+//! Dock page: the `basic` demo (position selection) from the PrimeNG showcase (`apps/showcase/doc/dock`). Images from the CDN are replaced
+//! with colored tiles with emoji, the hint is the `use:tooltip` directive; the `advanced` demo (Terminal, Galleria) is not ported.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -7,7 +7,7 @@ use prime_dock::{Dock, DockItem, DockPosition};
 use prime_radiobutton::RadioButton;
 use prime_tooltip::{TooltipOptions, TooltipPosition, tooltip};
 
-/// Пункты дока: подпись, эмодзи и цвет плитки.
+/// Dock items: label, emoji and tile color.
 const APPS: [(&str, &str, &str); 6] = [
     ("Finder", "📁", "#3b82f6"),
     ("Terminal", "⌨️", "#334155"),
@@ -21,7 +21,7 @@ fn model() -> Vec<DockItem> {
     APPS.iter().map(|(label, _, _)| DockItem::new().label(*label)).collect()
 }
 
-/// Страница `/dock`.
+/// `/dock` page.
 #[component]
 pub fn DockPage() -> impl IntoView {
     let choice = RwSignal::new(Some("bottom".to_owned()));

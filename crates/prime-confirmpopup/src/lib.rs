@@ -1,9 +1,9 @@
-//! ConfirmPopup — порт `p-confirmpopup` из PrimeNG 21.1.10.
+//! ConfirmPopup: a port of `p-confirmpopup` from PrimeNG 21.1.10.
 //!
-//! Всплывающее подтверждение у элемента, вызвавшего действие. Приложение шлёт [`Confirmation`] общему
-//! [`ConfirmationService`] (он лежит в контексте), а компонент показывает те подтверждения, чей `key` совпадает с его собственным:
-//! панель `div.p-confirmpopup[role=alertdialog]` у `target` с текстом, значком и кнопками «Нет» и «Да». Панель выводится в
-//! `body` и появляется только в браузере.
+//! A popup confirmation next to the element that triggered the action. The application sends a [`Confirmation`] to the shared
+//! [`ConfirmationService`] (kept in the context), and the component shows the confirmations whose `key` matches its own:
+//! a `div.p-confirmpopup[role=alertdialog]` panel at `target` with text, an icon and "No" and "Yes" buttons. The panel is rendered into
+//! `body` and appears only in the browser.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -13,7 +13,7 @@
 //! Owner::new().with(|| {
 //!     provide_confirmation_service();
 //!     let html = view! { <ConfirmPopup /> }.to_html();
-//!     // пока подтверждения нет, панели в разметке нет
+//!     // while there is no confirmation, the panel is absent from the markup
 //!     assert!(!html.contains("p-confirmpopup"));
 //! });
 //! ```
@@ -40,33 +40,33 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Pass-through частей [`ConfirmPopup`].
+/// Pass-through parts of [`ConfirmPopup`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ConfirmPopupPt {
-    /// Корень панели.
+    /// Panel root.
     pub root: Pt,
-    /// Блок содержимого.
+    /// Content block.
     pub content: Pt,
-    /// Значок.
+    /// Icon.
     pub icon: Pt,
-    /// Текст вопроса.
+    /// Question text.
     pub message: Pt,
-    /// Подвал с кнопками.
+    /// Footer with the buttons.
     pub footer: Pt,
 }
 
-/// Контекст представления `headless`.
+/// Context of the `headless` view.
 #[derive(Clone)]
 pub struct ConfirmPopupHeadless {
-    /// Показанное подтверждение.
+    /// The confirmation being shown.
     pub confirmation: Confirmation,
-    /// Согласие: вызывает `accept`, скрывает панель и возвращает фокус на цель.
+    /// Accept: calls `accept`, hides the panel and returns focus to the target.
     pub accept: Callback<()>,
-    /// Отказ: вызывает `reject`, скрывает панель и возвращает фокус на цель.
+    /// Reject: calls `reject`, hides the panel and returns focus to the target.
     pub reject: Callback<()>,
 }
 
-/// Состояние, общее для обработчиков панели.
+/// State shared by the panel handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     key: OptProp<String>,
@@ -74,11 +74,11 @@ struct Core {
     auto_z_index: Prop<bool>,
     base_z_index: Prop<i32>,
     visible_prop: OptProp<bool>,
-    /// Показанное подтверждение (панель строится по нему).
+    /// The confirmation being shown (the panel is built from it).
     confirmation: StoredValue<Option<Confirmation>, LocalStorage>,
-    /// Внутреннее состояние показа.
+    /// Internal show state.
     visible: RwSignal<bool>,
-    /// Перенацеливание: панель скрыта на один такт и показана заново, подтверждение сохранять.
+    /// Retargeting: the panel is hidden for one tick and shown again; keep the confirmation.
     retargeting: StoredValue<bool>,
     panel: NodeRef<leptos::html::Div>,
     flipped: RwSignal<bool>,
@@ -90,12 +90,12 @@ struct Core {
 }
 
 impl Core {
-    /// Панель показана: свойство `visible`, а если оно не задано — внутреннее состояние.
+    /// The panel is shown: the `visible` property, and if it is not set, the internal state.
     fn shown(&self) -> bool {
         self.visible_prop.get().unwrap_or_else(|| self.visible.get())
     }
 
-    /// Подписки на окно и слой освобождаются.
+    /// Window and layer subscriptions are released.
     fn release(&self) {
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
             cleanup();
@@ -109,7 +109,7 @@ impl Core {
         self.visible.try_set(false);
     }
 
-    /// Событие сервиса.
+    /// Service event.
     fn on_event(self: &Arc<Self>, event: ConfirmEvent) {
         match event {
             ConfirmEvent::Close => self.hide(),
@@ -119,7 +119,7 @@ impl Core {
                 }
                 self.confirmation.set_value(Some(*confirmation));
                 if self.visible.get_untracked() {
-                    // Панель уже показана: скрыть и показать заново у новой цели в следующем такте.
+                    // The panel is already shown: hide and show again at the new target on the next tick.
                     self.retargeting.set_value(true);
                     self.visible.set(false);
                     let this = self.clone();
@@ -140,7 +140,7 @@ impl Core {
         }
     }
 
-    /// Согласие или отказ: колбэк, скрытие, фокус на цель.
+    /// Accept or reject: callback, hide, focus on the target.
     fn answer(&self, accept: bool) {
         let confirmation = self.confirmation.get_value();
         if let Some(cb) = confirmation.as_ref().and_then(|c| if accept { c.accept } else { c.reject }) {
@@ -165,7 +165,7 @@ impl Core {
         (inside_panel, inside_target)
     }
 
-    /// Панель только что показана: слой, выравнивание, стрелка, фокус, подписки, `on_show`.
+    /// The panel has just been shown: layer, alignment, arrow, focus, subscriptions, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let Some(panel) = self.panel.get_untracked() else { return };
@@ -202,7 +202,7 @@ impl Core {
             );
         }
 
-        // Подписки — в следующем тике: клик, вызвавший `confirm`, ещё всплывает к окну и закрыл бы панель сам.
+        // Subscriptions go on the next tick: the click that called `confirm` is still bubbling to the window and would close the panel itself.
         let this = self.clone();
         let handle = leptos::leptos_dom::helpers::set_timeout_with_handle(
             move || {
@@ -221,7 +221,7 @@ impl Core {
         }
     }
 
-    /// Клик снаружи, `Escape`, изменение размера окна и прокрутка предка цели.
+    /// Outside click, `Escape`, window resize and scroll of a target ancestor.
     #[cfg(target_arch = "wasm32")]
     fn bind_window(self: &Arc<Self>) {
         let this = self.clone();
@@ -257,7 +257,7 @@ impl Core {
             c.push(Box::new(move || resize.remove()));
         });
 
-        // Прокрутка предка цели (или сдвинувшая цель прокрутка страницы) закрывает панель.
+        // Scrolling a target ancestor (or page scrolling that moved the target) closes the panel.
         let this = self.clone();
         if let Some(target) = self.confirmation.get_value().and_then(|c| c.target)
             && let Some(unwatch) = prime_dom::watch_scroll(target, move || this.hide())
@@ -266,7 +266,7 @@ impl Core {
         }
     }
 
-    /// Панель только что скрыта: подписки сняты, подтверждение забыто (кроме перенацеливания), `on_hide`.
+    /// The panel has just been hidden: subscriptions removed, confirmation forgotten (except for retargeting), `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -280,52 +280,52 @@ impl Core {
     }
 }
 
-/// Всплывающее подтверждение у элемента-цели.
+/// Popup confirmation next to the target element.
 ///
-/// Свойства принимают значение или сигнал. Представления (`content`, `headless`, значки) строятся заново при каждом показе.
-/// Нужен `ConfirmationService` в контексте (`provide_confirmation_service`).
+/// Properties accept a value or a signal. Views (`content`, `headless`, icons) are rebuilt on every show.
+/// Requires a `ConfirmationService` in the context (`provide_confirmation_service`).
 #[component]
 pub fn ConfirmPopup(
-    /// Ключ: панель показывает только подтверждения с таким же ключом.
+    /// Key: the panel shows only confirmations with the same key.
     #[prop(optional, into)]
     key: OptProp<String>,
-    /// Что получает фокус при показе, если подтверждение не задаёт своё (`Accept` по умолчанию).
+    /// What gets focus on show if the confirmation does not set its own (`Accept` by default).
     #[prop(optional, default = Prop::Static(ConfirmFocus::Accept), into)]
     default_focus: Prop<ConfirmFocus>,
-    /// Автоматически назначать `z-index`.
+    /// Assign `z-index` automatically.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the configuration value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Управляемый показ: если задан, определяет показ вместо внутреннего состояния.
+    /// Controlled show: if set, it determines the show instead of the internal state.
     #[prop(optional, into)]
     visible: OptProp<bool>,
-    /// Встроенный стиль панели.
+    /// Inline style of the panel.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс панели.
+    /// Additional class of the panel.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<ConfirmPopupPt>,
-    /// Своё содержимое блока `p-confirmpopup-content`.
+    /// Custom content of the `p-confirmpopup-content` block.
     #[prop(optional)]
     content: Option<Callback<Confirmation, AnyView>>,
-    /// Своё содержимое всей панели.
+    /// Custom content of the whole panel.
     #[prop(optional)]
     headless: Option<Callback<ConfirmPopupHeadless, AnyView>>,
-    /// Значок кнопки согласия.
+    /// Icon of the accept button.
     #[prop(optional, into)]
     accept_icon: Option<ViewFn>,
-    /// Значок кнопки отказа.
+    /// Icon of the reject button.
     #[prop(optional, into)]
     reject_icon: Option<ViewFn>,
-    /// Вызывается после показа и выравнивания панели.
+    /// Called after the panel is shown and aligned.
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-    /// Вызывается после скрытия панели.
+    /// Called after the panel is hidden.
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
 ) -> impl IntoView {
@@ -360,14 +360,14 @@ pub fn ConfirmPopup(
             core.release();
         });
     }
-    // Побочные эффекты показа и скрытия (положение, слушатели, фокус) — только в браузере.
+    // Side effects of showing and hiding (position, listeners, focus) happen only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
         Effect::new(move |_| {
             let shown = core.shown();
-            // Панель попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
-            // После перенацеливания в ссылке ещё лежит старая, уже убранная панель: нужна подключённая к документу.
+            // The panel enters the DOM after this effect, so we also watch the reference to it.
+            // After retargeting the reference still holds the old, already removed panel: we need the one attached to the document.
             let mounted = core.panel.get().is_some_and(|p| web_sys::Node::is_connected(&p));
             let was = core.was_visible.get_value();
             if shown && mounted && !was {
@@ -387,7 +387,7 @@ pub fn ConfirmPopup(
     }
 }
 
-/// Свойства, нужные только при выводе панели.
+/// Properties needed only when rendering the panel.
 struct Parts {
     style: OptProp<String>,
     style_class: OptProp<String>,
@@ -397,7 +397,7 @@ struct Parts {
     reject_icon: Option<ViewFn>,
 }
 
-/// Кнопка подвала с учётом свойств подтверждения.
+/// Footer button taking the confirmation properties into account.
 fn footer_button(confirmation: &Confirmation, accept: bool, icon: Option<ViewFn>, core: &Arc<Core>) -> impl IntoView + use<> {
     let props: ConfirmButtonProps =
         if accept { confirmation.accept_button_props.clone() } else { confirmation.reject_button_props.clone() }.unwrap_or_default();
@@ -426,7 +426,7 @@ fn footer_button(confirmation: &Confirmation, accept: bool, icon: Option<ViewFn>
     }
 }
 
-/// Панель с содержимым и кнопками.
+/// Panel with content and buttons.
 fn build_panel(core: &Arc<Core>, pt: &Arc<ConfirmPopupPt>, parts: &Arc<Parts>) -> impl IntoView + use<> {
     let confirmation = core.confirmation.get_value().unwrap_or_default();
     let flipped = core.flipped;

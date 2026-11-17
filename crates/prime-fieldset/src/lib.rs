@@ -1,21 +1,21 @@
-//! Fieldset — порт `p-fieldset` из PrimeNG 21.1.10.
+//! Fieldset — port of `p-fieldset` from PrimeNG 21.1.10.
 //!
-//! Структура и классы совпадают с PrimeNG: корень `<fieldset class="p-fieldset …">` с `<legend class="p-fieldset-legend">`
-//! и контейнером содержимого `p-fieldset-content-container` (обёртка `p-fieldset-content-wrapper`, содержимое `p-fieldset-content`).
-//! При `toggleable` внутри легенды стоит кнопка `p-fieldset-toggle-button` с иконкой «плюс»/«минус» и подписью.
+//! Structure and classes match PrimeNG: root `<fieldset class="p-fieldset …">` with `<legend class="p-fieldset-legend">`
+//! and content container `p-fieldset-content-container` (wrapper `p-fieldset-content-wrapper`, content `p-fieldset-content`).
+//! With `toggleable`, a toggle button `p-fieldset-toggle-button` with a plus/minus icon and a label sits inside the legend.
 //!
-//! Сворачивание построено на [`prime_core::collapsible`], так же как у Panel: состояние — двусторонний сигнал `collapsed`
-//! (без него — собственное, начальное значение `default_collapsed`), кнопка получает `aria-controls` и `aria-expanded`,
-//! область — `role="region"`, `aria-labelledby`, `aria-hidden`; раскрытие и сворачивание анимируют классы
-//! `p-collapsible-enter-active`/`p-collapsible-leave-active`, а `on_after_toggle` вызывается по окончании анимации.
+//! Collapsing is built on [`prime_core::collapsible`], the same as in Panel: the state is a two-way `collapsed` signal
+//! (without it, an own state with the initial value `default_collapsed`), the button gets `aria-controls` and `aria-expanded`,
+//! the region gets `role="region"`, `aria-labelledby`, `aria-hidden`; expanding and collapsing animate the classes
+//! `p-collapsible-enter-active`/`p-collapsible-leave-active`, and `on_after_toggle` is called when the animation ends.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_fieldset::Fieldset;
 //!
 //! let collapsed = RwSignal::new(true);
-//! let html = view! { <Fieldset legend="Заголовок" toggleable=true collapsed=collapsed><p>"Содержимое"</p></Fieldset> }.to_html();
-//! assert!(html.contains("p-fieldset-collapsed") && html.contains(r#"aria-expanded="false""#) && html.contains("Заголовок"));
+//! let html = view! { <Fieldset legend="Header" toggleable=true collapsed=collapsed><p>"Content"</p></Fieldset> }.to_html();
+//! assert!(html.contains("p-fieldset-collapsed") && html.contains(r#"aria-expanded="false""#) && html.contains("Header"));
 //! ```
 
 mod state;
@@ -30,88 +30,88 @@ use std::sync::Arc;
 
 pub use state::{data_p, write_root_classes};
 
-/// Событие `on_before_toggle`: исходное событие и состояние до переключения.
+/// `on_before_toggle` event: the original event and the state before toggling.
 #[derive(Clone, Debug)]
 pub struct FieldsetBeforeToggle {
-    /// Исходное событие `click`.
+    /// Original `click` event.
     pub original_event: web_sys::MouseEvent,
-    /// Значение `collapsed` до переключения.
+    /// Value of `collapsed` before toggling.
     pub collapsed: bool,
 }
 
-/// Событие `on_after_toggle`: новое состояние после окончания анимации.
+/// `on_after_toggle` event: the new state after the animation ends.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct FieldsetAfterToggle {
-    /// Значение `collapsed` после переключения.
+    /// Value of `collapsed` after toggling.
     pub collapsed: bool,
 }
 
-/// Pass-through частей Fieldset.
+/// Pass-through for the parts of Fieldset.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct FieldsetPt {
-    /// Корневой элемент (`fieldset.p-fieldset`).
+    /// Root element (`fieldset.p-fieldset`).
     pub root: Pt,
-    /// Легенда (`legend.p-fieldset-legend`).
+    /// Legend (`legend.p-fieldset-legend`).
     pub legend: Pt,
-    /// Подпись легенды (`span.p-fieldset-legend-label`).
+    /// Legend label (`span.p-fieldset-legend-label`).
     pub legend_label: Pt,
-    /// Кнопка-переключатель (`button.p-fieldset-toggle-button`).
+    /// Toggle button (`button.p-fieldset-toggle-button`).
     pub toggle_button: Pt,
-    /// Иконка переключателя: оболочка слота (`span.p-fieldset-toggle-icon`); для стандартных иконок применяется только класс.
+    /// Toggle icon: slot wrapper (`span.p-fieldset-toggle-icon`); for standard icons only the class is applied.
     pub toggle_icon: Pt,
-    /// Контейнер содержимого (`div.p-fieldset-content-container`).
+    /// Content container (`div.p-fieldset-content-container`).
     pub content_container: Pt,
-    /// Обёртка содержимого (`div.p-fieldset-content-wrapper`).
+    /// Content wrapper (`div.p-fieldset-content-wrapper`).
     pub content_wrapper: Pt,
-    /// Содержимое (`div.p-fieldset-content`).
+    /// Content (`div.p-fieldset-content`).
     pub content: Pt,
 }
 
-/// Группирующий контейнер с легендой и необязательным сворачиванием.
+/// Grouping container with a legend and optional collapsing.
 ///
-/// Текстовые и логические свойства принимают значение или сигнал; `collapsed` — двусторонний сигнал.
+/// Text and boolean properties accept a value or a signal; `collapsed` is a two-way signal.
 #[component]
 pub fn Fieldset(
-    /// Атрибут `id` корня; от него образуются идентификаторы кнопки и содержимого. По умолчанию уникальный.
+    /// `id` attribute of the root; the button and content identifiers are built from it. Unique by default.
     #[prop(optional, into)]
     id: Option<String>,
-    /// Текст легенды (`p-fieldset-legend-label`).
+    /// Legend text (`p-fieldset-legend-label`).
     #[prop(optional, into)]
     legend: OptProp<String>,
-    /// Можно ли сворачивать содержимое.
+    /// Whether the content can be collapsed.
     #[prop(optional, into)]
     toggleable: Prop<bool>,
-    /// Двусторонний сигнал «свёрнуто».
+    /// Two-way "collapsed" signal.
     #[prop(optional)]
     collapsed: Option<RwSignal<bool>>,
-    /// Начальное состояние, когда `collapsed` не передан.
+    /// Initial state when `collapsed` is not passed.
     #[prop(optional)]
     default_collapsed: bool,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Слот легенды: выводится после подписи.
+    /// Legend slot: rendered after the label.
     #[prop(optional, into)]
     header_template: Option<ViewFn>,
-    /// Слот иконки развёртывания (показывается у свёрнутого Fieldset).
+    /// Expand icon slot (shown for a collapsed Fieldset).
     #[prop(optional, into)]
     expand_icon_template: Option<ViewFn>,
-    /// Слот иконки сворачивания (показывается у развёрнутого Fieldset).
+    /// Collapse icon slot (shown for an expanded Fieldset).
     #[prop(optional, into)]
     collapse_icon_template: Option<ViewFn>,
-    /// Вызывается до переключения.
+    /// Called before toggling.
     #[prop(optional, into)]
     on_before_toggle: Option<Callback<FieldsetBeforeToggle>>,
-    /// Вызывается после окончания анимации переключения.
+    /// Called after the toggle animation ends.
     #[prop(optional, into)]
     on_after_toggle: Option<Callback<FieldsetAfterToggle>>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<FieldsetPt>,
-    /// Содержимое (`p-fieldset-content`).
+    /// Content (`p-fieldset-content`).
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -131,7 +131,7 @@ pub fn Fieldset(
         on_before_toggle,
     });
 
-    // `NodeRef` нужен только клиенту (анимация и `tabindex`): при SSR его нет, а `()` — пустой атрибут вместо `node_ref`.
+    // `NodeRef` is needed only by the client (animation and `tabindex`): there is none during SSR, and `()` is an empty attribute instead of `node_ref`.
     #[cfg(target_arch = "wasm32")]
     let region = {
         let region = NodeRef::<leptos::html::Div>::new();
@@ -212,7 +212,7 @@ pub fn Fieldset(
     }
 }
 
-/// Разметка Fieldset: одна для статической и реактивной ветвей (меняются только выражения атрибутов и легенды).
+/// Fieldset markup: one for the static and reactive branches (only the attribute and legend expressions differ).
 macro_rules! fieldset_markup {
     (
         $root_id:expr, $class:expr, $style:expr, $data:expr, $root_attrs:expr, $legend:expr, $region:expr, $container_class:expr,
@@ -245,7 +245,7 @@ macro_rules! fieldset_markup {
 }
 use fieldset_markup;
 
-/// Замыкание над свойствами экземпляра: клоны `Arc` и указатель на функцию без захвата.
+/// Closure over the instance properties: `Arc` clones and a function pointer without capture.
 fn rx<T>(
     props: &Arc<Props>,
     pt: &Arc<FieldsetPt>,
@@ -276,13 +276,13 @@ fn style_of(props: &Arc<Props>, pt: &FieldsetPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Стиль контейнера содержимого: свёрнутый при первом рендере Fieldset скрыт сразу; дальше им управляет анимация.
+/// Style of the content container: a Fieldset collapsed at the first render is hidden right away; after that the animation controls it.
 fn container_style_of(props: &Props, pt: &FieldsetPt) -> Option<String> {
     let hidden = if props.toggleable.get_untracked() { props.state.initial_style() } else { None };
     (hidden.is_some() || pt.content_container.has_style()).then(|| pt.content_container.merge_style(hidden.unwrap_or("")))
 }
 
-/// Легенда: подпись и слот, а при `toggleable` — внутри кнопки; читает `collapsed` только внутри вложенных замыканий.
+/// Legend: label and slot, and with `toggleable` — inside the button; reads `collapsed` only inside nested closures.
 fn legend_of(props: &Arc<Props>, pt: &FieldsetPt) -> AnyView {
     let toggleable = props.toggleable.get();
     let text = props.legend.get();
@@ -299,7 +299,7 @@ fn legend_of(props: &Arc<Props>, pt: &FieldsetPt) -> AnyView {
     }
 }
 
-/// Кнопка-переключатель в легенде с `aria-controls` и `aria-expanded`; иконка зависит от `collapsed`.
+/// Toggle button in the legend with `aria-controls` and `aria-expanded`; the icon depends on `collapsed`.
 fn toggle_button(
     props: &Arc<Props>,
     pt: &FieldsetPt,
@@ -341,7 +341,7 @@ fn toggle_button(
     }
 }
 
-/// Переключает Fieldset: `on_before_toggle` с прежним состоянием, затем смена `collapsed`.
+/// Toggles the Fieldset: `on_before_toggle` with the previous state, then changes `collapsed`.
 fn toggle(props: &Props, e: web_sys::MouseEvent) {
     if !props.toggleable.get_untracked() {
         return;
@@ -353,7 +353,7 @@ fn toggle(props: &Props, e: web_sys::MouseEvent) {
     props.state.toggle();
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     ids: CollapseIds,
     state: CollapseState,

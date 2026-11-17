@@ -1,5 +1,5 @@
-//! Страница Textarea: демонстрации `basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` из showcase PrimeNG
-//! (`apps/showcase/doc/textarea`). Демонстрация `keyfilter` не перенесена (нет соответствующего компонента).
+//! Textarea page: the `basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/textarea`). The `keyfilter` demo is not ported (there is no corresponding component).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -8,7 +8,7 @@ use prime_floatlabel::FloatLabel;
 use prime_iftalabel::IftaLabel;
 use prime_textarea::Textarea;
 
-/// Страница `/textarea`.
+/// `/textarea` page.
 #[component]
 pub fn TextareaPage() -> impl IntoView {
     let value = RwSignal::new(String::new());

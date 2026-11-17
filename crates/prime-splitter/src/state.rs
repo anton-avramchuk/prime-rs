@@ -1,18 +1,18 @@
-//! Чистая логика Splitter: размеры панелей, смещение, ограничения, клавиши, классы и хранилище
-//! (по `splitter.ts` и `splitterstyle.ts` PrimeNG).
+//! Pure Splitter logic: panel sizes, offset, constraints, keys, classes and storage
+//! (after PrimeNG `splitter.ts` and `splitterstyle.ts`).
 
-/// Раскладка панелей.
+/// Panel layout.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum SplitterLayout {
-    /// В ряд.
+    /// In a row.
     #[default]
     Horizontal,
-    /// В столбец.
+    /// In a column.
     Vertical,
 }
 
 impl SplitterLayout {
-    /// Имя раскладки: часть класса `p-splitter-<имя>`, `aria-orientation` и `data-p`.
+    /// Layout name: part of the class `p-splitter-<name>`, `aria-orientation` and `data-p`.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Horizontal => "horizontal",
@@ -21,7 +21,7 @@ impl SplitterLayout {
     }
 }
 
-/// Хранилище состояния.
+/// State storage.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum SplitterStorage {
     /// `sessionStorage`.
@@ -31,7 +31,7 @@ pub enum SplitterStorage {
     Local,
 }
 
-/// Начальные размеры в процентах: заданные ненулевые, остальные — поровну.
+/// Initial sizes in percent: given non-zero ones, the rest split equally.
 pub fn initial_sizes(panel_sizes: &[f64], n: usize) -> Vec<f64> {
     (0..n)
         .map(|i| match panel_sizes.get(i) {
@@ -41,23 +41,23 @@ pub fn initial_sizes(panel_sizes: &[f64], n: usize) -> Vec<f64> {
         .collect()
 }
 
-/// Значение `flex-basis` панели.
+/// Panel `flex-basis` value.
 pub fn flex_basis(size: f64, n: usize, gutter: f64) -> String {
     format!("calc({size}% - {}px)", n.saturating_sub(1) as f64 * gutter)
 }
 
-/// Смещение указателя в процентах размера корня.
+/// Pointer offset as a percentage of the root size.
 pub fn drag_delta(start: f64, current: f64, size: f64, rtl: bool, horizontal: bool) -> f64 {
     if horizontal && rtl { (start - current) * 100.0 / size } else { (current - start) * 100.0 / size }
 }
 
-/// Допустим ли новый размер пары: меньше своего ненулевого минимума нельзя.
+/// Whether the new size of the pair is valid: it cannot go below its own non-zero minimum.
 pub fn is_valid_resize(new_prev: f64, new_next: f64, min_prev: f64, min_next: f64) -> bool {
     !(min_prev > 0.0 && min_prev > new_prev) && !(min_next > 0.0 && min_next > new_next)
 }
 
-/// Шаг по клавише: положительный увеличивает предыдущую панель. Для горизонтальной раскладки работают стрелки влево и вправо,
-/// для вертикальной — вверх и вниз.
+/// Key step: a positive one enlarges the previous panel. For the horizontal layout the left and right arrows work,
+/// for the vertical one up and down.
 pub fn key_step(layout: SplitterLayout, key: &str, step: f64) -> Option<f64> {
     match (layout, key) {
         (SplitterLayout::Horizontal, "ArrowRight") | (SplitterLayout::Vertical, "ArrowUp") => Some(step),
@@ -66,17 +66,17 @@ pub fn key_step(layout: SplitterLayout, key: &str, step: f64) -> Option<f64> {
     }
 }
 
-/// Стрелка ли это (их действие по умолчанию отменяется всегда).
+/// Whether this is an arrow (their default action is always cancelled).
 pub fn is_arrow(key: &str) -> bool {
     matches!(key, "ArrowLeft" | "ArrowRight" | "ArrowUp" | "ArrowDown")
 }
 
-/// `aria-valuenow`: размер с четырьмя знаками (как `toFixed(4)`).
+/// `aria-valuenow`: size with four decimals (like `toFixed(4)`).
 pub fn aria_value(size: f64) -> String {
     format!("{size:.4}")
 }
 
-/// Классы корня (без `p-splitter-resizing`).
+/// Root classes (without `p-splitter-resizing`).
 pub fn root_classes(layout: SplitterLayout, resizing: bool) -> String {
     let mut out = format!("p-splitter p-component p-splitter-{}", layout.as_str());
     if resizing {
@@ -85,17 +85,17 @@ pub fn root_classes(layout: SplitterLayout, resizing: bool) -> String {
     out
 }
 
-/// Классы панели.
+/// Panel classes.
 pub fn panel_classes(nested: bool) -> &'static str {
     if nested { "p-splitterpanel p-splitterpanel-nested" } else { "p-splitterpanel" }
 }
 
-/// Классы разделителя.
+/// Gutter classes.
 pub fn gutter_classes(resizing: bool) -> &'static str {
     if resizing { "p-splitter-gutter p-splitter-gutter-resizing" } else { "p-splitter-gutter" }
 }
 
-/// Значение `data-p` корня и разделителей: раскладка и, при вложенности, `nested`.
+/// `data-p` value of the root and gutters: layout and, when nested, `nested`.
 pub fn data_p(layout: SplitterLayout, nested: bool) -> &'static str {
     match (layout, nested) {
         (SplitterLayout::Horizontal, false) => "horizontal",
@@ -105,7 +105,7 @@ pub fn data_p(layout: SplitterLayout, nested: bool) -> &'static str {
     }
 }
 
-/// Стиль корня.
+/// Root style.
 pub fn root_style(layout: SplitterLayout) -> &'static str {
     match layout {
         SplitterLayout::Horizontal => "display: flex; flex-wrap: nowrap",
@@ -113,7 +113,7 @@ pub fn root_style(layout: SplitterLayout) -> &'static str {
     }
 }
 
-/// Стиль ручки: размер по оси раскладки.
+/// Handle style: size along the layout axis.
 pub fn handle_style(layout: SplitterLayout, gutter: f64) -> String {
     match layout {
         SplitterLayout::Horizontal => format!("width: {gutter}px"),
@@ -121,13 +121,13 @@ pub fn handle_style(layout: SplitterLayout, gutter: f64) -> String {
     }
 }
 
-/// Размеры в виде JSON-массива.
+/// Sizes as a JSON array.
 pub fn to_json(sizes: &[f64]) -> String {
     let items: Vec<String> = sizes.iter().map(f64::to_string).collect();
     format!("[{}]", items.join(","))
 }
 
-/// Разбор JSON-массива чисел; всё иное — `None`.
+/// Parse a JSON array of numbers; anything else is `None`.
 pub fn parse_json(text: &str) -> Option<Vec<f64>> {
     let inner = text.trim().strip_prefix('[')?.strip_suffix(']')?.trim();
     if inner.is_empty() {
@@ -164,13 +164,13 @@ mod tests {
         assert_eq!(drag_delta(100.0, 140.0, 400.0, false, true), 10.0);
         assert_eq!(drag_delta(100.0, 60.0, 400.0, false, true), -10.0);
         assert_eq!(drag_delta(100.0, 140.0, 400.0, true, true), -10.0);
-        assert_eq!(drag_delta(100.0, 140.0, 400.0, true, false), 10.0, "rtl влияет только на горизонтальную раскладку");
+        assert_eq!(drag_delta(100.0, 140.0, 400.0, true, false), 10.0, "rtl affects only the horizontal layout");
         assert_eq!(drag_delta(0.0, 30.0, 300.0, false, false), 10.0);
     }
 
     #[test]
     fn is_valid_resize_table() {
-        // (новый prev, новый next, мин prev, мин next, ожидается)
+        // (new prev, new next, min prev, min next, expected)
         let cases = [
             (60.0, 40.0, 10.0, 0.0, true),
             (5.0, 95.0, 10.0, 0.0, false),

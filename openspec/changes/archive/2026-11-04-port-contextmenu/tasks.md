@@ -1,34 +1,34 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `contextmenu` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился и есть классы `p-contextmenu*`
-- [x] 1.2 Расширить `pub use model::…` в `prime-tieredmenu` нужными функциями (без изменения поведения)
+- [x] 1.1 Add `contextmenu` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of the other components did not change and the `p-contextmenu*` classes are present
+- [x] 1.2 Extend `pub use model::…` in `prime-tieredmenu` with the needed functions (no behaviour change)
 
-## 2. Крейт `prime-contextmenu`
+## 2. The `prime-contextmenu` crate
 
-- [x] 2.1 `place` (положение у курсора) с табличными тестами
-- [x] 2.2 Компонент `ContextMenu`, `ContextMenuPt`, `ContextMenuRef`: корень, список, уровни, пункты, разделители, группы, `item`/`submenu_icon`, SSR-тесты, rustdoc
-- [x] 2.3 Путь активных пунктов, фокус, наведение (`dirty`, mobile), клавиатура, поиск, положение подменю
-- [x] 2.4 Триггер: `target`, `global`, `trigger_event`, долгое касание; показ, перепозиционирование, `on_show`/`on_hide`
-- [x] 2.5 Закрытие: клик вне (без правой кнопки и Ctrl), `resize`, лист, `Escape`, `Tab`; слой `Menu`; снятие слушателей
-- [x] 2.6 Браузерные `tests/web.rs` (один последовательный тест)
+- [x] 2.1 `place` (position at the cursor) with table tests
+- [x] 2.2 The `ContextMenu`, `ContextMenuPt`, `ContextMenuRef` component: root, list, levels, items, separators, groups, `item`/`submenu_icon`, SSR tests, rustdoc
+- [x] 2.3 Active item path, focus, hover (`dirty`, mobile), keyboard, search, submenu position
+- [x] 2.4 Trigger: `target`, `global`, `trigger_event`, long press; showing, repositioning, `on_show`/`on_hide`
+- [x] 2.5 Closing: outside click (without the right button and Ctrl), `resize`, leaf, `Escape`, `Tab`; the `Menu` layer; listener removal
+- [x] 2.6 Browser `tests/web.rs` (one sequential test)
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/contextmenu` (`basic`, `command`, `template`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `contextmenu.spec.ts` (стили, положение у курсора, переворот у края, подменю, клавиатура, команда); `networkidle`, перезапуск сервера showcase; `PW_CHANNEL=chrome npx playwright test contextmenu`
+- [x] 3.1 The `/contextmenu` page (`basic`, `command`, `template`), menu, route, `stylesheet(&[..])`, the crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `contextmenu.spec.ts` (styles, position at the cursor, flip at the edge, submenu, keyboard, command); `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test contextmenu`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-contextmenu` (с `dep:prime-menu`, `dep:prime-tieredmenu`), бюджеты (сначала `cargo bench -p render-bench --bench alloc`; wasm — в фоне, отдельный файл бюджетов)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-contextmenu` (with `dep:prime-menu`, `dep:prime-tieredmenu`), budgets (first `cargo bench -p render-bench --bench alloc`; wasm in the background, a separate budgets file)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/contextmenu.md` (отличия от PrimeNG, что не проверялось); `prime-contextmenu` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с исключениями CI и `--all-features`, тесты (SSR по одному: `--exact`; эффекты только под `cfg(wasm32)`; результат wasm-тестов проверять по `test result`), deny, machete, `openspec validate port-contextmenu`; CI `dev` зелёный
+- [x] 5.1 `docs/contextmenu.md` (differences from PrimeNG, what was not verified); `prime-contextmenu` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with the CI exceptions and `--all-features`, tests (SSR one by one: `--exact`; effects only under `cfg(wasm32)`; check the wasm test result by `test result`), deny, machete, `openspec validate port-contextmenu`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Дальше по плану волны 5: Menubar.
+- Archive after CI.
+- Next in the wave 5 plan: Menubar.

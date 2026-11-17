@@ -2,27 +2,27 @@
 
 ## Why
 
-Galleria — галерея изображений: крупный кадр, миниатюры с прокруткой, индикаторы, подписи, автоматическая смена и полноэкранный режим. Второй компонент волны 6. Логика окна миниатюр (смещение, медианный элемент, постраничная навигация, адаптивное число видимых) — самостоятельная чистая модель; оболочка строится на готовых `Portal`/`FocusTrap`/`block_body_scroll`, как у Drawer.
+Galleria — an image gallery: a large frame, scrollable thumbnails, indicators, captions, automatic change and a full-screen mode. The second component of wave 6. The logic of the thumbnail window (the offset, the median element, page navigation, the adaptive number of visible items) is a self-contained pure model; the shell is built on the ready `Portal`/`FocusTrap`/`block_body_scroll`, as in Drawer.
 
 ## What Changes
 
-- Новый крейт `prime-galleria` (порт `p-galleria` из PrimeNG 21.1.10).
-- Чистая модель `model.rs`: окно миниатюр (`median_index`, `total_pages`, смещение по активному индексу, доступность кнопок, видимость миниатюр), следующий/предыдущий индекс кадра, выбор `num_visible` по ширине окна (`responsive_options`), классы позиций.
-- `Galleria`: `div.p-galleria.p-component` (`role=region`; в полноэкранном режиме — внутри `div.p-galleria-mask.p-overlay-mask` в `Portal`, `role=dialog`, `aria-modal`) > кнопка закрытия, `header`, `.p-galleria-content` > `.p-galleria-items-container` (`.p-galleria-items` > кнопки навигации, `.p-galleria-item`, `.p-galleria-caption`; список индикаторов) и `.p-galleria-thumbnails` (`.p-galleria-thumbnails-content` > кнопки, `-viewport` > `-thumbnail-items` > `-thumbnail-item` > `.p-galleria-thumbnail`), `footer`.
-- Данные — `Vec<GalleriaImage>` (`item_image_src`, `thumbnail_image_src`, `alt`, `title`); свои шаблоны — `item`, `thumbnail`, `caption`, `indicator`, `header`, `footer` как `Callback`/`ViewFn`.
-- Поведение: активный индекс — `RwSignal<usize>`; кнопки кадра (`show_item_navigators`, `circular`), индикаторы (клик, `Enter`/`Space`, наведение при `change_item_on_indicator_hover`), миниатюры (клик, `Enter`/`Space`, стрелки/`Home`/`End`, кнопки страниц, касание), автосмена (`auto_play`, `transition_interval`, остановка по клику при `should_stop_autoplay_by_click`), позиции миниатюр и индикаторов, `show_indicators_on_item`, `show_item_navigators_on_hover`, вертикальные миниатюры, адаптивные `num_visible`, полноэкранный режим (`visible`, маска, закрытие по маске и кнопке, блокировка прокрутки, ловушка фокуса).
-- Страница `/galleria` (`basic`, `autoplay`, `caption`, `controlled`, `thumbnail`, `responsive`, `advanced`), e2e, бенчмарки и бюджеты, `docs/galleria.md`, `galleria` в `theme.components`.
-- **Не входит:** `fullscreenchange` документа и системный полный экран (`requestFullscreen`), `Bind`, формы Angular, `maskMotionOptions`/`motionOptions`/`showTransitionOptions`, `numVisibleLimit` заменено ограничением `min(num_visible, len)`.
+- A new crate `prime-galleria` (a port of `p-galleria` from PrimeNG 21.1.10).
+- A pure model `model.rs`: the thumbnail window (`median_index`, `total_pages`, the offset by the active index, the availability of the buttons, the visibility of thumbnails), the next/previous index of the frame, the choice of `num_visible` by the window width (`responsive_options`), the position classes.
+- `Galleria`: `div.p-galleria.p-component` (`role=region`; in the full-screen mode — inside `div.p-galleria-mask.p-overlay-mask` in `Portal`, `role=dialog`, `aria-modal`) > the close button, `header`, `.p-galleria-content` > `.p-galleria-items-container` (`.p-galleria-items` > navigation buttons, `.p-galleria-item`, `.p-galleria-caption`; the list of indicators) and `.p-galleria-thumbnails` (`.p-galleria-thumbnails-content` > buttons, `-viewport` > `-thumbnail-items` > `-thumbnail-item` > `.p-galleria-thumbnail`), `footer`.
+- The data — `Vec<GalleriaImage>` (`item_image_src`, `thumbnail_image_src`, `alt`, `title`); custom templates — `item`, `thumbnail`, `caption`, `indicator`, `header`, `footer` as `Callback`/`ViewFn`.
+- Behaviour: the active index — `RwSignal<usize>`; the frame buttons (`show_item_navigators`, `circular`), the indicators (click, `Enter`/`Space`, hover with `change_item_on_indicator_hover`), the thumbnails (click, `Enter`/`Space`, arrows/`Home`/`End`, page buttons, touch), auto-change (`auto_play`, `transition_interval`, stopping by click with `should_stop_autoplay_by_click`), the positions of thumbnails and indicators, `show_indicators_on_item`, `show_item_navigators_on_hover`, vertical thumbnails, adaptive `num_visible`, the full-screen mode (`visible`, the mask, closing by the mask and the button, scroll blocking, focus trap).
+- The page `/galleria` (`basic`, `autoplay`, `caption`, `controlled`, `thumbnail`, `responsive`, `advanced`), e2e, benchmarks and budgets, `docs/galleria.md`, `galleria` in `theme.components`.
+- **Not included:** the document's `fullscreenchange` and the system full screen (`requestFullscreen`), `Bind`, Angular forms, `maskMotionOptions`/`motionOptions`/`showTransitionOptions`; `numVisibleLimit` is replaced by the limit `min(num_visible, len)`.
 
 ## Capabilities
 
 ### New Capabilities
-- `galleria`: галерея изображений с миниатюрами, индикаторами, автосменой и полноэкранным режимом.
+- `galleria`: an image gallery with thumbnails, indicators, auto-change and a full-screen mode.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-galleria` (`publish = false`); зависимости: `prime-core`, `prime-dom`, `prime-icons`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.
+- A new crate `crates/prime-galleria` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-icons`.
+- Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

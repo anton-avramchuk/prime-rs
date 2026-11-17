@@ -1,6 +1,6 @@
 [package]
 name = "prime-panel"
-description = "prime-rs: компонент Panel (порт PrimeNG)"
+description = "prime-rs: Panel component (port of PrimeNG)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -18,7 +18,7 @@ prime-core = { workspace = true }
 prime-icons = { workspace = true, features = ["minus", "plus"] }
 web-sys = { workspace = true, features = ["MouseEvent"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks the client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

@@ -1,15 +1,15 @@
-//! Движок маски InputMask — чистый порт логики `inputmask.ts` PrimeNG 21.1.10 (`initMask`, `checkVal`, `shiftL`/`shiftR`,
-//! `onKeyPress`, удаление, фокус, потеря фокуса, `getUnmaskedValue`) без DOM: методы принимают и возвращают текст и позиции каретки.
+//! InputMask engine — a pure port of the logic of `inputmask.ts` from PrimeNG 21.1.10 (`initMask`, `checkVal`, `shiftL`/`shiftR`,
+//! `onKeyPress`, deletion, focus, blur, `getUnmaskedValue`) without the DOM: methods accept and return text and caret positions.
 //!
-//! Шаблоны маски: `9` — цифра, `a` — буква (по предикату), `*` — буква или цифра, `?` — начало необязательной части, остальные
-//! символы — постоянные.
+//! Mask templates: `9` — digit, `a` — letter (by predicate), `*` — letter or digit, `?` — start of an optional part, other
+//! characters are constants.
 
 use std::sync::Arc;
 
-/// Предикат «буква» для шаблона `a` и `*`.
+/// "Letter" predicate for the `a` and `*` templates.
 pub type CharTest = Arc<dyn Fn(char) -> bool + Send + Sync>;
 
-/// Предикат по умолчанию: ASCII-буквы (`[A-Za-z]`).
+/// Default predicate: ASCII letters (`[A-Za-z]`).
 pub fn ascii_letters() -> CharTest {
     Arc::new(|c: char| c.is_ascii_alphabetic())
 }
@@ -21,42 +21,42 @@ enum Kind {
     AlphaNum,
 }
 
-/// Результат ввода символа ([`Mask::key_press`]).
+/// Result of a character input ([`Mask::key_press`]).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Typed {
-    /// Новый текст поля, если буфер записывался.
+    /// New field text, if the buffer was written.
     pub text: Option<String>,
-    /// Новая позиция каретки, если она менялась.
+    /// New caret position, if it changed.
     pub caret: Option<usize>,
-    /// Символ принят.
+    /// The character was accepted.
     pub accepted: bool,
-    /// После ввода обязательная часть заполнена.
+    /// After the input the required part is filled.
     pub completed: bool,
 }
 
-/// Результат удаления ([`Mask::delete`]).
+/// Result of a deletion ([`Mask::delete`]).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Deleted {
-    /// Новый текст поля, если буфер записывался.
+    /// New field text, if the buffer was written.
     pub text: Option<String>,
-    /// Новая позиция каретки, если она менялась.
+    /// New caret position, if it changed.
     pub caret: Option<usize>,
 }
 
-/// Результат фокуса ([`Mask::focus`]): текст и выделение.
+/// Result of focus ([`Mask::focus`]): text and selection.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Focused {
-    /// Текст поля после проверки значения (без записи буфера).
+    /// Field text after the value check (without writing the buffer).
     pub text: String,
-    /// Текст поля через 10 мс: записанный буфер.
+    /// Field text after 10 ms: the written buffer.
     pub buffer_text: String,
-    /// Начало выделения.
+    /// Selection start.
     pub begin: usize,
-    /// Конец выделения.
+    /// Selection end.
     pub end: usize,
 }
 
-/// Состояние маски: буфер и таблицы позиций.
+/// Mask state: buffer and position tables.
 #[derive(Clone)]
 pub struct Mask {
     tests: Vec<Option<Kind>>,
@@ -73,7 +73,7 @@ pub struct Mask {
 }
 
 impl Mask {
-    /// Строит маску (`initMask`). Пустая маска даёт движок без позиций ввода.
+    /// Builds the mask (`initMask`). An empty mask gives an engine without input positions.
     pub fn new(mask: &str, slot_char: &str, auto_clear: bool, keep_buffer: bool, alpha: CharTest) -> Self {
         let tokens: Vec<char> = mask.chars().collect();
         let slot: Vec<char> = if slot_char.is_empty() { vec!['_'] } else { slot_char.chars().collect() };
@@ -121,22 +121,22 @@ impl Mask {
         m
     }
 
-    /// Буфер как строка (`buffer.join('')`).
+    /// Buffer as a string (`buffer.join('')`).
     pub fn buffer_text(&self) -> String {
         self.buffer.iter().collect()
     }
 
-    /// Пустой буфер маски (постоянные символы и заполнители).
+    /// Empty mask buffer (constants and placeholders).
     pub fn default_buffer(&self) -> &str {
         &self.default_buffer
     }
 
-    /// Число позиций (без `?`).
+    /// Number of positions (without `?`).
     pub fn len(&self) -> usize {
         self.len
     }
 
-    /// Нет позиций.
+    /// No positions.
     pub fn is_empty(&self) -> bool {
         self.len == 0
     }
@@ -161,7 +161,7 @@ impl Mask {
         i >= 0 && self.tests.get(i as usize).copied().flatten().is_some()
     }
 
-    /// Первая позиция ввода после `pos`; `len`, если её нет.
+    /// First input position after `pos`; `len` if there is none.
     pub fn seek_next(&self, pos: isize) -> usize {
         let mut p = pos;
         loop {
@@ -172,7 +172,7 @@ impl Mask {
         }
     }
 
-    /// Последняя позиция ввода перед `pos`; `-1`, если её нет.
+    /// Last input position before `pos`; `-1` if there is none.
     pub fn seek_prev(&self, pos: isize) -> isize {
         let mut p = pos;
         loop {
@@ -183,13 +183,13 @@ impl Mask {
         }
     }
 
-    /// Все ли обязательные позиции заполнены (`isCompleted`).
+    /// Whether all required positions are filled (`isCompleted`).
     pub fn is_completed(&self) -> bool {
         let (Some(first), Some(last)) = (self.first_non_mask, self.last_required) else { return true };
         (first..=last).all(|i| !(self.tests.get(i).copied().flatten().is_some() && self.buffer.get(i) == Some(&self.placeholder(i))))
     }
 
-    /// Введённые символы без постоянных и заполнителей (`getUnmaskedValue`).
+    /// Entered characters without constants and placeholders (`getUnmaskedValue`).
     pub fn unmasked(&self) -> String {
         self.buffer
             .iter()
@@ -251,7 +251,7 @@ impl Mask {
         }
     }
 
-    /// `checkVal`: раскладывает символы `text` по позициям маски. Возвращает новый текст поля и позицию каретки.
+    /// `checkVal`: distributes the characters of `text` over the mask positions. Returns the new field text and the caret position.
     pub fn check_val(&mut self, text: &str, allow: bool) -> (String, usize) {
         let chars: Vec<char> = text.chars().collect();
         let mut last_match: isize = -1;
@@ -302,7 +302,7 @@ impl Mask {
         (new_text, i)
     }
 
-    /// Ввод символа в позиции каретки `[begin, end)` (`onKeyPress`).
+    /// Input of a character at the caret position `[begin, end)` (`onKeyPress`).
     pub fn key_press(&mut self, ch: char, begin: usize, end: usize) -> Typed {
         let mut out = Typed { text: None, caret: None, accepted: false, completed: false };
         if end > begin {
@@ -326,7 +326,7 @@ impl Mask {
         out
     }
 
-    /// `Backspace` (`forward = false`) или `Delete` (`forward = true`) в позиции каретки `[begin, end)`.
+    /// `Backspace` (`forward = false`) or `Delete` (`forward = true`) at the caret position `[begin, end)`.
     pub fn delete(&mut self, begin: usize, end: usize, forward: bool) -> Deleted {
         let (mut b, mut e) = (begin as isize, end as isize);
         if e - b == 0 {
@@ -346,7 +346,7 @@ impl Mask {
         }
     }
 
-    /// Фокус: проверка значения, затем (через 10 мс) запись буфера и выделение — вся маска, если она пуста, иначе каретка.
+    /// Focus: value check, then (after 10 ms) the buffer is written and selected — the whole mask if it is empty, otherwise the caret.
     pub fn focus(&mut self, text: &str) -> Focused {
         let (checked, pos) = self.check_val(text, false);
         let full = self.len + usize::from(false);
@@ -354,7 +354,7 @@ impl Mask {
         Focused { text: checked, buffer_text: self.buffer_text(), begin, end }
     }
 
-    /// Потеря фокуса: итоговый текст поля.
+    /// Blur: the final field text.
     pub fn blur(&mut self, text: &str) -> String {
         if self.keep_buffer { text.to_owned() } else { self.check_val(text, false).0 }
     }
@@ -368,7 +368,7 @@ mod tests {
         Mask::new(m, "_", true, false, ascii_letters())
     }
 
-    /// Печатает строку подряд с позиции после фокуса; возвращает итоговый текст и каретку.
+    /// Types a string in a row from the position after focus; returns the final text and caret.
     fn type_all(m: &mut Mask, s: &str) -> (String, usize) {
         let mut text = m.focus("").buffer_text;
         let mut caret = m.focus("").begin;
@@ -390,12 +390,12 @@ mod tests {
         assert_eq!(m.default_buffer(), "(___) ___-____");
         assert_eq!(m.len(), 14);
         let m = mask("99-aaa?9");
-        assert_eq!(m.default_buffer(), "__-___9".replace('9', "_"), "необязательный `?` не входит в буфер");
+        assert_eq!(m.default_buffer(), "__-___9".replace('9', "_"), "the optional `?` is not part of the buffer");
         assert_eq!(m.len(), 7);
         let m = Mask::new("99-99", "#", true, false, ascii_letters());
         assert_eq!(m.default_buffer(), "##-##");
         let m = Mask::new("9999", "ab", true, false, ascii_letters());
-        assert_eq!(m.default_buffer(), "abaa", "заполнитель — символ по индексу маски, иначе первый");
+        assert_eq!(m.default_buffer(), "abaa", "the placeholder is the slot character at the mask index, otherwise the first one");
         assert!(mask("").is_empty());
     }
 
@@ -421,7 +421,7 @@ mod tests {
         let mut m = mask("**");
         assert!(m.key_press('7', 0, 0).accepted && m.key_press('z', 1, 1).accepted);
         assert_eq!(m.buffer_text(), "7z");
-        assert!(m.key_press('!', 2, 2).text.is_none(), "за пределами маски ничего нет");
+        assert!(m.key_press('!', 2, 2).text.is_none(), "nothing exists beyond the mask");
     }
 
     #[test]
@@ -432,7 +432,7 @@ mod tests {
         let t = m.key_press('9', 1, 1);
         assert_eq!((t.text.as_deref(), t.caret), (Some("1923"), Some(2)));
         let t = m.key_press('8', 0, 0);
-        assert_eq!(t.text.as_deref(), Some("8192"), "последний символ вытолкнут, как в PrimeNG");
+        assert_eq!(t.text.as_deref(), Some("8192"), "the last character is pushed out, as in PrimeNG");
     }
 
     #[test]
@@ -440,7 +440,11 @@ mod tests {
         let mut m = mask("9999");
         type_all(&mut m, "1234");
         let t = m.key_press('5', 1, 3);
-        assert_eq!(t.text.as_deref(), Some("154_"), "выделение удалено, остаток сдвинут влево, затем вправо под вставляемый символ");
+        assert_eq!(
+            t.text.as_deref(),
+            Some("154_"),
+            "the selection is removed, the rest shifts left, then right under the inserted character"
+        );
     }
 
     #[test]
@@ -448,13 +452,17 @@ mod tests {
         let mut m = mask("99-99");
         type_all(&mut m, "1234");
         let d = m.delete(4, 4, false);
-        assert_eq!((d.text.as_deref(), d.caret), (Some("12-4_"), Some(3)), "Backspace удаляет символ слева от каретки, остаток сдвигается");
+        assert_eq!(
+            (d.text.as_deref(), d.caret),
+            (Some("12-4_"), Some(3)),
+            "Backspace removes the character left of the caret, the rest shifts"
+        );
         let d = m.delete(1, 1, true);
-        assert_eq!(d.text.as_deref(), Some("14-__"), "Delete удаляет символ справа и сдвигает остаток");
+        assert_eq!(d.text.as_deref(), Some("14-__"), "Delete removes the character to the right and shifts the rest");
         let d = m.delete(0, 5, false);
-        assert_eq!(d.text.as_deref(), Some("__-__"), "выделение удаляется целиком");
+        assert_eq!(d.text.as_deref(), Some("__-__"), "the selection is removed entirely");
         let d = m.delete(0, 0, false);
-        assert_eq!(d, Deleted { text: None, caret: None }, "слева от начала ничего нет");
+        assert_eq!(d, Deleted { text: None, caret: None }, "there is nothing left of the start");
     }
 
     #[test]
@@ -463,7 +471,7 @@ mod tests {
         assert_eq!(m.default_buffer(), "__-___");
         assert_eq!(m.len(), 6);
         type_all(&mut m, "123");
-        assert!(m.is_completed(), "обязательная часть заполнена");
+        assert!(m.is_completed(), "the required part is filled");
         let t = m.key_press('4', 5, 5);
         assert!(t.accepted);
         let mut m = mask("99-99");
@@ -483,35 +491,39 @@ mod tests {
         assert_eq!(text, "(555) 123-4567");
         assert_eq!(pos, 14);
         let (text, _) = m.check_val("a5b5", true);
-        assert_eq!(text, "(55_) ___-____", "лишние символы пропускаются");
+        assert_eq!(text, "(55_) ___-____", "extra characters are skipped");
     }
 
     #[test]
     fn blur_clears_incomplete_values() {
         let mut m = mask("99-99");
-        assert_eq!(m.check_val("12", false).0, "", "неполное значение с auto_clear очищается");
+        assert_eq!(m.check_val("12", false).0, "", "an incomplete value is cleared with auto_clear");
         let mut m = mask("99-99");
         assert_eq!(m.check_val("1234", false).0, "12-34");
         let mut m = Mask::new("99-99", "_", false, false, ascii_letters());
-        assert_eq!(m.check_val("12", false).0, "12-__", "без auto_clear остаётся");
+        assert_eq!(m.check_val("12", false).0, "12-__", "without auto_clear it stays");
         assert_eq!(m.blur("12-__"), "12-__");
         let mut m = Mask::new("99-99", "_", true, true, ascii_letters());
-        assert_eq!(m.blur("12-__"), "12-__", "keep_buffer не пересчитывает значение");
+        assert_eq!(m.blur("12-__"), "12-__", "keep_buffer does not recalculate the value");
     }
 
     #[test]
     fn focus_selects_everything_in_a_full_mask() {
         let mut m = mask("99-99");
         let f = m.focus("");
-        assert_eq!((f.text.as_str(), f.buffer_text.as_str(), f.begin, f.end), ("", "__-__", 0, 0), "пустая маска — каретка в начале");
+        assert_eq!(
+            (f.text.as_str(), f.buffer_text.as_str(), f.begin, f.end),
+            ("", "__-__", 0, 0),
+            "an empty mask — the caret at the start"
+        );
         let f = m.focus("12-34");
-        assert_eq!((f.buffer_text.as_str(), f.begin, f.end), ("12-34", 0, 5), "полная маска выделяется целиком");
+        assert_eq!((f.buffer_text.as_str(), f.begin, f.end), ("12-34", 0, 5), "a full mask is selected entirely");
         let mut m = Mask::new("99-99", "_", false, false, ascii_letters());
         let f = m.focus("12-3");
-        assert_eq!((f.buffer_text.as_str(), f.begin, f.end), ("12-3_", 4, 4), "каретка на первой свободной позиции");
+        assert_eq!((f.buffer_text.as_str(), f.begin, f.end), ("12-3_", 4, 4), "the caret is at the first free position");
         let mut m = mask("99-99");
         let f = m.focus("12-3");
-        assert_eq!(f.buffer_text, "__-__", "неполное значение при auto_clear очищается уже при фокусе (как в PrimeNG)");
+        assert_eq!(f.buffer_text, "__-__", "an incomplete value with auto_clear is already cleared on focus (as in PrimeNG)");
     }
 
     #[test]

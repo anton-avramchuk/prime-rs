@@ -1,8 +1,8 @@
-//! Steps — порт `p-steps` из PrimeNG 21.1.10.
+//! Steps — port of PrimeNG 21.1.10 `p-steps`.
 //!
-//! Нумерованные шаги мастера в ряд: `nav.p-steps` > `ul.p-steps-list` > `li.p-steps-item` со ссылкой, номером и подписью. По
-//! умолчанию компонент только отображает текущий шаг (`readonly`); в интерактивном режиме клик и клавиши ←/→/`Home`/`End`/`Enter`/
-//! `Space` переключают шаги. Текущий шаг ведёт владелец через `active_index` (значение или сигнал).
+//! Numbered wizard steps in a row: `nav.p-steps` > `ul.p-steps-list` > `li.p-steps-item` with a link, a number and a label. By
+//! default the component only displays the current step (`readonly`); in interactive mode a click and the keys ←/→/`Home`/`End`/`Enter`/
+//! `Space` switch steps. The current step is driven by the owner via `active_index` (a value or a signal).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -28,117 +28,117 @@ pub use state::{
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Событие команды пункта.
+/// Item command event.
 #[derive(Clone)]
 pub struct StepsCommand {
-    /// Исходное событие (клик или клавиша).
+    /// Original event (click or key).
     pub event: web_sys::Event,
-    /// Пункт.
+    /// Item.
     pub item: StepsItem,
-    /// Индекс пункта.
+    /// Item index.
     pub index: usize,
 }
 
-/// Пункт Steps (вместо `MenuItem` PrimeNG, без полей маршрутизатора).
+/// Steps item (instead of PrimeNG's `MenuItem`, without router fields).
 #[derive(Clone, Default)]
 pub struct StepsItem {
-    /// Атрибут `id` пункта.
+    /// `id` attribute of the item.
     pub id: Option<String>,
-    /// Подпись.
+    /// Label.
     pub label: Option<String>,
-    /// Адрес ссылки; без него переход по ссылке отменяется.
+    /// Link address; without it the link navigation is cancelled.
     pub url: Option<String>,
-    /// `target` ссылки.
+    /// `target` of the link.
     pub target: Option<String>,
-    /// Отключён.
+    /// Disabled.
     pub disabled: bool,
-    /// Свой `tabindex` ссылки.
+    /// Custom `tabindex` of the link.
     pub tabindex: Option<i32>,
-    /// Встроенный стиль `li`.
+    /// Inline style of `li`.
     pub style: Option<String>,
-    /// Команда при выборе пункта.
+    /// Command on item selection.
     pub command: Option<Callback<StepsCommand>>,
 }
 
 impl StepsItem {
-    /// Пустой пункт.
+    /// Empty item.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Атрибут `id`.
+    /// `id` attribute.
     pub fn id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self
     }
 
-    /// Подпись.
+    /// Label.
     pub fn label(mut self, label: impl Into<String>) -> Self {
         self.label = Some(label.into());
         self
     }
 
-    /// Адрес ссылки.
+    /// Link address.
     pub fn url(mut self, url: impl Into<String>) -> Self {
         self.url = Some(url.into());
         self
     }
 
-    /// `target` ссылки.
+    /// `target` of the link.
     pub fn target(mut self, target: impl Into<String>) -> Self {
         self.target = Some(target.into());
         self
     }
 
-    /// Отключён ли пункт.
+    /// Whether the item is disabled.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 
-    /// `tabindex` ссылки.
+    /// `tabindex` of the link.
     pub fn tabindex(mut self, tabindex: i32) -> Self {
         self.tabindex = Some(tabindex);
         self
     }
 
-    /// Встроенный стиль `li`.
+    /// Inline style of `li`.
     pub fn style(mut self, style: impl Into<String>) -> Self {
         self.style = Some(style.into());
         self
     }
 
-    /// Команда.
+    /// Command.
     pub fn command(mut self, command: impl Into<Callback<StepsCommand>>) -> Self {
         self.command = Some(command.into());
         self
     }
 }
 
-/// Pass-through частей [`Steps`].
+/// Pass-through parts of [`Steps`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct StepsPt {
-    /// Корень `nav`.
+    /// `nav` root.
     pub root: Pt,
-    /// Список.
+    /// List.
     pub list: Pt,
-    /// Пункт `li`.
+    /// Item `li`.
     pub item: Pt,
-    /// Ссылка пункта.
+    /// Item link.
     pub item_link: Pt,
-    /// Номер.
+    /// Number.
     pub item_number: Pt,
-    /// Подпись.
+    /// Label.
     pub item_label: Pt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 struct Core {
     model: Prop<Vec<StepsItem>>,
     readonly: Prop<bool>,
     active: Signal<usize>,
     active_signal: Option<RwSignal<usize>>,
-    /// Ссылка с фокусом клавиатуры (roving `tabindex`); `None` — по умолчанию активный пункт.
+    /// The link with keyboard focus (roving `tabindex`); `None` — the active item by default.
     focus_index: RwSignal<Option<usize>>,
     list: NodeRef<leptos::html::Ul>,
     on_change: Option<Callback<usize>>,
@@ -149,7 +149,7 @@ impl Core {
         self.model.get_untracked().get(index).cloned()
     }
 
-    /// Клик или `Enter`/`Space` по пункту.
+    /// Click or `Enter`/`Space` on an item.
     fn activate(&self, event: web_sys::Event, index: usize) {
         let Some(item) = self.item(index) else { return };
         match click_outcome(item.disabled, self.readonly.get_untracked(), item.url.is_some()) {
@@ -199,37 +199,37 @@ impl Core {
     }
 }
 
-/// Индикатор шагов мастера.
+/// Wizard step indicator.
 ///
-/// Свойства принимают значение или сигнал. `active_index` ведёт владелец: клик в интерактивном режиме сообщает новый индекс
-/// через `on_active_index_change` и обновляет `active_index_signal`, если он задан.
+/// Properties accept a value or a signal. `active_index` is driven by the owner: a click in interactive mode reports the new index
+/// via `on_active_index_change` and updates `active_index_signal` if it is set.
 #[component]
 pub fn Steps(
-    /// Пункты.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<StepsItem>>,
-    /// Текущий шаг (с нуля).
+    /// Current step (zero-based).
     #[prop(optional, into)]
     active_index: Prop<usize>,
-    /// Двусторонний сигнал текущего шага: клик записывает в него индекс (вместо `active_index`, если задан).
+    /// Two-way signal of the current step: a click writes the index to it (instead of `active_index`, if set).
     #[prop(optional)]
     active_index_signal: Option<RwSignal<usize>>,
-    /// Только отображение: клик по шагам ничего не делает.
+    /// Display only: a click on the steps does nothing.
     #[prop(optional, default = Prop::Static(true), into)]
     readonly: Prop<bool>,
-    /// Свойство совместимости с PrimeNG (там влияет лишь на ссылки маршрутизатора).
+    /// PrimeNG compatibility property (there it affects only router links).
     #[prop(optional, default = Prop::Static(true), into)]
     exact: Prop<bool>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<StepsPt>,
-    /// Текущий шаг выбран пользователем.
+    /// The current step was chosen by the user.
     #[prop(optional)]
     on_active_index_change: Option<Callback<usize>>,
 ) -> impl IntoView {
@@ -251,7 +251,7 @@ pub fn Steps(
         list: NodeRef::new(),
         on_change: on_active_index_change,
     });
-    // Смена текущего шага возвращает «ролевой» tabindex на него.
+    // A change of the current step returns the roving tabindex to it.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();

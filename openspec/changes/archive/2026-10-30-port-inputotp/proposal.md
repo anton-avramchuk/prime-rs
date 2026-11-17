@@ -2,29 +2,29 @@
 
 ## Why
 
-`InputOtp` — следующий компонент волны 2: ввод одноразового кода по ячейке на символ, с автопереходом, вставкой всего кода и маской. Он опирается на готовый `InputText` (классы и вариант) и не требует оверлеев, поэтому подходит как первая интерактивная партия после компонентов отображения.
+`InputOtp` is the next wave 2 component: entering a one-time code with a cell per character, with auto-advance, pasting of the whole code and a mask. It builds on the existing `InputText` (classes and variant) and needs no overlays, so it fits as the first interactive batch after the display components.
 
 ## What Changes
 
-- Новый крейт `prime-inputotp` с компонентом `InputOtp`:
-  - Корень `<div class="p-inputotp p-component">` (вместо хоста `<p-inputotp>`) и `length` ячеек `<input class="p-inputtext p-component p-inputotp-input …">` (классы `InputText`: `p-filled`, `p-inputtext-sm|lg`, `p-invalid`, `p-variant-filled`).
-  - Значение — необязательный `RwSignal<String>`; символы ячеек — его символы по порядку.
-  - Свойства: `value`, `length` (по умолчанию 4), `mask` (`type="password"`), `integer_only` (`inputmode="numeric"`, только цифры), `size`, `variant`, `invalid`, `disabled`, `readonly`, `autofocus` (первая ячейка), `tabindex`, `name`, `style_class`, `style`, `pt` (`root`, `input`); события `on_change` (новое значение), `on_focus`, `on_blur`; шаблон ячейки `input` — колбэк с токеном, индексом и обработчиками событий.
-  - Поведение как в PrimeNG: ввод символа и переход в следующую ячейку, `Backspace` на пустой ячейке и `ArrowLeft` — в предыдущую, `ArrowRight` — в следующую, `ArrowUp`/`ArrowDown` отменяются, вставка раскладывается по ячейкам (обрезается до `length`), выделение содержимого при фокусе, ограничение набора цифрами при `integer_only`, поля не принимают ввод при `readonly` и `disabled`.
-  - Чистая логика (токены, решения по клавишам и вставке) вынесена в `state.rs` и проверяется табличными тестами.
-- Страница showcase `/inputotp` с демонстрациями `basic`, `mask`, `integeronly`, `sizes`, `template` из PrimeNG; e2e с настоящим вводом, вставкой и клавишами; бенчмарки и бюджеты; `docs/inputotp.md`.
-- Стили: `inputotp` добавляется в `theme.components`; `inputtext` уже подключён.
-- **Не входит:** интеграция с Angular Forms (`ngModel`, `ReactiveForms`); демонстрация `sample` (она опирается на кнопки и счётчик повторной отправки — составная страница); ввод с экранной клавиатуры и автозаполнение кода из SMS (`autocomplete="one-time-code"` проставляется, но поведение браузеров не проверялось).
+- New crate `prime-inputotp` with the `InputOtp` component:
+  - Root `<div class="p-inputotp p-component">` (instead of the `<p-inputotp>` host) and `length` cells `<input class="p-inputtext p-component p-inputotp-input …">` (`InputText` classes: `p-filled`, `p-inputtext-sm|lg`, `p-invalid`, `p-variant-filled`).
+  - The value is an optional `RwSignal<String>`; the cell characters are its characters in order.
+  - Properties: `value`, `length` (default 4), `mask` (`type="password"`), `integer_only` (`inputmode="numeric"`, digits only), `size`, `variant`, `invalid`, `disabled`, `readonly`, `autofocus` (first cell), `tabindex`, `name`, `style_class`, `style`, `pt` (`root`, `input`); events `on_change` (new value), `on_focus`, `on_blur`; the cell template `input` is a callback with the token, index and event handlers.
+  - Behavior as in PrimeNG: typing a character moves to the next cell, `Backspace` on an empty cell and `ArrowLeft` move to the previous one, `ArrowRight` to the next, `ArrowUp`/`ArrowDown` are cancelled, paste is distributed across the cells (trimmed to `length`), content is selected on focus, typing is limited to digits with `integer_only`, fields accept no input with `readonly` and `disabled`.
+  - Pure logic (tokens, key and paste decisions) is extracted to `state.rs` and verified by table-driven tests.
+- Showcase page `/inputotp` with the PrimeNG demos `basic`, `mask`, `integeronly`, `sizes`, `template`; e2e with real input, paste and keys; benchmarks and budgets; `docs/inputotp.md`.
+- Styles: `inputotp` is added to `theme.components`; `inputtext` is already enabled.
+- **Out of scope:** Angular Forms integration (`ngModel`, `ReactiveForms`); the `sample` demo (it relies on buttons and a resend counter, a composite page); on-screen keyboard input and SMS code autofill (`autocomplete="one-time-code"` is set, but browser behavior was not verified).
 
 ## Capabilities
 
 ### New Capabilities
-- `inputotp`: ввод одноразового кода по символам в отдельных ячейках.
+- `inputotp`: one-time code entry by characters in separate cells.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-inputotp` (`publish = false`); зависимости: `prime-core`, `prime-inputtext` (классы ячейки), `web-sys` (`HtmlInputElement`, `KeyboardEvent`, `ClipboardEvent`, `DataTransfer`, `InputEvent`, `FocusEvent`, `Element`).
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, а при браузерных тестах `tests/web.rs` — job в `ci.yml` (три места).
+- New crate `crates/prime-inputotp` (`publish = false`); dependencies: `prime-core`, `prime-inputtext` (cell classes), `web-sys` (`HtmlInputElement`, `KeyboardEvent`, `ClipboardEvent`, `DataTransfer`, `InputEvent`, `FocusEvent`, `Element`).
+- Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, and with browser tests `tests/web.rs` a job in `ci.yml` (three places).

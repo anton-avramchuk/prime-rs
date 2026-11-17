@@ -1,49 +1,49 @@
 # treeselect Specification
 
 ## Purpose
-TreeSelect позволяет выбрать узел или несколько узлов дерева в выпадающей панели.
+TreeSelect lets the user select a node or several nodes of a tree in a dropdown panel.
 
 ## Requirements
 
-### Requirement: Разметка
-`TreeSelect` крейта `prime-treeselect` SHALL принимать `Vec<TreeNode>` и выводить `div.p-treeselect.p-component.p-inputwrapper` (классы состояния: `p-treeselect-display-chip`, `p-disabled`, `p-invalid`, `p-focus`, `p-variant-filled`, `p-inputwrapper-filled`, `p-inputwrapper-focus`, `p-treeselect-open`, `p-treeselect-clearable`, `p-treeselect-fluid`, `p-treeselect-sm`, `p-treeselect-lg`), скрытое поле `input[role=combobox][readonly]` (`aria-haspopup="tree"`, `aria-expanded`, `aria-controls`, `tabindex`, `disabled`), контейнер метки с `div.p-treeselect-label` и кнопку `div.p-treeselect-dropdown[role=button]` со стрелкой. Метка SHALL показывать подписи выбранных узлов через запятую либо `placeholder` (`p-placeholder`), а при `display = Chip` — чипы `p-treeselect-chip-item` > `p-treeselect-chip`. Панель SHALL выводиться только в открытом состоянии.
+### Requirement: Markup
+`TreeSelect` of the `prime-treeselect` crate SHALL accept `Vec<TreeNode>` and render `div.p-treeselect.p-component.p-inputwrapper` (state classes: `p-treeselect-display-chip`, `p-disabled`, `p-invalid`, `p-focus`, `p-variant-filled`, `p-inputwrapper-filled`, `p-inputwrapper-focus`, `p-treeselect-open`, `p-treeselect-clearable`, `p-treeselect-fluid`, `p-treeselect-sm`, `p-treeselect-lg`), a hidden field `input[role=combobox][readonly]` (`aria-haspopup="tree"`, `aria-expanded`, `aria-controls`, `tabindex`, `disabled`), a label container with `div.p-treeselect-label` and a button `div.p-treeselect-dropdown[role=button]` with an arrow. The label SHALL show the captions of selected nodes separated by commas or the `placeholder` (`p-placeholder`), and with `display = Chip` — chips `p-treeselect-chip-item` > `p-treeselect-chip`. The panel SHALL be rendered only in the open state.
 
-#### Scenario: Закрыто
-- **WHEN** выбран узел «Work»
-- **THEN** метка содержит «Work», панели нет, `aria-expanded="false"`
+#### Scenario: Closed
+- **WHEN** the node "Work" is selected
+- **THEN** the label contains "Work", there is no panel, `aria-expanded="false"`
 
-#### Scenario: Пусто
-- **WHEN** ничего не выбрано
-- **THEN** метка показывает `placeholder`
+#### Scenario: Empty
+- **WHEN** nothing is selected
+- **THEN** the label shows the `placeholder`
 
-### Requirement: Открытие и выбор
-Клик по полю SHALL открывать или закрывать панель `div.p-treeselect-overlay` с `div.p-treeselect-tree-container` (`max-height` = `scroll_height`, по умолчанию `400px`) и деревом; панель SHALL находиться внутри корня и выравниваться по полю. При открытии SHALL раскрываться предки выбранных узлов. В режиме `Single` выбор узла SHALL закрывать панель и возвращать фокус на поле; в `Multiple` и `Checkbox` панель остаётся открытой. Значение SHALL быть двусторонним сигналом ключей. Клик вне компонента, `resize` и `Escape` SHALL закрывать панель.
+### Requirement: Opening and selection
+A click on the field SHALL open or close the panel `div.p-treeselect-overlay` with `div.p-treeselect-tree-container` (`max-height` = `scroll_height`, `400px` by default) and the tree; the panel SHALL be inside the root and aligned to the field. On open the ancestors of selected nodes SHALL be expanded. In `Single` mode selecting a node SHALL close the panel and return focus to the field; in `Multiple` and `Checkbox` the panel stays open. The value SHALL be a two-way signal of keys. A click outside the component, `resize` and `Escape` SHALL close the panel.
 
-#### Scenario: Единичный выбор
-- **WHEN** панель открыта и пользователь кликает по узлу
-- **THEN** ключ узла в значении, панель закрыта, `on_hide` вызван
+#### Scenario: Single selection
+- **WHEN** the panel is open and the user clicks a node
+- **THEN** the node key is in the value, the panel is closed, `on_hide` is called
 
-#### Scenario: Предки выбранного
-- **WHEN** значение содержит вложенный узел и панель открывается
-- **THEN** его предки раскрыты
+#### Scenario: Ancestors of the selection
+- **WHEN** the value contains a nested node and the panel opens
+- **THEN** its ancestors are expanded
 
-### Requirement: Очистка
-При `show_clear` и непустом значении SHALL выводиться значок `p-treeselect-clear-icon`; клик по нему SHALL очищать значение, вызывать `on_clear` и не открывать панель.
+### Requirement: Clear
+With `show_clear` and a non-empty value the icon `p-treeselect-clear-icon` SHALL be rendered; a click on it SHALL clear the value, call `on_clear` and not open the panel.
 
-#### Scenario: Очистка
-- **WHEN** пользователь кликает по значку очистки
-- **THEN** значение пусто, панель не открыта
+#### Scenario: Clear
+- **WHEN** the user clicks the clear icon
+- **THEN** the value is empty, the panel is not open
 
-### Requirement: Клавиатура
-На скрытом поле ↓ SHALL открывать панель и переводить фокус на первый узел дерева, `Space`/`Enter` — открывать, `Escape` — закрывать панель и оставлять фокус на поле, `Tab` — закрывать панель. Отключённое поле SHALL не реагировать на клики и клавиши.
+### Requirement: Keyboard
+On the hidden field Down SHALL open the panel and move focus to the first tree node, `Space`/`Enter` — open, `Escape` — close the panel and leave focus on the field, `Tab` — close the panel. A disabled field SHALL NOT react to clicks and keys.
 
-#### Scenario: Стрелка вниз
-- **WHEN** фокус на поле и нажата ↓
-- **THEN** панель открыта, фокус на первом узле дерева
+#### Scenario: Down arrow
+- **WHEN** focus is on the field and Down is pressed
+- **THEN** the panel is open, focus is on the first tree node
 
-### Requirement: Параметры дерева
-Режим выбора, `meta_key_selection`, распространение выбора, фильтр (`filter`, `filter_by`, `filter_mode`, `filter_placeholder`), `empty_message`, `loading` SHALL передаваться в `Tree`; фильтр SHALL сбрасываться при закрытии панели.
+### Requirement: Tree parameters
+The selection mode, `meta_key_selection`, selection propagation, the filter (`filter`, `filter_by`, `filter_mode`, `filter_placeholder`), `empty_message`, `loading` SHALL be passed to `Tree`; the filter SHALL reset when the panel closes.
 
-#### Scenario: Фильтр
-- **WHEN** задан `filter` и панель открыта
-- **THEN** в панели есть поле фильтра дерева
+#### Scenario: Filter
+- **WHEN** `filter` is set and the panel is open
+- **THEN** the panel contains a tree filter field

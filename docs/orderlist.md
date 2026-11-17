@@ -1,42 +1,42 @@
 # OrderList
 
-Порт `p-orderlist` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-orderlist` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-orderlist::OrderList`, `OrderListPt`, `ControlsPosition` | `packages/primeng/src/orderlist/orderlist.ts`, `orderlist/style/orderliststyle.ts` |
-| Перестановка выбранных элементов | `prime-orderlist::reorder` — чистая логика вместо `moveUp/moveTop/moveDown/moveBottom`, табличные тесты |
-| Список, выбор, поиск | `prime-listbox::Listbox` (в PrimeNG — `p-listbox`) |
-| CSS | `@primeuix/styles/orderlist` и блок `/* For PrimeNG */` (`orderlist` в `theme.components` и `primeng_extra`) |
-| Демонстрации | `apps/showcase/doc/orderlist/*-doc.ts` (`basic`, `filter`; `controls` — наша) |
+| Reordering of the selected items | `prime-orderlist::reorder` — pure logic instead of `moveUp/moveTop/moveDown/moveBottom`, table-driven tests |
+| List, selection, search | `prime-listbox::Listbox` (in PrimeNG — `p-listbox`) |
+| CSS | `@primeuix/styles/orderlist` and the `/* For PrimeNG */` block (`orderlist` in `theme.components` and `primeng_extra`) |
+| Demos | `apps/showcase/doc/orderlist/*-doc.ts` (`basic`, `filter`; `controls` is ours) |
 
-Спека: `openspec/specs/orderlist`. Порядок — `RwSignal<Vec<ListboxOption>>`, выбор — `RwSignal<Vec<String>>` (значения выбранных).
+Spec: `openspec/specs/orderlist`. The order is a `RwSignal<Vec<ListboxOption>>`, the selection is a `RwSignal<Vec<String>>` (the values of the selected items).
 
 ```rust
 let value = RwSignal::new(vec![ListboxOption::new("Apple", "a"), ListboxOption::new("Pear", "p")]);
 view! { <OrderList value=value filter=true on_reorder=Callback::new(|sel: Vec<String>| log(sel)) /> }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка: `p-orderlist p-component` с `p-orderlist-controls-left|right`, панель `p-orderlist-controls` из четырёх кнопок (вверх, в начало, вниз, в конец), недоступных без выбора или при `disabled`, затем список.
-- Список — множественный выбор, `striped_rows`, `meta_key_selection`, `scroll_height` (по умолчанию `14rem`), поиск.
-- Перестановка по полному списку, даже если поиск скрывает часть элементов; выбор после перемещения сохраняется.
+- Markup: `p-orderlist p-component` with `p-orderlist-controls-left|right`, the `p-orderlist-controls` panel of four buttons (up, to the top, down, to the bottom), unavailable without a selection or when `disabled`, then the list.
+- The list — multiple selection, `striped_rows`, `meta_key_selection`, `scroll_height` (default `14rem`), search.
+- Reordering over the full list, even if the search hides some items; the selection is kept after moving.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Выбранные элементы сохраняют взаимный порядок при любом перемещении | В PrimeNG при `moveUp` смежные элементы у края меняются местами, а `moveTop`/`moveBottom` зависят от порядка кликов — это ошибки; поведение исправлено сознательно. |
-| Нет перетаскивания (`dragdrop`) | В PrimeNG оно построено на Angular CDK; общего решения для drag-and-drop в проекте пока нет. |
-| Нет `header`, шаблонов, `filterBy`/`filterMatchMode`/`filterLocale`, `responsive`/`breakpoint`, `buttonProps` | У `Listbox` нет заголовочного слота; поиск идёт по метке; остальное вне объёма порта. |
-| Значение — список `ListboxOption` (метка и строковое значение), а не произвольные объекты | Типизированная модель вместо `any`; свой вид элемента — `option`. |
+| Selected items keep their relative order on any move | In PrimeNG, with `moveUp` adjacent items at the edge swap places, and `moveTop`/`moveBottom` depend on the click order — these are bugs; the behaviour is fixed on purpose. |
+| No drag and drop (`dragdrop`) | In PrimeNG it is built on Angular CDK; the project has no common drag-and-drop solution yet. |
+| No `header`, templates, `filterBy`/`filterMatchMode`/`filterLocale`, `responsive`/`breakpoint`, `buttonProps` | `Listbox` has no header slot; search goes by the label; the rest is outside the scope of the port. |
+| The value is a list of `ListboxOption` (a label and a string value), not arbitrary objects | A typed model instead of `any`; the item view is `option`. |
 
-## Что не проверялось
+## Not verified
 
-- Перемещение с клавиатуры внутри списка (стандартное поведение `Listbox`).
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
+- Moving from the keyboard inside the list (the standard `Listbox` behaviour).
+- Screen readers: `aria-*` were checked against PrimeNG, screen reader behaviour was not.
 
-## Производительность
+## Performance
 
-См. `benches/` (`orderlist-1`, `orderlist-1000`, `case-orderlist`) и `benches/*budgets.toml`.
+See `benches/` (`orderlist-1`, `orderlist-1000`, `case-orderlist`) and `benches/*budgets.toml`.

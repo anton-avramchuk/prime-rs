@@ -1,41 +1,41 @@
-//! Чистые операции правки текста поля (`insert`, `deleteRange`, `onKeyDown`, `initCursor` PrimeNG), без DOM.
+//! Pure field text editing operations (PrimeNG's `insert`, `deleteRange`, `onKeyDown`, `initCursor`), without the DOM.
 //!
-//! Текст разбирается в модель (знак и цифры с необязательным десятичным разделителем), правится и собирается заново по формату;
-//! курсор переносится по числу значимых символов (цифр и разделителя) слева от него.
+//! The text is parsed into a model (sign and digits with an optional decimal separator), edited and reassembled per the format;
+//! the caret is carried over by the number of significant characters (digits and the separator) to its left.
 
 use crate::format::{InputNumberMode, NumberFormat, Parsed};
 
-/// Контекст правки: формат, границы и режимы.
+/// Editing context: format, bounds and modes.
 #[derive(Clone, Copy, Debug)]
 pub struct EditCtx<'a> {
-    /// Форматтер.
+    /// Formatter.
     pub nf: &'a NumberFormat,
-    /// Нижняя граница.
+    /// Lower bound.
     pub min: Option<f64>,
-    /// Верхняя граница.
+    /// Upper bound.
     pub max: Option<f64>,
-    /// Разрешено ли пустое значение (иначе пустота заменяется нулём).
+    /// Whether an empty value is allowed (otherwise emptiness is replaced by zero).
     pub allow_empty: bool,
-    /// Режим форматирования.
+    /// Formatting mode.
     pub mode: InputNumberMode,
 }
 
-/// Результат правки.
+/// Result of an edit.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Edit {
-    /// Новый текст поля.
+    /// New field text.
     pub text: String,
-    /// Новая позиция курсора (в символах).
+    /// New caret position (in characters).
     pub caret: usize,
-    /// Значение, разобранное из нового текста.
+    /// Value parsed from the new text.
     pub value: Parsed,
 }
 
-/// Модель правки: знак и цифры с маркером `.` десятичного разделителя.
+/// Editing model: sign and digits with the `.` marker for the decimal separator.
 #[derive(Clone, Debug)]
 struct Model {
     neg: bool,
-    /// Цифры и не более одного `.`.
+    /// Digits and at most one `.`.
     flat: Vec<char>,
 }
 
@@ -72,13 +72,13 @@ impl Model {
     }
 }
 
-/// Число значимых символов (цифр и десятичного разделителя) в `text[..caret]` внутри числовой части.
+/// Number of significant characters (digits and the decimal separator) in `text[..caret]` within the numeric part.
 fn flat_before(nf: &NumberFormat, text: &str, caret: usize) -> usize {
     let (start, _) = nf.core_bounds(text);
     text.chars().enumerate().filter(|(i, c)| *i >= start && *i < caret && (c.is_ascii_digit() || *c == nf.decimal())).count()
 }
 
-/// Позиция курсора сразу после `flat` значимых символов (при 0 — начало числовой части).
+/// Caret position right after `flat` significant characters (at 0, the start of the numeric part).
 fn caret_after(nf: &NumberFormat, text: &str, flat: usize) -> usize {
     let (start, end) = nf.core_bounds(text);
     if flat == 0 {
@@ -96,17 +96,17 @@ fn caret_after(nf: &NumberFormat, text: &str, flat: usize) -> usize {
     end
 }
 
-/// Индекс минуса в тексте, если он есть.
+/// Index of the minus in the text, if present.
 fn minus_index(nf: &NumberFormat, text: &str) -> Option<usize> {
     text.chars().position(|c| c == nf.minus() || c == '-')
 }
 
-/// Собирает текст из модели и ставит курсор после `caret_flat` значимых символов.
+/// Assembles text from the model and places the caret after `caret_flat` significant characters.
 fn render(ctx: &EditCtx, mut model: Model, caret_flat: usize) -> Edit {
     let nf = ctx.nf;
     let mut int: Vec<char> = model.flat[..model.int_len()].to_vec();
     let mut frac: Option<Vec<char>> = model.dot().map(|d| model.flat[d + 1..].to_vec());
-    // ведущие нули: «05» → «5», «00» → «0», «.5» → «0.5»
+    // leading zeros: "05" -> "5", "00" -> "0", ".5" -> "0.5"
     let lead = int.iter().take_while(|&&c| c == '0').count();
     let mut caret_flat = caret_flat;
     if lead > 0 {
@@ -153,12 +153,12 @@ fn render(ctx: &EditCtx, mut model: Model, caret_flat: usize) -> Edit {
     Edit { text, caret, value }
 }
 
-/// Разрешён ли минус при заданной нижней границе.
+/// Whether a minus is allowed for the given lower bound.
 fn allows_minus(ctx: &EditCtx) -> bool {
     ctx.min.is_none_or(|m| m < 0.0)
 }
 
-/// Вводит один символ на месте выделения `sel`; `None` — символ отвергнут.
+/// Enters one character in place of the selection `sel`; `None` means the character was rejected.
 pub fn insert_char(ctx: &EditCtx, text: &str, sel: (usize, usize), c: char) -> Option<Edit> {
     let nf = ctx.nf;
     let mut model = Model::from_text(nf, text)?;
@@ -201,7 +201,7 @@ pub fn insert_char(ctx: &EditCtx, text: &str, sel: (usize, usize), c: char) -> O
             return None;
         }
         if collapsed && fs < model.flat.len() {
-            // в дробной части цифра замещает следующую
+            // in the fraction part a digit replaces the next one
             model.flat[fs] = c;
         } else {
             model.flat.insert(fs, c);
@@ -212,7 +212,7 @@ pub fn insert_char(ctx: &EditCtx, text: &str, sel: (usize, usize), c: char) -> O
     Some(render(ctx, model, fs + 1))
 }
 
-/// Вводит строку (набор нескольких символов подряд): правки применяются по символам.
+/// Enters a string (several characters typed in a row): edits are applied character by character.
 pub fn insert_text(ctx: &EditCtx, text: &str, sel: (usize, usize), data: &str) -> Option<Edit> {
     let mut current: Option<Edit> = None;
     let (mut text_now, mut sel_now) = (text.to_owned(), sel);
@@ -229,7 +229,7 @@ pub fn insert_text(ctx: &EditCtx, text: &str, sel: (usize, usize), data: &str) -
     current
 }
 
-/// Удаляет выделенный диапазон.
+/// Deletes the selected range.
 pub fn delete_range(ctx: &EditCtx, text: &str, sel: (usize, usize)) -> Option<Edit> {
     let nf = ctx.nf;
     let mut model = Model::from_text(nf, text)?;
@@ -242,7 +242,7 @@ pub fn delete_range(ctx: &EditCtx, text: &str, sel: (usize, usize)) -> Option<Ed
     Some(render(ctx, model, fs))
 }
 
-/// Удаляет цифру дробной части: нулём или сдвигом (в десятичном режиме при числе знаков больше минимума).
+/// Deletes a fraction digit: with a zero or by shifting (in decimal mode when the digit count exceeds the minimum).
 fn zero_or_remove_frac(ctx: &EditCtx, model: &mut Model, flat_idx: usize) -> bool {
     let shift = ctx.mode == InputNumberMode::Decimal && ctx.nf.min_frac() < model.frac_len();
     if shift {
@@ -253,7 +253,7 @@ fn zero_or_remove_frac(ctx: &EditCtx, model: &mut Model, flat_idx: usize) -> boo
     shift
 }
 
-/// Удаляет цифру целой части; единственная цифра заменяется нулём, а результат, не больший нуля, становится пустым.
+/// Deletes an integer digit; a lone digit is replaced by zero, and a result not greater than zero becomes empty.
 fn remove_int_digit(model: &mut Model, flat_idx: usize) {
     if model.int_len() == 1 {
         model.flat[flat_idx] = '0';
@@ -267,7 +267,7 @@ fn remove_int_digit(model: &mut Model, flat_idx: usize) {
     }
 }
 
-/// Backspace при сжатом выделении; `None` — действие не меняет текст.
+/// Backspace with a collapsed selection; `None` means the action does not change the text.
 pub fn delete_back(ctx: &EditCtx, text: &str, sel: (usize, usize)) -> Option<Edit> {
     if sel.0 != sel.1 {
         return delete_range(ctx, text, sel);
@@ -310,7 +310,7 @@ pub fn delete_back(ctx: &EditCtx, text: &str, sel: (usize, usize)) -> Option<Edi
     None
 }
 
-/// Delete при сжатом выделении; `None` — действие не меняет текст.
+/// Delete with a collapsed selection; `None` means the action does not change the text.
 pub fn delete_forward(ctx: &EditCtx, text: &str, sel: (usize, usize)) -> Option<Edit> {
     if sel.0 != sel.1 {
         return delete_range(ctx, text, sel);
@@ -351,7 +351,7 @@ pub fn delete_forward(ctx: &EditCtx, text: &str, sel: (usize, usize)) -> Option<
     None
 }
 
-/// Вставка из буфера: вставленный текст разбирается как число (дробь допускается независимо от `max_fraction_digits`).
+/// Paste from the clipboard: the pasted text is parsed as a number (a fraction is allowed regardless of `max_fraction_digits`).
 pub fn paste(ctx: &EditCtx, text: &str, sel: (usize, usize), pasted: &str) -> Option<Edit> {
     let nf = ctx.nf;
     let parts = nf.decompose(pasted.trim())?;
@@ -394,13 +394,13 @@ pub fn paste(ctx: &EditCtx, text: &str, sel: (usize, usize), pasted: &str) -> Op
     Some(render(ctx, model, at))
 }
 
-/// Ограничивает значение границами.
+/// Clamps the value to the bounds.
 pub fn validate(value: f64, min: Option<f64>, max: Option<f64>) -> f64 {
     let v = min.map_or(value, |m| value.max(m));
     max.map_or(v, |m| v.min(m))
 }
 
-/// Фиксация текста (`Enter`, `Tab`, потеря фокуса): число ограничивается границами и форматируется заново.
+/// Commit of the text (`Enter`, `Tab`, focus loss): the number is clamped to the bounds and formatted again.
 pub fn commit(ctx: &EditCtx, text: &str) -> (Option<f64>, String) {
     let nf = ctx.nf;
     match nf.parse(text) {
@@ -416,16 +416,16 @@ pub fn commit(ctx: &EditCtx, text: &str) -> (Option<f64>, String) {
     }
 }
 
-/// Шаг вверх или вниз от значения в поле (пустое — 0); результат ограничивается границами, текст форматируется.
+/// Step up or down from the value in the field (empty is 0); the result is clamped to the bounds, the text is formatted.
 pub fn spin(ctx: &EditCtx, text: &str, dir: f64, step: f64) -> (f64, String) {
     let current = ctx.nf.parse(text).value().unwrap_or(0.0);
-    // убираем шум двоичной арифметики (0.1 + 0.2)
+    // remove binary arithmetic noise (0.1 + 0.2)
     let raw = ((current + dir * step) * 1e12).round() / 1e12;
     let v = validate(raw, ctx.min, ctx.max);
     (v, ctx.nf.format(v))
 }
 
-/// Приводит курсор внутрь числовой части (`initCursor`): не заходит в префикс и суффикс.
+/// Brings the caret inside the numeric part (`initCursor`): it does not enter the prefix or suffix.
 pub fn clamp_caret(nf: &NumberFormat, text: &str, caret: usize) -> usize {
     let (start, end) = nf.core_bounds(text);
     caret.clamp(start, end)
@@ -452,7 +452,7 @@ mod tests {
         nf_of(FormatOptions { max_fraction_digits: Some(2), locale: "en-US".into(), ..FormatOptions::default() })
     }
 
-    /// Применяет последовательность символов в конец поля; возвращает текст и курсор.
+    /// Applies a sequence of characters at the end of the field; returns the text and the caret.
     fn typed(ctx: &EditCtx, chars: &str) -> (String, usize) {
         let (mut text, mut caret) = (String::new(), 0);
         for c in chars.chars() {
@@ -480,13 +480,13 @@ mod tests {
     fn insert_in_the_middle_keeps_the_caret_after_the_inserted_digit() {
         let nf = default_format();
         let ctx = ctx_with(&nf, InputNumberMode::Decimal);
-        // «1,234» — вставка «9» после «1»
+        // "1,234": inserting "9" after "1"
         let e = insert_char(&ctx, "1,234", (1, 1), '9').unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("19,234", 2));
-        // вставка в начало
+        // insertion at the start
         let e = insert_char(&ctx, "234", (0, 0), '1').unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("1,234", 1));
-        // замена выделения
+        // replacing a selection
         let e = insert_char(&ctx, "1,234", (0, 5), '7').unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("7", 1));
     }
@@ -501,11 +501,11 @@ mod tests {
         assert_eq!(typed(&ctx, "1."), ("1.".to_owned(), 2));
         assert_eq!(typed(&ctx, "1.5"), ("1.5".to_owned(), 3));
         assert_eq!(typed(&ctx, "1.25"), ("1.25".to_owned(), 4));
-        // третья цифра дроби не вводится
+        // the third fraction digit is not entered
         assert_eq!(typed(&ctx, "1.259"), ("1.25".to_owned(), 4));
-        // второй разделитель игнорируется
+        // the second separator is ignored
         assert_eq!(typed(&ctx, "1.2.").0, "1.2");
-        // «.» в пустом поле даёт «0.»
+        // "." in an empty field gives "0."
         assert_eq!(typed(&ctx, "."), ("0.".to_owned(), 2));
         assert_eq!(typed(&ctx, ".5"), ("0.5".to_owned(), 3));
     }
@@ -518,7 +518,7 @@ mod tests {
         assert_eq!((e.text.as_str(), e.caret), ("1.70", 3));
         let e = insert_char(&ctx, "1.50", (3, 3), '7').unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("1.57", 4));
-        assert!(insert_char(&ctx, "1.57", (4, 4), '1').is_none(), "за пределом дроби");
+        assert!(insert_char(&ctx, "1.57", (4, 4), '1').is_none(), "beyond the fraction limit");
     }
 
     #[test]
@@ -527,7 +527,7 @@ mod tests {
         let ctx = ctx_with(&nf, InputNumberMode::Decimal);
         let e = insert_char(&ctx, "12.00", (2, 2), '.').unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("12.00", 3));
-        // выделение, захватившее разделитель, заменяется им
+        // a selection covering the separator is replaced by it
         let e = insert_char(&ctx, "1,234.00", (1, 6), '.').unwrap();
         assert_eq!(e.value, Parsed::Number(1.0));
     }
@@ -547,7 +547,7 @@ mod tests {
         let ctx = ctx_with(&nf, InputNumberMode::Currency);
         assert_eq!(typed(&ctx, "5"), ("$5.00".to_owned(), 2));
         assert_eq!(typed(&ctx, "1234"), ("$1,234.00".to_owned(), 6));
-        // курсор перед числом (после «$») — вставка в начало
+        // caret before the number (after "$"): insertion at the start
         let e = insert_char(&ctx, "$5.00", (1, 1), '1').unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("$15.00", 2));
     }
@@ -558,19 +558,19 @@ mod tests {
         let ctx = ctx_with(&nf, InputNumberMode::Decimal);
         assert_eq!(typed(&ctx, "-5"), ("-5".to_owned(), 2));
         assert_eq!(typed(&ctx, "-").0, "-");
-        // минус не в начале числа игнорируется
+        // a minus not at the start of the number is ignored
         assert!(insert_char(&ctx, "12", (2, 2), '-').is_none());
-        // повторный минус не меняет число
+        // a repeated minus does not change the number
         let e = insert_char(&ctx, "-12", (0, 0), '-').unwrap();
         assert_eq!(e.text, "-12");
-        // нижняя граница не меньше нуля: минус запрещён
+        // lower bound not below zero: minus is forbidden
         let non_negative = EditCtx { min: Some(0.0), ..ctx };
         assert!(insert_char(&non_negative, "", (0, 0), '-').is_none());
-        // отрицательная валюта
+        // negative currency
         let nf = usd();
         let ctx = ctx_with(&nf, InputNumberMode::Currency);
         assert_eq!(typed(&ctx, "-5").0, "-$5.00");
-        // ru-RU: ASCII-минус принимается и выводится знаком локали
+        // ru-RU: the ASCII minus is accepted and shown as the locale's sign
         let ru = nf_of(FormatOptions { locale: "ru-RU".into(), ..FormatOptions::default() });
         let ctx = ctx_with(&ru, InputNumberMode::Decimal);
         assert_eq!(typed(&ctx, "-5").0, "\u{2212}5");
@@ -580,16 +580,16 @@ mod tests {
     fn backspace_over_digits_groups_and_decimal() {
         let nf = default_format();
         let ctx = ctx_with(&nf, InputNumberMode::Decimal);
-        // обычная цифра
+        // ordinary digit
         let e = delete_back(&ctx, "1,234", (5, 5)).unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("123", 3));
-        // сразу после запятой удаляется цифра перед ней
+        // right after the comma the digit before it is deleted
         let e = delete_back(&ctx, "1,234", (2, 2)).unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("234", 0));
-        // единственная цифра — пусто
+        // a lone digit: empty
         let e = delete_back(&ctx, "5", (1, 1)).unwrap();
         assert_eq!((e.text.as_str(), e.value), ("", Parsed::Empty));
-        // нет цифр слева
+        // no digits to the left
         assert!(delete_back(&ctx, "5", (0, 0)).is_none());
     }
 
@@ -597,21 +597,21 @@ mod tests {
     fn backspace_in_fraction_zeroes_or_shifts_by_mode() {
         let nf = frac2();
         let ctx = ctx_with(&nf, InputNumberMode::Decimal);
-        // десятичный режим, знаков больше минимума (0) — цифра убирается
+        // decimal mode, digit count above the minimum (0): the digit is removed
         let e = delete_back(&ctx, "1.25", (4, 4)).unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("1.2", 3));
-        // разделитель при непустой дроби курсор только сдвигает
+        // with a non-empty fraction the separator only moves the caret
         let e = delete_back(&ctx, "1.25", (2, 2)).unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("1.25", 1));
-        // разделитель без дроби удаляется
+        // a separator without a fraction is deleted
         let e = delete_back(&ctx, "1.", (2, 2)).unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("1", 1));
-        // валюта: цифра дроби заменяется нулём
+        // currency: the fraction digit is replaced by zero
         let cur = usd();
         let ctx = ctx_with(&cur, InputNumberMode::Currency);
         let e = delete_back(&ctx, "$12.34", (6, 6)).unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("$12.30", 5));
-        // не удаляется префикс
+        // the prefix is not deleted
         assert!(delete_back(&ctx, "$12.34", (1, 1)).is_none());
     }
 
@@ -622,7 +622,7 @@ mod tests {
         let e = delete_back(&ctx, "5.5", (1, 1)).unwrap();
         assert_eq!((e.text.as_str(), e.value), ("0.5", Parsed::Number(0.5)));
         let e = delete_back(&ctx, "-5", (2, 2)).unwrap();
-        assert_eq!((e.text.as_str(), e.value), ("", Parsed::Empty), "ноль и меньше — пусто, минус тоже");
+        assert_eq!((e.text.as_str(), e.value), ("", Parsed::Empty), "zero and below is empty, so is a minus");
     }
 
     #[test]
@@ -631,7 +631,7 @@ mod tests {
         let ctx = ctx_with(&nf, InputNumberMode::Decimal);
         let e = delete_forward(&ctx, "1,234", (0, 0)).unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("234", 0));
-        // перед запятой удаляется цифра после неё
+        // before the comma the digit after it is deleted
         let e = delete_forward(&ctx, "1,234", (1, 1)).unwrap();
         assert_eq!((e.text.as_str(), e.caret), ("134", 1));
         assert!(delete_forward(&ctx, "1,234", (5, 5)).is_none());
@@ -651,7 +651,7 @@ mod tests {
         assert_eq!((e.text.as_str(), e.caret), ("1,567", 1));
         let e = delete_back(&ctx, "1,234", (0, 5)).unwrap();
         assert_eq!((e.text.as_str(), e.value), ("", Parsed::Empty));
-        // валюта: выделено всё — пусто без префикса
+        // currency: everything selected: empty without the prefix
         let cur = usd();
         let ctx = ctx_with(&cur, InputNumberMode::Currency);
         let e = delete_range(&ctx, "$12.00", (0, 6)).unwrap();
@@ -682,7 +682,7 @@ mod tests {
         assert!(paste(&ctx, "12", (0, 0), "").is_none());
         let non_negative = EditCtx { min: Some(0.0), ..ctx };
         assert_eq!(paste(&non_negative, "", (0, 0), "-7").unwrap().value, Parsed::Number(7.0));
-        // дробь обрезается по максимуму формата
+        // the fraction is truncated to the format maximum
         let two = frac2();
         let ctx = ctx_with(&two, InputNumberMode::Decimal);
         assert_eq!(paste(&ctx, "", (0, 0), "1.2345").unwrap().text, "1.23");
@@ -733,7 +733,7 @@ mod tests {
         });
         let ctx = ctx_with(&nf, InputNumberMode::Decimal);
         assert_eq!(typed(&ctx, "42"), ("Expires in 42 days".to_owned(), 13));
-        // Backspace не трогает суффикс
+        // Backspace does not touch the suffix
         let e = delete_back(&ctx, "Expires in 42 days", (13, 13)).unwrap();
         assert_eq!(e.text, "Expires in 4 days");
         assert!(delete_back(&ctx, "Expires in 42 days", (11, 11)).is_none());
@@ -744,7 +744,7 @@ mod tests {
         let nf = nf_of(FormatOptions { max_fraction_digits: Some(2), locale: "de-DE".into(), ..FormatOptions::default() });
         let ctx = ctx_with(&nf, InputNumberMode::Decimal);
         assert_eq!(typed(&ctx, "1234,5").0, "1.234,5");
-        // точка в немецкой локали не десятичный разделитель
+        // the dot in the German locale is not a decimal separator
         assert_eq!(typed(&ctx, "1.5").0, "15");
     }
 }

@@ -1,63 +1,63 @@
 ## ADDED Requirements
 
-### Requirement: Свойства Avatar
-Компонент `Avatar` крейта `prime-avatar` SHALL принимать `label`, `icon` (содержимое Leptos), `image` (URL), `size` (`normal`, `large`, `xlarge`; по умолчанию `normal`), `shape` (`square`, `circle`; по умолчанию `square`), `style`, `style_class`, `aria_label`, `aria_labelledby`, `children`, `pt` и событие `on_image_error`. Все свойства необязательны; изменяемые во время работы SHALL принимать значение или сигнал.
+### Requirement: Avatar properties
+The `Avatar` component of the `prime-avatar` crate SHALL accept `label`, `icon` (Leptos content), `image` (URL), `size` (`normal`, `large`, `xlarge`; `normal` by default), `shape` (`square`, `circle`; `square` by default), `style`, `style_class`, `aria_label`, `aria_labelledby`, `children`, `pt` and the `on_image_error` event. All properties are optional; those that change at runtime SHALL accept a value or a signal.
 
-#### Scenario: Метка
-- **WHEN** `Avatar` отрисован с `label = "P"`
-- **THEN** внутри есть `<span class="p-avatar-label">P</span>`
+#### Scenario: Label
+- **WHEN** `Avatar` is rendered with `label = "P"`
+- **THEN** it contains `<span class="p-avatar-label">P</span>`
 
-#### Scenario: Значения по умолчанию
-- **WHEN** `Avatar` отрисован без свойств
-- **THEN** у корня классы `p-avatar p-component`, а `data-p` равен `square normal`
+#### Scenario: Default values
+- **WHEN** `Avatar` is rendered without properties
+- **THEN** the root has the classes `p-avatar p-component` and `data-p` equals `square normal`
 
-### Requirement: Классы и атрибуты Avatar
-Корень SHALL быть элементом с классами `p-avatar p-component` и модификаторами: `p-avatar-image` при заданном `image`, `p-avatar-circle` при `shape = circle`, `p-avatar-lg` при `size = large`, `p-avatar-xl` при `size = xlarge`. Атрибут `data-p` SHALL содержать через пробел форму и размер; `aria-label` и `aria-labelledby` SHALL переноситься на корень. `style_class` и `style` SHALL добавляться без потери собственных классов.
+### Requirement: Avatar classes and attributes
+The root SHALL be an element with the classes `p-avatar p-component` and the modifiers: `p-avatar-image` when `image` is set, `p-avatar-circle` for `shape = circle`, `p-avatar-lg` for `size = large`, `p-avatar-xl` for `size = xlarge`. The `data-p` attribute SHALL contain, space-separated, the shape and size; `aria-label` and `aria-labelledby` SHALL be carried over to the root. `style_class` and `style` SHALL be added without losing the own classes.
 
-#### Scenario: Форма и размер
-- **WHEN** заданы `shape = circle` и `size = xlarge`
-- **THEN** у корня классы `p-avatar-circle` и `p-avatar-xl`, а `data-p` равен `circle xlarge`
+#### Scenario: Shape and size
+- **WHEN** `shape = circle` and `size = xlarge` are set
+- **THEN** the root has the classes `p-avatar-circle` and `p-avatar-xl`, and `data-p` equals `circle xlarge`
 
-#### Scenario: Изображение
-- **WHEN** задан `image`
-- **THEN** у корня есть `p-avatar-image`
+#### Scenario: Image
+- **WHEN** `image` is set
+- **THEN** the root has `p-avatar-image`
 
-#### Scenario: Доступность
-- **WHEN** заданы `aria_label = "Фото"` и `aria_labelledby = "id1"`
-- **THEN** у корня атрибуты `aria-label="Фото"` и `aria-labelledby="id1"`
+#### Scenario: Accessibility
+- **WHEN** `aria_label = "Photo"` and `aria_labelledby = "id1"` are set
+- **THEN** the root has the attributes `aria-label="Photo"` and `aria-labelledby="id1"`
 
-### Requirement: Содержимое Avatar
-Содержимое SHALL выводиться в порядке: `children`, затем метка `span.p-avatar-label`, если задана; иначе иконка `span.p-avatar-icon`, если задана; иначе изображение `<img>` с `src`, `aria-label` и `data-p`, если задан `image`. Каждый из этих элементов SHALL нести тот же `data-p`, что и корень.
+### Requirement: Avatar content
+Content SHALL be rendered in the order: `children`, then the `span.p-avatar-label` label if set; otherwise the `span.p-avatar-icon` icon if set; otherwise the `<img>` image with `src`, `aria-label` and `data-p` if `image` is set. Each of these elements SHALL carry the same `data-p` as the root.
 
-#### Scenario: Приоритет
-- **WHEN** заданы `label`, `icon` и `image`
-- **THEN** выводится только метка
+#### Scenario: Priority
+- **WHEN** `label`, `icon` and `image` are set
+- **THEN** only the label is rendered
 
-#### Scenario: Иконка вместо изображения
-- **WHEN** заданы `icon` и `image`, но нет `label`
-- **THEN** выводится `span.p-avatar-icon`, изображения нет
+#### Scenario: Icon instead of image
+- **WHEN** `icon` and `image` are set but there is no `label`
+- **THEN** `span.p-avatar-icon` is rendered, there is no image
 
-### Requirement: Ошибка загрузки изображения Avatar
-При ошибке загрузки `<img>` SHALL вызываться `on_image_error` с исходным событием.
+### Requirement: Avatar image load error
+When the `<img>` fails to load, `on_image_error` SHALL be called with the original event.
 
-#### Scenario: Ошибка
-- **WHEN** изображение не загрузилось
-- **THEN** `on_image_error` вызван один раз
+#### Scenario: Error
+- **WHEN** the image failed to load
+- **THEN** `on_image_error` is called once
 
 ### Requirement: Pass-through Avatar
-`Avatar` SHALL принимать `pt` для корня, метки, иконки и изображения; классы и атрибуты добавляются к собственным, не заменяя их.
+`Avatar` SHALL accept `pt` for the root, label, icon and image; classes and attributes are added to its own, not replacing them.
 
-#### Scenario: pt на метке
-- **WHEN** передан `pt` с классом `extra` для метки
-- **THEN** у `p-avatar-label` есть и `p-avatar-label`, и `extra`
+#### Scenario: pt on the label
+- **WHEN** a `pt` with the class `extra` is passed for the label
+- **THEN** `p-avatar-label` has both `p-avatar-label` and `extra`
 
-### Requirement: Стоимость отрисовки Avatar
-`Avatar` SHALL использовать статическую ветвь отрисовки, если все свойства статические, и реактивную иначе; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `avatar` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `avatar` в `benches/budgets.toml`.
+### Requirement: Avatar rendering cost
+`Avatar` SHALL use the static render branch if all properties are static, and the reactive one otherwise; both branches SHALL produce the same markup. The number of allocations per instance in SSR SHALL fit the `avatar` budget in `benches/alloc-budgets.toml`, and the wasm contribution the `avatar` budget in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один и тот же набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** the same set of values is passed statically and as signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Avatar не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the Avatar values do not exceed the budgets

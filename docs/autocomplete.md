@@ -1,15 +1,15 @@
 # AutoComplete
 
-Порт `p-autocomplete` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10 `p-autocomplete` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-autocomplete::AutoComplete`, `AutoCompletePt`, `AutoCompleteOption`, `AutoCompleteCompleteEvent`, `AutoCompleteDropdownMode` | `packages/primeng/src/autocomplete/autocomplete.ts`, `autocomplete/style/autocompletestyle.ts` |
-| Модель (плоский список, навигация, подпись значения, совпадение, разделитель) | `prime-autocomplete::state` — чистые функции с табличными тестами |
-| CSS | `@primeuix/styles/autocomplete`, пресет Aura и блок `/* For PrimeNG */` — `cargo xtask gen-theme` (`autocomplete` в `primeng_extra`) |
-| Демонстрации | `apps/showcase/doc/autocomplete/*-doc.ts` (`basic`, `dropdown`, `multiple`, `forceselection`, `group`, `clearicon`, `disabled`, `invalid`, `template`) |
+| Model (flat list, navigation, value label, match, separator) | `prime-autocomplete::state`: pure functions with table-driven tests |
+| CSS | `@primeuix/styles/autocomplete`, the Aura preset and the `/* For PrimeNG */` block: `cargo xtask gen-theme` (`autocomplete` in `primeng_extra`) |
+| Demos | `apps/showcase/doc/autocomplete/*-doc.ts` (`basic`, `dropdown`, `multiple`, `forceselection`, `group`, `clearicon`, `disabled`, `invalid`, `template`) |
 
-Спека: `openspec/specs/autocomplete`. Варианты — `AutoCompleteOption` (`label`, `value` — по умолчанию подпись, `disabled`, `items` — вложенные варианты группы). Одиночный режим: `value: RwSignal<String>` (набранный текст либо значение выбранного варианта); `multiple`: `values: RwSignal<Vec<String>>`.
+Spec: `openspec/specs/autocomplete`. Options are `AutoCompleteOption` (`label`, `value` defaulting to the label, `disabled`, `items` for the nested options of a group). Single mode: `value: RwSignal<String>` (typed text or the value of the selected option); `multiple`: `values: RwSignal<Vec<String>>`.
 
 ```rust
 let (value, suggestions) = (RwSignal::new(String::new()), RwSignal::new(Vec::new()));
@@ -22,29 +22,29 @@ view! {
 }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-autocomplete.p-component.p-inputwrapper` > `input.p-inputtext.p-autocomplete-input[role=combobox]` либо `ul.p-autocomplete-input-multiple` с чипами `p-autocomplete-chip-item` > `Chip.p-autocomplete-chip` и `li.p-autocomplete-input-chip`; значок очистки, спиннер `p-autocomplete-loader`, кнопка `p-autocomplete-dropdown`; панель `p-autocomplete-overlay` > `p-autocomplete-list-container` > `ul.p-autocomplete-list[role=listbox]` > `li.p-autocomplete-option` (`-selected`, `p-focus`, `p-disabled`, `aria-*`, `data-p-*`), `li.p-autocomplete-option-group`, `li.p-autocomplete-empty-message`.
-- Запрос: ввод от `min_length` символов через `delay` вызывает `on_complete`; до обновления `suggestions` виден спиннер; новые варианты открывают панель (в том числе повторно тот же набор); пустой результат — сообщение; кнопка-стрелка шлёт пустой запрос или текущий текст; `complete_on_focus`.
-- Выбор и клавиши по `onKeyDown`: ↓ ↑ по допустимым вариантам, `Alt+↑` выбирает и закрывает, `Enter` выбирает, `Escape` закрывает с фокусом, `Tab` выбирает сфокусированный, `Backspace` в пустом `multiple` удаляет последний чип, ← → по чипам, `force_selection` (очистка несовпавшего ввода по `change` и закрытию), `unique`, `typeahead = false` (добавление набранного по `Enter`, разделителю, `Tab`, потере фокуса и вставке).
+- Markup and classes: `div.p-autocomplete.p-component.p-inputwrapper` > `input.p-inputtext.p-autocomplete-input[role=combobox]` or `ul.p-autocomplete-input-multiple` with chips `p-autocomplete-chip-item` > `Chip.p-autocomplete-chip` and `li.p-autocomplete-input-chip`; clear icon, `p-autocomplete-loader` spinner, `p-autocomplete-dropdown` button; panel `p-autocomplete-overlay` > `p-autocomplete-list-container` > `ul.p-autocomplete-list[role=listbox]` > `li.p-autocomplete-option` (`-selected`, `p-focus`, `p-disabled`, `aria-*`, `data-p-*`), `li.p-autocomplete-option-group`, `li.p-autocomplete-empty-message`.
+- Query: typing from `min_length` characters calls `on_complete` after `delay`; the spinner is visible until `suggestions` are updated; new options open the panel (including the same set again); an empty result shows a message; the arrow button sends an empty query or the current text; `complete_on_focus`.
+- Selection and keys per `onKeyDown`: down/up over eligible options, `Alt+Up` selects and closes, `Enter` selects, `Escape` closes with focus, `Tab` selects the focused one, `Backspace` in an empty `multiple` removes the last chip, left/right over chips, `force_selection` (clearing a non-matching input on `change` and close), `unique`, `typeahead = false` (adding the typed text on `Enter`, the separator, `Tab`, blur and paste).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Варианты — `AutoCompleteOption` (строки), без объектов, `optionLabel`/`optionValue`/`dataKey` | Нет произвольных объектов; значение — строка. |
-| Нет виртуальной прокрутки и `lazy`, `appendTo`, формы Angular, `onKeyUp`/`onInputKeydown`, сообщений для скринридеров (`aria-live`), `selectOnFocus`, `autoHighlight` | Вне объёма порта. |
-| Панель выводится только при открытии и лежит внутри корня (`position: absolute` по CSS темы, корень `position: relative`) | В PrimeNG — отдельный `p-overlay`. |
-| `Home`/`End` в поле не трогают каретку (браузер делает это сам) | PrimeNG ставит `setSelectionRange` вручную, итог тот же. |
-| Шаблоны — свойства `item`, `group_view`, `selected_item`; нет `header`/`footer`/`loader`/иконок | Нет `pTemplate`. |
-| Контейнер чипов обрабатывает только события на себе (стрелки поля не доходят до него) | В PrimeNG для этого вызывается `stopPropagation` в каждом обработчике. |
+| Options are `AutoCompleteOption` (strings), no objects, `optionLabel`/`optionValue`/`dataKey` | No arbitrary objects; the value is a string. |
+| No virtual scrolling and `lazy`, `appendTo`, Angular forms, `onKeyUp`/`onInputKeydown`, screen reader messages (`aria-live`), `selectOnFocus`, `autoHighlight` | Outside the port's scope. |
+| The panel is rendered only when open and lives inside the root (`position: absolute` from the theme CSS, root `position: relative`) | In PrimeNG it is a separate `p-overlay`. |
+| `Home`/`End` in the field do not touch the caret (the browser does that itself) | PrimeNG calls `setSelectionRange` manually, the result is the same. |
+| Templates are the properties `item`, `group_view`, `selected_item`; no `header`/`footer`/`loader`/icons | There is no `pTemplate`. |
+| The chip container handles only events on itself (field arrows do not reach it) | In PrimeNG `stopPropagation` is called in every handler for this. |
 
-## Что не проверялось
+## What was not verified
 
-- Раскладка справа налево и сенсорный ввод.
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Долгий список вариантов (без виртуальной прокрутки панель прокручивается стандартно).
+- Right-to-left layout and touch input.
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behaviour was not.
+- A long option list (without virtual scrolling the panel scrolls normally).
 
-## Производительность
+## Performance
 
-См. `benches/` (`autocomplete-1`, `autocomplete-1000`, `case-autocomplete`) и `benches/*budgets.toml`.
+See `benches/` (`autocomplete-1`, `autocomplete-1000`, `case-autocomplete`) and `benches/*budgets.toml`.

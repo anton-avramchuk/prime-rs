@@ -1,31 +1,31 @@
 # Divider
 
-Порт `p-divider` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-divider` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-divider::Divider` | `packages/primeng/src/divider/divider.ts`, `divider/style/dividerstyle.ts` |
-| CSS | `@primeuix/styles/divider` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/divider/*-doc.ts` (`basic`, `content`, `type`, `vertical`) |
+| CSS | `@primeuix/styles/divider` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/divider/*-doc.ts` (`basic`, `content`, `type`, `vertical`) |
 
-Спека: `openspec/specs/divider`.
+Spec: `openspec/specs/divider`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы `p-divider p-component`, `p-divider-<layout>`, `p-divider-<type>` и класс выравнивания по той же таблице, что в `dividerstyle.ts`
-  (все сочетания проверены таблицей юнит-тестов, включая недопустимые: у них класса выравнивания нет).
-- `role="separator"`, `aria-orientation`, inline-стиль `justify-content` или `align-items`, `data-p` (`align`, `layout`, тип).
-- Блок `div.p-divider-content` присутствует всегда.
+- Classes `p-divider p-component`, `p-divider-<layout>`, `p-divider-<type>` and the alignment class by the same table as in `dividerstyle.ts`
+  (all combinations are verified by a unit test table, including invalid ones: they have no alignment class).
+- `role="separator"`, `aria-orientation`, inline style `justify-content` or `align-items`, `data-p` (`align`, `layout`, type).
+- The `div.p-divider-content` block is always present.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-divider>` | Хост в Angular — деталь фреймворка. |
-| Свойство `type` называется `divider_type` | `type` — ключевое слово Rust. |
-| Демонстрация `login` без адаптивных классов Tailwind и иконок кнопок | Вертикальный разделитель всегда, `pi pi-*` не поставляются. |
-| Тексты-заполнители в демонстрациях сокращены | Размер страницы. |
+| The root is a `<div>`, not the `<p-divider>` host | The host in Angular is a framework detail. |
+| The `type` property is called `divider_type` | `type` is a Rust keyword. |
+| The `login` demo has no Tailwind responsive classes and no button icons | A vertical divider always, `pi pi-*` are not shipped. |
+| Placeholder texts in the demos are shortened | Page size. |
 
-## Производительность
+## Performance
 
-SSR: 22 аллокации на экземпляр (бюджет 27); вклад в сырой wasm +95 КБ (бюджет 130 КБ). Шаблон — как у Button (`docs/button.md`).
+SSR: 22 allocations per instance (budget 27); contribution to raw wasm +95 KB (budget 130 KB). The template is like Button's (`docs/button.md`).

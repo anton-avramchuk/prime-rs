@@ -4,7 +4,7 @@ test.describe('Carousel', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1600, height: 900 });
         await page.goto('/carousel');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-carousel')).toBeAttached();
     });
@@ -12,7 +12,7 @@ test.describe('Carousel', () => {
     const demo = (page, name: string) => page.locator(`[data-demo=${name}] .p-carousel`);
     const active = (c) => c.locator('.p-carousel-item.p-carousel-item-active');
 
-    test('стили темы: окно обрезает список, элементы в ряд, три видимых', async ({ page }) => {
+    test('theme styles: the viewport clips the list, items in a row, three visible', async ({ page }) => {
         const c = demo(page, 'basic');
         const viewport = c.locator('.p-carousel-viewport');
         expect(await viewport.evaluate((el) => getComputedStyle(el).overflow)).toBe('hidden');
@@ -25,7 +25,7 @@ test.describe('Carousel', () => {
         await expect(c.locator('.p-carousel-prev-button')).toHaveClass(/p-disabled/);
     });
 
-    test('кнопки и точки листают по три элемента', async ({ page }) => {
+    test('buttons and dots page by three items', async ({ page }) => {
         const c = demo(page, 'basic');
         await c.locator('.p-carousel-next-button').click();
         await expect(c.locator('.p-carousel-indicator').nth(1)).toHaveClass(/p-carousel-indicator-active/);
@@ -35,13 +35,13 @@ test.describe('Carousel', () => {
         await expect(c.locator('.p-carousel-next-button')).toHaveClass(/p-disabled/);
         await c.locator('.p-carousel-prev-button').click();
         await expect(c.locator('.p-carousel-indicator').nth(1)).toHaveClass(/p-carousel-indicator-active/);
-        // после перехода неактивные элементы скрываются
+        // after the transition inactive items are hidden
         await page.waitForTimeout(800);
         const hiddenOne = c.locator('.p-carousel-item:not(.p-carousel-item-active)').first();
         expect(await hiddenOne.evaluate((el) => getComputedStyle(el).visibility)).toBe('hidden');
     });
 
-    test('адаптивность: в узком окне видно меньше элементов', async ({ page }) => {
+    test('responsiveness: fewer items are visible in a narrow window', async ({ page }) => {
         const c = demo(page, 'responsive');
         await expect(active(c)).toHaveCount(3);
         await page.setViewportSize({ width: 700, height: 900 });
@@ -53,14 +53,14 @@ test.describe('Carousel', () => {
         await expect(active(c)).toHaveCount(3);
     });
 
-    test('бесконечный режим с автопрокруткой идёт по кругу и останавливается по нажатию', async ({ page }) => {
+    test('infinite mode with autoplay goes in a circle and stops on click', async ({ page }) => {
         const c = demo(page, 'circular');
         await expect(c.locator('.p-carousel-item-clone')).toHaveCount(6);
         await expect(c.locator('.p-carousel-content')).toHaveAttribute('aria-live', 'polite');
         const dots = c.locator('.p-carousel-indicator');
         await expect(dots.nth(0)).toHaveClass(/p-carousel-indicator-active/);
         await expect(dots.nth(1)).toHaveClass(/p-carousel-indicator-active/, { timeout: 5000 });
-        // назад с нулевой страницы уходит на последнюю
+        // backward from page zero goes to the last one
         await c.locator('.p-carousel-indicator-button').nth(0).click();
         await expect(c.locator('.p-carousel-content')).toHaveAttribute('aria-live', 'off');
         await expect(dots.nth(0)).toHaveClass(/p-carousel-indicator-active/);
@@ -71,7 +71,7 @@ test.describe('Carousel', () => {
         await expect(dots.last()).toHaveClass(/p-carousel-indicator-active/);
     });
 
-    test('вертикальный режим листает по оси Y в окне заданной высоты', async ({ page }) => {
+    test('vertical mode pages along the Y axis in a viewport of a given height', async ({ page }) => {
         const c = demo(page, 'vertical');
         await expect(c).toHaveClass(/p-carousel-vertical/);
         const viewport = c.locator('.p-carousel-viewport');
@@ -86,7 +86,7 @@ test.describe('Carousel', () => {
         await expect(active(c)).toContainText('Black Watch');
     });
 
-    test('клавиатура: стрелки на точках переносят фокус, Enter открывает страницу', async ({ page }) => {
+    test('keyboard: arrows on dots move focus, Enter opens the page', async ({ page }) => {
         const c = demo(page, 'basic');
         const buttons = c.locator('.p-carousel-indicator-button');
         await buttons.first().focus();

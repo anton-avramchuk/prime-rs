@@ -1,8 +1,8 @@
-//! Поведение ConfirmDialog в реальном браузере (wasm-bindgen-test): показ по подтверждению, разметка, кнопки, типы закрытия,
-//! крестик/`Escape`/маска как отказ, `Close` сервиса, ключи, замена подтверждения, фокус, положение и шаблоны.
+//! ConfirmDialog behavior in a real browser (wasm-bindgen-test): showing on confirmation, markup, buttons, close types,
+//! close icon/`Escape`/mask as a rejection, service `Close`, keys, confirmation replacement, focus, position and templates.
 //!
-//! Сценарии идут одним последовательным тестом: стек слоёв `z-index`, счётчик блокировки прокрутки и слушатели окна общие на
-//! страницу. Стили темы не подключены: анимаций нет, окно убирается по запасному таймеру `Dialog`.
+//! The scenarios run as one sequential test: the `z-index` layer stack, the scroll-lock counter and the window listeners are shared across
+//! the page. Theme styles are not loaded: there are no animations, the window is removed by the `Dialog` fallback timer.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -32,7 +32,7 @@ fn find(sel: &str) -> Option<HtmlElement> {
 }
 
 fn must(sel: &str) -> HtmlElement {
-    find(sel).unwrap_or_else(|| panic!("нет {sel}"))
+    find(sel).unwrap_or_else(|| panic!("no {sel}"))
 }
 
 fn dialog_shown() -> bool {
@@ -50,12 +50,12 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам и `Portal` вставить окно и повесить слушатели.
+/// Lets effects and `Portal` insert the window and attach listeners.
 async fn settle() {
     sleep(120).await;
 }
 
-/// Ждёт окончания выхода по запасному таймеру `Dialog`.
+/// Waits for the exit to finish by the `Dialog` fallback timer.
 async fn after_leave() {
     sleep(1000).await;
 }
@@ -68,7 +68,7 @@ fn escape() {
     doc().dispatch_event(&KeyboardEvent::new_with_keyboard_event_init_dict("keydown", &init).unwrap()).unwrap();
 }
 
-/// Нажатие мыши на самой маске (так `Dialog` ловит клик вне окна).
+/// A mouse press on the mask itself (this is how `Dialog` catches a click outside the window).
 fn mousedown(el: &HtmlElement) {
     let init = web_sys::MouseEventInit::new();
     init.set_bubbles(true);
@@ -116,25 +116,25 @@ async fn markup_defaults_and_answers() {
     let hide = on_hide(&log);
     let (shared, handle) = mount(&host, move || view! { <ConfirmDialog on_hide=hide /> }.into_any());
     settle().await;
-    assert!(!dialog_shown(), "без подтверждения окна нет");
+    assert!(!dialog_shown(), "no window without a confirmation");
     let c = |c: Confirmation| c.header("Confirmation").message("Are you sure?").accept(cb(&log, "accept")).reject(cb(&log, "reject"));
     svc(&shared).confirm(c(Confirmation::new().icon(ViewFn::from(|| view! { <i class="my-icon">"!"</i> }))));
     settle().await;
     let dialog = must(".p-dialog.p-confirmdialog");
     assert_eq!(dialog.get_attribute("role").as_deref(), Some("alertdialog"));
-    assert!(find(".p-dialog-mask").is_some(), "маска");
+    assert!(find(".p-dialog-mask").is_some(), "mask");
     assert_eq!(must(".p-dialog-title").text_content().as_deref(), Some("Confirmation"));
     assert_eq!(must(".p-confirmdialog-message").text_content().as_deref(), Some("Are you sure?"));
     assert!(find(".p-confirmdialog-icon .my-icon").is_some());
     let buttons = doc().query_selector_all(".p-dialog-footer button").unwrap();
     assert_eq!(buttons.length(), 2);
     let first = buttons.item(0).unwrap().dyn_into::<HtmlElement>().unwrap();
-    assert!(first.class_name().contains("p-confirmdialog-reject-button"), "сначала отказ: {}", first.class_name());
+    assert!(first.class_name().contains("p-confirmdialog-reject-button"), "reject first: {}", first.class_name());
     assert_eq!(first.text_content().as_deref(), Some("No"));
     assert_eq!(must(".p-confirmdialog-accept-button").text_content().as_deref(), Some("Yes"));
-    assert!(body_locked(), "прокрутка страницы заблокирована");
+    assert!(body_locked(), "page scrolling is blocked");
     sleep(120).await;
-    assert!(doc().active_element().unwrap().class_list().contains("p-confirmdialog-accept-button"), "фокус на кнопке согласия");
+    assert!(doc().active_element().unwrap().class_list().contains("p-confirmdialog-accept-button"), "focus on the accept button");
     must(".p-confirmdialog-accept-button").click();
     after_leave().await;
     assert!(!dialog_shown() && !body_locked());
@@ -165,7 +165,7 @@ async fn cancel_paths_are_rejections() {
     must(".p-dialog-close-button").click();
     after_leave().await;
     assert!(!dialog_shown());
-    assert_eq!(*log.lock().unwrap(), ["reject", "hide:cancel"], "крестик = отказ с Cancel");
+    assert_eq!(*log.lock().unwrap(), ["reject", "hide:cancel"], "close icon = rejection with Cancel");
 
     log.lock().unwrap().clear();
     confirm(|c| c);
@@ -173,7 +173,7 @@ async fn cancel_paths_are_rejections() {
     escape();
     after_leave().await;
     assert!(!dialog_shown());
-    assert_eq!(*log.lock().unwrap(), ["reject", "hide:cancel"], "Escape = отказ с Cancel");
+    assert_eq!(*log.lock().unwrap(), ["reject", "hide:cancel"], "Escape = rejection with Cancel");
 
     log.lock().unwrap().clear();
     confirm(|c| c.close_on_escape(false));
@@ -184,7 +184,7 @@ async fn cancel_paths_are_rejections() {
     svc(&shared).close();
     after_leave().await;
     assert!(!dialog_shown());
-    assert_eq!(*log.lock().unwrap(), ["hide:none"], "Close сервиса — без колбэков");
+    assert_eq!(*log.lock().unwrap(), ["hide:none"], "service Close — without callbacks");
 
     log.lock().unwrap().clear();
     confirm(|c| c.dismissable_mask(true));
@@ -192,14 +192,14 @@ async fn cancel_paths_are_rejections() {
     mousedown(&must(".p-dialog-mask"));
     after_leave().await;
     assert!(!dialog_shown());
-    assert_eq!(*log.lock().unwrap(), ["reject", "hide:cancel"], "клик по маске = отказ");
+    assert_eq!(*log.lock().unwrap(), ["reject", "hide:cancel"], "a click on the mask = rejection");
 
     log.lock().unwrap().clear();
     confirm(|c| c);
     settle().await;
     mousedown(&must(".p-dialog-mask"));
     sleep(300).await;
-    assert!(dialog_shown(), "без dismissable_mask маска не закрывает");
+    assert!(dialog_shown(), "without dismissable_mask the mask does not close");
     must(".p-confirmdialog-accept-button").click();
     after_leave().await;
     assert_eq!(*log.lock().unwrap(), ["accept", "hide:accept"]);
@@ -220,8 +220,8 @@ async fn keys_replacement_and_overrides() {
     settle().await;
     svc(&shared).confirm(Confirmation::new().key("mine"));
     settle().await;
-    assert_eq!(doc().query_selector_all(".p-confirmdialog").unwrap().length(), 1, "чужой ключ игнорируется");
-    assert_eq!(must(".p-dialog-title").text_content().as_deref(), Some("Default header"), "значения компонента по умолчанию");
+    assert_eq!(doc().query_selector_all(".p-confirmdialog").unwrap().length(), 1, "a foreign key is ignored");
+    assert_eq!(must(".p-dialog-title").text_content().as_deref(), Some("Default header"), "component defaults");
     assert_eq!(must(".p-confirmdialog-message").text_content().as_deref(), Some("Default message"));
     assert_eq!(must(".p-confirmdialog-accept-button").text_content().as_deref(), Some("Okay"));
     svc(&shared).confirm(
@@ -234,13 +234,13 @@ async fn keys_replacement_and_overrides() {
             .accept_button_style_class("extra-a"),
     );
     settle().await;
-    assert_eq!(doc().query_selector_all(".p-confirmdialog").unwrap().length(), 1, "окно заменено на месте");
-    assert_eq!(must(".p-dialog-title").text_content().as_deref(), Some("Own header"), "подтверждение главнее");
+    assert_eq!(doc().query_selector_all(".p-confirmdialog").unwrap().length(), 1, "the window is replaced in place");
+    assert_eq!(must(".p-dialog-title").text_content().as_deref(), Some("Own header"), "the confirmation wins");
     assert_eq!(must(".p-confirmdialog-message").text_content().as_deref(), Some("Own message"));
     assert_eq!(
         must(".p-confirmdialog-accept-button").text_content().as_deref(),
         Some("Okay"),
-        "accept_label компонента главнее props.label"
+        "the component's accept_label wins over props.label"
     );
     assert!(must(".p-confirmdialog-accept-button").class_name().contains("extra-a"));
     assert_eq!(must(".p-confirmdialog-reject-button").text_content().as_deref(), Some("Cancel"));
@@ -258,7 +258,7 @@ async fn focus_visibility_and_position() {
     svc(&shared).confirm(Confirmation::new().message("m"));
     settle().await;
     sleep(120).await;
-    assert!(doc().active_element().unwrap().class_list().contains("p-confirmdialog-reject-button"), "фокус по умолчанию — отказ");
+    assert!(doc().active_element().unwrap().class_list().contains("p-confirmdialog-reject-button"), "default focus — reject");
     svc(&shared).close();
     after_leave().await;
 
@@ -267,7 +267,7 @@ async fn focus_visibility_and_position() {
     settle().await;
     sleep(120).await;
     assert!(find(".p-confirmdialog-reject-button").is_none() && find(".p-confirmdialog-accept-button").is_some());
-    assert!(doc().active_element().unwrap().class_list().contains("p-dialog-close-button"), "фокус на кнопке закрытия");
+    assert!(doc().active_element().unwrap().class_list().contains("p-dialog-close-button"), "focus on the close button");
     assert!(must(".p-dialog-mask").class_name().contains("p-dialog-bottomright"), "{}", must(".p-dialog-mask").class_name());
     svc(&shared).close();
     after_leave().await;
@@ -312,13 +312,13 @@ async fn templates() {
     assert!(find(".my-header").is_some(), "header_content");
     assert_eq!(must(".my-message").text_content().as_deref(), Some("custom"));
     assert!(find(".p-confirmdialog-message").is_none());
-    assert!(must(".p-confirmdialog-accept-button").query_selector(".acc-ico").unwrap().is_some(), "значок кнопки");
+    assert!(must(".p-confirmdialog-accept-button").query_selector(".acc-ico").unwrap().is_some(), "button icon");
     svc(&shared).close();
     after_leave().await;
 
     svc(&shared).confirm(Confirmation::new().key("icon").message("text").icon(ViewFn::from(|| view! { <i class="own-icon">"x"</i> })));
     settle().await;
-    assert!(find(".p-confirmdialog-icon .my-icon").is_none() && find(".my-icon").is_some(), "icon_content вместо значка");
+    assert!(find(".p-confirmdialog-icon .my-icon").is_none() && find(".my-icon").is_some(), "icon_content instead of the icon");
     assert!(find(".own-icon").is_none());
     assert_eq!(must(".p-confirmdialog-message").text_content().as_deref(), Some("text"));
     svc(&shared).close();
@@ -326,14 +326,14 @@ async fn templates() {
 
     svc(&shared).confirm(Confirmation::new().key("footer").message("m"));
     settle().await;
-    assert!(find(".my-footer").is_some() && find(".p-confirmdialog-accept-button").is_none(), "footer вместо кнопок");
+    assert!(find(".my-footer").is_some() && find(".p-confirmdialog-accept-button").is_none(), "footer instead of buttons");
     svc(&shared).close();
     after_leave().await;
 
     svc(&shared).confirm(Confirmation::new().key("headless").message("headless text").accept(cb(&log, "accept")));
     settle().await;
     assert_eq!(must(".hl span").text_content().as_deref(), Some("headless text"));
-    assert!(find(".p-dialog-header").is_none() && find(".p-dialog-footer").is_none(), "headless заменяет всё");
+    assert!(find(".p-dialog-header").is_none() && find(".p-dialog-footer").is_none(), "headless replaces everything");
     must(".hl-ok").click();
     after_leave().await;
     assert!(!dialog_shown());
@@ -351,8 +351,8 @@ async fn unmount_while_shown_releases_the_page() {
     assert!(dialog_shown() && body_locked());
     drop(handle);
     settle().await;
-    assert!(!dialog_shown(), "окно убрано при размонтировании");
-    assert!(!body_locked(), "прокрутка разблокирована");
+    assert!(!dialog_shown(), "the window is removed on unmount");
+    assert!(!body_locked(), "scrolling is unlocked");
     host.remove();
 }
 

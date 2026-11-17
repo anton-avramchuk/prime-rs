@@ -1,6 +1,6 @@
 [package]
 name = "prime-inplace"
-description = "prime-rs: компонент Inplace (порт PrimeNG)"
+description = "prime-rs: Inplace component (port of PrimeNG)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -19,7 +19,7 @@ prime-button = { workspace = true }
 prime-icons = { workspace = true, features = ["times"] }
 web-sys = { workspace = true, features = ["EventTarget", "KeyboardEvent", "MouseEvent", "Node"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks the client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

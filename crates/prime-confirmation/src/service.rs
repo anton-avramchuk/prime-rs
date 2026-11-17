@@ -1,18 +1,18 @@
-//! `ConfirmationService` — общая шина подтверждений между приложением и компонентами (порт `ConfirmationService` PrimeNG).
+//! `ConfirmationService` — a shared bus of confirmations between the application and components (port of PrimeNG `ConfirmationService`).
 
 use crate::confirmation::Confirmation;
 use leptos::prelude::*;
 
-/// Событие шины.
+/// Bus event.
 #[derive(Clone, Debug)]
 pub enum ConfirmEvent {
-    /// Показать подтверждение.
+    /// Show a confirmation.
     Confirm(Box<Confirmation>),
-    /// Закрыть показанное подтверждение.
+    /// Close the shown confirmation.
     Close,
 }
 
-/// Сервис подтверждений: `Copy`-хэндл, который кладётся в контекст и доступен из любого обработчика.
+/// Confirmation service: a `Copy` handle that is put into the context and is accessible from any handler.
 ///
 /// ```
 /// use leptos::prelude::*;
@@ -20,7 +20,7 @@ pub enum ConfirmEvent {
 ///
 /// Owner::new().with(|| {
 ///     let service = provide_confirmation_service();
-///     // подписчиков ещё нет — подтверждение просто никому не доставляется
+///     // there are no subscribers yet — the confirmation is simply not delivered to anyone
 ///     service.confirm(Confirmation::new().message("Sure?"));
 ///     service.close();
 /// });
@@ -32,22 +32,22 @@ pub struct ConfirmationService {
 }
 
 impl ConfirmationService {
-    /// Создаёт сервис без подписчиков. Вызывать внутри компонента (владелец хранилищ).
+    /// Creates a service without subscribers. Call inside a component (the owner of the storage).
     pub fn new() -> Self {
         Self { subscribers: StoredValue::new(Vec::new()), next: StoredValue::new(0) }
     }
 
-    /// Просит показать подтверждение.
+    /// Asks to show a confirmation.
     pub fn confirm(&self, confirmation: Confirmation) {
         self.emit(ConfirmEvent::Confirm(Box::new(confirmation)));
     }
 
-    /// Просит закрыть показанное подтверждение.
+    /// Asks to close the shown confirmation.
     pub fn close(&self) {
         self.emit(ConfirmEvent::Close);
     }
 
-    /// Подписывает обработчик; возвращает номер для [`ConfirmationService::unsubscribe`].
+    /// Subscribes a handler; returns the number for [`ConfirmationService::unsubscribe`].
     pub fn subscribe(&self, callback: Callback<ConfirmEvent>) -> usize {
         let id = self
             .next
@@ -61,13 +61,13 @@ impl ConfirmationService {
         id
     }
 
-    /// Снимает подписку.
+    /// Removes the subscription.
     pub fn unsubscribe(&self, id: usize) {
         self.subscribers.try_update_value(|s| s.retain(|(i, _)| *i != id));
     }
 
     fn emit(&self, event: ConfirmEvent) {
-        // Копия списка: обработчик может отписаться во время доставки.
+        // A copy of the list: a handler may unsubscribe during delivery.
         let subscribers = self.subscribers.try_get_value().unwrap_or_default();
         for (_, callback) in subscribers {
             callback.run(event.clone());
@@ -81,15 +81,15 @@ impl Default for ConfirmationService {
     }
 }
 
-/// Создаёт сервис и кладёт его в контекст текущего владельца.
+/// Creates the service and puts it into the context of the current owner.
 pub fn provide_confirmation_service() -> ConfirmationService {
     let service = ConfirmationService::new();
     provide_context(service);
     service
 }
 
-/// Берёт сервис из контекста; паникует с понятным сообщением, если `provide_confirmation_service()` не вызывался.
+/// Gets the service from the context; panics with a clear message if `provide_confirmation_service()` was not called.
 pub fn use_confirmation_service() -> ConfirmationService {
     use_context::<ConfirmationService>()
-        .expect("ConfirmationService не найден: вызовите provide_confirmation_service() в корне приложения (или выше компонента)")
+        .expect("ConfirmationService not found: call provide_confirmation_service() at the application root (or above the component)")
 }

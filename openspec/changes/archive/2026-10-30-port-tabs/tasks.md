@@ -1,27 +1,27 @@
 # Tasks
 
-## 1. Крейт
+## 1. Crate
 
-- [x] 1.1 `crates/prime-tabs`: `state.rs` (идентификаторы, классы, `tabindex_for`, `key_action`, `wrap_target`, `should_render`, прокрутка кнопок) с табличными тестами
-- [x] 1.2 Компоненты `Tabs`, `TabList`, `Tab`, `TabPanels`, `TabPanel`, `TabListPt`: контекст, разметка, SSR-тесты, rustdoc
-- [x] 1.3 Поведение: клик, фокус, клавиши, roving `tabindex`, индикатор, кнопки прокрутки, `lazy`; браузерные тесты `tests/web.rs`
+- [x] 1.1 `crates/prime-tabs`: `state.rs` (identifiers, classes, `tabindex_for`, `key_action`, `wrap_target`, `should_render`, button scrolling) with table-driven tests
+- [x] 1.2 Components `Tabs`, `TabList`, `Tab`, `TabPanels`, `TabPanel`, `TabListPt`: context, markup, SSR tests, rustdoc
+- [x] 1.3 Behaviour: click, focus, keys, roving `tabindex`, indicator, scroll buttons, `lazy`; browser tests `tests/web.rs`
 
-## 2. Тема, showcase, e2e
+## 2. Theme, showcase, e2e
 
-- [x] 2.1 Добавить модуль `tabs` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, убедиться, что CSS других компонентов не изменился
-- [x] 2.2 Страница `/tabs` (`basic`, `controlled`, `disabled`, `scrollable`, `dynamic`, `lazy`, `customtemplate`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 2.3 `e2e/tests/pages.json` и `tabs.spec.ts` (клик, клавиатура, отключённая, индикатор, прокрутка, ленивая); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test tabs`
+- [x] 2.1 Add the `tabs` module to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, make sure the CSS of other components has not changed
+- [x] 2.2 The `/tabs` page (`basic`, `controlled`, `disabled`, `scrollable`, `dynamic`, `lazy`, `customtemplate`), menu, route, `stylesheet(&[..])`, crate in the workspace and showcase
+- [x] 2.3 `e2e/tests/pages.json` and `tabs.spec.ts` (click, keyboard, disabled, indicator, scrolling, lazy); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test tabs`
 
-## 3. Бенчмарки и бюджеты
+## 3. Benchmarks and budgets
 
-- [x] 3.1 Сценарии `-1` и `-1000`, `case-tabs` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`)
+- [x] 3.1 Scenarios `-1` and `-1000`, `case-tabs` and budgets (first `cargo bench -p render-bench --bench alloc`)
 
-## 4. Интеграция
+## 4. Integration
 
-- [x] 4.1 `docs/tabs.md` (отличия от PrimeNG, что не проверялось); `prime-tabs` в браузерный job `ci.yml` (три места)
-- [x] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-tabs`; CI `dev` зелёный
+- [x] 4.1 `docs/tabs.md` (differences from PrimeNG, what was not verified); `prime-tabs` in the browser job of `ci.yml` (three places)
+- [x] 4.2 `cargo fmt --all -- --check`, clippy with `--all-features` (and for the wasm target), tests, deny, machete, `openspec validate port-tabs`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: Popover.
+- Archive after CI.
+- Next: Popover.

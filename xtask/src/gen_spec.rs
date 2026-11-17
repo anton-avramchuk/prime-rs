@@ -1,10 +1,10 @@
-//! `gen-spec`: заготовка спеки компонента из TypeScript-исходников PrimeNG.
+//! `gen-spec`: component spec skeleton from PrimeNG TypeScript sources.
 
 use std::collections::BTreeSet;
 use std::fmt::Write as _;
 use std::path::Path;
 
-/// Что удалось извлечь из исходников компонента.
+/// What was extracted from the component sources.
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct Extracted {
     pub selectors: Vec<String>,
@@ -18,7 +18,7 @@ fn ident_at_start(s: &str) -> Option<&str> {
     (end > 0).then(|| &s[..end])
 }
 
-/// Пропускает декоратор `@Name(...)` с учётом вложенных скобок; возвращает остаток строки.
+/// Skips a `@Name(...)` decorator taking nested parentheses into account; returns the rest of the line.
 fn skip_decorator<'a>(line: &'a str, name: &str) -> Option<&'a str> {
     let rest = line.strip_prefix(name)?;
     if !rest.starts_with('(') {
@@ -46,7 +46,7 @@ fn member_name(rest: &str) -> Option<&str> {
     ident_at_start(rest)
 }
 
-/// Разбирает файл компонента: селекторы, входы и выходы.
+/// Parses a component file: selectors, inputs and outputs.
 pub fn parse_component(source: &str) -> Extracted {
     let mut out = Extracted::default();
     let mut inputs = BTreeSet::new();
@@ -91,7 +91,7 @@ pub fn parse_component(source: &str) -> Extracted {
     out
 }
 
-/// Собирает имена классов `p-*` из блока `const classes = { ... }` файла стилей.
+/// Collects `p-*` class names from the `const classes = { ... }` block of the style file.
 pub fn parse_classes(style_source: &str) -> Vec<String> {
     let Some(start) = style_source.find("const classes") else {
         return Vec::new();
@@ -125,45 +125,45 @@ fn list(items: &[String], empty: &str) -> String {
     })
 }
 
-/// Формирует Markdown-заготовку спеки.
+/// Builds the Markdown spec skeleton.
 pub fn render(name: &str, commit: &str, version: &str, e: &Extracted) -> String {
     let mut s = String::new();
-    let _ = writeln!(s, "<!-- Заготовка создана `cargo xtask gen-spec {name}`; довести вручную. -->");
-    let _ = writeln!(s, "<!-- Источник: packages/primeng/src/{name}/{name}.ts, PrimeNG {version}, коммит {commit}. -->\n");
+    let _ = writeln!(s, "<!-- Skeleton created by `cargo xtask gen-spec {name}`; finish by hand. -->");
+    let _ = writeln!(s, "<!-- Source: packages/primeng/src/{name}/{name}.ts, PrimeNG {version}, commit {commit}. -->\n");
     let _ = writeln!(s, "## ADDED Requirements\n");
     let _ = writeln!(
         s,
-        "### Requirement: Props\nКомпонент `prime-{name}` SHALL принимать те же свойства, что и PrimeNG (имена приведены к snake_case Rust).\n"
+        "### Requirement: Props\nThe `prime-{name}` component SHALL accept the same properties as PrimeNG (names converted to Rust snake_case).\n"
     );
-    let _ = writeln!(s, "Селекторы PrimeNG:\n{}", list(&e.selectors, "не найдены"));
-    let _ = writeln!(s, "Входы PrimeNG:\n{}", list(&e.inputs, "не найдены"));
+    let _ = writeln!(s, "PrimeNG selectors:\n{}", list(&e.selectors, "not found"));
+    let _ = writeln!(s, "PrimeNG inputs:\n{}", list(&e.inputs, "not found"));
     let _ = writeln!(s, "#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n");
-    let _ = writeln!(s, "### Requirement: События\nКомпонент SHALL вызывать те же события, что и PrimeNG.\n");
-    let _ = writeln!(s, "Выходы PrimeNG:\n{}", list(&e.outputs, "не найдены"));
+    let _ = writeln!(s, "### Requirement: Events\nThe component SHALL emit the same events as PrimeNG.\n");
+    let _ = writeln!(s, "PrimeNG outputs:\n{}", list(&e.outputs, "not found"));
     let _ = writeln!(s, "#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n");
-    let _ = writeln!(s, "### Requirement: DOM и классы\nРазметка SHALL совпадать с PrimeNG и использовать те же классы.\n");
-    let _ = writeln!(s, "Классы PrimeNG:\n{}", list(&e.classes, "не найдены"));
+    let _ = writeln!(s, "### Requirement: DOM and classes\nThe markup SHALL match PrimeNG and use the same classes.\n");
+    let _ = writeln!(s, "PrimeNG classes:\n{}", list(&e.classes, "not found"));
     let _ = writeln!(s, "#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n");
     let _ = writeln!(
         s,
-        "### Requirement: Доступность\nКомпонент SHALL выставлять те же ARIA-атрибуты и роли, что и PrimeNG.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n"
+        "### Requirement: Accessibility\nThe component SHALL expose the same ARIA attributes and roles as PrimeNG.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n"
     );
     let _ = writeln!(
         s,
-        "### Requirement: Клавиатура\nКомпонент SHALL поддерживать те же клавиши, что и PrimeNG.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n"
+        "### Requirement: Keyboard\nThe component SHALL support the same keys as PrimeNG.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO\n"
     );
     let _ = writeln!(
         s,
-        "### Requirement: Производительность\nРендер компонента SHALL укладываться в бюджеты `benches/budgets.toml`.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO"
+        "### Requirement: Performance\nComponent rendering SHALL stay within the budgets of `benches/budgets.toml`.\n\n#### Scenario: TODO\n- **WHEN** TODO\n- **THEN** TODO"
     );
     s
 }
 
-/// Читает исходники компонента из `src_dir` и возвращает заготовку.
+/// Reads the component sources from `src_dir` and returns the skeleton.
 pub fn generate(src_dir: &Path, name: &str, commit: &str, version: &str) -> Result<String, String> {
     let dir = src_dir.join(name);
     let main = dir.join(format!("{name}.ts"));
-    let source = std::fs::read_to_string(&main).map_err(|_| format!("компонент `{name}` не найден: нет файла {}", main.display()))?;
+    let source = std::fs::read_to_string(&main).map_err(|_| format!("component `{name}` not found: no file {}", main.display()))?;
     let mut extracted = parse_component(&source);
     if let Ok(style) = std::fs::read_to_string(dir.join("style").join(format!("{name}style.ts"))) {
         extracted.classes = parse_classes(&style);

@@ -2,25 +2,25 @@
 
 ## Why
 
-Tag — следующий компонент волны 1 после Button и Badge: категоризирует контент (значение, серьёзность, иконка, скругление). Он простой по логике и целиком ложится на отработанный шаблон (`Prop`, две ветви отрисовки, тесты паритета), поэтому служит проверкой того, что шаблон переносится на новый компонент без изменений инфраструктуры.
+Tag is the next wave 1 component after Button and Badge: it categorizes content (value, severity, icon, rounding). Its logic is simple and fits entirely into the proven template (`Prop`, two render branches, parity tests), so it serves as a check that the template carries over to a new component without infrastructure changes.
 
 ## What Changes
 
-- Новый крейт `prime-tag` с компонентом `Tag`: свойства `value`, `severity`, `rounded`, `icon`, `style`, `style_class`, `children`, `pt`; классы `p-tag*`, `data-p` как в PrimeNG 21.1.10.
-- Статическая и реактивная ветви отрисовки, свойства — `Prop`/`OptProp`, бюджеты аллокаций и размера wasm.
-- Страница `/tag` в showcase с демонстрациями PrimeNG (`basic`, `icon`, `pill`, `severity`, `template`) и сравнение скриншотов в еженедельном job.
-- **Не входит:** шрифтовые иконки PrimeIcons (иконка — `ViewFn`), `unstyled`-режим.
+- New crate `prime-tag` with the `Tag` component: properties `value`, `severity`, `rounded`, `icon`, `style`, `style_class`, `children`, `pt`; classes `p-tag*`, `data-p` as in PrimeNG 21.1.10.
+- Static and reactive render branches, properties are `Prop`/`OptProp`, allocation and wasm size budgets.
+- Page `/tag` in the showcase with the PrimeNG demos (`basic`, `icon`, `pill`, `severity`, `template`) and screenshot comparison in the weekly job.
+- **Out of scope:** PrimeIcons font icons (the icon is a `ViewFn`), `unstyled` mode.
 
 ## Capabilities
 
 ### New Capabilities
-- `tag`: компонент Tag — значение, серьёзность, скругление, иконка, содержимое, `pt`, производительность.
+- `tag`: the Tag component: value, severity, rounding, icon, content, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-tag` (`publish = false`).
-- Изменяются `showcase` (страница, меню), `benches/render` (сценарии), `benches/wasm-size` (`case-tag`), `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests/pages.json`, `e2e/tests` (спека Tag), `crates/prime-theme` (CSS `tag` уже сгенерирован).
-- Зависимости: `prime-core`; внешних новых нет.
+- New crate `crates/prime-tag` (`publish = false`).
+- Changed: `showcase` (page, menu), `benches/render` (scenarios), `benches/wasm-size` (`case-tag`), `benches/budgets.toml`, `benches/alloc-budgets.toml`, `e2e/tests/pages.json`, `e2e/tests` (Tag spec), `crates/prime-theme` (the `tag` CSS is already generated).
+- Dependencies: `prime-core`; no new external ones.

@@ -1,13 +1,13 @@
-//! Pass-through (`pt`): дополнительные атрибуты и классы для частей компонента.
+//! Pass-through (`pt`): extra attributes and classes for component parts.
 
 use crate::class_names::ClassNames;
 use leptos::attr::any_attribute::{AnyAttribute, IntoAnyAttribute};
 use leptos::attr::custom::custom_attribute;
 use std::borrow::Cow;
 
-/// Дополнения для одного элемента компонента (корня или его части).
+/// Additions for one component element (the root or one of its parts).
 ///
-/// Собственные классы компонента не затираются: `class` из `Pt` добавляется после них.
+/// The component's own classes are not overwritten: the `class` from `Pt` is appended after them.
 ///
 /// ```
 /// use prime_core::Pt;
@@ -23,49 +23,49 @@ pub struct Pt {
 }
 
 impl Pt {
-    /// Пустой pass-through.
+    /// Empty pass-through.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Добавляет класс(ы).
+    /// Adds class(es).
     pub fn class(mut self, class: impl Into<String>) -> Self {
         self.class = Some(class.into());
         self
     }
 
-    /// Добавляет встроенный стиль (`margin: 4px`).
+    /// Adds an inline style (`margin: 4px`).
     pub fn style(mut self, style: impl Into<String>) -> Self {
         self.style = Some(style.into());
         self
     }
 
-    /// Добавляет атрибут (например, `data-testid`, `style`, `aria-describedby`).
+    /// Adds an attribute (for example, `data-testid`, `style`, `aria-describedby`).
     pub fn attr(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
         self.attrs.push((name.into(), value.into()));
         self
     }
 
-    /// Дополнительный класс из `Pt` (без копирования).
+    /// Extra class from `Pt` (without copying).
     pub fn extra_class(&self) -> Option<&str> {
         self.class.as_deref()
     }
 
-    /// Задан ли встроенный стиль.
+    /// Whether an inline style is set.
     pub fn has_style(&self) -> bool {
         self.style.is_some()
     }
 
-    /// Собственные классы компонента плюс класс из `Pt`.
+    /// The component's own classes plus the class from `Pt`.
     ///
-    /// Без класса в `Pt` строка интернируется и не аллоцирует (см. [`ClassNames::finish_cow`]).
+    /// Without a class in `Pt` the string is interned and does not allocate (see [`ClassNames::finish_cow`]).
     pub fn merge_class(&self, base: &str) -> Cow<'static, str> {
         let mut cn = ClassNames::new();
         cn.add(base).add_user(self.class.as_deref());
         cn.finish_cow()
     }
 
-    /// Собственный стиль компонента плюс стиль из `Pt`; пустые части пропускаются, `;` на концах нормализуются.
+    /// The component's own style plus the style from `Pt`; empty parts are skipped, trailing `;` are normalized.
     ///
     /// ```
     /// use prime_core::Pt;
@@ -89,8 +89,8 @@ impl Pt {
         }
     }
 
-    /// Склеивает части стиля (непустые, нормализованные как в [`merge_style`](Self::merge_style)) и стиль из `Pt` одной строкой.
-    /// Пустой результат — пустая строка.
+    /// Joins style parts (non-empty, normalized as in [`merge_style`](Self::merge_style)) and the `Pt` style into one string.
+    /// An empty result is an empty string.
     pub fn merge_style_parts(&self, parts: &[&str]) -> String {
         let mut out = String::new();
         for part in parts.iter().copied().chain(self.style.as_deref()) {
@@ -105,7 +105,7 @@ impl Pt {
         out
     }
 
-    /// Атрибуты для `view! { <div {..pt.attrs()} /> }`.
+    /// Attributes for `view! { <div {..pt.attrs()} /> }`.
     pub fn attrs(&self) -> Vec<AnyAttribute> {
         self.attrs.iter().map(|(k, v)| custom_attribute(k.clone(), v.clone()).into_any_attr()).collect()
     }

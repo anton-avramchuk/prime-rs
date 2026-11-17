@@ -1,6 +1,6 @@
-//! Страница Galleria: демонстрации `basic`, `autoplay`, `caption`, `controlled`, `thumbnail`, `indicator` и `fullscreen`
-//! из showcase PrimeNG (`apps/showcase/doc/galleria`; формы Angular не переносятся).
-//! Картинки — `data:`-ссылки с градиентом, чтобы страница не зависела от сети.
+//! Galleria page: demos of `basic`, `autoplay`, `caption`, `controlled`, `thumbnail`, `indicator` and `fullscreen`
+//! from the PrimeNG showcase (`apps/showcase/doc/galleria`; Angular forms are not ported).
+//! Images are `data:` URLs with a gradient so the page does not depend on the network.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ const COLORS: [(&str, &str); 8] = [
     ("84cc16", "365314"),
 ];
 
-/// SVG-картинка с градиентом и номером как `data:`-ссылка.
+/// SVG image with a gradient and a number as a `data:` URL.
 fn picture(index: usize, width: u32, height: u32) -> String {
     let (from, to) = COLORS[index % COLORS.len()];
     let (cx, cy, font) = (width / 2, height / 2, height / 4);
@@ -174,7 +174,7 @@ fn FullScreen() -> impl IntoView {
     }
 }
 
-/// Страница `/galleria`.
+/// The `/galleria` page.
 #[component]
 pub fn GalleriaPage() -> impl IntoView {
     view! {

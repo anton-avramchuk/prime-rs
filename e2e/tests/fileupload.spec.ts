@@ -6,14 +6,14 @@ test.describe('FileUpload', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1200 });
         await page.goto('/fileupload');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#advanced_upload')).toBeAttached();
     });
 
     const adv = (page) => page.locator('#advanced_upload');
 
-    test('стили темы: шапка с кнопками, пустое содержимое', async ({ page }) => {
+    test('theme styles: header with buttons, empty content', async ({ page }) => {
         const root = adv(page).locator('.p-fileupload');
         await expect(root).toHaveClass(/p-fileupload-advanced/);
         expect(await root.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
@@ -26,7 +26,7 @@ test.describe('FileUpload', () => {
         await expect(root.locator('.p-fileupload-content')).toContainText('Drag and drop files to here to upload.');
     });
 
-    test('выбор файлов: список, размер, значок, превью и удаление', async ({ page }) => {
+    test('file selection: list, size, icon, preview and removal', async ({ page }) => {
         const root = adv(page);
         await root.locator('input[type=file]').setInputFiles([png('a.png', 2048), png('b.png', 10)]);
         const files = root.locator('.p-fileupload-file');
@@ -43,7 +43,7 @@ test.describe('FileUpload', () => {
         await expect(root.locator('.p-fileupload-file')).toHaveCount(0);
     });
 
-    test('неверный тип и размер дают сообщения', async ({ page }) => {
+    test('invalid type and size give messages', async ({ page }) => {
         const root = adv(page);
         await root.locator('input[type=file]').setInputFiles({ name: 'a.txt', mimeType: 'text/plain', buffer: Buffer.from('hi') });
         await expect(root.locator('.p-message').first()).toContainText('a.txt: Invalid file type');
@@ -53,7 +53,7 @@ test.describe('FileUpload', () => {
         await expect(root.locator('.p-message').first()).toContainText('maximum upload size is 976.563 KB.');
     });
 
-    test('успешная загрузка: прогресс, значок «Completed», событие', async ({ page }) => {
+    test('successful upload: progress, "Completed" icon, event', async ({ page }) => {
         await page.route('**/api/upload', async (route) => {
             await route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
         });
@@ -63,12 +63,12 @@ test.describe('FileUpload', () => {
         await expect(page.getByTestId('advanced-status')).toHaveText('uploaded 1 (200)');
         await expect(root.locator('.p-fileupload-file')).toHaveCount(1);
         await expect(root.locator('.p-fileupload-file-badge')).toHaveText('Completed');
-        // загруженный файл удаляется той же кнопкой
+        // an uploaded file is removed by the same button
         await root.locator('.p-fileupload-file-remove-button').click();
         await expect(root.locator('.p-fileupload-file')).toHaveCount(0);
     });
 
-    test('ошибка сервера оставляет файл в списке', async ({ page }) => {
+    test('a server error keeps the file in the list', async ({ page }) => {
         await page.route('**/api/upload', (route) => route.fulfill({ status: 500, body: 'fail' }));
         const root = adv(page);
         await root.locator('input[type=file]').setInputFiles(png('a.png'));
@@ -78,7 +78,7 @@ test.describe('FileUpload', () => {
         await expect(root.locator('.p-fileupload-cancel-button')).toBeEnabled();
     });
 
-    test('перетаскивание подсвечивает содержимое и добавляет файл', async ({ page }) => {
+    test('dragging highlights the content and adds a file', async ({ page }) => {
         const root = adv(page);
         const content = root.locator('.p-fileupload-content');
         const data = await page.evaluateHandle(() => {
@@ -93,7 +93,7 @@ test.describe('FileUpload', () => {
         await expect(root.locator('.p-fileupload-file-name')).toHaveText('dropped.png');
     });
 
-    test('auto: загрузка сразу после выбора', async ({ page }) => {
+    test('auto: upload right after selection', async ({ page }) => {
         await page.route('**/api/upload', (route) => route.fulfill({ status: 200, body: 'ok' }));
         const root = page.locator('#auto_upload');
         await expect(root.locator('.p-fileupload-upload-button')).toHaveCount(0);
@@ -101,7 +101,7 @@ test.describe('FileUpload', () => {
         await expect(page.getByTestId('auto-status')).toHaveText('uploaded 2 (200)');
     });
 
-    test('basic: подпись и автозагрузка', async ({ page }) => {
+    test('basic: label and auto upload', async ({ page }) => {
         await page.route('**/api/upload', (route) => route.fulfill({ status: 201, body: 'ok' }));
         const root = page.locator('#basic_upload .p-fileupload');
         await expect(root).toHaveClass(/p-fileupload-basic/);
@@ -110,7 +110,7 @@ test.describe('FileUpload', () => {
         await expect(page.getByTestId('basic-status')).toHaveText('uploaded 1 (201)');
     });
 
-    test('custom: свой обработчик и очистка', async ({ page }) => {
+    test('custom: own handler and clear', async ({ page }) => {
         const root = page.locator('#custom_upload');
         await root.locator('input[type=file]').setInputFiles([png('1.png'), png('2.png', 4)]);
         await expect(root.locator('.p-fileupload-file')).toHaveCount(2);

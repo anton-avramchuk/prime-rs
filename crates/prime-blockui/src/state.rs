@@ -1,10 +1,9 @@
-//! Чистая логика BlockUI: классы маски, `aria-busy`, инлайн-стиль (по `blockuistyle.ts` и `block`/`unblock` PrimeNG).
+//! Pure BlockUI logic: mask classes, `aria-busy`, inline style (based on `blockuistyle.ts` and `block`/`unblock` in PrimeNG).
 
 use prime_core::ClassNames;
 use std::borrow::Cow;
 
-/// Классы маски: `p-blockui p-blockui-mask`, у документа `p-blockui-mask-document`, затем `p-overlay-mask` и класс анимации
-/// входа или выхода.
+/// Mask classes: `p-blockui p-blockui-mask`, for the document `p-blockui-mask-document`, then `p-overlay-mask` and the enter or leave animation class.
 pub fn mask_classes(document: bool, leaving: bool, extra: Option<&str>) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-blockui p-blockui-mask")
@@ -15,12 +14,12 @@ pub fn mask_classes(document: bool, leaving: bool, extra: Option<&str>) -> Cow<'
     cn.finish_cow()
 }
 
-/// Значение `aria-busy`: пока маска не уходит — `true`.
+/// `aria-busy` value: `true` while the mask is not leaving.
 pub fn aria_busy(leaving: bool) -> &'static str {
     if leaving { "false" } else { "true" }
 }
 
-/// Инлайн-стиль маски: `display: flex`, слой (если выдан) и пользовательские части.
+/// Inline style of the mask: `display: flex`, the layer (if assigned) and the user parts.
 pub fn mask_style(z_index: Option<i32>, extra: &[&str]) -> String {
     let mut out = String::from("display: flex");
     if let Some(z) = z_index {

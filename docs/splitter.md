@@ -1,44 +1,44 @@
 # Splitter
 
-Порт `p-splitter` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-splitter` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-splitter::Splitter`, `SplitterLayout`, `SplitterStorage`, `SplitterResizeEvent`, `SplitterPt` | `splitter/splitter.ts`, `splitter/style/splitterstyle.ts` |
-| CSS | `@primeuix/styles/splitter` — `cargo xtask gen-theme` (блока `/* For PrimeNG */` у компонента нет) |
-| Демонстрации | `apps/showcase/doc/splitter/{horizontal,vertical,size,nested}-doc.ts` |
+| CSS | `@primeuix/styles/splitter` - `cargo xtask gen-theme` (the component has no `/* For PrimeNG */` block) |
+| Demos | `apps/showcase/doc/splitter/{horizontal,vertical,size,nested}-doc.ts` |
 
-Спека: `openspec/specs/splitter`.
+Spec: `openspec/specs/splitter`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-splitter.p-component.p-splitter-<layout>` (inline `display: flex; flex-wrap: nowrap`, колонкой при `vertical`), `div.p-splitterpanel` (`tabindex="-1"`, `data-pc-section="panel"`), между панелями `div.p-splitter-gutter[role=separator]` с `div.p-splitter-gutter-handle[tabindex=0][aria-orientation][aria-valuenow]`; при изменении — `p-splitter-resizing` на корне, `p-splitter-gutter-resizing` и `data-p-gutter-resizing="true"` на разделителе.
-- Размер панели — `flex-basis: calc(<доля>% - <(n-1)·gutter_size>px)`; недостающие и нулевые `panel_sizes` делятся поровну.
-- Перетаскивание мышью считается в процентах размера корня (`pageX`/`pageY`), в `rtl` горизонтальное смещение инвертируется; стрелки двигают границу на `step` пикселей; `keyup` завершает изменение.
-- Состояние сохраняется в `localStorage`/`sessionStorage` по `state_key` как JSON-массив чисел и восстанавливается при монтировании.
+- Markup and classes: `div.p-splitter.p-component.p-splitter-<layout>` (inline `display: flex; flex-wrap: nowrap`, a column with `vertical`), `div.p-splitterpanel` (`tabindex="-1"`, `data-pc-section="panel"`), between panels `div.p-splitter-gutter[role=separator]` with `div.p-splitter-gutter-handle[tabindex=0][aria-orientation][aria-valuenow]`; while resizing - `p-splitter-resizing` on the root, `p-splitter-gutter-resizing` and `data-p-gutter-resizing="true"` on the gutter.
+- Panel size is `flex-basis: calc(<share>% - <(n-1)·gutter_size>px)`; missing and zero `panel_sizes` are split equally.
+- Mouse dragging is computed in percent of the root size (`pageX`/`pageY`), in `rtl` the horizontal offset is inverted; arrows move the boundary by `step` pixels; `keyup` ends the resize.
+- State is saved to `localStorage`/`sessionStorage` by `state_key` as a JSON array of numbers and restored on mount.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>` без хоста `<p-splitter>` | Хост в Angular — деталь фреймворка. |
-| `panels: Vec<ViewFn>` вместо `ng-template #panel` и `ContentChildren` | Вместо проекции содержимого. |
-| `nested` — явное свойство | В PrimeNG вложенность определяется запросом `contentChild(Splitter)`. |
-| `min_sizes[i]` относится к предыдущей панели, `min_sizes[i+1]` — к следующей для разделителя `i` | В PrimeNG для любого разделителя проверяются `minSizes[0]` и `minSizes[1]`; для трёх и более панелей это ошибка исходника. Для двух панелей поведение совпадает. |
-| Изменение, нарушающее `min_sizes`, отвергается целиком, `aria-valuenow` берётся из текущего размера панели (у каждого разделителя свой) | В PrimeNG один общий `prevSize` обновляется и при отвергнутом изменении. |
-| Стрелка применяет шаг на каждый `keydown` (включая автоповтор), без таймера в 40 мс; `on_resize_start` вызывается один раз за серию нажатий | В PrimeNG `setTimer` повторно вызывает `resizeStart`/`onResize`. |
-| Размер корня измеряется один раз за перетаскивание | Как в PrimeNG; пересчёт при изменении размеров окна во время перетаскивания не делается. |
-| События без `originalEvent`: `SplitterResizeEvent { sizes }` | Событие DOM в Leptos-обработчиках не передаётся наружу. |
-| Число панелей, раскладка, шаг, `gutter_size`, `min_sizes` читаются один раз; изменение `panels` на лету не поддерживается | Простая модель; PrimeNG пересчитывает размеры при смене `panelSizes`. |
-| Сохранённое состояние применяется только при совпадении числа панелей, ошибки хранилища игнорируются | Защита от устаревших данных. |
-| Касание: слушатели `touchmove`/`touchend`/`touchcancel` на `window`, без `preventDefault` | Не проверялось на реальных устройствах. |
-| Нет `Bind`/`pt` с контекстом | `pt` — простые добавки классов, стиля и атрибутов. |
-| В демонстрациях корню задано `width: 100%`; утилитные классы Tailwind заменены встроенными стилями | Карточка демонстрации у нас flex, у PrimeNG блочная. |
+| The root is a `<div>` without the `<p-splitter>` host | The host in Angular is a framework detail. |
+| `panels: Vec<ViewFn>` instead of `ng-template #panel` and `ContentChildren` | Instead of content projection. |
+| `nested` is an explicit property | In PrimeNG nesting is detected by the `contentChild(Splitter)` query. |
+| `min_sizes[i]` applies to the previous panel, `min_sizes[i+1]` to the next one for gutter `i` | In PrimeNG `minSizes[0]` and `minSizes[1]` are checked for any gutter; for three or more panels this is a bug in the source. For two panels the behaviour matches. |
+| A change violating `min_sizes` is rejected entirely, `aria-valuenow` is taken from the current panel size (each gutter has its own) | In PrimeNG a single shared `prevSize` is updated even on a rejected change. |
+| An arrow applies the step on every `keydown` (including auto-repeat), without the 40 ms timer; `on_resize_start` is called once per series of presses | In PrimeNG `setTimer` calls `resizeStart`/`onResize` repeatedly. |
+| The root size is measured once per drag | As in PrimeNG; no recomputation on window resize during dragging. |
+| Events without `originalEvent`: `SplitterResizeEvent { sizes }` | A DOM event is not passed out through Leptos handlers. |
+| The panel count, layout, step, `gutter_size`, `min_sizes` are read once; changing `panels` on the fly is not supported | A simple model; PrimeNG recomputes sizes when `panelSizes` changes. |
+| Saved state is applied only when the panel count matches, storage errors are ignored | Protection against stale data. |
+| Touch: `touchmove`/`touchend`/`touchcancel` listeners on `window`, without `preventDefault` | Not tested on real devices. |
+| No `Bind`/`pt` with context | `pt` is plain additions of classes, style and attributes. |
+| In the demos the root has `width: 100%`; Tailwind utility classes are replaced with inline styles | Our demo card is flex, PrimeNG's is block. |
 
-## Стоимость
+## Cost
 
-108 аллокаций на экземпляр при SSR (две панели); вклад в wasm ≈ 313 КБ (бюджет 350 КБ в `benches/budgets.toml`).
+108 allocations per instance in SSR (two panels); contribution to wasm is about 313 KB (budget 350 KB in `benches/budgets.toml`).
 
-## Не проверено
+## Not verified
 
-Касание на реальных устройствах, `rtl` в реальном браузере (проверена только чистая функция смещения), экранные считыватели. Проверены разметка, мышь, стрелки, `min_sizes`, вертикальная и вложенная раскладки, хранилище в Chrome (e2e и браузерные тесты).
+Touch on real devices, `rtl` in a real browser (only the pure offset function was checked), screen readers. Markup, mouse, arrows, `min_sizes`, vertical and nested layouts, and storage were verified in Chrome (e2e and browser tests).

@@ -1,5 +1,5 @@
-//! Поведение Toast в реальном браузере (wasm-bindgen-test): сообщения от сервиса, серьёзности и значки, закрытие и анимация выхода,
-//! `life`/`sticky`/наведение, ключи, `clear`, дубликаты, слой, свои представления, `breakpoints`, отписка при размонтировании.
+//! Toast behavior in a real browser (wasm-bindgen-test): messages from the service, severities and icons, closing and exit animation,
+//! `life`/`sticky`/hover, keys, `clear`, duplicates, layer, custom views, `breakpoints`, unsubscribe on unmount.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -29,13 +29,13 @@ fn count(sel: &str) -> u32 {
     doc().query_selector_all(sel).unwrap().length()
 }
 
-/// Любой элемент (в том числе SVG-значок, который не `HtmlElement`).
+/// Any element (including an SVG icon, which is not an `HtmlElement`).
 fn qe(sel: &str) -> web_sys::Element {
-    doc().query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}"))
+    doc().query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}"))
 }
 
 fn q(sel: &str) -> HtmlElement {
-    doc().query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    doc().query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 async fn sleep(ms: i32) {
@@ -60,7 +60,7 @@ fn msg(severity: ToastSeverity, summary: &str) -> ToastMessage {
     ToastMessage::new(severity, summary, format!("{summary} detail"))
 }
 
-/// Монтирует приложение с сервисом и одним `Toast`; возвращает сервис, список закрытых и размонтирование.
+/// Mounts the app with the service and one `Toast`; returns the service, the list of closed ones and the unmount handle.
 fn mount_one() -> (MessageService, Closed, Box<dyn std::any::Any>, HtmlElement) {
     let slot = Slot::default();
     let closed = Closed::default();
@@ -87,7 +87,7 @@ async fn message_markup_and_severities() {
     let (service, _, handle, h) = mount_one();
     settle().await;
     assert_eq!(count(".p-toast"), 1);
-    assert_eq!(count(".p-toast-message"), 0, "без сообщений контейнер пуст");
+    assert_eq!(count(".p-toast-message"), 0, "container is empty without messages");
     service.add(msg(ToastSeverity::Success, "Done").life(60000).id("m1"));
     settle().await;
     let m = q(".p-toast-message");
@@ -101,9 +101,9 @@ async fn message_markup_and_severities() {
     assert_eq!(m.get_attribute("id").as_deref(), Some("m1"));
     assert_eq!(q(".p-toast-summary").text_content().as_deref(), Some("Done"));
     assert_eq!(q(".p-toast-detail").text_content().as_deref(), Some("Done detail"));
-    assert!(m.query_selector(".p-toast-message-content svg.p-toast-message-icon").unwrap().is_some(), "значок серьёзности");
+    assert!(m.query_selector(".p-toast-message-content svg.p-toast-message-icon").unwrap().is_some(), "severity icon");
     assert_eq!(q(".p-toast-close-button").get_attribute("aria-label").as_deref(), Some("Close"));
-    assert!(qe(".p-toast-close-button svg").get_attribute("class").unwrap_or_default().contains("p-toast-close-icon"), "значок закрытия");
+    assert!(qe(".p-toast-close-button svg").get_attribute("class").unwrap_or_default().contains("p-toast-close-icon"), "close icon");
     service.clear();
     sleep(800).await;
 
@@ -132,7 +132,7 @@ async fn message_markup_and_severities() {
     assert_eq!(count(".p-toast-close-button"), 0, "closable=false");
     assert!(q(".p-toast-message").class_name().contains("wide"));
     assert!(q(".p-toast-message-content").class_name().contains("inner"));
-    assert!(q("span.p-toast-message-icon").class_name().contains("pi-star"), "свой значок");
+    assert!(q("span.p-toast-message-icon").class_name().contains("pi-star"), "custom icon");
     end(handle, h).await;
 }
 
@@ -144,10 +144,10 @@ async fn close_button_leaves_and_reports_once() {
     settle().await;
     let m = q(".p-toast-message");
     assert!(m.class_name().contains("p-toast-message-leave-active") && !m.class_name().contains("enter-active"), "{}", m.class_name());
-    assert!(closed.lock().unwrap().is_empty(), "on_close — после анимации");
+    assert!(closed.lock().unwrap().is_empty(), "on_close — after the animation");
     sleep(800).await;
-    assert_eq!(count(".p-toast-message"), 0, "после выхода сообщение убрано");
-    assert_eq!(*closed.lock().unwrap(), ["Bye"], "on_close один раз");
+    assert_eq!(count(".p-toast-message"), 0, "message removed after exit");
+    assert_eq!(*closed.lock().unwrap(), ["Bye"], "on_close exactly once");
     end(handle, h).await;
 }
 
@@ -158,24 +158,24 @@ async fn life_sticky_and_hover() {
     settle().await;
     assert_eq!(count(".p-toast-message"), 2);
     sleep(1000).await;
-    assert_eq!(count(".p-toast-message"), 1, "обычное ушло, sticky осталось");
+    assert_eq!(count(".p-toast-message"), 1, "regular one left, sticky remained");
     assert_eq!(q(".p-toast-summary").text_content().as_deref(), Some("Sticky"));
     assert_eq!(*closed.lock().unwrap(), ["Short"]);
     service.clear();
     sleep(800).await;
-    assert_eq!(count(".p-toast-message"), 0, "clear закрывает и sticky");
+    assert_eq!(count(".p-toast-message"), 0, "clear closes sticky too");
 
     service.add(msg(ToastSeverity::Info, "Hover").life(300));
     sleep(100).await;
     let m = q(".p-toast-message");
     fire(&m, "mouseenter");
     sleep(600).await;
-    assert!(!q(".p-toast-message").class_name().contains("leave-active"), "под курсором сообщение остаётся");
+    assert!(!q(".p-toast-message").class_name().contains("leave-active"), "message stays under the cursor");
     fire(&m, "mouseleave");
     sleep(150).await;
-    assert!(!q(".p-toast-message").class_name().contains("leave-active"), "таймер запущен заново");
+    assert!(!q(".p-toast-message").class_name().contains("leave-active"), "timer restarted");
     sleep(900).await;
-    assert_eq!(count(".p-toast-message"), 0, "после ухода курсора сообщение закрылось по времени");
+    assert_eq!(count(".p-toast-message"), 0, "after the cursor left the message closed on time");
     end(handle, h).await;
 }
 
@@ -200,19 +200,19 @@ async fn keys_clear_and_duplicates() {
     assert_eq!(count(".p-toast-top-left .p-toast-message"), 1);
     assert_eq!(count(".p-toast-bottom-right .p-toast-message"), 1);
     assert_eq!(q(".p-toast-top-left .p-toast-summary").text_content().as_deref(), Some("For A"));
-    assert_eq!(count(".p-toast-message"), 2, "сообщение без ключа не попало ни в один Toast с ключом");
+    assert_eq!(count(".p-toast-message"), 2, "key-less message did not reach any keyed Toast");
     service.clear_key("a");
     sleep(800).await;
-    assert_eq!(count(".p-toast-top-left .p-toast-message"), 0, "clear_key(a) закрыл первый");
-    assert_eq!(count(".p-toast-bottom-right .p-toast-message"), 1, "второй остался");
+    assert_eq!(count(".p-toast-top-left .p-toast-message"), 0, "clear_key(a) closed the first");
+    assert_eq!(count(".p-toast-bottom-right .p-toast-message"), 1, "second remained");
     service.clear();
     sleep(800).await;
-    assert_eq!(count(".p-toast-message"), 0, "clear закрыл всё");
+    assert_eq!(count(".p-toast-message"), 0, "clear closed everything");
     drop(handle);
     settle().await;
     h.remove();
 
-    // дубликаты
+    // duplicates
     let slot = Slot::default();
     let h = host();
     let s = slot.clone();
@@ -228,12 +228,12 @@ async fn keys_clear_and_duplicates() {
     service.add(open());
     service.add(msg(ToastSeverity::Error, "Same").key("open").life(60000));
     settle().await;
-    assert_eq!(count(".p-toast-message"), 2, "та же серьёзность — дубликат, другая — нет");
+    assert_eq!(count(".p-toast-message"), 2, "same severity — duplicate, different — not");
     service.clear();
     sleep(800).await;
     service.add(open());
     settle().await;
-    assert_eq!(count(".p-toast-message"), 1, "prevent_open_duplicates: после ухода такое же можно добавить снова");
+    assert_eq!(count(".p-toast-message"), 1, "prevent_open_duplicates: after one leaves, an identical one can be added again");
     service.clear();
     sleep(800).await;
 
@@ -245,7 +245,7 @@ async fn keys_clear_and_duplicates() {
     sleep(800).await;
     service.add(once());
     settle().await;
-    assert_eq!(count(".p-toast-message"), 0, "prevent_duplicates: однажды показанное больше не добавляется");
+    assert_eq!(count(".p-toast-message"), 0, "prevent_duplicates: once shown, never added again");
     drop(handle);
     settle().await;
     h.remove();
@@ -254,19 +254,19 @@ async fn keys_clear_and_duplicates() {
 async fn several_messages_and_layer() {
     let (service, _, handle, h) = mount_one();
     let toast = q(".p-toast");
-    assert_eq!(toast.style().get_property_value("z-index").unwrap(), "", "без сообщений слой не назначен");
+    assert_eq!(toast.style().get_property_value("z-index").unwrap(), "", "no layer assigned without messages");
     service.add_all(vec![
         msg(ToastSeverity::Success, "1").life(60000),
         msg(ToastSeverity::Info, "2").life(60000),
         msg(ToastSeverity::Warn, "3").life(60000),
     ]);
     settle().await;
-    assert_eq!(count(".p-toast-message"), 3, "add_all показывает все");
+    assert_eq!(count(".p-toast-message"), 3, "add_all shows all");
     let z: i32 = toast.style().get_property_value("z-index").unwrap().parse().unwrap();
     assert!(z > 0, "z-index {z}");
     service.clear();
     sleep(800).await;
-    assert_eq!(toast.style().get_property_value("z-index").unwrap(), "", "после ухода последнего слой освобождён");
+    assert_eq!(toast.style().get_property_value("z-index").unwrap(), "", "layer released after the last one leaves");
     end(handle, h).await;
 }
 
@@ -298,19 +298,19 @@ async fn template_headless_and_breakpoints() {
     settle().await;
     let templated = q("#tpl").closest(".p-toast-message").unwrap().unwrap();
     assert_eq!(q("#tpl").text_content().as_deref(), Some("Custom"));
-    assert!(templated.query_selector(".p-toast-summary").unwrap().is_none(), "шаблон заменил значок и тексты");
-    assert!(templated.query_selector(".p-toast-close-button").unwrap().is_some(), "кнопка закрытия осталась");
+    assert!(templated.query_selector(".p-toast-summary").unwrap().is_none(), "template replaced icon and texts");
+    assert!(templated.query_selector(".p-toast-close-button").unwrap().is_some(), "close button remained");
     let bare = q("#bare-close").closest(".p-toast-message").unwrap().unwrap();
-    assert!(bare.query_selector(".p-toast-message-content").unwrap().is_none(), "headless заменил всё содержимое");
+    assert!(bare.query_selector(".p-toast-message-content").unwrap().is_none(), "headless replaced all content");
     q("#bare-close").click();
     sleep(900).await;
-    assert_eq!(count("#bare-close"), 0, "функция закрытия закрыла сообщение");
+    assert_eq!(count("#bare-close"), 0, "close function closed the message");
 
     let head = doc().head().unwrap().inner_html();
     assert!(head.contains("max-width: 920px") && head.contains("width:50% !important"), "{head}");
     drop(handle);
     settle().await;
-    assert!(!doc().head().unwrap().inner_html().contains("width:50% !important"), "правила убраны при размонтировании");
+    assert!(!doc().head().unwrap().inner_html().contains("width:50% !important"), "rules removed on unmount");
     h.remove();
 }
 
@@ -324,10 +324,10 @@ async fn unmounting_unsubscribes_from_the_service() {
     service.clear();
     settle().await;
     assert_eq!(count(".p-toast"), 0);
-    assert!(closed.lock().unwrap().is_empty(), "после размонтирования on_close не вызывается");
+    assert!(closed.lock().unwrap().is_empty(), "on_close is not called after unmount");
 }
 
-/// Сценарии идут по очереди: уведомления и таймеры общие для страницы.
+/// Scenarios run in order: notifications and timers are shared across the page.
 #[wasm_bindgen_test]
 async fn toast_behaviour() {
     message_markup_and_severities().await;

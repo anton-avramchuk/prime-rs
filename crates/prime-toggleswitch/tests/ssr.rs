@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `data-p*`, стиль корня, слот, `pt` и паритет ветвей ToggleSwitch (SSR).
+//! DOM structure, classes, `data-p*`, root style, slot, `pt` and static/reactive parity of ToggleSwitch (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

@@ -2,56 +2,56 @@
 
 ## Context
 
-Требования — в `specs/slider`. Исходники PrimeNG 21.1.10: `packages/primeng/src/slider/slider.ts`, `slider/style/sliderstyle.ts`, демонстрации `apps/showcase/doc/slider`. Образцы — `crates/prime-scrollpanel` (перетаскивание, слушатели документа с отпиской, ветвление `cfg(target_arch = "wasm32")`), `crates/prime-selectbutton` и `crates/prime-rating` (правила отслеживания в замыканиях: события и фокус без пересоздания элементов; в обработчиках только `*_untracked`).
+Requirements are in `specs/slider`. PrimeNG 21.1.10 sources: `packages/primeng/src/slider/slider.ts`, `slider/style/sliderstyle.ts`, demos `apps/showcase/doc/slider`. Models — `crates/prime-scrollpanel` (dragging, document listeners with unsubscription, `cfg(target_arch = "wasm32")` branching), `crates/prime-selectbutton` and `crates/prime-rating` (tracking rules in closures: events and focus without recreating elements; only `*_untracked` in handlers).
 
-Наблюдения по исходнику, влияющие на решения:
-- Положение ручки всегда выводится из значения (`updateHandleValue` в конце `updateValue`), поэтому положение — чистая функция значения, а сырой процент перетаскивания не хранится.
-- При заданном `step` итог получается не округлением до ближайшего шага, а `handleStepChange`: сдвигом от прежнего значения на целое число шагов в сторону указателя (`floor` вправо, `ceil` влево). Это переносится как есть и покрывается табличным тестом.
-- Без `step` значение — `Math.floor` (до целого), а при дробном `step` — округление до числа его знаков после запятой.
-- В диапазоне значение пишется в `values[handleIndex]` с ограничением `min..max`, а наружу уходит `[minVal, maxVal]`; ручки могут пересекаться, индекс активной не меняется. Если стартовая ручка стоит на `max`, нажатие выбирает её (`handleIndex = 0`).
-- Клик по полосе двигает ручку `handleIndex` (последнюю активную, по умолчанию первую); клик по ручке не считается кликом по полосе (`sliderHandleClick`).
-- После каждого изменения значения фокус возвращается на активную ручку.
-- Касание: `floor(Δ·100 / размер) + стартовое положение` в процентах, шаг 1 %; события касания приходят на ручку, слушатели документа не нужны.
+Observations from the source that affect decisions:
+- The handle position is always derived from the value (`updateHandleValue` at the end of `updateValue`), so the position is a pure function of the value, and the raw drag percentage is not stored.
+- With a given `step`, the result is not rounding to the nearest step but `handleStepChange`: a shift from the previous value by a whole number of steps toward the pointer (`floor` to the right, `ceil` to the left). This is carried over as is and covered by a table-driven test.
+- Without `step` the value is `Math.floor` (to an integer), and with a fractional `step` — rounding to its number of decimals.
+- In a range the value is written to `values[handleIndex]` clamped to `min..max`, and `[minVal, maxVal]` goes out; handles may cross, the active index does not change. If the starting handle sits at `max`, a press selects it (`handleIndex = 0`).
+- A click on the track moves the `handleIndex` handle (the last active, the first by default); a click on a handle is not counted as a track click (`sliderHandleClick`).
+- After every value change focus returns to the active handle.
+- Touch: `floor(Δ·100 / size) + starting position` in percent, 1 % step; touch events arrive on the handle, no document listeners needed.
 
 ## Decisions
 
-### D1. Значение
-`value: Option<RwSignal<f64>>` и `values: Option<RwSignal<[f64; 2]>>`; без сигнала создаётся внутренний с `default_value` (`f64`, 0) или `default_values` (`Option<[f64; 2]>`, по умолчанию `[0, 0]`). Активен тот, что соответствует `range: Prop<bool>`; неактивный не читается. Числа — `f64` (дробный `step` в PrimeNG допустим).
+### D1. Value
+`value: Option<RwSignal<f64>>` and `values: Option<RwSignal<[f64; 2]>>`; without a signal an internal one is created with `default_value` (`f64`, 0) or `default_values` (`Option<[f64; 2]>`, default `[0, 0]`). The one matching `range: Prop<bool>` is active; the inactive one is not read. Numbers are `f64` (a fractional `step` is allowed in PrimeNG).
 
-### D2. Чистая логика (`state.rs`)
-Функции без DOM, каждая с табличным тестом: `percent(value, min, max)` (с ограничением 0–100 и защитой от `min == max`), `value_from_percent`, `decimals(step)`, `normalize(value, step)`, `step_change(new, old, step)`, `key_target(code, current, step, range) -> Option<KeyAction>` (стрелки, `PageUp/Down`, `Home/End`), `clamp`, `bar_percent(pointer, start, size, vertical, rtl)`, `touch_percent(pointer, start, size, vertical, start_percent)`, классы корня и `data-p`. Нестандартные значения PrimeNG (шаг 1 для клавиш, 10 для `Page*`, в диапазоне `Page*` равны 1) закреплены здесь.
+### D2. Pure logic (`state.rs`)
+DOM-free functions, each with a table-driven test: `percent(value, min, max)` (clamped to 0–100 and guarded against `min == max`), `value_from_percent`, `decimals(step)`, `normalize(value, step)`, `step_change(new, old, step)`, `key_target(code, current, step, range) -> Option<KeyAction>` (arrows, `PageUp/Down`, `Home/End`), `clamp`, `bar_percent(pointer, start, size, vertical, rtl)`, `touch_percent(pointer, start, size, vertical, start_percent)`, root classes and `data-p`. PrimeNG's non-standard values (step 1 for keys, 10 for `Page*`, in a range `Page*` equal 1) are fixed here.
 
-### D3. Состояние взаимодействия
-`active: RwSignal<usize>` (индекс активной ручки), `dragging: RwSignal<bool>` (для `data-p-sliding` и снятия `p-slider-animate`), флаг `handle_pressed` (обычный `Cell`/`AtomicBool`, как `sliderHandleClick`): нажатие на ручку ставит его, клик по хосту сбрасывает и пропускает обработку полосы. Геометрия (`getBoundingClientRect`, `offsetWidth/Height`) считывается в момент события через `NodeRef` корня; направление (`getComputedStyle(root).direction`) определяется там же для RTL. Используются клиентские координаты и `rect.left/top`, что эквивалентно `pageX − (rect.left + scrollX)` PrimeNG.
+### D3. Interaction state
+`active: RwSignal<usize>` (active handle index), `dragging: RwSignal<bool>` (for `data-p-sliding` and removing `p-slider-animate`), a `handle_pressed` flag (a plain `Cell`/`AtomicBool`, like `sliderHandleClick`): a press on a handle sets it, a click on the host resets it and skips the track handling. Geometry (`getBoundingClientRect`, `offsetWidth/Height`) is read at the time of the event via the root's `NodeRef`; direction (`getComputedStyle(root).direction`) is determined there too for RTL. Client coordinates and `rect.left/top` are used, which is equivalent to PrimeNG's `pageX − (rect.left + scrollX)`.
 
-### D4. Перетаскивание и слушатели
-Нажатие на ручку (`mousedown`) ставит `dragging`, выбирает ручку, фокусирует её, отменяет действие по умолчанию и подписывает `mousemove` и `mouseup` на `window` (`leptos::prelude::window_event_listener`; обработчик живёт ровно до `mouseup` или размонтирования — `on_cleanup`). `mousemove` вычисляет значение по указателю, `mouseup` снимает слушатели, сбрасывает `dragging` и вызывает `on_slide_end`. Подписка создаётся только из обработчика события, то есть в браузере, поэтому SSR не затрагивается и отдельной ветки `cfg` не требуется. Касание — `touchstart/touchmove/touchend` на ручке по алгоритму `onDragStart/onDrag/onDragEnd`.
+### D4. Dragging and listeners
+A press on a handle (`mousedown`) sets `dragging`, selects the handle, focuses it, cancels the default action and subscribes `mousemove` and `mouseup` on `window` (`leptos::prelude::window_event_listener`; the handler lives exactly until `mouseup` or unmount — `on_cleanup`). `mousemove` computes the value from the pointer, `mouseup` removes the listeners, resets `dragging` and calls `on_slide_end`. The subscription is created only from an event handler, i.e. in the browser, so SSR is unaffected and a separate `cfg` branch is not needed. Touch — `touchstart/touchmove/touchend` on the handle per the `onDragStart/onDrag/onDragEnd` algorithm.
 
-### D5. Обновление значения
-Единая функция `update_value(raw, event, index)`: ограничение `min..=max`, нормализация, запись в сигнал (в диапазоне — в `values[index]`, наружу — упорядоченная пара), вызов `on_change` и фокус активной ручки. `on_change` вызывается на каждое применённое действие, даже если значение осталось прежним (как `updateValue` в PrimeNG). `set_value_from_handle` с `step` идёт через `step_change`.
+### D5. Value update
+A single function `update_value(raw, event, index)`: clamping to `min..=max`, normalization, writing to the signal (in a range — to `values[index]`, an ordered pair goes out), calling `on_change` and focusing the active handle. `on_change` is called on every applied action, even if the value stayed the same (like `updateValue` in PrimeNG). `set_value_from_handle` with `step` goes through `step_change`.
 
-### D6. Разметка и реактивность
-Корень — `<div>`; положение ручек и заполнения — замыкания над значением и границами (`inset-inline-start`/`bottom`, `width`/`height`), собственные стили `position: absolute` статичны. Ручки и заполнение строятся один раз по `range` (структура зависит только от `range`; при смене `range` блок перестраивается, поэтому замыкание перестройки читает только `range`, а положение и значения читаются внутри ручек). Классы: `p-slider p-component`, `p-disabled`, `p-invalid`, `p-slider-horizontal|vertical`, `p-slider-animate` (при `animate` и не `dragging`), `style_class`, `pt.root`; `data-p` — ориентация. Ручка: `role=slider`, `aria-valuemin/now/max`, `aria-orientation`, `data-pc-section`, `tabindex` (нет при `disabled`), `p-slider-handle-active` у активной в диапазоне.
+### D6. Markup and reactivity
+The root is a `<div>`; the position of handles and fill — closures over the value and bounds (`inset-inline-start`/`bottom`, `width`/`height`), the own `position: absolute` styles are static. Handles and fill are built once by `range` (the structure depends only on `range`; when `range` changes the block is rebuilt, so the rebuild closure reads only `range`, and position and values are read inside the handles). Classes: `p-slider p-component`, `p-disabled`, `p-invalid`, `p-slider-horizontal|vertical`, `p-slider-animate` (with `animate` and not `dragging`), `style_class`, `pt.root`; `data-p` — orientation. Handle: `role=slider`, `aria-valuemin/now/max`, `aria-orientation`, `data-pc-section`, `tabindex` (absent when `disabled`), `p-slider-handle-active` on the active one in a range.
 
 ### D7. CSS
-`slider` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; блока `/* For PrimeNG */` у `sliderstyle.ts` нет, `primeng_extra` не меняется.
+`slider` in `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; `sliderstyle.ts` has no `/* For PrimeNG */` block, `primeng_extra` is unchanged.
 
-### D8. Демонстрации
-`basic`, `range`, `step`, `vertical`, `filter`, `input`. В `filter` вместо внешней картинки градиентный блок с CSS-фильтрами `contrast`, `brightness`, `sepia`, переключаемыми `SelectButton`; три слайдера создаются по выбору. В `input` значение связано с `InputText` через два `Effect` (строка ↔ число). Ширина и высота задаются через `style`. В `basic` — `echo` значения для e2e.
+### D8. Demos
+`basic`, `range`, `step`, `vertical`, `filter`, `input`. In `filter`, instead of an external image a gradient block with CSS filters `contrast`, `brightness`, `sepia` toggled by `SelectButton`; three sliders are created on selection. In `input` the value is linked to `InputText` via two `Effect`s (string ↔ number). Width and height are set via `style`. In `basic` — an `echo` of the value for e2e.
 
-### D9. Тесты
-SSR: структура, положение и `aria-*` для одиночного режима и диапазона, ориентации, классы и `data-p`, `disabled`, `pt`, паритет статических и реактивных свойств. Браузерные (`tests/web.rs`): клавиши (шаг, страницы, `Home/End`, границы, фокус остаётся на ручке), клик по полосе, перетаскивание (синтетические `mousedown/mousemove/mouseup`: значение, `on_slide_end`, отсутствие слушателей после отпускания — проверкой, что `mousemove` после `mouseup` значение не меняет), `disabled`, диапазон (порядок, активная ручка), внешний сигнал и реактивные границы, сохранение ручек и фокуса после изменения. e2e: перетаскивание реальной мышью и клавиши. Касание покрыто чистыми функциями и ручной проверкой (синтетические `TouchEvent` в `wasm-bindgen-test` неудобны).
+### D9. Tests
+SSR: structure, position and `aria-*` for single mode and range, orientations, classes and `data-p`, `disabled`, `pt`, parity of static and reactive properties. Browser (`tests/web.rs`): keys (step, pages, `Home/End`, bounds, focus stays on the handle), click on the track, dragging (synthetic `mousedown/mousemove/mouseup`: value, `on_slide_end`, no listeners after release — verified by `mousemove` after `mouseup` not changing the value), `disabled`, range (order, active handle), external signal and reactive bounds, handle and focus preservation after a change. e2e: dragging with a real mouse and keys. Touch is covered by pure functions and manual verification (synthetic `TouchEvent`s are inconvenient in `wasm-bindgen-test`).
 
 ## Risks / Trade-offs
 
-- [Много ветвей поведения (диапазон, RTL, вертикаль, шаг), легко разойтись с PrimeNG] → чистые функции с табличными тестами и сверка с исходником; отличия (`D1`, отсутствие сырого процента) записываются в `docs/slider.md`.
-- [`window_event_listener` в обработчике: утечка слушателей при размонтировании посреди перетаскивания] → снятие в `on_cleanup` и при `mouseup`; тест на отсутствие реакции после `mouseup`.
-- [Касание проверяется слабее мыши] → чистая функция `touch_percent` и ручной прогон в браузере.
+- [Many behavior branches (range, RTL, vertical, step), easy to diverge from PrimeNG] → pure functions with table-driven tests and checking against the source; differences (`D1`, no raw percentage) are recorded in `docs/slider.md`.
+- [`window_event_listener` in a handler: listener leak on unmount mid-drag] → removal in `on_cleanup` and on `mouseup`; a test for no reaction after `mouseup`.
+- [Touch is verified less than mouse] → the pure function `touch_percent` and a manual browser run.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

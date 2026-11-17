@@ -1,4 +1,4 @@
-//! Разметка Table (SSR): столбцы и строки, сортировка, пагинатор, выбор, раскрытие, модификаторы, пустое состояние, `pt`.
+//! Table markup (SSR): columns and rows, sorting, paginator, selection, expansion, modifiers, empty state, `pt`.
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 
@@ -43,16 +43,16 @@ fn sortable_columns() -> Vec<Column<Product>> {
     ]
 }
 
-/// Открывающий тег элемента, в котором встречается подстрока.
+/// Opening tag of the element in which the substring occurs.
 fn tag_of<'a>(html: &'a str, needle: &str) -> &'a str {
-    let at = html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"));
+    let at = html.find(needle).unwrap_or_else(|| panic!("missing {needle}: {html}"));
     let start = html[..at].rfind('<').unwrap();
     let end = at + html[at..].find('>').unwrap();
     &html[start..=end]
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("missing {needle}: {html}"))
 }
 
 #[test]
@@ -67,7 +67,7 @@ fn basic_markup() {
         "{html}"
     );
     assert!(html.contains(">Code<") && html.contains(">Name<"), "{html}");
-    assert_eq!(html.matches("<tr role=\"row\"").count(), 5, "заголовок и четыре строки: {html}");
+    assert_eq!(html.matches("<tr role=\"row\"").count(), 5, "header and four rows: {html}");
     assert!(html.contains(">Watch<") && html.contains(">c4<"), "{html}");
     assert!(!html.contains("p-datatable-tfoot") && !html.contains("p-datatable-mask") && !html.contains("p-paginator"), "{html}");
     assert!(tag_of(&html, "p-datatable-table-container").contains("overflow: auto"), "{html}");
@@ -100,7 +100,7 @@ fn sortable_headers_and_order() {
     assert!(th.starts_with("<th") && th.contains("p-datatable-sortable-column"), "{html}");
     assert!(html.contains("aria-sort=\"none\"") && html.contains("tabindex=\"0\""), "{html} {code}");
     assert!(!html.contains("p-datatable-column-sorted"), "{html}");
-    assert_eq!(html.matches("p-datatable-sort-icon").count(), 3, "по значку в каждом заголовке: {html}");
+    assert_eq!(html.matches("p-datatable-sort-icon").count(), 3, "an icon in each header: {html}");
 
     let html = render(|| {
         let sort = RwSignal::new(vec![SortMeta::new("name", -1)]);
@@ -108,15 +108,15 @@ fn sortable_headers_and_order() {
     });
     assert!(html.contains("aria-sort=\"descending\"") && html.contains("p-datatable-column-sorted"), "{html}");
     let order: Vec<usize> = ["Watch", "Shirt", "Purse", "Band"].iter().map(|n| pos(&html, &format!(">{n}<"))).collect();
-    assert!(order.windows(2).all(|w| w[0] < w[1]), "по убыванию имени: {html}");
+    assert!(order.windows(2).all(|w| w[0] < w[1]), "by name descending: {html}");
 
     let html = render(|| {
         let sort = RwSignal::new(vec![SortMeta::new("quantity", 1), SortMeta::new("name", 1)]);
         view! { <Table value=products() columns=sortable_columns() row_key=key() sort_mode=SortMode::Multiple sort=sort /> }.to_html()
     });
     let order: Vec<usize> = ["Shirt", "Watch", "Band", "Purse"].iter().map(|n| pos(&html, &format!(">{n}<"))).collect();
-    assert!(order.windows(2).all(|w| w[0] < w[1]), "по количеству, затем по имени: {html}");
-    assert!(html.contains("p-sortable-column-badge"), "в многоуровневой сортировке есть счётчики: {html}");
+    assert!(order.windows(2).all(|w| w[0] < w[1]), "by quantity, then by name: {html}");
+    assert!(html.contains("p-sortable-column-badge"), "multi-level sort has counters: {html}");
 }
 
 #[test]
@@ -133,7 +133,7 @@ fn paginator_slices_rows() {
         let first = RwSignal::new(3usize);
         view! { <Table value=products() columns=plain_columns() row_key=key() paginator=true default_rows=3usize first=first /> }.to_html()
     });
-    assert!(html.contains(">c4<") && !html.contains(">c1<"), "вторая страница: {html}");
+    assert!(html.contains(">c4<") && !html.contains(">c1<"), "second page: {html}");
 }
 
 #[test]
@@ -157,7 +157,7 @@ fn checkbox_and_radio_columns() {
         let selection = RwSignal::new(vec!["c1".to_owned(), "c2".to_owned()]);
         view! { <Table value=products() columns=columns.clone() row_key=key() selection=selection /> }.to_html()
     });
-    assert_eq!(html.matches("p-checkbox ").count() + html.matches("class=\"p-checkbox\"").count(), 5, "заголовок и четыре строки: {html}");
+    assert_eq!(html.matches("p-checkbox ").count() + html.matches("class=\"p-checkbox\"").count(), 5, "header and four rows: {html}");
     assert_eq!(html.matches("p-checkbox-checked").count(), 2, "{html}");
     assert!(html.contains("aria-label=\"Select All\"") || html.contains("p-checkbox"), "{html}");
     let mut columns = vec![Column::selection_radio()];
@@ -183,7 +183,7 @@ fn row_expansion() {
     assert!(html.contains("p-datatable-row-expansion") && html.contains("Details of Band") && !html.contains("Details of Watch"), "{html}");
     assert_eq!(html.matches("p-datatable-row-expansion").count(), 1, "{html}");
     let expansion_at = pos(&html, "Details of Band");
-    assert!(pos(&html, ">Band<") < expansion_at && expansion_at < pos(&html, ">Shirt<"), "раскрытие сразу после своей строки: {html}");
+    assert!(pos(&html, ">Band<") < expansion_at && expansion_at < pos(&html, ">Shirt<"), "expansion right after its row: {html}");
     assert!(html.contains("colspan=\"3\""), "{html}");
 }
 
@@ -198,7 +198,7 @@ fn empty_loading_caption_footer() {
     let html = render(|| view! { <Table value=products() columns=plain_columns() row_key=key() loading=true /> }.to_html());
     assert!(html.contains("p-datatable-mask p-overlay-mask") && html.contains("p-datatable-loading-icon"), "{html}");
     let html = render(|| view! { <Table value={Vec::<Product>::new()} columns=plain_columns() row_key=key() loading=true /> }.to_html());
-    assert!(!html.contains("p-datatable-empty-message"), "при загрузке сообщения нет: {html}");
+    assert!(!html.contains("p-datatable-empty-message"), "no message while loading: {html}");
     let columns = vec![
         Column::text("code", "Code", |p: &Product| p.code.to_owned()).footer("Total"),
         Column::text("name", "Name", |p: &Product| p.name.to_owned()).footer("4 items"),
@@ -251,7 +251,7 @@ fn filter_columns() -> Vec<Column<Product>> {
 #[test]
 fn filter_row_renders_inputs() {
     let html = render(|| view! { <Table value=products() columns=filter_columns() row_key=key() /> }.to_html());
-    assert_eq!(html.matches("p-datatable-filter\"").count(), 2, "поле у двух фильтруемых столбцов: {html}");
+    assert_eq!(html.matches("p-datatable-filter\"").count(), 2, "an input on two filterable columns: {html}");
     assert!(html.contains("aria-label=\"Name filter\""), "{html}");
     let plain = render(|| view! { <Table value=products() columns=plain_columns() row_key=key() /> }.to_html());
     assert!(!plain.contains("p-datatable-filter"), "{plain}");
@@ -265,7 +265,7 @@ fn filters_narrow_rows() {
         view! { <Table value=products() columns=filter_columns() row_key=key() filters=filters /> }.to_html()
     });
     assert!(html.contains(">Purse<") && !html.contains(">Watch<") && !html.contains(">Band<"), "{html}");
-    assert!(html.contains("value=\"p\""), "значение фильтра в поле: {html}");
+    assert!(html.contains("value=\"p\""), "filter value in the input: {html}");
     let html = render(|| {
         let filters = RwSignal::new(vec![FilterMeta { field: "quantity".into(), value: "30".into(), match_mode: MatchMode::Gte }]);
         view! { <Table value=products() columns=filter_columns() row_key=key() filters=filters /> }.to_html()
@@ -276,7 +276,7 @@ fn filters_narrow_rows() {
 #[test]
 fn global_filter_and_pagination() {
     let html = render(|| view! { <Table value=products() columns=filter_columns() row_key=key() global_filter="c3" /> }.to_html());
-    assert!(html.contains(">Shirt<") && !html.contains(">Watch<"), "поиск по полю code (searchable): {html}");
+    assert!(html.contains(">Shirt<") && !html.contains(">Watch<"), "search by the code field (searchable): {html}");
     let html = render(|| view! { <Table value=products() columns=filter_columns() row_key=key() global_filter="zzz" /> }.to_html());
     assert!(html.contains("p-datatable-empty-message"), "{html}");
     let html = render(|| {
@@ -294,7 +294,7 @@ fn global_filter_and_pagination() {
         }
         .to_html()
     });
-    assert!(html.contains("1 of 2") || html.contains("1 of 1"), "страницы считаются по отфильтрованным: {html}");
+    assert!(html.contains("1 of 2") || html.contains("1 of 1"), "pages are counted over the filtered rows: {html}");
     assert!(html.contains(">Watch<") && html.contains(">Band<") && !html.contains(">Purse<"), "{html}");
 }
 
@@ -319,11 +319,11 @@ fn edit_cells_and_rows() {
             .to_html()
     });
     assert_eq!(html.matches("p-cell-editing").count(), 1, "{html}");
-    assert!(html.contains("<input") && html.contains("value=\"Band\""), "редактор с текущим значением: {html}");
+    assert!(html.contains("<input") && html.contains("value=\"Band\""), "editor with the current value: {html}");
     assert_eq!(html.matches("p-datatable-row-editor-save").count(), 1, "{html}");
     assert_eq!(html.matches("p-datatable-row-editor-init").count(), 3, "{html}");
     let html = render(|| view! { <Table value=products() columns=editable_columns() row_key=key() /> }.to_html());
-    assert!(!html.contains("p-editable-column") && !html.contains("<input"), "без edit_mode правки нет: {html}");
+    assert!(!html.contains("p-editable-column") && !html.contains("<input"), "no editing without edit_mode: {html}");
 }
 
 #[test]
@@ -347,11 +347,11 @@ fn lazy_shows_value_as_is() {
         }
         .to_html()
     });
-    assert!(in_order(&html, &["Watch", "Band", "Shirt", "Purse"]), "порядок не меняется, срез не делается: {html}");
-    assert!(html.contains("1 of 50"), "страницы по total_records: {html}");
+    assert!(in_order(&html, &["Watch", "Band", "Shirt", "Purse"]), "order is unchanged, no slicing: {html}");
+    assert!(html.contains("1 of 50"), "pages by total_records: {html}");
 }
 
 fn in_order(html: &str, names: &[&str]) -> bool {
-    let at: Vec<usize> = names.iter().map(|n| html.find(&format!(">{n}<")).unwrap_or_else(|| panic!("нет {n}: {html}"))).collect();
+    let at: Vec<usize> = names.iter().map(|n| html.find(&format!(">{n}<")).unwrap_or_else(|| panic!("missing {n}: {html}"))).collect();
     at.windows(2).all(|w| w[0] < w[1])
 }

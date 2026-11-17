@@ -1,44 +1,44 @@
 # Steps
 
-Порт `p-steps` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10 `p-steps` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-steps::Steps`, `StepsItem`, `StepsCommand`, `StepsPt` | `packages/primeng/src/steps/steps.ts`, `steps/style/stepsstyle.ts` |
-| CSS | `@primeuix/styles/steps` и пресет Aura — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет) |
-| Демонстрации | В этой копии PrimeNG каталога `apps/showcase/doc/steps` нет (апстрим удалил демонстрации, страница `pages/steps/index.ts` на них ссылается); набор `basic`, `controlled`, `interactive` выведен из списка на странице и кода компонента |
+| CSS | `@primeuix/styles/steps` and the Aura preset — `cargo xtask gen-theme` (there is no `/* For PrimeNG */` block) |
+| Demos | This PrimeNG copy has no `apps/showcase/doc/steps` directory (upstream removed the demos, the `pages/steps/index.ts` page still references them); the set `basic`, `controlled`, `interactive` is derived from the list on the page and the component code |
 
-Спека: `openspec/specs/steps`.
+Spec: `openspec/specs/steps`.
 
 ```rust
 let active = RwSignal::new(0usize);
 view! { <Steps model=items active_index_signal=active readonly=false /> }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `nav.p-steps.p-component` (`p-readonly`, `data-pc-name="steps"`) > `ul.p-steps-list` > `li.p-steps-item` (`p-steps-item-active`, `p-disabled`, `aria-current="step"`) > `a.p-steps-item-link[role=link]` (`aria-expanded`, `aria-disabled`, `tabindex`) > `span.p-steps-item-number` и `span.p-steps-item-label`.
-- По умолчанию `readonly = true`: клик ничего не делает, неактивные пункты отключены. В интерактивном режиме клик по доступному пункту сообщает индекс (`on_active_index_change`), вызывает `command` пункта с событием, пунктом и индексом и отменяет переход по ссылке, если у пункта нет `url`.
-- Клавиатура: ←/→/`Home`/`End` переносят фокус с roving `tabindex`, `Tab` возвращает `tabindex="0"` активному пункту, `Enter`/`Space` — клик.
-- Правила `tabindex`: у отключённого `-1`, у активного собственный (или `0`), у остальных собственный (или `-1`).
+- Markup and classes: `nav.p-steps.p-component` (`p-readonly`, `data-pc-name="steps"`) > `ul.p-steps-list` > `li.p-steps-item` (`p-steps-item-active`, `p-disabled`, `aria-current="step"`) > `a.p-steps-item-link[role=link]` (`aria-expanded`, `aria-disabled`, `tabindex`) > `span.p-steps-item-number` and `span.p-steps-item-label`.
+- By default `readonly = true`: a click does nothing, inactive items are disabled. In interactive mode a click on an available item reports the index (`on_active_index_change`), calls the item's `command` with the event, the item and the index, and cancels link navigation if the item has no `url`.
+- Keyboard: ←/→/`Home`/`End` move focus with a roving `tabindex`, `Tab` returns `tabindex="0"` to the active item, `Enter`/`Space` — a click.
+- `tabindex` rules: `-1` for a disabled one, its own (or `0`) for the active one, its own (or `-1`) for the rest.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Нет `routerLink` и определения активного пункта по адресу маршрутизатора; активный шаг — только `active_index` | Нет маршрутизатора Angular. |
-| Текущий шаг — `active_index` (значение или сигнал) и необязательный двусторонний `active_index_signal` вместо `activeIndex`/`activeIndexChange` | Идиома Leptos. |
-| Пункты нумеруются по индексу; в PrimeNG `track item.label` склеивал пункты с одинаковой подписью | Ошибка исходника. |
-| Нет подсказок пунктов (`tooltipOptions`), HTML-подписей (`escape = false`), `Bind`, `pTemplate` | Не переносятся. |
-| `exact` принимается, но поведения не имеет | В PrimeNG влияет только на ссылки маршрутизатора. |
-| Демонстрация `routing` не перенесена | Нет маршрутизатора. |
+| No `routerLink` and no detection of the active item by the router address; the active step is only `active_index` | No Angular router. |
+| The current step is `active_index` (a value or a signal) and an optional two-way `active_index_signal` instead of `activeIndex`/`activeIndexChange` | A Leptos idiom. |
+| Items are numbered by index; in PrimeNG `track item.label` merged items with the same label | A bug in the source. |
+| No item tooltips (`tooltipOptions`), HTML labels (`escape = false`), `Bind`, `pTemplate` | Not ported. |
+| `exact` is accepted but has no behaviour | In PrimeNG it affects only router links. |
+| The `routing` demo is not ported | No router. |
 
-## Что не проверялось
+## Not verified
 
-- Раскладка справа налево и сенсорный ввод.
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Сравнение с эталонными скриншотами PrimeNG: демонстраций в локальной копии нет.
+- Right-to-left layout and touch input.
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behaviour was not.
+- Comparison with PrimeNG reference screenshots: there are no demos in the local copy.
 
-## Производительность
+## Performance
 
-См. `benches/` (`steps-1`, `steps-1000`, `case-steps`) и `benches/*budgets.toml`.
+See `benches/` (`steps-1`, `steps-1000`, `case-steps`) and `benches/*budgets.toml`.

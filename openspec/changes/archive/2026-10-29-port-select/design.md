@@ -2,63 +2,63 @@
 
 ## Context
 
-Требования — в `specs/select`. Исходники PrimeNG 21.1.10: `packages/primeng/src/select/select.ts` (2015 строк: `Select` и вложенный `SelectItem`), `select/style/selectstyle.ts`, демонстрации `apps/showcase/doc/select`. Образцы — `crates/prime-inputnumber` и `crates/prime-knob` (слушатели `window` и таймеры из обработчиков, `StoredValue<_, LocalStorage>`, `Effect` только под `cfg(target_arch = "wasm32")`, замыкания, не пересоздающие элементы), `crates/prime-selectbutton` (значения-строки, `SelectButtonOption`), `crates/prime-dom` (`position::absolute_position`, `dom::align_overlay`, `FocusTrap` с фокусируемыми границами) и `prime_core::zindex` (`ZGroup::Overlay`). Объём первого change выбран пользователем: ядро, фильтр и группы.
+Requirements are in `specs/select`. PrimeNG 21.1.10 sources: `packages/primeng/src/select/select.ts` (2015 lines: `Select` and the nested `SelectItem`), `select/style/selectstyle.ts`, demos `apps/showcase/doc/select`. Reference implementations: `crates/prime-inputnumber` and `crates/prime-knob` (`window` listeners and timers from handlers, `StoredValue<_, LocalStorage>`, `Effect` only under `cfg(target_arch = "wasm32")`, closures that do not recreate elements), `crates/prime-selectbutton` (string values, `SelectButtonOption`), `crates/prime-dom` (`position::absolute_position`, `dom::align_overlay`, `FocusTrap` with focusable boundaries) and `prime_core::zindex` (`ZGroup::Overlay`). The scope of the first change was chosen by the user: core, filter and groups.
 
-Наблюдения по исходнику, влияющие на решения:
-- Панель — отдельный `p-overlay` (позиционирование, добавление в `body` или `self`, закрытие снаружи, анимация); у нас такого компонента нет, и Select — его первый потребитель.
-- Индексы вариантов (`focusedOptionIndex`, id `{id}_{индекс}`) считаются по плоскому списку, в котором заголовки групп занимают позиции; допустимыми для фокуса считаются только не отключённые варианты (`isValidOption`). Поиск набором (`searchOptions`) копит символы 500 мс и ищет первый допустимый вариант с префиксом.
-- Поиск `filter` в PrimeNG использует `FilterService` (режимы совпадения, поля, локаль); по умолчанию — «содержит». В группах отбираются группы с подходящими вариантами.
-- `Tab` на открытой панели с фокусируемыми элементами уводит фокус на скрытый граничный элемент панели (ловушка фокуса), иначе выбирает вариант под фокусом и закрывает панель.
-- Селекторы `isVisibleClearIcon` и `emptyMessage` зависят от перевода (`emptyMessage`, `emptyFilterMessage`, `aria.listLabel`); эти ключи уже есть в `prime-core::translation_defaults`.
-- Блок `/* For PrimeNG */` в `selectstyle.ts` содержит нужное правило цвета подсказки `.p-select-label.p-placeholder { color: dt('select.placeholder.color') }` (плюс правила Angular Forms), поэтому `select` добавляется в `primeng_extra`.
-- Поле поиска в PrimeNG — `p-iconfield` + `p-inputicon`; такие компоненты у нас не портированы, но их CSS (`iconfield`, `inputicon`) нужен для разметки поля поиска.
+Observations about the source that affect the decisions:
+- The panel is a separate `p-overlay` (positioning, appending to `body` or `self`, closing on outside click, animation); we have no such component, and Select is its first consumer.
+- Option indices (`focusedOptionIndex`, id `{id}_{index}`) are computed over the flat list in which group headers occupy positions; only non-disabled options are valid for focus (`isValidOption`). Type-ahead search (`searchOptions`) accumulates characters for 500 ms and looks for the first valid option with that prefix.
+- The `filter` search in PrimeNG uses `FilterService` (match modes, fields, locale); the default is "contains". With groups, the groups that have matching options are kept.
+- `Tab` on an open panel with focusable elements moves focus to a hidden boundary element of the panel (focus trap); otherwise it selects the focused option and closes the panel.
+- The `isVisibleClearIcon` and `emptyMessage` selectors depend on translation (`emptyMessage`, `emptyFilterMessage`, `aria.listLabel`); these keys already exist in `prime-core::translation_defaults`.
+- The `/* For PrimeNG */` block in `selectstyle.ts` contains the needed placeholder color rule `.p-select-label.p-placeholder { color: dt('select.placeholder.color') }` (plus Angular Forms rules), so `select` is added to `primeng_extra`.
+- The search field in PrimeNG is `p-iconfield` + `p-inputicon`; we have not ported those components, but their CSS (`iconfield`, `inputicon`) is needed for the search field markup.
 
 ## Decisions
 
-### D1. Данные и значение
-`SelectOption { label: String, value: String, disabled: bool }`, `SelectGroup { label: String, items: Vec<SelectOption> }`; `options: Prop<Vec<SelectOption>>` и `groups: Prop<Vec<SelectGroup>>` (если групп нет — плоский список). Значения — строки (как у `SelectButton`). `value: Option<RwSignal<Option<String>>>`, иначе внутренний сигнал с `default_value`. Состояние открытости: `open: Option<RwSignal<bool>>`, иначе внутренний.
+### D1. Data and value
+`SelectOption { label: String, value: String, disabled: bool }`, `SelectGroup { label: String, items: Vec<SelectOption> }`; `options: Prop<Vec<SelectOption>>` and `groups: Prop<Vec<SelectGroup>>` (if there are no groups, a flat list). Values are strings (as in `SelectButton`). `value: Option<RwSignal<Option<String>>>`, otherwise an internal signal with `default_value`. Openness state: `open: Option<RwSignal<bool>>`, otherwise internal.
 
-### D2. Плоский список (`options.rs`, чистые функции)
-`Entry::Group(label)` и `Entry::Option { option, group }`; `visible_entries(options, groups, filter) -> Vec<Entry>` (фильтрация «содержит» без учёта регистра; группы без подходящих вариантов опускаются). Чистые функции индексов: `first_valid`, `last_valid`, `next_valid`, `prev_valid` (как `findNextOptionIndex` и `findPrevOptionIndex`: при отсутствии следующего индекс остаётся прежним), `selected_index`, `first_focused` (выбранный или первый допустимый), `search_match(entries, typed)`, `set_size`, `pos_in_set`. Табличные тесты на группы, отключённые варианты и границы.
+### D2. Flat list (`options.rs`, pure functions)
+`Entry::Group(label)` and `Entry::Option { option, group }`; `visible_entries(options, groups, filter) -> Vec<Entry>` (case-insensitive "contains" filtering; groups without matching options are omitted). Pure index functions: `first_valid`, `last_valid`, `next_valid`, `prev_valid` (like `findNextOptionIndex` and `findPrevOptionIndex`: when there is no next one, the index stays the same), `selected_index`, `first_focused` (the selected or the first valid), `search_match(entries, typed)`, `set_size`, `pos_in_set`. Table-driven tests for groups, disabled options and boundaries.
 
-### D3. Состояние и реактивность
-`value`, `open`, `filter: RwSignal<String>`, `focused_index: RwSignal<Option<usize>>` (индекс в плоском списке), `focused: RwSignal<bool>` (метка в фокусе), `clicked: RwSignal<bool>` (открыто мышью: первая стрелка идёт на первый или последний вариант, а не на выбранный), буфер набора (`StoredValue`) с таймером 500 мс. Метка, значок очистки и кнопка читают только `value`, `open`, `loading` и свойства — панель в DOM есть лишь при `open`, поэтому замыкание панели можно пересоздавать, а метка (элемент, получающий фокус) не пересоздаётся (урок `port-selectbutton`). Внутри списка элементы строятся по плоскому списку; фокус варианта — класс и атрибуты через замыкания, без пересоздания `li`.
+### D3. State and reactivity
+`value`, `open`, `filter: RwSignal<String>`, `focused_index: RwSignal<Option<usize>>` (index in the flat list), `focused: RwSignal<bool>` (label is focused), `clicked: RwSignal<bool>` (opened with the mouse: the first arrow goes to the first or last option rather than the selected one), the type-ahead buffer (`StoredValue`) with a 500 ms timer. The label, clear icon and button read only `value`, `open`, `loading` and properties; the panel is in the DOM only when `open`, so the panel closure can be recreated, while the label (the element that receives focus) is not recreated (lesson from `port-selectbutton`). Inside the list, items are built from the flat list; option focus is a class and attributes via closures, without recreating `li`.
 
-### D4. Панель (`overlay.rs`)
-Панель — потомок корня (`position: relative` из CSS темы), абсолютно позиционируется `prime_dom::align_overlay` (под полем, над ним при нехватке места), z-index — `prime_core::zindex::generate(ZGroup::Overlay, base)` из конфигурации, снимается при закрытии. Подписки на `window` (клик/`mousedown` вне компонента, `resize`) создаются при открытии из обработчика или `Effect` под `cfg(wasm32)` и снимаются при закрытии и `on_cleanup`. Анимации нет (панель появляется и исчезает мгновенно), `appendTo` не поддерживается (всегда внутри корня). `scroll_height` — `max-height` контейнера списка, при открытии выбранный вариант прокручивается `scrollIntoView({ block: nearest })`.
+### D4. Panel (`overlay.rs`)
+The panel is a descendant of the root (`position: relative` from the theme CSS), absolutely positioned by `prime_dom::align_overlay` (below the field, above it when there is not enough room), z-index is `prime_core::zindex::generate(ZGroup::Overlay, base)` from the configuration, released on close. `window` subscriptions (click/`mousedown` outside the component, `resize`) are created on open from a handler or an `Effect` under `cfg(wasm32)` and removed on close and `on_cleanup`. There is no animation (the panel appears and disappears instantly), `appendTo` is not supported (always inside the root). `scroll_height` is the `max-height` of the list container; on open the selected option is scrolled with `scrollIntoView({ block: nearest })`.
 
-### D5. Клавиатура и фокус
-`keydown` метки (и поля поиска) разбирает `KeyboardEvent.code`: `ArrowDown`, `ArrowUp` (+`Alt`), `Home`, `End`, `PageUp`, `PageDown`, `Space`, `Enter`/`NumpadEnter`, `Escape`, `Tab`, `Delete`, `Backspace` (в поле поиска), печатные символы (поиск набором). Правила — как в `onKeyDown` и `onFilterKeyDown`. Заблокированное (`disabled`, `readonly`, `loading`) игнорирует клавиши. `Tab`: при открытой панели с фокусируемыми элементами фокус уходит на скрытую границу (ловушка из `prime-dom`), иначе вариант под фокусом выбирается и панель закрывается. Фокус панели возвращается на метку при закрытии (`Escape`, выбор, `Tab`).
+### D5. Keyboard and focus
+The `keydown` of the label (and the search field) is handled by `KeyboardEvent.code`: `ArrowDown`, `ArrowUp` (+`Alt`), `Home`, `End`, `PageUp`, `PageDown`, `Space`, `Enter`/`NumpadEnter`, `Escape`, `Tab`, `Delete`, `Backspace` (in the search field), printable characters (type-ahead search). The rules are as in `onKeyDown` and `onFilterKeyDown`. A blocked state (`disabled`, `readonly`, `loading`) ignores keys. `Tab`: with an open panel that has focusable elements, focus goes to the hidden boundary (the trap from `prime-dom`), otherwise the focused option is selected and the panel closes. Panel focus returns to the label on close (`Escape`, selection, `Tab`).
 
-### D6. Поиск
-Поле поиска — `input.p-inputtext p-component p-select-filter` внутри `span.p-iconfield` со `SearchIcon` в `span.p-inputicon`; `on:input` пишет `filter`, сбрасывает `focused_index`, зовёт `on_filter` и после перерисовки пересчитывает положение панели. `reset_filter_on_hide` сбрасывает строку при закрытии. Сообщение пустого результата — `empty_filter_message` или перевод `emptyFilterMessage`, пустого списка — `empty_message` или `emptyMessage` (как в PrimeNG: `emptyMessageLabel || emptyFilterMessageLabel`).
+### D6. Search
+The search field is `input.p-inputtext p-component p-select-filter` inside `span.p-iconfield` with a `SearchIcon` in `span.p-inputicon`; `on:input` writes `filter`, resets `focused_index`, calls `on_filter` and recomputes the panel position after re-render. `reset_filter_on_hide` resets the string on close. The empty result message is `empty_filter_message` or the `emptyFilterMessage` translation, the empty list message is `empty_message` or `emptyMessage` (as in PrimeNG: `emptyMessageLabel || emptyFilterMessageLabel`).
 
-### D7. Разметка, классы, атрибуты
-Классы и `data-p` — по `selectstyle.ts` (`state.rs`, табличные тесты): корень `p-select p-component p-inputwrapper` + модификаторы; метка `p-select-label` (+`p-placeholder`, `p-select-label-empty`); панель `p-select-overlay p-component-overlay p-component`; вариант `p-select-option` (+`p-select-option-selected` без `checkmark`, `p-disabled`, `p-focus`). Идентификатор `id` — `pn_id_<n>` из `prime_core::ids::next_unique`, варианты — `{id}_{индекс}`, список — `{id}_list`. Метка — `span[role=combobox]`, а не `<input>`. Лишние атрибуты элементов собираются в `Vec<AnyAttribute>` при превышении 26 (урок `port-inputnumber`).
+### D7. Markup, classes, attributes
+Classes and `data-p` follow `selectstyle.ts` (`state.rs`, table-driven tests): root `p-select p-component p-inputwrapper` + modifiers; label `p-select-label` (+`p-placeholder`, `p-select-label-empty`); panel `p-select-overlay p-component-overlay p-component`; option `p-select-option` (+`p-select-option-selected` without `checkmark`, `p-disabled`, `p-focus`). The `id` is `pn_id_<n>` from `prime_core::ids::next_unique`, options are `{id}_{index}`, the list is `{id}_list`. The label is a `span[role=combobox]`, not an `<input>`. Extra element attributes are collected into `Vec<AnyAttribute>` when exceeding 26 (lesson from `port-inputnumber`).
 
-### D8. Значки и шаблоны
-По умолчанию `ChevronDownIcon`, `TimesIcon`, `SpinnerIcon` (с вращением), `CheckIcon`, `BlankIcon`, `SearchIcon`; `dropdown_icon`, `clear_icon`, `loading_icon` заменяют их (`ViewFn`). Шаблоны: `item_template: Callback<SelectOption, AnyView>`, `selected_item_template: Callback<SelectOption, AnyView>`, `group_template: Callback<SelectGroup, AnyView>`.
+### D8. Icons and templates
+By default `ChevronDownIcon`, `TimesIcon`, `SpinnerIcon` (spinning), `CheckIcon`, `BlankIcon`, `SearchIcon`; `dropdown_icon`, `clear_icon`, `loading_icon` replace them (`ViewFn`). Templates: `item_template: Callback<SelectOption, AnyView>`, `selected_item_template: Callback<SelectOption, AnyView>`, `group_template: Callback<SelectGroup, AnyView>`.
 
 ### D9. CSS
-`select`, `iconfield` в `theme.components` и `select` в `primeng_extra` (`upstream.toml`), `cargo xtask gen-theme`; `@primeuix/styles` отдельного модуля `inputicon` не содержит: классы `.p-inputicon` входят в `iconfield`; нужно проверить, что CSS других компонентов не изменился.
+`select`, `iconfield` in `theme.components` and `select` in `primeng_extra` (`upstream.toml`), `cargo xtask gen-theme`; `@primeuix/styles` has no separate `inputicon` module: the `.p-inputicon` classes are part of `iconfield`; we need to check that the CSS of other components has not changed.
 
-### D10. Демонстрации
-`basic`, `checkmark`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`, `loadingstate`, `sizes`, `template` (двенадцать). В `template` вместо флагов страны (картинки с CDN) — символьные метки; в `group` — группы городов. В `basic` — `echo` значения для e2e.
+### D10. Demos
+`basic`, `checkmark`, `clearicon`, `disabled`, `filled`, `filter`, `fluid`, `group`, `invalid`, `loadingstate`, `sizes`, `template` (twelve). In `template`, instead of country flags (CDN images) there are symbolic labels; in `group` there are city groups. `basic` has a value `echo` for e2e.
 
-### D11. Тесты
-Чистые: `options.rs` (индексы, фильтр, группы, набор) и `state.rs`. SSR: закрытая разметка, метка и подсказка, значок очистки, загрузка, классы и `data-p`, открытая панель (через `open`): варианты, группы, `aria-*`, галочки, поле поиска, пустое сообщение, `pt`, паритет ветвей. Браузерные (`tests/web.rs`): открытие и закрытие (клик, Escape, клик снаружи, Tab), выбор мышью и клавишей, пропуск отключённых, набор символов, фильтр, группы, очистка, `disabled`/`readonly`/`loading`, фокус возвращается на метку и метка не пересоздаётся, внешний `value`, `open`, реактивные варианты. e2e: реальная клавиатура и мышь, положение панели под полем.
+### D11. Tests
+Pure: `options.rs` (indices, filter, groups, type-ahead) and `state.rs`. SSR: closed markup, label and placeholder, clear icon, loading, classes and `data-p`, open panel (via `open`): options, groups, `aria-*`, checkmarks, search field, empty message, `pt`, branch parity. Browser (`tests/web.rs`): open and close (click, Escape, outside click, Tab), selection by mouse and key, skipping disabled, type-ahead, filter, groups, clear, `disabled`/`readonly`/`loading`, focus returns to the label and the label is not recreated, external `value`, `open`, reactive options. e2e: real keyboard and mouse, panel position under the field.
 
 ## Risks / Trade-offs
 
-- [Первый оверлей: положение, z-index, закрытие снаружи, обрезание родителями с `overflow`] → панель внутри корня и позиционирование из `prime-dom`; документируем отсутствие `appendTo` и анимации.
-- [Большой объём клавиатурной логики] → чистые функции индексов с таблицами, поведение из `onKeyDown` закрепляется браузерными тестами.
-- [Фильтр проще PrimeNG (только «содержит» по метке)] → зафиксировано в спеке и `docs/select.md`.
-- [Значение-строка и типизированные варианты вместо `optionLabel`/`optionValue`] → осознанное отличие, как у SelectButton.
+- [First overlay: position, z-index, outside close, clipping by parents with `overflow`] → the panel is inside the root and positioning comes from `prime-dom`; we document the absence of `appendTo` and animation.
+- [Large amount of keyboard logic] → pure index functions with tables, behaviour from `onKeyDown` is pinned by browser tests.
+- [The filter is simpler than PrimeNG (only "contains" on the label)] → recorded in the spec and `docs/select.md`.
+- [String value and typed options instead of `optionLabel`/`optionValue`] → a deliberate difference, as with SelectButton.
 
 ## Migration Plan
 
-Миграции нет: новый крейт и данные темы. Откат — `git revert`.
+No migration: a new crate and theme data. Rollback is `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

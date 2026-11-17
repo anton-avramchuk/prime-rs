@@ -2,25 +2,25 @@
 
 ## Why
 
-Knob — числовой ввод в виде круговой шкалы, перетаскиваемой мышью и касанием; по устройству это ближайший родственник Slider (значение, границы, шаг, перетаскивание с подпиской на `window`, клавиши), только вместо полосы SVG-дуга. Порт следует за `port-slider` и переиспользует его приёмы.
+Knob - numeric input as a circular scale dragged by mouse and touch; by design it is the closest relative of Slider (value, bounds, step, dragging with a `window` subscription, keys), only with an SVG arc instead of a bar. The port follows `port-slider` and reuses its techniques.
 
 ## What Changes
 
-- Новый крейт `prime-knob` с компонентом `Knob`: двусторонний `value` (`RwSignal<f64>`) или внутреннее состояние с `default_value` (без него показывается `min`), свойства `min` (0), `max` (100), `step` (1), `size` (100 px), `stroke_width` (14), `show_value` (`true`), `value_template` (`{value}`), `value_color`, `range_color`, `text_color`, `readonly`, `disabled`, `required`, `name`, `tabindex`, `aria_label`, `aria_labelledby`, `style`, `style_class`; событие `on_change` (новое значение) и `pt` (`root`, `svg`, `range`, `value`, `text`).
-- Разметка как в PrimeNG 21.1.10 (`knob.ts`, `knobstyle.ts`): корень `<div class="p-knob p-component">` (`p-disabled`), внутри `<svg viewBox="0 0 100 100" role="slider">` с `path.p-knob-range`, `path.p-knob-value` и `text.p-knob-text`; дуга от −120° до +120° (с разрывом внизу), значение рисуется от нуля шкалы.
-- Взаимодействие как в PrimeNG: клик по шкале, перетаскивание мышью и касанием (слушатели на `window` только на время нажатия), клавиши стрелок (±1), `PageUp`/`PageDown` (±10), `Home`/`End`.
-- Страница `/knob` (`basic`, `minmax`, `reactive`, `size`, `step`, `stroke`, `template`, `color`, `readonly`, `disabled`), e2e, браузерные тесты, бенчмарки, бюджеты, `docs/knob.md`, CSS темы `knob`.
-- **Не входит:** Angular Forms (`ngModel`, реактивные формы); `styleClass` отдельной логикой (есть `style_class`); демонстрации `reactiveforms` и `templatedrivenforms`.
+- New crate `prime-knob` with the `Knob` component: two-way `value` (`RwSignal<f64>`) or internal state with `default_value` (`min` is shown without it), properties `min` (0), `max` (100), `step` (1), `size` (100 px), `stroke_width` (14), `show_value` (`true`), `value_template` (`{value}`), `value_color`, `range_color`, `text_color`, `readonly`, `disabled`, `required`, `name`, `tabindex`, `aria_label`, `aria_labelledby`, `style`, `style_class`; the `on_change` event (new value) and `pt` (`root`, `svg`, `range`, `value`, `text`).
+- Markup as in PrimeNG 21.1.10 (`knob.ts`, `knobstyle.ts`): root `<div class="p-knob p-component">` (`p-disabled`), inside `<svg viewBox="0 0 100 100" role="slider">` with `path.p-knob-range`, `path.p-knob-value` and `text.p-knob-text`; an arc from -120 deg to +120 deg (with a gap at the bottom), the value is drawn from the scale zero.
+- Interaction as in PrimeNG: click on the scale, dragging with mouse and touch (`window` listeners only while pressed), arrow keys (+-1), `PageUp`/`PageDown` (+-10), `Home`/`End`.
+- Page `/knob` (`basic`, `minmax`, `reactive`, `size`, `step`, `stroke`, `template`, `color`, `readonly`, `disabled`), e2e, browser tests, benchmarks, budgets, `docs/knob.md`, `knob` theme CSS.
+- **Out of scope:** Angular Forms (`ngModel`, reactive forms); `styleClass` as separate logic (`style_class` exists); the `reactiveforms` and `templatedrivenforms` demos.
 
 ## Capabilities
 
 ### New Capabilities
-- `knob`: компонент Knob — значение и шкала, ввод мышью, касанием и клавиатурой, структура и доступность, `pt`, производительность.
+- `knob`: the Knob component - value and scale, mouse, touch and keyboard input, structure and accessibility, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-knob` (`publish = false`); зависимости `prime-core`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml` (`knob` в `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (браузерный job для `tests/web.rs`).
+- New crate `crates/prime-knob` (`publish = false`); dependencies `prime-core`.
+- Changed: workspace `Cargo.toml`, `upstream.toml` (`knob` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (browser job for `tests/web.rs`).

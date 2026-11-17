@@ -1,31 +1,31 @@
 # Toolbar
 
-Порт `p-toolbar` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-toolbar` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-toolbar::Toolbar` | `packages/primeng/src/toolbar/toolbar.ts`, `toolbar/style/toolbarstyle.ts` |
-| CSS | `@primeuix/styles/toolbar` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/toolbar/*-doc.ts` (`basic`, `custom`) |
+| CSS | `@primeuix/styles/toolbar` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/toolbar/*-doc.ts` (`basic`, `custom`) |
 
-Спека: `openspec/specs/toolbar`.
+Spec: `openspec/specs/toolbar`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Корень `div.p-toolbar.p-component` с `role="toolbar"` и `aria-labelledby`.
-- Области `p-toolbar-start`, `p-toolbar-center`, `p-toolbar-end` в этом порядке и только при заданном слоте; проецируемое содержимое стоит перед ними.
+- Root `div.p-toolbar.p-component` with `role="toolbar"` and `aria-labelledby`.
+- Areas `p-toolbar-start`, `p-toolbar-center`, `p-toolbar-end` in this order and only when a slot is set; projected content comes before them.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-toolbar>` | Хост в Angular — деталь фреймворка. |
-| Слоты — `ViewFn` (`start_template`, `center_template`, `end_template`), содержимое — `children` | Вместо шаблонов `#start`, `#center`, `#end` и `<ng-content>`. |
-| Нет синонимов шаблонов `left` и `right` | Устаревшие имена `start` и `end`. |
-| Нет `BlockableUI` | Интерфейс блокировки Angular. |
-| Демонстрация `basic`: кнопка «Save» вместо SplitButton, `InputText` с иконкой поиска вместо IconField, иконки SVG из `prime-icons` (плюс, корзина, загрузка) вместо шрифта PrimeIcons (плюс, печать, загрузка) | SplitButton, IconField и InputIcon ещё не портированы; иконки печати нет в наборе. |
+| The root is a `<div>`, not the host `<p-toolbar>` | The Angular host is a framework detail. |
+| Slots are `ViewFn` (`start_template`, `center_template`, `end_template`), content is `children` | Instead of the `#start`, `#center`, `#end` templates and `<ng-content>`. |
+| No `left` and `right` template synonyms | Outdated names `start` and `end`. |
+| No `BlockableUI` | The Angular blocking interface. |
+| The `basic` demo: a "Save" button instead of SplitButton, an `InputText` with a search icon instead of IconField, SVG icons from `prime-icons` (plus, trash, upload) instead of the PrimeIcons font (plus, print, upload) | SplitButton, IconField and InputIcon are not ported yet; there is no print icon in the set. |
 
-## Производительность
+## Performance
 
-SSR: 23 аллокации на экземпляр с тремя областями (бюджет 26), из них около половины — три слота `ViewFn`; вклад в сырой wasm +96 КБ (бюджет 110 КБ).
-Шаблон — как у Card (`docs/card.md`).
+SSR: 23 allocations per instance with three areas (budget 26), about half of them are the three `ViewFn` slots; contribution to raw wasm +96 KB (budget 110 KB).
+Template — as for Card (`docs/card.md`).

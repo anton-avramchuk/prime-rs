@@ -2,25 +2,25 @@
 
 ## Why
 
-RadioButton — следующий компонент волны 1 после Checkbox. Он переиспользует модель Checkbox (корень + `input` + `box`, два класса данных, сигнал значения), добавляя выбор одного значения из группы по общему сигналу.
+RadioButton is the next component of wave 1 after Checkbox. It reuses the Checkbox model (the root + `input` + `box`, two data classes, the value signal), adding the selection of one value from a group through a shared signal.
 
 ## What Changes
 
-- Новый крейт `prime-radiobutton` с компонентом `RadioButton`: `value` флажка и двусторонний `model: RwSignal<Option<String>>` группы; `default_checked` для неконтролируемого случая; `disabled`, `required`, `invalid`, `size`, `variant`, `input_id`, `name`, `tabindex`, `aria_label`, `aria_labelledby`, `style`, `style_class`, `pt` (`root`, `input`, `box`, `icon`).
-- События `on_click` (значение и исходное событие, как `onClick` PrimeNG), `on_focus`, `on_blur`.
-- Разметка и классы как в PrimeNG 21.1.10: `p-radiobutton p-component` и модификаторы `p-radiobutton-checked`, `p-disabled`, `p-invalid`, `p-variant-filled`, `p-radiobutton-sm p-inputfield-sm`, `p-radiobutton-lg p-inputfield-lg`; `<input type="radio" class="p-radiobutton-input">` с `aria-checked`, `<div class="p-radiobutton-box">` с `<div class="p-radiobutton-icon">`; атрибуты `data-p`, `data-p-checked`, `data-p-disabled`.
-- Страница `/radiobutton` (`group`, `filled`, `sizes`, `invalid`, `disabled`), e2e, бенчмарки, бюджеты.
-- **Не входит:** интеграция с формами и реестр `RadioControlRegistry` (группа определяется общим сигналом), `binary`, `autofocus`.
+- A new crate `prime-radiobutton` with the `RadioButton` component: the `value` of the checkbox and the two-way `model: RwSignal<Option<String>>` of the group; `default_checked` for the uncontrolled case; `disabled`, `required`, `invalid`, `size`, `variant`, `input_id`, `name`, `tabindex`, `aria_label`, `aria_labelledby`, `style`, `style_class`, `pt` (`root`, `input`, `box`, `icon`).
+- The events `on_click` (the value and the original event, like `onClick` in PrimeNG), `on_focus`, `on_blur`.
+- Markup and classes as in PrimeNG 21.1.10: `p-radiobutton p-component` and the modifiers `p-radiobutton-checked`, `p-disabled`, `p-invalid`, `p-variant-filled`, `p-radiobutton-sm p-inputfield-sm`, `p-radiobutton-lg p-inputfield-lg`; `<input type="radio" class="p-radiobutton-input">` with `aria-checked`, `<div class="p-radiobutton-box">` with `<div class="p-radiobutton-icon">`; the attributes `data-p`, `data-p-checked`, `data-p-disabled`.
+- The `/radiobutton` page (`group`, `filled`, `sizes`, `invalid`, `disabled`), e2e, benchmarks, budgets.
+- **Not included:** form integration and the `RadioControlRegistry` registry (the group is defined by a shared signal), `binary`, `autofocus`.
 
 ## Capabilities
 
 ### New Capabilities
-- `radiobutton`: компонент RadioButton — состояние, события, атрибуты, классы, `pt`, производительность.
+- `radiobutton`: the RadioButton component — state, events, attributes, classes, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-radiobutton` (`publish = false`); зависимости `prime-core`, `web-sys`.
-- Изменяются `showcase`, `benches/render`, `benches/wasm-size`, бюджеты, `e2e/tests`, браузерный job CI.
+- A new crate `crates/prime-radiobutton` (`publish = false`); dependencies `prime-core`, `web-sys`.
+- Changes to `showcase`, `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`, the CI browser job.

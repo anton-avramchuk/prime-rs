@@ -3,18 +3,18 @@ import { expect, test } from '@playwright/test';
 test.describe('ToggleButton', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/togglebutton');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-togglebutton')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(6);
         const radius = await page.locator('[data-demo=basic] .p-togglebutton').evaluate((el) => getComputedStyle(el).borderTopLeftRadius);
         expect(radius).not.toBe('0px');
     });
 
-    test('клик и клавиши переключают состояние', async ({ page }) => {
+    test('click and keys toggle the state', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-togglebutton');
         const label = root.locator('.p-togglebutton-label');
         await expect(label).toHaveText('Off');
@@ -32,7 +32,7 @@ test.describe('ToggleButton', () => {
         await expect(page.getByTestId('echo')).toHaveText('true');
     });
 
-    test('иконка меняется вместе с состоянием', async ({ page }) => {
+    test('the icon changes together with the state', async ({ page }) => {
         const root = page.locator('[data-demo=customized] .p-togglebutton');
         await expect(root.locator('.p-togglebutton-icon svg')).toBeAttached();
         await expect(root.locator('.p-togglebutton-label')).toHaveText('Unlocked');
@@ -43,7 +43,7 @@ test.describe('ToggleButton', () => {
         await expect(root).toHaveAttribute('aria-label', 'Do you confirm');
     });
 
-    test('disabled, fluid, invalid и размеры', async ({ page }) => {
+    test('disabled, fluid, invalid and sizes', async ({ page }) => {
         const disabled = page.locator('[data-demo=disabled] .p-togglebutton');
         await expect(disabled).toHaveClass(/p-disabled/);
         await expect(disabled).toHaveAttribute('tabindex', '-1');

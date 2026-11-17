@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('ConfirmDialog', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/confirmdialog');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] button').first()).toBeAttached();
     });
@@ -11,7 +11,7 @@ test.describe('ConfirmDialog', () => {
     const basic = (page) => page.locator('[data-demo=basic]');
     const dialog = (page) => page.locator('.p-confirmdialog');
 
-    test('окно по центру с маской, заголовком, текстом и кнопками темы', async ({ page }) => {
+    test('a centered window with the mask, header, text and theme buttons', async ({ page }) => {
         await basic(page).getByRole('button', { name: 'Save' }).click();
         const d = dialog(page);
         await expect(d).toBeVisible();
@@ -30,7 +30,7 @@ test.describe('ConfirmDialog', () => {
         await expect(d.locator('.p-confirmdialog-accept-button')).toBeFocused();
     });
 
-    test('значок рядом с текстом, содержимое выстроено в строку', async ({ page }) => {
+    test('icon next to the text, content laid out in a row', async ({ page }) => {
         await basic(page).getByRole('button', { name: 'Delete' }).click();
         const content = dialog(page).locator('.p-dialog-content');
         await expect(content.locator('.p-confirmdialog-icon')).toBeVisible();
@@ -41,7 +41,7 @@ test.describe('ConfirmDialog', () => {
         await expect(dialog(page).locator('.p-confirmdialog-accept-button')).toHaveClass(/p-button-danger/);
     });
 
-    test('согласие и отказ показывают сообщения и закрывают окно', async ({ page }) => {
+    test('accept and reject show messages and close the window', async ({ page }) => {
         await basic(page).getByRole('button', { name: 'Save' }).click();
         await dialog(page).locator('.p-confirmdialog-accept-button').click();
         await expect(dialog(page)).toHaveCount(0);
@@ -53,7 +53,7 @@ test.describe('ConfirmDialog', () => {
         await expect(page.locator('.p-toast-message')).toHaveCount(2);
     });
 
-    test('крестик и Escape считаются отказом', async ({ page }) => {
+    test('close icon and Escape count as a rejection', async ({ page }) => {
         await basic(page).getByRole('button', { name: 'Save' }).click();
         await dialog(page).locator('.p-dialog-close-button').click();
         await expect(dialog(page)).toHaveCount(0);
@@ -65,10 +65,10 @@ test.describe('ConfirmDialog', () => {
         await expect(page.locator('.p-toast-message')).toHaveCount(2);
     });
 
-    test('позиции: окно переносится к краям и углам', async ({ page }) => {
+    test('positions: the window moves to edges and corners', async ({ page }) => {
         const demo = page.locator('[data-demo=position]');
         const view = page.viewportSize()!;
-        // у маски есть внутренний отступ (около 1.5rem): окно прижато к краю с точностью до него
+        // the mask has an inner padding (about 1.5rem): the window is pressed to the edge within it
         const edge = 30;
         const cases: [string, (b: { x: number; y: number; width: number; height: number }) => void][] = [
             ['Left', (b) => expect(b.x).toBeLessThan(edge)],
@@ -85,7 +85,7 @@ test.describe('ConfirmDialog', () => {
         }
     });
 
-    test('шаблоны: своё сообщение и headless', async ({ page }) => {
+    test('templates: a custom message and headless', async ({ page }) => {
         await page.locator('[data-demo=template]').getByRole('button', { name: 'Save' }).click();
         await expect(page.getByTestId('custom-message')).toBeVisible();
         await expect(dialog(page).locator('.p-dialog-footer')).toBeVisible();

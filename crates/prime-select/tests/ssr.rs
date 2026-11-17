@@ -1,4 +1,4 @@
-//! Закрытая и открытая (через `open`) разметка Select: метка, подсказка, очистка, загрузка, варианты, группы, поиск, `aria-*`, `pt` (SSR).
+//! Closed and open (via `open`) Select markup: label, placeholder, clear, loading, options, groups, search, `aria-*`, `pt` (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -64,7 +64,7 @@ fn selected_value_shows_its_label_and_unknown_value_falls_back() {
     assert!(html.contains(r#"aria-label="London""#), "{html}");
     let html = view! { <Select options=cities() default_value="nope" placeholder="Select a City" /> }.to_html();
     assert!(html.contains("p-placeholder") && html.contains("Select a City") && !html.contains("p-inputwrapper-filled"), "{html}");
-    // значение из группы
+    // value from a group
     let html = view! { <Select groups=groups() default_value="C" /> }.to_html();
     assert!(html.contains(">Chicago<"), "{html}");
 }
@@ -136,7 +136,7 @@ fn attributes_and_ids() {
     ] {
         assert!(html.contains(expected), "{expected}: {html}");
     }
-    assert!(html.contains(r#"id="pn_id_"#), "корень должен иметь id: {html}");
+    assert!(html.contains(r#"id="pn_id_"#), "the root must have an id: {html}");
 }
 
 #[test]
@@ -160,13 +160,13 @@ fn open_panel_lists_options_with_aria() {
     for label in ["New York", "Rome", "London", "Istanbul", "Paris"] {
         assert!(html.contains(&format!(r#"aria-label="{label}""#)), "{label}: {html}");
     }
-    // выбранный вариант
+    // selected option
     assert_eq!(count(&html, r#"aria-selected="true""#), 1, "{html}");
     assert!(html.contains("p-select-option p-select-option-selected"), "{html}");
-    assert_eq!(count(&html, r#"data-p-disabled="true""#), 1, "отключённый вариант: {html}");
+    assert_eq!(count(&html, r#"data-p-disabled="true""#), 1, "disabled option: {html}");
     assert!(html.contains("p-select-option p-disabled"), "{html}");
     assert!(html.contains(r#"aria-setsize="5""#) && html.contains(r#"aria-posinset="3""#), "{html}");
-    // идентификаторы вариантов {id}_{индекс}
+    // option ids {id}_{index}
     assert!(html.contains("_0\"") && html.contains("_4\""), "{html}");
 }
 
@@ -186,7 +186,7 @@ fn checkmark_icons() {
     let html = view! { <Select options=cities() default_value="LDN" checkmark=true open=open() /> }.to_html();
     assert_eq!(count(&html, "p-select-option-check-icon"), 1, "{html}");
     assert_eq!(count(&html, "p-select-option-blank-icon"), 4, "{html}");
-    assert!(!html.contains("p-select-option-selected"), "с галочкой выделения классом нет: {html}");
+    assert!(!html.contains("p-select-option-selected"), "no selection checkmark class: {html}");
 }
 
 #[test]
@@ -207,7 +207,7 @@ fn groups_render_headers_and_options_in_order() {
         ["Germany", "Berlin", "Frankfurt", "USA", "Chicago", "Los Angeles"].iter().map(|l| html.find(l).unwrap()).collect();
     assert!(order.windows(2).all(|w| w[0] < w[1]), "{html}");
     assert!(html.contains(r#"aria-setsize="4""#) && html.contains(r#"aria-posinset="3""#), "{html}");
-    // идентификаторы считаются вместе с заголовками: у «Chicago» индекс 4
+    // ids are counted together with headers: "Chicago" has index 4
     let chicago = html.find("Chicago").unwrap();
     assert!(html[..chicago].rfind("_4\"").is_some(), "{html}");
     let tpl = Callback::new(|g: SelectGroup| view! { <i class="gtpl">{g.label}</i> }.into_any());
@@ -280,7 +280,7 @@ fn reactive_props_render_like_static() {
     let fixed = view! { <Select options=cities() placeholder="Pick" /> }.to_html();
     let strip = |s: &str| {
         let mut out = s.replace("<!>", "");
-        // идентификаторы экземпляров отличаются
+        // instance ids differ
         while let Some(i) = out.find("pn_id_") {
             let end = out[i..].find('"').map_or(out.len(), |e| i + e);
             out.replace_range(i..end, "ID");

@@ -2,67 +2,67 @@
 
 ## Context
 
-Требования — в `specs/confirmation` и `specs/confirmpopup`. Исходники PrimeNG 21.1.10: `confirmpopup/confirmpopup.ts` (около 530 строк), `confirmpopup/style/confirmpopupstyle.ts`, `api/confirmation.ts`, `api/confirmationservice.ts`; стили `@primeuix/styles/confirmpopup`; демонстрации `apps/showcase/doc/confirmpopup/{basic,template,headless}-doc.ts`. Образцы в проекте: `prime-popover` (панель у цели: `align_overlay`, стрелка, переворот, слушатели окна, перенацеливание), `prime-toast` (`MessageService` как `Copy`-хэндл в контексте с подписчиками), `prime-button`.
+The requirements are in `specs/confirmation` and `specs/confirmpopup`. PrimeNG 21.1.10 sources: `confirmpopup/confirmpopup.ts` (about 530 lines), `confirmpopup/style/confirmpopupstyle.ts`, `api/confirmation.ts`, `api/confirmationservice.ts`; styles `@primeuix/styles/confirmpopup`; demos `apps/showcase/doc/confirmpopup/{basic,template,headless}-doc.ts`. Templates in the project: `prime-popover` (the panel at the target: `align_overlay`, the arrow, flipping, window listeners, retargeting), `prime-toast` (`MessageService` as a `Copy` handle in the context with subscribers), `prime-button`.
 
-Наблюдения по исходнику:
-- Компонент подписан на `requireConfirmation$`: `null` — скрыть; подтверждение с чужим `key` игнорируется (но если панель уже показана, она перевыравнивается в следующем кадре). Свои поля подтверждения копируются на компонент, `accept` и `reject` оборачиваются в эмиттеры.
-- Панель в DOM, пока `render`; `onBeforeEnter` ставит автофокус, переносит в `body`, выравнивает (`absolutePosition`), стрелку, слой `overlay` и вешает слушатели (в `setTimeout`, чтобы не поймать клик, вызвавший `confirm`).
-- Стрелка: `--p-confirmpopup-arrow-left` — разница левых краёв цели и панели, если панель левее цели; `p-confirm-popup-flipped` и `data-p-confirmpopup-flipped`, если панель выше цели.
-- Закрытие: `Escape` (если `closeOnEscape !== false`) = «Нет»; клик вне панели и вне цели (`dismissableMask !== false`) = просто скрыть; `resize` окна (не на сенсорных); прокрутка предка цели. `accept`/`reject` скрывают и возвращают фокус на цель.
-- Фокус при показе: `confirmation.defaultFocus ?? defaultFocus`: `accept` | `reject` | `none`.
-- Кнопки: `size` по умолчанию `small`; `rejectButtonProps` по умолчанию без стиля (в демонстрациях `severity=secondary`, `outlined`); `acceptVisible`/`rejectVisible`.
+Observations on the source:
+- The component subscribes to `requireConfirmation$`: `null` — hide; a confirmation with a foreign `key` is ignored (but if the panel is already shown, it is re-aligned on the next frame). Its own confirmation fields are copied onto the component, and `accept` and `reject` are wrapped in emitters.
+- The panel is in the DOM while `render`; `onBeforeEnter` sets autofocus, moves it into `body`, aligns it (`absolutePosition`), the arrow, the `overlay` layer and attaches the listeners (in a `setTimeout`, so as not to catch the click that called `confirm`).
+- Arrow: `--p-confirmpopup-arrow-left` — the difference of the left edges of the target and the panel, if the panel is to the left of the target; `p-confirm-popup-flipped` and `data-p-confirmpopup-flipped`, if the panel is above the target.
+- Closing: `Escape` (if `closeOnEscape !== false`) = "No"; a click outside the panel and outside the target (`dismissableMask !== false`) = simply hide; `resize` of the window (not on touch devices); scrolling of an ancestor of the target. `accept`/`reject` hide and return the focus to the target.
+- Focus on show: `confirmation.defaultFocus ?? defaultFocus`: `accept` | `reject` | `none`.
+- Buttons: `size` by default `small`; `rejectButtonProps` by default without a style (in the demos `severity=secondary`, `outlined`); `acceptVisible`/`rejectVisible`.
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы, роли и поведение панели; общий сервис и `Confirmation`, пригодные для ConfirmDialog без изменений.
+**Goals:** the same DOM, classes, roles and behaviour of the panel; a shared service and `Confirmation`, usable for ConfirmDialog without changes.
 
 **Non-Goals:** `appendTo`, `motionOptions`, `Bind`, `pTemplate`, `ConfirmationService.onAccept`.
 
 ## Decisions
 
-### D1. Крейт `prime-confirmation`
-`Confirmation` — строитель с публичными полями; `Callback` вместо эмиттеров; значки — `ViewFn`. Элемент-цель `Option<web_sys::HtmlElement>` не `Send`, поэтому `Confirmation` не `Send`: сервис хранит подписчиков в `StoredValue<_, LocalStorage>`, как `PopoverRef` хранит цель. `ConfirmationService` — `Copy`-хэндл: `confirm(Confirmation)`, `close()`, `subscribe(Callback<ConfirmEvent>) -> usize`, `unsubscribe(id)`; `ConfirmEvent { Confirm(Confirmation), Close }`. `provide_confirmation_service()` кладёт сервис в контекст, `use_confirmation_service()` достаёт его (паника с понятным текстом, если не положен — как у `MessageService`).
+### D1. Crate `prime-confirmation`
+`Confirmation` is a builder with public fields; `Callback` instead of emitters; icons are `ViewFn`. The target element `Option<web_sys::HtmlElement>` is not `Send`, so `Confirmation` is not `Send`: the service keeps the subscribers in `StoredValue<_, LocalStorage>`, as `PopoverRef` keeps the target. `ConfirmationService` is a `Copy` handle: `confirm(Confirmation)`, `close()`, `subscribe(Callback<ConfirmEvent>) -> usize`, `unsubscribe(id)`; `ConfirmEvent { Confirm(Confirmation), Close }`. `provide_confirmation_service()` puts the service into the context, `use_confirmation_service()` retrieves it (a panic with a clear text if it was not provided — as with `MessageService`).
 
-### D2. Крейт `prime-confirmpopup`: панель в `body`
-Панель выводится в `Portal` (в `body`) и выравнивается режимом `Absolute`, как `appendTo = body` в PrimeNG. Логика слушателей — по образцу `Popover`, но сам он не оборачивается: другой корень (`role=alertdialog`, классы `p-confirmpopup`), другие CSS-переменные стрелки и подписка на сервис. Чистая логика стрелки и переворота (`arrow_left`, `is_flipped`, `outside_click`) уже есть в `prime-popover::state`; зависимость на `prime-popover` ради трёх функций не нужна — они копируются в `state.rs` вместе с табличными тестами (по 3–5 строк).
+### D2. Crate `prime-confirmpopup`: the panel in `body`
+The panel is rendered into a `Portal` (in `body`) and aligned in the `Absolute` mode, as `appendTo = body` in PrimeNG. The listener logic follows the sample of `Popover`, but the component itself is not wrapped: a different root (`role=alertdialog`, the classes `p-confirmpopup`), different CSS variables of the arrow and a subscription to the service. The pure logic of the arrow and flipping (`arrow_left`, `is_flipped`, `outside_click`) already exists in `prime-popover::state`; a dependency on `prime-popover` for three functions is not needed — they are copied into `state.rs` together with table tests (3–5 lines each).
 
-### D3. Чистая логика (`state.rs`)
-`root_classes(flipped, extra)`, `arrow_left`, `is_flipped`, `outside_click`, `focus_target(per_confirmation, component) -> ConfirmFocus`, `accepts_key(component_key, confirmation_key)` (сравнение `Option<&str>`: `None == None`), `button_label(custom, default)`. Табличные тесты.
+### D3. Pure logic (`state.rs`)
+`root_classes(flipped, extra)`, `arrow_left`, `is_flipped`, `outside_click`, `focus_target(per_confirmation, component) -> ConfirmFocus`, `accepts_key(component_key, confirmation_key)` (comparison of `Option<&str>`: `None == None`), `button_label(custom, default)`. Table tests.
 
-### D4. Состояние и показ
-`Core`: `confirmation: RwSignal<Option<Confirmation>>` в `LocalStorage`, `visible: RwSignal<bool>`, `target` берётся из подтверждения. Подписка на сервис — в теле компонента (`subscribe`, `on_cleanup` → `unsubscribe`). `confirm` с тем же `key`: записать подтверждение, `visible = true`; если панель уже показана — перевыровнять в следующем тике (`set_timeout(0)`) и пересоздать содержимое. `close` — скрыть. Панель строится при `visible`, убирается после выхода (классы `p-anchored-overlay-enter-active`/`-leave-active` на корне, запасной таймер, как в `Popover`).
+### D4. State and showing
+`Core`: `confirmation: RwSignal<Option<Confirmation>>` in `LocalStorage`, `visible: RwSignal<bool>`, `target` is taken from the confirmation. The subscription to the service is in the component body (`subscribe`, `on_cleanup` → `unsubscribe`). `confirm` with the same `key`: store the confirmation, `visible = true`; if the panel is already shown — re-align it on the next tick (`set_timeout(0)`) and rebuild the content. `close` — hide. The panel is built while `visible` and removed after the exit (the classes `p-anchored-overlay-enter-active`/`-leave-active` on the root, a fallback timer, as in `Popover`).
 
-### D5. Слушатели
-Как в `Popover`: клик, `Escape`, `resize`, `scroll` с захватом; подписка в `set_timeout(0)`; снятие в `closed()` и `on_cleanup`. Различие: `Escape` вызывает `reject` (если `close_on_escape != false`), клик снаружи только скрывает (если `dismissable_mask != false`).
+### D5. Listeners
+As in `Popover`: click, `Escape`, `resize`, `scroll` with capture; the subscription in `set_timeout(0)`; removal in `closed()` and `on_cleanup`. The difference: `Escape` calls `reject` (if `close_on_escape != false`), a click outside only hides (if `dismissable_mask != false`).
 
-### D6. Кнопки
-`Button` из `prime-button` с `size=Small`; свойства из `ConfirmButtonProps` накладываются на значения по умолчанию; `autofocus` по `default_focus`. Фокус при показе — как в `Popover.focus_on_show`: находим кнопку по классу `p-confirmpopup-accept-button`/`-reject-button` и фокусируем в `set_timeout(5)`. После `accept`/`reject` фокус возвращается на цель.
+### D6. Buttons
+`Button` from `prime-button` with `size=Small`; the properties from `ConfirmButtonProps` are applied over the default values; `autofocus` by `default_focus`. The focus on show — as in `Popover.focus_on_show`: the button is found by the class `p-confirmpopup-accept-button`/`-reject-button` and focused in `set_timeout(5)`. After `accept`/`reject` the focus returns to the target.
 
-### D7. Управляемый показ
-`visible` (необязательный `Prop<bool>`): если задан, он определяет показ (`computedVisible` в PrimeNG); внутренний сигнал нужен, когда `visible` не задан. Закрытие пользователем меняет только внутреннее состояние, а показ остаётся за владельцем `visible`.
+### D7. Controlled showing
+`visible` (an optional `Prop<bool>`): if set, it determines the showing (`computedVisible` in PrimeNG); the internal signal is needed when `visible` is not set. Closing by the user changes only the internal state, while the showing stays with the owner of `visible`.
 
-### D8. Headless и content
-`headless` (`Callback<HeadlessContext, AnyView>`): `HeadlessContext { confirmation, accept: Callback<()>, reject: Callback<()> }` — заменяет всё содержимое панели; `content` (`Callback<Confirmation, AnyView>`) — только блок `p-confirmpopup-content`. В PrimeNG `#cp` дает `cp.onAccept()`; у нас вместо этого контекст.
+### D8. Headless and content
+`headless` (`Callback<HeadlessContext, AnyView>`): `HeadlessContext { confirmation, accept: Callback<()>, reject: Callback<()> }` — replaces all the content of the panel; `content` (`Callback<Confirmation, AnyView>`) — only the block `p-confirmpopup-content`. In PrimeNG `#cp` gives `cp.onAccept()`; here a context is used instead.
 
 ### D9. CSS
-`confirmpopup` добавляется в `theme.components`. Если в стилях нет `p-confirmpopup-reject-button`/`accept-button` — только классы (как в PrimeNG).
+`confirmpopup` is added to `theme.components`. If the styles have no `p-confirmpopup-reject-button`/`accept-button` — only the classes (as in PrimeNG).
 
-### D10. Тесты
-`prime-confirmation`: сервис (подписчики, `confirm`, `close`, `unsubscribe`, контекст) — нативные. `prime-confirmpopup`: SSR (панели нет, пока не показана; на сервере сервис без вызовов), браузерный `tests/web.rs` одним последовательным тестом (общие слушатели окна и стек `z-index`): показ по `confirm`, разметка, подписи по умолчанию и свои, `accept`/`reject` и колбэки, возврат фокуса на цель, `Escape`, клик снаружи, `dismissable_mask=false`, `close_on_escape=false`, чужой `key`, повторное `confirm` с другой целью, `close()`, `default_focus`, `accept_visible`/`reject_visible`, `content` и `headless`, `visible`. e2e: положение под целью, стрелка, переворот у нижнего края, три демонстрации.
+### D10. Tests
+`prime-confirmation`: the service (subscribers, `confirm`, `close`, `unsubscribe`, the context) — native. `prime-confirmpopup`: SSR (there is no panel until it is shown; on the server the service has no calls), a browser `tests/web.rs` as one sequential test (the shared window listeners and the `z-index` stack): showing by `confirm`, the markup, the default and custom labels, `accept`/`reject` and the callbacks, returning the focus to the target, `Escape`, a click outside, `dismissable_mask=false`, `close_on_escape=false`, a foreign `key`, a repeated `confirm` with another target, `close()`, `default_focus`, `accept_visible`/`reject_visible`, `content` and `headless`, `visible`. e2e: the position under the target, the arrow, flipping at the bottom edge, the three demos.
 
-### D11. Демонстрации и бенчмарки
-`basic` (Save/Delete с Toast), `template` (содержимое), `headless`. Бенч `confirmpopup-1`/`-1000` (на сервере панели нет — измеряется только корневой маркер) и `case-confirmpopup`.
+### D11. Demos and benchmarks
+`basic` (Save/Delete with a Toast), `template` (content), `headless`. Bench `confirmpopup-1`/`-1000` (on the server there is no panel — only the root marker is measured) and `case-confirmpopup`.
 
 ## Risks / Trade-offs
 
-- [Общий сервис в отдельном крейте] Лишний крейт, но ConfirmDialog не зависит от ConfirmPopup и наоборот.
-- [Копия функций стрелки] Три маленькие функции дублируются; вынос в `prime-dom` — отдельное улучшение, когда понадобится третьему потребителю.
-- [`Confirmation` не `Send`] Из-за `HtmlElement`; сервис и компонент используют `LocalStorage`.
+- [A shared service in a separate crate] An extra crate, but ConfirmDialog does not depend on ConfirmPopup and vice versa.
+- [A copy of the arrow functions] The three small functions are duplicated; moving them into `prime-dom` is a separate improvement, needed when a third consumer appears.
+- [`Confirmation` is not `Send`] Because of `HtmlElement`; the service and the component use `LocalStorage`.
 
 ## Open Questions
 
-- `ConfirmationService.onAccept` нужен только ConfirmDialog PrimeNG — вернёмся к нему в `port-confirmdialog`.
+- `ConfirmationService.onAccept` is needed only by PrimeNG's ConfirmDialog — we will come back to it in `port-confirmdialog`.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

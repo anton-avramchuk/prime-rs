@@ -1,30 +1,30 @@
 ## Purpose
-IftaLabel показывает метку над значением внутри поля, оставляя её на месте (стиль «inside field, top aligned»).
+IftaLabel shows a label above the value inside the field, keeping it in place (the "inside field, top aligned" style).
 
 ## ADDED Requirements
 
-### Requirement: Разметка IftaLabel
-Компонент `IftaLabel` крейта `prime-iftalabel` SHALL выводить `<span class="p-iftalabel">` с дочерним содержимым (поле и его `<label>`). `style_class` SHALL добавляться после собственных классов, `style` — задавать встроенный стиль, `pt.root` — добавлять классы, стиль и атрибуты без замены собственных. Положение метки над значением и отступы поля SHALL обеспечиваться CSS темы `iftalabel`.
+### Requirement: Markup of IftaLabel
+The `IftaLabel` component of the `prime-iftalabel` crate SHALL render `<span class="p-iftalabel">` with the child content (the field and its `<label>`). `style_class` SHALL be added after the own classes, `style` — sets the inline style, `pt.root` — adds classes, style and attributes without replacing the own ones. The position of the label above the value and the paddings of the field SHALL be provided by the CSS of the theme `iftalabel`.
 
-#### Scenario: Корень
-- **WHEN** в `IftaLabel` вложены поле и метка
-- **THEN** выводится один `span.p-iftalabel` с обоими элементами в исходном порядке
+#### Scenario: Root
+- **WHEN** a field and a label are nested inside `IftaLabel`
+- **THEN** one `span.p-iftalabel` is rendered with both elements in the original order
 
-#### Scenario: Классы и стиль
-- **WHEN** заданы `style_class = "mine"` и `style = "width: 14rem"`
-- **THEN** класс корня `p-iftalabel mine`, атрибут `style="width: 14rem;"`
+#### Scenario: Classes and style
+- **WHEN** `style_class = "mine"` and `style = "width: 14rem"` are set
+- **THEN** the root class is `p-iftalabel mine`, the attribute `style="width: 14rem;"`
 
-#### Scenario: Положение метки
-- **WHEN** страница с подключённым CSS темы показывает `IftaLabel` с `InputText`
-- **THEN** метка лежит внутри границ поля над значением
+#### Scenario: Label position
+- **WHEN** a page with the theme CSS connected shows an `IftaLabel` with an `InputText`
+- **THEN** the label lies inside the bounds of the field above the value
 
-#### Scenario: Недопустимое значение
-- **WHEN** вложенное поле имеет класс `p-invalid`
-- **THEN** метка получает цвет недопустимого значения из темы
+#### Scenario: Invalid value
+- **WHEN** the nested field has the class `p-invalid`
+- **THEN** the label gets the invalid-value color from the theme
 
-### Requirement: Стоимость отрисовки IftaLabel
-Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `iftalabel-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `iftalabel` в `benches/budgets.toml`.
+### Requirement: Rendering cost of IftaLabel
+The number of allocations per instance during SSR SHALL fit the budget `iftalabel-1000` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `iftalabel` in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения IftaLabel не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of IftaLabel do not exceed the budgets

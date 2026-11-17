@@ -1,13 +1,13 @@
-//! Перестановка выбранных элементов списка (по `moveUp`, `moveTop`, `moveDown`, `moveBottom` PrimeNG, без DOM).
+//! Reordering the selected list items (after PrimeNG `moveUp`, `moveTop`, `moveDown`, `moveBottom`, no DOM).
 //!
-//! В отличие от PrimeNG, выбранные элементы сохраняют взаимный порядок: у PrimeNG смежные выбранные элементы у края
-//! при `moveUp` меняются местами, а `moveTop`/`moveBottom` зависят от порядка кликов по элементам.
+//! Unlike PrimeNG, the selected items keep their relative order: in PrimeNG adjacent selected items at the edge
+//! swap places on `moveUp`, and `moveTop`/`moveBottom` depend on the order of clicks on the items.
 
 fn is_selected(selected: &[String], key: &str) -> bool {
     selected.iter().any(|s| s == key)
 }
 
-/// Сдвигает каждый выбранный элемент вверх на одну позицию, если выше стоит не выбранный.
+/// Moves every selected item up by one position if the one above is not selected.
 pub fn move_up(items: &[String], selected: &[String]) -> Vec<String> {
     let mut out = items.to_vec();
     for i in 1..out.len() {
@@ -18,7 +18,7 @@ pub fn move_up(items: &[String], selected: &[String]) -> Vec<String> {
     out
 }
 
-/// Сдвигает каждый выбранный элемент вниз на одну позицию, если ниже стоит не выбранный.
+/// Moves every selected item down by one position if the one below is not selected.
 pub fn move_down(items: &[String], selected: &[String]) -> Vec<String> {
     let mut out = items.to_vec();
     for i in (0..out.len().saturating_sub(1)).rev() {
@@ -29,14 +29,14 @@ pub fn move_down(items: &[String], selected: &[String]) -> Vec<String> {
     out
 }
 
-/// Переносит все выбранные элементы в начало, сохраняя порядок.
+/// Moves all selected items to the top, keeping the order.
 pub fn move_top(items: &[String], selected: &[String]) -> Vec<String> {
     let (mut picked, rest): (Vec<_>, Vec<_>) = items.iter().cloned().partition(|k| is_selected(selected, k));
     picked.extend(rest);
     picked
 }
 
-/// Переносит все выбранные элементы в конец, сохраняя порядок.
+/// Moves all selected items to the bottom, keeping the order.
 pub fn move_bottom(items: &[String], selected: &[String]) -> Vec<String> {
     let (picked, mut rest): (Vec<_>, Vec<_>) = items.iter().cloned().partition(|k| is_selected(selected, k));
     rest.extend(picked);
@@ -57,7 +57,7 @@ mod tests {
 
     #[test]
     fn up_table() {
-        // (список, выбранные, ожидание)
+        // (list, selected, expectation)
         for (items, sel, want) in [
             ("A B C D", "C", "A C B D"),
             ("A B C D", "A", "A B C D"),
@@ -92,11 +92,11 @@ mod tests {
     #[test]
     fn top_and_bottom_table() {
         assert_eq!(join(move_top(&v("A B C D"), &v("C"))), "C A B D");
-        assert_eq!(join(move_top(&v("A B C D"), &v("D B"))), "B D A C", "порядок клика не важен");
+        assert_eq!(join(move_top(&v("A B C D"), &v("D B"))), "B D A C", "click order does not matter");
         assert_eq!(join(move_top(&v("A B C"), &v("A"))), "A B C");
         assert_eq!(join(move_top(&v("A B C"), &v(""))), "A B C");
         assert_eq!(join(move_bottom(&v("A B C D"), &v("A C"))), "B D A C");
-        assert_eq!(join(move_bottom(&v("A B C D"), &v("C A"))), "B D A C", "порядок клика не важен");
+        assert_eq!(join(move_bottom(&v("A B C D"), &v("C A"))), "B D A C", "click order does not matter");
         assert_eq!(join(move_bottom(&v("A B C"), &v("C"))), "A B C");
     }
 

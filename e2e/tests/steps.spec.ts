@@ -4,7 +4,7 @@ test.describe('Steps', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 900 });
         await page.goto('/steps');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-steps')).toBeAttached();
     });
@@ -12,7 +12,7 @@ test.describe('Steps', () => {
     const steps = (page, name: string) => page.locator(`[data-demo=${name}] .p-steps`);
     const item = (page, name: string, i: number) => steps(page, name).locator('.p-steps-item').nth(i);
 
-    test('стили темы: шаги в ряд с номерами в кружках, активный выделен', async ({ page }) => {
+    test('theme styles: steps in a row with numbers in circles, the active one is highlighted', async ({ page }) => {
         const s = steps(page, 'basic');
         expect(await s.locator('.p-steps-list').evaluate((el) => getComputedStyle(el).display)).toBe('flex');
         const a = (await item(page, 'basic', 0).boundingBox())!;
@@ -22,7 +22,7 @@ test.describe('Steps', () => {
         const box = (await number.boundingBox())!;
         expect(Math.abs(box.width - box.height)).toBeLessThan(1);
         expect(await number.evaluate((el) => getComputedStyle(el).borderTopLeftRadius)).not.toBe('0px');
-        // активный номер отличается от остальных цветом рамки или текста (фон в светлой теме у обоих белый)
+        // the active number differs from the others in border or text colour (the background is white for both in the light theme)
         const look = (i: number) =>
             s.locator('.p-steps-item-number').nth(i).evaluate((el) => {
                 const c = getComputedStyle(el);
@@ -35,12 +35,12 @@ test.describe('Steps', () => {
         await expect(s).toHaveClass(/p-readonly/);
     });
 
-    test('в режиме чтения клик ничего не меняет', async ({ page }) => {
+    test('in readonly mode a click changes nothing', async ({ page }) => {
         await item(page, 'basic', 3).locator('a').click({ force: true });
         await expect(item(page, 'basic', 1)).toHaveClass(/p-steps-item-active/);
     });
 
-    test('управляемая демонстрация: кнопки меняют шаг', async ({ page }) => {
+    test('controlled demo: buttons change the step', async ({ page }) => {
         const demo = page.locator('[data-demo=controlled]');
         await expect(item(page, 'controlled', 0)).toHaveClass(/p-steps-item-active/);
         await expect(demo.getByRole('button', { name: 'Back' })).toBeDisabled();
@@ -54,7 +54,7 @@ test.describe('Steps', () => {
         await expect(demo.getByRole('button', { name: 'Next' })).toBeDisabled();
     });
 
-    test('интерактивная демонстрация: клик и клавиатура переключают шаги, отключённый шаг недоступен', async ({ page }) => {
+    test('interactive demo: click and keyboard switch steps, a disabled step is unavailable', async ({ page }) => {
         await item(page, 'interactive', 1).locator('a').click();
         await expect(item(page, 'interactive', 1)).toHaveClass(/p-steps-item-active/);
         await expect(page.locator('.p-toast-message').first()).toContainText('Seat — step 2');

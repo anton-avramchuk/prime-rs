@@ -3,18 +3,18 @@ import { expect, test } from '@playwright/test';
 test.describe('SplitButton', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/splitbutton');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-splitbutton')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(11);
         const root = page.locator('[data-demo=basic] .p-splitbutton');
         await expect(root.locator('.p-splitbutton-button')).toHaveText('Save');
-        // flex-элемент карточки демонстрации получает вычисленное значение flex вместо inline-flex
+        // the flex item of the demo card gets a computed flex value instead of inline-flex
         expect(['flex', 'inline-flex']).toContain(await root.evaluate((el) => getComputedStyle(el).display));
-        // кнопки склеены: у основной нет правого скругления, у стрелки нет левого
+        // the buttons are joined: the main one has no right rounding, the arrow has no left one
         const main = root.locator('.p-splitbutton-button');
         const dropdown = root.locator('.p-splitbutton-dropdown');
         expect(await main.evaluate((el) => getComputedStyle(el).borderTopRightRadius)).toBe('0px');
@@ -24,14 +24,14 @@ test.describe('SplitButton', () => {
         expect(Math.abs(a.x + a.width - b.x)).toBeLessThan(2);
     });
 
-    test('основная кнопка вызывает действие', async ({ page }) => {
+    test('main button triggers the action', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-splitbutton');
         await root.locator('.p-splitbutton-button').click();
         await expect(page.getByTestId('echo')).toHaveText('1');
         await expect(page.locator('.p-toast-message')).toContainText('Data Saved');
     });
 
-    test('стрелка открывает меню под компонентом, повторный клик закрывает', async ({ page }) => {
+    test('arrow opens the menu under the component, a repeated click closes it', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-splitbutton');
         const dropdown = root.locator('.p-splitbutton-dropdown');
         await dropdown.click();
@@ -48,7 +48,7 @@ test.describe('SplitButton', () => {
         await expect(dropdown).toHaveAttribute('aria-expanded', 'false');
     });
 
-    test('пункт меню выполняет команду и закрывает меню', async ({ page }) => {
+    test('menu item runs the command and closes the menu', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-splitbutton');
         await root.locator('.p-splitbutton-dropdown').click();
         await root.locator('.p-menu-item', { hasText: 'Update' }).click();
@@ -56,7 +56,7 @@ test.describe('SplitButton', () => {
         await expect(root.locator('.p-menu-overlay')).toHaveCount(0);
     });
 
-    test('клавиши ↓ и Escape, клик снаружи закрывает меню', async ({ page }) => {
+    test('keys ↓ and Escape, outside click closes the menu', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-splitbutton');
         const dropdown = root.locator('.p-splitbutton-dropdown');
         await dropdown.focus();
@@ -71,7 +71,7 @@ test.describe('SplitButton', () => {
         await expect(root.locator('.p-menu-overlay')).toHaveCount(0);
     });
 
-    test('модификаторы и серьёзность видны на кнопках', async ({ page }) => {
+    test('modifiers and severity are visible on the buttons', async ({ page }) => {
         const raised = page.locator('[data-demo=raised] .p-splitbutton').first();
         await expect(raised).toHaveClass(/p-splitbutton-raised/);
         expect(await raised.evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe('none');
@@ -85,7 +85,7 @@ test.describe('SplitButton', () => {
         expect((await small.boundingBox())!.height).toBeLessThan((await large.boundingBox())!.height);
     });
 
-    test('недоступный компонент не открывается; шаблон заменяет метку', async ({ page }) => {
+    test('disabled component does not open; template replaces the label', async ({ page }) => {
         const disabled = page.locator('[data-demo=disabled] .p-splitbutton');
         await expect(disabled.locator('.p-splitbutton-button')).toBeDisabled();
         await expect(disabled.locator('.p-splitbutton-dropdown')).toBeDisabled();

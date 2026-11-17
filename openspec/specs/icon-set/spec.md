@@ -1,38 +1,38 @@
 # icon-set Specification
 
 ## Purpose
-Набор SVG-иконок PrimeNG в крейте prime-icons: подключение по feature-флагам, доступность, воспроизводимая генерация.
+PrimeNG SVG icon set in the prime-icons crate: feature-flag inclusion, accessibility, reproducible generation.
 
 ## Requirements
 
-### Requirement: Иконки PrimeNG в одном крейте
-Система SHALL предоставлять крейт `prime-icons`, содержащий 53 SVG-иконки из `packages/primeng/src/icons` (без `baseicon` и `blank`) с теми же именами (например, `CheckIcon`, `ChevronDownIcon`), данными контура и `viewBox`, что в PrimeNG.
+### Requirement: PrimeNG icons in one crate
+The system SHALL provide the `prime-icons` crate containing 53 SVG icons from `packages/primeng/src/icons` (without `baseicon` and `blank`) with the same names (for example `CheckIcon`, `ChevronDownIcon`), path data and `viewBox` as in PrimeNG.
 
-#### Scenario: Совпадение с PrimeNG
-- **WHEN** иконка `check` отрисована
-- **THEN** её SVG содержит тот же `d` и `viewBox`, что и исходник PrimeNG
+#### Scenario: Match with PrimeNG
+- **WHEN** the `check` icon is rendered
+- **THEN** its SVG contains the same `d` and `viewBox` as the PrimeNG source
 
-### Requirement: Подключение иконок по feature-флагам
-Каждая иконка SHALL быть доступна только при включённом собственном feature-флаге, чтобы неиспользуемые иконки не попадали в сборку.
+### Requirement: Including icons by feature flags
+Each icon SHALL be available only when its own feature flag is enabled, so that unused icons do not end up in the build.
 
-#### Scenario: Иконка не включена
-- **WHEN** feature иконки не включён
-- **THEN** её тип недоступен, а размер wasm не включает её данные
+#### Scenario: Icon not enabled
+- **WHEN** the icon's feature is not enabled
+- **THEN** its type is unavailable, and the wasm size does not include its data
 
-### Requirement: Общее поведение иконок
-Все иконки SHALL поддерживать размер, режим вращения (`spin`), пользовательский класс и a11y-атрибуты: по умолчанию `aria-hidden="true"`, при заданной подписи `role="img"` и `aria-label`.
+### Requirement: Common icon behaviour
+All icons SHALL support a size, a spin mode (`spin`), a custom class and a11y attributes: `aria-hidden="true"` by default, `role="img"` and `aria-label` when a label is set.
 
-#### Scenario: Декоративная иконка
-- **WHEN** иконка отрисована без подписи
-- **THEN** у `svg` есть `aria-hidden="true"` и нет `role`
+#### Scenario: Decorative icon
+- **WHEN** the icon is rendered without a label
+- **THEN** the `svg` has `aria-hidden="true"` and no `role`
 
-#### Scenario: Иконка с подписью
-- **WHEN** задан `aria-label`
-- **THEN** у `svg` есть `role="img"` и `aria-label`, а `aria-hidden` отсутствует
+#### Scenario: Icon with a label
+- **WHEN** `aria-label` is set
+- **THEN** the `svg` has `role="img"` and `aria-label`, and `aria-hidden` is absent
 
-### Requirement: Воспроизводимая генерация
-Код иконок SHALL создаваться командой генерации из исходников PrimeNG, а повторный запуск без изменений в исходниках SHALL не менять файлы.
+### Requirement: Reproducible generation
+The icon code SHALL be produced by a generation command from the PrimeNG sources, and a rerun with no changes in the sources SHALL NOT change the files.
 
-#### Scenario: Повторная генерация
-- **WHEN** команда генерации запускается второй раз без изменений
-- **THEN** `git diff` пуст
+#### Scenario: Repeated generation
+- **WHEN** the generation command is run a second time with no changes
+- **THEN** `git diff` is empty

@@ -2,41 +2,41 @@
 
 ## Context
 
-Требования — в `specs/message`. Исходники PrimeNG 21.1.10: `packages/primeng/src/message/message.ts`, `message/style/messagestyle.ts`, демонстрации `apps/showcase/doc/message`. Шаблон компонента — `docs/toggleswitch.md`, `docs/checkbox.md`.
+Requirements are in `specs/message`. PrimeNG 21.1.10 sources: `packages/primeng/src/message/message.ts`, `message/style/messagestyle.ts`, demos `apps/showcase/doc/message`. Component template: `docs/toggleswitch.md`, `docs/checkbox.md`.
 
 ## Goals / Non-Goals
 
-**Goals:** разметка, классы и `data-p` как в PrimeNG; закрытие и `life`; слоты; статическая ветвь для неинтерактивного сообщения.
-**Non-Goals:** `escape=false`, анимации `@primeuix/motion`, ripple на кнопке закрытия, `MessageService`/`Toast`.
+**Goals:** markup, classes and `data-p` as in PrimeNG; closing and `life`; slots; a static branch for a non-interactive message.
+**Non-Goals:** `escape=false`, `@primeuix/motion` animations, ripple on the close button, `MessageService`/`Toast`.
 
 ## Decisions
 
-### D1. Корень — `<div>`
-Вместо хоста `<p-message>`; `role="alert"`, `aria-live="polite"`, `data-p` — на корне.
+### D1. The root is a `<div>`
+Instead of the `<p-message>` host; `role="alert"`, `aria-live="polite"`, `data-p` are on the root.
 
-### D2. Текст и содержимое
-Как в PrimeNG: при непустом `text` выводится `span.p-message-text` с текстом, затем всегда второй `span.p-message-text` с дочерним содержимым (пустой, если детей нет). `container_template` заменяет оба и получает колбэк закрытия.
+### D2. Text and content
+As in PrimeNG: with a non-empty `text`, a `span.p-message-text` with the text is rendered, then always a second `span.p-message-text` with the child content (empty if there are no children). `container_template` replaces both and receives the close callback.
 
-### D3. Закрытие и `life`
-Состояние `visible` создаётся только если сообщение закрываемое или имеет `life`. `close` скрывает сообщение и вызывает `on_close`. Скрытие — класс `p-message-leave-active` и `display: none` (PrimeNG убирает элемент после анимации). `life` запускает таймер `set_timeout` только в браузере.
+### D3. Closing and `life`
+The `visible` state is created only if the message is closable or has `life`. `close` hides the message and calls `on_close`. Hiding is the `p-message-leave-active` class and `display: none` (PrimeNG removes the element after the animation). `life` starts a `set_timeout` timer in the browser only.
 
-### D4. Иконки
-`icon` — CSS-класс (`<i class="p-message-icon …">`); `icon_template` выводится без обёртки (как в PrimeNG); по умолчанию кнопка закрытия содержит `TimesIcon` с классом `p-message-close-icon`; `aria-label` берётся из локали (`aria.close`).
+### D4. Icons
+`icon` is a CSS class (`<i class="p-message-icon …">`); `icon_template` is rendered without a wrapper (as in PrimeNG); by default the close button contains a `TimesIcon` with the `p-message-close-icon` class; `aria-label` comes from the locale (`aria.close`).
 
-### D5. Ветви
-Статическая — при `all_static!`, `!closable` и без `life`; иначе реактивная. Разметка одна, в `macro_rules!`; части (иконка, текст, кнопка) строятся функциями над свойствами.
+### D5. Branches
+Static when `all_static!`, `!closable` and no `life`; otherwise reactive. There is one markup, in a `macro_rules!`; the parts (icon, text, button) are built by functions over the properties.
 
-### D6. Тесты
-SSR: структура, классы, `data-p`, роль, текст и дети, слоты, `pt`, паритет. Браузер: закрытие по клику, `on_close`, автоскрытие по `life`.
+### D6. Tests
+SSR: structure, classes, `data-p`, role, text and children, slots, `pt`, parity. Browser: close on click, `on_close`, auto-hide by `life`.
 
 ## Risks / Trade-offs
 
-- [Без анимации скрытие мгновенное] → зафиксировано в `docs/message.md`.
+- [Without animation hiding is instant] → recorded in `docs/message.md`.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback is `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

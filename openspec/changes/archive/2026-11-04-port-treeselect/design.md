@@ -2,40 +2,40 @@
 
 ## Context
 
-Требования — в `specs/treeselect`. Исходники PrimeNG 21.1.10: `treeselect/treeselect.ts`, `treeselect/style/treeselectstyle.ts`; демонстрации `apps/showcase/doc/treeselect/*-doc.ts`. Образцы — `prime-select` (оболочка, панель внутри корня, `align_overlay`, слушатели окна, `ZGroup::Overlay`) и `prime-tree` (внутри панели).
+Requirements are in `specs/treeselect`. PrimeNG 21.1.10 sources: `treeselect/treeselect.ts`, `treeselect/style/treeselectstyle.ts`; demos `apps/showcase/doc/treeselect/*-doc.ts`. Models: `prime-select` (shell, panel inside the root, `align_overlay`, window listeners, `ZGroup::Overlay`) and `prime-tree` (inside the panel).
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы, `aria-*`, клавиши и выбор через общий `Tree`.
+**Goals:** the same DOM, classes, `aria-*`, keys and selection through a shared `Tree`.
 
-**Non-Goals:** виртуальная прокрутка, `appendTo`, формы Angular, шаблоны `header`/`footer`/`empty`/иконок, скрытые фокус-ловушки панели.
+**Non-Goals:** virtual scrolling, `appendTo`, Angular forms, `header`/`footer`/`empty`/icon templates, hidden panel focus traps.
 
 ## Decisions
 
-### D1. Значение и дерево
-Значение — `RwSignal<Vec<String>>` ключей (в `Single` — 0 или 1). Тот же сигнал передаётся в `Tree` как `selection`, раскрытые ключи — свой `RwSignal<HashSet<String>>` в `expanded_keys`. Метка берёт подписи узлов по ключам из `options`. Режим выбора `Single` по умолчанию (в отличие от `Tree`).
+### D1. Value and tree
+The value is `RwSignal<Vec<String>>` of keys (in `Single` — 0 or 1). The same signal is passed to `Tree` as `selection`, the expanded keys are our own `RwSignal<HashSet<String>>` in `expanded_keys`. The label takes node captions by keys from `options`. Selection mode `Single` by default (unlike `Tree`).
 
-### D2. Оболочка
-`Props`-подобное состояние `Core`: `open`, `focused`, `value`, `expanded`, ссылки на корень, панель и скрытое поле. Побочные эффекты открытия (z-index группы `Overlay`, `align_overlay(Relative)`, слушатели клика вне и `resize`, фокус) — под `cfg(wasm32)` в `Effect`, как в `Select`. Панель строится только при открытом состоянии, поэтому фильтр дерева сбрасывается сам.
+### D2. Shell
+`Props`-like state `Core`: `open`, `focused`, `value`, `expanded`, references to the root, panel and hidden field. Opening side effects (`Overlay` group z-index, `align_overlay(Relative)`, outside-click and `resize` listeners, focus) — under `cfg(wasm32)` in an `Effect`, as in `Select`. The panel is built only in the open state, so the tree filter resets by itself.
 
-### D3. Открытие
-`show()` раскрывает предков выбранных ключей (чистая функция `ancestors_of(options, keys)` с тестом) и открывает; `hide()` закрывает. После раскрытия/сворачивания узла панель перевыравнивается в `set_timeout(0)`. Клик по корню переключает панель, кроме кликов внутри панели и по значку очистки.
+### D3. Opening
+`show()` expands the ancestors of the selected keys (the pure function `ancestors_of(options, keys)` with a test) and opens; `hide()` closes. After a node is expanded/collapsed the panel is re-aligned in `set_timeout(0)`. A click on the root toggles the panel, except clicks inside the panel and on the clear icon.
 
-### D4. Клавиатура
-Обработчик на скрытом поле: ↓ — открыть и, в следующем такте, сфокусировать первый `li[role=treeitem]` панели; `Space`/`Enter` — открыть; `Escape` — закрыть и вернуть фокус; `Tab` — закрыть.
+### D4. Keyboard
+Handler on the hidden field: Down — open and, on the next tick, focus the first `li[role=treeitem]` of the panel; `Space`/`Enter` — open; `Escape` — close and return focus; `Tab` — close.
 
-### D5. Тесты
-Чистая функция предков — табличный тест. SSR: разметка закрытого поля, метка (запятая, чипы, плейсхолдер), классы состояния, очистка, `pt`. Браузерные `tests/web.rs` одним последовательным тестом: открытие/закрытие, единичный и множественный выбор, чекбоксы, очистка, клавиатура, клик вне, раскрытие предков, фильтр. e2e: раскладка темой, панель под полем, выбор.
+### D5. Tests
+The pure ancestors function — a table-driven test. SSR: markup of the closed field, label (comma, chips, placeholder), state classes, clear, `pt`. Browser `tests/web.rs` as one sequential test: open/close, single and multiple selection, checkboxes, clear, keyboard, outside click, expanding ancestors, filter. e2e: theme layout, panel below the field, selection.
 
 ## Risks / Trade-offs
 
-- [Общий сигнал выбора] `Tree` и оболочка пишут один сигнал → одно место правды; в `Single` `Tree` сам заменяет выбор.
-- [Фокус в панели] Без фокус-ловушек `Tab` внутри панели уходит из компонента → `Tab` на поле закрывает панель, внутри панели закрытие по `focusout` не делаем (закрывает клик вне).
+- [Shared selection signal] `Tree` and the shell write one signal → one source of truth; in `Single` `Tree` itself replaces the selection.
+- [Focus in the panel] Without focus traps `Tab` inside the panel leaves the component → `Tab` on the field closes the panel, inside the panel we do not close on `focusout` (an outside click closes).
 
 ## Open Questions
 
-- Нужно ли закрывать панель на `Tab` из дерева — сверить с `onTabKey` (в PrimeNG фокус уходит в скрытые ловушки).
+- Whether the panel must close on `Tab` from the tree — check against `onTabKey` (in PrimeNG focus goes to hidden traps).
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

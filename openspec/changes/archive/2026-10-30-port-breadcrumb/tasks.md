@@ -1,26 +1,26 @@
 # Tasks
 
-## 1. Крейт
+## 1. Crate
 
-- [x] 1.1 `crates/prime-breadcrumb`: `BreadcrumbItem` (построитель), `BreadcrumbClick`, `BreadcrumbPt`, `click_plan` с табличным тестом
-- [x] 1.2 Компонент `Breadcrumb`: корень, список, пункт «домой», пункты, разделители, шаблоны `item` и `separator`, клики; SSR-тесты по всем сценариям спецификации, rustdoc
+- [x] 1.1 `crates/prime-breadcrumb`: `BreadcrumbItem` (builder), `BreadcrumbClick`, `BreadcrumbPt`, `click_plan` with a table-driven test
+- [x] 1.2 Component `Breadcrumb`: root, list, the "home" item, items, separators, `item` and `separator` templates, clicks; SSR tests for all spec scenarios, rustdoc
 
-## 2. Тема, showcase, e2e
+## 2. Theme, showcase, e2e
 
-- [x] 2.1 Добавить `breadcrumb` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, убедиться, что CSS других компонентов не изменился
-- [x] 2.2 Страница `/breadcrumb` (`basic`, `template`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 2.3 `e2e/tests/pages.json` и `breadcrumb.spec.ts`; ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test breadcrumb`
+- [x] 2.1 Add `breadcrumb` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, make sure the CSS of other components did not change
+- [x] 2.2 The `/breadcrumb` page (`basic`, `template`), menu, route, `stylesheet(&[..])`, crate in the workspace and showcase
+- [x] 2.3 `e2e/tests/pages.json` and `breadcrumb.spec.ts`; wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test breadcrumb`
 
-## 3. Бенчмарки и бюджеты
+## 3. Benchmarks and budgets
 
-- [x] 3.1 Сценарии `-1` и `-1000`, `case-breadcrumb` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`)
+- [x] 3.1 Scenarios `-1` and `-1000`, `case-breadcrumb` and budgets (first `cargo bench -p render-bench --bench alloc`)
 
-## 4. Интеграция
+## 4. Integration
 
-- [x] 4.1 `docs/breadcrumb.md` (отличия от PrimeNG: нет `routerLink`, `BreadcrumbItem` вместо `MenuItem`, `Steps` не переносится, демонстрация `router` пропущена)
-- [x] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features`, тесты, deny, machete, `openspec validate port-breadcrumb`; CI `dev` зелёный
+- [x] 4.1 `docs/breadcrumb.md` (differences from PrimeNG: no `routerLink`, `BreadcrumbItem` instead of `MenuItem`, `Steps` is not ported, the `router` demo is skipped)
+- [x] 4.2 `cargo fmt --all -- --check`, clippy with `--all-features`, tests, deny, machete, `openspec validate port-breadcrumb`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: InputOtp, ScrollTop, Password.
+- Archive after CI.
+- Next: InputOtp, ScrollTop, Password.

@@ -7,7 +7,7 @@ test.describe('ButtonGroup', () => {
         await expect(page.locator('[data-demo=basic] .p-buttongroup')).toBeVisible();
     });
 
-    test('демонстрации и разметка корня', async ({ page }) => {
+    test('demos and root markup', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(2);
         const group = page.locator('[data-demo=basic] .p-buttongroup');
         await expect(group).toHaveAttribute('role', 'group');
@@ -16,7 +16,7 @@ test.describe('ButtonGroup', () => {
         expect(await group.evaluate((el) => getComputedStyle(el).display)).toBe('flex');
     });
 
-    test('кнопки слитные: скруглены только крайние углы', async ({ page }) => {
+    test('buttons are joined: only the outer corners are rounded', async ({ page }) => {
         const buttons = page.locator('[data-demo=basic] .p-buttongroup button');
         const radius = (i: number, prop: string) => buttons.nth(i).evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), prop);
         expect(await radius(0, 'border-top-left-radius')).not.toBe('0px');
@@ -27,7 +27,7 @@ test.describe('ButtonGroup', () => {
         expect(await radius(2, 'border-top-right-radius')).not.toBe('0px');
     });
 
-    test('icons: три кнопки с одними значками', async ({ page }) => {
+    test('icons: three buttons with the same icons', async ({ page }) => {
         const buttons = page.locator('[data-demo=icons] .p-buttongroup button');
         await expect(buttons).toHaveCount(3);
         await expect(buttons.first()).toHaveClass(/p-button-icon-only/);

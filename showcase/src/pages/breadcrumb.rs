@@ -1,7 +1,7 @@
-//! Страница Breadcrumb: демонстрации `basic` и `template` по `apps/showcase/doc/breadcrumb` PrimeNG.
+//! Breadcrumb page: demos `basic` and `template` after PrimeNG's `apps/showcase/doc/breadcrumb`.
 //!
-//! Демонстрация `router` не переносится (Angular Router). В `template` вместо `sitemap`, `book`, `wallet`,
-//! `shopping-bag`, `calculator` взяты имеющиеся иконки `prime-icons`.
+//! The `router` demo is not ported (Angular Router). In `template` the available `prime-icons` icons are used instead of `sitemap`, `book`, `wallet`,
+//! `shopping-bag`, `calculator`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -12,7 +12,7 @@ fn icon_item(icon: impl Fn() -> AnyView + Send + Sync + 'static) -> BreadcrumbIt
     BreadcrumbItem::new().icon(ViewFn::from(icon)).url("#")
 }
 
-/// Страница `/breadcrumb`.
+/// The `/breadcrumb` page.
 #[component]
 pub fn BreadcrumbPage() -> impl IntoView {
     let basic: Vec<BreadcrumbItem> =

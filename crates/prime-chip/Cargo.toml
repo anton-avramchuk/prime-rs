@@ -1,6 +1,6 @@
 [package]
 name = "prime-chip"
-description = "prime-rs: компонент Chip (порт PrimeNG)"
+description = "prime-rs: Chip component (port of PrimeNG)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -20,7 +20,7 @@ web-sys = { workspace = true, features = ["Event", "KeyboardEvent", "MouseEvent"
 
 [dev-dependencies]
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks the client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

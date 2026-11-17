@@ -1,17 +1,17 @@
-//! DOM-хелперы для оверлеев: позиционирование, ловушка фокуса, портал и ripple.
+//! DOM helpers for overlays: positioning, focus trap, portal and ripple.
 //!
-//! Все функции безопасны для SSR: вне браузера они ничего не делают, а чистая арифметика
-//! позиционирования ([`position`]) работает на любой цели.
+//! All functions are SSR-safe: outside the browser they do nothing, and the pure positioning arithmetic
+//! ([`position`]) works on any target.
 //!
-//! - [`position`] — порт `absolutePosition` и `relativePosition` из `DomHandler` с теми же правилами переворота;
-//! - [`dom::align_overlay`] — измеряет якорь и оверлей и записывает `top`, `left`, `transform-origin`;
-//! - [`FocusTrap`] — ловушка фокуса на служебных элементах `.p-hidden-focusable`, как `pFocusTrap`;
-//! - [`Portal`] — вынос содержимого в `body` (из Leptos);
-//! - [`Ripple`] — `span.p-ink`, активируемый на `mousedown`;
-//! - [`scroll`] — закрытие всплывающих панелей по прокрутке ([`watch_scroll`]).
+//! - [`position`] — port of `absolutePosition` and `relativePosition` from `DomHandler` with the same flipping rules;
+//! - [`dom::align_overlay`] — measures the anchor and the overlay and writes `top`, `left`, `transform-origin`;
+//! - [`FocusTrap`] — focus trap on the service `.p-hidden-focusable` elements, like `pFocusTrap`;
+//! - [`Portal`] — moves the content into `body` (from Leptos);
+//! - [`Ripple`] — `span.p-ink`, activated on `mousedown`;
+//! - [`scroll`] — closing popup panels on scroll ([`watch_scroll`]).
 //!
-//! Браузерные тесты: `cargo test -p prime-dom --target wasm32-unknown-unknown --test web`
-//! (нужны `wasm-bindgen-cli` и `chromedriver`, см. `docs/build.md`).
+//! Browser tests: `cargo test -p prime-dom --target wasm32-unknown-unknown --test web`
+//! (requires `wasm-bindgen-cli` and `chromedriver`, see `docs/build.md`).
 
 pub mod dom;
 pub mod focus;

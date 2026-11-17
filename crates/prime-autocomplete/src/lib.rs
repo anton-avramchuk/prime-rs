@@ -1,8 +1,8 @@
-//! AutoComplete — порт `p-autocomplete` из PrimeNG 21.1.10.
+//! AutoComplete: port of PrimeNG 21.1.10 `p-autocomplete`.
 //!
-//! Поле ввода с подсказками: при вводе от `min_length` символов через `delay` вызывается `on_complete`, пользователь
-//! обновляет `suggestions`, и варианты показываются в панели внутри корня. Варианты — [`AutoCompleteOption`] (группы —
-//! через `items` и `group = true`). Значение одиночного режима — `RwSignal<String>`, множественного (`multiple`, чипы) —
+//! Input field with suggestions: when typing from `min_length` characters, `on_complete` is called after `delay`, the user
+//! updates `suggestions`, and the options are shown in a panel inside the root. Options are [`AutoCompleteOption`] (groups
+//! via `items` and `group = true`). The single-mode value is `RwSignal<String>`, the multiple-mode one (`multiple`, chips) is
 //! `RwSignal<Vec<String>>`.
 //!
 //! ```
@@ -44,57 +44,57 @@ use prime_dom::dom::{AlignMode, align_overlay};
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
-/// Что отправляет кнопка-стрелка.
+/// What the arrow button sends.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum AutoCompleteDropdownMode {
-    /// Пустой запрос.
+    /// Empty query.
     #[default]
     Blank,
-    /// Текущий текст поля.
+    /// Current field text.
     Current,
 }
 
-/// Событие запроса вариантов.
+/// Option query event.
 #[derive(Clone, Debug)]
 pub struct AutoCompleteCompleteEvent {
-    /// Запрос.
+    /// Query.
     pub query: String,
 }
 
-/// Pass-through частей [`AutoComplete`].
+/// Pass-through of [`AutoComplete`] parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct AutoCompletePt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Поле ввода.
+    /// Input field.
     pub input: Pt,
-    /// Контейнер чипов.
+    /// Chip container.
     pub input_multiple: Pt,
-    /// Элемент чипа.
+    /// Chip element.
     pub chip_item: Pt,
-    /// Контейнер поля внутри чипов.
+    /// Field container inside the chips.
     pub input_chip: Pt,
-    /// Значок очистки.
+    /// Clear icon.
     pub clear_icon: Pt,
-    /// Спиннер запроса.
+    /// Query spinner.
     pub loader: Pt,
-    /// Кнопка раскрытия.
+    /// Dropdown button.
     pub dropdown: Pt,
-    /// Панель.
+    /// Panel.
     pub overlay: Pt,
-    /// Контейнер списка.
+    /// List container.
     pub list_container: Pt,
-    /// Список.
+    /// List.
     pub list: Pt,
-    /// Вариант.
+    /// Option.
     pub option: Pt,
-    /// Заголовок группы.
+    /// Group header.
     pub option_group: Pt,
-    /// Сообщение о пустом результате.
+    /// Empty result message.
     pub empty_message: Pt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: String,
@@ -202,7 +202,7 @@ impl Core {
         self.force_selection_check();
     }
 
-    /// `updateInputWithForceSelection`: несовпавший ввод очищается, совпавший выбирается.
+    /// `updateInputWithForceSelection`: a non-matching input is cleared, a matching one is selected.
     fn force_selection_check(&self) {
         if !self.force_selection.get_untracked() || self.open.get_untracked() {
             return;
@@ -277,7 +277,7 @@ impl Core {
         self.focus_input();
     }
 
-    /// Добавляет набранный текст чипом (режим `multiple` без `typeahead`).
+    /// Adds the typed text as a chip (`multiple` mode without `typeahead`).
     fn add_typed(&self, text: &str) -> bool {
         let text = text.trim();
         if text.is_empty() || self.values.with_untracked(|v| v.iter().any(|x| x == text)) {
@@ -291,7 +291,7 @@ impl Core {
         true
     }
 
-    /// `search`: запрос вариантов.
+    /// `search`: option query.
     fn search(&self, query: &str, source: &str) {
         if source == "input" && query.trim().is_empty() {
             return;
@@ -308,7 +308,7 @@ impl Core {
         }
     }
 
-    /// Ввод в поле (`onInput`).
+    /// Field input (`onInput`).
     fn input(self: &Arc<Self>, query: String) {
         self.text.set(query.clone());
         if !self.typeahead.get_untracked() {
@@ -545,7 +545,7 @@ impl Core {
         }
     }
 
-    /// Клавиши контейнера чипов (`onMultipleContainerKeyDown`): только события на самом контейнере.
+    /// Chip container keys (`onMultipleContainerKeyDown`): only events on the container itself.
     fn container_key_down(&self, e: &web_sys::KeyboardEvent) {
         if self.blocked() {
             e.prevent_default();
@@ -593,7 +593,7 @@ impl Core {
         }
     }
 
-    /// Панель только что открылась: z-index, положение, слушатели окна, `on_show`.
+    /// The panel has just opened: z-index, position, window listeners, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         self.realign();
@@ -644,7 +644,7 @@ impl Core {
         self.cancel_search();
     }
 
-    /// Выравнивание панели по корню.
+    /// Aligning the panel to the root.
     #[cfg(target_arch = "wasm32")]
     fn realign(&self) {
         if let (Some(overlay), Some(root)) = (self.overlay_ref.get_untracked(), self.root_ref.get_untracked()) {
@@ -658,7 +658,7 @@ impl Core {
     }
 }
 
-/// Всё, что нужно для вывода вариантов.
+/// Everything needed to render the options.
 #[derive(Clone)]
 struct Ctx {
     core: Arc<Core>,
@@ -667,168 +667,168 @@ struct Ctx {
     group_view: Option<Callback<String, AnyView>>,
 }
 
-/// Поле ввода с подсказками.
+/// Input field with suggestions.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn AutoComplete(
-    /// Варианты, предложенные на запрос.
+    /// Options suggested for the query.
     #[prop(optional, into)]
     suggestions: Prop<Vec<AutoCompleteOption>>,
-    /// Значение одиночного режима: набранный текст либо значение выбранного варианта.
+    /// Single-mode value: the typed text or the value of the selected option.
     #[prop(optional)]
     value: Option<RwSignal<String>>,
-    /// Значения множественного режима.
+    /// Multiple-mode values.
     #[prop(optional)]
     values: Option<RwSignal<Vec<String>>>,
-    /// Множественный выбор с чипами.
+    /// Multiple selection with chips.
     #[prop(optional)]
     multiple: bool,
-    /// Варианты сгруппированы (верхний уровень — заголовки).
+    /// Options are grouped (the top level is headers).
     #[prop(optional, into)]
     group: Prop<bool>,
-    /// Кнопка-стрелка.
+    /// Arrow button.
     #[prop(optional, into)]
     dropdown: Prop<bool>,
-    /// Что отправляет кнопка-стрелка.
+    /// What the arrow button sends.
     #[prop(optional)]
     dropdown_mode: AutoCompleteDropdownMode,
-    /// Значок очистки.
+    /// Clear icon.
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-    /// Очищать ввод, не совпавший ни с одним вариантом.
+    /// Clear input that matches no option.
     #[prop(optional, into)]
     force_selection: Prop<bool>,
-    /// Запрашивать варианты при первом фокусе.
+    /// Query options on first focus.
     #[prop(optional, into)]
     complete_on_focus: Prop<bool>,
-    /// Фокус на первый вариант при открытии панели.
+    /// Focus the first option when the panel opens.
     #[prop(optional, into)]
     auto_option_focus: Prop<bool>,
-    /// Переносить фокус на вариант под курсором.
+    /// Move focus to the option under the cursor.
     #[prop(optional, default = Prop::Static(true), into)]
     focus_on_hover: Prop<bool>,
-    /// Минимальная длина запроса.
+    /// Minimum query length.
     #[prop(optional, default = Prop::Static(1), into)]
     min_length: Prop<usize>,
-    /// Задержка запроса в миллисекундах.
+    /// Query delay in milliseconds.
     #[prop(optional, default = 300)]
     delay: u32,
-    /// Подсказка пустого поля.
+    /// Empty field hint.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Высота списка (по умолчанию `200px`).
+    /// List height (default `200px`).
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-    /// Запрашивать варианты при вводе (иначе поле — только ввод, `multiple` добавляет набранное).
+    /// Query options on input (otherwise the field is input-only, `multiple` adds the typed text).
     #[prop(optional, default = Prop::Static(true), into)]
     typeahead: Prop<bool>,
-    /// Не добавлять повторяющиеся чипы.
+    /// Do not add duplicate chips.
     #[prop(optional, default = Prop::Static(true), into)]
     unique: Prop<bool>,
-    /// Показывать сообщение при пустом результате.
+    /// Show a message on an empty result.
     #[prop(optional, default = Prop::Static(true), into)]
     show_empty_message: Prop<bool>,
-    /// Сообщение при пустом результате (по умолчанию — из `locale`).
+    /// Message on an empty result (defaults to `locale`).
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-    /// Добавлять набранное чипом по `Tab` (`multiple`, без `typeahead`).
+    /// Add the typed text as a chip on `Tab` (`multiple`, without `typeahead`).
     #[prop(optional, into)]
     add_on_tab: Prop<bool>,
-    /// Добавлять набранное чипом при потере фокуса (`multiple`, без `typeahead`).
+    /// Add the typed text as a chip on blur (`multiple`, without `typeahead`).
     #[prop(optional, into)]
     add_on_blur: Prop<bool>,
-    /// Разделитель чипов (клавиша и вставка).
+    /// Chip separator (key and paste).
     #[prop(optional, into)]
     separator: OptProp<String>,
-    /// Недоступно.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Только чтение.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Вариант оформления.
+    /// Styling variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину.
+    /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Тип поля (`text` по умолчанию).
+    /// Field type (`text` by default).
     #[prop(optional, into)]
     input_type: OptProp<String>,
-    /// Атрибут `id` поля.
+    /// Field `id` attribute.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Порядок обхода Tab.
+    /// Tab order.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Атрибут `id` корня (основа идентификаторов вариантов).
+    /// Root `id` attribute (basis of option identifiers).
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Root inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra root class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Дополнительный класс поля.
+    /// Extra field class.
     #[prop(optional, into)]
     input_style_class: OptProp<String>,
-    /// Дополнительный класс панели.
+    /// Extra panel class.
     #[prop(optional, into)]
     panel_style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<AutoCompletePt>,
-    /// Своё содержимое варианта.
+    /// Custom option content.
     #[prop(optional)]
     item: Option<Callback<AutoCompleteOption, AnyView>>,
-    /// Свой заголовок группы (подпись группы).
+    /// Custom group header (group label).
     #[prop(optional)]
     group_view: Option<Callback<String, AnyView>>,
-    /// Своё содержимое чипа (значение).
+    /// Custom chip content (value).
     #[prop(optional)]
     selected_item: Option<Callback<String, AnyView>>,
-    /// Запрос вариантов.
+    /// Option query.
     #[prop(optional)]
     on_complete: Option<Callback<AutoCompleteCompleteEvent>>,
-    /// Вариант выбран (значение).
+    /// Option selected (value).
     #[prop(optional)]
     on_select: Option<Callback<String>>,
-    /// Чип удалён (значение).
+    /// Chip removed (value).
     #[prop(optional)]
     on_unselect: Option<Callback<String>>,
-    /// Чип добавлен набранным текстом.
+    /// Chip added from the typed text.
     #[prop(optional)]
     on_add: Option<Callback<String>>,
-    /// Значение очищено.
+    /// Value cleared.
     #[prop(optional)]
     on_clear: Option<Callback<()>>,
-    /// Клик по кнопке-стрелке (запрос).
+    /// Click on the arrow button (query).
     #[prop(optional)]
     on_dropdown_click: Option<Callback<String>>,
-    /// Панель показана.
+    /// Panel shown.
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-    /// Панель скрыта.
+    /// Panel hidden.
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
-    /// Поле получило фокус.
+    /// Field received focus.
     #[prop(optional)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Поле потеряло фокус.
+    /// Field lost focus.
     #[prop(optional)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
 ) -> impl IntoView {
@@ -896,7 +896,7 @@ pub fn AutoComplete(
     }
     #[cfg(target_arch = "wasm32")]
     {
-        // Значение извне (не набранное) обновляет текст поля.
+        // An external value (not typed) updates the field text.
         let c = core.clone();
         Effect::new(move |_| {
             let v = c.value.get();
@@ -907,7 +907,7 @@ pub fn AutoComplete(
                 }
             }
         });
-        // Открытие и закрытие панели: положение, z-index, слушатели.
+        // Opening and closing the panel: position, z-index, listeners.
         let c = core.clone();
         Effect::new(move |_| {
             let is_open = c.open.get();
@@ -920,10 +920,10 @@ pub fn AutoComplete(
                 }
             }
         });
-        // Новые варианты после запроса: показать панель или скрыть (`handleSuggestionsChange`).
+        // New options after a query: show or hide the panel (`handleSuggestionsChange`).
         let (c, show_empty_message) = (core.clone(), show_empty_message.clone());
         Effect::new(move |_| {
-            // Исходный сигнал, а не `rows`: тот же набор вариантов после нового запроса тоже должен показать панель.
+            // The source signal, not `rows`: the same set of options after a new query must also show the panel.
             let empty = c.options.with(Vec::is_empty);
             if c.loading.get_untracked() {
                 if !empty || show_empty_message.get_untracked() {
@@ -1236,7 +1236,7 @@ pub fn AutoComplete(
     }
 }
 
-/// Панель со списком вариантов.
+/// Panel with the option list.
 fn panel_view(
     ctx: &Ctx,
     extra: &OptProp<String>,

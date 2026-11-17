@@ -2,24 +2,24 @@
 
 ## Why
 
-Toolbar — простой группирующий контейнер для кнопок и другого содержимого с тремя областями (начало, центр, конец). Он не требует новой общей логики, имеет роль `toolbar` и подходит как следующий небольшой компонент после составных Panel, Fieldset и Accordion.
+Toolbar is a simple grouping container for buttons and other content with three areas (start, center, end). It requires no new shared logic, has the role `toolbar`, and suits as the next small component after the composite Panel, Fieldset and Accordion.
 
 ## What Changes
 
-- Новый крейт `prime-toolbar` с компонентом `Toolbar`: слоты `start_template`, `center_template`, `end_template` (`ViewFn`), `aria_labelledby`, `style`, `style_class`, `children` (проецируемое содержимое перед областями), `pt`.
-- Разметка как в PrimeNG 21.1.10 (`toolbar.ts`, `toolbarstyle.ts`): корень `<div class="p-toolbar p-component" role="toolbar">`, области `p-toolbar-start`, `p-toolbar-center`, `p-toolbar-end` выводятся только при заданном слоте и в таком порядке.
-- Страница `/toolbar` (`basic`, `custom`), e2e, бенчмарки, бюджеты, `docs/toolbar.md`, CSS темы `toolbar`.
-- **Не входит:** `BlockableUI`; старые имена шаблонов `left` и `right` (в PrimeNG они синонимы `start` и `end`); демонстрации с SplitButton, IconField и InputIcon, которых ещё нет в порте (`basic` собирается из Button и InputText).
+- A new crate `prime-toolbar` with the `Toolbar` component: the slots `start_template`, `center_template`, `end_template` (`ViewFn`), `aria_labelledby`, `style`, `style_class`, `children` (projected content before the areas), `pt`.
+- Markup as in PrimeNG 21.1.10 (`toolbar.ts`, `toolbarstyle.ts`): the root `<div class="p-toolbar p-component" role="toolbar">`, the areas `p-toolbar-start`, `p-toolbar-center`, `p-toolbar-end` are rendered only when a slot is set and in this order.
+- The `/toolbar` page (`basic`, `custom`), e2e, benchmarks, budgets, `docs/toolbar.md`, the CSS of the theme `toolbar`.
+- **Not included:** `BlockableUI`; the old template names `left` and `right` (in PrimeNG they are synonyms of `start` and `end`); the demos with SplitButton, IconField and InputIcon, which are not yet in the port (`basic` is built from Button and InputText).
 
 ## Capabilities
 
 ### New Capabilities
-- `toolbar`: компонент Toolbar — структура, классы, роль и `aria-labelledby`, три области со слотами, `style`, `pt`, производительность.
+- `toolbar`: the Toolbar component — structure, classes, role and `aria-labelledby`, three areas with slots, `style`, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-toolbar` (`publish = false`); зависимости `prime-core`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml` (`toolbar` в `theme.components`), `showcase`, `benches/*`, `e2e/tests`.
+- A new crate `crates/prime-toolbar` (`publish = false`); dependencies `prime-core`.
+- Changes to the workspace `Cargo.toml`, `upstream.toml` (`toolbar` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`.

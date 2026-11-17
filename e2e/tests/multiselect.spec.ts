@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('MultiSelect', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/multiselect');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-multiselect')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(14);
         const label = page.locator('[data-demo=basic] .p-multiselect-label');
         await expect(label).toHaveText('Select Cities');
@@ -19,7 +19,7 @@ test.describe('MultiSelect', () => {
         expect(color).not.toBe(await page.locator('[data-demo=basic]').evaluate((el) => getComputedStyle(el).color));
     });
 
-    test('клик открывает панель под полем, выбор не закрывает её', async ({ page }) => {
+    test('a click opens the panel below the field, selecting does not close it', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-multiselect');
         await root.click();
         const overlay = root.locator('.p-multiselect-overlay');
@@ -41,7 +41,7 @@ test.describe('MultiSelect', () => {
         await expect(overlay).toHaveCount(0);
     });
 
-    test('больше трёх значений превращаются в сводку', async ({ page }) => {
+    test('more than three values turn into a summary', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-multiselect');
         await root.click();
         for (const city of ['New York', 'Rome', 'London', 'Istanbul']) {
@@ -50,7 +50,7 @@ test.describe('MultiSelect', () => {
         await expect(root.locator('.p-multiselect-label')).toHaveText('4 items selected');
     });
 
-    test('чипы удаляются кликом по значку и не открывают панель', async ({ page }) => {
+    test('chips are removed by clicking the icon and do not open the panel', async ({ page }) => {
         const root = page.locator('[data-demo=chips] .p-multiselect');
         await root.click();
         await root.locator('.p-multiselect-option', { hasText: 'New York' }).click();
@@ -64,7 +64,7 @@ test.describe('MultiSelect', () => {
         await expect(root.locator('.p-multiselect-overlay')).toHaveCount(0);
     });
 
-    test('«выбрать все» и поиск', async ({ page }) => {
+    test('"select all" and search', async ({ page }) => {
         const root = page.locator('[data-demo=filter] .p-multiselect');
         await root.click();
         await root.locator('.p-multiselect-filter').fill('on');
@@ -78,7 +78,7 @@ test.describe('MultiSelect', () => {
         await expect(root.locator('.p-multiselect-option .p-checkbox-checked')).toHaveCount(0);
     });
 
-    test('клавиатура: стрелки, Enter, Shift-диапазон, Escape', async ({ page }) => {
+    test('keyboard: arrows, Enter, Shift range, Escape', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-multiselect');
         const input = root.locator('.p-hidden-accessible input');
         await input.focus();
@@ -99,7 +99,7 @@ test.describe('MultiSelect', () => {
         await expect(input).toBeFocused();
     });
 
-    test('значок очистки сбрасывает выбор', async ({ page }) => {
+    test('the clear icon resets the selection', async ({ page }) => {
         const root = page.locator('[data-demo=clearicon] .p-multiselect');
         await expect(root.locator('.p-multiselect-label')).toHaveText('Paris');
         await root.locator('.p-multiselect-clear-icon').click();
@@ -107,7 +107,7 @@ test.describe('MultiSelect', () => {
         await expect(root.locator('.p-multiselect-overlay')).toHaveCount(0);
     });
 
-    test('недоступное поле не открывается, загрузка показывает спиннер', async ({ page }) => {
+    test('a disabled field does not open, loading shows a spinner', async ({ page }) => {
         const disabled = page.locator('[data-demo=disabled] .p-multiselect');
         await expect(disabled).toHaveClass(/p-disabled/);
         await disabled.click({ force: true });
@@ -115,7 +115,7 @@ test.describe('MultiSelect', () => {
         await expect(page.locator('[data-demo=loadingstate] .p-multiselect-loading-icon')).toBeVisible();
     });
 
-    test('группы и шаблон варианта', async ({ page }) => {
+    test('groups and option template', async ({ page }) => {
         const group = page.locator('[data-demo=group] .p-multiselect');
         await group.click();
         await expect(group.locator('.p-multiselect-option-group')).toHaveCount(3);

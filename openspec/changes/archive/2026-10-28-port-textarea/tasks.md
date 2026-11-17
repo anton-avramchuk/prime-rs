@@ -1,29 +1,29 @@
 # Tasks
 
-## 1. Крейт и логика
+## 1. Crate and logic
 
-- [x] 1.1 Создать крейт `crates/prime-textarea` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `web-sys`), добавить в workspace; проверить `cargo check -p prime-textarea --all-features`
-- [x] 1.2 Реализовать `TextareaState`, `write_classes` по `textareastyle.ts` и чистую функцию `fit_height` для автоподгонки; проверить таблицей юнит-тестов
+- [x] 1.1 Create the crate `crates/prime-textarea` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `web-sys`), add it to the workspace; check `cargo check -p prime-textarea --all-features`
+- [x] 1.2 Implement `TextareaState`, `write_classes` per `textareastyle.ts` and the pure function `fit_height` for the auto-resize; check with a table of unit tests
 
-## 2. Компонент
+## 2. Component
 
-- [x] 2.1 Реализовать `Textarea` (атрибуты, классы, значение дочерним текстом, вариант из `PrimeConfig`, `pt`, две ветви); проверить SSR-тестами и паритетом
-- [x] 2.2 Реализовать двустороннюю привязку, события и `auto_resize` с `on_resize`; проверить `wasm-bindgen-test`
-- [x] 2.3 Добавить rustdoc с примером; проверить `cargo test -p prime-textarea --all-features`
+- [x] 2.1 Implement `Textarea` (attributes, classes, the value as child text, the variant from `PrimeConfig`, `pt`, two branches); check with SSR tests and parity
+- [x] 2.2 Implement the two-way binding, the events and `auto_resize` with `on_resize`; check with `wasm-bindgen-test`
+- [x] 2.3 Add rustdoc with an example; check `cargo test -p prime-textarea --all-features`
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/textarea` (`basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`), меню, CSS `textarea`
-- [x] 3.2 `e2e/tests/pages.json` и `e2e/tests/textarea.spec.ts`; проверить `npx playwright test textarea`
+- [x] 3.1 The `/textarea` page (`basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`), the menu, the CSS `textarea`
+- [x] 3.2 `e2e/tests/pages.json` and `e2e/tests/textarea.spec.ts`; check `npx playwright test textarea`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `textarea-1`, `textarea-1000`, `case-textarea`, бюджеты по измерению
+- [x] 4.1 Scenarios `textarea-1`, `textarea-1000`, `case-textarea`, budgets by measurement
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/textarea.md`; clippy, тесты, deny, machete, `openspec validate port-textarea`; `prime-textarea` в браузерный job CI; CI `dev` зелёный
+- [x] 5.1 `docs/textarea.md`; clippy, tests, deny, machete, `openspec validate port-textarea`; `prime-textarea` in the browser CI job; CI `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
+- Archive after CI.

@@ -1,30 +1,30 @@
 ## Purpose
-ButtonGroup объединяет кнопки в одну слитную группу с общими скруглениями по краям.
+ButtonGroup joins buttons into one connected group with shared rounded corners on the edges.
 
 ## ADDED Requirements
 
-### Requirement: Разметка ButtonGroup
-Компонент `ButtonGroup` крейта `prime-buttongroup` SHALL выводить `<span class="p-buttongroup p-component" role="group">` с дочерним содержимым внутри. `style_class` SHALL добавляться к классам корня после собственных, `style` — задавать встроенный стиль, `pt.root` — добавлять классы, стиль и атрибуты без замены собственных. Слитный вид кнопок внутри группы (общая граница, скругления только у крайних) SHALL обеспечиваться CSS темы `buttongroup`.
+### Requirement: ButtonGroup markup
+The `ButtonGroup` component of the `prime-buttongroup` crate SHALL render `<span class="p-buttongroup p-component" role="group">` with the child content inside. `style_class` SHALL be added to the root classes after the own ones, `style` — sets the inline style, `pt.root` — adds classes, style and attributes without replacing the own ones. The joined look of the buttons inside the group (a shared border, rounded corners only on the outer ones) SHALL be provided by the CSS of the theme `buttongroup`.
 
-#### Scenario: Корень
-- **WHEN** в группу вложены три кнопки
-- **THEN** выводится один `span.p-buttongroup.p-component[role=group]`, внутри которого три `button.p-button` в исходном порядке
+#### Scenario: Root
+- **WHEN** three buttons are nested inside the group
+- **THEN** one `span.p-buttongroup.p-component[role=group]` is rendered, containing three `button.p-button` in the original order
 
-#### Scenario: Классы и стиль
-- **WHEN** заданы `style_class = "mine"` и `style = "width: 20rem"`
-- **THEN** класс корня `p-buttongroup p-component mine`, атрибут `style="width: 20rem;"`
+#### Scenario: Classes and style
+- **WHEN** `style_class = "mine"` and `style = "width: 20rem"` are set
+- **THEN** the root class is `p-buttongroup p-component mine`, the attribute `style="width: 20rem;"`
 
-#### Scenario: Слитные кнопки
-- **WHEN** страница с подключённым CSS темы показывает три кнопки в группе
-- **THEN** у средней кнопки нет скругления, у первой скруглены только левые углы, у последней только правые
+#### Scenario: Joined buttons
+- **WHEN** a page with the theme CSS connected shows three buttons in a group
+- **THEN** the middle button has no rounding, the first has only its left corners rounded, the last only its right corners
 
 #### Scenario: pt
-- **WHEN** `pt.root` содержит класс `custom` и атрибут `data-x="1"`
-- **THEN** корень имеет `p-buttongroup p-component custom` и `data-x="1"`
+- **WHEN** `pt.root` contains the class `custom` and the attribute `data-x="1"`
+- **THEN** the root has `p-buttongroup p-component custom` and `data-x="1"`
 
-### Requirement: Стоимость отрисовки ButtonGroup
-Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `buttongroup-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `buttongroup` в `benches/budgets.toml`.
+### Requirement: Rendering cost of ButtonGroup
+The number of allocations per instance during SSR SHALL fit the budget `buttongroup-1000` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `buttongroup` in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения ButtonGroup не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of ButtonGroup do not exceed the budgets

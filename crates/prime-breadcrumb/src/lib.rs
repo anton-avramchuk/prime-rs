@@ -1,8 +1,8 @@
-//! Breadcrumb — порт `p-breadcrumb` из PrimeNG 21.1.10.
+//! Breadcrumb - port of `p-breadcrumb` from PrimeNG 21.1.10.
 //!
-//! Корень `nav.p-breadcrumb` (вместо хоста `<p-breadcrumb>`), список `ol.p-breadcrumb-list`, пункт «домой»,
-//! пункты модели и разделители. Вместо `MenuItem` с полями маршрутизатора Angular — [`BreadcrumbItem`] с `url`:
-//! навигацию SPA ведёт `command`. Шаблоны `item` и `separator` — колбэки.
+//! Root `nav.p-breadcrumb` (instead of the `<p-breadcrumb>` host), list `ol.p-breadcrumb-list`, the "home" item,
+//! model items and separators. Instead of `MenuItem` with Angular router fields - [`BreadcrumbItem`] with `url`:
+//! SPA navigation is driven by `command`. The `item` and `separator` templates are callbacks.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -23,58 +23,58 @@ use std::sync::Arc;
 
 pub use state::{BreadcrumbClick, BreadcrumbItem, ClickPlan, click_plan};
 
-/// Pass-through частей Breadcrumb.
+/// Pass-through of the Breadcrumb parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct BreadcrumbPt {
-    /// Корневой `nav`.
+    /// Root `nav`.
     pub root: Pt,
-    /// Список `ol`.
+    /// List `ol`.
     pub list: Pt,
-    /// Пункт «домой».
+    /// "Home" item.
     pub home_item: Pt,
-    /// Пункт модели.
+    /// Model item.
     pub item: Pt,
-    /// Ссылка пункта.
+    /// Item link.
     pub item_link: Pt,
-    /// Значок пункта.
+    /// Item icon.
     pub item_icon: Pt,
-    /// Подпись пункта.
+    /// Item label.
     pub item_label: Pt,
-    /// Разделитель.
+    /// Separator.
     pub separator: Pt,
-    /// Значок разделителя.
+    /// Separator icon.
     pub separator_icon: Pt,
-    /// Бейдж пункта.
+    /// Item badge.
     pub pc_badge: BadgePt,
 }
 
-/// Путь по иерархии страниц.
+/// Path through the page hierarchy.
 ///
-/// Каждое свойство принимает значение или сигнал; сигнал `model` или `home` перестраивает список целиком.
+/// Every property accepts a value or a signal; a `model` or `home` signal rebuilds the whole list.
 #[component]
 pub fn Breadcrumb(
-    /// Пункты.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<BreadcrumbItem>>,
-    /// Пункт «домой».
+    /// "Home" item.
     #[prop(optional, into)]
     home: OptProp<BreadcrumbItem>,
-    /// `aria-label` пункта «домой».
+    /// `aria-label` of the "home" item.
     #[prop(optional, into)]
     home_aria_label: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Шаблон пункта (заменяет содержимое `li`).
+    /// Item template (replaces the `li` content).
     #[prop(optional, into)]
     item: Option<Callback<BreadcrumbItem, AnyView>>,
-    /// Шаблон разделителя (заменяет значок).
+    /// Separator template (replaces the icon).
     #[prop(optional, into)]
     separator: Option<ViewFn>,
-    /// Вызывается при нажатии на неотключённый пункт после его `command`.
+    /// Called when a non-disabled item is pressed, after its `command`.
     #[prop(optional, into)]
     on_item_click: Option<Callback<BreadcrumbClick>>,
     /// Pass-through.
@@ -127,7 +127,7 @@ pub fn Breadcrumb(
     }
 }
 
-/// Общие для разметки пунктов данные.
+/// Data shared by the item markup.
 #[derive(Clone)]
 struct Ctx {
     pt: Arc<BreadcrumbPt>,

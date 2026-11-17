@@ -1,8 +1,8 @@
-//! Страница Drawer: демонстрации `basic`, `position`, `size`, `fullscreen`, `template`, `headless` по `apps/showcase/doc/drawer` PrimeNG.
+//! Drawer page: demos `basic`, `position`, `size`, `fullscreen`, `template`, `headless` from PrimeNG `apps/showcase/doc/drawer`.
 //!
-//! Значков `plus`-аватара, `user`, `sign-out` и логотипа в `prime-icons` нет, поэтому кнопки подвала в `template` без значков, а
-//! `headless` упрощена: заголовок с кнопкой закрытия и список ссылок вместо меню профиля с `Ripple` и `StyleClass`. Размер в `size`
-//! задаётся встроенным стилем (в PrimeNG — утилиты Tailwind).
+//! There are no icons for the `plus` avatar, `user`, `sign-out` or the logo in `prime-icons`, so the footer buttons in `template` have no icons, and
+//! `headless` is simplified: a header with a close button and a list of links instead of a profile menu with `Ripple` and `StyleClass`. The size in `size`
+//! is set by an inline style (PrimeNG uses Tailwind utilities).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -13,7 +13,7 @@ use prime_icons::{ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, Plu
 
 const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
 
-/// Страница `/drawer`.
+/// Page `/drawer`.
 #[component]
 pub fn DrawerPage() -> impl IntoView {
     let basic = RwSignal::new(false);

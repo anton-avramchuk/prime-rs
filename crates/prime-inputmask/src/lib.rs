@@ -1,8 +1,8 @@
-//! InputMask — порт `p-inputmask` из PrimeNG 21.1.10.
+//! InputMask — port of `p-inputmask` from PrimeNG 21.1.10.
 //!
-//! Поле ввода по маске: `9` — цифра, `a` — буква (`character_pattern`), `*` — буква или цифра, `?` — начало необязательной
-//! части, остальные символы постоянные. Значение — `RwSignal<String>`: маскированный текст либо (с `unmask`) только введённые
-//! символы. Логика маски — чистый движок [`Mask`] (буфер, проверка символов, сдвиги при вводе и удалении).
+//! Masked input field: `9` — digit, `a` — letter (`character_pattern`), `*` — letter or digit, `?` — start of an optional
+//! part, other characters are constants. The value is a `RwSignal<String>`: the masked text or (with `unmask`) only the entered
+//! characters. The mask logic is the pure engine [`Mask`] (buffer, character checks, shifts on input and deletion).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -31,25 +31,25 @@ use leptos::wasm_bindgen::JsCast;
 #[cfg(target_arch = "wasm32")]
 use std::time::Duration;
 
-/// Pass-through частей [`InputMask`].
+/// Pass-through for the parts of [`InputMask`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct InputMaskPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Поле ввода.
+    /// Input field.
     pub input: Pt,
-    /// Значок очистки.
+    /// Clear icon.
     pub clear_icon: Pt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     mask: StoredValue<Mask>,
     mask_text: Prop<String>,
     value: RwSignal<String>,
     focus_text: StoredValue<String>,
-    /// После фокуса уже вводили: отложенная запись буфера и каретки не нужна.
+    /// Input has already happened after focus: the deferred buffer and caret write is not needed.
     touched: StoredValue<bool>,
     unmask: Prop<bool>,
     readonly: Prop<bool>,
@@ -86,7 +86,7 @@ impl Core {
             .unwrap_or((0, 0))
     }
 
-    /// Каретка только у поля, которое сейчас в фокусе (`caret()` исходника).
+    /// The caret is set only on the field that is currently focused (`caret()` of the original).
     fn set_caret(&self, begin: usize, end: usize) {
         #[cfg(target_arch = "wasm32")]
         if let Some(i) = self.input_ref.get_untracked() {
@@ -101,7 +101,7 @@ impl Core {
         let _ = (begin, end);
     }
 
-    /// `updateModel`: значение из поля (или введённые символы при `unmask`).
+    /// `updateModel`: the value from the field (or the entered characters with `unmask`).
     fn update_model(&self) {
         let updated = if self.unmask.get_untracked() { self.mask.with_value(Mask::unmasked) } else { self.text() };
         if self.value.get_untracked() != updated {
@@ -217,7 +217,7 @@ impl Core {
         }
     }
 
-    /// Ввод не клавишами (вставка, перетаскивание, IME): значение раскладывается по маске.
+    /// Input not via keys (paste, drag and drop, IME): the value is laid out by the mask.
     fn input_changed(self: &Arc<Self>) {
         if self.readonly.get_untracked() {
             return;
@@ -258,7 +258,7 @@ impl Core {
         }
     }
 
-    /// Пересобирает маску при смене её свойств и очищает значение (как сеттер `mask` исходника).
+    /// Rebuilds the mask when its properties change and clears the value (like the `mask` setter of the original).
     fn rebuild(&self) {
         let m = Mask::new(
             &self.mask_text.get_untracked(),
@@ -281,112 +281,112 @@ impl<T: Send + Sync + 'static> UpdateReturn<T> for StoredValue<T> {
     fn update_value_return<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
         let mut out = None;
         self.update_value(|v| out = Some(f(v)));
-        out.expect("StoredValue::update_value вызывает замыкание")
+        out.expect("StoredValue::update_value calls the closure")
     }
 }
 
-/// Поле ввода по маске.
+/// Masked input field.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn InputMask(
-    /// Маска: `9` — цифра, `a` — буква, `*` — буква или цифра, `?` — начало необязательной части.
+    /// Mask: `9` — digit, `a` — letter, `*` — letter or digit, `?` — start of an optional part.
     #[prop(into)]
     mask: Prop<String>,
-    /// Значение: маскированный текст либо (с `unmask`) только введённые символы.
+    /// Value: the masked text or (with `unmask`) only the entered characters.
     #[prop(optional)]
     value: Option<RwSignal<String>>,
-    /// Символ-заполнитель пустых позиций.
+    /// Placeholder character for empty positions.
     #[prop(optional, default = Prop::Static("_".to_owned()), into)]
     slot_char: Prop<String>,
-    /// Очищать неполное значение при потере фокуса.
+    /// Clear an incomplete value on blur.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_clear: Prop<bool>,
-    /// Значок очистки.
+    /// Clear icon.
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-    /// В значении только введённые символы.
+    /// The value contains only the entered characters.
     #[prop(optional, into)]
     unmask: Prop<bool>,
-    /// Сохранять буфер при потере фокуса и не затирать введённое.
+    /// Keep the buffer on blur and do not overwrite the entered text.
     #[prop(optional, into)]
     keep_buffer: Prop<bool>,
-    /// Предикат «буква» для шаблонов `a` и `*` (по умолчанию ASCII-буквы).
+    /// "Letter" predicate for the `a` and `*` templates (default: ASCII letters).
     #[prop(optional)]
     character_pattern: Option<CharTest>,
-    /// Тип поля.
+    /// Input type.
     #[prop(optional, into)]
     input_type: OptProp<String>,
-    /// Подсказка пустого поля.
+    /// Placeholder of the empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Только чтение.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Недоступно.
+    /// Unavailable.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Вариант оформления.
+    /// Style variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину.
+    /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Атрибут `id` поля.
+    /// `id` attribute of the field.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Порядок обхода Tab.
+    /// Tab order.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `title`.
+    /// `title` attribute.
     #[prop(optional, into)]
     title: OptProp<String>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Атрибут `aria-required`.
+    /// `aria-required` attribute.
     #[prop(optional, into)]
     aria_required: Prop<bool>,
-    /// Атрибут `autocomplete`.
+    /// `autocomplete` attribute.
     #[prop(optional, into)]
     autocomplete: OptProp<String>,
-    /// Атрибут `id` корня.
+    /// `id` attribute of the root.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс поля.
+    /// Extra class of the field.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<InputMaskPt>,
-    /// Обязательная часть маски заполнена.
+    /// The required part of the mask is filled.
     #[prop(optional)]
     on_complete: Option<Callback<()>>,
-    /// Поле получило фокус.
+    /// The field received focus.
     #[prop(optional)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Поле потеряло фокус.
+    /// The field lost focus.
     #[prop(optional)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Введён или удалён символ.
+    /// A character was entered or deleted.
     #[prop(optional)]
     on_input: Option<Callback<()>>,
-    /// Значение очищено значком.
+    /// The value was cleared by the icon.
     #[prop(optional)]
     on_clear: Option<Callback<()>>,
-    /// Изменились введённые символы (без постоянных).
+    /// The entered characters changed (without constants).
     #[prop(optional)]
     on_unmasked_change: Option<Callback<String>>,
 ) -> impl IntoView {
@@ -428,7 +428,7 @@ pub fn InputMask(
     });
     #[cfg(target_arch = "wasm32")]
     {
-        // Значение извне пересчитывается по маске; собственные изменения (поле уже совпадает) пропускаются.
+        // A value set from outside is laid out by the mask; our own changes (the field already matches) are skipped.
         let c = core.clone();
         Effect::new(move |_| {
             let v = c.value.get();
@@ -445,7 +445,7 @@ pub fn InputMask(
                 c.set_text(&text);
             }
         });
-        // Смена маски или её настроек очищает значение.
+        // Changing the mask or its settings clears the value.
         let c = core.clone();
         let first = StoredValue::new(true);
         Effect::new(move |_| {

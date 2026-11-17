@@ -1,94 +1,94 @@
 # tooltip Specification
 
 ## Purpose
-Tooltip показывает подсказку рядом с элементом по наведению мыши или фокусу, не меняя разметку страницы; подсказка выбирает сторону, а при нехватке места переносится на другую.
+Tooltip shows a hint next to an element on mouse hover or focus without changing the page markup; the tooltip picks a side and moves to another one when there is not enough room.
 
 ## Requirements
 
-### Requirement: Подключение к элементу
-Директива `tooltip` крейта `prime-tooltip` SHALL подключаться к любому элементу атрибутом `use:` и не изменять его разметку и набор атрибутов. Вне браузера (SSR) директива SHALL ничего не делать и не обращаться к `window` и `document`.
+### Requirement: Attaching to an element
+The `tooltip` directive of the `prime-tooltip` crate SHALL attach to any element with the `use:` attribute and SHALL NOT change its markup or set of attributes. Outside the browser (SSR) the directive SHALL do nothing and SHALL NOT access `window` and `document`.
 
-#### Scenario: Разметка не меняется
-- **WHEN** на элемент добавлена директива `tooltip`
-- **THEN** серверная разметка элемента совпадает с разметкой без директивы
+#### Scenario: Markup is unchanged
+- **WHEN** the `tooltip` directive is added to an element
+- **THEN** the server markup of the element matches the markup without the directive
 
-### Requirement: Разметка подсказки
-Показанная подсказка SHALL быть `div.p-tooltip.p-component[role=tooltip]` в `body` с классом `p-tooltip-<position>` (`right`, `left`, `top`, `bottom`), дочерними `div.p-tooltip-arrow` и `div.p-tooltip-text`; `style_class` SHALL добавляться к классам корня, `id` — ставиться на корень. Пока подсказка не показана, в документе нет `.p-tooltip` от этого элемента.
+### Requirement: Tooltip markup
+A shown tooltip SHALL be a `div.p-tooltip.p-component[role=tooltip]` in `body` with a `p-tooltip-<position>` class (`right`, `left`, `top`, `bottom`), with child `div.p-tooltip-arrow` and `div.p-tooltip-text`; `style_class` SHALL be added to the root classes and `id` SHALL be set on the root. While the tooltip is not shown, the document contains no `.p-tooltip` from this element.
 
-#### Scenario: Показана
-- **WHEN** пользователь наводит мышь на элемент с текстом подсказки «Enter your username»
-- **THEN** в `body` есть `.p-tooltip.p-tooltip-right[role=tooltip]` с текстом в `.p-tooltip-text`
+#### Scenario: Shown
+- **WHEN** the user hovers the mouse over an element with the tooltip text "Enter your username"
+- **THEN** `body` contains `.p-tooltip.p-tooltip-right[role=tooltip]` with the text in `.p-tooltip-text`
 
-### Requirement: События показа
-При `Hover` подсказка SHALL показываться на `mouseenter` и касание и скрываться на `mouseleave`, `click` и конец касания. При `Focus` — показываться на `focus` и скрываться на `blur` самого элемента (либо поля ввода внутри обёртки `p-inputwrapper`, либо компонента `.p-component` внутри элемента). При `Both` SHALL работать оба набора событий.
+### Requirement: Show events
+With `Hover` the tooltip SHALL be shown on `mouseenter` and touch and hidden on `mouseleave`, `click` and touch end. With `Focus` it SHALL be shown on `focus` and hidden on `blur` of the element itself (or of the input inside a `p-inputwrapper` wrapper, or of the `.p-component` component inside the element). With `Both` both sets of events SHALL work.
 
-#### Scenario: Только фокус
-- **WHEN** `event=Focus` и пользователь наводит мышь на элемент
-- **THEN** подсказка не показывается; при фокусе клавиатурой — показывается
+#### Scenario: Focus only
+- **WHEN** `event=Focus` and the user hovers the mouse over the element
+- **THEN** the tooltip is not shown; on keyboard focus it is shown
 
-### Requirement: Задержки и время жизни
-`show_delay` SHALL откладывать показ, `hide_delay` — скрытие, `life` SHALL скрывать показанную подсказку через указанное время (плюс `show_delay`). Уход курсора до окончания `show_delay` SHALL отменять показ.
+### Requirement: Delays and lifetime
+`show_delay` SHALL postpone the show, `hide_delay` the hide, and `life` SHALL hide a shown tooltip after the given time (plus `show_delay`). The cursor leaving before `show_delay` ends SHALL cancel the show.
 
-#### Scenario: Задержка показа
-- **WHEN** `show_delay` равен 300 мс и курсор уходит через 100 мс
-- **THEN** подсказка не показывается
+#### Scenario: Show delay
+- **WHEN** `show_delay` is 300 ms and the cursor leaves after 100 ms
+- **THEN** the tooltip is not shown
 
-### Requirement: Автоскрытие
-При `auto_hide` подсказка SHALL не перехватывать указатель. Без `auto_hide` подсказку SHALL быть можно навести курсором: уход курсора с элемента на подсказку не скрывает её, уход с подсказки — скрывает.
+### Requirement: Auto-hide
+With `auto_hide` the tooltip SHALL NOT capture the pointer. Without `auto_hide` the tooltip SHALL be hoverable with the cursor: the cursor moving from the element onto the tooltip does not hide it, moving off the tooltip hides it.
 
-#### Scenario: Наведение на подсказку
-- **WHEN** `auto_hide` выключен и курсор переходит с элемента на подсказку
-- **THEN** подсказка остаётся видимой
+#### Scenario: Hovering the tooltip
+- **WHEN** `auto_hide` is off and the cursor moves from the element onto the tooltip
+- **THEN** the tooltip stays visible
 
-### Requirement: Позиция
-Подсказка SHALL располагаться с выбранной стороны элемента, центрируясь по перпендикулярной оси, со смещениями `position_top` и `position_left`; стрелка SHALL указывать на элемент. Если подсказка с выбранной стороны выходит за границы окна, SHALL пробоваться остальные стороны в порядке приоритета (`top`: top → bottom → right → left; `bottom`: bottom → top → right → left; `left`: left → right → top → bottom; `right`: right → left → top → bottom), пока не найдётся помещающаяся.
+### Requirement: Position
+The tooltip SHALL be placed on the chosen side of the element, centered on the perpendicular axis, with the `position_top` and `position_left` offsets; the arrow SHALL point at the element. If the tooltip goes beyond the window bounds on the chosen side, the other sides SHALL be tried in priority order (`top`: top → bottom → right → left; `bottom`: bottom → top → right → left; `left`: left → right → top → bottom; `right`: right → left → top → bottom) until one fits.
 
-#### Scenario: Нет места справа
-- **WHEN** элемент у правого края окна и `position=Right`
-- **THEN** подсказка расположена слева, у корня `p-tooltip-left`
+#### Scenario: No room on the right
+- **WHEN** the element is at the right edge of the window and `position=Right`
+- **THEN** the tooltip is placed on the left, the root has `p-tooltip-left`
 
-### Requirement: Содержимое
-Текст SHALL выводиться как текст (без разбора разметки); `Html` SHALL выводиться как разметка; `View` SHALL выводить переданное представление. Пустое содержимое не показывает подсказку.
+### Requirement: Content
+Text SHALL be rendered as text (markup is not parsed); `Html` SHALL be rendered as markup; `View` SHALL render the passed view. Empty content does not show a tooltip.
 
-#### Scenario: Текст не разбирается как разметка
-- **WHEN** содержимое — `<b>x</b>` в виде `Text`
-- **THEN** в подсказке виден литерал `<b>x</b>`, элемента `b` нет
+#### Scenario: Text is not parsed as markup
+- **WHEN** the content is `<b>x</b>` as `Text`
+- **THEN** the tooltip shows the literal `<b>x</b>`, there is no `b` element
 
-### Requirement: Отключение и обрезанный текст
-При `disabled` подсказка SHALL не показываться, а уже показанная — скрываться. При `show_on_ellipsis` подсказка SHALL показываться, только если содержимое элемента не помещается в него по ширине или высоте.
+### Requirement: Disabling and clipped text
+With `disabled` the tooltip SHALL NOT be shown, and an already shown one SHALL be hidden. With `show_on_ellipsis` the tooltip SHALL be shown only if the element content does not fit in it by width or height.
 
-#### Scenario: Текст помещается
-- **WHEN** `show_on_ellipsis` включён и текст целиком виден
-- **THEN** подсказка не показывается
+#### Scenario: Text fits
+- **WHEN** `show_on_ellipsis` is on and the text is fully visible
+- **THEN** the tooltip is not shown
 
-### Requirement: Закрытие
-Показанную подсказку SHALL скрывать клавиша `Escape` (при `hide_on_escape`), изменение размера окна и прокрутка вложенного прокручиваемого предка элемента; прокрутка самой страницы подсказку не скрывает, так как она позиционирована в координатах страницы. После скрытия подписки SHALL быть сняты, а `z-index` освобождён.
+### Requirement: Closing
+A shown tooltip SHALL be hidden by the `Escape` key (with `hide_on_escape`), by a window resize and by scrolling of a nested scrollable ancestor of the element; scrolling the page itself does not hide the tooltip, since it is positioned in page coordinates. After hiding, the subscriptions SHALL be removed and the `z-index` released.
 
 #### Scenario: Escape
-- **WHEN** подсказка показана и нажат Escape
-- **THEN** подсказка скрыта
+- **WHEN** the tooltip is shown and Escape is pressed
+- **THEN** the tooltip is hidden
 
-#### Scenario: Прокрутка страницы
-- **WHEN** подсказка показана и страница прокручена
-- **THEN** подсказка остаётся видимой рядом с элементом
+#### Scenario: Page scroll
+- **WHEN** the tooltip is shown and the page is scrolled
+- **THEN** the tooltip stays visible next to the element
 
-### Requirement: Слои
-Без `z_index` подсказка SHALL получать `z-index` группы подсказок; с `z_index` — заданное значение.
+### Requirement: Layers
+Without `z_index` the tooltip SHALL get the `z-index` of the tooltip group; with `z_index`, the given value.
 
-#### Scenario: Над модальным окном
-- **WHEN** подсказка показана у элемента внутри открытого `Dialog`
-- **THEN** её `z-index` выше `z-index` окна диалога
+#### Scenario: Above a modal window
+- **WHEN** the tooltip is shown for an element inside an open `Dialog`
+- **THEN** its `z-index` is higher than the `z-index` of the dialog window
 
-### Requirement: Изменение содержимого
-При смене текста во время показа подсказка SHALL обновить содержимое и пересчитать положение; при смене на пустое — скрыться.
+### Requirement: Content change
+When the text changes while shown, the tooltip SHALL update the content and recompute the position; when it changes to empty, it SHALL hide.
 
-#### Scenario: Смена текста
-- **WHEN** подсказка показана и сигнал текста меняется
-- **THEN** подсказка показывает новый текст
+#### Scenario: Text change
+- **WHEN** the tooltip is shown and the text signal changes
+- **THEN** the tooltip shows the new text
 
-### Requirement: Очистка
-При удалении элемента из документа слушатели и показанная подсказка SHALL быть убраны.
+### Requirement: Cleanup
+When the element is removed from the document, the listeners and the shown tooltip SHALL be removed.
 
-#### Scenario: Размонтирование
-- **WHEN** элемент с показанной подсказкой размонтируется
-- **THEN** подсказка удалена из `body`
+#### Scenario: Unmount
+- **WHEN** an element with a shown tooltip is unmounted
+- **THEN** the tooltip is removed from `body`

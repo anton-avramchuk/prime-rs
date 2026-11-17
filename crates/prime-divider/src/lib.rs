@@ -1,9 +1,9 @@
-//! Divider — порт `p-divider` из PrimeNG 21.1.10.
+//! Divider - port of PrimeNG 21.1.10 `p-divider`.
 //!
-//! Разметка, классы, `role="separator"`, `aria-orientation`, inline-стиль выравнивания и `data-p` совпадают с PrimeNG;
-//! вместо хост-элемента `<p-divider>` отрисовывается `<div class="p-divider …">` с блоком `p-divider-content` внутри.
+//! Markup, classes, `role="separator"`, `aria-orientation`, the inline alignment style and `data-p` match PrimeNG;
+//! instead of the `<p-divider>` host element a `<div class="p-divider ...">` with a `p-divider-content` block inside is rendered.
 //!
-//! Свойства — [`Prop`]/[`OptProp`]; если все они статические, компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! Properties are [`Prop`]/[`OptProp`]; if all of them are static, the component renders ready-made values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -23,39 +23,39 @@ use std::sync::Arc;
 
 pub use state::{DividerAlign, DividerLayout, DividerState, DividerType, align_style, data_p, write_classes};
 
-/// Pass-through частей Divider.
+/// Pass-through for Divider parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct DividerPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Блок содержимого (`div.p-divider-content`).
+    /// Content block (`div.p-divider-content`).
     pub content: Pt,
 }
 
-/// Разделитель: направление, тип линии, выравнивание содержимого.
+/// Divider: direction, line type, content alignment.
 ///
-/// Каждое свойство принимает значение или сигнал. `children` выводятся внутри `div.p-divider-content`.
+/// Each property accepts a value or a signal. `children` are rendered inside `div.p-divider-content`.
 #[component]
 pub fn Divider(
-    /// Направление (по умолчанию `horizontal`).
+    /// Direction (`horizontal` by default).
     #[prop(optional, into)]
     layout: Prop<DividerLayout>,
-    /// Тип линии (по умолчанию `solid`); атрибута `type` в DOM нет.
+    /// Line type (`solid` by default); there is no `type` attribute in the DOM.
     #[prop(optional, into)]
     divider_type: Prop<DividerType>,
-    /// Выравнивание содержимого.
+    /// Content alignment.
     #[prop(optional, into)]
     align: OptProp<DividerAlign>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<DividerPt>,
-    /// Содержимое внутри блока `p-divider-content`.
+    /// Content inside the `p-divider-content` block.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -88,7 +88,7 @@ pub fn Divider(
     }
 }
 
-/// Разметка Divider: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// Divider markup: one for the static and reactive branches (only attribute expressions differ).
 macro_rules! divider_markup {
     ($class:expr, $style:expr, $data:expr, $orientation:expr, $attrs:expr, $content_class:expr, $content_attrs:expr, $content:expr) => {
         view! {
@@ -114,7 +114,7 @@ fn class_of(props: &Props, pt: &DividerPt) -> Cow<'static, str> {
     cn.finish_cow()
 }
 
-/// Стиль корня: выравнивание, затем `style` и стиль из `pt`.
+/// Root style: alignment, then `style` and the style from `pt`.
 fn style_of(props: &Props, pt: &DividerPt) -> Option<String> {
     let align = align_style(&state_of(props)).map(|(k, v)| format!("{k}: {v}")).unwrap_or_default();
     props.style.with(|st| {
@@ -127,7 +127,7 @@ fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     layout: Prop<DividerLayout>,
     divider_type: Prop<DividerType>,

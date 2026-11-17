@@ -1,6 +1,6 @@
 [package]
 name = "prime-drawer"
-description = "prime-rs: компонент Drawer (порт PrimeNG)"
+description = "prime-rs: Drawer component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -21,7 +21,7 @@ prime-icons = { workspace = true, features = ["times"] }
 web-sys = { workspace = true, features = ["Event", "EventTarget", "KeyboardEvent", "MouseEvent", "HtmlElement", "Element", "Node", "Document", "Window", "CssStyleDeclaration", "AnimationEvent"] }
 wasm-bindgen = { workspace = true }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

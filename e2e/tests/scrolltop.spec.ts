@@ -7,13 +7,13 @@ test.describe('ScrollTop', () => {
         await expect(page.locator('[data-demo=basic]')).toBeVisible();
     });
 
-    test('вверху страницы кнопки окна нет, вложенная скрыта', async ({ page }) => {
+    test('at the top of the page there is no window button, the nested one is hidden', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(2);
         await expect(page.locator('body button.p-scrolltop:not(.p-scrolltop-sticky)')).toHaveCount(0);
         await expect(page.locator('[data-demo=element] button.p-scrolltop-sticky')).toBeHidden();
     });
 
-    test('окно: кнопка появляется после порога, fixed, клик возвращает наверх', async ({ page }) => {
+    test('window: the button appears after the threshold, fixed, a click returns to the top', async ({ page }) => {
         await page.evaluate(() => window.scrollTo(0, 800));
         const button = page.locator('button.p-scrolltop:not(.p-scrolltop-sticky)');
         await expect(button).toBeVisible();
@@ -29,7 +29,7 @@ test.describe('ScrollTop', () => {
         await expect(button).toHaveCount(0);
     });
 
-    test('окно: клавиши Enter и Space прокручивают наверх', async ({ page }) => {
+    test('window: the Enter and Space keys scroll to the top', async ({ page }) => {
         const button = page.locator('button.p-scrolltop:not(.p-scrolltop-sticky)');
         for (const key of ['Enter', 'Space']) {
             await page.evaluate(() => window.scrollTo(0, 800));
@@ -41,7 +41,7 @@ test.describe('ScrollTop', () => {
         }
     });
 
-    test('окно: возврат ниже порога скрывает кнопку', async ({ page }) => {
+    test('window: returning below the threshold hides the button', async ({ page }) => {
         await page.evaluate(() => window.scrollTo(0, 800));
         const button = page.locator('button.p-scrolltop:not(.p-scrolltop-sticky)');
         await expect(button).toBeVisible();
@@ -49,7 +49,7 @@ test.describe('ScrollTop', () => {
         await expect(button).toHaveCount(0);
     });
 
-    test('element: кнопка внутри прокручиваемого блока, sticky, клик прокручивает блок', async ({ page }) => {
+    test('element: the button inside a scrollable block, sticky, a click scrolls the block', async ({ page }) => {
         const scroller = page.getByTestId('scroller');
         const button = scroller.locator('button.p-scrolltop-sticky');
         await scroller.scrollIntoViewIfNeeded();

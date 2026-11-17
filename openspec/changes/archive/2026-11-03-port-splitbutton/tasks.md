@@ -1,30 +1,30 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `splitbutton` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился и что есть классы `p-splitbutton*`
+- [x] 1.1 Add `splitbutton` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of other components did not change and that the `p-splitbutton*` classes exist
 
-## 2. Крейт
+## 2. Crate
 
-- [x] 2.1 `crates/prime-splitbutton`: `state.rs` (`root_classes`, `is_toggle_key`) с табличными тестами
-- [x] 2.2 Компонент `SplitButton`, `SplitButtonPt`: корень, основная кнопка (`Button`), кнопка раскрытия (своя разметка), `content`, модификаторы, SSR-тесты, rustdoc
-- [x] 2.3 Меню: `Menu popup` с `MenuRef`, привязка к корню, переключение по клику и ↓/↑, закрытие по клику на основную кнопку, `aria-expanded`, события показа и скрытия; браузерные `tests/web.rs`
+- [x] 2.1 `crates/prime-splitbutton`: `state.rs` (`root_classes`, `is_toggle_key`) with table-driven tests
+- [x] 2.2 `SplitButton` component, `SplitButtonPt`: root, main button (`Button`), dropdown button (own markup), `content`, modifiers, SSR tests, rustdoc
+- [x] 2.3 Menu: `Menu popup` with `MenuRef`, attachment to the root, toggling by click and ↓/↑, closing on a click of the main button, `aria-expanded`, show and hide events; browser `tests/web.rs`
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/splitbutton` (`basic`, `disabled`, `icons`, `outlined`, `raised`, `raisedtext`, `rounded`, `severity`, `sizes`, `template`, `text`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `splitbutton.spec.ts` (разметка, клики, клавиши, положение панели, команда пункта); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test splitbutton`
+- [x] 3.1 Page `/splitbutton` (`basic`, `disabled`, `icons`, `outlined`, `raised`, `raisedtext`, `rounded`, `severity`, `sizes`, `template`, `text`), menu, route, `stylesheet(&[..])`, crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `splitbutton.spec.ts` (markup, clicks, keys, panel position, item command); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test splitbutton`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-splitbutton` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`; замер wasm — в фоне, с отдельным файлом бюджетов)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-splitbutton` and budgets (first `cargo bench -p render-bench --bench alloc`; wasm measurement — in the background, with a separate budgets file)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/splitbutton.md` (отличия от PrimeNG, что не проверялось); `prime-splitbutton` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с исключениями CI и `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-splitbutton`; CI `dev` зелёный
+- [x] 5.1 `docs/splitbutton.md` (differences from PrimeNG, what was not verified); `prime-splitbutton` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with CI exclusions and `--all-features` (and for the wasm target), tests, deny, machete, `openspec validate port-splitbutton`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: Dock.
+- Archive after CI.
+- Next: Dock.

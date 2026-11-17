@@ -1,6 +1,6 @@
-//! Страница ToggleButton: демонстрации `basic`, `customized`, `disabled`, `fluid`, `invalid`, `sizes` из showcase PrimeNG
-//! (`apps/showcase/doc/togglebutton`). Демонстрации с Angular Forms не переносятся; вместо `pi-lock` и `pi-lock-open` иконки
-//! `CheckIcon` и `TimesIcon` (в `prime-icons` замков нет).
+//! ToggleButton page: demos of `basic`, `customized`, `disabled`, `fluid`, `invalid`, `sizes` from the PrimeNG showcase
+//! (`apps/showcase/doc/togglebutton`). Demos with Angular Forms are not ported; instead of `pi-lock` and `pi-lock-open` the icons
+//! `CheckIcon` and `TimesIcon` are used (`prime-icons` has no locks).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -16,7 +16,7 @@ fn off_icon() -> ViewFn {
     ViewFn::from(|| view! { <TimesIcon /> })
 }
 
-/// Страница `/togglebutton`.
+/// The `/togglebutton` page.
 #[component]
 pub fn ToggleButtonPage() -> impl IntoView {
     let basic = RwSignal::new(false);

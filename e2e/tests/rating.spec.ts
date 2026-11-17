@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('Rating', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/rating');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-rating')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(5);
         await expect(page.locator('[data-demo=basic] .p-rating-option')).toHaveCount(5);
         await expect(page.locator('[data-demo=numberofstars] .p-rating-option')).toHaveCount(10);
@@ -16,7 +16,7 @@ test.describe('Rating', () => {
         expect(size).not.toBe('14px');
     });
 
-    test('клик выбирает звезду, повторный клик сбрасывает', async ({ page }) => {
+    test('a click selects a star, a second click resets', async ({ page }) => {
         const options = page.locator('[data-demo=basic] .p-rating-option');
         await options.nth(2).click();
         await expect(page.locator('[data-demo=basic] .p-rating-option-active')).toHaveCount(3);
@@ -27,7 +27,7 @@ test.describe('Rating', () => {
         await expect(page.getByTestId('echo')).toHaveText('');
     });
 
-    test('стрелки клавиатуры переключают звёзды', async ({ page }) => {
+    test('keyboard arrows switch the stars', async ({ page }) => {
         const options = page.locator('[data-demo=basic] .p-rating-option');
         await options.nth(1).click();
         await expect(page.getByTestId('echo')).toHaveText('2');
@@ -41,7 +41,7 @@ test.describe('Rating', () => {
         await expect(page.locator('[data-demo=basic] .p-rating-option-active')).toHaveCount(1);
     });
 
-    test('disabled, readonly и шаблон иконок', async ({ page }) => {
+    test('disabled, readonly and the icon template', async ({ page }) => {
         const disabled = page.locator('[data-demo=disabled] .p-rating');
         await expect(disabled).toHaveClass(/p-disabled/);
         await expect(disabled.locator('input').first()).toBeDisabled();

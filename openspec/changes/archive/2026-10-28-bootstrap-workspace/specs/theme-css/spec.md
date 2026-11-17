@@ -1,37 +1,37 @@
 ## ADDED Requirements
 
-### Requirement: Статический CSS из токенов Aura
-Система SHALL генерировать статический CSS темы командой разработчика по токенам пресета Aura и стилям компонентов, которые использует PrimeNG, не генерируя CSS в рантайме приложения. Сгенерированный CSS SHALL храниться в репозитории, чтобы обычная сборка не требовала Node и доступа к сети.
+### Requirement: Static CSS from the Aura tokens
+The system SHALL generate the theme's static CSS with a developer command from the Aura preset tokens and the component styles used by PrimeNG, without generating CSS at application runtime. The generated CSS SHALL be stored in the repository so that a regular build does not require Node or network access.
 
-#### Scenario: Генерация
-- **WHEN** запускается команда генерации темы
-- **THEN** создаётся CSS с переменными и правилами для классов `p-*` портированных компонентов
+#### Scenario: Generation
+- **WHEN** the theme generation command is run
+- **THEN** CSS is created with variables and rules for the `p-*` classes of the ported components
 
-#### Scenario: Обычная сборка
-- **WHEN** приложение собирается без Node и без доступа к сети
-- **THEN** сборка использует закоммиченный CSS и проходит успешно
+#### Scenario: Regular build
+- **WHEN** the application is built without Node and without network access
+- **THEN** the build uses the committed CSS and succeeds
 
-#### Scenario: Воспроизводимость
-- **WHEN** генерация запускается дважды на одних входных данных
-- **THEN** результат побайтно совпадает
+#### Scenario: Reproducibility
+- **WHEN** generation is run twice on the same inputs
+- **THEN** the result matches byte for byte
 
-### Requirement: Совместимость с классами PrimeNG
-CSS темы SHALL использовать те же имена классов и CSS-переменных (`--p-*`), что и PrimeNG, чтобы разметка портированных компонентов работала с ним без изменений.
+### Requirement: Compatibility with PrimeNG classes
+The theme CSS SHALL use the same class and CSS variable (`--p-*`) names as PrimeNG so that the markup of the ported components works with it unchanged.
 
-#### Scenario: Переменная токена
-- **WHEN** в PrimeNG существует токен `primary.color`
-- **THEN** в сгенерированном CSS есть переменная с тем же именем и значением
+#### Scenario: Token variable
+- **WHEN** PrimeNG has the token `primary.color`
+- **THEN** the generated CSS has a variable with the same name and value
 
-### Requirement: Светлая и тёмная схема
-Тема SHALL поддерживать светлую и тёмную цветовые схемы, переключаемые селектором, который задаётся в конфигурации (как `darkModeSelector` в PrimeNG).
+### Requirement: Light and dark scheme
+The theme SHALL support light and dark color schemes, switched by a selector set in the configuration (like `darkModeSelector` in PrimeNG).
 
-#### Scenario: Переключение
-- **WHEN** на корневой элемент добавляется селектор тёмного режима
-- **THEN** применяются значения токенов тёмной схемы
+#### Scenario: Switching
+- **WHEN** the dark mode selector is added to the root element
+- **THEN** the dark scheme token values apply
 
-### Requirement: Подключение только нужного CSS
-Приложение SHALL иметь возможность подключить базовый CSS темы отдельно от CSS конкретных компонентов, чтобы не загружать стили неиспользуемых компонентов.
+### Requirement: Including only the needed CSS
+An application SHALL be able to include the theme's base CSS separately from the CSS of individual components so as not to load styles of unused components.
 
-#### Scenario: Приложение использует только Button
-- **WHEN** приложение подключает базовый CSS и CSS Button
-- **THEN** стилей других компонентов в загружаемых файлах нет
+#### Scenario: Application uses only Button
+- **WHEN** the application includes the base CSS and the Button CSS
+- **THEN** there are no styles of other components in the loaded files

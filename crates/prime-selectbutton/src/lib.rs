@@ -1,10 +1,10 @@
-//! SelectButton — порт `p-selectbutton` из PrimeNG 21.1.10.
+//! SelectButton — port of `p-selectbutton` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-selectbutton[role=group]` (вместо хоста `<p-selectbutton>`), внутри по
-//! [`ToggleButton`](prime_togglebutton::ToggleButton) на вариант с `on_label = off_label = label`.
+//! Markup and classes as in PrimeNG: root `div.p-selectbutton[role=group]` (instead of the `<p-selectbutton>` host), inside a
+//! [`ToggleButton`](prime_togglebutton::ToggleButton) per option with `on_label = off_label = label`.
 //!
-//! Одиночный выбор — двусторонний сигнал `value: RwSignal<Option<String>>`, множественный (`multiple`) —
-//! `values: RwSignal<Vec<String>>`. Без сигнала компонент ведёт внутреннее состояние (`default_value`, `default_values`).
+//! Single selection is a two-way signal `value: RwSignal<Option<String>>`, multiple selection (`multiple`) is
+//! `values: RwSignal<Vec<String>>`. Without a signal the component keeps internal state (`default_value`, `default_values`).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -28,92 +28,92 @@ pub use state::{
     SelectButtonOption, SelectButtonState, SelectButtonValue, data_p, select_multiple, select_single, toggle_allow_empty, write_classes,
 };
 
-/// Событие изменения выбора: новое значение и исходное событие браузера.
+/// Selection change event: the new value and the original browser event.
 #[derive(Clone, Debug)]
 pub struct SelectButtonChange {
-    /// Новое значение.
+    /// New value.
     pub value: SelectButtonValue,
-    /// Исходное событие (`click` или `keydown`).
+    /// Original event (`click` or `keydown`).
     pub original_event: web_sys::Event,
 }
 
-/// Событие нажатия на вариант (после `on_change`).
+/// Option press event (after `on_change`).
 #[derive(Clone, Debug)]
 pub struct SelectButtonOptionClick {
-    /// Нажатый вариант.
+    /// The pressed option.
     pub option: SelectButtonOption,
-    /// Его индекс в списке.
+    /// Its index in the list.
     pub index: usize,
-    /// Исходное событие (`click` или `keydown`).
+    /// Original event (`click` or `keydown`).
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей SelectButton.
+/// Pass-through of SelectButton parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct SelectButtonPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Каждая вложенная кнопка `ToggleButton`.
+    /// Each nested `ToggleButton` button.
     pub toggle_button: ToggleButtonPt,
 }
 
-/// Выбор одного или нескольких вариантов кнопками.
+/// Selection of one or several options with buttons.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` и `values` — двусторонние сигналы.
+/// Each property accepts a value or a signal; `value` and `values` are two-way signals.
 #[component]
 pub fn SelectButton(
-    /// Варианты.
+    /// Options.
     #[prop(optional, into)]
     options: Prop<Vec<SelectButtonOption>>,
-    /// Двусторонний сигнал значения одиночного выбора.
+    /// Two-way signal of the single-selection value.
     #[prop(optional)]
     value: Option<RwSignal<Option<String>>>,
-    /// Двусторонний сигнал значений множественного выбора.
+    /// Two-way signal of the multiple-selection values.
     #[prop(optional)]
     values: Option<RwSignal<Vec<String>>>,
-    /// Начальное значение, если `value` не передан.
+    /// Initial value if `value` is not passed.
     #[prop(optional, into)]
     default_value: OptProp<String>,
-    /// Начальные значения, если `values` не передан.
+    /// Initial values if `values` is not passed.
     #[prop(optional)]
     default_values: Vec<String>,
-    /// Множественный выбор.
+    /// Multiple selection.
     #[prop(optional, into)]
     multiple: Prop<bool>,
-    /// Разрешено ли снимать выбор; ограничение действует только при явном `false`.
+    /// Whether deselecting is allowed; the restriction applies only with an explicit `false`.
     #[prop(optional, into)]
     allow_empty: OptProp<bool>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// На всю ширину.
+    /// Full width.
     #[prop(optional, into)]
     fluid: Prop<bool>,
-    /// Размер кнопок.
+    /// Button size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Атрибут `aria-labelledby`.
+    /// `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс каждой кнопки (не корня, как в PrimeNG).
+    /// Extra class of each button (not of the root, as in PrimeNG).
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Содержимое кнопки; получает вариант и его индекс.
+    /// Button content; receives the option and its index.
     #[prop(optional, into)]
     item_template: Option<Callback<(SelectButtonOption, usize), AnyView>>,
-    /// Вызывается после изменения выбора пользователем.
+    /// Called after the selection is changed by the user.
     #[prop(optional, into)]
     on_change: Option<Callback<SelectButtonChange>>,
-    /// Вызывается после `on_change` с нажатым вариантом.
+    /// Called after `on_change` with the pressed option.
     #[prop(optional, into)]
     on_option_click: Option<Callback<SelectButtonOptionClick>>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<SelectButtonPt>,
 ) -> impl IntoView {
@@ -135,7 +135,7 @@ pub fn SelectButton(
         on_change,
         on_option_click,
     });
-    // Ограничение `allow_empty` для вложенных кнопок общее для всех вариантов (`getAllowEmpty`).
+    // The `allow_empty` restriction for nested buttons is shared by all options (`getAllowEmpty`).
     let toggle_empty = {
         let props = props.clone();
         Signal::derive(move || toggle_allow_empty(props.multiple.get(), props.allow_empty.get(), props.values.with(Vec::len)))
@@ -187,7 +187,7 @@ pub fn SelectButton(
     }
 }
 
-/// Кнопка одного варианта: `ToggleButton`, чей сигнал всегда равен «вариант выбран».
+/// Single-option button: a `ToggleButton` whose signal always equals "option is selected".
 fn option_button(
     props: &Arc<Props>,
     toggle_pt: &ToggleButtonPt,
@@ -196,7 +196,7 @@ fn option_button(
     option: SelectButtonOption,
 ) -> impl IntoView + use<> {
     let selected = RwSignal::new(props.selected_untracked(&option.value));
-    // Синхронизация нужна только в браузере: при SSR разметка строится один раз, а `Effect` без executor паникует.
+    // Synchronization is needed only in the browser: with SSR the markup is built once, and an `Effect` without an executor panics.
     #[cfg(target_arch = "wasm32")]
     {
         let (props, value) = (props.clone(), option.value.clone());
@@ -214,7 +214,7 @@ fn option_button(
     };
     let (size, fluid, style_class) = (props.size.clone(), props.fluid.clone(), props.style_class.clone());
     let (label, toggle_pt) = (option.label.clone(), toggle_pt.clone());
-    // `content_template` у `ToggleButton` принимает только готовый `Callback`, поэтому ветви две.
+    // `content_template` of `ToggleButton` accepts only a ready `Callback`, hence two branches.
     match props.item_template {
         Some(template) => {
             let content = Callback::new(move |_: bool| template.run((option.clone(), index)));
@@ -255,7 +255,7 @@ fn state_of(props: &Props) -> SelectButtonState {
     SelectButtonState { invalid: props.invalid.get(), fluid: props.fluid.get() }
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     options: Prop<Vec<SelectButtonOption>>,
     value: RwSignal<Option<String>>,
@@ -275,7 +275,7 @@ struct Props {
 }
 
 impl Props {
-    /// Выбран ли вариант (с подпиской на значение активного режима); нужен только синхронизации в браузере.
+    /// Whether the option is selected (subscribing to the value of the active mode); needed only for synchronization in the browser.
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     fn is_selected(&self, value: &str) -> bool {
         if self.multiple.get() {
@@ -285,7 +285,7 @@ impl Props {
         }
     }
 
-    /// Как `onOptionSelect`: меняет значение, зовёт события и выравнивает сигнал кнопки с итоговым состоянием.
+    /// Like `onOptionSelect`: changes the value, fires the events and aligns the button signal with the final state.
     fn choose(&self, option: &SelectButtonOption, index: usize, selected: RwSignal<bool>, original_event: web_sys::Event) {
         if !(self.disabled.get_untracked() || option.disabled) {
             let allow_empty = self.allow_empty.get_untracked();

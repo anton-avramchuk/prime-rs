@@ -1,5 +1,5 @@
-//! Страница TreeSelect: демонстрации `basic`, `multiple`, `checkbox`, `filter`, `clearicon`, `disabled`, `invalid` и `template`
-//! из showcase PrimeNG (`apps/showcase/doc/treeselect`; формы Angular, виртуальная прокрутка и ленивая загрузка не переносятся).
+//! TreeSelect page: the `basic`, `multiple`, `checkbox`, `filter`, `clearicon`, `disabled`, `invalid` and `template` demos
+//! from the PrimeNG showcase (`apps/showcase/doc/treeselect`; Angular forms, virtual scrolling and lazy loading are not ported).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -62,7 +62,7 @@ fn Clear() -> impl IntoView {
     view! { <TreeSelect options=files() value=value show_clear=true placeholder="Select Item" style=WIDTH /> }
 }
 
-/// Страница `/treeselect`.
+/// Page `/treeselect`.
 #[component]
 pub fn TreeSelectPage() -> impl IntoView {
     view! {

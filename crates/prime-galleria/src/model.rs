@@ -1,22 +1,22 @@
-//! Чистая модель Galleria: окно миниатюр, соседние индексы, адаптивное число видимых, классы
-//! (по `galleria.ts` и `galleriastyle.ts` PrimeNG, без DOM).
+//! Pure Galleria model: thumbnail window, neighboring indices, responsive visible count, classes
+//! (per `galleria.ts` and `galleriastyle.ts` of PrimeNG, no DOM).
 
-/// Сторона, с которой выводятся миниатюры или индикаторы.
+/// The side on which thumbnails or indicators are rendered.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum GalleriaPosition {
-    /// Снизу (по умолчанию).
+    /// Bottom (default).
     #[default]
     Bottom,
-    /// Сверху.
+    /// Top.
     Top,
-    /// Слева.
+    /// Left.
     Left,
-    /// Справа.
+    /// Right.
     Right,
 }
 
 impl GalleriaPosition {
-    /// Суффикс класса: `bottom`, `top`, `left`, `right`.
+    /// Class suffix: `bottom`, `top`, `left`, `right`.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Bottom => "bottom",
@@ -26,27 +26,27 @@ impl GalleriaPosition {
         }
     }
 
-    /// Миниатюры расположены вертикально.
+    /// Thumbnails are laid out vertically.
     pub fn is_vertical(self) -> bool {
         matches!(self, Self::Left | Self::Right)
     }
 }
 
-/// Адаптивный вариант: до ширины окна `breakpoint` (px) показывать `num_visible` миниатюр.
+/// Responsive option: up to window width `breakpoint` (px) show `num_visible` thumbnails.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct GalleriaResponsive {
-    /// Максимальная ширина окна, px.
+    /// Maximum window width, px.
     pub breakpoint: u32,
-    /// Число видимых миниатюр.
+    /// Number of visible thumbnails.
     pub num_visible: usize,
 }
 
-/// Число видимых миниатюр, не превышающее число изображений (`numVisibleLimit`).
+/// Number of visible thumbnails, not exceeding the number of images (`numVisibleLimit`).
 pub fn effective_num_visible(num_visible: usize, len: usize) -> usize {
     if len > 0 && len < num_visible { len } else { num_visible }
 }
 
-/// Выбор числа видимых миниатюр по ширине окна: наименьший `breakpoint`, не меньший ширины (`calculatePosition`).
+/// Choosing the number of visible thumbnails by window width: the smallest `breakpoint` not less than the width (`calculatePosition`).
 pub fn responsive_num_visible(options: &[GalleriaResponsive], window_width: u32, base: usize) -> usize {
     let mut sorted = options.to_vec();
     sorted.sort_by_key(|o| std::cmp::Reverse(o.breakpoint));
@@ -59,18 +59,18 @@ pub fn responsive_num_visible(options: &[GalleriaResponsive], window_width: u32,
     result
 }
 
-/// Индекс миниатюры, к которой стремится активная (`getMedianItemIndex`).
+/// Index of the thumbnail the active one tends toward (`getMedianItemIndex`).
 pub fn median_index(num_visible: usize) -> usize {
     let index = num_visible / 2;
     if num_visible % 2 == 1 { index } else { index.saturating_sub(1) }
 }
 
-/// Число «страниц» ленты (`getTotalPageNumber`).
+/// Number of "pages" of the strip (`getTotalPageNumber`).
 pub fn total_pages(len: usize, num_visible: usize) -> usize {
     if len > num_visible { len - num_visible + 1 } else { 0 }
 }
 
-/// Смещение ленты в элементах (≤ 0) для активного индекса — результат `onAfterContentChecked`.
+/// Strip offset in items (<= 0) for the active index: the result of `onAfterContentChecked`.
 pub fn shifted_items(len: usize, num_visible: usize, active: usize) -> i32 {
     let (len, nv, active) = (len as i32, num_visible as i32, active as i32);
     let median = median_index(num_visible) as i32;
@@ -85,59 +85,59 @@ pub fn shifted_items(len: usize, num_visible: usize, active: usize) -> i32 {
     }
 }
 
-/// Значение `transform` ленты миниатюр.
+/// `transform` value of the thumbnail strip.
 pub fn thumbnails_transform(shifted: i32, num_visible: usize, vertical: bool) -> String {
     let percent = f64::from(shifted) * (100.0 / num_visible.max(1) as f64);
     if vertical { format!("translate3d(0, {percent}%, 0)") } else { format!("translate3d({percent}%, 0, 0)") }
 }
 
-/// Индекс первой видимой миниатюры (`firstItemAciveIndex`).
+/// Index of the first visible thumbnail (`firstItemAciveIndex`).
 pub fn first_active(shifted: i32) -> i32 {
     -shifted
 }
 
-/// Индекс последней видимой миниатюры (`lastItemActiveIndex`).
+/// Index of the last visible thumbnail (`lastItemActiveIndex`).
 pub fn last_active(shifted: i32, num_visible: usize) -> i32 {
     first_active(shifted) + num_visible as i32 - 1
 }
 
-/// Миниатюра попадает в видимое окно (`isItemActive`).
+/// The thumbnail is within the visible window (`isItemActive`).
 pub fn is_item_active(shifted: i32, num_visible: usize, index: usize) -> bool {
     let index = index as i32;
     first_active(shifted) <= index && last_active(shifted, num_visible) >= index
 }
 
-/// Следующий индекс кадра: после последнего — `0` при `circular`.
+/// Next frame index: after the last one, `0` when `circular`.
 pub fn next_index(active: usize, len: usize, circular: bool) -> usize {
     if circular && len > 0 && len - 1 == active { 0 } else { (active + 1).min(len.saturating_sub(1)) }
 }
 
-/// Предыдущий индекс кадра: перед первым — последний при `circular`.
+/// Previous frame index: before the first one, the last one when `circular`.
 pub fn prev_index(active: usize, len: usize, circular: bool) -> usize {
     if circular && active == 0 { len.saturating_sub(1) } else { active.saturating_sub(1) }
 }
 
-/// Кнопка «назад» кадра недоступна (`GalleriaItem.isNavBackwardDisabled`).
+/// The frame "backward" button is disabled (`GalleriaItem.isNavBackwardDisabled`).
 pub fn item_backward_disabled(active: usize, circular: bool) -> bool {
     !circular && active == 0
 }
 
-/// Кнопка «вперёд» кадра недоступна.
+/// The frame "forward" button is disabled.
 pub fn item_forward_disabled(active: usize, len: usize, circular: bool) -> bool {
     !circular && active + 1 >= len
 }
 
-/// Кнопка «назад» миниатюр недоступна.
+/// The thumbnails "backward" button is disabled.
 pub fn thumb_backward_disabled(active: usize, len: usize, num_visible: usize, circular: bool) -> bool {
     (!circular && active == 0) || len <= num_visible
 }
 
-/// Кнопка «вперёд» миниатюр недоступна.
+/// The thumbnails "forward" button is disabled.
 pub fn thumb_forward_disabled(active: usize, len: usize, num_visible: usize, circular: bool) -> bool {
     (!circular && active + 1 >= len) || len <= num_visible
 }
 
-/// Классы корня.
+/// Root classes.
 pub fn root_classes(
     full_screen: bool,
     inset_indicators: bool,
@@ -166,7 +166,7 @@ pub fn root_classes(
     cn
 }
 
-/// Классы миниатюры в ленте.
+/// Classes of a thumbnail in the strip.
 pub fn thumbnail_item_classes(index: usize, active: usize, shifted: i32, num_visible: usize) -> String {
     let mut cn = String::from("p-galleria-thumbnail-item");
     if active == index {
@@ -197,7 +197,7 @@ mod tests {
 
     #[test]
     fn shifted_table() {
-        // (len, n_visible, active, смещение)
+        // (len, n_visible, active, offset)
         let cases = [
             (6, 3, 0, 0),
             (6, 3, 1, 0),
@@ -256,7 +256,7 @@ mod tests {
         assert!(item_backward_disabled(0, false) && !item_backward_disabled(0, true));
         assert!(item_forward_disabled(2, 3, false) && !item_forward_disabled(2, 3, true));
         assert!(thumb_backward_disabled(0, 6, 3, false) && !thumb_backward_disabled(1, 6, 3, false));
-        assert!(thumb_backward_disabled(3, 3, 3, true), "миниатюр не больше видимых");
+        assert!(thumb_backward_disabled(3, 3, 3, true), "no more thumbnails than visible");
         assert!(thumb_forward_disabled(5, 6, 3, false) && !thumb_forward_disabled(5, 6, 3, true));
     }
 

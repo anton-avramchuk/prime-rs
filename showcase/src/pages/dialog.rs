@@ -1,10 +1,10 @@
-//! Страница Dialog: демонстрации `basic`, `position`, `modal`, `withoutmodal`, `maximizable`, `responsive`, `longcontent`,
-//! `template`, `headless` по `apps/showcase/doc/dialog` PrimeNG.
+//! Dialog page: demos `basic`, `position`, `modal`, `withoutmodal`, `maximizable`, `responsive`, `longcontent`,
+//! `template`, `headless` after PrimeNG's `apps/showcase/doc/dialog`.
 //!
-//! Демонстрация `overlaysinside` не переносится (у `Select` нет `appendTo`, его панель обрежется границами окна). `headless`
-//! упрощена: форма входа без логотипа и градиента, а `backdrop-blur` заменён встроенным стилем маски. Значков `external-link`,
-//! `user` и `arrow-*-right/left` (диагональных) в `prime-icons` нет, поэтому у кнопок только подписи. Размеры окон задаются
-//! встроенными стилями (в PrimeNG — Tailwind).
+//! The `overlaysinside` demo is not ported (`Select` has no `appendTo`, its panel would be clipped by the window bounds). `headless`
+//! is simplified: a login form without a logo and gradient, and `backdrop-blur` replaced by the mask's inline style. The `external-link`,
+//! `user` and `arrow-*-right/left` (diagonal) icons are not in `prime-icons`, so the buttons have only labels. Window sizes are set
+//! by inline styles (Tailwind in PrimeNG).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -30,12 +30,12 @@ fn field(label: &'static str, id: &'static str) -> impl IntoView {
     }
 }
 
-/// Ширина окна по ширине экрана, как в демонстрациях PrimeNG.
+/// Window width by screen width, as in the PrimeNG demos.
 fn breakpoints() -> Vec<(String, String)> {
     vec![("1199px".to_owned(), "75vw".to_owned()), ("575px".to_owned(), "90vw".to_owned())]
 }
 
-/// Форма «Edit Profile» из нескольких демонстраций PrimeNG.
+/// The "Edit Profile" form from several PrimeNG demos.
 fn profile_form(visible: RwSignal<bool>) -> impl IntoView {
     view! {
         <span style="display: block; margin-bottom: 2rem; color: var(--p-text-muted-color)">"Update your information."</span>
@@ -48,7 +48,7 @@ fn profile_form(visible: RwSignal<bool>) -> impl IntoView {
     }
 }
 
-/// Страница `/dialog`.
+/// The `/dialog` page.
 #[component]
 pub fn DialogPage() -> impl IntoView {
     let basic = RwSignal::new(false);

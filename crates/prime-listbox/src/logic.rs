@@ -1,67 +1,67 @@
-//! Варианты, группы и чистая логика Listbox: плоский список, фильтр, индексы фокуса, выбор одного и нескольких значений,
-//! диапазоны, поиск набором (`visibleOptions`, `onOptionSelect*`, `searchOptions` и родственные функции PrimeNG).
+//! Options, groups and pure Listbox logic: flat list, filter, focus indices, single and multiple selection,
+//! ranges, type-ahead search (`visibleOptions`, `onOptionSelect*`, `searchOptions` and related PrimeNG functions).
 
-/// Вариант выбора.
+/// Selectable option.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ListboxOption {
-    /// Метка варианта.
+    /// Option label.
     pub label: String,
-    /// Значение варианта.
+    /// Option value.
     pub value: String,
-    /// Вариант недоступен.
+    /// Option is disabled.
     pub disabled: bool,
 }
 
 impl ListboxOption {
-    /// Доступный вариант с меткой и значением.
+    /// Enabled option with a label and value.
     pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
         Self { label: label.into(), value: value.into(), disabled: false }
     }
 
-    /// Недоступный вариант.
+    /// Disabled option.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 }
 
-/// Группа вариантов.
+/// Option group.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ListboxGroup {
-    /// Заголовок группы.
+    /// Group header.
     pub label: String,
-    /// Варианты группы.
+    /// Group options.
     pub items: Vec<ListboxOption>,
 }
 
 impl ListboxGroup {
-    /// Группа с заголовком и вариантами.
+    /// Group with a header and options.
     pub fn new(label: impl Into<String>, items: Vec<ListboxOption>) -> Self {
         Self { label: label.into(), items }
     }
 }
 
-/// Элемент плоского списка: заголовок группы или вариант.
+/// Flat list item: a group header or an option.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Entry {
-    /// Заголовок группы (`index` — номер группы в списке групп).
+    /// Group header (`index` is the group's number in the group list).
     Group {
-        /// Номер группы.
+        /// Group number.
         index: usize,
-        /// Заголовок.
+        /// Header.
         label: String,
     },
-    /// Вариант.
+    /// Option.
     Option(ListboxOption),
 }
 
 impl Entry {
-    /// Допустим ли элемент для фокуса и выбора: вариант, не отключённый.
+    /// Whether the item is eligible for focus and selection: an option that is not disabled.
     pub fn is_valid(&self) -> bool {
         matches!(self, Self::Option(o) if !o.disabled)
     }
 
-    /// Вариант, если это он.
+    /// The option, if this is one.
     pub fn option(&self) -> Option<&ListboxOption> {
         match self {
             Self::Option(o) => Some(o),
@@ -70,14 +70,14 @@ impl Entry {
     }
 }
 
-/// Подходит ли метка под строку поиска: «содержит» без учёта регистра, пробелы по краям строки отбрасываются.
+/// Whether the label matches the search string: case-insensitive "contains", leading and trailing whitespace is dropped.
 pub fn matches_filter(label: &str, filter: &str) -> bool {
     let needle = filter.trim().to_lowercase();
     needle.is_empty() || label.to_lowercase().contains(&needle)
 }
 
-/// Плоский список видимых элементов: варианты или группы с вариантами, отфильтрованные по строке поиска.
-/// Группы без подходящих вариантов опускаются.
+/// Flat list of visible items: options or groups with options, filtered by the search string.
+/// Groups without matching options are omitted.
 pub fn visible_entries(options: &[ListboxOption], groups: &[ListboxGroup], filter: &str) -> Vec<Entry> {
     if groups.is_empty() {
         return options.iter().filter(|o| matches_filter(&o.label, filter)).cloned().map(Entry::Option).collect();
@@ -93,7 +93,7 @@ pub fn visible_entries(options: &[ListboxOption], groups: &[ListboxGroup], filte
     out
 }
 
-/// Вариант с заданным значением среди всех вариантов (без фильтра).
+/// Option with the given value among all options (without the filter).
 pub fn find_option(options: &[ListboxOption], groups: &[ListboxGroup], value: &str) -> Option<ListboxOption> {
     if groups.is_empty() {
         options.iter().find(|o| o.value == value).cloned()
@@ -102,42 +102,42 @@ pub fn find_option(options: &[ListboxOption], groups: &[ListboxGroup], value: &s
     }
 }
 
-/// Индекс первого допустимого элемента.
+/// Index of the first eligible item.
 pub fn first_valid(entries: &[Entry]) -> Option<usize> {
     entries.iter().position(Entry::is_valid)
 }
 
-/// Индекс последнего допустимого элемента.
+/// Index of the last eligible item.
 pub fn last_valid(entries: &[Entry]) -> Option<usize> {
     entries.iter().rposition(Entry::is_valid)
 }
 
-/// Индекс следующего допустимого элемента после `index`; если его нет — прежний (`findNextOptionIndex`).
+/// Index of the next eligible item after `index`; if there is none, the previous one (`findNextOptionIndex`).
 pub fn next_valid(entries: &[Entry], index: usize) -> usize {
     entries.iter().enumerate().skip(index + 1).find(|(_, e)| e.is_valid()).map_or(index, |(i, _)| i)
 }
 
-/// Индекс предыдущего допустимого элемента перед `index`; если его нет — прежний (`findPrevOptionIndex`).
+/// Index of the previous eligible item before `index`; if there is none, the previous one (`findPrevOptionIndex`).
 pub fn prev_valid(entries: &[Entry], index: usize) -> usize {
     entries.iter().enumerate().take(index).rev().find(|(_, e)| e.is_valid()).map_or(index, |(i, _)| i)
 }
 
-/// Выбран ли вариант с таким значением.
+/// Whether the option with this value is selected.
 fn is_selected(selected: &[String], value: &str) -> bool {
     selected.iter().any(|s| s == value)
 }
 
-/// Индекс первого допустимого выбранного варианта (`findSelectedOptionIndex`).
+/// Index of the first eligible selected option (`findSelectedOptionIndex`).
 pub fn selected_index(entries: &[Entry], selected: &[String]) -> Option<usize> {
     entries.iter().position(|e| e.is_valid() && e.option().is_some_and(|o| is_selected(selected, &o.value)))
 }
 
-/// Индекс для первой фокусировки: выбранный или первый допустимый (`findFirstFocusedOptionIndex`).
+/// Index for the first focus: the selected or the first eligible one (`findFirstFocusedOptionIndex`).
 pub fn first_focused(entries: &[Entry], selected: &[String]) -> Option<usize> {
     selected_index(entries, selected).or_else(|| first_valid(entries))
 }
 
-/// Индекс для фокусировки с конца: последний выбранный допустимый или последний допустимый (`findLastFocusedOptionIndex`).
+/// Index for focusing from the end: the last selected eligible or the last eligible one (`findLastFocusedOptionIndex`).
 pub fn last_focused(entries: &[Entry], selected: &[String]) -> Option<usize> {
     entries
         .iter()
@@ -145,8 +145,8 @@ pub fn last_focused(entries: &[Entry], selected: &[String]) -> Option<usize> {
         .or_else(|| last_valid(entries))
 }
 
-/// Ближайший выбранный вариант к `index` (`findNearestSelectedOptionIndex`): при `first_check_up` сначала вверх, затем вниз,
-/// иначе наоборот; если выбранных нет — сам `index`.
+/// Selected option nearest to `index` (`findNearestSelectedOptionIndex`): with `first_check_up` up first, then down,
+/// otherwise the reverse; if there are no selected ones, `index` itself.
 pub fn nearest_selected(entries: &[Entry], selected: &[String], index: usize, first_check_up: bool) -> usize {
     let chosen = |e: &Entry| e.is_valid() && e.option().is_some_and(|o| is_selected(selected, &o.value));
     let prev = || entries.iter().enumerate().take(index).rev().find(|(_, e)| chosen(e)).map(|(i, _)| i);
@@ -155,8 +155,8 @@ pub fn nearest_selected(entries: &[Entry], selected: &[String], index: usize, fi
     found.unwrap_or(index)
 }
 
-/// Первый допустимый вариант, метка которого начинается с набранной строки без учёта регистра; поиск идёт от `from`
-/// (включительно) до конца, затем с начала (`searchOptions`).
+/// First eligible option whose label starts with the typed string, case-insensitive; the search goes from `from`
+/// (inclusive) to the end, then from the start (`searchOptions`).
 pub fn search_match_from(entries: &[Entry], typed: &str, from: Option<usize>) -> Option<usize> {
     let typed = typed.to_lowercase();
     let hit = |e: &Entry| e.is_valid() && e.option().is_some_and(|o| o.label.to_lowercase().starts_with(&typed));
@@ -169,18 +169,18 @@ pub fn search_match_from(entries: &[Entry], typed: &str, from: Option<usize>) ->
     }
 }
 
-/// Число вариантов без заголовков групп (`aria-setsize`).
+/// Number of options without group headers (`aria-setsize`).
 pub fn set_size(entries: &[Entry]) -> usize {
     entries.iter().filter(|e| e.option().is_some()).count()
 }
 
-/// Номер варианта среди вариантов без заголовков групп (`aria-posinset`, с единицы).
+/// Position of the option among options without group headers (`aria-posinset`, one-based).
 pub fn pos_in_set(entries: &[Entry], index: usize) -> usize {
     entries.iter().take(index + 1).filter(|e| e.option().is_some()).count()
 }
 
-/// Одиночный выбор (`onOptionSelectSingle`). `None` — без изменений, `Some(v)` — новое значение.
-/// `meta` — включён `meta_key_selection` (и нет касания), `meta_key` — нажат `Ctrl`/`⌘`.
+/// Single selection (`onOptionSelectSingle`). `None` means no change, `Some(v)` is the new value.
+/// `meta` means `meta_key_selection` is on (and no touch), `meta_key` means `Ctrl`/`⌘` is pressed.
 pub fn select_single(current: Option<&str>, value: &str, meta: bool, meta_key: bool) -> Option<Option<String>> {
     let selected = current == Some(value);
     if meta {
@@ -192,7 +192,7 @@ pub fn select_single(current: Option<&str>, value: &str, meta: bool, meta_key: b
     }
 }
 
-/// Множественный выбор (`onOptionSelectMultiple`): новый список значений.
+/// Multiple selection (`onOptionSelectMultiple`): the new list of values.
 pub fn select_multiple(current: &[String], value: &str, meta: bool, meta_key: bool) -> Vec<String> {
     let selected = is_selected(current, value);
     let without = || current.iter().filter(|v| v.as_str() != value).cloned().collect::<Vec<_>>();
@@ -213,7 +213,7 @@ pub fn select_multiple(current: &[String], value: &str, meta: bool, meta_key: bo
     }
 }
 
-/// Допустимые варианты в диапазоне индексов `start..=end` (порядок границ любой), `onOptionSelectRange`.
+/// Eligible options in the index range `start..=end` (bounds in any order), `onOptionSelectRange`.
 pub fn select_range(entries: &[Entry], start: usize, end: usize) -> Vec<String> {
     let (lo, hi) = (start.min(end), start.max(end));
     entries
@@ -224,17 +224,17 @@ pub fn select_range(entries: &[Entry], start: usize, end: usize) -> Vec<String> 
         .collect()
 }
 
-/// Все допустимые видимые варианты (`Ctrl+A`, «выбрать все»).
+/// All eligible visible options (`Ctrl+A`, "select all").
 pub fn select_all(entries: &[Entry]) -> Vec<String> {
     entries.iter().filter(|e| e.is_valid()).filter_map(|e| e.option().map(|o| o.value.clone())).collect()
 }
 
-/// Выбраны ли все видимые варианты, кроме отключённых (`allSelected`); пустой список — нет.
+/// Whether all visible options except disabled ones are selected (`allSelected`); an empty list means no.
 pub fn all_selected(entries: &[Entry], selected: &[String]) -> bool {
     !entries.is_empty() && entries.iter().all(|e| !e.is_valid() || e.option().is_some_and(|o| is_selected(selected, &o.value)))
 }
 
-/// Классы корня в порядке `listboxstyle.ts`.
+/// Root classes in the order of `listboxstyle.ts`.
 pub fn write_root_classes(cn: &mut prime_core::ClassNames, striped: bool, disabled: bool, invalid: bool, fluid: bool) {
     cn.add("p-listbox p-component")
         .add_if(striped, "p-listbox-striped")
@@ -243,12 +243,12 @@ pub fn write_root_classes(cn: &mut prime_core::ClassNames, striped: bool, disabl
         .add_if(fluid, "p-listbox-fluid");
 }
 
-/// Классы варианта.
+/// Option classes.
 pub fn write_option_classes(cn: &mut prime_core::ClassNames, highlighted: bool, focused: bool, disabled: bool) {
     cn.add("p-listbox-option").add_if(highlighted, "p-listbox-option-selected").add_if(focused, "p-focus").add_if(disabled, "p-disabled");
 }
 
-/// Значение `data-p` корня: `invalid`, `disabled`.
+/// Value of the root `data-p`: `invalid`, `disabled`.
 pub fn data_p(invalid: bool, disabled: bool) -> std::borrow::Cow<'static, str> {
     let mut d = prime_core::DataP::new();
     d.add_if(invalid, "invalid").add_if(disabled, "disabled");
@@ -315,21 +315,21 @@ mod tests {
         let filtered = visible_entries(&[], &groups(), "k");
         assert_eq!(labels(&filtered), ["[Germany]", "Frankfurt", "[Japan]", "Kyoto"]);
         assert!(visible_entries(&[], &groups(), "zzz").is_empty());
-        assert_eq!(visible_entries(&opts(), &groups(), "").len(), 8, "группы главнее плоских вариантов");
+        assert_eq!(visible_entries(&opts(), &groups(), "").len(), 8, "groups take precedence over flat options");
     }
 
     #[test]
     fn navigation_skips_disabled_options_and_group_headers() {
         let flat = visible_entries(&opts(), &[], "");
         assert_eq!((first_valid(&flat), last_valid(&flat)), (Some(0), Some(4)));
-        assert_eq!(next_valid(&flat, 0), 2, "отключённый вариант пропущен");
+        assert_eq!(next_valid(&flat, 0), 2, "disabled option is skipped");
         assert_eq!(prev_valid(&flat, 2), 0);
-        assert_eq!(next_valid(&flat, 4), 4, "дальше некуда — индекс прежний");
+        assert_eq!(next_valid(&flat, 4), 4, "nowhere further, index unchanged");
         assert_eq!(prev_valid(&flat, 0), 0);
         let grouped = visible_entries(&[], &groups(), "");
-        assert_eq!(first_valid(&grouped), Some(1), "заголовок группы пропущен");
-        assert_eq!(next_valid(&grouped, 2), 4, "через заголовок группы");
-        assert_eq!(next_valid(&grouped, 4), 7, "отключённый вариант пропущен");
+        assert_eq!(first_valid(&grouped), Some(1), "group header is skipped");
+        assert_eq!(next_valid(&grouped, 2), 4, "across a group header");
+        assert_eq!(next_valid(&grouped, 4), 7, "disabled option is skipped");
         assert_eq!(last_valid(&grouped), Some(7));
     }
 
@@ -337,9 +337,9 @@ mod tests {
     fn focus_indexes_follow_selection() {
         let flat = visible_entries(&opts(), &[], "");
         assert_eq!(selected_index(&flat, &sel(&["LDN"])), Some(2));
-        assert_eq!(selected_index(&flat, &sel(&["RM"])), None, "отключённый выбранный не ищется");
+        assert_eq!(selected_index(&flat, &sel(&["RM"])), None, "disabled selected one is not searched");
         assert_eq!(selected_index(&flat, &[]), None);
-        assert_eq!(selected_index(&flat, &sel(&["PRS", "IST"])), Some(3), "первый по порядку списка");
+        assert_eq!(selected_index(&flat, &sel(&["PRS", "IST"])), Some(3), "first in list order");
         assert_eq!(first_focused(&flat, &sel(&["IST"])), Some(3));
         assert_eq!(first_focused(&flat, &sel(&["nope"])), Some(0));
         assert_eq!(last_focused(&flat, &[]), Some(4));
@@ -351,21 +351,21 @@ mod tests {
     fn nearest_selected_checks_requested_direction_first() {
         let flat = visible_entries(&opts(), &[], "");
         let s = sel(&["NY", "PRS"]);
-        assert_eq!(nearest_selected(&flat, &s, 2, true), 0, "сначала вверх");
-        assert_eq!(nearest_selected(&flat, &s, 2, false), 4, "сначала вниз");
-        assert_eq!(nearest_selected(&flat, &s, 4, false), 0, "вниз нет — вверх");
-        assert_eq!(nearest_selected(&flat, &[], 2, true), 2, "нет выбранных — тот же индекс");
+        assert_eq!(nearest_selected(&flat, &s, 2, true), 0, "up first");
+        assert_eq!(nearest_selected(&flat, &s, 2, false), 4, "down first");
+        assert_eq!(nearest_selected(&flat, &s, 4, false), 0, "nothing down, so up");
+        assert_eq!(nearest_selected(&flat, &[], 2, true), 2, "no selected ones, same index");
     }
 
     #[test]
     fn type_ahead_starts_at_focus_and_wraps() {
         let flat = visible_entries(&opts(), &[], "");
         assert_eq!(search_match_from(&flat, "lo", None), Some(2));
-        assert_eq!(search_match_from(&flat, "LON", Some(3)), Some(2), "после конца — с начала");
+        assert_eq!(search_match_from(&flat, "LON", Some(3)), Some(2), "after the end, from the start");
         assert_eq!(search_match_from(&flat, "p", Some(0)), Some(4));
-        assert_eq!(search_match_from(&flat, "ro", None), None, "отключённый не ищется");
+        assert_eq!(search_match_from(&flat, "ro", None), None, "disabled one is not searched");
         assert_eq!(search_match_from(&flat, "zz", Some(1)), None);
-        assert_eq!(search_match_from(&flat, "n", Some(0)), Some(0), "от самого фокусного включительно");
+        assert_eq!(search_match_from(&flat, "n", Some(0)), Some(0), "from the focused one inclusive");
     }
 
     #[test]
@@ -379,7 +379,7 @@ mod tests {
 
     #[test]
     fn single_selection_table() {
-        // (текущее, значение, meta, meta_key) -> результат
+        // (current, value, meta, meta_key) -> result
         type Case = (Option<&'static str>, &'static str, bool, bool, Option<Option<&'static str>>);
         let cases: [Case; 8] = [
             (None, "a", false, false, Some(Some("a"))),
@@ -402,10 +402,10 @@ mod tests {
         assert_eq!(select_multiple(&sel(&["a"]), "b", false, false), sel(&["a", "b"]));
         assert_eq!(select_multiple(&sel(&["a", "b"]), "a", false, false), sel(&["b"]));
         assert_eq!(select_multiple(&[], "a", false, false), sel(&["a"]));
-        // meta: без Ctrl заменяет, с Ctrl добавляет или снимает
+        // meta: without Ctrl replaces, with Ctrl adds or removes
         assert_eq!(select_multiple(&sel(&["a", "b"]), "c", true, false), sel(&["c"]));
         assert_eq!(select_multiple(&sel(&["a", "b"]), "c", true, true), sel(&["a", "b", "c"]));
-        assert_eq!(select_multiple(&sel(&["a", "b"]), "a", true, false), sel(&["a"]), "оставляет только кликнутый");
+        assert_eq!(select_multiple(&sel(&["a", "b"]), "a", true, false), sel(&["a"]), "keeps only the clicked one");
         assert_eq!(select_multiple(&sel(&["a", "b"]), "a", true, true), sel(&["b"]));
     }
 
@@ -413,7 +413,7 @@ mod tests {
     fn range_and_select_all_skip_disabled_and_headers() {
         let flat = visible_entries(&opts(), &[], "");
         assert_eq!(select_range(&flat, 0, 3), sel(&["NY", "LDN", "IST"]));
-        assert_eq!(select_range(&flat, 3, 0), sel(&["NY", "LDN", "IST"]), "порядок границ не важен");
+        assert_eq!(select_range(&flat, 3, 0), sel(&["NY", "LDN", "IST"]), "bound order does not matter");
         assert_eq!(select_range(&flat, 2, 2), sel(&["LDN"]));
         let grouped = visible_entries(&[], &groups(), "");
         assert_eq!(select_range(&grouped, 0, 4), sel(&["B", "F", "C"]));
@@ -427,7 +427,7 @@ mod tests {
         let flat = visible_entries(&opts(), &[], "");
         assert!(all_selected(&flat, &sel(&["NY", "LDN", "IST", "PRS"])));
         assert!(!all_selected(&flat, &sel(&["NY", "LDN"])));
-        assert!(!all_selected(&[], &[]), "пустой список — не все");
+        assert!(!all_selected(&[], &[]), "empty list, not all");
         let filtered = visible_entries(&opts(), &[], "n");
         assert!(all_selected(&filtered, &sel(&["NY", "LDN", "IST"])));
     }

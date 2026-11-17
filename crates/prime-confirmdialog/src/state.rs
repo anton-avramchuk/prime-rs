@@ -1,13 +1,13 @@
-//! Чистая логика ConfirmDialog: приоритет значений, положение, подписи кнопок и классы (по `confirmdialog.ts` PrimeNG).
+//! Pure ConfirmDialog logic: value priority, position, button labels and classes (after PrimeNG `confirmdialog.ts`).
 
 use prime_dialog::DialogPosition;
 
-/// `option(name)` PrimeNG: значение подтверждения, а если оно не задано, — свойство компонента.
+/// PrimeNG `option(name)`: the confirmation value, and if it is not set — the component prop.
 pub fn pick<T>(from_confirmation: Option<T>, from_component: T) -> T {
     from_confirmation.unwrap_or(from_component)
 }
 
-/// Положение окна из строки подтверждения; неизвестное значение — по центру.
+/// Window position from the confirmation string; an unknown value — centered.
 pub fn position_of(name: &str) -> DialogPosition {
     match name {
         "top" => DialogPosition::Top,
@@ -22,12 +22,12 @@ pub fn position_of(name: &str) -> DialogPosition {
     }
 }
 
-/// Подпись кнопки: `*_label`, затем `*_button_props.label`, затем перевод по умолчанию (пустые строки не считаются).
+/// Button label: `*_label`, then `*_button_props.label`, then the default translation (empty strings do not count).
 pub fn button_label(label: Option<&str>, props_label: Option<&str>, default: &str) -> String {
     label.filter(|l| !l.is_empty()).or(props_label.filter(|l| !l.is_empty())).unwrap_or(default).to_owned()
 }
 
-/// Класс кнопки: базовый плюс пользовательский.
+/// Button class: the base plus the custom one.
 pub fn button_class(base: &str, extra: Option<&str>) -> String {
     match extra.filter(|e| !e.is_empty()) {
         Some(extra) => format!("{base} {extra}"),
@@ -35,7 +35,7 @@ pub fn button_class(base: &str, extra: Option<&str>) -> String {
     }
 }
 
-/// Класс корня окна: `p-confirmdialog` плюс пользовательский.
+/// Window root class: `p-confirmdialog` plus the custom one.
 pub fn root_class(extra: Option<&str>) -> String {
     button_class("p-confirmdialog", extra)
 }

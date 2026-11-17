@@ -5,91 +5,91 @@ TBD - created by archiving change port-accordion. Update Purpose after archive.
 
 ## Requirements
 
-### Requirement: Структура и классы Accordion
-`Accordion` крейта `prime-accordion` SHALL отрисовывать `<div class="p-accordion p-component">`, содержащий `AccordionPanel`. `AccordionPanel` SHALL отрисовывать `<div class="p-accordionpanel">` с `p-accordionpanel-active` у активной панели и `p-disabled` у отключённой, а также `data-p-active` и `data-p-disabled`. `AccordionHeader` SHALL отрисовывать `p-accordionheader` с содержимым и иконкой `p-accordionheader-toggle-icon` (шеврон вверх у активной панели, вниз у неактивной, `aria-hidden="true"`) и `data-p="active"` у активной. `AccordionContent` SHALL отрисовывать `p-accordioncontent` с вложенными `p-motion`, `p-accordioncontent-wrapper` и `p-accordioncontent-content`. `style_class` каждой части SHALL добавляться без потери собственных классов.
+### Requirement: Accordion structure and classes
+`Accordion` of the `prime-accordion` crate SHALL render `<div class="p-accordion p-component">` containing `AccordionPanel`. `AccordionPanel` SHALL render `<div class="p-accordionpanel">` with `p-accordionpanel-active` on the active panel and `p-disabled` on a disabled one, as well as `data-p-active` and `data-p-disabled`. `AccordionHeader` SHALL render `p-accordionheader` with content and the `p-accordionheader-toggle-icon` icon (chevron up on the active panel, down on an inactive one, `aria-hidden="true"`) and `data-p="active"` on the active one. `AccordionContent` SHALL render `p-accordioncontent` with nested `p-motion`, `p-accordioncontent-wrapper` and `p-accordioncontent-content`. The `style_class` of each part SHALL be added without losing its own classes.
 
-#### Scenario: Базовая структура
-- **WHEN** отрисованы три панели, активна первая
-- **THEN** у первой `p-accordionpanel-active`, а у остальных нет; заголовок первой содержит шеврон вверх, остальных — вниз
+#### Scenario: Basic structure
+- **WHEN** three panels are rendered, the first is active
+- **THEN** the first has `p-accordionpanel-active` and the others do not; the first header contains a chevron up, the others — down
 
-#### Scenario: Отключённая панель
-- **WHEN** панель имеет `disabled`
-- **THEN** у неё `p-disabled` и `data-p-disabled="true"`
+#### Scenario: Disabled panel
+- **WHEN** a panel has `disabled`
+- **THEN** it has `p-disabled` and `data-p-disabled="true"`
 
-### Requirement: Значение и режим multiple
-`Accordion` SHALL принимать двусторонний `value` (`RwSignal<Vec<String>>`) либо `default_value` для собственного состояния. Панель активна, если её `value` входит в список. Клик по заголовку не отключённой панели SHALL в одиночном режиме открывать её и закрывать остальные, а повторный клик по активной — закрывать её; при `multiple` SHALL добавлять или убирать значение, не затрагивая остальные.
+### Requirement: Value and the multiple mode
+`Accordion` SHALL accept a two-way `value` (`RwSignal<Vec<String>>`) or `default_value` for its own state. A panel is active if its `value` is in the list. A click on the header of a non-disabled panel SHALL, in single mode, open it and close the others, and a repeated click on the active one — close it; with `multiple` it SHALL add or remove the value without affecting the others.
 
-#### Scenario: Одиночный режим
-- **WHEN** открыта панель `0` и нажат заголовок панели `1`
-- **THEN** `value` становится `["1"]`, панель `0` закрывается
+#### Scenario: Single mode
+- **WHEN** panel `0` is open and the header of panel `1` is clicked
+- **THEN** `value` becomes `["1"]`, panel `0` closes
 
-#### Scenario: Режим multiple
-- **WHEN** `multiple`, открыта панель `0` и нажат заголовок панели `1`
-- **THEN** `value` содержит `0` и `1`
+#### Scenario: Multiple mode
+- **WHEN** `multiple`, panel `0` is open and the header of panel `1` is clicked
+- **THEN** `value` contains `0` and `1`
 
-#### Scenario: Закрытие активной
-- **WHEN** нажат заголовок единственной активной панели
-- **THEN** `value` становится пустым
+#### Scenario: Closing the active one
+- **WHEN** the header of the only active panel is clicked
+- **THEN** `value` becomes empty
 
-#### Scenario: Отключённая панель
-- **WHEN** нажат заголовок отключённой панели
-- **THEN** `value` не меняется
+#### Scenario: Disabled panel
+- **WHEN** the header of a disabled panel is clicked
+- **THEN** `value` does not change
 
-### Requirement: События Accordion
-`Accordion` SHALL вызывать `on_open` с исходным событием и значением панели, когда панель стала активной после клика, и `on_close`, когда стала неактивной; при открытии одной панели закрытие остальных в одиночном режиме событием `on_close` не сопровождается.
+### Requirement: Accordion events
+`Accordion` SHALL call `on_open` with the original event and the panel value when a panel became active after a click, and `on_close` when it became inactive; when one panel opens, the closing of the others in single mode is not accompanied by an `on_close` event.
 
-#### Scenario: Открытие
-- **WHEN** пользователь открывает неактивную панель
-- **THEN** вызван `on_open` со значением этой панели
+#### Scenario: Opening
+- **WHEN** the user opens an inactive panel
+- **THEN** `on_open` is called with this panel's value
 
-#### Scenario: Закрытие
-- **WHEN** пользователь закрывает активную панель
-- **THEN** вызван `on_close` со значением этой панели
+#### Scenario: Closing
+- **WHEN** the user closes an active panel
+- **THEN** `on_close` is called with this panel's value
 
-### Requirement: Доступность и клавиатура Accordion
-`AccordionHeader` SHALL иметь `role="button"`, `aria-expanded`, `aria-controls` (идентификатор содержимого), `aria-disabled`, `tabindex="0"` (`-1` у отключённой) и идентификатор `{id}_accordionheader_{value}`. `AccordionContent` SHALL иметь `role="region"`, идентификатор `{id}_accordioncontent_{value}` и `aria-labelledby` с идентификатором заголовка. Enter, Space и NumpadEnter на заголовке SHALL переключать панель; ArrowDown и ArrowUp SHALL переносить фокус на заголовок следующей и предыдущей не отключённой панели с переходом по кругу; Home и End — на первый и последний. При `select_on_focus` получение фокуса не отключённым заголовком SHALL переключать панель.
+### Requirement: Accordion accessibility and keyboard
+`AccordionHeader` SHALL have `role="button"`, `aria-expanded`, `aria-controls` (the content identifier), `aria-disabled`, `tabindex="0"` (`-1` on a disabled one) and the identifier `{id}_accordionheader_{value}`. `AccordionContent` SHALL have `role="region"`, the identifier `{id}_accordioncontent_{value}` and `aria-labelledby` with the header identifier. Enter, Space and NumpadEnter on the header SHALL toggle the panel; ArrowDown and ArrowUp SHALL move focus to the header of the next and previous non-disabled panel with wrapping around; Home and End — to the first and last. With `select_on_focus`, a non-disabled header receiving focus SHALL toggle the panel.
 
-#### Scenario: Связь заголовка и содержимого
-- **WHEN** панель со значением `a` отрисована
-- **THEN** `aria-controls` заголовка равен `id` содержимого, а `aria-labelledby` содержимого — `id` заголовка
+#### Scenario: Header and content link
+- **WHEN** a panel with the value `a` is rendered
+- **THEN** the header's `aria-controls` equals the content `id`, and the content's `aria-labelledby` is the header `id`
 
-#### Scenario: Стрелки пропускают отключённые
-- **WHEN** фокус на заголовке первой панели, вторая отключена, нажата ArrowDown
-- **THEN** фокус переходит на заголовок третьей панели
+#### Scenario: Arrows skip disabled ones
+- **WHEN** focus is on the first panel's header, the second is disabled, ArrowDown is pressed
+- **THEN** focus moves to the third panel's header
 
-#### Scenario: Круговая навигация
-- **WHEN** фокус на заголовке последней панели и нажата ArrowDown
-- **THEN** фокус переходит на заголовок первой панели
+#### Scenario: Circular navigation
+- **WHEN** focus is on the last panel's header and ArrowDown is pressed
+- **THEN** focus moves to the first panel's header
 
-#### Scenario: Клавиатурное переключение
-- **WHEN** фокус на заголовке и нажат Enter
-- **THEN** панель переключается один раз
+#### Scenario: Keyboard toggling
+- **WHEN** focus is on the header and Enter is pressed
+- **THEN** the panel toggles once
 
-### Requirement: Анимация Accordion
-Содержимое неактивной панели SHALL быть скрыто с первого рендера. При смене состояния в браузере содержимое SHALL анимироваться классами `p-collapsible-enter-active` и `p-collapsible-leave-active`, а после завершения скрываться или показываться; фокусируемые потомки скрытого содержимого SHALL получать `tabindex="-1"`.
+### Requirement: Accordion animation
+The content of an inactive panel SHALL be hidden from the first render. When the state changes in the browser, the content SHALL animate with the classes `p-collapsible-enter-active` and `p-collapsible-leave-active`, and after completion be hidden or shown; focusable descendants of hidden content SHALL get `tabindex="-1"`.
 
-#### Scenario: Начальное состояние
-- **WHEN** панель неактивна при первом рендере
-- **THEN** её содержимое скрыто сразу, без анимации
+#### Scenario: Initial state
+- **WHEN** a panel is inactive at the first render
+- **THEN** its content is hidden immediately, without animation
 
-#### Scenario: Раскрытие
-- **WHEN** неактивная панель открывается в браузере
-- **THEN** контейнер получает `p-collapsible-enter-active`, затем класс снимается и содержимое видимо
+#### Scenario: Expanding
+- **WHEN** an inactive panel opens in the browser
+- **THEN** the container gets `p-collapsible-enter-active`, then the class is removed and the content is visible
 
-### Requirement: Слоты и pass-through Accordion
-`toggle_icon_template` заголовка SHALL получать `active` и заменять стандартную иконку. `pt` аккордеона SHALL принимать части `root`, `panel`, `header`, `toggle_icon`, `content_container`, `content_wrapper`, `content`, добавляя классы, стиль и атрибуты без замены собственных.
+### Requirement: Accordion slots and pass-through
+The header's `toggle_icon_template` SHALL receive `active` and replace the standard icon. The accordion's `pt` SHALL accept the parts `root`, `panel`, `header`, `toggle_icon`, `content_container`, `content_wrapper`, `content`, adding classes, style and attributes without replacing its own.
 
-#### Scenario: Свой значок
-- **WHEN** задан `toggle_icon_template`
-- **THEN** вместо шеврона выводится слот с актуальным `active`
+#### Scenario: Custom icon
+- **WHEN** `toggle_icon_template` is set
+- **THEN** the slot with the current `active` is rendered instead of the chevron
 
-#### Scenario: Класс через pt
-- **WHEN** в `pt.header` передан класс `custom`
-- **THEN** у каждого заголовка есть `custom` и `p-accordionheader`
+#### Scenario: Class via pt
+- **WHEN** the class `custom` is passed in `pt.header`
+- **THEN** every header has `custom` and `p-accordionheader`
 
-### Requirement: Стоимость отрисовки Accordion
-Число аллокаций SSR на аккордеон из трёх панелей SHALL укладываться в бюджет `accordion-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `accordion` в `benches/budgets.toml`.
+### Requirement: Accordion rendering cost
+The number of SSR allocations for an accordion of three panels SHALL fit within the `accordion-1000` budget in `benches/alloc-budgets.toml`, the wasm contribution — within the `accordion` budget in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Accordion не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the Accordion values do not exceed the budgets

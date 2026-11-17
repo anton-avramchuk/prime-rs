@@ -1,7 +1,7 @@
-//! Страница InputGroup: демонстрации `basic`, `button`, `checkbox`, `multiple` из showcase PrimeNG (`apps/showcase/doc/inputgroup`).
+//! InputGroup page: demos `basic`, `button`, `checkbox`, `multiple` from the PrimeNG showcase (`apps/showcase/doc/inputgroup`).
 //!
-//! Нет InputNumber, Select, Menu, FloatLabel и IftaLabel — вместо них `InputText`; иконок `user`, `map`, `clock` в `prime-icons` тоже нет,
-//! поэтому взяты `search`, `star-fill`, `check`, `times`.
+//! There are no InputNumber, Select, Menu, FloatLabel and IftaLabel - `InputText` is used instead; the icons `user`, `map`, `clock` are also absent from `prime-icons`,
+//! so `search`, `star-fill`, `check`, `times` are used.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -12,7 +12,7 @@ use prime_inputgroup::{InputGroup, InputGroupAddon};
 use prime_inputtext::InputText;
 use prime_radiobutton::RadioButton;
 
-/// Страница `/inputgroup`.
+/// Page `/inputgroup`.
 #[component]
 pub fn InputGroupPage() -> impl IntoView {
     let checked = RwSignal::new(false);

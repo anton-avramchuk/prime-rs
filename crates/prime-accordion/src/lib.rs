@@ -1,12 +1,12 @@
-//! Accordion — порт `p-accordion` из PrimeNG 21.1.10.
+//! Accordion — port of PrimeNG 21.1.10 `p-accordion`.
 //!
-//! Составной компонент из четырёх частей, как в PrimeNG: [`Accordion`] хранит список активных значений,
-//! [`AccordionPanel`] задаёт `value` панели, [`AccordionHeader`] — заголовок-кнопка, [`AccordionContent`] — раскрывающееся содержимое.
-//! Части общаются через контекст Leptos и не принимают значений друг от друга.
+//! A composite component of four parts, as in PrimeNG: [`Accordion`] keeps the list of active values,
+//! [`AccordionPanel`] sets the panel's `value`, [`AccordionHeader`] is the header button, [`AccordionContent`] is the collapsible content.
+//! The parts communicate through the Leptos context and do not take values from each other.
 //!
-//! Значение — двусторонний сигнал `RwSignal<Vec<String>>`: в одиночном режиме в нём 0 или 1 значение, при `multiple` — любое число.
-//! Раскрытие и сворачивание анимируют классы `p-collapsible-enter-active`/`p-collapsible-leave-active` через
-//! [`prime_core::collapsible`], как у Panel и Fieldset.
+//! The value is a two-way `RwSignal<Vec<String>>` signal: in single mode it holds 0 or 1 value, with `multiple` — any number.
+//! Expanding and collapsing animate the `p-collapsible-enter-active`/`p-collapsible-leave-active` classes via
+//! [`prime_core::collapsible`], as in Panel and Fieldset.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -39,35 +39,35 @@ use std::sync::Arc;
 
 pub use state::{Nav, nav_target, toggle_value};
 
-/// Событие `on_open` и `on_close`: исходное событие и значение панели.
+/// `on_open` and `on_close` event: the original event and the panel value.
 #[derive(Clone, Debug)]
 pub struct AccordionToggle {
-    /// Исходное событие `click`.
+    /// Original `click` event.
     pub original_event: web_sys::Event,
-    /// Значение панели (`value` у [`AccordionPanel`]).
+    /// Panel value (`value` of [`AccordionPanel`]).
     pub index: String,
 }
 
-/// Pass-through частей Accordion.
+/// Pass-through parts of Accordion.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct AccordionPt {
-    /// Корневой элемент (`div.p-accordion`).
+    /// Root element (`div.p-accordion`).
     pub root: Pt,
-    /// Панель (`div.p-accordionpanel`).
+    /// Panel (`div.p-accordionpanel`).
     pub panel: Pt,
-    /// Заголовок (`div.p-accordionheader`).
+    /// Header (`div.p-accordionheader`).
     pub header: Pt,
-    /// Иконка переключателя: применяется только класс.
+    /// Toggle icon: only the class is applied.
     pub toggle_icon: Pt,
-    /// Контейнер содержимого (`div.p-accordioncontent`).
+    /// Content container (`div.p-accordioncontent`).
     pub content_container: Pt,
-    /// Обёртка содержимого (`div.p-accordioncontent-wrapper`).
+    /// Content wrapper (`div.p-accordioncontent-wrapper`).
     pub content_wrapper: Pt,
-    /// Содержимое (`div.p-accordioncontent-content`).
+    /// Content (`div.p-accordioncontent-content`).
     pub content: Pt,
 }
 
-/// Общее состояние группы, доступное панелям.
+/// Shared group state available to the panels.
 #[derive(Clone)]
 struct AccordionCtx {
     id: String,
@@ -79,7 +79,7 @@ struct AccordionCtx {
     pt: Arc<AccordionPt>,
 }
 
-/// Состояние панели, доступное заголовку и содержимому.
+/// Panel state available to the header and content.
 #[derive(Clone)]
 struct PanelCtx {
     value: String,
@@ -87,8 +87,8 @@ struct PanelCtx {
     active: Signal<bool>,
 }
 
-const NO_ACCORDION: &str = "AccordionPanel, AccordionHeader и AccordionContent должны находиться внутри Accordion";
-const NO_PANEL: &str = "AccordionHeader и AccordionContent должны находиться внутри AccordionPanel";
+const NO_ACCORDION: &str = "AccordionPanel, AccordionHeader and AccordionContent must be inside Accordion";
+const NO_PANEL: &str = "AccordionHeader and AccordionContent must be inside AccordionPanel";
 
 fn header_id(ctx: &AccordionCtx, value: &str) -> String {
     format!("{}_accordionheader_{value}", ctx.id)
@@ -102,39 +102,39 @@ fn bool_attr(v: bool) -> &'static str {
     if v { "true" } else { "false" }
 }
 
-/// Группа вкладок: хранит список активных значений.
+/// Tab group: keeps the list of active values.
 ///
-/// `value` — двусторонний сигнал; без него состояние собственное, начальное — `default_value`.
+/// `value` is a two-way signal; without it the state is internal, initially `default_value`.
 #[component]
 pub fn Accordion(
-    /// Атрибут `id`-основа для идентификаторов заголовков и содержимого. По умолчанию уникальный.
+    /// `id` attribute base for header and content identifiers. Unique by default.
     #[prop(optional, into)]
     id: Option<String>,
-    /// Двусторонний сигнал активных значений.
+    /// Two-way signal of active values.
     #[prop(optional)]
     value: Option<RwSignal<Vec<String>>>,
-    /// Начальные значения, когда `value` не передан.
+    /// Initial values when `value` is not passed.
     #[prop(optional)]
     default_value: Vec<String>,
-    /// Можно ли открыть несколько панелей одновременно.
+    /// Whether several panels can be open at the same time.
     #[prop(optional, into)]
     multiple: Prop<bool>,
-    /// Переключать панель при получении фокуса заголовком.
+    /// Toggle the panel when its header receives focus.
     #[prop(optional, into)]
     select_on_focus: Prop<bool>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается, когда панель открыта кликом по заголовку.
+    /// Called when a panel is opened by a click on the header.
     #[prop(optional, into)]
     on_open: Option<Callback<AccordionToggle>>,
-    /// Вызывается, когда панель закрыта кликом по заголовку.
+    /// Called when a panel is closed by a click on the header.
     #[prop(optional, into)]
     on_close: Option<Callback<AccordionToggle>>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<AccordionPt>,
-    /// Панели.
+    /// Panels.
     children: Children,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
@@ -169,19 +169,19 @@ pub fn Accordion(
     }
 }
 
-/// Панель: задаёт `value` и состояние активности для заголовка и содержимого.
+/// Panel: sets `value` and the active state for the header and content.
 #[component]
 pub fn AccordionPanel(
-    /// Уникальное значение панели в группе.
+    /// Unique panel value in the group.
     #[prop(into)]
     value: String,
-    /// Панель недоступна для взаимодействия.
+    /// The panel is not available for interaction.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Дополнительный класс панели.
+    /// Extra class of the panel.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Заголовок и содержимое.
+    /// Header and content.
     children: Children,
 ) -> impl IntoView {
     let ctx = use_context::<AccordionCtx>().expect(NO_ACCORDION);
@@ -210,16 +210,16 @@ pub fn AccordionPanel(
     }
 }
 
-/// Заголовок панели: кнопка с иконкой переключателя.
+/// Panel header: a button with a toggle icon.
 #[component]
 pub fn AccordionHeader(
-    /// Дополнительный класс заголовка.
+    /// Extra class of the header.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Слот иконки переключателя; получает `active` и заменяет шеврон.
+    /// Toggle icon slot; receives `active` and replaces the chevron.
     #[prop(optional, into)]
     toggle_icon_template: Option<Callback<bool, AnyView>>,
-    /// Содержимое заголовка.
+    /// Header content.
     children: Children,
 ) -> impl IntoView {
     let ctx = use_context::<AccordionCtx>().expect(NO_ACCORDION);
@@ -336,13 +336,13 @@ pub fn AccordionHeader(
     }
 }
 
-/// Раскрывающееся содержимое панели.
+/// Collapsible panel content.
 #[component]
 pub fn AccordionContent(
-    /// Дополнительный класс контейнера содержимого.
+    /// Extra class of the content container.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Содержимое.
+    /// Content.
     children: Children,
 ) -> impl IntoView {
     let ctx = use_context::<AccordionCtx>().expect(NO_ACCORDION);
@@ -351,7 +351,7 @@ pub fn AccordionContent(
     let (id, labelled_by) = (content_id(&ctx, &panel.value), header_id(&ctx, &panel.value));
     let pt = ctx.pt.clone();
 
-    // `NodeRef` нужен только клиенту (анимация и `tabindex`): при SSR его нет, а `()` — пустой атрибут вместо `node_ref`.
+    // `NodeRef` is needed only by the client (animation and `tabindex`): there is none in SSR, and `()` is an empty attribute instead of `node_ref`.
     #[cfg(target_arch = "wasm32")]
     let region = {
         let region = NodeRef::<leptos::html::Div>::new();
@@ -385,7 +385,7 @@ pub fn AccordionContent(
     }
 }
 
-/// Переносит фокус на заголовок соседней не отключённой панели (только браузер).
+/// Moves focus to the header of the neighbouring non-disabled panel (browser only).
 fn focus_neighbor(e: &web_sys::KeyboardEvent, nav: Nav) {
     use leptos::wasm_bindgen::JsCast;
     let Some(header) = e.current_target().and_then(|t| t.dyn_into::<web_sys::Element>().ok()) else { return };

@@ -1,51 +1,51 @@
-//! Чистая логика SelectButton: варианты, выбор и классы корня (по `selectbutton.ts` и `selectbuttonstyle.ts` PrimeNG).
+//! Pure SelectButton logic: options, selection and root classes (from PrimeNG's `selectbutton.ts` and `selectbuttonstyle.ts`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Вариант выбора.
+/// Selection option.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct SelectButtonOption {
-    /// Метка кнопки.
+    /// Button label.
     pub label: String,
-    /// Значение варианта.
+    /// Option value.
     pub value: String,
-    /// Вариант недоступен.
+    /// The option is unavailable.
     pub disabled: bool,
 }
 
 impl SelectButtonOption {
-    /// Доступный вариант с меткой и значением.
+    /// Available option with a label and a value.
     pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
         Self { label: label.into(), value: value.into(), disabled: false }
     }
 
-    /// Недоступный вариант.
+    /// Unavailable option.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 }
 
-/// Значение SelectButton: одиночное или множественное.
+/// SelectButton value: single or multiple.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SelectButtonValue {
-    /// Одиночный выбор (`None` — ничего не выбрано).
+    /// Single selection (`None` — nothing selected).
     Single(Option<String>),
-    /// Множественный выбор в порядке добавления.
+    /// Multiple selection in the order of addition.
     Multiple(Vec<String>),
 }
 
-/// Результат выбора в одиночном режиме: `None` — значение не меняется, `Some(v)` — новое значение.
+/// Selection result in single mode: `None` — the value does not change, `Some(v)` — the new value.
 ///
-/// Как `onOptionSelect` PrimeNG: повторный клик по выбранному варианту сбрасывает значение, если `allow_empty` не равен `false`.
+/// Like PrimeNG's `onOptionSelect`: a repeated click on the selected option clears the value unless `allow_empty` is `false`.
 pub fn select_single(current: Option<&str>, target: &str, allow_empty: Option<bool>) -> Option<Option<String>> {
     if current == Some(target) { if allow_empty == Some(false) { None } else { Some(None) } } else { Some(Some(target.to_owned())) }
 }
 
-/// Результат выбора в множественном режиме: `None` — список не меняется.
+/// Selection result in multiple mode: `None` — the list does not change.
 ///
-/// Выбранное значение удаляется, невыбранное добавляется в конец; при `allow_empty = false` единственное значение не удаляется.
+/// A selected value is removed, an unselected one is appended to the end; with `allow_empty = false` the only value is not removed.
 pub fn select_multiple(current: &[String], target: &str, allow_empty: Option<bool>) -> Option<Vec<String>> {
     if current.iter().any(|v| v == target) {
         if allow_empty == Some(false) && current.len() == 1 {
@@ -59,26 +59,26 @@ pub fn select_multiple(current: &[String], target: &str, allow_empty: Option<boo
     }
 }
 
-/// `allow_empty` для вложенной кнопки (`getAllowEmpty`): во множественном режиме последнее значение снять нельзя при `false`.
+/// `allow_empty` for a nested button (`getAllowEmpty`): in multiple mode the last value cannot be deselected when `false`.
 pub fn toggle_allow_empty(multiple: bool, allow_empty: Option<bool>, selected_count: usize) -> Option<bool> {
     if multiple { Some(allow_empty.unwrap_or(true) || selected_count != 1) } else { allow_empty }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p` корня.
+/// Snapshot of the properties affecting the root's classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct SelectButtonState {
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// На всю ширину.
+    /// Full width.
     pub fluid: bool,
 }
 
-/// Добавляет классы корня в порядке `selectbuttonstyle.ts`.
+/// Adds the root classes in the order of `selectbuttonstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &SelectButtonState) {
     cn.add("p-selectbutton p-component").add_if(s.invalid, "p-invalid").add_if(s.fluid, "p-selectbutton-fluid");
 }
 
-/// Значение `data-p`: `invalid`.
+/// `data-p` value: `invalid`.
 pub fn data_p(s: &SelectButtonState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.invalid, "invalid");

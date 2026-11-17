@@ -1,6 +1,6 @@
 [package]
 name = "prime-inputnumber"
-description = "prime-rs: компонент InputNumber (порт PrimeNG)"
+description = "prime-rs: InputNumber component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -19,7 +19,7 @@ prime-inputtext = { workspace = true }
 prime-icons = { workspace = true, features = ["angleup", "angledown", "times"] }
 web-sys = { workspace = true, features = ["Event", "InputEvent", "KeyboardEvent", "FocusEvent", "MouseEvent", "HtmlInputElement", "DataTransfer"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr is for native tests only: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

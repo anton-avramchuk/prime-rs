@@ -1,29 +1,29 @@
-//! Чистая логика Steps: классы, отключённость, `tabindex`, `aria-disabled`, исход клика и клавиши (по `steps.ts` PrimeNG).
+//! Pure Steps logic: classes, disabled state, `tabindex`, `aria-disabled`, click and key outcome (after PrimeNG `steps.ts`).
 
 use prime_core::ClassNames;
 use std::borrow::Cow;
 
-/// Классы корня: `p-steps p-component`, `p-readonly`, пользовательский класс.
+/// Root classes: `p-steps p-component`, `p-readonly`, the user class.
 pub fn root_classes(readonly: bool, extra: Option<&str>) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-steps p-component").add_if(readonly, "p-readonly").add_user(extra);
     cn.finish_cow()
 }
 
-/// Классы пункта: `p-steps-item`, `p-steps-item-active`, `p-disabled`.
+/// Item classes: `p-steps-item`, `p-steps-item-active`, `p-disabled`.
 pub fn item_classes(active: bool, disabled: bool) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-steps-item").add_if(active, "p-steps-item-active").add_if(disabled, "p-disabled");
     cn.finish_cow()
 }
 
-/// Пункт отключён: у него `disabled`, либо включено чтение, а пункт не активен (`isItemDisabled`).
+/// The item is disabled: it has `disabled`, or readonly is on and the item is not active (`isItemDisabled`).
 pub fn is_item_disabled(item_disabled: bool, index: usize, active: usize, readonly: bool) -> bool {
     item_disabled || (readonly && index != active)
 }
 
-/// `tabindex` ссылки без перемещения фокуса: у отключённого `-1`, у активного собственный (или `0`), у остальных собственный
-/// (или `-1`) (`getItemTabIndex`).
+/// Link `tabindex` without moving focus: `-1` for a disabled one, its own (or `0`) for the active one, its own
+/// (or `-1`) for the rest (`getItemTabIndex`).
 pub fn link_tabindex(item_disabled: bool, item_tabindex: Option<i32>, index: usize, active: usize) -> i32 {
     if item_disabled {
         -1
@@ -34,29 +34,29 @@ pub fn link_tabindex(item_disabled: bool, item_tabindex: Option<i32>, index: usi
     }
 }
 
-/// `aria-disabled` ссылки: `disabled` пункта или чтение у неактивного пункта.
+/// Link `aria-disabled`: the item's `disabled` or readonly on an inactive item.
 pub fn aria_disabled(item_disabled: bool, index: usize, active: usize, readonly: bool) -> bool {
     item_disabled || (readonly && index != active)
 }
 
-/// Что делает клик.
+/// What a click does.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Click {
-    /// Только отменить переход по ссылке.
+    /// Only cancel the link navigation.
     Ignore,
-    /// Выбрать пункт и вызвать команду; `prevent_default` — отменить ли переход (у пункта нет `url`).
+    /// Select the item and call the command; `prevent_default` — whether to cancel navigation (the item has no `url`).
     Activate {
-        /// Отменить ли переход по ссылке.
+        /// Whether to cancel the link navigation.
         prevent_default: bool,
     },
 }
 
-/// Исход клика (`onItemClick`): чтение или отключённый пункт — игнорируются.
+/// Click outcome (`onItemClick`): readonly or a disabled item — ignored.
 pub fn click_outcome(item_disabled: bool, readonly: bool, has_url: bool) -> Click {
     if readonly || item_disabled { Click::Ignore } else { Click::Activate { prevent_default: !has_url } }
 }
 
-/// Пункт, на который переносится фокус по клавише; на границах остаётся тот же. `None` — клавиша не двигает фокус.
+/// The item that focus moves to on a key; at the bounds it stays the same. `None` — the key does not move focus.
 pub fn key_target(code: &str, index: usize, count: usize) -> Option<usize> {
     let last = count.checked_sub(1)?;
     match code {
@@ -68,7 +68,7 @@ pub fn key_target(code: &str, index: usize, count: usize) -> Option<usize> {
     }
 }
 
-/// `Enter` и `Space` действуют как клик.
+/// `Enter` and `Space` act as a click.
 pub fn is_activation_key(code: &str) -> bool {
     matches!(code, "Enter" | "Space")
 }
@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn disabled_table() {
-        // (disabled, индекс, активный, чтение) → отключён
+        // (disabled, index, active, readonly) → disabled
         for (dis, i, a, ro, want) in [
             (false, 1, 1, true, false),
             (false, 0, 1, true, true),
@@ -104,11 +104,11 @@ mod tests {
 
     #[test]
     fn tabindex_table() {
-        assert_eq!(link_tabindex(true, Some(5), 1, 1), -1, "отключённый");
-        assert_eq!(link_tabindex(false, None, 1, 1), 0, "активный");
-        assert_eq!(link_tabindex(false, Some(3), 1, 1), 3, "активный со своим");
+        assert_eq!(link_tabindex(true, Some(5), 1, 1), -1, "disabled");
+        assert_eq!(link_tabindex(false, None, 1, 1), 0, "active");
+        assert_eq!(link_tabindex(false, Some(3), 1, 1), 3, "active with its own");
         assert_eq!(link_tabindex(false, Some(0), 1, 1), 0);
-        assert_eq!(link_tabindex(false, None, 0, 1), -1, "остальные");
+        assert_eq!(link_tabindex(false, None, 0, 1), -1, "the rest");
         assert_eq!(link_tabindex(false, Some(2), 0, 1), 2);
     }
 

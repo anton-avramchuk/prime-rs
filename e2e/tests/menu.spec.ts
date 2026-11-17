@@ -7,7 +7,7 @@ test.describe('Menu', () => {
         await expect(page.locator('[data-demo=basic] .p-menu')).toBeVisible();
     });
 
-    test('basic: два пункта со значками', async ({ page }) => {
+    test('basic: two items with icons', async ({ page }) => {
         const items = page.locator('[data-demo=basic] .p-menu-item');
         await expect(items).toHaveCount(2);
         await expect(items.nth(0)).toHaveText('New');
@@ -17,13 +17,13 @@ test.describe('Menu', () => {
         await expect(items.nth(0)).toHaveAttribute('role', 'menuitem');
     });
 
-    test('group: заголовки групп', async ({ page }) => {
+    test('group: group headers', async ({ page }) => {
         const demo = page.locator('[data-demo=group]');
         await expect(demo.locator('.p-menu-submenu-label')).toHaveText(['Documents', 'Profile']);
         await expect(demo.locator('.p-menu-item')).toHaveCount(4);
     });
 
-    test('command: клик по пункту показывает сообщение', async ({ page }) => {
+    test('command: clicking an item shows a message', async ({ page }) => {
         const demo = page.locator('[data-demo=command]');
         await demo.locator('.p-menu-item', { hasText: 'New' }).click();
         await expect(demo.locator('.p-toast-message-success .p-toast-detail')).toHaveText('File created');
@@ -31,7 +31,7 @@ test.describe('Menu', () => {
         await expect(demo.locator('.p-toast-message-warn .p-toast-detail')).toHaveText('No results found');
     });
 
-    test('клавиши: стрелки, Home, End меняют активный пункт', async ({ page }) => {
+    test('keys: arrows, Home, End change the active item', async ({ page }) => {
         const list = page.locator('[data-demo=group] .p-menu-list');
         await list.focus();
         const items = page.locator('[data-demo=group] .p-menu-item');
@@ -48,7 +48,7 @@ test.describe('Menu', () => {
         await expect(list).toHaveAttribute('aria-activedescendant', id!);
     });
 
-    test('popup: показ у кнопки, закрытие кликом снаружи, Escape и выбором пункта', async ({ page }) => {
+    test('popup: show at a button, close by an outside click, Escape and item selection', async ({ page }) => {
         const demo = page.locator('[data-demo=popup]');
         const button = demo.getByRole('button', { name: 'Options' });
         await expect(demo.locator('.p-menu')).toHaveCount(0);
@@ -75,7 +75,7 @@ test.describe('Menu', () => {
         await expect(menu).toHaveCount(0);
     });
 
-    test('template: свои представления пункта, заголовка, начала и конца', async ({ page }) => {
+    test('template: custom views of item, header, start and end', async ({ page }) => {
         const demo = page.locator('[data-demo=template]');
         await expect(demo.locator('.p-menu-start')).toContainText('PRIMEAPP');
         await expect(demo.locator('.p-menu-end')).toContainText('Amy Elsner');

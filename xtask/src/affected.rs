@@ -1,38 +1,38 @@
-//! `affected`: какие крейты затронуты изменениями (для выборочных проверок в CI).
+//! `affected`: which crates are affected by changes (for selective checks in CI).
 //!
-//! Правила:
-//! - изменение общего ядра (`prime-core`, `prime-dom`), зависимостей (`Cargo.toml`, `Cargo.lock`), тулчейна, `xtask`
-//!   или конфигурации CI/сборки означает полный прогон всего workspace;
-//! - иначе — изменённые крейты и все крейты, которые от них зависят;
-//! - изменения вне крейтов (документация, `openspec/`) ничего не затрагивают.
+//! Rules:
+//! - a change to the shared core (`prime-core`, `prime-dom`), dependencies (`Cargo.toml`, `Cargo.lock`), the toolchain, `xtask`
+//!   or CI/build configuration means a full run of the whole workspace;
+//! - otherwise, the changed crates and all crates that depend on them;
+//! - changes outside crates (docs, `openspec/`) affect nothing.
 
 use serde::Deserialize;
 use std::collections::BTreeSet;
 use std::path::Path;
 use std::process::Command;
 
-/// Крейт workspace.
+/// A workspace crate.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Pkg {
     pub name: String,
-    /// Каталог относительно корня, с `/` (`crates/prime-button`).
+    /// Directory relative to the root, with `/` (`crates/prime-button`).
     pub dir: String,
-    /// Имена workspace-крейтов, от которых он зависит.
+    /// Names of the workspace crates it depends on.
     pub deps: Vec<String>,
 }
 
-/// Результат.
+/// Result.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Affected {
-    /// Проверять весь workspace.
+    /// Check the whole workspace.
     All,
-    /// Проверять только эти крейты (может быть пусто).
+    /// Check only these crates (may be empty).
     Packages(Vec<String>),
 }
 
-/// Крейты общего ядра: их изменение затрагивает всех.
+/// Shared core crates: changing them affects everything.
 const CORE: &[&str] = &["prime-core", "prime-dom"];
-/// Файлы и каталоги, изменение которых требует полного прогона.
+/// Files and directories whose change requires a full run.
 const GLOBAL: &[&str] = &[
     "Cargo.toml",
     "Cargo.lock",
@@ -49,7 +49,7 @@ fn is_global(file: &str) -> bool {
     GLOBAL.iter().any(|g| file == *g || (g.ends_with('/') && file.starts_with(g)))
 }
 
-/// Определяет затронутые крейты по списку изменённых файлов (пути относительно корня, с `/`).
+/// Determines the affected crates from a list of changed files (paths relative to the root, with `/`).
 pub fn affected(pkgs: &[Pkg], changed: &[String]) -> Affected {
     if changed.iter().any(|f| is_global(f)) {
         return Affected::All;
@@ -91,7 +91,7 @@ struct MetaDep {
     name: String,
 }
 
-/// Читает крейты workspace через `cargo metadata`.
+/// Reads workspace crates via `cargo metadata`.
 pub fn read_packages(root: &Path) -> Result<Vec<Pkg>, String> {
     let out = Command::new("cargo")
         .current_dir(root)
@@ -119,7 +119,7 @@ pub fn read_packages(root: &Path) -> Result<Vec<Pkg>, String> {
         .collect())
 }
 
-/// Изменённые файлы относительно `base` (`git diff --name-only base...HEAD`).
+/// Files changed relative to `base` (`git diff --name-only base...HEAD`).
 pub fn changed_files(root: &Path, base: &str) -> Result<Vec<String>, String> {
     let out = Command::new("git")
         .current_dir(root)
@@ -132,11 +132,11 @@ pub fn changed_files(root: &Path, base: &str) -> Result<Vec<String>, String> {
     Ok(String::from_utf8_lossy(&out.stdout).lines().map(str::to_owned).collect())
 }
 
-/// Крейты-приложения: у них свои проверки (job `apps`), в `-p`-список библиотек они не попадают.
+/// Application crates: they have their own checks (job `apps`) and are not included in the `-p` list of libraries.
 const APPS: &[&str] = &["showcase", "wasm-size", "render-bench", "xtask"];
 
-/// Строки для `$GITHUB_OUTPUT`: `all` (полный прогон), `any` (есть затронутые библиотеки), `args`
-/// (`--workspace --exclude …` или `-p a -p b` только для библиотек), `apps` (затронуты приложения).
+/// Lines for `$GITHUB_OUTPUT`: `all` (full run), `any` (there are affected libraries), `args`
+/// (`--workspace --exclude ...` or `-p a -p b` for libraries only), `apps` (applications are affected).
 pub fn render_outputs(result: &Affected) -> String {
     let exclude = APPS.iter().map(|a| format!("--exclude {a}")).collect::<Vec<_>>().join(" ");
     match result {

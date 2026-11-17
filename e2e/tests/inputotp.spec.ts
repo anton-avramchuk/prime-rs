@@ -8,7 +8,7 @@ test.describe('InputOtp', () => {
         await expect(page.locator('[data-demo=basic] .p-inputotp')).toBeVisible();
     });
 
-    test('структура: пять демонстраций и число ячеек', async ({ page }) => {
+    test('structure: five demos and the number of cells', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(5);
         await expect(page.locator('[data-demo=basic] input.p-inputotp-input')).toHaveCount(4);
         await expect(page.locator('[data-demo=template] input.custom-otp-input')).toHaveCount(6);
@@ -16,7 +16,7 @@ test.describe('InputOtp', () => {
         await expect(page.locator('[data-demo=integeronly] input[inputmode=numeric]')).toHaveCount(4);
     });
 
-    test('ввод: символы заполняют ячейки с автопереходом', async ({ page }) => {
+    test('input: characters fill the cells with auto-advance', async ({ page }) => {
         const cells = page.locator('[data-demo=basic] input');
         await cells.nth(0).click();
         await page.keyboard.type('12ab');
@@ -25,14 +25,14 @@ test.describe('InputOtp', () => {
         await expect(cells.nth(3)).toBeFocused();
     });
 
-    test('переполнение: пятый символ не вводится', async ({ page }) => {
+    test('overflow: the fifth character is not entered', async ({ page }) => {
         const cells = page.locator('[data-demo=basic] input');
         await cells.nth(0).click();
         await page.keyboard.type('12345');
         await expect(page.getByTestId('echo-basic')).toHaveText('1234');
     });
 
-    test('Backspace в пустой ячейке и стрелки переводят фокус', async ({ page }) => {
+    test('Backspace in an empty cell and arrows move focus', async ({ page }) => {
         const cells = page.locator('[data-demo=basic] input');
         await cells.nth(0).click();
         await page.keyboard.type('1');
@@ -45,14 +45,14 @@ test.describe('InputOtp', () => {
         await expect(cells.nth(0)).toBeFocused();
     });
 
-    test('integer_only: буквы не вводятся', async ({ page }) => {
+    test('integer_only: letters are not entered', async ({ page }) => {
         const cells = page.locator('[data-demo=integeronly] input');
         await cells.nth(0).click();
         await page.keyboard.type('a1b2');
         await expect(page.getByTestId('echo-integer')).toHaveText('12');
     });
 
-    test('вставка кода раскладывается по ячейкам', async ({ page }) => {
+    test('pasting a code is distributed across cells', async ({ page }) => {
         const cells = page.locator('[data-demo=basic] input');
         await cells.nth(0).click();
         await page.evaluate(() => {
@@ -65,7 +65,7 @@ test.describe('InputOtp', () => {
         for (const [i, v] of ['9', '8', '7', '6'].entries()) await expect(cells.nth(i)).toHaveValue(v);
     });
 
-    test('template: свои поля и разделитель после третьей ячейки', async ({ page }) => {
+    test('template: custom fields and a separator after the third cell', async ({ page }) => {
         const cells = page.locator('[data-demo=template] input.custom-otp-input');
         await cells.nth(0).click();
         await page.keyboard.type('123456');

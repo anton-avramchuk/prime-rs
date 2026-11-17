@@ -1,70 +1,70 @@
-//! Модель CascadeSelect и чистая логика переходов (по `cascadeselect.ts` PrimeNG 21.1.10).
+//! CascadeSelect model and pure transition logic (after PrimeNG 21.1.10 `cascadeselect.ts`).
 //!
-//! Варианты образуют дерево: ключи `"0"`, `"0_1"`, `"0_1_2"` (индексы предков и собственный). Путь активных групп
-//! ([`State::active`]) хранит раскрытые группы от корня вглубь; фокус — ключ варианта, а список уровня фокуса — его соседи.
+//! Options form a tree: keys `"0"`, `"0_1"`, `"0_1_2"` (indices of ancestors and its own). The path of active groups
+//! ([`State::active`]) holds the expanded groups from the root down; focus is an option key, and the list of the focus level is its siblings.
 
-/// Вариант: лист со значением либо группа с вложенными вариантами.
+/// Option: a leaf with a value or a group with nested options.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CascadeOption {
-    /// Подпись.
+    /// Label.
     pub label: String,
-    /// Значение листа (по умолчанию — подпись).
+    /// Leaf value (the label by default).
     pub value: Option<String>,
-    /// Недоступен.
+    /// Unavailable.
     pub disabled: bool,
-    /// Вложенные варианты (группа).
+    /// Nested options (group).
     pub children: Vec<CascadeOption>,
 }
 
 impl CascadeOption {
-    /// Вариант с подписью.
+    /// Option with a label.
     pub fn new(label: impl Into<String>) -> Self {
         Self { label: label.into(), ..Self::default() }
     }
 
-    /// Значение листа.
+    /// Leaf value.
     pub fn value(mut self, value: impl Into<String>) -> Self {
         self.value = Some(value.into());
         self
     }
 
-    /// Недоступность.
+    /// Unavailability.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 
-    /// Вложенные варианты.
+    /// Nested options.
     pub fn children(mut self, children: Vec<CascadeOption>) -> Self {
         self.children = children;
         self
     }
 }
 
-/// Узел дерева «обработанных вариантов».
+/// Node of the tree of "processed options".
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Node {
-    /// Ключ.
+    /// Key.
     pub key: String,
-    /// Ключ родителя (пусто у корневых).
+    /// Parent key (empty for root options).
     pub parent_key: String,
-    /// Глубина (корневые — `0`).
+    /// Depth (root options are `0`).
     pub level: usize,
-    /// Индекс среди соседей.
+    /// Index among siblings.
     pub index: usize,
-    /// Число соседей.
+    /// Number of siblings.
     pub siblings: usize,
-    /// Группа (есть вложенные варианты).
+    /// Group (has nested options).
     pub group: bool,
-    /// Допустим для фокуса.
+    /// Eligible for focus.
     pub valid: bool,
-    /// Подпись.
+    /// Label.
     pub label: String,
-    /// Значение (подпись, если не задано).
+    /// Value (the label if not set).
     pub value: String,
 }
 
-/// Строит узлы в порядке обхода в глубину.
+/// Builds nodes in depth-first order.
 pub fn build(options: &[CascadeOption]) -> Vec<Node> {
     fn walk(options: &[CascadeOption], level: usize, parent: &str, out: &mut Vec<Node>) {
         for (index, o) in options.iter().enumerate() {
@@ -88,51 +88,51 @@ pub fn build(options: &[CascadeOption]) -> Vec<Node> {
     out
 }
 
-/// Является ли `ancestor` предком `key` (или им самим): сравнение по границам ключа.
+/// Whether `ancestor` is an ancestor of `key` (or the key itself): compared on key boundaries.
 pub fn is_ancestor_or_self(ancestor: &str, key: &str) -> bool {
     key == ancestor || key.strip_prefix(ancestor).is_some_and(|rest| rest.starts_with('_'))
 }
 
-/// Состояние переходов.
+/// Transition state.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct State {
-    /// Раскрытые группы от корня вглубь.
+    /// Expanded groups from the root down.
     pub active: Vec<String>,
-    /// Вариант под фокусом.
+    /// Option under focus.
     pub focus: Option<String>,
-    /// После клика по группе наведение раскрывает любые группы.
+    /// After a click on a group, hover expands any groups.
     pub dirty: bool,
 }
 
-/// Результат клика по варианту.
+/// Result of a click on an option.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Click {
-    /// Раскрытая группа свернулась.
+    /// An expanded group collapsed.
     Closed,
-    /// Группа раскрылась.
+    /// A group expanded.
     Group,
-    /// Выбран лист с этим значением.
+    /// A leaf with this value was selected.
     Select(String),
 }
 
-/// Дерево вариантов с операциями.
+/// Option tree with operations.
 pub struct Menu<'a> {
-    /// Узлы.
+    /// Nodes.
     pub nodes: &'a [Node],
 }
 
 impl Menu<'_> {
-    /// Узел по ключу.
+    /// Node by key.
     pub fn node(&self, key: &str) -> Option<&Node> {
         self.nodes.iter().find(|n| n.key == key)
     }
 
-    /// Дети узла с ключом `parent` (корневые при пустом ключе).
+    /// Children of the node with key `parent` (root ones for an empty key).
     pub fn children(&self, parent: &str) -> Vec<&Node> {
         self.nodes.iter().filter(|n| n.parent_key == parent).collect()
     }
 
-    /// Список уровня фокуса: соседи варианта под фокусом либо корневые.
+    /// List of the focus level: siblings of the option under focus, or root ones.
     pub fn visible(&self, st: &State) -> Vec<&Node> {
         match st.focus.as_deref().and_then(|f| self.node(f)) {
             Some(n) => self.children(&n.parent_key),
@@ -140,13 +140,13 @@ impl Menu<'_> {
         }
     }
 
-    /// Ключи пути от корня до листа со значением `value` (пусто, если такого нет).
+    /// Keys of the path from the root to the leaf with value `value` (empty if there is none).
     pub fn path_to_value(&self, value: &str) -> Vec<String> {
         let Some(leaf) = self.nodes.iter().find(|n| !n.group && n.value == value) else { return Vec::new() };
         self.nodes.iter().filter(|n| is_ancestor_or_self(&n.key, &leaf.key)).map(|n| n.key.clone()).collect()
     }
 
-    /// Подпись листа со значением `value`.
+    /// Label of the leaf with value `value`.
     pub fn label_of(&self, value: &str) -> Option<&str> {
         self.nodes.iter().find(|n| !n.group && n.value == value).map(|n| n.label.as_str())
     }
@@ -163,7 +163,7 @@ impl Menu<'_> {
         list.iter().rev().find(|n| n.valid).map(|n| n.key.clone())
     }
 
-    /// Выбранный (находящийся в пути) допустимый вариант списка, иначе первый допустимый.
+    /// The selected (in-path) eligible option of the list, otherwise the first eligible one.
     fn first_focused(list: &[&Node], st: &State) -> Option<String> {
         list.iter().find(|n| n.valid && Self::is_active(st, &n.key)).map(|n| n.key.clone()).or_else(|| Self::first_valid(list))
     }
@@ -178,7 +178,7 @@ impl Menu<'_> {
         Some(found.map_or_else(|| cur.to_owned(), |n| n.key.clone()))
     }
 
-    /// Открытие панели: путь к выбранному значению и начальный фокус.
+    /// Opening the panel: path to the selected value and initial focus.
     pub fn show(&self, st: &mut State, value: Option<&str>, auto_option_focus: bool) {
         let path = value.map(|v| self.path_to_value(v)).unwrap_or_default();
         if let Some(last) = path.last() {
@@ -197,13 +197,13 @@ impl Menu<'_> {
         };
     }
 
-    /// Закрытие панели.
+    /// Closing the panel.
     pub fn hide(&self, st: &mut State) {
         st.active.clear();
         st.focus = None;
     }
 
-    /// `onOptionChange`: фокус на вариант, закрытие соседних и вложенных групп, раскрытие группы.
+    /// `onOptionChange`: focus on an option, closing sibling and nested groups, expanding the group.
     pub fn option_change(&self, st: &mut State, key: &str, hover: bool, mobile: bool) {
         let Some(node) = self.node(key) else { return };
         let mut active: Vec<String> = st
@@ -222,7 +222,7 @@ impl Menu<'_> {
         st.active = active;
     }
 
-    /// `onOptionClick`. `prevent_selection` — переход фокуса клавишей, лист при этом не выбирается.
+    /// `onOptionClick`. `prevent_selection` — focus moved by a key, the leaf is not selected then.
     pub fn option_click(&self, st: &mut State, key: &str, hover: bool, prevent_selection: bool, mobile: bool) -> Option<Click> {
         let node = self.node(key)?;
         if Self::is_active(st, key) {
@@ -241,7 +241,7 @@ impl Menu<'_> {
         (!prevent_selection).then(|| Click::Select(node.value.clone()))
     }
 
-    /// Наведение на вариант.
+    /// Hover over an option.
     pub fn hover(&self, st: &mut State, key: &str, has_value: bool, focus_on_hover: bool, mobile: bool) {
         if !focus_on_hover {
             return;
@@ -258,7 +258,7 @@ impl Menu<'_> {
         }
     }
 
-    /// Перенос фокуса клавишей: группа раскрывается, лист закрывает группы своего уровня.
+    /// Moving focus by a key: a group expands, a leaf closes the groups of its level.
     fn focus_move(&self, st: &mut State, key: &str, focus_on_hover: bool, mobile: bool) {
         let Some(node) = self.node(key) else { return };
         if !focus_on_hover {
@@ -276,7 +276,7 @@ impl Menu<'_> {
         }
     }
 
-    /// ↓ при открытой панели.
+    /// ↓ with the panel open.
     pub fn arrow_down(&self, st: &mut State, clicked: bool, focus_on_hover: bool, mobile: bool) {
         let list = self.visible(st);
         let next = match st.focus.as_deref() {
@@ -289,7 +289,7 @@ impl Menu<'_> {
         }
     }
 
-    /// ↑ при открытой панели.
+    /// ↑ with the panel open.
     pub fn arrow_up(&self, st: &mut State, clicked: bool, focus_on_hover: bool, mobile: bool) {
         let list = self.visible(st);
         let prev = match st.focus.as_deref() {
@@ -302,7 +302,7 @@ impl Menu<'_> {
         }
     }
 
-    /// →: группа раскрывается; уже раскрытая — фокус на её первый вариант.
+    /// →: a group expands; an already expanded one — focus on its first option.
     pub fn arrow_right(&self, st: &mut State, focus_on_hover: bool, mobile: bool) {
         let Some(node) = st.focus.as_deref().and_then(|f| self.node(f)) else { return };
         if !node.group {
@@ -319,7 +319,7 @@ impl Menu<'_> {
         }
     }
 
-    /// ←: закрывает группу своего уровня и возвращает фокус на группу-родителя.
+    /// ←: closes the group of its level and returns focus to the parent group.
     pub fn arrow_left(&self, st: &mut State, focus_on_hover: bool, mobile: bool) {
         let Some(node) = st.focus.as_deref().and_then(|f| self.node(f)) else { return };
         let parent_key = node.parent_key.clone();
@@ -348,7 +348,7 @@ impl Menu<'_> {
         }
     }
 
-    /// `Tab`: лист под фокусом остаётся в пути; панель закрывается вызывающим.
+    /// `Tab`: the leaf under focus stays in the path; the panel is closed by the caller.
     pub fn tab(&self, st: &mut State, mobile: bool) {
         if let Some(key) = st.focus.clone()
             && self.node(&key).is_some_and(|n| !n.group)
@@ -357,7 +357,7 @@ impl Menu<'_> {
         }
     }
 
-    /// Поиск по началу подписи от текущего варианта (включительно) по кругу.
+    /// Search by label prefix from the current option (inclusive), wrapping around.
     pub fn search(&self, st: &mut State, text: &str, focus_on_hover: bool, mobile: bool) {
         let needle = text.to_lowercase();
         let list = self.visible(st);
@@ -412,7 +412,7 @@ mod tests {
         assert_eq!(&all[..6], ["0", "0_0", "0_0_0", "0_0_1", "0_0_2", "0_1"]);
         assert_eq!(m.path_to_value("w"), keys(&["0", "0_0", "0_0_2"]));
         assert_eq!(m.path_to_value("Sydney"), keys(&["0", "0_0", "0_0_0"]));
-        assert!(m.path_to_value("Australia").is_empty(), "группа не имеет значения");
+        assert!(m.path_to_value("Australia").is_empty(), "a group has no value");
         assert!(m.path_to_value("zzz").is_empty());
         assert_eq!(m.label_of("w"), Some("Wollongong"));
         assert_eq!(m.label_of("Wollongong"), None);
@@ -431,11 +431,11 @@ mod tests {
         assert_eq!(
             m.visible(&st).iter().map(|n| n.key.as_str()).collect::<Vec<_>>(),
             ["0_0_0", "0_0_1", "0_0_2"],
-            "список уровня выбранного"
+            "list of the selected level"
         );
         let mut st = State::default();
         m.show(&mut st, None, false);
-        assert_eq!((st.active.is_empty(), st.focus.clone()), (true, None), "без значения и auto_option_focus фокуса нет");
+        assert_eq!((st.active.is_empty(), st.focus.clone()), (true, None), "without a value and auto_option_focus there is no focus");
         m.show(&mut st, None, true);
         assert_eq!(st.focus.as_deref(), Some("0"));
         m.hide(&mut st);
@@ -452,13 +452,13 @@ mod tests {
         assert_eq!(m.option_click(&mut st, "0_0", false, false, false), Some(Click::Group));
         assert_eq!(st.active, keys(&["0", "0_0"]));
         assert_eq!(m.option_click(&mut st, "0_1", false, false, false), Some(Click::Group));
-        assert_eq!(st.active, keys(&["0", "0_1"]), "соседняя группа закрывает прежнюю");
+        assert_eq!(st.active, keys(&["0", "0_1"]), "a sibling group closes the previous one");
         assert_eq!(m.option_click(&mut st, "0_1_0", false, false, false), Some(Click::Select("Brisbane".into())));
-        assert_eq!(m.option_click(&mut st, "0_1", false, false, false), Some(Click::Closed), "раскрытая группа сворачивается");
-        assert_eq!(st.active, keys(&["0"]), "родители остаются в пути");
+        assert_eq!(m.option_click(&mut st, "0_1", false, false, false), Some(Click::Closed), "an expanded group collapses");
+        assert_eq!(st.active, keys(&["0"]), "parents stay in the path");
         assert_eq!(m.option_click(&mut st, "0", false, false, false), Some(Click::Closed));
         assert!(st.active.is_empty());
-        assert_eq!(m.option_click(&mut st, "3", false, true, false), None, "лист при переходе клавишей не выбирается");
+        assert_eq!(m.option_click(&mut st, "3", false, true, false), None, "a leaf is not selected on a key-driven move");
     }
 
     #[test]
@@ -467,23 +467,23 @@ mod tests {
         let m = Menu { nodes: &nodes };
         let mut st = State::default();
         m.hover(&mut st, "0_0", false, true, false);
-        assert!(st.active.is_empty(), "до клика вложенные группы не раскрываются");
+        assert!(st.active.is_empty(), "before a click nested groups do not expand");
         m.hover(&mut st, "0", false, true, false);
-        assert_eq!(st.active, keys(&["0"]), "до клика корневые группы раскрываются");
+        assert_eq!(st.active, keys(&["0"]), "before a click root groups expand");
         m.hover(&mut st, "3", false, true, false);
         assert_eq!(st.focus.as_deref(), Some("3"));
         let mut st = State { dirty: true, ..State::default() };
         m.hover(&mut st, "0", false, true, false);
         m.hover(&mut st, "0_0", false, true, false);
-        assert_eq!(st.active, keys(&["0", "0_0"]), "после клика наведение раскрывает любые группы");
+        assert_eq!(st.active, keys(&["0", "0_0"]), "after a click hover expands any groups");
         m.hover(&mut st, "0_1", false, false, false);
-        assert_eq!(st.active, keys(&["0", "0_0"]), "без focus_on_hover ничего не меняется");
+        assert_eq!(st.active, keys(&["0", "0_0"]), "without focus_on_hover nothing changes");
         let mut st = State { dirty: true, ..State::default() };
         m.hover(&mut st, "0", false, true, true);
-        assert!(st.active.is_empty() && st.focus.as_deref() == Some("0"), "на узком окне путь не меняется");
+        assert!(st.active.is_empty() && st.focus.as_deref() == Some("0"), "in a narrow window the path does not change");
         let mut st = State::default();
         m.hover(&mut st, "0", true, true, false);
-        assert_eq!(st.active, keys(&["0"]), "при выбранном значении наведение работает сразу");
+        assert_eq!(st.active, keys(&["0"]), "with a selected value hover works right away");
     }
 
     #[test]
@@ -492,33 +492,33 @@ mod tests {
         let m = Menu { nodes: &nodes };
         let mut st = State::default();
         m.arrow_down(&mut st, false, true, false);
-        assert_eq!((st.focus.as_deref(), st.active.clone()), (Some("0"), keys(&["0"])), "фокус на группу раскрывает её");
+        assert_eq!((st.focus.as_deref(), st.active.clone()), (Some("0"), keys(&["0"])), "focus on a group expands it");
         m.arrow_down(&mut st, false, true, false);
-        assert_eq!((st.focus.as_deref(), st.active.clone()), (Some("1"), keys(&["1"])), "переход на другую группу закрывает прежнюю");
+        assert_eq!((st.focus.as_deref(), st.active.clone()), (Some("1"), keys(&["1"])), "moving to another group closes the previous one");
         m.arrow_down(&mut st, false, true, false);
-        assert_eq!(st.focus.as_deref(), Some("3"), "недоступный пропущен");
-        assert!(st.active.is_empty(), "лист закрывает группы своего уровня");
+        assert_eq!(st.focus.as_deref(), Some("3"), "the unavailable one is skipped");
+        assert!(st.active.is_empty(), "a leaf closes the groups of its level");
         m.arrow_down(&mut st, false, true, false);
-        assert_eq!(st.focus.as_deref(), Some("3"), "ниже нет");
+        assert_eq!(st.focus.as_deref(), Some("3"), "nothing below");
         m.arrow_up(&mut st, false, true, false);
         assert_eq!(st.focus.as_deref(), Some("1"));
         m.arrow_up(&mut st, false, true, false);
         m.arrow_up(&mut st, false, true, false);
         assert_eq!(st.focus.as_deref(), Some("0"));
         m.arrow_right(&mut st, true, false);
-        assert_eq!(st.focus.as_deref(), Some("0_0"), "→ на раскрытой группе входит в неё");
+        assert_eq!(st.focus.as_deref(), Some("0_0"), "→ on an expanded group enters it");
         assert_eq!(st.active, keys(&["0", "0_0"]));
         m.arrow_right(&mut st, true, false);
         assert_eq!(st.focus.as_deref(), Some("0_0_0"));
         m.arrow_down(&mut st, false, true, false);
-        assert_eq!(st.focus.as_deref(), Some("0_0_2"), "Newcastle отключён");
+        assert_eq!(st.focus.as_deref(), Some("0_0_2"), "Newcastle is disabled");
         m.arrow_left(&mut st, true, false);
-        assert_eq!(st.focus.as_deref(), Some("0_0"), "← возвращает на группу-родителя");
+        assert_eq!(st.focus.as_deref(), Some("0_0"), "← returns to the parent group");
         assert_eq!(st.active, keys(&["0", "0_0"]));
         m.arrow_left(&mut st, true, false);
         assert_eq!(st.focus.as_deref(), Some("0"));
         m.arrow_left(&mut st, true, false);
-        assert!(st.active.is_empty(), "← на корне закрывает группу");
+        assert!(st.active.is_empty(), "← at the root closes the group");
     }
 
     #[test]
@@ -546,13 +546,13 @@ mod tests {
         m.search(&mut st, "p", false, false);
         assert_eq!(st.focus.as_deref(), Some("3"));
         m.search(&mut st, "o", false, false);
-        assert_eq!(st.focus.as_deref(), Some("3"), "отключённый Other не находится");
+        assert_eq!(st.focus.as_deref(), Some("3"), "the disabled Other is not found");
         m.search(&mut st, "ca", false, false);
-        assert_eq!(st.focus.as_deref(), Some("1"), "по кругу");
+        assert_eq!(st.focus.as_deref(), Some("1"), "wrapping around");
         let mut st = State { focus: Some("0_0_2".into()), ..State::default() };
         m.search(&mut st, "s", false, false);
         assert_eq!(st.focus.as_deref(), Some("0_0_0"));
         m.tab(&mut st, false);
-        assert_eq!((st.active.len(), st.focus.as_deref()), (0, Some("0_0_0")), "Tab на листе только переносит фокус, путь не пополняется");
+        assert_eq!((st.active.len(), st.focus.as_deref()), (0, Some("0_0_0")), "Tab on a leaf only moves focus, the path is not extended");
     }
 }

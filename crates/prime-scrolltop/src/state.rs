@@ -1,44 +1,44 @@
-//! Чистая логика ScrollTop: порог видимости, классы корня и фаза показа (по `scrolltop.ts` и `scrolltopstyle.ts` PrimeNG).
+//! Pure ScrollTop logic: visibility threshold, root classes and show phase (after PrimeNG `scrolltop.ts` and `scrolltopstyle.ts`).
 
-/// Что прокручивает кнопка.
+/// What the button scrolls.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum ScrollTopTarget {
-    /// Окно (кнопка `fixed`).
+    /// The window (the button is `fixed`).
     #[default]
     Window,
-    /// Родительский элемент (кнопка `sticky`).
+    /// The parent element (the button is `sticky`).
     Parent,
 }
 
-/// Поведение прокрутки по клику.
+/// Scroll behavior on click.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum ScrollTopBehavior {
-    /// Плавная прокрутка.
+    /// Smooth scrolling.
     #[default]
     Smooth,
-    /// Мгновенный переход.
+    /// Instant jump.
     Auto,
 }
 
-/// Фаза показа кнопки.
+/// Button show phase.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Phase {
-    /// Не показана.
+    /// Not shown.
     Hidden,
-    /// Появляется (идёт анимация входа).
+    /// Appearing (the enter animation is running).
     Entering,
-    /// Показана.
+    /// Shown.
     Shown,
-    /// Исчезает (идёт анимация выхода).
+    /// Disappearing (the exit animation is running).
     Leaving,
 }
 
-/// Кнопка должна быть видна: прокрутка строго больше порога.
+/// The button must be visible: scroll is strictly greater than the threshold.
 pub fn is_visible(scroll: f64, threshold: f64) -> bool {
     scroll > threshold
 }
 
-/// Классы корня: `p-scrolltop` и `p-scrolltop-sticky` для родителя.
+/// Root classes: `p-scrolltop` and `p-scrolltop-sticky` for the parent.
 pub fn root_classes(target: ScrollTopTarget) -> &'static str {
     match target {
         ScrollTopTarget::Window => "p-scrolltop",
@@ -46,12 +46,12 @@ pub fn root_classes(target: ScrollTopTarget) -> &'static str {
     }
 }
 
-/// Классы анимации входа: сначала начальное состояние, потом (на следующем кадре) только активный переход.
+/// Enter animation classes: first the initial state, then (on the next frame) only the active transition.
 pub fn enter_classes(started: bool) -> &'static str {
     if started { "p-scrolltop-enter-active p-scrolltop-enter-to" } else { "p-scrolltop-enter-from p-scrolltop-enter-active" }
 }
 
-/// Классы анимации выхода.
+/// Exit animation classes.
 pub fn leave_classes(started: bool) -> &'static str {
     if started { "p-scrolltop-leave-active p-scrolltop-leave-to" } else { "p-scrolltop-leave-from p-scrolltop-leave-active" }
 }

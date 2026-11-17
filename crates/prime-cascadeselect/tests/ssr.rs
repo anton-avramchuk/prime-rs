@@ -1,5 +1,5 @@
-//! Разметка CascadeSelect (SSR): корень, скрытое поле, метка, классы состояния, очистка, загрузка, `pt`.
-//! Панель выводится только в открытом состоянии и проверяется в браузерных тестах.
+//! CascadeSelect markup (SSR): root, hidden input, label, state classes, clear, loading, `pt`.
+//! The panel is rendered only when open and is checked in browser tests.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -61,7 +61,7 @@ fn selected_leaf_shows_its_label_by_value() {
         let value = RwSignal::new(Some("Sydney".to_owned()));
         view! { <CascadeSelect options=options() value=value placeholder="Pick" /> }.to_html()
     });
-    assert!(html.contains("p-placeholder") && html.contains("Pick"), "неизвестное значение показывает подсказку: {html}");
+    assert!(html.contains("p-placeholder") && html.contains("Pick"), "an unknown value shows the placeholder: {html}");
 }
 
 #[test]

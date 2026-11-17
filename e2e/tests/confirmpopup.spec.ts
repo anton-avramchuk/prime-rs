@@ -3,14 +3,14 @@ import { expect, test } from '@playwright/test';
 test.describe('ConfirmPopup', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/confirmpopup');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] button').first()).toBeAttached();
     });
 
     const basic = (page) => page.locator('[data-demo=basic]');
 
-    test('панель открывается под кнопкой со стрелкой и стилями темы', async ({ page }) => {
+    test('the panel opens below the button with an arrow and theme styles', async ({ page }) => {
         const save = basic(page).getByRole('button', { name: 'Save' });
         await save.click();
         const panel = page.locator('.p-confirmpopup');
@@ -30,7 +30,7 @@ test.describe('ConfirmPopup', () => {
         await expect(panel.locator('.p-confirmpopup-accept-button')).toBeFocused();
     });
 
-    test('согласие показывает сообщение, закрывает панель и возвращает фокус', async ({ page }) => {
+    test('accept shows a message, closes the panel and returns focus', async ({ page }) => {
         const save = basic(page).getByRole('button', { name: 'Save' });
         await save.click();
         await page.locator('.p-confirmpopup-accept-button').click();
@@ -39,7 +39,7 @@ test.describe('ConfirmPopup', () => {
         await expect(save).toBeFocused();
     });
 
-    test('отказ и Escape показывают сообщение об отказе', async ({ page }) => {
+    test('reject and Escape show the rejection message', async ({ page }) => {
         const save = basic(page).getByRole('button', { name: 'Save' });
         await save.click();
         await page.locator('.p-confirmpopup-reject-button').click();
@@ -52,7 +52,7 @@ test.describe('ConfirmPopup', () => {
         await expect(page.locator('.p-toast-message')).toHaveCount(2);
     });
 
-    test('клик снаружи закрывает без ответа, клик по цели и панели — нет', async ({ page }) => {
+    test('outside click closes without a response, click on the target and panel does not', async ({ page }) => {
         const save = basic(page).getByRole('button', { name: 'Save' });
         await save.click();
         await page.locator('.p-confirmpopup-message').click();
@@ -62,7 +62,7 @@ test.describe('ConfirmPopup', () => {
         await expect(page.locator('.p-toast-message')).toHaveCount(0);
     });
 
-    test('вторая кнопка переносит панель и меняет подписи', async ({ page }) => {
+    test('the second button moves the panel and changes labels', async ({ page }) => {
         const demo = basic(page);
         await demo.getByRole('button', { name: 'Save' }).click();
         await expect(page.locator('.p-confirmpopup')).toBeVisible();
@@ -78,9 +78,9 @@ test.describe('ConfirmPopup', () => {
         expect(p.x + p.width).toBeGreaterThan(b.x);
     });
 
-    test('у нижнего края окна панель переворачивается над кнопкой', async ({ page }) => {
+    test('at the bottom edge of the window the panel flips above the button', async ({ page }) => {
         const save = basic(page).getByRole('button', { name: 'Save' });
-        // окно ниже кнопки не вмещает панель: она должна оказаться над кнопкой
+        // the window below the button cannot fit the panel: it must end up above the button
         const b0 = (await save.boundingBox())!;
         await page.setViewportSize({ width: 1280, height: Math.round(b0.y + b0.height + 40) });
         await save.click();
@@ -93,7 +93,7 @@ test.describe('ConfirmPopup', () => {
         await expect(panel).toHaveClass(/p-confirm-popup-flipped/);
     });
 
-    test('шаблоны: своё содержимое и headless', async ({ page }) => {
+    test('templates: custom content and headless', async ({ page }) => {
         await page.locator('[data-demo=template]').getByRole('button', { name: 'Save' }).click();
         await expect(page.getByTestId('custom-content')).toBeVisible();
         await expect(page.locator('.p-confirmpopup-footer')).toBeVisible();

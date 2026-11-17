@@ -2,28 +2,28 @@
 
 ## Why
 
-Steps — первый компонент волны 5: индикатор шагов мастера (нумерованные пункты в ряд), более простой предшественник `Stepper`. Он остаётся в PrimeNG 21, его стили (`@primeuix/styles/steps`) есть, а в проекте нужен как самый короткий порт для разогрева волны и как образец «навигации по пунктам-ссылкам» (клавиатура с roving `tabindex`), который затем переиспользуют Menubar и PanelMenu.
+Steps is the first wave 5 component: a wizard step indicator (numbered items in a row), a simpler predecessor of `Stepper`. It remains in PrimeNG 21, its styles (`@primeuix/styles/steps`) exist, and the project needs it as the shortest port to warm up the wave and as a reference for "navigation over link items" (keyboard with a roving `tabindex`), which Menubar and PanelMenu then reuse.
 
 ## What Changes
 
-- Новый крейт `prime-steps` (порт `p-steps` из PrimeNG 21.1.10).
-- `StepsItem` (вместо `MenuItem` PrimeNG, без полей маршрутизатора): `id`, `label`, `url`, `target`, `disabled`, `tabindex`, `style`, `command` (`Callback<StepsCommand>` с событием, пунктом и индексом).
-- `Steps`: `nav.p-steps.p-component` (`p-readonly`, `data-pc-name="steps"`) > `ul.p-steps-list` > `li.p-steps-item` (`p-steps-item-active`, `p-disabled`, `aria-current="step"` у активного, `id`) > `a.p-steps-item-link[role=link]` (`href`, `target`, `tabindex`, `aria-expanded`, `aria-disabled`) > `span.p-steps-item-number` (номер с единицы) и `span.p-steps-item-label`.
-- Поведение: по умолчанию `readonly = true` — клик ничего не делает (`preventDefault`), все пункты кроме активного отключены; в интерактивном режиме клик по доступному пункту вызывает `on_active_index_change(i)` и `command`, переход по ссылке отменяется, если у пункта нет `url`; клавиши ←/→ по пунктам, `Home`/`End`, `Enter`/`Space` — клик, с roving `tabindex` (активный пункт `0`, остальные `-1`; `Tab` возвращает фокус-индикатор на активный пункт).
-- Свойства: `model`, `active_index` (двусторонний `RwSignal<usize>` или значение), `readonly` (по умолчанию `true`), `exact`, `style`, `style_class`, `pt`; события `on_active_index_change`.
-- Страница showcase `/steps` с демонстрациями `basic`, `controlled`, `interactive`; e2e; бенчмарки и бюджеты; `docs/steps.md`.
-- Стили: `steps` добавляется в `theme.components`.
-- **Не входит:** `routerLink` и поля маршрутизатора (`queryParams`, `fragment`, …), `RouterModule`-определение активного пункта по адресу (активный пункт — только `active_index`), подсказки пунктов (`tooltipOptions`), HTML-метки (`escape = false`), `Bind`, `pTemplate`. Демонстрация `routing` не переносится: в локальной копии PrimeNG каталога `doc/steps` нет (демонстрации удалены апстримом при чистке), набор демонстраций выведен из списка в `pages/steps/index.ts` (`basic`, `controlled`, `interactive`, `routing`, `accessibility`).
+- New crate `prime-steps` (a port of PrimeNG 21.1.10 `p-steps`).
+- `StepsItem` (instead of PrimeNG's `MenuItem`, without router fields): `id`, `label`, `url`, `target`, `disabled`, `tabindex`, `style`, `command` (`Callback<StepsCommand>` with the event, the item and the index).
+- `Steps`: `nav.p-steps.p-component` (`p-readonly`, `data-pc-name="steps"`) > `ul.p-steps-list` > `li.p-steps-item` (`p-steps-item-active`, `p-disabled`, `aria-current="step"` on the active one, `id`) > `a.p-steps-item-link[role=link]` (`href`, `target`, `tabindex`, `aria-expanded`, `aria-disabled`) > `span.p-steps-item-number` (number counted from one) and `span.p-steps-item-label`.
+- Behaviour: by default `readonly = true` — a click does nothing (`preventDefault`), all items except the active one are disabled; in interactive mode a click on an available item calls `on_active_index_change(i)` and `command`, link navigation is cancelled if the item has no `url`; keys ←/→ over items, `Home`/`End`, `Enter`/`Space` — a click, with a roving `tabindex` (the active item `0`, the rest `-1`; `Tab` returns the focus marker to the active item).
+- Properties: `model`, `active_index` (a two-way `RwSignal<usize>` or a value), `readonly` (`true` by default), `exact`, `style`, `style_class`, `pt`; events `on_active_index_change`.
+- Showcase page `/steps` with demos `basic`, `controlled`, `interactive`; e2e; benchmarks and budgets; `docs/steps.md`.
+- Styles: `steps` is added to `theme.components`.
+- **Out of scope:** `routerLink` and router fields (`queryParams`, `fragment`, …), `RouterModule` detection of the active item by address (the active item is only `active_index`), item tooltips (`tooltipOptions`), HTML labels (`escape = false`), `Bind`, `pTemplate`. The `routing` demo is not ported: the local PrimeNG copy has no `doc/steps` directory (the demos were removed upstream during cleanup), the demo set is derived from the list in `pages/steps/index.ts` (`basic`, `controlled`, `interactive`, `routing`, `accessibility`).
 
 ## Capabilities
 
 ### New Capabilities
-- `steps`: индикатор шагов мастера с необязательной интерактивной навигацией.
+- `steps`: a wizard step indicator with optional interactive navigation.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-steps` (`publish = false`); зависимости: `prime-core`, `web-sys`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (браузерный job, три места: `prime-steps`).
+- New crate `crates/prime-steps` (`publish = false`); dependencies: `prime-core`, `web-sys`.
+- Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places: `prime-steps`).

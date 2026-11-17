@@ -1,44 +1,44 @@
 # InputMask
 
-Порт `p-inputmask` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-inputmask` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
-| `prime-inputmask::InputMask`, `InputMaskPt`, движок `Mask` | `packages/primeng/src/inputmask/inputmask.ts`, `inputmask/style/inputmaskstyle.ts` |
-| Движок маски (буфер, `checkVal`, `shiftL/R`, ввод, удаление, фокус, потеря фокуса, `unmasked`) | `prime-inputmask::mask` — чистый порт без DOM, табличные тесты |
-| CSS | в `@primeuix/styles` модуля `inputmask` нет — только блок `/* For PrimeNG */` (`inputmask` в `primeng_extra`); `xtask/theme/extract.mjs` пропускает отсутствующий модуль |
-| Демонстрации | `apps/showcase/doc/inputmask/*-doc.ts` (`basic`, `mask`, `optional`, `slotchar`, `unmask`, `clearicon`, `disabled`, `invalid`) |
+| `prime-inputmask::InputMask`, `InputMaskPt`, the `Mask` engine | `packages/primeng/src/inputmask/inputmask.ts`, `inputmask/style/inputmaskstyle.ts` |
+| The mask engine (buffer, `checkVal`, `shiftL/R`, input, deletion, focus, blur, `unmasked`) | `prime-inputmask::mask` — a pure port without the DOM, table-driven tests |
+| CSS | `@primeuix/styles` has no `inputmask` module — only a `/* For PrimeNG */` block (`inputmask` in `primeng_extra`); `xtask/theme/extract.mjs` skips the missing module |
+| Demos | `apps/showcase/doc/inputmask/*-doc.ts` (`basic`, `mask`, `optional`, `slotchar`, `unmask`, `clearicon`, `disabled`, `invalid`) |
 
-Спека: `openspec/specs/inputmask`. Значение — `RwSignal<String>`: маскированный текст либо (с `unmask`) только введённые символы.
+Spec: `openspec/specs/inputmask`. The value is a `RwSignal<String>`: the masked text or (with `unmask`) only the entered characters.
 
 ```rust
 let value = RwSignal::new(String::new());
-view! { <InputMask mask="(999) 999-9999" value=value slot_char="_" on_complete=Callback::new(|_| log("полный номер")) /> }
+view! { <InputMask mask="(999) 999-9999" value=value slot_char="_" on_complete=Callback::new(|_| log("full number")) /> }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Маска: `9` — цифра, `a` — буква (`character_pattern`, по умолчанию ASCII), `*` — буква или цифра, `?` — начало необязательной части, остальное — постоянные символы; заполнитель `slot_char` берётся по индексу символа маски (как `getPlaceholder`).
-- Ввод: символ проверяется по шаблону позиции, вставляется со сдвигом вправо (`shiftR`), каретка переходит на следующую позицию; выделение удаляется со сдвигом влево (`shiftL`); `Backspace`/`Delete`; `Enter` завершает ввод; `Escape` возвращает текст на момент фокуса; вставка и ввод через `input` раскладываются по маске (`checkVal(true)`).
-- Фокус показывает буфер маски (через 10 мс), каретка — на первой свободной позиции, у полной маски выделяется всё; потеря фокуса очищает неполное значение при `auto_clear`; `keep_buffer` сохраняет введённое; `on_complete` при заполнении обязательной части; `unmask`; `show_clear`.
-- Разметка: корень `p-inputmask p-component p-inputwrapper` (`p-variant-filled`), поле на классах `InputText`, значок `p-inputmask-clear-icon`.
+- Mask: `9` — digit, `a` — letter (`character_pattern`, ASCII by default), `*` — letter or digit, `?` — start of an optional part, the rest are constant characters; the placeholder `slot_char` is taken by the index of the mask character (as `getPlaceholder`).
+- Input: a character is checked against the position template, inserted with a shift to the right (`shiftR`), the caret moves to the next position; a selection is removed with a shift to the left (`shiftL`); `Backspace`/`Delete`; `Enter` finishes the input; `Escape` returns the text as it was at focus; paste and input via `input` are laid out by the mask (`checkVal(true)`).
+- Focus shows the mask buffer (after 10 ms), the caret goes to the first free position, for a full mask everything is selected; blur clears an incomplete value with `auto_clear`; `keep_buffer` keeps what was entered; `on_complete` when the required part is filled; `unmask`; `show_clear`.
+- Markup: root `p-inputmask p-component p-inputwrapper` (`p-variant-filled`), the field with `InputText` classes, the clear icon `p-inputmask-clear-icon`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `span`, а не пользовательский элемент `p-inputmask`; `position: relative` и (при `fluid`) `width: 100%` заданы встроенным стилем | CSS `For PrimeNG` целится в тег `p-inputmask`, которого в Leptos нет. |
-| Обычные символы обрабатываются в `keydown` (по `KeyboardEvent::key`), а не в устаревшем `keypress` | `keypress` объявлен устаревшим; поведение то же. |
-| Нет ветки Android Chrome (`handleAndroidInput`) и iPhone-Backspace; ввод вне клавиш (IME, вставка, перетаскивание) обрабатывается общим разбором `input` | Не проверялось на устройствах. |
-| Нет форм Angular, `Bind`, `pTemplate` и шаблона значка очистки; `on_input` без события | Вне объёма порта. |
-| При фокусе с неполным значением и `auto_clear` буфер очищается уже на фокусе, а каретка остаётся на прежней позиции | Так же в PrimeNG (`checkVal()` без `allow`). |
+| The root is a `span`, not a custom `p-inputmask` element; `position: relative` and (with `fluid`) `width: 100%` are set by an inline style | The `For PrimeNG` CSS targets the `p-inputmask` tag, which does not exist in Leptos. |
+| Ordinary characters are handled in `keydown` (by `KeyboardEvent::key`), not in the obsolete `keypress` | `keypress` is deprecated; the behaviour is the same. |
+| No Android Chrome branch (`handleAndroidInput`) and no iPhone Backspace handling; input not from keys (IME, paste, drag and drop) is handled by the common `input` parsing | Not verified on devices. |
+| No Angular forms, `Bind`, `pTemplate` and no clear icon template; `on_input` has no event | Outside the scope of the port. |
+| On focus with an incomplete value and `auto_clear` the buffer is cleared already on focus, and the caret stays at its previous position | The same in PrimeNG (`checkVal()` without `allow`). |
 
-## Что не проверялось
+## Not verified
 
-- Ввод на мобильных устройствах и через IME.
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Раскладка справа налево.
+- Input on mobile devices and through IME.
+- Screen readers: `aria-*` were checked against PrimeNG, screen reader behaviour was not.
+- Right-to-left layout.
 
-## Производительность
+## Performance
 
-См. `benches/` (`inputmask-1`, `inputmask-1000`, `case-inputmask`) и `benches/*budgets.toml`.
+See `benches/` (`inputmask-1`, `inputmask-1000`, `case-inputmask`) and `benches/*budgets.toml`.

@@ -4,12 +4,12 @@ test.describe('DataView', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1600 });
         await page.goto('/dataview');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_dataview')).toBeAttached();
     });
 
-        test('стили темы: корень блочный, позиционирован, содержимое с отступами', async ({ page }) => {
+        test('theme styles: block root, positioned, content with padding', async ({ page }) => {
         const root = page.locator('#basic_dataview .p-dataview');
         await expect(root).toHaveClass(/p-dataview-list/);
         expect(await root.evaluate((el) => getComputedStyle(el).position)).toBe('relative');
@@ -18,7 +18,7 @@ test.describe('DataView', () => {
         await expect(page.locator('#basic_dataview .p-paginator')).toHaveCount(0);
     });
 
-    test('переключение между списком и сеткой', async ({ page }) => {
+    test('switching between list and grid', async ({ page }) => {
         const root = page.locator('#layout_dataview .p-dataview');
         await expect(root).toHaveClass(/p-dataview-list/);
         await expect(page.locator('#layout_dataview .product-row')).toHaveCount(6);
@@ -32,7 +32,7 @@ test.describe('DataView', () => {
         await expect(page.locator('#layout_dataview .product-row')).toHaveCount(6);
     });
 
-    test('пагинатор: страницы по пять', async ({ page }) => {
+    test('paginator: five per page', async ({ page }) => {
         const view = page.locator('#pagination_dataview');
         await view.scrollIntoViewIfNeeded();
         await expect(view.locator('.product-row')).toHaveCount(5);
@@ -45,7 +45,7 @@ test.describe('DataView', () => {
         await expect(view.locator('.product-row').first()).toContainText('Bamboo Watch');
     });
 
-    test('сортировка по цене возвращает на первую страницу', async ({ page }) => {
+    test('sorting by price returns to the first page', async ({ page }) => {
         const view = page.locator('#sorting_dataview');
         await view.scrollIntoViewIfNeeded();
         await view.locator('.p-paginator-next').click();
@@ -57,7 +57,7 @@ test.describe('DataView', () => {
         await expect(view.locator('.product-price').first()).toHaveText('$299');
     });
 
-    test('загрузка: маска и значок, нет сообщения о пустых данных', async ({ page }) => {
+    test('loading: mask and icon, no empty data message', async ({ page }) => {
         const view = page.locator('#loading_dataview');
         await view.scrollIntoViewIfNeeded();
         await expect(view.locator('.p-dataview-loading-overlay')).toBeVisible();

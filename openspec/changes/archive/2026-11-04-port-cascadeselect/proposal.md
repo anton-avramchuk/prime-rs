@@ -2,28 +2,28 @@
 
 ## Why
 
-CascadeSelect — поле выбора значения из вложенной структуры: панель с корневым списком, из которого вбок раскрываются списки вложенных групп. Оболочка (метка, очистка, кнопка, панель внутри корня) такая же, как у `Select`/`TreeSelect`; новое — каскад списков, путь активных групп и клавиатура с переходами между уровнями.
+CascadeSelect is a field for picking a value from a nested structure: a panel with a root list, from which lists of nested groups unfold sideways. The shell (label, clear, button, panel inside the root) is the same as in `Select`/`TreeSelect`; what is new is the cascade of lists, the path of active groups and keyboard handling with transitions between levels.
 
 ## What Changes
 
-- Новый крейт `prime-cascadeselect` (порт `p-cascadeselect` из PrimeNG 21.1.10).
-- Модель: `CascadeOption` — `label`, `value` (по умолчанию `label`), `disabled`, `children`. Значение — `RwSignal<Option<String>>` (значение листа).
-- `CascadeSelect`: корень `div.p-cascadeselect.p-component.p-inputwrapper` (`p-cascadeselect-clearable|mobile|open|fluid|sm|lg`, `p-disabled`, `p-invalid`, `p-focus`, `p-variant-filled`, `p-inputwrapper-filled|focus`) > скрытое поле `input[role=combobox][readonly]` (`aria-haspopup="tree"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`) > `span.p-cascadeselect-label` (подпись выбранного листа либо `placeholder`) > значок очистки > `div.p-cascadeselect-dropdown` (стрелка либо спиннер загрузки) > панель `div.p-cascadeselect-overlay` > `div.p-cascadeselect-list-container` > `ul.p-cascadeselect-list[role=tree]` > `li.p-cascadeselect-option[role=treeitem]` (`-option-group`, `-option-active`, `-option-selected`, `p-focus`, `p-disabled`; `aria-level|setsize|posinset|label|selected`, `id`) > `div.p-cascadeselect-option-content` > `span.p-cascadeselect-option-text` + `span.p-cascadeselect-group-icon` (у групп) и вложенный `ul.p-cascadeselect-list.p-cascadeselect-overlay.p-cascadeselect-option-list[role=group]` у активной группы.
-- Поведение: клик по полю открывает/закрывает панель; клик по группе раскрывает её список, повторный — сворачивает; клик по листу выбирает его значение и закрывает панель; наведение раскрывает группы (до первого клика — корневые, после — любые); при открытии раскрывается путь к выбранному; клик вне и `resize` закрывают; `show_clear` очищает; на узком окне (`breakpoint`, `960px`) наведение путь не меняет.
-- Клавиатура на скрытом поле: ↓ ↑ по списку уровня (с открытием группы под фокусом), → раскрывает группу и входит в неё, ← закрывает группу и возвращает на неё, `Alt+↑` закрывает, `Home`/`End`, `Enter`/`Space`, `Escape`, `Tab`, `Backspace` (очистка при `show_clear`), поиск по началу подписи.
-- Свойства: `options`, `value`, `placeholder`, `show_clear`, `disabled`, `invalid`, `variant`, `size`, `fluid`, `loading`, `breakpoint`, `focus_on_hover`, `select_on_focus`, `auto_option_focus`, `input_id`, `tabindex`, `aria_label`, `aria_labelledby`, `id`, `style`, `style_class`, `panel_style_class`; события `on_change`, `on_group_change`, `on_show`, `on_hide`, `on_clear`, `on_focus`, `on_blur`; представления `value_view` и `option`.
-- Страница `/cascadeselect` (`basic`, `clearicon`, `disabled`, `invalid`, `loading`, `template`), e2e, бенчмарки и бюджеты, `docs/cascadeselect.md`, `cascadeselect` в `theme.components` и `primeng_extra`.
-- **Не входит:** произвольные объекты опций (`optionLabel`/`optionValue`/`optionGroupLabel`/`optionGroupChildren`/`dataKey`), формы Angular, `appendTo`, `Ripple`, `Bind`, `pTemplate`, шаблоны `header`/`footer`/иконок, отзеркаливание вложенного списка у края окна (`position()`), `onBeforeShow`/`onBeforeHide`, сообщения для скринридеров (`aria-live`).
+- New crate `prime-cascadeselect` (port of `p-cascadeselect` from PrimeNG 21.1.10).
+- Model: `CascadeOption` — `label`, `value` (`label` by default), `disabled`, `children`. The value is `RwSignal<Option<String>>` (the leaf value).
+- `CascadeSelect`: root `div.p-cascadeselect.p-component.p-inputwrapper` (`p-cascadeselect-clearable|mobile|open|fluid|sm|lg`, `p-disabled`, `p-invalid`, `p-focus`, `p-variant-filled`, `p-inputwrapper-filled|focus`) > hidden input `input[role=combobox][readonly]` (`aria-haspopup="tree"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`) > `span.p-cascadeselect-label` (label of the selected leaf or `placeholder`) > clear icon > `div.p-cascadeselect-dropdown` (arrow or loading spinner) > panel `div.p-cascadeselect-overlay` > `div.p-cascadeselect-list-container` > `ul.p-cascadeselect-list[role=tree]` > `li.p-cascadeselect-option[role=treeitem]` (`-option-group`, `-option-active`, `-option-selected`, `p-focus`, `p-disabled`; `aria-level|setsize|posinset|label|selected`, `id`) > `div.p-cascadeselect-option-content` > `span.p-cascadeselect-option-text` + `span.p-cascadeselect-group-icon` (for groups) and a nested `ul.p-cascadeselect-list.p-cascadeselect-overlay.p-cascadeselect-option-list[role=group]` for the active group.
+- Behavior: a click on the field opens/closes the panel; a click on a group expands its list, a repeated one collapses it; a click on a leaf selects its value and closes the panel; hover expands groups (before the first click — root ones, after — any); on open the path to the selected one is expanded; an outside click and `resize` close; `show_clear` clears; in a narrow window (`breakpoint`, `960px`) hover does not change the path.
+- Keyboard on the hidden input: ↓ ↑ over the level list (opening the group under focus), → expands the group and enters it, ← closes the group and returns to it, `Alt+↑` closes, `Home`/`End`, `Enter`/`Space`, `Escape`, `Tab`, `Backspace` (clear with `show_clear`), search by label prefix.
+- Properties: `options`, `value`, `placeholder`, `show_clear`, `disabled`, `invalid`, `variant`, `size`, `fluid`, `loading`, `breakpoint`, `focus_on_hover`, `select_on_focus`, `auto_option_focus`, `input_id`, `tabindex`, `aria_label`, `aria_labelledby`, `id`, `style`, `style_class`, `panel_style_class`; events `on_change`, `on_group_change`, `on_show`, `on_hide`, `on_clear`, `on_focus`, `on_blur`; views `value_view` and `option`.
+- Page `/cascadeselect` (`basic`, `clearicon`, `disabled`, `invalid`, `loading`, `template`), e2e, benchmarks and budgets, `docs/cascadeselect.md`, `cascadeselect` in `theme.components` and `primeng_extra`.
+- **Out of scope:** arbitrary option objects (`optionLabel`/`optionValue`/`optionGroupLabel`/`optionGroupChildren`/`dataKey`), Angular forms, `appendTo`, `Ripple`, `Bind`, `pTemplate`, `header`/`footer`/icon templates, mirroring of the nested list at the window edge (`position()`), `onBeforeShow`/`onBeforeHide`, screen reader messages (`aria-live`).
 
 ## Capabilities
 
 ### New Capabilities
-- `cascadeselect`: выбор значения из каскада вложенных списков.
+- `cascadeselect`: picking a value from a cascade of nested lists.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-cascadeselect` (`publish = false`); зависимости: `prime-core`, `prime-dom`, `prime-icons` (chevrondown, angleright, times, spinner).
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.
+- New crate `crates/prime-cascadeselect` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-icons` (chevrondown, angleright, times, spinner).
+- Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml`.

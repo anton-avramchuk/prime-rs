@@ -1,4 +1,4 @@
-//! Разметка, значение, атрибуты, шаблон и `pt` InputOtp (SSR).
+//! InputOtp markup, value, attributes, template and `pt` (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -29,7 +29,7 @@ fn length_sets_cell_count_and_maxlength() {
     assert_eq!(count(&html, "p-inputotp-input"), 6, "{html}");
     assert_eq!(count(&html, r#"maxlength="6""#), 1, "{html}");
     assert_eq!(count(&html, r#"maxlength="1""#), 5, "{html}");
-    assert!(html.find(r#"maxlength="6""#) < html.find(r#"maxlength="1""#), "первая ячейка принимает вставку: {html}");
+    assert!(html.find(r#"maxlength="6""#) < html.find(r#"maxlength="1""#), "the first cell accepts paste: {html}");
 }
 
 #[test]

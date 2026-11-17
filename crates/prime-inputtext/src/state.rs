@@ -1,24 +1,24 @@
-//! Чистая логика InputText: классы и `data-p` (по `inputtextstyle.ts` и `InputText.dataP` PrimeNG).
+//! Pure InputText logic: classes and `data-p` (after PrimeNG `inputtextstyle.ts` and `InputText.dataP`).
 
 use prime_core::{ClassNames, DataP, Size, Variant};
 use std::borrow::Cow;
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct InputTextState {
-    /// Значение не пусто.
+    /// The value is not empty.
     pub filled: bool,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// Итоговый вариант (свойство или `PrimeConfig.input_variant`).
+    /// Resulting variant (the property or `PrimeConfig.input_variant`).
     pub variant: Option<Variant>,
-    /// На всю ширину контейнера.
+    /// Full container width.
     pub fluid: bool,
 }
 
-/// Добавляет классы корня в порядке `inputtextstyle.ts`.
+/// Adds the root classes in the order of `inputtextstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &InputTextState) {
     cn.add("p-inputtext p-component")
         .add_if(s.filled, "p-filled")
@@ -29,7 +29,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &InputTextState) {
         .add_if(s.fluid, "p-inputtext-fluid");
 }
 
-/// Значение `data-p`: `invalid`, `fluid`, `filled` (при варианте `filled`), размер.
+/// `data-p` value: `invalid`, `fluid`, `filled` (with the `filled` variant), size.
 pub fn data_p(s: &InputTextState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.invalid, "invalid")

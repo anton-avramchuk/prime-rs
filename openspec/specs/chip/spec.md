@@ -1,79 +1,79 @@
 # chip Specification
 
 ## Purpose
-Компонент Chip (порт p-chip из PrimeNG): метка, иконка или изображение, удаление мышью и клавиатурой, события, локализуемая подпись, pass-through.
+The Chip component (port of PrimeNG `p-chip`): a label, an icon or an image, removal by mouse and keyboard, events, a localizable label, pass-through.
 
 ## Requirements
 
-### Requirement: Свойства Chip
-Компонент `Chip` крейта `prime-chip` SHALL принимать `label`, `icon` (содержимое Leptos), `image` (URL), `alt`, `disabled`, `removable`, `remove_icon` (содержимое Leptos), `style`, `style_class`, `children`, `pt` и события `on_remove`, `on_image_error`. Все свойства необязательны; изменяемые во время работы SHALL принимать значение или сигнал.
+### Requirement: Chip properties
+The `Chip` component of the `prime-chip` crate SHALL accept `label`, `icon` (Leptos content), `image` (URL), `alt`, `disabled`, `removable`, `remove_icon` (Leptos content), `style`, `style_class`, `children`, `pt` and the events `on_remove`, `on_image_error`. All properties are optional; those that can change at runtime SHALL accept a value or a signal.
 
-#### Scenario: Метка
-- **WHEN** `Chip` отрисован с `label = "Amy Elsner"`
-- **THEN** внутри есть `<div class="p-chip-label">Amy Elsner</div>`
+#### Scenario: Label
+- **WHEN** `Chip` is rendered with `label = "Amy Elsner"`
+- **THEN** it contains `<div class="p-chip-label">Amy Elsner</div>`
 
-#### Scenario: Без метки
-- **WHEN** `label` не задана
-- **THEN** элемента `p-chip-label` нет
+#### Scenario: Without a label
+- **WHEN** `label` is not set
+- **THEN** there is no `p-chip-label` element
 
-### Requirement: Классы и атрибуты Chip
-Корень SHALL быть элементом с классами `p-chip p-component` и `p-disabled` при `disabled`; атрибут `data-p` SHALL равняться `removable` при `removable` и быть пустым иначе. `style_class` и `style` SHALL добавляться без потери собственных классов.
+### Requirement: Classes and attributes of Chip
+The root SHALL be an element with the classes `p-chip p-component` and `p-disabled` when `disabled`; the `data-p` attribute SHALL equal `removable` when `removable` and be empty otherwise. `style_class` and `style` SHALL be added without losing the own classes.
 
-#### Scenario: Disabled и removable
-- **WHEN** заданы `disabled` и `removable`
-- **THEN** у корня есть `p-disabled`, а `data-p` равен `removable`
+#### Scenario: Disabled and removable
+- **WHEN** `disabled` and `removable` are set
+- **THEN** the root has `p-disabled`, and `data-p` equals `removable`
 
-### Requirement: Содержимое Chip
-Содержимое SHALL выводиться в порядке: `children`, затем изображение `<img class="p-chip-image">` с `src` и `alt`, если задан `image`, иначе иконка в `<span class="p-chip-icon">`, если задана, затем метка, затем элемент удаления, если `removable`.
+### Requirement: Content of Chip
+The content SHALL be rendered in this order: `children`, then the image `<img class="p-chip-image">` with `src` and `alt` if `image` is set, otherwise the icon in `<span class="p-chip-icon">` if it is set, then the label, then the remove element if `removable`.
 
-#### Scenario: Изображение вместо иконки
-- **WHEN** заданы `image` и `icon`
-- **THEN** выводится `img.p-chip-image`, а `p-chip-icon` нет
+#### Scenario: Image instead of icon
+- **WHEN** `image` and `icon` are set
+- **THEN** `img.p-chip-image` is rendered, and `p-chip-icon` is absent
 
-#### Scenario: Иконка
-- **WHEN** задана только `icon`
-- **THEN** выводится `span.p-chip-icon`
+#### Scenario: Icon
+- **WHEN** only `icon` is set
+- **THEN** `span.p-chip-icon` is rendered
 
-### Requirement: Удаление Chip
-При `removable` SHALL выводиться элемент `span.p-chip-remove-icon` с `role="button"`, `tabindex="0"` (`-1` при `disabled`) и `aria-label` из `PrimeConfig.locale` (`aria.removeLabel`, по умолчанию `Remove`); внутри — `remove_icon` или `TimesCircleIcon`. Клик по нему, а также клавиши Enter и Backspace SHALL скрывать Chip (`display: none`) и вызывать `on_remove` ровно один раз.
+### Requirement: Removing a Chip
+With `removable` the element `span.p-chip-remove-icon` SHALL be rendered with `role="button"`, `tabindex="0"` (`-1` when `disabled`) and an `aria-label` from `PrimeConfig.locale` (`aria.removeLabel`, default `Remove`); inside it — `remove_icon` or `TimesCircleIcon`. A click on it, as well as the Enter and Backspace keys, SHALL hide the Chip (`display: none`) and call `on_remove` exactly once.
 
-#### Scenario: Клик
-- **WHEN** пользователь нажимает на элемент удаления
-- **THEN** Chip скрыт (`display: none`) и `on_remove` вызван один раз
+#### Scenario: Click
+- **WHEN** the user clicks the remove element
+- **THEN** the Chip is hidden (`display: none`) and `on_remove` is called once
 
-#### Scenario: Клавиатура
-- **WHEN** фокус на элементе удаления и нажата Enter или Backspace
-- **THEN** Chip скрыт и `on_remove` вызван один раз
+#### Scenario: Keyboard
+- **WHEN** the focus is on the remove element and Enter or Backspace is pressed
+- **THEN** the Chip is hidden and `on_remove` is called once
 
-#### Scenario: Подпись из локали
-- **WHEN** в `PrimeConfig.locale` задано `aria.removeLabel = "Удалить"`
-- **THEN** у элемента удаления `aria-label="Удалить"`
+#### Scenario: Label from the locale
+- **WHEN** `aria.removeLabel = "Delete"` is set in `PrimeConfig.locale`
+- **THEN** the remove element has `aria-label="Delete"`
 
-#### Scenario: Не удаляемый
-- **WHEN** `removable` не задан
-- **THEN** элемента удаления нет
+#### Scenario: Not removable
+- **WHEN** `removable` is not set
+- **THEN** there is no remove element
 
-### Requirement: Ошибка загрузки изображения
-При ошибке загрузки `img.p-chip-image` SHALL вызываться `on_image_error` с исходным событием.
+### Requirement: Image loading error
+On an image loading error `img.p-chip-image` SHALL call `on_image_error` with the original event.
 
-#### Scenario: Ошибка
-- **WHEN** изображение не загрузилось
-- **THEN** `on_image_error` вызван один раз
+#### Scenario: Error
+- **WHEN** the image fails to load
+- **THEN** `on_image_error` is called once
 
-### Requirement: Pass-through Chip
-`Chip` SHALL принимать `pt` для корня, изображения, иконки, метки и элемента удаления; классы и атрибуты добавляются к собственным, не заменяя их.
+### Requirement: Pass-through of Chip
+`Chip` SHALL accept `pt` for the root, the image, the icon, the label and the remove element; the classes and attributes are added to the own ones, without replacing them.
 
-#### Scenario: pt на метке
-- **WHEN** передан `pt` с классом `extra` для метки
-- **THEN** у `p-chip-label` есть и `p-chip-label`, и `extra`
+#### Scenario: pt on the label
+- **WHEN** `pt` with the class `extra` is passed for the label
+- **THEN** `p-chip-label` has both `p-chip-label` and `extra`
 
-### Requirement: Стоимость отрисовки Chip
-`Chip` SHALL использовать статическую ветвь отрисовки, если все свойства статические и он не удаляемый, и реактивную иначе; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `chip` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `chip` в `benches/budgets.toml`.
+### Requirement: Rendering cost of Chip
+`Chip` SHALL use the static render branch if all properties are static and it is not removable, and the reactive branch otherwise; both branches SHALL produce the same markup. The number of allocations per instance during SSR SHALL fit the budget `chip` in `benches/alloc-budgets.toml`, and the wasm contribution — the budget `chip` in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один и тот же набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** the same set of values is passed statically and through signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Chip не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the values of Chip do not exceed the budgets

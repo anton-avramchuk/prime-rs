@@ -1,55 +1,55 @@
-//! Чистая модель Table: сортировка, выбор строк, раскрытие (по `table.ts` PrimeNG, без DOM).
+//! Pure Table model: sorting, row selection, expansion (after PrimeNG `table.ts`, no DOM).
 //!
-//! Строки определяются ключами (`String`), как `dataKey` у PrimeNG; выбор и раскрытие хранят ключи.
+//! Rows are identified by keys (`String`), like PrimeNG's `dataKey`; selection and expansion store keys.
 
 use std::cmp::Ordering;
 
-/// Режим сортировки.
+/// Sort mode.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum SortMode {
-    /// По одному столбцу (по умолчанию).
+    /// By a single column (default).
     #[default]
     Single,
-    /// По нескольким столбцам, добавление клавишей Ctrl/⌘.
+    /// By several columns, added with the Ctrl/⌘ key.
     Multiple,
 }
 
-/// Режим выбора строк кликом.
+/// Row selection mode on click.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SelectionMode {
-    /// Одна строка.
+    /// One row.
     Single,
-    /// Несколько строк.
+    /// Several rows.
     Multiple,
 }
 
-/// Столбец и порядок сортировки (1 — по возрастанию, -1 — по убыванию).
+/// A column and its sort order (1 - ascending, -1 - descending).
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SortMeta {
-    /// Поле столбца.
+    /// Column field.
     pub field: String,
-    /// Порядок: 1 или -1.
+    /// Order: 1 or -1.
     pub order: i32,
 }
 
 impl SortMeta {
-    /// Сортировка по полю.
+    /// Sort by field.
     pub fn new(field: impl Into<String>, order: i32) -> Self {
         Self { field: field.into(), order }
     }
 }
 
-/// Порядок сортировки столбца: 0, если по нему не сортируют.
+/// Sort order of a column: 0 if it is not sorted by.
 pub fn order_of(meta: &[SortMeta], field: &str) -> i32 {
     meta.iter().find(|m| m.field == field).map_or(0, |m| m.order)
 }
 
-/// Номер столбца в многоуровневой сортировке (с 1) для значка-счётчика; одиночная сортировка значка не имеет.
+/// Column number in a multi-level sort (starting at 1) for the counter badge; single sort has no badge.
 pub fn badge_of(mode: SortMode, meta: &[SortMeta], field: &str) -> Option<usize> {
     if mode == SortMode::Multiple && meta.len() > 1 { meta.iter().position(|m| m.field == field).map(|i| i + 1) } else { None }
 }
 
-/// Новая сортировка после клика по заголовку `field` (`sort`).
+/// New sort after a click on the `field` header (`sort`).
 pub fn toggle_sort(mode: SortMode, meta: &[SortMeta], field: &str, meta_key: bool, default_order: i32) -> Vec<SortMeta> {
     match mode {
         SortMode::Single => {
@@ -72,7 +72,7 @@ pub fn toggle_sort(mode: SortMode, meta: &[SortMeta], field: &str, meta_key: boo
     }
 }
 
-/// Строки в порядке сортировки: устойчивая, многоуровневая (`multisortField`); `compare` сравнивает по полю.
+/// Rows in sort order: stable, multi-level (`multisortField`); `compare` compares by field.
 pub fn sort_rows<T: Clone>(rows: &[T], meta: &[SortMeta], compare: &dyn Fn(&str, &T, &T) -> Ordering) -> Vec<T> {
     let mut out = rows.to_vec();
     if meta.is_empty() {
@@ -91,16 +91,16 @@ pub fn sort_rows<T: Clone>(rows: &[T], meta: &[SortMeta], compare: &dyn Fn(&str,
     out
 }
 
-/// Результат клика по строке: новый выбор и признак «строка выбрана» (для события выбора/снятия).
+/// Result of a row click: the new selection and the "row is selected" flag (for the select/unselect event).
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RowClick {
-    /// Новый выбор.
+    /// New selection.
     pub selection: Vec<String>,
-    /// Кликнутая строка теперь выбрана.
+    /// The clicked row is now selected.
     pub selected: bool,
 }
 
-/// Выбор по клику на строку (`handleRowClick` без диапазона Shift).
+/// Selection on row click (`handleRowClick` without Shift range).
 pub fn row_click(mode: SelectionMode, selection: &[String], key: &str, meta_selection: bool, meta_key: bool) -> RowClick {
     let was = selection.iter().any(|k| k == key);
     let without = || selection.iter().filter(|k| k.as_str() != key).cloned().collect::<Vec<_>>();
@@ -136,12 +136,12 @@ pub fn row_click(mode: SelectionMode, selection: &[String], key: &str, meta_sele
     RowClick { selection, selected }
 }
 
-/// Все строки `keys` выбраны (флажок в заголовке).
+/// All `keys` rows are selected (header checkbox).
 pub fn all_selected(keys: &[String], selection: &[String]) -> bool {
     !keys.is_empty() && keys.iter().all(|k| selection.contains(k))
 }
 
-/// Выбор после флажка в заголовке (`toggleRowsWithCheckbox`): при `check` добавляет `keys`; при `page_only` остальной выбор сохраняется.
+/// Selection after the header checkbox (`toggleRowsWithCheckbox`): when `check`, adds `keys`; with `page_only` the rest of the selection is kept.
 pub fn toggle_all(keys: &[String], selection: &[String], check: bool, page_only: bool) -> Vec<String> {
     let mut next: Vec<String> = if page_only { selection.iter().filter(|k| !keys.contains(k)).cloned().collect() } else { Vec::new() };
     if check {
@@ -150,7 +150,7 @@ pub fn toggle_all(keys: &[String], selection: &[String], check: bool, page_only:
     next
 }
 
-/// Раскрытие строки (`toggleRow`): в режиме `single` раскрыта только одна строка.
+/// Row expansion (`toggleRow`): in `single` mode only one row is expanded.
 pub fn toggle_expanded(expanded: &[String], key: &str, single: bool) -> (Vec<String>, bool) {
     if expanded.iter().any(|k| k == key) {
         (expanded.iter().filter(|k| k.as_str() != key).cloned().collect(), false)
@@ -161,7 +161,7 @@ pub fn toggle_expanded(expanded: &[String], key: &str, single: bool) -> (Vec<Str
     }
 }
 
-/// Сравнение строк с пропусками в начале (`null` меньше всего) для столбца, значение которого — `Option`.
+/// Comparison of rows with gaps first (`null` is the smallest) for a column whose value is an `Option`.
 pub fn compare_option<T: Ord>(a: &Option<T>, b: &Option<T>) -> Ordering {
     match (a, b) {
         (None, None) => Ordering::Equal,
@@ -171,45 +171,45 @@ pub fn compare_option<T: Ord>(a: &Option<T>, b: &Option<T>) -> Ordering {
     }
 }
 
-/// Режим сравнения фильтра (`FilterMatchMode` PrimeNG).
+/// Filter match mode (PrimeNG `FilterMatchMode`).
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum MatchMode {
-    /// Начинается с (по умолчанию).
+    /// Starts with (default).
     #[default]
     StartsWith,
-    /// Содержит.
+    /// Contains.
     Contains,
-    /// Не содержит.
+    /// Does not contain.
     NotContains,
-    /// Заканчивается на.
+    /// Ends with.
     EndsWith,
-    /// Равно.
+    /// Equals.
     Equals,
-    /// Не равно.
+    /// Does not equal.
     NotEquals,
-    /// Меньше (числа).
+    /// Less than (numbers).
     Lt,
-    /// Меньше или равно (числа).
+    /// Less than or equal (numbers).
     Lte,
-    /// Больше (числа).
+    /// Greater than (numbers).
     Gt,
-    /// Больше или равно (числа).
+    /// Greater than or equal (numbers).
     Gte,
 }
 
-/// Фильтр столбца.
+/// Column filter.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FilterMeta {
-    /// Поле столбца.
+    /// Column field.
     pub field: String,
-    /// Искомое значение.
+    /// Search value.
     pub value: String,
-    /// Режим сравнения.
+    /// Match mode.
     pub match_mode: MatchMode,
 }
 
-/// Подходит ли текст ячейки под значение фильтра. Строки сравниваются без учёта регистра; `Equals`/`NotEquals` и режимы
-/// порядка сравнивают числа как числа, если оба значения числовые.
+/// Whether the cell text matches the filter value. Strings are compared case-insensitively; `Equals`/`NotEquals` and order
+/// modes compare numbers as numbers if both values are numeric.
 pub fn matches(text: &str, value: &str, mode: MatchMode) -> bool {
     let (text, value) = (text.trim().to_lowercase(), value.trim().to_lowercase());
     let numbers = || Some((text.parse::<f64>().ok()?, value.parse::<f64>().ok()?));
@@ -227,7 +227,7 @@ pub fn matches(text: &str, value: &str, mode: MatchMode) -> bool {
     }
 }
 
-/// Фильтры после ввода значения в `field`: пустое значение снимает фильтр столбца.
+/// Filters after entering a value in `field`: an empty value clears the column filter.
 pub fn set_filter(filters: &[FilterMeta], field: &str, value: &str, mode: MatchMode) -> Vec<FilterMeta> {
     let mut next: Vec<FilterMeta> = filters.iter().filter(|f| f.field != field).cloned().collect();
     if !value.trim().is_empty() {
@@ -237,13 +237,13 @@ pub fn set_filter(filters: &[FilterMeta], field: &str, value: &str, mode: MatchM
     next
 }
 
-/// Значение фильтра столбца (пустая строка, если фильтра нет).
+/// Column filter value (empty string if there is no filter).
 pub fn filter_value<'a>(filters: &'a [FilterMeta], field: &str) -> &'a str {
     filters.iter().find(|f| f.field == field).map_or("", |f| f.value.as_str())
 }
 
-/// Строки, подходящие под все фильтры столбцов и под глобальный фильтр (режим `Contains` по любому из `global_fields`).
-/// `text_of(field, row)` даёт текст поля строки.
+/// Rows matching all column filters and the global filter (`Contains` mode on any of `global_fields`).
+/// `text_of(field, row)` gives the text of a row field.
 pub fn filter_rows<T: Clone>(
     rows: &[T],
     filters: &[FilterMeta],
@@ -283,7 +283,7 @@ mod tests {
         let second = toggle_sort(SortMode::Single, &first, "a", false, 1);
         assert_eq!(second, [m("a", -1)]);
         assert_eq!(toggle_sort(SortMode::Single, &second, "a", false, 1), [m("a", 1)]);
-        assert_eq!(toggle_sort(SortMode::Single, &second, "b", false, 1), [m("b", 1)], "другой столбец — порядок по умолчанию");
+        assert_eq!(toggle_sort(SortMode::Single, &second, "b", false, 1), [m("b", 1)], "other column: default order");
         assert_eq!(toggle_sort(SortMode::Single, &second, "b", false, -1), [m("b", -1)]);
     }
 
@@ -291,13 +291,13 @@ mod tests {
     fn multiple_sort_table() {
         use SortMode::Multiple;
         assert_eq!(toggle_sort(Multiple, &[], "a", false, 1), [m("a", 1)]);
-        assert_eq!(toggle_sort(Multiple, &[m("a", 1)], "b", false, 1), [m("b", 1)], "без клавиши — заново");
-        assert_eq!(toggle_sort(Multiple, &[m("a", 1)], "b", true, 1), [m("a", 1), m("b", 1)], "с клавишей — добавляется");
-        assert_eq!(toggle_sort(Multiple, &[m("a", 1), m("b", 1)], "a", false, 1), [m("a", -1)], "без клавиши остаётся один столбец");
+        assert_eq!(toggle_sort(Multiple, &[m("a", 1)], "b", false, 1), [m("b", 1)], "without key: starts over");
+        assert_eq!(toggle_sort(Multiple, &[m("a", 1)], "b", true, 1), [m("a", 1), m("b", 1)], "with key: appended");
+        assert_eq!(toggle_sort(Multiple, &[m("a", 1), m("b", 1)], "a", false, 1), [m("a", -1)], "without key a single column remains");
         assert_eq!(
             toggle_sort(Multiple, &[m("a", 1), m("b", 1)], "a", true, 1),
             [m("a", -1), m("b", 1)],
-            "с клавишей порядок меняется на месте"
+            "with key the order changes in place"
         );
         assert_eq!(toggle_sort(Multiple, &[], "a", true, -1), [m("a", -1)]);
     }
@@ -307,7 +307,7 @@ mod tests {
         let meta = [m("a", 1), m("b", -1)];
         assert_eq!((order_of(&meta, "a"), order_of(&meta, "b"), order_of(&meta, "c")), (1, -1, 0));
         assert_eq!(badge_of(SortMode::Multiple, &meta, "b"), Some(2));
-        assert_eq!(badge_of(SortMode::Multiple, &meta[..1], "a"), None, "один столбец — без счётчика");
+        assert_eq!(badge_of(SortMode::Multiple, &meta[..1], "a"), None, "one column: no counter");
         assert_eq!(badge_of(SortMode::Single, &meta, "a"), None);
         assert_eq!(badge_of(SortMode::Multiple, &meta, "c"), None);
     }
@@ -316,7 +316,7 @@ mod tests {
     fn sort_rows_is_multilevel_and_stable() {
         let rows = vec![(2, 'b'), (1, 'z'), (2, 'a'), (1, 'a'), (3, 'c')];
         let cmp = |field: &str, a: &(i32, char), b: &(i32, char)| if field == "n" { a.0.cmp(&b.0) } else { a.1.cmp(&b.1) };
-        assert_eq!(sort_rows(&rows, &[m("n", 1)], &cmp), [(1, 'z'), (1, 'a'), (2, 'b'), (2, 'a'), (3, 'c')], "устойчиво");
+        assert_eq!(sort_rows(&rows, &[m("n", 1)], &cmp), [(1, 'z'), (1, 'a'), (2, 'b'), (2, 'a'), (3, 'c')], "stable");
         assert_eq!(sort_rows(&rows, &[m("n", -1), m("c", 1)], &cmp), [(3, 'c'), (2, 'a'), (2, 'b'), (1, 'a'), (1, 'z')]);
         assert_eq!(sort_rows(&rows, &[], &cmp), rows);
     }
@@ -329,7 +329,7 @@ mod tests {
         let r = row_click(Single, &keys("a"), "b", false, false);
         assert_eq!(r.selection, keys("b"));
         let r = row_click(Single, &keys("a"), "a", false, false);
-        assert_eq!((r.selection, r.selected), (vec![], false), "повторный клик снимает");
+        assert_eq!((r.selection, r.selected), (vec![], false), "repeated click deselects");
         let r = row_click(Multiple, &keys("a"), "b", false, false);
         assert_eq!(r.selection, keys("a b"));
         let r = row_click(Multiple, &keys("a b"), "a", false, false);
@@ -340,13 +340,13 @@ mod tests {
     fn row_click_with_meta_key_selection() {
         use SelectionMode::*;
         let r = row_click(Multiple, &keys("a b"), "c", true, false);
-        assert_eq!(r.selection, keys("c"), "без клавиши выбор заменяется");
+        assert_eq!(r.selection, keys("c"), "without key the selection is replaced");
         let r = row_click(Multiple, &keys("a b"), "c", true, true);
-        assert_eq!(r.selection, keys("a b c"), "с клавишей дополняется");
+        assert_eq!(r.selection, keys("a b c"), "with key it is extended");
         let r = row_click(Multiple, &keys("a b"), "a", true, true);
-        assert_eq!((r.selection, r.selected), (keys("b"), false), "с клавишей выбранная снимается");
+        assert_eq!((r.selection, r.selected), (keys("b"), false), "with key a selected row is deselected");
         let r = row_click(Multiple, &keys("a b"), "a", true, false);
-        assert_eq!(r.selection, keys("a"), "без клавиши остаётся только кликнутая");
+        assert_eq!(r.selection, keys("a"), "without key only the clicked one remains");
         let r = row_click(Single, &keys("a"), "a", true, true);
         assert!(r.selection.is_empty() && !r.selected);
         let r = row_click(Single, &keys("a"), "b", true, false);
@@ -358,12 +358,12 @@ mod tests {
         let all = keys("a b c");
         assert!(all_selected(&all, &keys("c b a x")));
         assert!(!all_selected(&all, &keys("a b")));
-        assert!(!all_selected(&[], &keys("a")), "пустой набор не считается выбранным");
+        assert!(!all_selected(&[], &keys("a")), "an empty set is not considered selected");
         assert_eq!(toggle_all(&all, &[], true, false), all);
         assert_eq!(toggle_all(&all, &keys("a b c"), false, false), Vec::<String>::new());
-        assert_eq!(toggle_all(&keys("a b"), &keys("c x"), true, true), keys("c x a b"), "при page_only остальной выбор сохраняется");
+        assert_eq!(toggle_all(&keys("a b"), &keys("c x"), true, true), keys("c x a b"), "with page_only the rest of the selection is kept");
         assert_eq!(toggle_all(&keys("a b"), &keys("a c"), false, true), keys("c"));
-        assert_eq!(toggle_all(&keys("a b"), &keys("a c"), true, false), keys("a b"), "без page_only выбор заменяется");
+        assert_eq!(toggle_all(&keys("a b"), &keys("a c"), true, false), keys("a b"), "without page_only the selection is replaced");
     }
 
     #[test]
@@ -375,7 +375,7 @@ mod tests {
         let (e3, open) = toggle_expanded(&e2, "a", false);
         assert_eq!((e3, open), (keys("b"), false));
         let (e4, open) = toggle_expanded(&e2, "c", true);
-        assert_eq!((e4, open), (keys("c"), true), "режим single");
+        assert_eq!((e4, open), (keys("c"), true), "single mode");
     }
 
     #[test]
@@ -416,9 +416,9 @@ mod tests {
         let b = set_filter(&a, "code", "f2", MatchMode::Contains);
         assert_eq!(b.len(), 2);
         let c = set_filter(&b, "name", "blue", MatchMode::StartsWith);
-        assert_eq!((c[0].field.as_str(), filter_value(&c, "name")), ("name", "blue"), "порядок сохраняется");
+        assert_eq!((c[0].field.as_str(), filter_value(&c, "name")), ("name", "blue"), "order is preserved");
         let d = set_filter(&c, "name", "  ", MatchMode::StartsWith);
-        assert_eq!(d.len(), 1, "пустое значение снимает фильтр");
+        assert_eq!(d.len(), 1, "an empty value clears the filter");
         assert_eq!(filter_value(&d, "name"), "");
     }
 
@@ -438,9 +438,9 @@ mod tests {
         let by_name = set_filter(&[], "name", "bl", MatchMode::StartsWith);
         assert_eq!(f(&by_name, ""), ["Black Watch", "Blue Band"]);
         let both = set_filter(&by_name, "price", "75", MatchMode::Lt);
-        assert_eq!(f(&both, ""), ["Black Watch"], "условия складываются по И");
-        assert_eq!(f(&[], "fit"), ["Blue Band"], "глобальный фильтр: любое из полей");
-        assert_eq!(f(&by_name, "watch"), ["Black Watch"], "глобальный и столбцовый вместе");
+        assert_eq!(f(&both, ""), ["Black Watch"], "conditions are combined with AND");
+        assert_eq!(f(&[], "fit"), ["Blue Band"], "global filter: any of the fields");
+        assert_eq!(f(&by_name, "watch"), ["Black Watch"], "global and column filters together");
         assert!(f(&[], "zzz").is_empty());
     }
 }

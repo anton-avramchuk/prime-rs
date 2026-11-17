@@ -1,112 +1,112 @@
 # multiselect Specification
 
 ## Purpose
-MultiSelect позволяет выбрать несколько значений из списка вариантов в выпадающей панели с поиском, группами, флажками, режимом чипов и управлением с клавиатуры.
+MultiSelect lets the user select several values from a list of options in a dropdown panel with search, groups, checkboxes, chip mode and keyboard control.
 
 ## Requirements
 
-### Requirement: Значения и метка
-`MultiSelect` крейта `prime-multiselect` SHALL принимать двусторонний `values` (`RwSignal<Vec<String>>`); без него SHALL вести внутреннее состояние, начинающееся с `default_values`. Метка `div.p-multiselect-label` в режиме `comma` SHALL показывать метки выбранных вариантов через «, » в порядке выбора, а при выбранных значениях больше `max_selected_labels` — `selected_items_label` (по умолчанию «{0} items selected» из перевода, `{0}` — число выбранных). Без выбора метка SHALL показывать `placeholder` с классом `p-placeholder`, а без `placeholder` — пустую метку с классом `p-multiselect-label-empty`. При `display_selected_label = false` метка SHALL показывать `placeholder`. `selected_items` SHALL заменять содержимое метки. Значения, которых нет среди вариантов, SHALL не попадать в метку.
+### Requirement: Values and label
+`MultiSelect` of the `prime-multiselect` crate SHALL accept a two-way `values` (`RwSignal<Vec<String>>`); without it SHALL keep internal state starting with `default_values`. The `div.p-multiselect-label` label in `comma` mode SHALL show the labels of the selected options joined with ", " in selection order, and when more values than `max_selected_labels` are selected — `selected_items_label` (by default "{0} items selected" from the translation, `{0}` is the selected count). With no selection the label SHALL show `placeholder` with the `p-placeholder` class, and without `placeholder` — an empty label with the `p-multiselect-label-empty` class. With `display_selected_label = false` the label SHALL show `placeholder`. `selected_items` SHALL replace the label content. Values that are not among the options SHALL NOT appear in the label.
 
-#### Scenario: Список меток
-- **WHEN** выбраны «New York» и «London», `max_selected_labels` равен 3
-- **THEN** метка показывает «New York, London»
+#### Scenario: List of labels
+- **WHEN** "New York" and "London" are selected, `max_selected_labels` is 3
+- **THEN** the label shows "New York, London"
 
-#### Scenario: Сводка
-- **WHEN** выбрано четыре значения, `max_selected_labels` равен 3
-- **THEN** метка показывает «4 items selected»
+#### Scenario: Summary
+- **WHEN** four values are selected, `max_selected_labels` is 3
+- **THEN** the label shows "4 items selected"
 
-#### Scenario: Подсказка
-- **WHEN** ничего не выбрано и задан `placeholder = "Select Cities"`
-- **THEN** метка показывает «Select Cities» с классом `p-placeholder`
+#### Scenario: Hint
+- **WHEN** nothing is selected and `placeholder = "Select Cities"` is set
+- **THEN** the label shows "Select Cities" with the `p-placeholder` class
 
-### Requirement: Режим чипов
-При `display = Chip` корень SHALL получать класс `p-multiselect-display-chip`, а метка — по одному `div.p-multiselect-chip-item` с `Chip` (`p-multiselect-chip`) на выбранный вариант, не больше `max_selected_labels`; при превышении предела SHALL показываться `selected_items_label`. У чипа, если поле доступно (не `disabled`, не `readonly`), SHALL быть значок удаления (`chip_icon` или стандартный); клик по нему SHALL убирать значение, вызывать `on_remove` и `on_change`, не открывая панель.
+### Requirement: Chip mode
+With `display = Chip` the root SHALL get the `p-multiselect-display-chip` class, and the label — one `div.p-multiselect-chip-item` with a `Chip` (`p-multiselect-chip`) per selected option, at most `max_selected_labels`; when the limit is exceeded `selected_items_label` SHALL be shown. A chip, if the field is available (not `disabled`, not `readonly`), SHALL have a remove icon (`chip_icon` or the standard one); a click on it SHALL remove the value, call `on_remove` and `on_change`, without opening the panel.
 
-#### Scenario: Чипы
-- **WHEN** выбраны два значения в режиме `chip`
-- **THEN** выведены два `.p-multiselect-chip-item` с метками
+#### Scenario: Chips
+- **WHEN** two values are selected in `chip` mode
+- **THEN** two `.p-multiselect-chip-item` with labels are rendered
 
-#### Scenario: Удаление чипа
-- **WHEN** пользователь кликает по значку удаления чипа
-- **THEN** значение убрано из `values`, панель не открылась, вызваны `on_remove` и `on_change`
+#### Scenario: Chip removal
+- **WHEN** the user clicks the chip remove icon
+- **THEN** the value is removed from `values`, the panel did not open, `on_remove` and `on_change` were called
 
-### Requirement: Панель
-Панель `div.p-multiselect-overlay` SHALL открываться по клику на поле, стрелкам вниз и вверх, `Enter`, `Space`, `Home`/`End` и набору печатного символа, а также программно через двусторонний `open`; закрываться по повторному клику, `Escape`, `Tab`, клику вне компонента, `resize` и `Alt+↑`. Выбор варианта SHALL оставлять панель открытой. Открытая панель SHALL быть расположена под полем (над ним, если снизу не хватает места) с z-index группы оверлеев, а `aria-expanded` поля SHALL быть `true`. При `filter` и `autofocus_filter` фокус SHALL переходить в поле поиска. Закрытие по `Escape` SHALL возвращать фокус на поле. При `disabled`, `readonly` и `loading` панель SHALL не открываться. `on_show` и `on_hide` SHALL вызываться при открытии и закрытии; `reset_filter_on_hide` SHALL сбрасывать строку поиска при закрытии.
+### Requirement: Panel
+The `div.p-multiselect-overlay` panel SHALL open on a click on the field, the down and up arrows, `Enter`, `Space`, `Home`/`End` and typing a printable character, and programmatically through the two-way `open`; it SHALL close on a repeated click, `Escape`, `Tab`, a click outside the component, `resize` and `Alt+↑`. Selecting an option SHALL keep the panel open. An open panel SHALL be positioned below the field (above it if there is not enough room below) with the overlay group z-index, and the field's `aria-expanded` SHALL be `true`. With `filter` and `autofocus_filter` focus SHALL move to the search field. Closing with `Escape` SHALL return focus to the field. With `disabled`, `readonly` and `loading` the panel SHALL NOT open. `on_show` and `on_hide` SHALL be called on open and close; `reset_filter_on_hide` SHALL reset the search string on close.
 
-#### Scenario: Открытие кликом
-- **WHEN** пользователь кликает по закрытому полю
-- **THEN** панель открыта, `aria-expanded="true"`, вызван `on_show`
+#### Scenario: Open on click
+- **WHEN** the user clicks the closed field
+- **THEN** the panel is open, `aria-expanded="true"`, `on_show` was called
 
-#### Scenario: Выбор не закрывает
-- **WHEN** панель открыта и пользователь кликает по варианту
-- **THEN** значение добавлено, панель осталась открытой
+#### Scenario: Selection does not close
+- **WHEN** the panel is open and the user clicks an option
+- **THEN** the value is added, the panel stayed open
 
-#### Scenario: Недоступно
-- **WHEN** задан `disabled`
-- **THEN** клик по полю панель не открывает
+#### Scenario: Disabled
+- **WHEN** `disabled` is set
+- **THEN** a click on the field does not open the panel
 
-### Requirement: Выбор вариантов
-Клик по варианту `li.p-multiselect-option[role=option]` SHALL добавлять его значение в `values` или убирать его и вызывать `on_change` один раз со списком значений и исходным событием. Недоступные варианты SHALL не выбираться и пропускаться клавиатурой. Выбранный вариант SHALL иметь `aria-selected="true"`, флажок с классом `p-checkbox-checked` и (при `highlight_on_select`) класс `p-multiselect-option-selected`; вариант под фокусом — класс `p-focus` и `data-p-focused`; `focus_on_hover` SHALL переносить фокус на вариант под указателем. `aria-setsize`/`aria-posinset` SHALL не учитывать заголовки групп. `item` SHALL заменять содержимое варианта (после флажка), получая вариант и признак выбора.
+### Requirement: Option selection
+A click on an `li.p-multiselect-option[role=option]` option SHALL add its value to `values` or remove it and call `on_change` once with the list of values and the original event. Disabled options SHALL NOT be selected and SHALL be skipped by the keyboard. A selected option SHALL have `aria-selected="true"`, a checkbox with the `p-checkbox-checked` class and (with `highlight_on_select`) the `p-multiselect-option-selected` class; the focused option — the `p-focus` class and `data-p-focused`; `focus_on_hover` SHALL move focus to the option under the pointer. `aria-setsize`/`aria-posinset` SHALL NOT count group headers. `item` SHALL replace the option content (after the checkbox), receiving the option and the selected flag.
 
-#### Scenario: Добавление и снятие
-- **WHEN** пользователь кликает по двум вариантам, затем по первому
-- **THEN** `values` содержит только второй, `on_change` вызван трижды
+#### Scenario: Add and remove
+- **WHEN** the user clicks two options, then the first one
+- **THEN** `values` contains only the second, `on_change` was called three times
 
-#### Scenario: Недоступный вариант
-- **WHEN** пользователь кликает по варианту с `disabled`
-- **THEN** `values` не меняются
+#### Scenario: Disabled option
+- **WHEN** the user clicks an option with `disabled`
+- **THEN** `values` does not change
 
-### Requirement: Предел выбора
-При `selection_limit` и выбранных значениях, равных пределу, все невыбранные варианты SHALL считаться недоступными (класс `p-disabled`, не выбираются, пропускаются клавиатурой), выбранные SHALL оставаться доступными для снятия, а флажок «выбрать все» SHALL не выводиться.
+### Requirement: Selection limit
+With `selection_limit` and the number of selected values equal to the limit, all unselected options SHALL be considered disabled (the `p-disabled` class, not selectable, skipped by the keyboard), the selected ones SHALL stay available for deselection, and the "select all" checkbox SHALL NOT be rendered.
 
-#### Scenario: Предел достигнут
-- **WHEN** `selection_limit = 2` и выбраны два значения
-- **THEN** остальные варианты недоступны, снятие выбранного возможно
+#### Scenario: Limit reached
+- **WHEN** `selection_limit = 2` and two values are selected
+- **THEN** the other options are disabled, deselecting a selected one is possible
 
-### Requirement: Выбрать все
-Шапка `div.p-multiselect-header` (при `show_header`) SHALL при `show_toggle_all` и отсутствии `selection_limit` содержать флажок «выбрать все». Он SHALL выбирать все доступные видимые варианты (с учётом поиска, не теряя уже выбранные вне результата поиска и выбранные недоступные), а если все доступные видимые уже выбраны — снимать их (выбранные недоступные остаются). Флажок SHALL быть отмечен, когда выбраны все доступные видимые варианты. Нажатие SHALL вызывать `on_select_all_change` и `on_change`.
+### Requirement: Select all
+The `div.p-multiselect-header` header (with `show_header`) SHALL, with `show_toggle_all` and no `selection_limit`, contain a "select all" checkbox. It SHALL select all available visible options (accounting for search, without losing those already selected outside the search result and the selected disabled ones), and if all available visible ones are already selected — deselect them (selected disabled ones remain). The checkbox SHALL be checked when all available visible options are selected. A click SHALL call `on_select_all_change` and `on_change`.
 
-#### Scenario: Выбрать все с поиском
-- **WHEN** поиск оставляет два варианта и нажат флажок
-- **THEN** выбраны эти два и ранее выбранные
+#### Scenario: Select all with search
+- **WHEN** the search leaves two options and the checkbox is clicked
+- **THEN** these two and the previously selected ones are selected
 
-#### Scenario: Снять все
-- **WHEN** все доступные видимые варианты выбраны и нажат флажок
-- **THEN** выбор снят, кроме недоступных выбранных
+#### Scenario: Deselect all
+- **WHEN** all available visible options are selected and the checkbox is clicked
+- **THEN** the selection is cleared, except the selected disabled ones
 
-### Requirement: Поиск
-При `filter` шапка SHALL содержать `p-iconfield.p-multiselect-filter-container` с полем `input.p-multiselect-filter[role=searchbox]` (`aria-owns`, `aria-activedescendant`, `placeholder` из `filter_placeholder`, `aria-label` из `aria_filter_label`) и значком `p-inputicon`. Ввод SHALL оставлять варианты, метка которых содержит строку (без учёта регистра); группы без подходящих вариантов опускаются; фокусный вариант сбрасывается; вызывается `on_filter`; при пустом результате SHALL выводиться `li.p-multiselect-empty-message` с `empty_filter_message`, при пустом списке — с `empty_message`.
+### Requirement: Search
+With `filter` the header SHALL contain a `p-iconfield.p-multiselect-filter-container` with an `input.p-multiselect-filter[role=searchbox]` field (`aria-owns`, `aria-activedescendant`, `placeholder` from `filter_placeholder`, `aria-label` from `aria_filter_label`) and a `p-inputicon` icon. Input SHALL keep the options whose label contains the string (case-insensitive); groups without matching options are omitted; the focused option is reset; `on_filter` is called; with an empty result `li.p-multiselect-empty-message` with `empty_filter_message` SHALL be rendered, with an empty list — with `empty_message`.
 
-#### Scenario: Фильтрация
-- **WHEN** пользователь вводит «lon»
-- **THEN** остаются варианты, содержащие «lon» в любом регистре, `on_filter` вызван со строкой
+#### Scenario: Filtering
+- **WHEN** the user types "lon"
+- **THEN** the options containing "lon" in any case remain, `on_filter` is called with the string
 
-#### Scenario: Пустой результат
-- **WHEN** строка не подходит ни под один вариант
-- **THEN** выведено `li.p-multiselect-empty-message`
+#### Scenario: Empty result
+- **WHEN** the string matches no option
+- **THEN** `li.p-multiselect-empty-message` is rendered
 
-### Requirement: Клавиатура
-Скрытое поле `combobox` SHALL принимать фокус (`tabindex`, по умолчанию `0`; при `disabled` равен `-1`) и иметь `aria-activedescendant` вариант под фокусом. ↓/↑ SHALL открывать панель и переносить фокус на следующий/предыдущий доступный вариант (`Shift` — выбирать диапазон от опорного); `Alt+↑` SHALL выбирать вариант под фокусом и закрывать панель; `Home`/`End` — на первый/последний доступный (`Ctrl+Shift` — диапазон); `PageUp`/`PageDown` — прокручивать к началу/концу; `Enter`/`Space` на закрытой панели открывать её, на открытой — переключать вариант под фокусом (`Shift` — диапазон); `Escape` — закрывать; `Tab` — выбирать вариант под фокусом, если он не выбран, и закрывать панель; `Ctrl+A` — выбирать все доступные видимые варианты; печатный символ — открывать панель и переходить к варианту, метка которого начинается с набранной строки (накопление 500 мс). При `select_on_focus` перенос фокуса клавишами SHALL выбирать вариант.
+### Requirement: Keyboard
+The hidden `combobox` field SHALL accept focus (`tabindex`, `0` by default; `-1` when `disabled`) and have `aria-activedescendant` pointing to the focused option. ↓/↑ SHALL open the panel and move focus to the next/previous available option (`Shift` — select a range from the anchor); `Alt+↑` SHALL select the focused option and close the panel; `Home`/`End` — to the first/last available one (`Ctrl+Shift` — range); `PageUp`/`PageDown` — scroll to the start/end; `Enter`/`Space` on a closed panel open it, on an open one — toggle the focused option (`Shift` — range); `Escape` — close; `Tab` — select the focused option if it is not selected, and close the panel; `Ctrl+A` — select all available visible options; a printable character — open the panel and go to the option whose label starts with the typed string (accumulation 500 ms). With `select_on_focus`, moving focus with the keys SHALL select the option.
 
-#### Scenario: Навигация и выбор
-- **WHEN** поле в фокусе, нажато ↓ (панель открывается), затем ↓ и Enter
-- **THEN** выбран второй доступный вариант, панель открыта
+#### Scenario: Navigation and selection
+- **WHEN** the field is focused, ↓ is pressed (the panel opens), then ↓ and Enter
+- **THEN** the second available option is selected, the panel is open
 
 #### Scenario: Escape
-- **WHEN** панель открыта и нажат Escape
-- **THEN** панель закрыта, фокус на поле
+- **WHEN** the panel is open and Escape is pressed
+- **THEN** the panel is closed, focus is on the field
 
-### Requirement: Очистка, загрузка, блокировки
-При `show_clear` и выбранных значениях SHALL выводиться значок `p-multiselect-clear-icon`; клик по нему SHALL сбрасывать `values`, вызывать `on_change` и `on_clear` и не открывать панель. При `loading` кнопка раскрытия SHALL показывать значок загрузки `p-multiselect-loading-icon`. Корень SHALL получать `p-disabled`, `p-invalid`, `p-variant-filled`, `p-focus`, `p-inputwrapper-filled`, `p-inputwrapper-focus`, `p-multiselect-open`, `p-multiselect-fluid`, `p-multiselect-sm`/`-lg` по состоянию; `fluid` без значения SHALL браться из контекста `Fluid`. При `readonly` и `disabled` выбор, очистка и удаление чипов SHALL не работать.
+### Requirement: Clear, loading, blocking
+With `show_clear` and selected values the `p-multiselect-clear-icon` icon SHALL be rendered; a click on it SHALL reset `values`, call `on_change` and `on_clear` and not open the panel. With `loading` the dropdown button SHALL show the `p-multiselect-loading-icon` loading icon. The root SHALL get `p-disabled`, `p-invalid`, `p-variant-filled`, `p-focus`, `p-inputwrapper-filled`, `p-inputwrapper-focus`, `p-multiselect-open`, `p-multiselect-fluid`, `p-multiselect-sm`/`-lg` by state; `fluid` without a value SHALL come from the `Fluid` context. With `readonly` and `disabled`, selection, clearing and chip removal SHALL NOT work.
 
-#### Scenario: Очистка
-- **WHEN** пользователь кликает по значку очистки
-- **THEN** `values` пусты, панель не открылась, вызваны `on_change` и `on_clear`
+#### Scenario: Clear
+- **WHEN** the user clicks the clear icon
+- **THEN** `values` is empty, the panel did not open, `on_change` and `on_clear` were called
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) `MultiSelect` SHALL отрисовываться полностью с закрытой панелью (метка, чипы, значки); `window` и `document` SHALL не использоваться.
+### Requirement: Rendering without a browser
+Outside the browser (SSR) `MultiSelect` SHALL render fully with a closed panel (label, chips, icons); `window` and `document` SHALL NOT be used.
 
 #### Scenario: SSR
-- **WHEN** страница с `MultiSelect` и выбранными значениями отрисована на сервере
-- **THEN** в разметке есть корень, метка с выбранными значениями и нет панели
+- **WHEN** a page with `MultiSelect` and selected values is rendered on the server
+- **THEN** the markup contains the root, a label with the selected values and no panel

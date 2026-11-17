@@ -2,31 +2,31 @@
 
 ## Why
 
-ConfirmPopup — шестой компонент волны 4: всплывающее подтверждение у элемента, вызвавшего действие («Удалить запись?»). Он строится на общем сервисе подтверждений `ConfirmationService`, которым затем воспользуется ConfirmDialog, поэтому сервис и описание подтверждения выносятся в отдельный крейт без интерфейса.
+ConfirmPopup is the sixth component of wave 4: a popup confirmation at the element that triggered the action ("Delete the record?"). It is built on the shared confirmation service `ConfirmationService`, which ConfirmDialog will use afterwards, so the service and the confirmation description are moved into a separate crate without an interface.
 
 ## What Changes
 
-- Новый крейт `prime-confirmation` (порт `api/confirmation.ts` и `api/confirmationservice.ts` из PrimeNG 21.1.10), без компонентов и стилей:
-  - `Confirmation` — описание подтверждения (строитель): `key`, `message`, `header`, `icon` (`ViewFn`), `target` (элемент-цель для ConfirmPopup), `accept`, `reject` (`Callback<()>`), подписи и значки кнопок, `accept_visible`, `reject_visible`, `accept_button_style_class`, `reject_button_style_class`, `accept_button_props`, `reject_button_props` (`ConfirmButtonProps`: `label`, `severity`, `outlined`, `text`, `size`), `default_focus` (`ConfirmFocus`), `close_on_escape`, `dismissable_mask`, `block_scroll`, `closable`, `position`, `modal` — все поля, что есть в `Confirmation` PrimeNG, чтобы ConfirmDialog не менял описание.
-  - `ConfirmationService` (`Copy`-хэндл в контексте Leptos): `confirm`, `close`, `subscribe`/`unsubscribe`; `provide_confirmation_service` и `use_confirmation_service`.
-- Новый крейт `prime-confirmpopup` (порт `p-confirmpopup`).
-- `ConfirmPopup`: слушает сервис; подтверждение с ключом, совпадающим с `key` компонента, показывает панель `div.p-confirmpopup.p-component[role=alertdialog]` у `target` > `div.p-confirmpopup-content` (значок `p-confirmpopup-icon`, текст `p-confirmpopup-message`) и `div.p-confirmpopup-footer` с кнопками «Нет» (`p-confirmpopup-reject-button`) и «Да» (`p-confirmpopup-accept-button`), оба размера `small`; подписи по умолчанию — переводы `reject` и `accept`.
-- Поведение: выравнивание по цели с переворотом над целью и сдвигом стрелки (`--p-confirmpopup-arrow-left`, `p-confirm-popup-flipped`, `data-p-confirmpopup-flipped`); слой группы оверлеев; фокус на кнопку по `default_focus` (по умолчанию «Да»); `accept` и `reject` вызывают колбэк, скрывают панель и возвращают фокус на цель; закрытие `Escape` (как «Нет»), кликом вне панели и цели (`dismissable_mask`), `resize` окна (не на сенсорных устройствах), прокруткой предка цели; повторное `confirm` перенацеливает панель.
-- Свойства: `key`, `default_focus` (`accept`), `auto_z_index`, `base_z_index`, `visible` (управляемый показ), `style`, `style_class`, `pt`; представления `content`, `headless`, `accept_icon`, `reject_icon`; события `on_show`, `on_hide`.
-- Страница showcase `/confirmpopup` с демонстрациями `basic`, `template` (содержимое), `headless`; e2e; бенчмарки и бюджеты; `docs/confirmpopup.md`, `docs/confirmation.md`.
-- Стили: `confirmpopup` добавляется в `theme.components`.
-- **Не входит:** `appendTo` (панель всегда в `body` через `Portal`), `showTransitionOptions`/`hideTransitionOptions`/`motionOptions` (анимация — классы темы), `Bind`, `pTemplate`, класс-значки `pi pi-…` (значки — `ViewFn`), `ConfirmationService.onAccept` (его слушает только ConfirmDialog PrimeNG; добавится при необходимости вместе с ним).
+- A new crate `prime-confirmation` (a port of `api/confirmation.ts` and `api/confirmationservice.ts` from PrimeNG 21.1.10), without components and styles:
+  - `Confirmation` — the description of a confirmation (a builder): `key`, `message`, `header`, `icon` (`ViewFn`), `target` (the target element for ConfirmPopup), `accept`, `reject` (`Callback<()>`), the labels and icons of the buttons, `accept_visible`, `reject_visible`, `accept_button_style_class`, `reject_button_style_class`, `accept_button_props`, `reject_button_props` (`ConfirmButtonProps`: `label`, `severity`, `outlined`, `text`, `size`), `default_focus` (`ConfirmFocus`), `close_on_escape`, `dismissable_mask`, `block_scroll`, `closable`, `position`, `modal` — all the fields that `Confirmation` in PrimeNG has, so that ConfirmDialog does not change the description.
+  - `ConfirmationService` (a `Copy` handle in the Leptos context): `confirm`, `close`, `subscribe`/`unsubscribe`; `provide_confirmation_service` and `use_confirmation_service`.
+- A new crate `prime-confirmpopup` (a port of `p-confirmpopup`).
+- `ConfirmPopup`: listens to the service; a confirmation with a key matching the `key` of the component shows the panel `div.p-confirmpopup.p-component[role=alertdialog]` at `target` > `div.p-confirmpopup-content` (the icon `p-confirmpopup-icon`, the text `p-confirmpopup-message`) and `div.p-confirmpopup-footer` with the buttons "No" (`p-confirmpopup-reject-button`) and "Yes" (`p-confirmpopup-accept-button`), both of size `small`; the default labels are the translations `reject` and `accept`.
+- Behaviour: alignment to the target with flipping above the target and a shift of the arrow (`--p-confirmpopup-arrow-left`, `p-confirm-popup-flipped`, `data-p-confirmpopup-flipped`); the layer of the overlay group; focus on the button by `default_focus` (by default "Yes"); `accept` and `reject` call the callback, hide the panel and return the focus to the target; closing by `Escape` (as "No"), by a click outside the panel and the target (`dismissable_mask`), by `resize` of the window (not on touch devices), by scrolling of an ancestor of the target; a repeated `confirm` retargets the panel.
+- Properties: `key`, `default_focus` (`accept`), `auto_z_index`, `base_z_index`, `visible` (a controlled showing), `style`, `style_class`, `pt`; the views `content`, `headless`, `accept_icon`, `reject_icon`; the events `on_show`, `on_hide`.
+- The showcase page `/confirmpopup` with the demos `basic`, `template` (content), `headless`; e2e; benchmarks and budgets; `docs/confirmpopup.md`, `docs/confirmation.md`.
+- Styles: `confirmpopup` is added to `theme.components`.
+- **Not included:** `appendTo` (the panel is always in `body` through `Portal`), `showTransitionOptions`/`hideTransitionOptions`/`motionOptions` (the animation is the theme classes), `Bind`, `pTemplate`, the icon classes `pi pi-…` (the icons are `ViewFn`), `ConfirmationService.onAccept` (only PrimeNG's ConfirmDialog listens to it; it will be added when needed, together with it).
 
 ## Capabilities
 
 ### New Capabilities
-- `confirmation`: описание подтверждения и общий сервис подтверждений.
-- `confirmpopup`: всплывающее подтверждение у элемента-цели.
+- `confirmation`: the description of a confirmation and the shared confirmation service.
+- `confirmpopup`: a popup confirmation at the target element.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новые крейты `crates/prime-confirmation` (только нативные тесты) и `crates/prime-confirmpopup` (`publish = false`); зависимости: `prime-core`, `prime-dom`, `prime-button`, `prime-confirmation`, `web-sys`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (браузерный job, три места: `prime-confirmpopup`).
+- New crates `crates/prime-confirmation` (native tests only) and `crates/prime-confirmpopup` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `prime-button`, `prime-confirmation`, `web-sys`.
+- Changes to `Cargo.toml` of the workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (the browser job, three places: `prime-confirmpopup`).

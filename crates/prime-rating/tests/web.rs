@@ -1,5 +1,5 @@
-//! Поведение Rating в реальном браузере (wasm-bindgen-test): выбор и сброс кликом, `readonly`, `disabled`, `change` радиокнопки,
-//! события, внешний сигнал, реактивное число звёзд, видимый фокус и сохранение элементов звёзд.
+//! Rating behaviour in a real browser (wasm-bindgen-test): select and reset by click, `readonly`, `disabled`, radio button `change`,
+//! events, external signal, reactive star count, visible focus and keeping the star elements.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -21,11 +21,11 @@ fn host() -> HtmlElement {
     el
 }
 
-/// Опция звезды с номером `n` (с 1).
+/// Star option number `n` (from 1).
 fn option(host: &HtmlElement, n: u32) -> HtmlElement {
     host.query_selector(&format!(".p-rating > .p-rating-option:nth-child({n})"))
         .unwrap()
-        .unwrap_or_else(|| panic!("нет звезды {n}"))
+        .unwrap_or_else(|| panic!("no star {n}"))
         .dyn_into()
         .unwrap()
 }
@@ -34,7 +34,7 @@ fn input(host: &HtmlElement, n: u32) -> HtmlInputElement {
     option(host, n).query_selector("input").unwrap().unwrap().dyn_into().unwrap()
 }
 
-/// Состояние: по символу на звезду (`1` — активна), по классу `p-rating-option-active`.
+/// State: one character per star (`1` is active), by the `p-rating-option-active` class.
 fn active(host: &HtmlElement) -> String {
     let list = host.query_selector_all(".p-rating > .p-rating-option").unwrap();
     (0..list.length())
@@ -45,7 +45,7 @@ fn active(host: &HtmlElement) -> String {
         .collect()
 }
 
-/// Журнал `on_rate`: значение или `-` для сброса.
+/// `on_rate` log: the value or `-` for a reset.
 fn log() -> (Arc<Mutex<Vec<String>>>, Callback<RatingRate>) {
     let log = Arc::new(Mutex::new(Vec::new()));
     let l = log.clone();
@@ -70,7 +70,7 @@ async fn click_selects_and_second_click_clears() {
     option(&host, 5).click();
     leptos::task::tick().await;
     assert_eq!((value.get_untracked(), active(&host).as_str()), (None, "00000"));
-    assert!(!input(&host, 5).checked(), "радиокнопка осталась отмеченной после сброса");
+    assert!(!input(&host, 5).checked(), "radio button stayed checked after the reset");
     assert_eq!(*log.lock().unwrap(), ["3", "5", "-"]);
     host.remove();
 }
@@ -115,7 +115,7 @@ async fn radio_click_is_handled_once_by_change_without_clearing() {
     let host = host();
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <Rating value=value on_rate=on_rate /> });
     leptos::task::tick().await;
-    // нативный `click()` по радиокнопке — как стрелка клавиатуры: приходят `click` и `change`
+    // a native `click()` on the radio button works like a keyboard arrow: `click` and `change` both arrive
     input(&host, 2).click();
     leptos::task::tick().await;
     assert_eq!(value.get_untracked(), Some(2));
@@ -153,9 +153,9 @@ async fn selecting_keeps_star_elements_and_focus() {
     let first = option(&host, 2);
     first.click();
     leptos::task::tick().await;
-    assert!(first.is_same_node(Some(&option(&host, 2))), "звёзды пересозданы после выбора");
-    assert!(input(&host, 2).is_same_node(doc().active_element().as_deref()), "после клика фокус должен стоять на радиокнопке звезды");
-    // следующий выбор тоже не роняет фокус
+    assert!(first.is_same_node(Some(&option(&host, 2))), "stars were recreated after the selection");
+    assert!(input(&host, 2).is_same_node(doc().active_element().as_deref()), "after a click focus must be on the star's radio button");
+    // the next selection does not drop focus either
     option(&host, 4).click();
     leptos::task::tick().await;
     assert!(input(&host, 4).is_same_node(doc().active_element().as_deref()));
@@ -174,7 +174,7 @@ async fn focus_and_blur_callbacks_fire_and_mouse_focus_is_not_visible() {
     option(&host, 2).click();
     leptos::task::tick().await;
     assert_eq!(*n.lock().unwrap(), ["focus"]);
-    assert!(!option(&host, 2).class_name().contains("p-focus-visible"), "фокус после клика мышью не должен быть видимым");
+    assert!(!option(&host, 2).class_name().contains("p-focus-visible"), "focus after a mouse click must not be visible");
     input(&host, 2).blur().unwrap();
     leptos::task::tick().await;
     assert_eq!(*n.lock().unwrap(), ["focus", "blur"]);

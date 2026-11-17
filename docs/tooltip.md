@@ -1,18 +1,18 @@
 # Tooltip
 
-Порт директивы `pTooltip` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+A port of the `pTooltip` directive from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
-| `prime-tooltip::tooltip` (директива), `TooltipOptions`, `TooltipContent`, `TooltipPosition`, `TooltipEvent` | `tooltip/tooltip.ts`, `tooltip/style/*` |
-| CSS | `@primeuix/styles/tooltip` — `cargo xtask gen-theme` (блока `For PrimeNG` нет) |
-| Демонстрации | `apps/showcase/doc/tooltip/{position,event,delay,autohide,options,custom}-doc.ts` |
+| `prime-tooltip::tooltip` (directive), `TooltipOptions`, `TooltipContent`, `TooltipPosition`, `TooltipEvent` | `tooltip/tooltip.ts`, `tooltip/style/*` |
+| CSS | `@primeuix/styles/tooltip`: `cargo xtask gen-theme` (there is no `For PrimeNG` block) |
+| Demos | `apps/showcase/doc/tooltip/{position,event,delay,autohide,options,custom}-doc.ts` |
 
-Спека: `openspec/specs/tooltip`.
+Spec: `openspec/specs/tooltip`.
 
-## Как пользоваться
+## Usage
 
-В Leptos аналог `pTooltip` — `use:`-директива: она работает на любом элементе и на корне любого компонента проекта и не меняет разметку.
+In Leptos the analog of `pTooltip` is a `use:` directive: it works on any element and on the root of any project component and does not change the markup.
 
 ```rust
 view! {
@@ -22,33 +22,33 @@ view! {
 }
 ```
 
-`TooltipOptions::text_signal(signal)` делает текст реактивным, `.disabled(signal)` — отключение; `html(..)` и `view(..)` задают разметку и представление. Директиву вызывает Leptos в браузере при построении и гидратации элемента; на сервере она не вызывается.
+`TooltipOptions::text_signal(signal)` makes the text reactive, `.disabled(signal)` disables it; `html(..)` and `view(..)` set markup and a view. The directive is invoked by Leptos in the browser when the element is built and hydrated; it is not invoked on the server.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка: `div.p-tooltip.p-component.p-tooltip-<сторона>[role=tooltip]` в `body` > `div.p-tooltip-arrow` + `div.p-tooltip-text`; `id`, `style_class`, `position_style`, `fit_content`, `z_index`.
-- События `Hover` (мышь и касание), `Focus`, `Both`; `click` скрывает; фокус слушается на `.p-component` внутри элемента, на `input` в `p-inputwrapper` или на самом элементе.
-- Позиция: четыре стороны и тот же порядок переноса при нехватке места (`top`: top → bottom → right → left и т. д.), стрелка у края и по центру, смещения `position_top` и `position_left`.
-- `show_delay`, `hide_delay`, `life`, `auto_hide` (при `false` подсказку можно навести мышью), `hide_on_escape`, `show_on_ellipsis`, `disabled`.
-- Закрытие по Escape, `resize` окна и прокрутке вложенного прокручиваемого предка; слой группы подсказок (`ZGroup::Tooltip`).
+- Markup: `div.p-tooltip.p-component.p-tooltip-<side>[role=tooltip]` in `body` > `div.p-tooltip-arrow` + `div.p-tooltip-text`; `id`, `style_class`, `position_style`, `fit_content`, `z_index`.
+- Events `Hover` (mouse and touch), `Focus`, `Both`; `click` hides; focus is listened for on `.p-component` inside the element, on the `input` in `p-inputwrapper`, or on the element itself.
+- Position: four sides and the same fallback order when there is not enough room (`top`: top → bottom → right → left, etc.), the arrow at the edge and centered, `position_top` and `position_left` offsets.
+- `show_delay`, `hide_delay`, `life`, `auto_hide` (when `false` the tooltip can be hovered with the mouse), `hide_on_escape`, `show_on_ellipsis`, `disabled`.
+- Closing on Escape, window `resize` and scrolling of a nested scrollable ancestor; the tooltip group layer (`ZGroup::Tooltip`).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Подсказка всегда в `body`; `appendTo` (`target`, элемент) нет | Так же у `Popover`, `Dialog`, `Drawer`. |
-| Прокрутка самой страницы подсказку не скрывает | Подсказка лежит в координатах страницы и едет вместе с ней. В PrimeNG `ConnectedOverlayScrollHandler` слушает прокручиваемых предков, а не окно. |
-| Появление — CSS-переход прозрачности 250 мс, а не JS-функция `fadeIn` | Результат тот же. |
-| Параметры собираются строителем `TooltipOptions`, нет `tooltipOptions`-объекта и отдельных входов | Типизированный аналог входов `pTooltip`, `tooltipPosition`, `showDelay` и др. |
-| Содержимое — `Text` / `Html` / `View`; нет `TemplateRef` и флага `escape` | `Html` — аналог `[escape]="false"`, `View` — шаблона. |
-| Нет `pTooltipPT`, `pTooltipUnstyled`, `Bind` | `pt`-механизм PrimeNG не переносится. |
-| Нет задержки 100 мс внутри `p-dialog` | Наш `Dialog` позиционирует окно до показа подсказки. |
-| При повторном применении директивы (`rebuild`) слушатели перепривязываются по новым параметрам, а реактивные сигналы прежнего содержимого продолжают отслеживаться | Следствие того, что Leptos вызывает директиву при каждом построении атрибутов. |
+| The tooltip is always in `body`; there is no `appendTo` (`target`, element) | Same as for `Popover`, `Dialog`, `Drawer`. |
+| Scrolling the page itself does not hide the tooltip | The tooltip is in page coordinates and moves with the page. In PrimeNG `ConnectedOverlayScrollHandler` listens to scrollable ancestors, not the window. |
+| Appearance is a 250 ms CSS opacity transition rather than the JS `fadeIn` function | The result is the same. |
+| Parameters are assembled by the `TooltipOptions` builder; there is no `tooltipOptions` object and separate inputs | A typed analog of the `pTooltip`, `tooltipPosition`, `showDelay`, etc. inputs. |
+| Content is `Text` / `Html` / `View`; there is no `TemplateRef` and no `escape` flag | `Html` is the analog of `[escape]="false"`, `View` of a template. |
+| There is no `pTooltipPT`, `pTooltipUnstyled`, `Bind` | The PrimeNG `pt` mechanism is not ported. |
+| There is no 100 ms delay inside `p-dialog` | Our `Dialog` positions the window before the tooltip is shown. |
+| When the directive is applied again (`rebuild`), listeners are rebound to the new parameters, while the reactive signals of the previous content keep being tracked | A consequence of Leptos calling the directive on every attribute build. |
 
-## Стоимость
+## Cost
 
-В SSR директива не вызывается, поэтому стоимость — около 1 аллокации на элемент (построение параметров); вклад в wasm ≈ 151 КБ (бюджет 170 КБ в `benches/budgets.toml`).
+The directive is not invoked in SSR, so the cost is about 1 allocation per element (building the parameters); the contribution to wasm is about 151 KB (budget 170 KB in `benches/budgets.toml`).
 
-## Не проверено
+## Not verified
 
-Касание (`touchstart`/`touchend`, закрытие касанием вне подсказки при `auto_hide(false)`) на реальном вводе, `rtl` и экранные считыватели (`aria-describedby` не ставится, как и в PrimeNG). Проверены в Chrome (браузерные тесты и e2e с настоящей мышью и клавиатурой): показ и скрытие по hover, focus и both, `click`, четыре стороны и перенос на другую при нехватке места, смещения и опции вида, задержки и `life`, `auto_hide(false)`, Escape, `resize` и прокрутка вложенного предка, текст/HTML/`View`, реактивные текст и `disabled`, `show_on_ellipsis`, директива на корне `Button` и `InputText`, очистка при размонтировании и повторное применение к тому же элементу. Сравнение скриншотов с PrimeNG (`pages.json`) не запускалось.
+Touch (`touchstart`/`touchend`, closing by touch outside the tooltip with `auto_hide(false)`) on real input, `rtl` and screen readers (`aria-describedby` is not set, same as in PrimeNG). Verified in Chrome (browser tests and e2e with a real mouse and keyboard): show and hide on hover, focus and both, `click`, the four sides and fallback to another one when there is not enough room, offsets and view options, delays and `life`, `auto_hide(false)`, Escape, `resize` and scrolling of a nested ancestor, text/HTML/`View`, reactive text and `disabled`, `show_on_ellipsis`, the directive on the root of `Button` and `InputText`, cleanup on unmount and re-applying to the same element. Screenshot comparison with PrimeNG (`pages.json`) was not run.

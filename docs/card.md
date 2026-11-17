@@ -1,31 +1,31 @@
 # Card
 
-Порт `p-card` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-card` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-card::Card` | `packages/primeng/src/card/card.ts`, `card/style/cardstyle.ts` |
-| CSS | `@primeuix/styles/card` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/card/*-doc.ts` (`basic`, `advanced`) |
+| CSS | `@primeuix/styles/card` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/card/*-doc.ts` (`basic`, `advanced`) |
 
-Спека: `openspec/specs/card`.
+Spec: `openspec/specs/card`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы `p-card p-component`, `p-card-header`, `p-card-body`, `p-card-title`, `p-card-subtitle`, `p-card-content`, `p-card-footer`.
-- Структура: шапка (только при слоте) вне тела; в теле заголовок, подзаголовок (только при тексте или слоте), содержимое (всегда), подвал (только при слоте).
-- Слот приоритетнее текстового свойства (`header_template` над `header` и т. д.).
+- Classes `p-card p-component`, `p-card-header`, `p-card-body`, `p-card-title`, `p-card-subtitle`, `p-card-content`, `p-card-footer`.
+- Structure: the header (only with a slot) outside the body; in the body the title, subtitle (only with text or a slot), content (always), footer (only with a slot).
+- A slot takes priority over the text property (`header_template` over `header`, etc.).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-card>` | Хост в Angular — деталь фреймворка (`display: block` для `<div>` не нужен). |
-| Слоты — `ViewFn` (`header_template`, `title_template`, `subtitle_template`, `footer_template`), содержимое — `children` | Вместо шаблонов `#header`, `#title`, … и фасетов `p-header`/`p-footer`. |
-| Нет `BlockableUI` | Интерфейс блокировки Angular. |
-| Класс `p-card-caption` не используется | В шаблоне PrimeNG он тоже не применяется. |
+| The root is a `<div>`, not the `<p-card>` host | The host in Angular is a framework detail (`display: block` is not needed for `<div>`). |
+| Slots are `ViewFn` (`header_template`, `title_template`, `subtitle_template`, `footer_template`), content is `children` | Instead of the `#header`, `#title`, … templates and the `p-header`/`p-footer` facets. |
+| No `BlockableUI` | An Angular blocking interface. |
+| The `p-card-caption` class is not used | It is not applied in the PrimeNG template either. |
 
-## Производительность
+## Performance
 
-SSR: 29 аллокаций на экземпляр с заголовком и подзаголовком (бюджет 35); вклад в сырой wasm +96 КБ (бюджет 130 КБ).
-Шаблон — как у Button (`docs/button.md`).
+SSR: 29 allocations per instance with a title and a subtitle (budget 35); contribution to raw wasm +96 KB (budget 130 KB).
+The template is as for Button (`docs/button.md`).

@@ -1,9 +1,9 @@
-//! Поведение Image в реальном браузере (wasm-bindgen-test): открытие и закрытие просмотра, панель действий, поворот и масштаб,
-//! слой, прокрутка страницы, фокус, события, представления и ошибка загрузки.
+//! Image behavior in a real browser (wasm-bindgen-test): opening and closing the preview, the action toolbar, rotation and zoom,
+//! layer, page scrolling, focus, events, views and the load error.
 //!
-//! Сценарии идут одним последовательным тестом: стек слоёв `z-index` и счётчик блокировки прокрутки общие на страницу,
-//! поэтому параллельные тесты влияли бы друг на друга. Стили темы в этих тестах не подключены: анимаций нет,
-//! просмотр убирается по запасному таймеру.
+//! Scenarios run as one sequential test: the `z-index` layer stack and the scroll lock counter are shared per page,
+//! so parallel tests would affect each other. Theme styles are not attached in these tests: there are no animations,
+//! the preview is removed by the fallback timer.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -28,13 +28,13 @@ fn host() -> HtmlElement {
     el
 }
 
-/// Элемент в документе целиком: просмотр выводится в `body`, а не в хосте.
+/// An element anywhere in the document: the preview is rendered in `body`, not in the host.
 fn find(sel: &str) -> Option<HtmlElement> {
     doc().query_selector(sel).unwrap().and_then(|e| e.dyn_into().ok())
 }
 
 fn must(sel: &str) -> HtmlElement {
-    find(sel).unwrap_or_else(|| panic!("нет {sel}"))
+    find(sel).unwrap_or_else(|| panic!("missing {sel}"))
 }
 
 fn body_locked() -> bool {
@@ -48,12 +48,12 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам и `Portal` вставить маску.
+/// Lets effects and `Portal` insert the mask.
 async fn settle() {
     sleep(60).await;
 }
 
-/// Ждёт окончания выхода по запасному таймеру.
+/// Waits for the exit to finish via the fallback timer.
 async fn after_leave() {
     sleep(700).await;
 }
@@ -107,10 +107,10 @@ async fn open_shows_mask_toolbar_and_locks_the_page() {
     assert!(mask.class_name().contains("p-overlay-mask"), "{}", mask.class_name());
     assert_eq!(mask.get_attribute("role").as_deref(), Some("dialog"));
     assert_eq!(mask.get_attribute("aria-modal").as_deref(), Some("true"));
-    assert!(mask.parent_element().unwrap().tag_name() != "P-IMAGE", "маска вне корня Image");
+    assert!(mask.parent_element().unwrap().tag_name() != "P-IMAGE", "the mask is outside the Image root");
     let z: i32 = mask.style().get_property_value("z-index").unwrap().parse().unwrap();
-    assert!(z >= 1100, "слой группы Modal: {z}");
-    assert!(body_locked(), "прокрутка страницы заблокирована");
+    assert!(z >= 1100, "Modal group layer: {z}");
+    assert!(body_locked(), "page scrolling is locked");
     let buttons = doc().query_selector_all(".p-image-toolbar button").unwrap();
     assert_eq!(buttons.length(), 5);
     let classes: Vec<String> = (0..5).map(|i| buttons.item(i).unwrap().dyn_into::<HtmlElement>().unwrap().class_name()).collect();
@@ -119,15 +119,15 @@ async fn open_shows_mask_toolbar_and_locks_the_page() {
     }
     assert_eq!(must(".p-image-rotate-right-button").get_attribute("aria-label").as_deref(), Some("Rotate Right"));
     assert_eq!(must(".p-image-close-button").get_attribute("aria-label").as_deref(), Some("Close"));
-    assert_eq!(must("img.p-image-original").get_attribute("src").as_deref(), Some("big.jpg"), "источник просмотра");
+    assert_eq!(must("img.p-image-original").get_attribute("src").as_deref(), Some("big.jpg"), "preview source");
     assert_eq!(*log.lock().unwrap(), ["show"]);
     sleep(80).await;
     let active = doc().active_element().unwrap();
-    assert!(active.class_list().contains("p-image-close-button"), "фокус на кнопке закрытия: {}", active.class_name());
+    assert!(active.class_list().contains("p-image-close-button"), "focus on the close button: {}", active.class_name());
     must(".p-image-close-button").click();
     after_leave().await;
-    assert!(find(".p-image-mask").is_none(), "маска убрана");
-    assert!(!body_locked(), "прокрутка разблокирована");
+    assert!(find(".p-image-mask").is_none(), "the mask is removed");
+    assert!(!body_locked(), "scrolling is unlocked");
     assert_eq!(*log.lock().unwrap(), ["show", "hide"]);
     cleanup(&host);
 }
@@ -161,7 +161,7 @@ async fn rotate_and_zoom_change_transform_and_limits() {
     must(".p-image-zoom-in-button").click();
     settle().await;
     assert_eq!(transform(), "rotate(-90deg) scale(1.1)");
-    assert!(find(".p-image-mask").is_some(), "клики по панели не закрывают");
+    assert!(find(".p-image-mask").is_some(), "clicks on the toolbar do not close it");
     for _ in 0..3 {
         must(".p-image-zoom-in-button").click();
     }
@@ -176,12 +176,12 @@ async fn rotate_and_zoom_change_transform_and_limits() {
     assert_eq!(transform(), "rotate(-90deg) scale(0.6)");
     assert!(btn_disabled(".p-image-zoom-out-button") && must(".p-image-zoom-out-button").class_name().contains("p-disabled"));
     assert!(!btn_disabled(".p-image-zoom-in-button"));
-    // повторное открытие начинается с нуля
+    // reopening starts from scratch
     must(".p-image-close-button").click();
     after_leave().await;
     must(".p-image-preview-mask").click();
     settle().await;
-    assert_eq!(transform(), "rotate(0deg) scale(1)", "поворот и масштаб сброшены");
+    assert_eq!(transform(), "rotate(0deg) scale(1)", "rotation and zoom reset");
     must(".p-image-close-button").click();
     after_leave().await;
     cleanup(&host);
@@ -195,14 +195,14 @@ async fn mask_click_closes_but_image_and_toolbar_clicks_do_not() {
     settle().await;
     must("img.p-image-original").click();
     settle().await;
-    assert!(find(".p-image-mask").is_some(), "клик по картинке не закрывает");
+    assert!(find(".p-image-mask").is_some(), "a click on the image does not close it");
     must(".p-image-toolbar").click();
     settle().await;
-    assert!(find(".p-image-mask").is_some(), "клик по панели не закрывает");
+    assert!(find(".p-image-mask").is_some(), "a click on the toolbar does not close it");
     must(".p-image-rotate-right-button").click();
     must(".p-image-mask").click();
     after_leave().await;
-    assert!(find(".p-image-mask").is_none(), "клик по маске закрывает, даже после действия панели");
+    assert!(find(".p-image-mask").is_none(), "a click on the mask closes it, even after a toolbar action");
     assert!(!body_locked());
     cleanup(&host);
 }
@@ -216,11 +216,11 @@ async fn escape_closes_and_returns_focus() {
     escape();
     sleep(80).await;
     let active = doc().active_element().unwrap();
-    assert!(active.class_list().contains("p-image-preview-mask"), "фокус вернулся на кнопку просмотра: {}", active.class_name());
+    assert!(active.class_list().contains("p-image-preview-mask"), "focus returned to the preview button: {}", active.class_name());
     after_leave().await;
     assert!(find(".p-image-mask").is_none());
     assert!(!body_locked());
-    // после закрытия Escape ничего не делает и слушатель снят
+    // after closing, Escape does nothing and the listener is removed
     escape();
     settle().await;
     assert!(find(".p-image-mask").is_none());
@@ -237,11 +237,11 @@ async fn reopening_during_leave_keeps_a_single_scroll_lock() {
     sleep(100).await;
     must(".p-image-preview-mask").click();
     sleep(100).await;
-    assert!(find(".p-image-mask").is_some(), "маска осталась");
+    assert!(find(".p-image-mask").is_some(), "the mask remained");
     must(".p-image-close-button").click();
     after_leave().await;
     assert!(find(".p-image-mask").is_none());
-    assert!(!body_locked(), "прокрутка разблокирована ровно один раз");
+    assert!(!body_locked(), "scrolling unlocked exactly once");
     cleanup(&host);
 }
 
@@ -274,10 +274,10 @@ async fn templates_replace_indicator_icons_and_preview() {
     assert!(seen.lock().unwrap()[0].contains("p-image-original"));
     must(".p-image-rotate-right-button").click();
     settle().await;
-    assert_eq!(transform(), "rotate(90deg) scale(1)", "стиль из контекста следует за действиями");
+    assert_eq!(transform(), "rotate(90deg) scale(1)", "the style from the context follows the actions");
     must("img.p-image-original").click();
     settle().await;
-    assert!(find(".p-image-mask").is_some(), "preview_callback: клик по своей картинке не закрывает");
+    assert!(find(".p-image-mask").is_some(), "preview_callback: a click on its own image does not close it");
     must(".p-image-close-button").click();
     after_leave().await;
     cleanup(&host);
@@ -304,7 +304,7 @@ async fn unmount_while_open_releases_the_page() {
     assert!(body_locked());
     drop(handle);
     settle().await;
-    assert!(!body_locked(), "блокировка снята при размонтировании");
+    assert!(!body_locked(), "the lock is released on unmount");
     assert!(find(".p-image-mask").is_none());
     cleanup(&host);
 }

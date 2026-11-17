@@ -1,10 +1,10 @@
-//! InputOtp — порт компонента `p-inputotp` из PrimeNG 21.1.10.
+//! InputOtp — port of the `p-inputotp` component from PrimeNG 21.1.10.
 //!
-//! Одноразовый код вводится по одному символу в отдельные поля `<input>` (классы `p-inputtext p-component p-inputotp-input`) с
-//! автопереходом, переходом стрелками, вставкой всего кода и маскированием.
+//! A one-time code is entered one character at a time into separate `<input>` fields (classes `p-inputtext p-component p-inputotp-input`) with
+//! auto-advance, arrow navigation, pasting of the whole code and masking.
 //!
-//! Значение — необязательное двустороннее `value: RwSignal<String>`: символы строки по порядку заполняют ячейки. Без `value`
-//! токены лежат внутри компонента, а результат приходит через `on_change`.
+//! The value is an optional two-way `value: RwSignal<String>`: the characters of the string fill the cells in order. Without `value`
+//! the tokens live inside the component, and the result arrives via `on_change`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -25,19 +25,19 @@ use web_sys::wasm_bindgen::JsCast;
 
 pub use state::{KeyAction, Move, input_move, join, key_decision, paste_value, tokens_of};
 
-/// Число ячеек по умолчанию.
+/// Default number of cells.
 const DEFAULT_LENGTH: usize = 4;
 
-/// Pass-through частей InputOtp.
+/// Pass-through of InputOtp parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct InputOtpPt {
-    /// Корневой `div`.
+    /// Root `div`.
     pub root: Pt,
-    /// Каждая ячейка.
+    /// Each cell.
     pub input: Pt,
 }
 
-/// Обработчики событий ячейки; шаблон `input` подключает их к своему полю.
+/// Cell event handlers; the `input` template attaches them to its field.
 #[derive(Clone, Copy)]
 pub struct InputOtpEvents {
     /// `input`.
@@ -52,80 +52,80 @@ pub struct InputOtpEvents {
     pub on_paste: Callback<web_sys::ClipboardEvent>,
 }
 
-/// Данные ячейки для шаблона `input`.
+/// Cell data for the `input` template.
 #[derive(Clone)]
 pub struct InputOtpSlot {
-    /// Символ ячейки (пустая строка, если не заполнена).
+    /// Cell character (empty string if not filled).
     pub token: String,
-    /// Номер ячейки с нуля.
+    /// Zero-based cell number.
     pub index: usize,
-    /// Обработчики событий.
+    /// Event handlers.
     pub events: InputOtpEvents,
 }
 
-/// Поле ввода одноразового кода.
+/// One-time code input field.
 ///
-/// Каждое свойство принимает значение или сигнал. `value` — двусторонняя привязка (`RwSignal<String>`).
+/// Each property accepts a value or a signal. `value` is a two-way binding (`RwSignal<String>`).
 #[component]
 pub fn InputOtp(
-    /// Двусторонне связанное значение; без него токены хранятся внутри компонента.
+    /// Two-way bound value; without it the tokens are stored inside the component.
     #[prop(optional)]
     value: Option<RwSignal<String>>,
-    /// Число ячеек (по умолчанию 4).
+    /// Number of cells (default 4).
     #[prop(optional, into)]
     length: OptProp<usize>,
-    /// Скрывать символы (`type="password"`).
+    /// Hide characters (`type="password"`).
     #[prop(optional, into)]
     mask: Prop<bool>,
-    /// Только цифры.
+    /// Digits only.
     #[prop(optional, into)]
     integer_only: Prop<bool>,
-    /// Атрибут `name` каждой ячейки.
+    /// `name` attribute of each cell.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Атрибут `tabindex` каждой ячейки.
+    /// `tabindex` attribute of each cell.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Недоступно.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Только для чтения.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Обязательное.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Вариант; если не задан, берётся `PrimeConfig.input_variant`.
+    /// Variant; if not set, `PrimeConfig.input_variant` is used.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Фокус на первой ячейке при отрисовке.
+    /// Focus the first cell on render.
     #[prop(optional, into)]
     autofocus: Prop<bool>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при изменении значения (аргумент — склеенная строка).
+    /// Called when the value changes (the argument is the joined string).
     #[prop(optional, into)]
     on_change: Option<Callback<String>>,
-    /// Вызывается при получении фокуса ячейкой.
+    /// Called when a cell receives focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса ячейкой.
+    /// Called when a cell loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Шаблон вместо стандартного поля каждой ячейки.
+    /// Template instead of the standard field of each cell.
     #[prop(optional, into)]
     input: Option<Callback<InputOtpSlot, AnyView>>,
-    /// Pass-through частей.
+    /// Part pass-through.
     #[prop(optional)]
     pt: Option<InputOtpPt>,
 ) -> impl IntoView {
@@ -153,7 +153,7 @@ pub fn InputOtp(
         on_blur,
     });
 
-    // Внешнее изменение `value` перекладывается в токены; собственная запись совпадает с ними и пропускается.
+    // An external change of `value` is copied into the tokens; our own write matches them and is skipped.
     #[cfg(target_arch = "wasm32")]
     if let Some(v) = value {
         let ctx = ctx.clone();
@@ -183,7 +183,7 @@ pub fn InputOtp(
             (!style.is_empty()).then_some(style)
         }
     };
-    // Замыкание списка читает только `length`: чтение токенов здесь пересоздавало бы ячейки и роняло фокус.
+    // The list closure reads only `length`: reading the tokens here would recreate the cells and drop focus.
     let cells = {
         let (ctx, pt) = (ctx.clone(), pt.clone());
         move || (0..ctx.len()).map(|i| cell_view(&ctx, &pt, input, i)).collect_view()
@@ -197,7 +197,7 @@ pub fn InputOtp(
     }
 }
 
-/// Одна ячейка: стандартное поле или шаблон.
+/// One cell: the standard field or a template.
 fn cell_view(ctx: &Arc<Ctx>, pt: &Arc<InputOtpPt>, template: Option<Callback<InputOtpSlot, AnyView>>, index: usize) -> AnyView {
     let events = InputOtpEvents {
         on_input: {
@@ -299,7 +299,7 @@ fn cell_view(ctx: &Arc<Ctx>, pt: &Arc<InputOtpPt>, template: Option<Callback<Inp
     .into_any()
 }
 
-/// Состояние и свойства экземпляра.
+/// Instance state and properties.
 struct Ctx {
     tokens: RwSignal<Vec<String>>,
     value: Option<RwSignal<String>>,
@@ -352,7 +352,7 @@ impl Ctx {
         self.readonly.get_untracked() || self.disabled.get_untracked()
     }
 
-    /// Записывает новые токены: сигнал значения и `on_change`.
+    /// Writes the new tokens: the value signal and `on_change`.
     fn commit(&self, tokens: Vec<String>) {
         let joined = join(&tokens);
         self.tokens.set(tokens);
@@ -369,7 +369,7 @@ impl Ctx {
         let input_type = e.dyn_ref::<web_sys::InputEvent>().map(web_sys::InputEvent::input_type).unwrap_or_default();
         let len = self.len_untracked();
         if index == 0 && text.chars().count() > 1 {
-            // Вставка или автозаполнение в первую ячейку.
+            // Paste or autofill into the first cell.
             match paste_value(&text, len, self.integer_only.get_untracked()) {
                 Some(pasted) => {
                     let last = pasted.chars().count().min(len).saturating_sub(1);
@@ -394,7 +394,7 @@ impl Ctx {
         }
     }
 
-    /// Возвращает в поле токен ячейки (отклонённый ввод не меняет сигнал, поэтому DOM нужно исправить вручную).
+    /// Puts the cell's token back into the field (rejected input does not change the signal, so the DOM must be fixed manually).
     fn restore(&self, e: &web_sys::Event, index: usize) {
         if let Some(el) = e.target().and_then(|t| t.dyn_into::<web_sys::HtmlInputElement>().ok()) {
             el.set_value(&self.token(index));
@@ -463,7 +463,7 @@ impl Ctx {
     }
 }
 
-/// Поля `<input>` рядом с целью (в шаблоне между ними могут быть другие элементы) и позиция цели среди них.
+/// `<input>` fields near the target (other elements may sit between them in a template) and the target's position among them.
 fn siblings_of(target: &web_sys::Element) -> Option<(Vec<web_sys::HtmlInputElement>, usize)> {
     let children = target.parent_element()?.children();
     let inputs: Vec<web_sys::HtmlInputElement> =
@@ -472,13 +472,13 @@ fn siblings_of(target: &web_sys::Element) -> Option<(Vec<web_sys::HtmlInputEleme
     Some((inputs, pos))
 }
 
-/// Фокус на ячейке, сдвинутой на `delta` от целевой (но не дальше крайних).
+/// Focus on the cell shifted by `delta` from the target (but not beyond the extreme ones).
 fn focus_nth(e: &web_sys::Event, delta: isize) {
     let Some(target) = e.target().and_then(|t| t.dyn_into::<web_sys::Element>().ok()) else { return };
     focus_at(&target, |pos| pos.saturating_add_signed(delta));
 }
 
-/// Фокус на ячейке с номером, вычисленным по позиции цели; номер ограничивается крайними ячейками.
+/// Focus on the cell with the number computed from the target's position; the number is clamped to the extreme cells.
 fn focus_at(target: &web_sys::Element, index: impl FnOnce(usize) -> usize) {
     let Some((inputs, pos)) = siblings_of(target) else { return };
     if let Some(input) = inputs.get(index(pos).min(inputs.len().saturating_sub(1))) {

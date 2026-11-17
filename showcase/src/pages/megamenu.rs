@@ -1,5 +1,5 @@
-//! Страница MegaMenu: демонстрации `basic`, `vertical`, `command` и `template` из showcase PrimeNG
-//! (`apps/showcase/doc/megamenu`; `router` не переносится). Значки PrimeIcons заменены значками `prime-icons` там, где аналог есть.
+//! MegaMenu page: the `basic`, `vertical`, `command` and `template` demos from the PrimeNG showcase
+//! (`apps/showcase/doc/megamenu`; `router` is not ported). PrimeIcons icons are replaced with `prime-icons` icons where a counterpart exists.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -89,7 +89,7 @@ fn template_item(ctx: MegaMenuItemContext) -> AnyView {
     .into_any()
 }
 
-/// Страница `/megamenu`.
+/// Page `/megamenu`.
 #[component]
 pub fn MegaMenuPage() -> impl IntoView {
     view! {

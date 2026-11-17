@@ -1,9 +1,9 @@
-# Бюджеты вклада компонентов в размер wasm.
-# Мера: размер сырого .wasm (release, wasm32-unknown-unknown, без wasm-opt) минус размер `case-baseline`
-# приложения `benches/wasm-size`. Проверяется `cargo xtask wasm-size`.
-# Первые значения — измеренный вклад с запасом ≈ 50 %; пересмотреть после появления первых компонентов.
+# Budgets for the contribution of components to wasm size.
+# Metric: raw .wasm size (release, wasm32-unknown-unknown, without wasm-opt) minus the size of `case-baseline`
+# of the `benches/wasm-size` app. Checked by `cargo xtask wasm-size`.
+# Initial values are the measured contribution with a margin of about 50 %; revisit once the first components appear.
 
-# one-icon: после optimize-allocs иконка использует ClassNames::finish_cow (интернирование), +≈3 КБ.
+# one-icon: after optimize-allocs the icon uses ClassNames::finish_cow (interning), +~3 KB.
 [[case]]
 name = "one-icon"
 feature = "case-one-icon"
@@ -49,7 +49,7 @@ name = "card"
 feature = "case-card"
 max_delta_bytes = 130000
 
-# После `static-render-path` (две ветви разметки): вклад badge 96 303 Б, button 373 874 Б (было 84 320 и 326 754); бюджеты не менялись.
+# After `static-render-path` (two markup branches): badge contributes 96 303 B, button 373 874 B (was 84 320 and 326 754); budgets unchanged.
 
 [[case]]
 name = "inputtext"

@@ -1,4 +1,4 @@
-//! Структура DOM, пункты, разделители, шаблоны и `pt` Breadcrumb (SSR).
+//! DOM structure, items, separators, templates and `pt` of Breadcrumb (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

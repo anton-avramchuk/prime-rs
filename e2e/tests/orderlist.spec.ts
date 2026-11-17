@@ -4,7 +4,7 @@ test.describe('OrderList', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1200 });
         await page.goto('/orderlist');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_orderlist')).toBeAttached();
     });
@@ -12,7 +12,7 @@ test.describe('OrderList', () => {
     const root = (page, id: string) => page.locator(`#${id} .p-orderlist`);
     const labels = (page, id: string) => page.locator(`#${id} .p-listbox-option`).allTextContents().then((t) => t.map((s) => s.trim()));
 
-    test('стили темы: кнопки слева столбцом, список справа', async ({ page }) => {
+    test('theme styles: buttons in a column on the left, the list on the right', async ({ page }) => {
         const orderlist = root(page, 'basic_orderlist');
         await expect(orderlist).toHaveClass(/p-orderlist-controls-left/);
         expect(await orderlist.evaluate((el) => getComputedStyle(el).display)).toBe('flex');
@@ -26,7 +26,7 @@ test.describe('OrderList', () => {
         expect(c.x).toBeLessThan(l.x);
     });
 
-    test('кнопки двигают выбранный элемент', async ({ page }) => {
+    test('buttons move the selected item', async ({ page }) => {
         const orderlist = root(page, 'basic_orderlist');
         await orderlist.locator('.p-listbox-option', { hasText: 'Bracelet' }).first().click();
         const buttons = orderlist.locator('.p-orderlist-controls .p-button');
@@ -43,7 +43,7 @@ test.describe('OrderList', () => {
         await expect(page.getByTestId('basic-order')).toContainText('Galaxy Earrings, Bracelet');
     });
 
-    test('несколько выбранных: Ctrl-клик и перемещение вверх', async ({ page }) => {
+    test('several selected: Ctrl-click and moving up', async ({ page }) => {
         const orderlist = root(page, 'basic_orderlist');
         await orderlist.locator('.p-listbox-option', { hasText: 'Blue Band' }).click();
         await orderlist.locator('.p-listbox-option', { hasText: 'Brown Purse' }).click();
@@ -53,7 +53,7 @@ test.describe('OrderList', () => {
         expect(all.indexOf('Brown Purse')).toBe(4);
     });
 
-    test('фильтр: двигаем элемент, найденный поиском', async ({ page }) => {
+    test('filter: we move an item found by search', async ({ page }) => {
         const orderlist = root(page, 'filter_orderlist');
         await orderlist.locator('input.p-listbox-filter').fill('Galaxy');
         await expect(orderlist.locator('.p-listbox-option')).toHaveCount(1);
@@ -63,7 +63,7 @@ test.describe('OrderList', () => {
         expect((await labels(page, 'filter_orderlist'))[0]).toBe('Galaxy Earrings');
     });
 
-    test('кнопки справа', async ({ page }) => {
+    test('buttons on the right', async ({ page }) => {
         const orderlist = root(page, 'controls_orderlist');
         await expect(orderlist).toHaveClass(/p-orderlist-controls-right/);
         const c = (await orderlist.locator('.p-orderlist-controls').boundingBox())!;

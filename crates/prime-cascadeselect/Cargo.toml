@@ -1,6 +1,6 @@
 [package]
 name = "prime-cascadeselect"
-description = "prime-rs: компонент CascadeSelect (порт PrimeNG)"
+description = "prime-rs: CascadeSelect component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -20,7 +20,7 @@ prime-icons = { workspace = true, features = ["chevrondown", "angleright", "time
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "FocusEvent", "KeyboardEvent", "MouseEvent", "HtmlElement", "HtmlInputElement", "Element", "Node", "Window", "MediaQueryList", "MediaQueryListEvent", "HtmlUListElement", "DomRect", "CssStyleDeclaration", "ScrollIntoViewOptions", "ScrollLogicalPosition"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

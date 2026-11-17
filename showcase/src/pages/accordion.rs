@@ -1,7 +1,7 @@
-//! Страница Accordion: демонстрации `basic`, `multiple`, `disabled`, `controlled`, `dynamic` и `template`
-//! из showcase PrimeNG (`apps/showcase/doc/accordion`).
+//! Accordion page: demos `basic`, `multiple`, `disabled`, `controlled`, `dynamic` and `template`
+//! from the PrimeNG showcase (`apps/showcase/doc/accordion`).
 //!
-//! В `template` иконки «плюс»/«минус» — SVG из `prime-icons` вместо шрифта PrimeIcons.
+//! In `template` the "plus"/"minus" icons are SVGs from `prime-icons` instead of the PrimeIcons font.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn v(items: &[&str]) -> Vec<String> {
     items.iter().map(|s| (*s).to_owned()).collect()
 }
 
-/// Три панели с заголовками `Header I…III`.
+/// Three panels with headers `Header I…III`.
 #[component]
 fn Three(#[prop(optional)] disabled_third: bool) -> impl IntoView {
     view! {
@@ -49,7 +49,7 @@ fn Three(#[prop(optional)] disabled_third: bool) -> impl IntoView {
     }
 }
 
-/// Страница `/accordion`.
+/// Page `/accordion`.
 #[component]
 pub fn AccordionPage() -> impl IntoView {
     let active = RwSignal::new(v(&["0"]));

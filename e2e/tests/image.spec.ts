@@ -3,18 +3,18 @@ import { expect, test } from '@playwright/test';
 test.describe('Image', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/image');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=preview] .p-image')).toBeAttached();
     });
 
-    test('обычная картинка без кнопки просмотра', async ({ page }) => {
+    test('a plain image without a preview button', async ({ page }) => {
         const image = page.locator('[data-demo=basic] .p-image');
         await expect(image.locator('img')).toBeVisible();
         await expect(image.locator('.p-image-preview-mask')).toHaveCount(0);
     });
 
-    test('кнопка просмотра накрывает картинку и проявляется при наведении', async ({ page }) => {
+    test('the preview button covers the image and appears on hover', async ({ page }) => {
         const image = page.locator('[data-demo=preview] .p-image');
         const mask = image.locator('.p-image-preview-mask');
         expect(await image.evaluate((el) => getComputedStyle(el).position)).toBe('relative');
@@ -28,7 +28,7 @@ test.describe('Image', () => {
         await expect.poll(() => mask.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
     });
 
-    test('просмотр: открытие, панель, поворот, масштаб и закрытие', async ({ page }) => {
+    test('preview: opening, toolbar, rotation, zoom and closing', async ({ page }) => {
         await page.locator('[data-demo=preview] .p-image-preview-mask').click();
         const mask = page.locator('.p-image-mask');
         await expect(mask).toBeVisible();
@@ -52,7 +52,7 @@ test.describe('Image', () => {
         expect(await page.evaluate(() => document.body.classList.contains('p-overflow-hidden'))).toBe(false);
     });
 
-    test('клик по маске и Escape закрывают, клик по картинке — нет', async ({ page }) => {
+    test('a click on the mask and Escape close it, a click on the image does not', async ({ page }) => {
         const trigger = page.locator('[data-demo=preview] .p-image-preview-mask');
         await trigger.click();
         await expect(page.locator('.p-image-mask')).toBeVisible();
@@ -67,7 +67,7 @@ test.describe('Image', () => {
         await expect(trigger).toBeFocused();
     });
 
-    test('просмотр показывает вторую картинку, если она задана', async ({ page }) => {
+    test('the preview shows a second image if one is set', async ({ page }) => {
         await page.locator('[data-demo=previewimagesource] .p-image-preview-mask').click();
         const src = await page.locator('img.p-image-original').getAttribute('src');
         expect(decodeURIComponent(src!)).toContain('Large');
@@ -75,7 +75,7 @@ test.describe('Image', () => {
         await expect(page.locator('.p-image-mask')).toHaveCount(0);
     });
 
-    test('шаблоны: свой индикатор и свой просмотр', async ({ page }) => {
+    test('templates: a custom indicator and a custom preview', async ({ page }) => {
         const demo = page.locator('[data-demo=template]');
         await expect(demo.getByTestId('custom-indicator')).toBeAttached();
         await demo.locator('.p-image-preview-mask').click();

@@ -1,6 +1,6 @@
-//! Страница Inplace: демонстрации `basic`, `input`, `image`, `lazy` по `apps/showcase/doc/inplace` PrimeNG.
+//! Inplace page: the `basic`, `input`, `image`, `lazy` demos from `apps/showcase/doc/inplace` in PrimeNG.
 //!
-//! В `lazy` вместо `Table` обычная `<table>`; в `input` нет `pAutoFocus`, а в `image` вместо значка `pi-image` — `EyeIcon` (в `prime-icons` нет `image`).
+//! In `lazy` a plain `<table>` replaces `Table`; `input` has no `pAutoFocus`, and in `image` `EyeIcon` replaces the `pi-image` icon (there is no `image` in `prime-icons`).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -11,7 +11,7 @@ use prime_inputtext::InputText;
 
 const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-/// Страница `/inplace`.
+/// `/inplace` page.
 #[component]
 pub fn InplacePage() -> impl IntoView {
     let products = RwSignal::new(Vec::<(&'static str, &'static str, &'static str, u32)>::new());

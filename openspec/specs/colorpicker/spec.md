@@ -1,69 +1,69 @@
 # colorpicker Specification
 
 ## Purpose
-ColorPicker — выбор цвета на панели с полем насыщенности/яркости и шкалой оттенка.
+ColorPicker — color selection on a panel with a saturation/brightness field and a hue scale.
 
 ## Requirements
 
-### Requirement: Преобразования цветов
-Модуль SHALL переводить между HSB, RGB и HEX по формулам PrimeNG: `h` 0–360, `s`, `b` 0–100, `r`, `g`, `b` 0–255 (округление до целого); HEX короче шести цифр SHALL дополняться нулями слева; неразбираемая строка SHALL давать чёрный.
+### Requirement: Color conversions
+The module SHALL convert between HSB, RGB and HEX using the PrimeNG formulas: `h` 0–360, `s`, `b` 0–100, `r`, `g`, `b` 0–255 (rounded to an integer); HEX shorter than six digits SHALL be left-padded with zeros; an unparsable string SHALL yield black.
 
-#### Scenario: HSB в HEX
+#### Scenario: HSB to HEX
 - **WHEN** HSB `{h: 0, s: 100, b: 100}`
 - **THEN** HEX `ff0000`
 
-#### Scenario: HEX в HSB
+#### Scenario: HEX to HSB
 - **WHEN** HEX `#00ff00`
 - **THEN** HSB `{h: 120, s: 100, b: 100}`
 
-#### Scenario: Ограничение
+#### Scenario: Clamping
 - **WHEN** HSB `{h: 400, s: -5, b: 120}`
-- **THEN** результат ограничения `{h: 360, s: 0, b: 100}`
+- **THEN** the clamping result is `{h: 360, s: 0, b: 100}`
 
-### Requirement: Разметка
-`ColorPicker` SHALL выводить `div.p-colorpicker.p-component` (`p-colorpicker-overlay` без `inline`) с `input.p-colorpicker-preview` (`readonly`, `type=text`, `tabindex`, `id`, `aria-label`, `disabled` и `p-disabled` при блокировке; цвет фона — текущий цвет) и панелью `div.p-colorpicker-panel` (`p-colorpicker-panel-inline` при `inline`, `p-disabled` при блокировке) > `.p-colorpicker-content` > `.p-colorpicker-color-selector` (> `.p-colorpicker-color-background` > `.p-colorpicker-color-handle`) и `.p-colorpicker-hue` (> `.p-colorpicker-hue-handle`). При `inline` образца нет и панель видна всегда; иначе панель выводится только при открытии.
+### Requirement: Markup
+`ColorPicker` SHALL render `div.p-colorpicker.p-component` (`p-colorpicker-overlay` without `inline`) with `input.p-colorpicker-preview` (`readonly`, `type=text`, `tabindex`, `id`, `aria-label`, `disabled` and `p-disabled` when disabled; background color — the current color) and a panel `div.p-colorpicker-panel` (`p-colorpicker-panel-inline` with `inline`, `p-disabled` when disabled) > `.p-colorpicker-content` > `.p-colorpicker-color-selector` (> `.p-colorpicker-color-background` > `.p-colorpicker-color-handle`) and `.p-colorpicker-hue` (> `.p-colorpicker-hue-handle`). With `inline` there is no swatch and the panel is always visible; otherwise the panel is rendered only when open.
 
-#### Scenario: Закрытый
-- **WHEN** `inline = false`, панель закрыта
-- **THEN** в DOM есть образец, нет панели
+#### Scenario: Closed
+- **WHEN** `inline = false`, the panel is closed
+- **THEN** the DOM has the swatch and no panel
 
-#### Scenario: Встроенный
+#### Scenario: Embedded
 - **WHEN** `inline = true`
-- **THEN** нет образца, панель присутствует с `p-colorpicker-panel-inline`
+- **THEN** there is no swatch, the panel is present with `p-colorpicker-panel-inline`
 
-### Requirement: Значение и формат
-Значение SHALL быть `ColorValue` по `format`: `hex` — строка `#rrggbb`, `rgb` — `{r, g, b}`, `hsb` — `{h, s, b}`. Пустое значение SHALL показывать `default_color` (по умолчанию `ff0000`). Внешнее изменение `value` SHALL обновлять образец и положение указателей; указатели стоят в `left = floor(150·s/100)` px, `top = floor(150·(100−b)/100)` px (поле) и `top = floor(150 − 150·h/360)` px (шкала); фон поля — цвет с `s = 100, b = 100` текущего оттенка.
+### Requirement: Value and format
+The value SHALL be a `ColorValue` by `format`: `hex` — the string `#rrggbb`, `rgb` — `{r, g, b}`, `hsb` — `{h, s, b}`. An empty value SHALL show `default_color` (`ff0000` by default). An external change of `value` SHALL update the swatch and the pointer positions; the pointers are at `left = floor(150·s/100)` px, `top = floor(150·(100−b)/100)` px (field) and `top = floor(150 − 150·h/360)` px (scale); the field background is the color with `s = 100, b = 100` of the current hue.
 
-#### Scenario: Формат rgb
-- **WHEN** `format = rgb`, пользователь выбирает чистый красный
-- **THEN** значение `Rgb {r: 255, g: 0, b: 0}`
+#### Scenario: rgb format
+- **WHEN** `format = rgb`, the user picks pure red
+- **THEN** the value is `Rgb {r: 255, g: 0, b: 0}`
 
-#### Scenario: Положение указателей
-- **WHEN** значение HSB `{h: 0, s: 100, b: 100}`
-- **THEN** указатель поля в `left: 150px; top: 0px`, указатель шкалы в `top: 0px`
+#### Scenario: Pointer positions
+- **WHEN** the value is HSB `{h: 0, s: 100, b: 100}`
+- **THEN** the field pointer is at `left: 150px; top: 0px`, the scale pointer at `top: 0px`
 
-### Requirement: Открытие и закрытие
-Клик по образцу и клавиша `Space` SHALL переключать панель (`Space` с `preventDefault`); `Escape` и `Tab` на образце SHALL закрывать; клик вне корня и resize окна SHALL закрывать; `ColorPickerRef::show`/`hide` — программно. `on_show` и `on_hide` SHALL вызываться при реальной смене состояния; при `disabled` образец не открывает панель.
+### Requirement: Opening and closing
+Clicking the swatch and the `Space` key SHALL toggle the panel (`Space` with `preventDefault`); `Escape` and `Tab` on the swatch SHALL close it; a click outside the root and a window resize SHALL close it; `ColorPickerRef::show`/`hide` — programmatically. `on_show` and `on_hide` SHALL be called on an actual state change; with `disabled` the swatch does not open the panel.
 
 #### Scenario: Space
-- **WHEN** фокус на образце, нажат `Space`
-- **THEN** панель открыта; повторное нажатие закрывает
+- **WHEN** focus is on the swatch, `Space` is pressed
+- **THEN** the panel is open; pressing again closes it
 
-#### Scenario: Клик снаружи
-- **WHEN** панель открыта, клик вне корня
-- **THEN** панель закрыта, вызван `on_hide`
+#### Scenario: Outside click
+- **WHEN** the panel is open, a click outside the root
+- **THEN** the panel is closed, `on_hide` is called
 
-### Requirement: Выбор цвета
-`mousedown` и `touchstart` по полю SHALL задавать `s = floor(100·clamp(x, 0, 150)/150)` и `b = floor(100·(150 − clamp(y, 0, 150))/150)`; по шкале — `h = floor(360·(150 − clamp(y, 0, 150))/150)` (x, y — от левого верхнего угла области). Жест SHALL продолжаться при движении мыши по окну до `mouseup` (для касания — `touchmove`/`touchend` области, с `preventDefault`). Каждое изменение SHALL обновлять значение и вызывать `on_change`; во время жеста корень SHALL иметь `p-colorpicker-dragging`. При `disabled` жесты игнорируются.
+### Requirement: Color selection
+`mousedown` and `touchstart` on the field SHALL set `s = floor(100·clamp(x, 0, 150)/150)` and `b = floor(100·(150 − clamp(y, 0, 150))/150)`; on the scale — `h = floor(360·(150 − clamp(y, 0, 150))/150)` (x, y — from the top-left corner of the area). A gesture SHALL continue as the mouse moves over the window until `mouseup` (for touch — `touchmove`/`touchend` of the area, with `preventDefault`). Every change SHALL update the value and call `on_change`; during a gesture the root SHALL have `p-colorpicker-dragging`. With `disabled` gestures are ignored.
 
-#### Scenario: Клик по полю
-- **WHEN** клик в правом верхнем углу поля
+#### Scenario: Click on the field
+- **WHEN** a click in the top-right corner of the field
 - **THEN** `s = 100`, `b = 100`
 
-#### Scenario: Перетаскивание
-- **WHEN** `mousedown` по шкале и движение мыши ниже её нижней границы
-- **THEN** оттенок ограничен `0`; после `mouseup` движение значение не меняет
+#### Scenario: Dragging
+- **WHEN** `mousedown` on the scale and mouse movement below its lower bound
+- **THEN** the hue is clamped to `0`; after `mouseup` movement does not change the value
 
-#### Scenario: Заблокирован
-- **WHEN** `disabled`, `mousedown` по полю
-- **THEN** значение и `on_change` не затронуты
+#### Scenario: Disabled
+- **WHEN** `disabled`, `mousedown` on the field
+- **THEN** the value and `on_change` are unaffected

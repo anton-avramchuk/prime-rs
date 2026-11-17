@@ -1,34 +1,34 @@
 # ProgressBar
 
-Порт `p-progressbar` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-progressbar` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-progressbar::ProgressBar` | `packages/primeng/src/progressbar/progressbar.ts`, `progressbar/style/progressbarstyle.ts` |
-| CSS | `@primeuix/styles/progressbar` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/progressbar/*-doc.ts` (`basic`, `dynamic`, `indeterminate`, `template`) |
+| CSS | `@primeuix/styles/progressbar` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/progressbar/*-doc.ts` (`basic`, `dynamic`, `indeterminate`, `template`) |
 
-Спека: `openspec/specs/progressbar`.
+Spec: `openspec/specs/progressbar`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Корень с `role="progressbar"`, `aria-valuemin="0"`, `aria-valuemax="100"`, `aria-valuenow`, `aria-level`, классы `p-progressbar p-component p-progressbar-determinate|indeterminate`, `data-p` на корне и частях.
-- Определённый режим: `div.p-progressbar-value` (`width: <value>%; display: flex`, при `color` — `background`) с `div.p-progressbar-label`, внутри значение и единица (скрыты при нуле и отсутствии значения).
-- Неопределённый режим: только `div.p-progressbar-value`.
-- Слот `content_template` получает значение (`content` PrimeNG).
+- Root with `role="progressbar"`, `aria-valuemin="0"`, `aria-valuemax="100"`, `aria-valuenow`, `aria-level`, classes `p-progressbar p-component p-progressbar-determinate|indeterminate`, `data-p` on the root and parts.
+- Determinate mode: `div.p-progressbar-value` (`width: <value>%; display: flex`, with `color` - `background`) with `div.p-progressbar-label`, inside it the value and unit (hidden when zero or when there is no value).
+- Indeterminate mode: only `div.p-progressbar-value`.
+- The `content_template` slot receives the value (PrimeNG's `content`).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-progressbar>` | Хост в Angular — деталь фреймворка. |
-| `aria-valuenow` и `aria-level` отсутствуют без значения | PrimeNG выводит `aria-level="undefined%"`. |
-| `value` — `f64`, выводится через `Display` | Целые числа выводятся без дробной части, как в JavaScript. |
-| `content_template: Callback<Option<f64>, AnyView>` | Слоты Leptos. |
-| Демонстрация `dynamic` растёт на 10 каждые 500 мс | Детерминированный e2e; PrimeNG использует случайный шаг и `MessageService`. |
-| Нет браузерных тестов компонента | Клиентского поведения нет, достаточно SSR-тестов и e2e. |
+| The root is a `<div>`, not the `<p-progressbar>` host | A host in Angular is a framework detail. |
+| `aria-valuenow` and `aria-level` are absent without a value | PrimeNG renders `aria-level="undefined%"`. |
+| `value` is `f64`, rendered via `Display` | Integers are rendered without a fractional part, as in JavaScript. |
+| `content_template: Callback<Option<f64>, AnyView>` | Leptos slots. |
+| The `dynamic` demo grows by 10 every 500 ms | Deterministic e2e; PrimeNG uses a random step and `MessageService`. |
+| No browser tests of the component | There is no client-side behavior, SSR tests and e2e are enough. |
 
-## Производительность
+## Performance
 
-SSR: 36 аллокаций на экземпляр (бюджет 44); вклад в сырой wasm +136 КБ (бюджет 170 КБ).
-Шаблон — как у ToggleSwitch (`docs/toggleswitch.md`).
+SSR: 36 allocations per instance (budget 44); contribution to raw wasm +136 KB (budget 170 KB).
+The template is the same as ToggleSwitch (`docs/toggleswitch.md`).

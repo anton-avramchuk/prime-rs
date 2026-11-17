@@ -1,9 +1,9 @@
-//! `clean`: удаление устаревших артефактов `target/` через `cargo-sweep`.
+//! `clean`: removal of stale `target/` artifacts via `cargo-sweep`.
 
 use std::path::Path;
 use std::process::Command;
 
-/// Размер каталога в байтах.
+/// Directory size in bytes.
 pub fn dir_size(path: &Path) -> u64 {
     let Ok(entries) = std::fs::read_dir(path) else {
         return 0;
@@ -18,9 +18,9 @@ pub fn dir_size(path: &Path) -> u64 {
         .sum()
 }
 
-/// Человекочитаемый размер.
+/// Human-readable size.
 pub fn human(bytes: u64) -> String {
-    const UNITS: [&str; 4] = ["Б", "КБ", "МБ", "ГБ"];
+    const UNITS: [&str; 4] = ["B", "KB", "MB", "GB"];
     let mut value = bytes as f64;
     let mut unit = 0;
     while value >= 1024.0 && unit < UNITS.len() - 1 {
@@ -30,8 +30,8 @@ pub fn human(bytes: u64) -> String {
     format!("{value:.1} {}", UNITS[unit])
 }
 
-/// Аргументы `cargo sweep` по условиям очистки: давность в днях и/или предельный размер `target/` в ГБ
-/// (`--maxsize` у cargo-sweep задаётся в МБ). Без условий — давность `default_days`.
+/// `cargo sweep` arguments for the cleanup conditions: age in days and/or the maximum `target/` size in GB
+/// (cargo-sweep's `--maxsize` is given in MB). Without conditions, the age is `default_days`.
 pub fn sweep_args(days: Option<u32>, max_gb: Option<u32>, default_days: u32) -> Vec<Vec<String>> {
     let mut runs = Vec::new();
     if days.is_some() || max_gb.is_none() {
@@ -43,23 +43,23 @@ pub fn sweep_args(days: Option<u32>, max_gb: Option<u32>, default_days: u32) -> 
     runs
 }
 
-/// Удаляет артефакты, не использовавшиеся дольше `days` дней, и/или самые старые, пока `target/` больше `max_gb` ГБ;
-/// печатает размер до и после.
+/// Removes artifacts unused for more than `days` days and/or the oldest ones while `target/` is larger than `max_gb` GB;
+/// prints the size before and after.
 pub fn run(root: &Path, days: Option<u32>, max_gb: Option<u32>) -> Result<(), String> {
     let target = root.join("target");
     let before = dir_size(&target);
     for args in sweep_args(days, max_gb, 7) {
         let status = Command::new("cargo").current_dir(root).args(&args).status().map_err(|e| format!("cargo sweep: {e}"))?;
         if !status.success() {
-            return Err("cargo sweep завершился с ошибкой; установите: cargo install cargo-sweep".into());
+            return Err("cargo sweep failed; install it with: cargo install cargo-sweep".into());
         }
     }
     let after = dir_size(&target);
-    println!("было: {}, стало: {}, освобождено: {}", human(before), human(after), human(before.saturating_sub(after)));
+    println!("before: {}, after: {}, freed: {}", human(before), human(after), human(before.saturating_sub(after)));
     if let Some(gb) = max_gb
         && after > u64::from(gb) * 1024 * 1024 * 1024
     {
-        println!("предупреждение: target/ всё ещё больше {gb} ГБ (используемые артефакты cargo-sweep не трогает)");
+        println!("warning: target/ is still larger than {gb} GB (cargo-sweep does not touch artifacts in use)");
     }
     Ok(())
 }
@@ -70,9 +70,9 @@ mod tests {
 
     #[test]
     fn human_sizes() {
-        assert_eq!(human(0), "0.0 Б");
-        assert_eq!(human(1536), "1.5 КБ");
-        assert_eq!(human(5 * 1024 * 1024), "5.0 МБ");
+        assert_eq!(human(0), "0.0 B");
+        assert_eq!(human(1536), "1.5 KB");
+        assert_eq!(human(5 * 1024 * 1024), "5.0 MB");
     }
 
     #[test]

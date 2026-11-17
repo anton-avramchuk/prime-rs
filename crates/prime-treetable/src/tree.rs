@@ -1,76 +1,76 @@
-//! Чистая модель TreeTable: узлы, сортировка по уровням, страница корней, развёртка в строки, выбор флажками с
-//! распространением (по `treetable.ts` PrimeNG, без DOM).
+//! Pure TreeTable model: nodes, per-level sorting, root page, flattening into rows, checkbox selection with
+//! propagation (after PrimeNG `treetable.ts`, no DOM).
 
 use prime_table::model::{SortMeta, sort_rows};
 use std::cmp::Ordering;
 
-/// Узел дерева.
+/// Tree node.
 #[derive(Clone, Debug)]
 pub struct TreeNode<T> {
-    /// Ключ узла (аналог `dataKey`): по нему хранятся выбор и раскрытие.
+    /// Node key (analogue of `dataKey`): selection and expansion are stored by it.
     pub key: String,
-    /// Данные узла.
+    /// Node data.
     pub data: T,
-    /// Дочерние узлы.
+    /// Child nodes.
     pub children: Vec<TreeNode<T>>,
-    /// Явный признак листа (для ленивой загрузки: `Some(false)` — узел раскрываемый без детей).
+    /// Explicit leaf flag (for lazy loading: `Some(false)` — an expandable node without children).
     pub leaf: Option<bool>,
-    /// Начальное раскрытие, если `expanded_keys` не передан.
+    /// Initial expansion, if `expanded_keys` is not passed.
     pub expanded: bool,
 }
 
 impl<T> TreeNode<T> {
-    /// Узел без детей.
+    /// Node without children.
     pub fn new(key: impl Into<String>, data: T) -> Self {
         Self { key: key.into(), data, children: Vec::new(), leaf: None, expanded: false }
     }
 
-    /// Дочерние узлы.
+    /// Child nodes.
     pub fn children(mut self, children: Vec<TreeNode<T>>) -> Self {
         self.children = children;
         self
     }
 
-    /// Явный признак листа.
+    /// Explicit leaf flag.
     pub fn leaf(mut self, leaf: bool) -> Self {
         self.leaf = Some(leaf);
         self
     }
 
-    /// Раскрыт изначально.
+    /// Expanded initially.
     pub fn expanded(mut self, expanded: bool) -> Self {
         self.expanded = expanded;
         self
     }
 
-    /// Узел можно раскрыть: есть дети либо он явно не лист (кнопка раскрытия видна).
+    /// The node can be expanded: it has children or is explicitly not a leaf (the expand button is visible).
     pub fn is_expandable(&self) -> bool {
         self.leaf == Some(false) || !self.children.is_empty()
     }
 }
 
-/// Строка таблицы: узел с уровнем вложенности.
+/// Table row: a node with its nesting level.
 #[derive(Clone, Debug)]
 pub struct RowNode<T> {
-    /// Ключ узла.
+    /// Node key.
     pub key: String,
-    /// Данные узла.
+    /// Node data.
     pub data: T,
-    /// Уровень вложенности (корень — 0).
+    /// Nesting level (root is 0).
     pub level: usize,
-    /// Кнопка раскрытия видна.
+    /// Expand button is visible.
     pub expandable: bool,
-    /// Узел раскрыт.
+    /// Node is expanded.
     pub expanded: bool,
-    /// Ключ родителя.
+    /// Parent key.
     pub parent: Option<String>,
-    /// Номер среди соседей (с 1).
+    /// Position among siblings (from 1).
     pub position: usize,
-    /// Число соседей.
+    /// Number of siblings.
     pub set_size: usize,
 }
 
-/// Начальный набор раскрытых узлов по флагам `expanded`.
+/// Initial set of expanded nodes by the `expanded` flags.
 pub fn initial_expanded<T>(roots: &[TreeNode<T>]) -> Vec<String> {
     let mut out = Vec::new();
     fn walk<T>(nodes: &[TreeNode<T>], out: &mut Vec<String>) {
@@ -85,7 +85,7 @@ pub fn initial_expanded<T>(roots: &[TreeNode<T>]) -> Vec<String> {
     out
 }
 
-/// Сортировка соседей на каждом уровне (`sortNodes`); `compare` сравнивает данные узлов по полю.
+/// Sorting siblings at every level (`sortNodes`); `compare` compares node data by field.
 pub fn sort_nodes<T: Clone>(nodes: &[TreeNode<T>], meta: &[SortMeta], compare: &dyn Fn(&str, &T, &T) -> Ordering) -> Vec<TreeNode<T>> {
     if meta.is_empty() {
         return nodes.to_vec();
@@ -97,12 +97,12 @@ pub fn sort_nodes<T: Clone>(nodes: &[TreeNode<T>], meta: &[SortMeta], compare: &
     sorted
 }
 
-/// Страница корневых узлов (`serializePageNodes`): пагинатор считает корни, а не строки.
+/// Page of root nodes (`serializePageNodes`): the paginator counts roots, not rows.
 pub fn page_roots<T: Clone>(roots: &[TreeNode<T>], paginator: bool, first: usize, rows: usize) -> Vec<TreeNode<T>> {
     if paginator { roots.iter().skip(first).take(rows).cloned().collect() } else { roots.to_vec() }
 }
 
-/// Видимые строки: обход в глубину, потомки раскрытых узлов (`serializeNodes`).
+/// Visible rows: depth-first traversal, descendants of expanded nodes (`serializeNodes`).
 pub fn flatten<T: Clone>(roots: &[TreeNode<T>], expanded: &[String]) -> Vec<RowNode<T>> {
     let mut out = Vec::new();
     fn walk<T: Clone>(nodes: &[TreeNode<T>], parent: Option<&str>, level: usize, expanded: &[String], out: &mut Vec<RowNode<T>>) {
@@ -127,7 +127,7 @@ pub fn flatten<T: Clone>(roots: &[TreeNode<T>], expanded: &[String]) -> Vec<RowN
     out
 }
 
-/// Ключ узла и всех его потомков.
+/// Key of a node and all its descendants.
 fn collect_keys<T>(node: &TreeNode<T>, out: &mut Vec<String>) {
     out.push(node.key.clone());
     for child in &node.children {
@@ -135,7 +135,7 @@ fn collect_keys<T>(node: &TreeNode<T>, out: &mut Vec<String>) {
     }
 }
 
-/// Путь от корня до узла `key` включительно.
+/// Path from the root to node `key`, inclusive.
 fn path_to<'a, T>(nodes: &'a [TreeNode<T>], key: &str, path: &mut Vec<&'a TreeNode<T>>) -> bool {
     for node in nodes {
         path.push(node);
@@ -147,8 +147,8 @@ fn path_to<'a, T>(nodes: &'a [TreeNode<T>], key: &str, path: &mut Vec<&'a TreeNo
     false
 }
 
-/// Выбор флажком с распространением (`toggleNodeWithCheckbox`): вниз — на потомков, вверх — родитель выбран,
-/// только если выбраны все его дети; при снятии родители снимаются.
+/// Checkbox selection with propagation (`toggleNodeWithCheckbox`): down — to descendants, up — the parent is selected
+/// only if all its children are selected; on unselect the parents are unselected.
 pub fn checkbox_toggle<T>(roots: &[TreeNode<T>], selection: &[String], key: &str, select: bool) -> Vec<String> {
     let mut path = Vec::new();
     if !path_to(roots, key, &mut path) {
@@ -180,18 +180,18 @@ pub fn checkbox_toggle<T>(roots: &[TreeNode<T>], selection: &[String], key: &str
     set
 }
 
-/// Состояние флажка узла.
+/// Node checkbox state.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CheckState {
-    /// Не выбран.
+    /// Not selected.
     Unchecked,
-    /// Выбран часть потомков.
+    /// Some descendants selected.
     Partial,
-    /// Выбран.
+    /// Selected.
     Checked,
 }
 
-/// Состояние флажка узла по выбору (`partialSelected`).
+/// Node checkbox state by selection (`partialSelected`).
 pub fn check_state<T>(node: &TreeNode<T>, selection: &[String]) -> CheckState {
     if selection.contains(&node.key) {
         return CheckState::Checked;
@@ -203,7 +203,7 @@ pub fn check_state<T>(node: &TreeNode<T>, selection: &[String]) -> CheckState {
     if descendants.iter().any(|k| selection.contains(k)) { CheckState::Partial } else { CheckState::Unchecked }
 }
 
-/// Ключи всех узлов дерева (выбор всех флажком в заголовке).
+/// Keys of all tree nodes (select all via the header checkbox).
 pub fn all_keys<T>(roots: &[TreeNode<T>]) -> Vec<String> {
     let mut out = Vec::new();
     for root in roots {
@@ -212,7 +212,7 @@ pub fn all_keys<T>(roots: &[TreeNode<T>]) -> Vec<String> {
     out
 }
 
-/// Узел по ключу.
+/// Node by key.
 pub fn find<'a, T>(roots: &'a [TreeNode<T>], key: &str) -> Option<&'a TreeNode<T>> {
     let mut path = Vec::new();
     path_to(roots, key, &mut path).then(|| path[path.len() - 1])
@@ -248,7 +248,7 @@ mod tests {
         assert_eq!(row_keys(&flatten(&tree(), &[])), "a f h");
         assert_eq!(row_keys(&flatten(&tree(), &keys("a"))), "a b c f h");
         assert_eq!(row_keys(&flatten(&tree(), &keys("a b"))), "a b d e c f h");
-        assert_eq!(row_keys(&flatten(&tree(), &keys("b"))), "a f h", "потомки скрытого родителя не показываются");
+        assert_eq!(row_keys(&flatten(&tree(), &keys("b"))), "a f h", "descendants of a hidden parent are not shown");
         let rows = flatten(&tree(), &keys("a b"));
         let d = rows.iter().find(|r| r.key == "d").unwrap();
         assert_eq!((d.level, d.parent.as_deref(), d.position, d.set_size, d.expandable), (2, Some("b"), 1, 2, false));
@@ -260,7 +260,7 @@ mod tests {
     fn expandable_by_children_or_leaf_flag() {
         assert!(n("a", 1).children(vec![n("b", 2)]).is_expandable());
         assert!(!n("a", 1).is_expandable());
-        assert!(n("a", 1).leaf(false).is_expandable(), "ленивый узел без детей");
+        assert!(n("a", 1).leaf(false).is_expandable(), "lazy node without children");
         assert!(!n("a", 1).leaf(true).is_expandable());
     }
 
@@ -274,7 +274,7 @@ mod tests {
     fn sort_is_per_level() {
         let cmp = |_: &str, a: &i32, b: &i32| a.cmp(b);
         let sorted = sort_nodes(&tree(), &[SortMeta::new("v", 1)], &cmp);
-        assert_eq!(sorted.iter().map(|n| n.key.as_str()).collect::<Vec<_>>(), ["a", "h", "f"], "корни по значению 1, 4, 5");
+        assert_eq!(sorted.iter().map(|n| n.key.as_str()).collect::<Vec<_>>(), ["a", "h", "f"], "roots by value 1, 4, 5");
         let a = &sorted[0];
         assert_eq!(a.children.iter().map(|n| n.key.as_str()).collect::<Vec<_>>(), ["b", "c"], "3 < 9");
         assert_eq!(a.children[0].children.iter().map(|n| n.key.as_str()).collect::<Vec<_>>(), ["e", "d"], "2 < 7");
@@ -289,7 +289,7 @@ mod tests {
         let page = page_roots(&tree(), true, 1, 2);
         assert_eq!(page.iter().map(|n| n.key.as_str()).collect::<Vec<_>>(), ["f", "h"]);
         assert_eq!(page_roots(&tree(), true, 0, 1).len(), 1);
-        assert_eq!(page_roots(&tree(), false, 5, 1).len(), 3, "без пагинатора — все корни");
+        assert_eq!(page_roots(&tree(), false, 5, 1).len(), 3, "without a paginator — all roots");
         assert!(page_roots(&tree(), true, 9, 2).is_empty());
     }
 
@@ -297,14 +297,14 @@ mod tests {
     fn checkbox_propagates_down_and_up() {
         let t = tree();
         let sel = checkbox_toggle(&t, &[], "b", true);
-        assert_eq!(sel, keys("b d e"), "узел и потомки; родитель a не выбран: c ещё нет");
+        assert_eq!(sel, keys("b d e"), "the node and descendants; parent a is not selected: c is not there yet");
         let sel = checkbox_toggle(&t, &sel, "c", true);
-        assert_eq!(sel, keys("b d e c a"), "когда выбраны все дети, родитель выбирается");
+        assert_eq!(sel, keys("b d e c a"), "when all children are selected, the parent is selected");
         let sel = checkbox_toggle(&t, &sel, "d", false);
-        assert_eq!(sel, keys("e c"), "при снятии родители b и a снимаются");
+        assert_eq!(sel, keys("e c"), "on unselect parents b and a are unselected");
         let sel = checkbox_toggle(&t, &sel, "a", false);
-        assert!(sel.is_empty(), "снятие корня снимает всё поддерево: {sel:?}");
-        assert_eq!(checkbox_toggle(&t, &keys("x"), "zzz", true), keys("x"), "неизвестный ключ");
+        assert!(sel.is_empty(), "unselecting the root unselects the whole subtree: {sel:?}");
+        assert_eq!(checkbox_toggle(&t, &keys("x"), "zzz", true), keys("x"), "unknown key");
     }
 
     #[test]

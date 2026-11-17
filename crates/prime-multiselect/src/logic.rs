@@ -1,67 +1,67 @@
-//! Варианты, группы и чистая логика MultiSelect: плоский список, фильтр, индексы фокуса, выбор, диапазоны, «выбрать все»,
-//! предел выбора, метка и чипы, поиск набором (`visibleOptions`, `onOptionSelect`, `onToggleAll`, `label` и родственные функции PrimeNG).
+//! Options, groups and pure MultiSelect logic: flat list, filter, focus indices, selection, ranges, "select all",
+//! selection limit, label and chips, type-ahead search (`visibleOptions`, `onOptionSelect`, `onToggleAll`, `label` and related PrimeNG functions).
 
-/// Вариант выбора.
+/// A selectable option.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct MultiSelectOption {
-    /// Метка варианта.
+    /// Option label.
     pub label: String,
-    /// Значение варианта.
+    /// Option value.
     pub value: String,
-    /// Вариант недоступен.
+    /// The option is disabled.
     pub disabled: bool,
 }
 
 impl MultiSelectOption {
-    /// Доступный вариант с меткой и значением.
+    /// An enabled option with a label and a value.
     pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
         Self { label: label.into(), value: value.into(), disabled: false }
     }
 
-    /// Недоступный вариант.
+    /// A disabled option.
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
         self
     }
 }
 
-/// Группа вариантов.
+/// A group of options.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct MultiSelectGroup {
-    /// Заголовок группы.
+    /// Group header.
     pub label: String,
-    /// Варианты группы.
+    /// Group options.
     pub items: Vec<MultiSelectOption>,
 }
 
 impl MultiSelectGroup {
-    /// Группа с заголовком и вариантами.
+    /// A group with a header and options.
     pub fn new(label: impl Into<String>, items: Vec<MultiSelectOption>) -> Self {
         Self { label: label.into(), items }
     }
 }
 
-/// Элемент плоского списка: заголовок группы или вариант.
+/// Flat list item: a group header or an option.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Entry {
-    /// Заголовок группы (`index` — номер группы в списке групп).
+    /// Group header (`index` is the group number in the group list).
     Group {
-        /// Номер группы.
+        /// Group number.
         index: usize,
-        /// Заголовок.
+        /// Header.
         label: String,
     },
-    /// Вариант.
+    /// Option.
     Option(MultiSelectOption),
 }
 
 impl Entry {
-    /// Допустим ли элемент для фокуса и выбора: вариант, не отключённый.
+    /// Whether the item is valid for focus and selection: an option that is not disabled.
     pub fn is_valid(&self) -> bool {
         matches!(self, Self::Option(o) if !o.disabled)
     }
 
-    /// Вариант, если это он.
+    /// The option, if it is one.
     pub fn option(&self) -> Option<&MultiSelectOption> {
         match self {
             Self::Option(o) => Some(o),
@@ -70,14 +70,14 @@ impl Entry {
     }
 }
 
-/// Подходит ли метка под строку поиска: «содержит» без учёта регистра, пробелы по краям строки отбрасываются.
+/// Whether the label matches the search string: case-insensitive "contains", leading and trailing whitespace of the string is dropped.
 pub fn matches_filter(label: &str, filter: &str) -> bool {
     let needle = filter.trim().to_lowercase();
     needle.is_empty() || label.to_lowercase().contains(&needle)
 }
 
-/// Плоский список видимых элементов: варианты или группы с вариантами, отфильтрованные по строке поиска.
-/// Группы без подходящих вариантов опускаются.
+/// Flat list of visible items: options or groups with options, filtered by the search string.
+/// Groups without matching options are omitted.
 pub fn visible_entries(options: &[MultiSelectOption], groups: &[MultiSelectGroup], filter: &str) -> Vec<Entry> {
     if groups.is_empty() {
         return options.iter().filter(|o| matches_filter(&o.label, filter)).cloned().map(Entry::Option).collect();
@@ -93,7 +93,7 @@ pub fn visible_entries(options: &[MultiSelectOption], groups: &[MultiSelectGroup
     out
 }
 
-/// Вариант с заданным значением среди всех вариантов (без фильтра).
+/// The option with the given value among all options (no filter).
 pub fn find_option(options: &[MultiSelectOption], groups: &[MultiSelectGroup], value: &str) -> Option<MultiSelectOption> {
     if groups.is_empty() {
         options.iter().find(|o| o.value == value).cloned()
@@ -102,42 +102,42 @@ pub fn find_option(options: &[MultiSelectOption], groups: &[MultiSelectGroup], v
     }
 }
 
-/// Индекс первого допустимого элемента.
+/// Index of the first valid item.
 pub fn first_valid(entries: &[Entry]) -> Option<usize> {
     entries.iter().position(Entry::is_valid)
 }
 
-/// Индекс последнего допустимого элемента.
+/// Index of the last valid item.
 pub fn last_valid(entries: &[Entry]) -> Option<usize> {
     entries.iter().rposition(Entry::is_valid)
 }
 
-/// Индекс следующего допустимого элемента после `index`; если его нет — прежний (`findNextOptionIndex`).
+/// Index of the next valid item after `index`; if there is none, the previous one is kept (`findNextOptionIndex`).
 pub fn next_valid(entries: &[Entry], index: usize) -> usize {
     entries.iter().enumerate().skip(index + 1).find(|(_, e)| e.is_valid()).map_or(index, |(i, _)| i)
 }
 
-/// Индекс предыдущего допустимого элемента перед `index`; если его нет — прежний (`findPrevOptionIndex`).
+/// Index of the previous valid item before `index`; if there is none, the previous one is kept (`findPrevOptionIndex`).
 pub fn prev_valid(entries: &[Entry], index: usize) -> usize {
     entries.iter().enumerate().take(index).rev().find(|(_, e)| e.is_valid()).map_or(index, |(i, _)| i)
 }
 
-/// Выбран ли вариант с таким значением.
+/// Whether the option with this value is selected.
 fn is_selected(selected: &[String], value: &str) -> bool {
     selected.iter().any(|s| s == value)
 }
 
-/// Индекс первого допустимого выбранного варианта (`findSelectedOptionIndex`).
+/// Index of the first valid selected option (`findSelectedOptionIndex`).
 pub fn selected_index(entries: &[Entry], selected: &[String]) -> Option<usize> {
     entries.iter().position(|e| e.is_valid() && e.option().is_some_and(|o| is_selected(selected, &o.value)))
 }
 
-/// Индекс для первой фокусировки: выбранный или первый допустимый (`findFirstFocusedOptionIndex`).
+/// Index for the first focus: the selected one or the first valid one (`findFirstFocusedOptionIndex`).
 pub fn first_focused(entries: &[Entry], selected: &[String]) -> Option<usize> {
     selected_index(entries, selected).or_else(|| first_valid(entries))
 }
 
-/// Индекс для фокусировки с конца: последний выбранный допустимый или последний допустимый (`findLastFocusedOptionIndex`).
+/// Index for focusing from the end: the last selected valid one or the last valid one (`findLastFocusedOptionIndex`).
 pub fn last_focused(entries: &[Entry], selected: &[String]) -> Option<usize> {
     entries
         .iter()
@@ -145,8 +145,8 @@ pub fn last_focused(entries: &[Entry], selected: &[String]) -> Option<usize> {
         .or_else(|| last_valid(entries))
 }
 
-/// Ближайший выбранный вариант к `index` (`findNearestSelectedOptionIndex`): при `first_check_up` сначала вверх, затем вниз,
-/// иначе наоборот; если выбранных нет — сам `index`.
+/// The selected option nearest to `index` (`findNearestSelectedOptionIndex`): with `first_check_up` up first, then down,
+/// otherwise the other way round; if nothing is selected, `index` itself.
 pub fn nearest_selected(entries: &[Entry], selected: &[String], index: usize, first_check_up: bool) -> usize {
     let chosen = |e: &Entry| e.is_valid() && e.option().is_some_and(|o| is_selected(selected, &o.value));
     let prev = || entries.iter().enumerate().take(index).rev().find(|(_, e)| chosen(e)).map(|(i, _)| i);
@@ -155,8 +155,8 @@ pub fn nearest_selected(entries: &[Entry], selected: &[String], index: usize, fi
     found.unwrap_or(index)
 }
 
-/// Первый допустимый вариант, метка которого начинается с набранной строки без учёта регистра; поиск идёт от `from`
-/// (включительно) до конца, затем с начала (`searchOptions`).
+/// The first valid option whose label starts with the typed string, case-insensitively; the search goes from `from`
+/// (inclusive) to the end, then from the start (`searchOptions`).
 pub fn search_match_from(entries: &[Entry], typed: &str, from: Option<usize>) -> Option<usize> {
     let typed = typed.to_lowercase();
     let hit = |e: &Entry| e.is_valid() && e.option().is_some_and(|o| o.label.to_lowercase().starts_with(&typed));
@@ -169,17 +169,17 @@ pub fn search_match_from(entries: &[Entry], typed: &str, from: Option<usize>) ->
     }
 }
 
-/// Число вариантов без заголовков групп (`aria-setsize`).
+/// Number of options without group headers (`aria-setsize`).
 pub fn set_size(entries: &[Entry]) -> usize {
     entries.iter().filter(|e| e.option().is_some()).count()
 }
 
-/// Номер варианта среди вариантов без заголовков групп (`aria-posinset`, с единицы).
+/// Position of the option among the options without group headers (`aria-posinset`, one-based).
 pub fn pos_in_set(entries: &[Entry], index: usize) -> usize {
     entries.iter().take(index + 1).filter(|e| e.option().is_some()).count()
 }
 
-/// Переключает значение: убирает его, если оно выбрано, иначе добавляет в конец (`onOptionSelect`).
+/// Toggles the value: removes it if selected, otherwise appends it to the end (`onOptionSelect`).
 pub fn toggle_value(current: &[String], value: &str) -> Vec<String> {
     if is_selected(current, value) {
         current.iter().filter(|v| v.as_str() != value).cloned().collect()
@@ -190,7 +190,7 @@ pub fn toggle_value(current: &[String], value: &str) -> Vec<String> {
     }
 }
 
-/// Допустимые варианты в диапазоне индексов `start..=end` (порядок границ любой), `onOptionSelectRange`.
+/// Valid options in the index range `start..=end` (bounds in any order), `onOptionSelectRange`.
 pub fn select_range(entries: &[Entry], start: usize, end: usize) -> Vec<String> {
     let (lo, hi) = (start.min(end), start.max(end));
     entries
@@ -201,32 +201,32 @@ pub fn select_range(entries: &[Entry], start: usize, end: usize) -> Vec<String> 
         .collect()
 }
 
-/// Все допустимые видимые варианты (`Ctrl+A`).
+/// All valid visible options (`Ctrl+A`).
 pub fn select_all(entries: &[Entry]) -> Vec<String> {
     entries.iter().filter(|e| e.is_valid()).filter_map(|e| e.option().map(|o| o.value.clone())).collect()
 }
 
-/// Выбраны ли все видимые допустимые варианты (`allSelected`); пустой список — нет.
+/// Whether all visible valid options are selected (`allSelected`); an empty list means no.
 pub fn all_selected(entries: &[Entry], selected: &[String]) -> bool {
     !entries.is_empty() && entries.iter().all(|e| !e.is_valid() || e.option().is_some_and(|o| is_selected(selected, &o.value)))
 }
 
-/// Все варианты без заголовков групп (до фильтра).
+/// All options without group headers (before the filter).
 pub fn all_options(options: &[MultiSelectOption], groups: &[MultiSelectGroup]) -> Vec<MultiSelectOption> {
     if groups.is_empty() { options.to_vec() } else { groups.iter().flat_map(|g| g.items.iter().cloned()).collect() }
 }
 
-/// Предел выбора достигнут: выбрано ровно `limit` значений.
+/// The selection limit is reached: exactly `limit` values are selected.
 pub fn limit_reached(selected: &[String], limit: Option<usize>) -> bool {
     limit.is_some_and(|l| l > 0 && selected.len() == l)
 }
 
-/// Недоступен ли вариант с учётом предела выбора: собственный `disabled` либо предел достигнут, а вариант не выбран.
+/// Whether the option is disabled given the selection limit: its own `disabled`, or the limit is reached and the option is not selected.
 pub fn option_disabled(option: &MultiSelectOption, selected: &[String], limit: Option<usize>) -> bool {
     option.disabled || (limit_reached(selected, limit) && !is_selected(selected, &option.value))
 }
 
-/// Применяет предел выбора к плоскому списку: невыбранные варианты при достигнутом пределе становятся недоступными.
+/// Applies the selection limit to the flat list: unselected options become disabled when the limit is reached.
 pub fn apply_limit(entries: Vec<Entry>, selected: &[String], limit: Option<usize>) -> Vec<Entry> {
     if !limit_reached(selected, limit) {
         return entries;
@@ -243,9 +243,9 @@ pub fn apply_limit(entries: Vec<Entry>, selected: &[String], limit: Option<usize
         .collect()
 }
 
-/// Итоговые значения после клика по «выбрать все» (`onToggleAll`): выбранные недоступные остаются всегда; при выборе добавляются
-/// все доступные видимые, а при включённом поле поиска сохраняются и выбранные вне результата поиска; при снятии остаются
-/// только выбранные недоступные видимые. Повторы убираются, порядок: прежние вне поиска, недоступные, видимые.
+/// Resulting values after a click on "select all" (`onToggleAll`): selected disabled ones always remain; on select, all enabled
+/// visible ones are added, and with the search field enabled the selected ones outside the search result are kept too; on deselect only
+/// the selected disabled visible ones remain. Duplicates are removed, order: previous outside search, disabled, visible.
 pub fn toggle_all(all: &[MultiSelectOption], visible: &[Entry], selected: &[String], filter_enabled: bool) -> Vec<String> {
     let all_checked = all_selected(visible, selected);
     let chosen = |o: &MultiSelectOption| is_selected(selected, &o.value);
@@ -262,7 +262,7 @@ pub fn toggle_all(all: &[MultiSelectOption], visible: &[Entry], selected: &[Stri
     out
 }
 
-/// Подставляет число в шаблон: первое `{…}` заменяется на `count` (`getSelectedItemsLabel`); без скобок шаблон не меняется.
+/// Substitutes the number into the template: the first `{…}` is replaced with `count` (`getSelectedItemsLabel`); without braces the template is unchanged.
 pub fn summary(template: &str, count: usize) -> String {
     match (template.find('{'), template.find('}')) {
         (Some(open), Some(close)) if close > open => format!("{}{}{}", &template[..open], count, &template[close + 1..]),
@@ -270,23 +270,23 @@ pub fn summary(template: &str, count: usize) -> String {
     }
 }
 
-/// Метки выбранных вариантов в порядке выбора; значения, которых нет среди вариантов, пропускаются.
+/// Labels of the selected options in selection order; values that are not among the options are skipped.
 pub fn selected_labels(all: &[MultiSelectOption], selected: &[String]) -> Vec<String> {
     selected.iter().filter_map(|v| all.iter().find(|o| &o.value == v).map(|o| o.label.clone())).collect()
 }
 
-/// Что показывает метка.
+/// What the label shows.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum LabelContent {
-    /// Метки через запятую.
+    /// Comma-separated labels.
     Joined(String),
-    /// Сводка «N items selected».
+    /// Summary "N items selected".
     Summary(String),
-    /// Подсказка `placeholder` (или пусто).
+    /// The `placeholder` hint (or empty).
     Placeholder(Option<String>),
 }
 
-/// Метка режима `comma` (`label()`): список меток, сводка при превышении `max` либо подсказка.
+/// Label of `comma` mode (`label()`): the list of labels, a summary when exceeding `max`, or the hint.
 pub fn comma_label(labels: &[String], max: Option<usize>, template: &str, placeholder: Option<&str>, show_labels: bool) -> LabelContent {
     if !labels.is_empty() && show_labels {
         if max.is_some_and(|m| labels.len() > m) {
@@ -299,18 +299,18 @@ pub fn comma_label(labels: &[String], max: Option<usize>, template: &str, placeh
     }
 }
 
-/// Что показывает метка в режиме `chip`.
+/// What the label shows in `chip` mode.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ChipContent {
-    /// Чипы: значения выбранных вариантов (не больше `max`).
+    /// Chips: values of the selected options (at most `max`).
     Chips(Vec<String>),
-    /// Сводка: выбрано не меньше `max` (так делает PrimeNG: `chipSelectedItems().length === maxSelectedLabels`).
+    /// Summary: at least `max` selected (this is what PrimeNG does: `chipSelectedItems().length === maxSelectedLabels`).
     Summary(String),
-    /// Подсказка.
+    /// Hint.
     Placeholder(Option<String>),
 }
 
-/// Метка режима `chip` (`chipSelectedItems()`): чипы, сводка при `len >= max` либо подсказка.
+/// Label of `chip` mode (`chipSelectedItems()`): chips, a summary when `len >= max`, or the hint.
 pub fn chip_content(selected: &[String], max: Option<usize>, template: &str, placeholder: Option<&str>) -> ChipContent {
     if selected.is_empty() {
         return ChipContent::Placeholder(placeholder.filter(|p| !p.is_empty()).map(str::to_owned));
@@ -321,30 +321,30 @@ pub fn chip_content(selected: &[String], max: Option<usize>, template: &str, pla
     }
 }
 
-/// Состояние корня для классов и `data-p`.
+/// Root state for classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct RootState {
-    /// Режим чипов.
+    /// Chip mode.
     pub chip: bool,
-    /// Недоступен.
+    /// Disabled.
     pub disabled: bool,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// Вариант `filled`.
+    /// The `filled` variant.
     pub variant_filled: bool,
-    /// Поле в фокусе.
+    /// Field is focused.
     pub focused: bool,
-    /// Есть выбранные значения.
+    /// There are selected values.
     pub filled: bool,
-    /// Панель открыта.
+    /// Panel is open.
     pub open: bool,
-    /// На всю ширину.
+    /// Full width.
     pub fluid: bool,
-    /// Размер.
+    /// Size.
     pub size: Option<prime_core::Size>,
 }
 
-/// Классы корня в порядке `multiselectstyle.ts`.
+/// Root classes in the order of `multiselectstyle.ts`.
 pub fn write_root_classes(cn: &mut prime_core::ClassNames, s: &RootState) {
     use prime_core::Size;
     cn.add("p-multiselect p-component p-inputwrapper")
@@ -361,7 +361,7 @@ pub fn write_root_classes(cn: &mut prime_core::ClassNames, s: &RootState) {
         .add_if(s.size == Some(Size::Large), "p-multiselect-lg p-inputfield-lg");
 }
 
-/// Значение `data-p` корня: `invalid`, `disabled`, `focus`, `fluid`, `filled`, размер.
+/// Root `data-p` value: `invalid`, `disabled`, `focus`, `fluid`, `filled`, size.
 pub fn data_p(s: &RootState) -> std::borrow::Cow<'static, str> {
     let mut d = prime_core::DataP::new();
     d.add_if(s.invalid, "invalid")
@@ -373,12 +373,12 @@ pub fn data_p(s: &RootState) -> std::borrow::Cow<'static, str> {
     d.finish_cow()
 }
 
-/// Классы метки: `p-placeholder` при подсказке, `p-multiselect-label-empty` без подсказки и без выбора.
+/// Label classes: `p-placeholder` for the hint, `p-multiselect-label-empty` with no hint and no selection.
 pub fn write_label_classes(cn: &mut prime_core::ClassNames, placeholder_shown: bool, empty: bool) {
     cn.add("p-multiselect-label").add_if(placeholder_shown, "p-placeholder").add_if(empty, "p-multiselect-label-empty");
 }
 
-/// Классы варианта.
+/// Option classes.
 pub fn write_option_classes(cn: &mut prime_core::ClassNames, highlighted: bool, focused: bool, disabled: bool) {
     cn.add("p-multiselect-option")
         .add_if(highlighted, "p-multiselect-option-selected")
@@ -507,34 +507,34 @@ mod tests {
         assert!(!limit_reached(&sel(&["a"]), Some(2)));
         assert!(limit_reached(&sel(&["a", "b"]), Some(2)));
         assert!(!limit_reached(&sel(&["a", "b"]), None));
-        assert!(!limit_reached(&sel(&["a", "b"]), Some(0)), "ноль — без предела");
-        assert!(!option_disabled(&o, &sel(&["a", "b"]), Some(2)), "выбранный остаётся доступным");
+        assert!(!limit_reached(&sel(&["a", "b"]), Some(0)), "zero means no limit");
+        assert!(!option_disabled(&o, &sel(&["a", "b"]), Some(2)), "the selected one stays enabled");
         assert!(option_disabled(&MultiSelectOption::new("c", "c"), &sel(&["a", "b"]), Some(2)));
         assert!(option_disabled(&MultiSelectOption::new("c", "c").disabled(true), &[], Some(2)));
         let flat = visible_entries(&opts(), &[], "");
         let limited = apply_limit(flat.clone(), &sel(&["NY", "LDN"]), Some(2));
         assert_eq!(first_valid(&limited), Some(0));
         assert_eq!(next_valid(&limited, 0), 2);
-        assert_eq!(next_valid(&limited, 2), 2, "остальные недоступны");
-        assert_eq!(apply_limit(flat.clone(), &sel(&["NY"]), Some(2)), flat, "предел не достигнут");
+        assert_eq!(next_valid(&limited, 2), 2, "the rest are disabled");
+        assert_eq!(apply_limit(flat.clone(), &sel(&["NY"]), Some(2)), flat, "limit not reached");
     }
 
     #[test]
     fn toggle_all_table() {
         let all = all_options(&opts(), &[]);
         let visible = visible_entries(&opts(), &[], "");
-        // ничего не выбрано: все доступные видимые
+        // nothing selected: all enabled visible ones
         assert_eq!(toggle_all(&all, &visible, &[], true), sel(&["NY", "LDN", "IST", "PRS"]));
-        // выбран недоступный Rome: остаётся, порядок — недоступные перед видимыми
+        // disabled Rome selected: it stays, order — disabled before visible
         assert_eq!(toggle_all(&all, &visible, &sel(&["RM"]), true), sel(&["RM", "NY", "LDN", "IST", "PRS"]));
-        // все выбраны: снимает всё, кроме недоступных выбранных
+        // all selected: deselects everything except the selected disabled ones
         assert_eq!(toggle_all(&all, &visible, &sel(&["NY", "LDN", "IST", "PRS", "RM"]), true), sel(&["RM"]));
         assert!(toggle_all(&all, &visible, &sel(&["NY", "LDN", "IST", "PRS"]), true).is_empty());
-        // поиск «n»: видимые NY, LDN, IST; прежний выбор вне поиска (PRS) сохраняется при включённом поле поиска
+        // search "n": visible NY, LDN, IST; the previous selection outside the search (PRS) is kept with the search field enabled
         let found = visible_entries(&opts(), &[], "n");
         assert_eq!(toggle_all(&all, &found, &sel(&["PRS"]), true), sel(&["PRS", "NY", "LDN", "IST"]));
         assert_eq!(toggle_all(&all, &found, &sel(&["PRS"]), false), sel(&["NY", "LDN", "IST"]));
-        // снятие при поиске не трогает выбранные вне результата?  — PrimeNG: вне поиска они не сохраняются при снятии
+        // deselect during search does not touch the selected outside the result?  — PrimeNG: outside the search they are not kept on deselect
         assert!(toggle_all(&all, &found, &sel(&["NY", "LDN", "IST", "PRS"]), true).is_empty());
     }
 
@@ -574,7 +574,7 @@ mod tests {
         assert_eq!(
             chip_content(&s(&["a", "b", "c"]), Some(3), t, None),
             ChipContent::Summary("3 items selected".into()),
-            "как в PrimeNG: len == max"
+            "as in PrimeNG: len == max"
         );
         assert_eq!(chip_content(&s(&["a", "b", "c", "d"]), Some(3), t, None), ChipContent::Summary("4 items selected".into()));
         assert_eq!(chip_content(&s(&["a", "b", "c", "d"]), None, t, None), ChipContent::Chips(s(&["a", "b", "c", "d"])));
@@ -608,7 +608,7 @@ mod tests {
         let focus_only = RootState { open: true, ..RootState::default() };
         let mut cn = prime_core::ClassNames::new();
         write_root_classes(&mut cn, &focus_only);
-        assert!(cn.finish().contains("p-inputwrapper-focus"), "открытая панель даёт p-inputwrapper-focus");
+        assert!(cn.finish().contains("p-inputwrapper-focus"), "an open panel gives p-inputwrapper-focus");
     }
 
     #[test]

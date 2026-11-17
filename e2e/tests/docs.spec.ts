@@ -1,14 +1,14 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('Документация компонентов', () => {
+test.describe('Component documentation', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1440, height: 1000 });
         await page.goto('/autocomplete');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
     });
 
-    test('оболочка: заголовок, описание, импорт, примеры и оглавление', async ({ page }) => {
+    test('shell: title, description, import, examples and table of contents', async ({ page }) => {
         await expect(page.locator('h2')).toHaveText('AutoComplete');
         await expect(page.locator('.doc-desc')).toContainText('AutoComplete');
         await expect(page.locator('.doc-import pre')).toContainText('use prime_autocomplete::');
@@ -19,7 +19,7 @@ test.describe('Документация компонентов', () => {
         await expect(page.locator('.doc-toc')).toContainText('Props');
     });
 
-    test('кнопка Code раскрывает исходник примера', async ({ page }) => {
+    test('the Code button expands the example source', async ({ page }) => {
         const code = page.getByTestId('code-basic');
         await expect(code.locator('pre')).toBeHidden();
         await code.locator('summary').click();
@@ -29,13 +29,13 @@ test.describe('Документация компонентов', () => {
         await expect(code.locator('.tk-k').first()).toBeVisible();
     });
 
-    test('оглавление ведёт к якорю примера', async ({ page }) => {
+    test('the table of contents leads to the example anchor', async ({ page }) => {
         await page.locator('.doc-toc a', { hasText: 'Multiple' }).click();
         await expect(page).toHaveURL(/#multiple$/);
         await expect(page.locator('h3#multiple')).toBeInViewport();
     });
 
-    test('справочник API: свойства, события, тема', async ({ page }) => {
+    test('API reference: properties, events, theme', async ({ page }) => {
         const props = page.locator('h3#props');
         await props.scrollIntoViewIfNeeded();
         const table = page.locator('h3#props ~ h4 + table.doc-table').first();
@@ -45,7 +45,7 @@ test.describe('Документация компонентов', () => {
         await expect(page.locator('h3#theming ~ table').first()).toContainText('.p-autocomplete');
     });
 
-    test('меню: разделы, поиск и переход', async ({ page }) => {
+    test('menu: sections, search and navigation', async ({ page }) => {
         const nav = page.getByTestId('nav');
         await expect(nav.locator('.doc-nav-title', { hasText: 'Data' })).toBeVisible();
         await page.getByTestId('nav-search').fill('tree');
@@ -58,13 +58,13 @@ test.describe('Документация компонентов', () => {
         await expect(nav.getByRole('link', { name: 'TreeTable' })).toHaveAttribute('aria-current', 'page');
     });
 
-    test('переход к соседним компонентам внизу страницы', async ({ page }) => {
+    test('navigation to neighbouring components at the bottom of the page', async ({ page }) => {
         await page.locator('.doc-pager a', { hasText: 'CascadeSelect' }).click();
         await expect(page).toHaveURL(/\/cascadeselect$/);
         await expect(page.locator('h2')).toHaveText('CascadeSelect');
     });
 
-    test('заметки из docs/*.md и таблица свойств есть у Table', async ({ page }) => {
+    test('notes from docs/*.md and the properties table are present in Table', async ({ page }) => {
         await page.goto('/table');
         await page.waitForLoadState('networkidle');
         await expect(page.locator('h3#notes')).toBeAttached();

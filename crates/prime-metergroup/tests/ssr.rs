@@ -1,4 +1,4 @@
-//! Структура DOM, проценты, подписи, шаблоны и `pt` MeterGroup (SSR).
+//! DOM structure, percentages, labels, templates and `pt` of MeterGroup (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -15,7 +15,7 @@ fn strip(s: &str) -> String {
 }
 
 fn items() -> Vec<MeterItem> {
-    vec![MeterItem::new("Приложения", "#34d399", 20.0), MeterItem::new("Сообщения", "#fbbf24", 30.0)]
+    vec![MeterItem::new("Apps", "#34d399", 20.0), MeterItem::new("Messages", "#fbbf24", 30.0)]
 }
 
 #[test]
@@ -57,8 +57,8 @@ fn clamps_and_skips_non_positive() {
 
 #[test]
 fn label_text_and_marker() {
-    let html = strip(&view! { <MeterGroup value={vec![MeterItem::new("Приложения", "#34d399", 16.0)]} /> }.to_html());
-    assert!(html.contains("Приложения (16%)"), "{html}");
+    let html = strip(&view! { <MeterGroup value={vec![MeterItem::new("Apps", "#34d399", 16.0)]} /> }.to_html());
+    assert!(html.contains("Apps (16%)"), "{html}");
     assert!(html.contains("p-metergroup-label-marker") && html.contains("background-color: #34d399"), "{html}");
     assert!(html.contains("p-metergroup-label-list p-metergroup-label-list-horizontal"), "{html}");
 }
@@ -104,7 +104,7 @@ fn start_end_meter_templates() {
     let html = strip(&view! { <MeterGroup value={items()} start=start end=end meter=meter /> }.to_html());
     assert!(html.find("<u>S</u>").unwrap() < html.find("p-metergroup-meters").unwrap(), "{html}");
     assert!(html.find("<u>E</u>").unwrap() > html.find("p-metergroup-meters").unwrap(), "{html}");
-    assert!(html.contains("<s>0Приложения</s>") && html.contains("<s>1Сообщения</s>"), "{html}");
+    assert!(html.contains("<s>0Apps</s>") && html.contains("<s>1Messages</s>"), "{html}");
     assert!(!html.contains("class=\"p-metergroup-meter\""), "{html}");
 }
 

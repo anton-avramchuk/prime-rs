@@ -1,30 +1,30 @@
-//! Чистая логика Chip: классы, `data-p` и клавиша удаления (по `chipstyle.ts` и `Chip` PrimeNG).
+//! Pure Chip logic: classes, `data-p` and the remove key (based on `chipstyle.ts` and `Chip` in PrimeNG).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct ChipState {
-    /// Недоступен.
+    /// Unavailable.
     pub disabled: bool,
-    /// Удаляемый.
+    /// Removable.
     pub removable: bool,
 }
 
-/// Добавляет классы корня в порядке `chipstyle.ts`.
+/// Adds the root classes in the order of `chipstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &ChipState) {
     cn.add("p-chip p-component").add_if(s.disabled, "p-disabled");
 }
 
-/// Значение `data-p`: `removable`.
+/// `data-p` value: `removable`.
 pub fn data_p(s: &ChipState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.removable, "removable");
     d.finish_cow()
 }
 
-/// Клавиши, закрывающие Chip на элементе удаления: Enter и Backspace.
+/// Keys that remove the Chip on the remove element: Enter and Backspace.
 pub fn is_remove_key(key: &str) -> bool {
     matches!(key, "Enter" | "Backspace")
 }

@@ -2,24 +2,24 @@
 
 ## Why
 
-AvatarGroup объединяет несколько Avatar в перекрывающуюся группу. В PrimeNG это отдельный пакет (`primeng/avatargroup`), поэтому по правилу «один компонент — один крейт» он выделяется в свой крейт; при порте Avatar он был намеренно отложен (`docs/avatar.md`).
+AvatarGroup combines several Avatars into an overlapping group. In PrimeNG it is a separate package (`primeng/avatargroup`), so by the rule "one component — one crate" it gets its own crate; it was deliberately postponed when Avatar was ported (`docs/avatar.md`).
 
 ## What Changes
 
-- Новый крейт `prime-avatargroup` с компонентом `AvatarGroup`: дочернее содержимое, `style`, `style_class`, `pt` (`root`).
-- Разметка и классы как в PrimeNG 21.1.10: корень `<div class="p-avatar-group p-component">`; расположение и перекрытие аватаров задаёт CSS темы (`.p-avatar-group`).
-- Демонстрация `avatargroup` на странице `/avatar` в showcase, e2e, бенчмарки, бюджеты.
-- **Не входит:** автоматическое сворачивание лишних аватаров в «+N» (в PrimeNG этого тоже нет — «+2» делается вручную).
+- A new crate `prime-avatargroup` with the `AvatarGroup` component: child content, `style`, `style_class`, `pt` (`root`).
+- Markup and classes as in PrimeNG 21.1.10: the root `<div class="p-avatar-group p-component">`; the placement and overlap of the avatars are set by the theme CSS (`.p-avatar-group`).
+- The `avatargroup` demo on the `/avatar` page in the showcase, e2e, benchmarks, budgets.
+- **Not included:** automatic collapsing of extra avatars into "+N" (PrimeNG has no such feature either — "+2" is done manually).
 
 ## Capabilities
 
 ### New Capabilities
-- `avatargroup`: компонент AvatarGroup — разметка, классы, `pt`, производительность.
+- `avatargroup`: the AvatarGroup component — markup, classes, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-avatargroup` (`publish = false`); зависимость только `prime-core`.
-- Изменяются `showcase` (страница Avatar), `benches/render`, `benches/wasm-size`, бюджеты, `e2e/tests`, `docs/avatar.md`.
+- A new crate `crates/prime-avatargroup` (`publish = false`); the only dependency is `prime-core`.
+- Changes to `showcase` (the Avatar page), `benches/render`, `benches/wasm-size`, budgets, `e2e/tests`, `docs/avatar.md`.

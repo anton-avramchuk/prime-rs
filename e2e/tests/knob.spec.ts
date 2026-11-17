@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('Knob', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/knob');
-        // клики и перетаскивание до гидратации (загрузка wasm) теряются
+        // clicks and dragging before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-knob')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(10);
         const svg = page.locator('[data-demo=basic] svg');
         await expect(svg).toHaveAttribute('role', 'slider');
@@ -20,7 +20,7 @@ test.describe('Knob', () => {
         await expect(page.locator('[data-demo=size] svg')).toHaveCSS('width', '200px');
     });
 
-    test('клавиши и клик по шкале', async ({ page }) => {
+    test('keys and clicking the scale', async ({ page }) => {
         const svg = page.locator('[data-demo=basic] svg');
         await svg.focus();
         await page.keyboard.press('ArrowRight');
@@ -36,13 +36,13 @@ test.describe('Knob', () => {
         const [cx, cy] = [box.x + box.width / 2, box.y + box.height / 2];
         await page.mouse.click(cx, cy - 40);
         await expect(page.getByTestId('echo')).toHaveText('50');
-        // разрыв внизу шкалы значение не меняет
+        // a gap at the bottom of the scale does not change the value
         await page.mouse.click(cx, cy + 40);
         await expect(page.getByTestId('echo')).toHaveText('50');
         await expect(svg).toHaveAttribute('aria-valuenow', '50');
     });
 
-    test('перетаскивание следует за указателем даже за пределами шкалы', async ({ page }) => {
+    test('dragging follows the pointer even outside the scale', async ({ page }) => {
         const svg = page.locator('[data-demo=basic] svg');
         const box = (await svg.boundingBox())!;
         const [cx, cy] = [box.x + box.width / 2, box.y + box.height / 2];
@@ -57,12 +57,12 @@ test.describe('Knob', () => {
         const right = Number(await page.getByTestId('echo').textContent());
         expect(right).toBeGreaterThan(70);
         await page.mouse.up();
-        // после отпускания перемещение мыши ничего не меняет
+        // after release, mouse movement changes nothing
         await page.mouse.move(cx - 150, cy - 10, { steps: 3 });
         await expect(page.getByTestId('echo')).toHaveText(String(right));
     });
 
-    test('шаблон, цвета, границы, шаг, readonly и disabled', async ({ page }) => {
+    test('template, colors, bounds, step, readonly and disabled', async ({ page }) => {
         await expect(page.locator('[data-demo=template] text')).toHaveText('60%');
         await expect(page.locator('[data-demo=color] .p-knob-value')).toHaveAttribute('stroke', 'SlateGray');
         await expect(page.locator('[data-demo=color] .p-knob-range')).toHaveAttribute('stroke', 'MediumTurquoise');
@@ -90,7 +90,7 @@ test.describe('Knob', () => {
         await expect(page.locator('[data-demo=disabled] .p-knob')).toHaveClass(/p-disabled/);
     });
 
-    test('кнопки управляют readonly-ручкой', async ({ page }) => {
+    test('buttons control the readonly knob', async ({ page }) => {
         const svg = page.locator('[data-demo=reactive] svg[role=slider]');
         const buttons = page.locator('[data-demo=reactive] button');
         await expect(buttons.nth(1)).toBeDisabled();

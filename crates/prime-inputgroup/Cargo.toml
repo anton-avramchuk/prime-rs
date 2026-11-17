@@ -1,6 +1,6 @@
 [package]
 name = "prime-inputgroup"
-description = "prime-rs: компоненты InputGroup и InputGroupAddon (порт PrimeNG)"
+description = "prime-rs: InputGroup and InputGroupAddon components (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

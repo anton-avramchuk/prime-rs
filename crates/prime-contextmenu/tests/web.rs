@@ -1,7 +1,7 @@
-//! Поведение ContextMenu в реальном браузере (wasm-bindgen-test): показ по `contextmenu` на цели и на документе, положение у
-//! курсора и переворот у края окна, закрытие (клик вне, правая кнопка, Escape, лист, `resize`), подменю, клавиатура и шаблоны.
+//! ContextMenu behaviour in a real browser (wasm-bindgen-test): showing on `contextmenu` on a target and on the document, position at
+//! the cursor and flip at the window edge, closing (outside click, right button, Escape, leaf, `resize`), submenus, keyboard and templates.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели окна общие на страницу. Стили темы не подключены.
+//! The scenarios run as one sequential test: window listeners are shared across the page. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -28,7 +28,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(sel: &str) -> HtmlElement {
-    doc().query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}: {}", doc().body().unwrap().inner_html())).dyn_into().unwrap()
+    doc().query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}: {}", doc().body().unwrap().inner_html())).dyn_into().unwrap()
 }
 
 fn has(sel: &str) -> bool {
@@ -42,7 +42,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться и слушателю окна повеситься (в следующем тике).
+/// Lets the effects apply and the window listener attach (on the next tick).
 async fn settle() {
     sleep(60).await;
 }
@@ -59,7 +59,7 @@ fn focused() -> Option<String> {
     doc().query_selector("li.p-focus").unwrap().map(|e| e.get_attribute("id").unwrap())
 }
 
-/// Отправляет событие мыши; возвращает `false`, если действие по умолчанию отменено.
+/// Dispatches a mouse event; returns `false` if the default action was cancelled.
 fn mouse(el: &web_sys::EventTarget, name: &str, x: i32, y: i32, button: i16) -> bool {
     let init = MouseEventInit::new();
     init.set_bubbles(true);
@@ -115,37 +115,37 @@ async fn right_click_on_the_target_shows_the_menu_at_the_cursor() {
         }
     });
     settle().await;
-    assert!(!has(".p-contextmenu"), "до события меню нет");
-    assert!(!mouse(&q("#tgt"), "contextmenu", 40, 30, 2), "действие по умолчанию отменено");
+    assert!(!has(".p-contextmenu"), "no menu before the event");
+    assert!(!mouse(&q("#tgt"), "contextmenu", 40, 30, 2), "default action cancelled");
     settle().await;
     let panel = q("#c");
     assert!(panel.class_name().contains("p-contextmenu"), "{}", panel.class_name());
-    assert_ne!(panel.style().get_property_value("visibility").unwrap(), "hidden", "положение посчитано");
+    assert_ne!(panel.style().get_property_value("visibility").unwrap(), "hidden", "position computed");
     assert_eq!(panel.style().get_property_value("position").unwrap(), "absolute");
     let rect = panel.get_bounding_client_rect();
-    assert!((rect.left() - 41.0).abs() < 1.5 && (rect.top() - 31.0).abs() < 1.5, "у курсора + 1px: {} {}", rect.left(), rect.top());
-    assert!(!panel.style().get_property_value("z-index").unwrap().is_empty(), "слой назначен");
-    assert!(doc().active_element().unwrap().is_same_node(Some(&q("#c_list"))), "фокус в корневом списке");
+    assert!((rect.left() - 41.0).abs() < 1.5 && (rect.top() - 31.0).abs() < 1.5, "at the cursor + 1px: {} {}", rect.left(), rect.top());
+    assert!(!panel.style().get_property_value("z-index").unwrap().is_empty(), "layer assigned");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&q("#c_list"))), "focus in the root list");
     assert_eq!(*events.lock().unwrap(), ["show"]);
-    // Второй правый клик при открытом меню переставляет панель, не закрывая.
+    // A second right click while the menu is open moves the panel without closing it.
     mouse(&q("#tgt"), "contextmenu", 60, 50, 2);
     settle().await;
     let rect = q("#c").get_bounding_client_rect();
     assert!((rect.left() - 61.0).abs() < 1.5 && (rect.top() - 51.0).abs() < 1.5, "{} {}", rect.left(), rect.top());
     assert_eq!(*events.lock().unwrap(), ["show", "show"]);
-    // Левый клик вне закрывает, правый и Ctrl-клик — нет.
+    // A left click outside closes; a right click and Ctrl-click do not.
     mouse(&doc().body().unwrap(), "click", 5, 5, 2);
     settle().await;
-    assert!(has(".p-contextmenu"), "правая кнопка не закрывает");
+    assert!(has(".p-contextmenu"), "right button does not close");
     let init = MouseEventInit::new();
     init.set_bubbles(true);
     init.set_ctrl_key(true);
     doc().body().unwrap().dispatch_event(&MouseEvent::new_with_mouse_event_init_dict("click", &init).unwrap()).unwrap();
     settle().await;
-    assert!(has(".p-contextmenu"), "Ctrl-клик не закрывает");
+    assert!(has(".p-contextmenu"), "Ctrl-click does not close");
     mouse(&doc().body().unwrap(), "click", 5, 5, 0);
     settle().await;
-    assert!(!has(".p-contextmenu"), "левый клик вне закрывает");
+    assert!(!has(".p-contextmenu"), "left click outside closes");
     assert_eq!(events.lock().unwrap().last().map(String::as_str), Some("hide"));
     host.remove();
 }
@@ -165,8 +165,8 @@ async fn near_the_right_and_bottom_edges_the_menu_flips() {
     mouse(&q("#edge"), "contextmenu", w - 5, h - 5, 2);
     settle().await;
     let rect = q("#e").get_bounding_client_rect();
-    assert!(rect.right() <= f64::from(w) + 1.0 && rect.bottom() <= f64::from(h) + 1.0, "панель в окне: {rect:?}");
-    assert!(rect.left() < f64::from(w - 5) && rect.top() < f64::from(h - 5), "перевернута влево и вверх");
+    assert!(rect.right() <= f64::from(w) + 1.0 && rect.bottom() <= f64::from(h) + 1.0, "panel within the window: {rect:?}");
+    assert!(rect.left() < f64::from(w - 5) && rect.top() < f64::from(h - 5), "flipped left and up");
     mouse(&doc().body().unwrap(), "click", 1, 1, 0);
     settle().await;
     host.remove();
@@ -187,16 +187,16 @@ async fn leaves_submenus_and_keyboard() {
     menu.show_at(30.0, 30.0);
     settle().await;
     assert!(menu.visible());
-    // Клик по группе раскрывает подменю, лист закрывает меню и вызывает команду.
+    // A click on a group expands the submenu, a leaf closes the menu and calls the command.
     content("k", "3").click();
     settle().await;
     assert!(is_active("k", "3") && has(".p-contextmenu-submenu"));
     content("k", "3_1").click();
     settle().await;
-    assert!(!has(".p-contextmenu"), "лист закрывает меню");
+    assert!(!has(".p-contextmenu"), "leaf closes the menu");
     assert_eq!(*log.lock().unwrap(), ["Paste"]);
 
-    // Клавиатура: ↓ ↓ → Escape.
+    // Keyboard: Down, Down, Right, Escape.
     menu.show_at(30.0, 30.0);
     settle().await;
     let list = q("#k_list");
@@ -205,7 +205,7 @@ async fn leaves_submenus_and_keyboard() {
     assert_eq!(focused().as_deref(), Some("k_0"));
     press(&list, "End", "End");
     settle().await;
-    assert_eq!(focused().as_deref(), Some("k_3"), "разделитель пропущен: End → More");
+    assert_eq!(focused().as_deref(), Some("k_3"), "separator skipped: End → More");
     press(&list, "ArrowRight", "ArrowRight");
     settle().await;
     assert!(is_active("k", "3") && focused().as_deref() == Some("k_3_0"));
@@ -215,26 +215,26 @@ async fn leaves_submenus_and_keyboard() {
     press(&list, "Home", "Home");
     press(&list, "KeyR", "r");
     settle().await;
-    assert_eq!(focused().as_deref(), Some("k_1"), "поиск: Rename");
+    assert_eq!(focused().as_deref(), Some("k_1"), "search: Rename");
     press(&list, "Enter", "Enter");
     settle().await;
-    assert!(!has(".p-contextmenu") && log.lock().unwrap().last().map(String::as_str) == Some("Rename"), "Enter выбирает пункт");
+    assert!(!has(".p-contextmenu") && log.lock().unwrap().last().map(String::as_str) == Some("Rename"), "Enter selects the item");
     menu.show_at(30.0, 30.0);
     settle().await;
     press(&q("#k_list"), "Escape", "Escape");
     settle().await;
-    assert!(!has(".p-contextmenu"), "Escape закрывает");
+    assert!(!has(".p-contextmenu"), "Escape closes");
     menu.show_at(30.0, 30.0);
     settle().await;
     press(&q("#k_list"), "Tab", "Tab");
     settle().await;
-    assert!(!has(".p-contextmenu"), "Tab закрывает");
-    // Изменение размера окна закрывает меню.
+    assert!(!has(".p-contextmenu"), "Tab closes");
+    // Resizing the window closes the menu.
     menu.show_at(30.0, 30.0);
     settle().await;
     web_sys::window().unwrap().dispatch_event(&web_sys::Event::new("resize").unwrap()).unwrap();
     settle().await;
-    assert!(!has(".p-contextmenu"), "resize закрывает");
+    assert!(!has(".p-contextmenu"), "resize closes");
     host.remove();
 }
 
@@ -246,7 +246,7 @@ async fn global_menu_listens_on_the_document() {
     settle().await;
     mouse(&doc().body().unwrap(), "contextmenu", 20, 20, 2);
     settle().await;
-    assert!(has("#g.p-contextmenu"), "правый клик где угодно");
+    assert!(has("#g.p-contextmenu"), "right click anywhere");
     mouse(&doc().body().unwrap(), "click", 1, 1, 0);
     settle().await;
     assert!(!has(".p-contextmenu"));
@@ -254,7 +254,7 @@ async fn global_menu_listens_on_the_document() {
     settle().await;
     mouse(&doc().body().unwrap(), "contextmenu", 20, 20, 2);
     settle().await;
-    assert!(!has(".p-contextmenu"), "после размонтирования слушатель снят");
+    assert!(!has(".p-contextmenu"), "listener removed after unmount");
     host.remove();
 }
 

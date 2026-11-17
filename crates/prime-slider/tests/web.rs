@@ -1,5 +1,5 @@
-//! Поведение Slider в реальном браузере (wasm-bindgen-test): клавиши, клик по полосе, перетаскивание и снятие слушателей,
-//! `disabled`, диапазон, внешний сигнал, реактивные границы, сохранение ручек и фокуса.
+//! Slider behavior in a real browser (wasm-bindgen-test): keys, click on the track, dragging and listener removal,
+//! `disabled`, range, external signal, reactive bounds, handle and focus preservation.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,20 +22,20 @@ fn host() -> HtmlElement {
 }
 
 fn root(host: &HtmlElement) -> HtmlElement {
-    host.query_selector(".p-slider").unwrap().expect("нет .p-slider").dyn_into().unwrap()
+    host.query_selector(".p-slider").unwrap().expect("no .p-slider").dyn_into().unwrap()
 }
 
-/// Ручка с номером `n` (с нуля).
+/// Handle number `n` (zero-based).
 fn handle(host: &HtmlElement, n: u32) -> HtmlElement {
     let list = host.query_selector_all(".p-slider-handle").unwrap();
-    list.item(n).unwrap_or_else(|| panic!("нет ручки {n}")).dyn_into().unwrap()
+    list.item(n).unwrap_or_else(|| panic!("no handle {n}")).dyn_into().unwrap()
 }
 
 fn now(el: &HtmlElement) -> String {
     el.get_attribute("aria-valuenow").unwrap_or_default()
 }
 
-/// Событие мыши; возвращает `false`, если действие по умолчанию отменено.
+/// Mouse event; returns `false` if the default action was canceled.
 fn mouse(target: &EventTarget, name: &str, x: f64, y: f64) -> bool {
     let init = MouseEventInit::new();
     init.set_bubbles(true);
@@ -57,7 +57,7 @@ fn window() -> EventTarget {
     web_sys::window().unwrap().into()
 }
 
-/// Журнал событий: `change:<v>` и `end:<v>` (диапазон — `a,b`).
+/// Event log: `change:<v>` and `end:<v>` (range — `a,b`).
 fn log() -> (Arc<Mutex<Vec<String>>>, Callback<SliderChange>, Callback<SliderSlideEnd>) {
     let log = Arc::new(Mutex::new(Vec::new()));
     let (a, b) = (log.clone(), log.clone());
@@ -84,10 +84,10 @@ async fn keys_change_value_prevent_default_and_keep_focus() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <Slider value=value on_change=on_change /> });
     leptos::task::tick().await;
     let h = handle(&host, 0);
-    assert!(!key(&h, "ArrowRight"), "действие по умолчанию не отменено");
+    assert!(!key(&h, "ArrowRight"), "default action not canceled");
     leptos::task::tick().await;
     assert_eq!((value.get_untracked(), now(&h).as_str()), (51.0, "51"));
-    assert!(h.is_same_node(doc().active_element().as_deref()), "фокус должен остаться на ручке");
+    assert!(h.is_same_node(doc().active_element().as_deref()), "focus must stay on the handle");
     key(&h, "ArrowLeft");
     key(&h, "ArrowLeft");
     key(&h, "PageUp");
@@ -97,11 +97,11 @@ async fn keys_change_value_prevent_default_and_keep_focus() {
     key(&h, "Home");
     assert_eq!(value.get_untracked(), 0.0);
     key(&h, "ArrowDown");
-    assert_eq!(value.get_untracked(), 0.0, "не ниже min");
+    assert_eq!(value.get_untracked(), 0.0, "not below min");
     key(&h, "End");
     key(&h, "ArrowUp");
-    assert_eq!(value.get_untracked(), 100.0, "не выше max");
-    assert!(key(&h, "KeyA"), "посторонняя клавиша не должна отменяться");
+    assert_eq!(value.get_untracked(), 100.0, "not above max");
+    assert!(key(&h, "KeyA"), "an unrelated key must not be canceled");
     assert_eq!(log.lock().unwrap().len(), 9);
     assert_eq!(log.lock().unwrap()[0], "change:51");
     host.remove();
@@ -119,7 +119,7 @@ async fn step_moves_keys_by_step_and_keeps_handle_element() {
     assert_eq!(value.get_untracked(), 40.0);
     key(&h, "PageDown");
     assert_eq!(value.get_untracked(), 20.0);
-    assert!(h.is_same_node(Some(&handle(&host, 0))), "ручка пересоздана после изменения");
+    assert!(h.is_same_node(Some(&handle(&host, 0))), "handle recreated after the change");
     host.remove();
 }
 
@@ -168,7 +168,7 @@ async fn drag_updates_value_ends_once_and_unbinds_window_listeners() {
     let (r, rect) = (root(&host), root(&host).get_bounding_client_rect());
     let h = handle(&host, 0);
     assert_eq!(r.get_attribute("data-p-sliding").as_deref(), Some("false"));
-    assert!(!mouse(&h, "mousedown", rect.left(), rect.top()), "mousedown не отменён");
+    assert!(!mouse(&h, "mousedown", rect.left(), rect.top()), "mousedown not canceled");
     leptos::task::tick().await;
     assert_eq!(r.get_attribute("data-p-sliding").as_deref(), Some("true"));
     mouse(&window(), "mousemove", rect.left() + 50.0, rect.top());
@@ -178,12 +178,12 @@ async fn drag_updates_value_ends_once_and_unbinds_window_listeners() {
     mouse(&window(), "mouseup", rect.left() + 100.0, rect.top());
     leptos::task::tick().await;
     assert_eq!(r.get_attribute("data-p-sliding").as_deref(), Some("false"));
-    // слушателей больше нет: перемещение после отпускания ничего не меняет
+    // no listeners remain: movement after release changes nothing
     mouse(&window(), "mousemove", rect.left() + 200.0, rect.top());
     mouse(&window(), "mouseup", rect.left() + 200.0, rect.top());
     assert_eq!(value.get_untracked(), 50.0);
     assert_eq!(*log.lock().unwrap(), ["change:25", "change:50", "end:50"]);
-    // `click` после перетаскивания (как отпускание над полосой) не считается кликом по полосе
+    // `click` after dragging (like a release over the track) is not counted as a click on the track
     mouse(&h, "click", rect.left() + 200.0, rect.top());
     assert_eq!(value.get_untracked(), 50.0);
     assert_eq!(log.lock().unwrap().len(), 3);
@@ -199,7 +199,7 @@ async fn drag_with_step_moves_by_whole_steps() {
     let (_, rect) = (root(&host), root(&host).get_bounding_client_rect());
     mouse(&handle(&host, 0), "mousedown", rect.left() + 40.0, rect.top());
     mouse(&window(), "mousemove", rect.left() + 140.0, rect.top());
-    assert_eq!(value.get_untracked(), 60.0, "70 % → 60 (два шага от 20)");
+    assert_eq!(value.get_untracked(), 60.0, "70 % → 60 (two steps from 20)");
     mouse(&window(), "mousemove", rect.left() + 0.0, rect.top());
     assert_eq!(value.get_untracked(), 0.0);
     mouse(&window(), "mouseup", rect.left(), rect.top());
@@ -238,11 +238,11 @@ async fn range_keys_keep_pair_ordered_and_focus_follows_the_value() {
     leptos::task::tick().await;
     key(&handle(&host, 1), "ArrowRight");
     assert_eq!(values.get_untracked(), [20.0, 81.0]);
-    // первая ручка уходит за вторую: пара остаётся упорядоченной, фокус переходит на ручку с этим значением
+    // the first handle goes past the second: the pair stays ordered, focus moves to the handle with this value
     key(&handle(&host, 0), "End");
     leptos::task::tick().await;
     assert_eq!(values.get_untracked(), [81.0, 100.0]);
-    assert!(handle(&host, 1).is_same_node(doc().active_element().as_deref()), "фокус должен перейти на вторую ручку");
+    assert!(handle(&host, 1).is_same_node(doc().active_element().as_deref()), "focus must move to the second handle");
     assert!(handle(&host, 1).class_name().contains("p-slider-handle-active"));
     assert!(!handle(&host, 0).class_name().contains("p-slider-handle-active"));
     assert_eq!((now(&handle(&host, 0)).as_str(), now(&handle(&host, 1)).as_str()), ("81", "100"));
@@ -258,10 +258,10 @@ async fn range_bar_click_moves_the_active_handle() {
     leptos::task::tick().await;
     let (r, rect) = (root(&host), root(&host).get_bounding_client_rect());
     mouse(&r, "click", rect.left() + 100.0, rect.top());
-    assert_eq!(values.get_untracked(), [50.0, 80.0], "двигается первая (активная по умолчанию) ручка");
+    assert_eq!(values.get_untracked(), [50.0, 80.0], "the first (default active) handle moves");
     key(&handle(&host, 1), "ArrowLeft");
     mouse(&r, "click", rect.left() + 180.0, rect.top());
-    assert_eq!(values.get_untracked(), [50.0, 90.0], "активной стала вторая ручка");
+    assert_eq!(values.get_untracked(), [50.0, 90.0], "the second handle became active");
     host.remove();
 }
 

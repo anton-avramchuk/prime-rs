@@ -1,4 +1,4 @@
-//! Структура DOM, классы, шаблоны и `pt` Timeline (SSR).
+//! DOM structure, classes, templates and `pt` of Timeline (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

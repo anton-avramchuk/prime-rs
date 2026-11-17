@@ -1,6 +1,6 @@
 [package]
 name = "wasm-size"
-description = "Минимальное wasm-приложение для измерения вклада компонентов в размер бинарника"
+description = "Minimal wasm app for measuring the contribution of components to binary size"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,7 +10,7 @@ publish = false
 crate-type = ["cdylib"]
 
 [features]
-# Случаи измерения: ровно один должен быть включён.
+# Measurement cases: exactly one must be enabled.
 case-baseline = []
 case-one-icon = ["prime-icons/check"]
 case-all-icons = ["prime-icons/all-icons"]

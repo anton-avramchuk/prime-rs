@@ -1,7 +1,7 @@
-//! Поведение Menubar в реальном браузере (wasm-bindgen-test): раскрытие кликом и наведением, листья и команды, автоскрытие,
-//! клик вне, клавиатура корня и подменю, поиск по символам, мобильная кнопка, шаблоны и размонтирование.
+//! Menubar behavior in a real browser (wasm-bindgen-test): expanding by click and hover, leaves and commands, auto-hide,
+//! click outside, root and submenu keyboard, character search, mobile button, templates and unmount.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели окна общие на страницу. Стили темы не подключены.
+//! Scenarios run as one sequential test: window listeners are shared across the page. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -28,7 +28,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}: {}", host.outer_html())).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -42,7 +42,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться и слушателю окна повеситься.
+/// Lets effects apply and the window listener attach.
 async fn settle() {
     sleep(60).await;
 }
@@ -120,7 +120,7 @@ async fn click_expands_collapses_and_leaves_close() {
     assert!(is_active(&host, "m", "0_0"));
     click(&host, "m", "0_0");
     settle().await;
-    assert!(!is_active(&host, "m", "0_0") && is_active(&host, "m", "0"), "повторный клик сворачивает ветку");
+    assert!(!is_active(&host, "m", "0_0") && is_active(&host, "m", "0"), "a repeated click collapses the branch");
     click(&host, "m", "0");
     settle().await;
     assert!(!has(&host, ".p-menubar-submenu"));
@@ -130,14 +130,14 @@ async fn click_expands_collapses_and_leaves_close() {
     settle().await;
     click(&host, "m", "0_0_1");
     settle().await;
-    assert!(!has(&host, ".p-menubar-submenu"), "лист закрывает все подменю");
+    assert!(!has(&host, ".p-menubar-submenu"), "a leaf closes all submenus");
     assert_eq!(*log.lock().unwrap(), ["Folder"]);
-    assert!(doc().active_element().unwrap().is_same_node(Some(&q(&host, ".p-menubar-root-list"))), "фокус в корневом списке");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&q(&host, ".p-menubar-root-list"))), "focus in the root list");
     click(&host, "m", "0");
     settle().await;
     click(&host, "m", "0_3");
     settle().await;
-    assert_eq!(*log.lock().unwrap(), ["Folder"], "отключённый пункт команду не вызывает");
+    assert_eq!(*log.lock().unwrap(), ["Folder"], "a disabled item does not invoke the command");
     click(&host, "m", "4");
     settle().await;
     assert_eq!(log.lock().unwrap().last().map(String::as_str), Some("Quit"));
@@ -152,11 +152,11 @@ async fn hover_opens_only_after_a_click_and_respects_auto_display() {
     settle().await;
     mouse(&content(&host, "h", "1"), "mouseenter", false);
     settle().await;
-    assert!(!is_active(&host, "h", "1"), "до клика наведение не раскрывает");
+    assert!(!is_active(&host, "h", "1"), "before a click hover does not expand");
     click(&host, "h", "0");
     mouse(&content(&host, "h", "1"), "mouseenter", false);
     settle().await;
-    assert!(is_active(&host, "h", "1") && !is_active(&host, "h", "0"), "после клика наведение раскрывает соседнюю группу");
+    assert!(is_active(&host, "h", "1") && !is_active(&host, "h", "0"), "after a click hover expands the neighboring group");
     host.remove();
 
     let host = self::host();
@@ -184,13 +184,13 @@ async fn auto_hide_closes_after_the_mouse_leaves() {
     let list = q(&host, ".p-menubar-root-list");
     mouse(&list, "mouseleave", false);
     sleep(30).await;
-    assert!(is_active(&host, "a", "0"), "пока задержка не прошла");
+    assert!(is_active(&host, "a", "0"), "while the delay has not elapsed");
     mouse(&list, "mouseenter", false);
     sleep(150).await;
-    assert!(is_active(&host, "a", "0"), "возврат курсора отменяет закрытие");
+    assert!(is_active(&host, "a", "0"), "the cursor returning cancels the close");
     mouse(&list, "mouseleave", false);
     sleep(200).await;
-    assert!(!has(&host, ".p-menubar-submenu"), "через auto_hide_delay подменю закрыто");
+    assert!(!has(&host, ".p-menubar-submenu"), "after auto_hide_delay the submenu is closed");
     host.remove();
 
     let host = self::host();
@@ -201,7 +201,7 @@ async fn auto_hide_closes_after_the_mouse_leaves() {
     settle().await;
     mouse(&q(&host, ".p-menubar-root-list"), "mouseleave", false);
     sleep(250).await;
-    assert!(is_active(&host, "a", "0"), "без auto_hide подменю остаётся");
+    assert!(is_active(&host, "a", "0"), "without auto_hide the submenu stays");
     host.remove();
 }
 
@@ -215,12 +215,12 @@ async fn outside_click_closes_submenus() {
     assert!(has(&host, ".p-menubar-submenu"));
     doc().body().unwrap().click();
     settle().await;
-    assert!(!has(&host, ".p-menubar-submenu"), "клик вне закрывает");
+    assert!(!has(&host, ".p-menubar-submenu"), "a click outside closes");
     click(&host, "o", "1");
     settle().await;
     web_sys::window().unwrap().dispatch_event(&web_sys::Event::new("resize").unwrap()).unwrap();
     settle().await;
-    assert!(!has(&host, ".p-menubar-submenu"), "resize закрывает");
+    assert!(!has(&host, ".p-menubar-submenu"), "resize closes");
     host.remove();
 }
 
@@ -232,42 +232,42 @@ async fn keyboard_walks_root_and_submenus() {
     let list = q(&host, ".p-menubar-root-list");
     list.focus().unwrap();
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_0"), "фокус снаружи ставит первый пункт");
+    assert_eq!(focused(&host).as_deref(), Some("k_0"), "focus from outside sets the first item");
     assert_eq!(list.get_attribute("aria-activedescendant").as_deref(), Some("k_0"));
     press(&list, "ArrowRight", "ArrowRight");
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_1"), "→ по корню");
+    assert_eq!(focused(&host).as_deref(), Some("k_1"), "→ along the root");
     press(&list, "ArrowRight", "ArrowRight");
     press(&list, "ArrowRight", "ArrowRight");
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_4"), "Users → Quit, разделитель пропущен");
+    assert_eq!(focused(&host).as_deref(), Some("k_4"), "Users → Quit, separator skipped");
     press(&list, "ArrowLeft", "ArrowLeft");
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_2"), "← по корню");
+    assert_eq!(focused(&host).as_deref(), Some("k_2"), "← along the root");
     press(&list, "ArrowDown", "ArrowDown");
     settle().await;
-    assert!(!has(&host, ".p-menubar-submenu") && focused(&host).as_deref() == Some("k_2"), "↓ на листе корня ничего не делает");
+    assert!(!has(&host, ".p-menubar-submenu") && focused(&host).as_deref() == Some("k_2"), "↓ on a root leaf does nothing");
     press(&list, "Home", "Home");
     press(&list, "ArrowDown", "ArrowDown");
     settle().await;
-    assert!(is_active(&host, "k", "0") && focused(&host).as_deref() == Some("k_0_0"), "↓ раскрывает группу и входит");
+    assert!(is_active(&host, "k", "0") && focused(&host).as_deref() == Some("k_0_0"), "↓ expands the group and enters");
     press(&list, "ArrowDown", "ArrowDown");
     settle().await;
     assert_eq!(focused(&host).as_deref(), Some("k_0_1"));
     press(&list, "ArrowDown", "ArrowDown");
     settle().await;
-    assert_eq!(focused(&host).as_deref(), Some("k_0_1"), "Print отключён: остаёмся на Open");
+    assert_eq!(focused(&host).as_deref(), Some("k_0_1"), "Print is disabled: stay on Open");
     press(&list, "ArrowUp", "ArrowUp");
     press(&list, "ArrowRight", "ArrowRight");
     settle().await;
-    assert!(is_active(&host, "k", "0_0") && focused(&host).as_deref() == Some("k_0_0_0"), "→ раскрывает вложенную группу");
+    assert!(is_active(&host, "k", "0_0") && focused(&host).as_deref() == Some("k_0_0_0"), "→ expands the nested group");
     press(&list, "ArrowLeft", "ArrowLeft");
     settle().await;
-    assert!(!is_active(&host, "k", "0_0") && is_active(&host, "k", "0") && focused(&host).as_deref() == Some("k_0_0"), "← на родителя");
+    assert!(!is_active(&host, "k", "0_0") && is_active(&host, "k", "0") && focused(&host).as_deref() == Some("k_0_0"), "← to the parent");
     press(&list, "ArrowLeft", "ArrowLeft");
     settle().await;
-    assert!(!has(&host, ".p-menubar-submenu") && focused(&host).as_deref() == Some("k_0"), "← из подменю корня закрывает его");
-    // Enter на листе вызывает команду и закрывает всё.
+    assert!(!has(&host, ".p-menubar-submenu") && focused(&host).as_deref() == Some("k_0"), "← from a root submenu closes it");
+    // Enter on a leaf invokes the command and closes everything.
     press(&list, "ArrowDown", "ArrowDown");
     press(&list, "ArrowDown", "ArrowDown");
     settle().await;
@@ -275,18 +275,18 @@ async fn keyboard_walks_root_and_submenus() {
     settle().await;
     assert_eq!(log.lock().unwrap().last().map(String::as_str), Some("Open"));
     assert!(!has(&host, ".p-menubar-submenu"));
-    // Escape закрывает.
+    // Escape closes.
     press(&list, "ArrowDown", "ArrowDown");
     settle().await;
     assert!(has(&host, ".p-menubar-submenu"));
     press(&list, "Escape", "Escape");
     settle().await;
-    assert!(!has(&host, ".p-menubar-submenu"), "Escape закрывает");
+    assert!(!has(&host, ".p-menubar-submenu"), "Escape closes");
     press(&list, "ArrowDown", "ArrowDown");
     settle().await;
     press(&list, "Tab", "Tab");
     settle().await;
-    assert!(!has(&host, ".p-menubar-submenu"), "Tab закрывает");
+    assert!(!has(&host, ".p-menubar-submenu"), "Tab closes");
     host.remove();
 }
 
@@ -319,18 +319,18 @@ async fn mobile_button_toggles_the_list() {
     settle().await;
     assert!(q(&host, "#b").class_name().contains("p-menubar-mobile-active"));
     assert_eq!(button.get_attribute("aria-expanded").as_deref(), Some("true"));
-    assert!(!q(&host, ".p-menubar-root-list").style().get_property_value("z-index").unwrap().is_empty(), "слой назначен");
-    assert_eq!(focused(&host).as_deref(), Some("b_0"), "фокус на первом пункте");
-    // На узком окне наведение путь не меняет.
+    assert!(!q(&host, ".p-menubar-root-list").style().get_property_value("z-index").unwrap().is_empty(), "layer assigned");
+    assert_eq!(focused(&host).as_deref(), Some("b_0"), "focus on the first item");
+    // In a narrow window hover does not change the path.
     click(&host, "b", "0");
     mouse(&content(&host, "b", "1"), "mouseenter", false);
     settle().await;
     assert!(is_active(&host, "b", "0") && !is_active(&host, "b", "1"));
-    // Лист закрывает панель.
+    // A leaf closes the panel.
     click(&host, "b", "2");
     settle().await;
-    assert!(!q(&host, "#b").class_name().contains("p-menubar-mobile-active"), "лист закрывает панель");
-    // Повторное открытие и закрытие кнопкой.
+    assert!(!q(&host, "#b").class_name().contains("p-menubar-mobile-active"), "a leaf closes the panel");
+    // Reopening and closing via the button.
     button.click();
     settle().await;
     assert!(q(&host, "#b").class_name().contains("p-menubar-mobile-active"));
@@ -338,13 +338,13 @@ async fn mobile_button_toggles_the_list() {
     settle().await;
     assert!(!q(&host, "#b").class_name().contains("p-menubar-mobile-active"));
     assert!(q(&host, ".p-menubar-root-list").style().get_property_value("z-index").unwrap().is_empty());
-    // Enter на кнопке открывает, клик вне закрывает.
+    // Enter on the button opens, a click outside closes.
     press(&button, "Enter", "Enter");
     settle().await;
     assert!(q(&host, "#b").class_name().contains("p-menubar-mobile-active"));
     doc().body().unwrap().click();
     settle().await;
-    assert!(!q(&host, "#b").class_name().contains("p-menubar-mobile-active"), "клик вне закрывает панель");
+    assert!(!q(&host, "#b").class_name().contains("p-menubar-mobile-active"), "a click outside closes the panel");
     host.remove();
 }
 

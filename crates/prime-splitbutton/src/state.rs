@@ -1,9 +1,9 @@
-//! Чистая логика SplitButton: классы корня и клавиши открытия меню (по `splitbuttonstyle.ts` и `onDropdownButtonKeydown`).
+//! Pure SplitButton logic: root classes and menu-opening keys (after `splitbuttonstyle.ts` and `onDropdownButtonKeydown`).
 
 use prime_core::{ClassNames, Size};
 use std::borrow::Cow;
 
-/// Классы корня: `p-splitbutton p-component` и модификаторы `raised`, `rounded`, `outlined`, `text`, размер (`small → sm`, иначе `lg`).
+/// Root classes: `p-splitbutton p-component` and modifiers `raised`, `rounded`, `outlined`, `text`, size (`small → sm`, otherwise `lg`).
 pub fn root_classes(raised: bool, rounded: bool, outlined: bool, text: bool, size: Option<Size>) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-splitbutton p-component")
@@ -17,7 +17,7 @@ pub fn root_classes(raised: bool, rounded: bool, outlined: bool, text: bool, siz
     cn.finish_cow()
 }
 
-/// Клавиши кнопки раскрытия, открывающие меню: ↓ и ↑.
+/// Dropdown button keys that open the menu: ↓ and ↑.
 pub fn is_toggle_key(code: &str) -> bool {
     matches!(code, "ArrowDown" | "ArrowUp")
 }

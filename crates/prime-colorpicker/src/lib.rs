@@ -1,7 +1,7 @@
-//! ColorPicker — порт `p-colorpicker` из PrimeNG 21.1.10.
+//! ColorPicker — port of `p-colorpicker` from PrimeNG 21.1.10.
 //!
-//! Выбор цвета: образец-кнопка открывает панель с полем насыщенности/яркости и шкалой оттенка (или панель встроена,
-//! `inline`). Значение — [`ColorValue`] в формате `hex`, `rgb` или `hsb`. Математика цветов вынесена в [`color`].
+//! Color selection: a swatch button opens a panel with a saturation/brightness field and a hue scale (or the panel is embedded,
+//! `inline`). The value is a [`ColorValue`] in `hex`, `rgb` or `hsb` format. The color math lives in [`color`].
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -9,7 +9,7 @@
 //!
 //! let html = view! { <ColorPicker /> }.to_html();
 //! assert!(html.contains("p-colorpicker-preview"));
-//! // панель закрыта: в разметке её нет
+//! // the panel is closed: it is not in the markup
 //! assert!(!html.contains("p-colorpicker-panel"));
 //! ```
 
@@ -32,31 +32,31 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Формат значения.
+/// Value format.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum ColorFormat {
-    /// Строка `#rrggbb`.
+    /// String `#rrggbb`.
     #[default]
     Hex,
-    /// Каналы `r`, `g`, `b`.
+    /// Channels `r`, `g`, `b`.
     Rgb,
-    /// Оттенок, насыщенность, яркость.
+    /// Hue, saturation, brightness.
     Hsb,
 }
 
-/// Значение цвета.
+/// Color value.
 #[derive(Clone, Debug, PartialEq)]
 pub enum ColorValue {
-    /// Строка `#rrggbb` (при вводе допускается и без `#`).
+    /// String `#rrggbb` (without `#` is also accepted on input).
     Hex(String),
-    /// Каналы RGB.
+    /// RGB channels.
     Rgb(Rgb),
-    /// Оттенок, насыщенность, яркость.
+    /// Hue, saturation, brightness.
     Hsb(Hsb),
 }
 
 impl ColorValue {
-    /// Значение в HSB, каким его видит панель.
+    /// Value in HSB, as the panel sees it.
     pub fn to_hsb(&self) -> Hsb {
         match self {
             Self::Hex(hex) => hex_to_hsb(hex),
@@ -65,7 +65,7 @@ impl ColorValue {
         }
     }
 
-    /// Значение из HSB в заданном формате (`getValueToUpdate`).
+    /// Value from HSB in the given format (`getValueToUpdate`).
     pub fn from_hsb(hsb: Hsb, format: ColorFormat) -> Self {
         match format {
             ColorFormat::Hex => Self::Hex(format!("#{}", hsb_to_hex(hsb))),
@@ -75,30 +75,30 @@ impl ColorValue {
     }
 }
 
-/// Pass-through частей [`ColorPicker`].
+/// Pass-through of [`ColorPicker`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct ColorPickerPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Образец-поле.
+    /// Swatch field.
     pub preview: Pt,
-    /// Панель.
+    /// Panel.
     pub panel: Pt,
-    /// Содержимое панели.
+    /// Panel content.
     pub content: Pt,
-    /// Поле насыщенности/яркости.
+    /// Saturation/brightness field.
     pub color_selector: Pt,
-    /// Фон поля.
+    /// Field background.
     pub color_background: Pt,
-    /// Указатель поля.
+    /// Field pointer.
     pub color_handle: Pt,
-    /// Шкала оттенка.
+    /// Hue scale.
     pub hue: Pt,
-    /// Указатель шкалы.
+    /// Scale pointer.
     pub hue_handle: Pt,
 }
 
-/// Управляющий объект: показать и скрыть панель из кода.
+/// Handle object: show and hide the panel from code.
 #[derive(Clone, Copy)]
 pub struct ColorPickerRef {
     visible: RwSignal<bool>,
@@ -111,33 +111,33 @@ impl Default for ColorPickerRef {
 }
 
 impl ColorPickerRef {
-    /// Создаёт скрытую панель. Вызывать внутри компонента (владелец сигналов).
+    /// Creates a hidden panel. Call inside a component (the signal owner).
     pub fn new() -> Self {
         Self { visible: RwSignal::new(false) }
     }
 
-    /// Панель открыта (с подпиской).
+    /// Panel is open (with subscription).
     pub fn visible(&self) -> bool {
         self.visible.get()
     }
 
-    /// Показывает панель.
+    /// Shows the panel.
     pub fn show(&self) {
         self.visible.try_set(true);
     }
 
-    /// Скрывает панель.
+    /// Hides the panel.
     pub fn hide(&self) {
         self.visible.try_set(false);
     }
 
-    /// Переключает панель.
+    /// Toggles the panel.
     pub fn toggle(&self) {
         self.visible.try_update(|v| *v = !*v);
     }
 }
 
-/// Какая область сейчас перетаскивается.
+/// Which area is being dragged right now.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Drag {
     None,
@@ -145,7 +145,7 @@ enum Drag {
     Hue,
 }
 
-/// Классы корня.
+/// Root classes.
 pub fn root_classes(inline: bool, dragging: bool) -> &'static str {
     match (inline, dragging) {
         (true, false) => "p-colorpicker p-component",
@@ -155,7 +155,7 @@ pub fn root_classes(inline: bool, dragging: bool) -> &'static str {
     }
 }
 
-/// Классы панели.
+/// Panel classes.
 pub fn panel_classes(inline: bool, disabled: bool) -> &'static str {
     match (inline, disabled) {
         (false, false) => "p-colorpicker-panel",
@@ -165,7 +165,7 @@ pub fn panel_classes(inline: bool, disabled: bool) -> &'static str {
     }
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     value: RwSignal<Option<ColorValue>>,
@@ -181,7 +181,7 @@ struct Core {
     panel: NodeRef<leptos::html::Div>,
     field: NodeRef<leptos::html::Div>,
     hue: NodeRef<leptos::html::Div>,
-    /// Последнее значение, записанное самим компонентом: внешним оно не является, пересчитывать HSB из него нельзя.
+    /// The last value written by the component itself: it is not external, so HSB must not be recomputed from it.
     last_written: StoredValue<Option<ColorValue>>,
     listeners: StoredValue<Vec<WindowListenerHandle>, LocalStorage>,
     cleanups: StoredValue<Vec<Box<dyn FnOnce()>>, LocalStorage>,
@@ -192,7 +192,7 @@ struct Core {
     on_hide: Option<Callback<()>>,
 }
 
-/// Цвет по умолчанию: `default_color` или `ff0000`.
+/// Default color: `default_color` or `ff0000`.
 fn default_hsb(default_color: &OptProp<String>) -> Hsb {
     default_color.with(|c| hex_to_hsb(c.as_deref().unwrap_or("ff0000")))
 }
@@ -202,7 +202,7 @@ impl Core {
         self.hsb.get_untracked()
     }
 
-    /// Записывает выбранный цвет: HSB, значение в заданном формате, `on_change`.
+    /// Writes the selected color: HSB, the value in the given format, `on_change`.
     fn apply(&self, hsb: Hsb) {
         let hsb = validate_hsb(hsb);
         let value = ColorValue::from_hsb(hsb, self.format.get_untracked());
@@ -214,7 +214,7 @@ impl Core {
         }
     }
 
-    /// Координаты указателя относительно левого верхнего угла области.
+    /// Pointer coordinates relative to the top-left corner of the area.
     fn local(area: NodeRef<leptos::html::Div>, client_x: f64, client_y: f64) -> Option<(f64, f64)> {
         let rect = area.get_untracked()?.get_bounding_client_rect();
         Some((client_x - rect.left(), client_y - rect.top()))
@@ -276,7 +276,7 @@ impl Core {
         self.unbind_drag();
     }
 
-    /// Слушатели `mousemove`/`mouseup` окна живут только во время перетаскивания мышью.
+    /// The window `mousemove`/`mouseup` listeners live only during a mouse drag.
     fn bind_drag(self: &Arc<Self>) {
         self.unbind_drag();
         let (on_move, on_up) = (self.clone(), self.clone());
@@ -293,7 +293,7 @@ impl Core {
         }
     }
 
-    /// Снимает подписки на окно и освобождает z-index.
+    /// Removes the window subscriptions and releases the z-index.
     fn release(&self) {
         self.unbind_drag();
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
@@ -304,7 +304,7 @@ impl Core {
         }
     }
 
-    /// Панель только что показана: z-index, выравнивание по корню, подписки, `on_show`.
+    /// The panel has just been shown: z-index, alignment to the root, subscriptions, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let (Some(panel), Some(root)) = (self.panel.get_untracked(), self.root.get_untracked()) else { return };
@@ -317,7 +317,7 @@ impl Core {
         }
         align_overlay(&panel, &root, AlignMode::Relative, false);
 
-        // Подписки — в следующем тике: клик, открывший панель, ещё всплывает к окну и закрыл бы её сам.
+        // Subscriptions go on the next tick: the click that opened the panel is still bubbling to the window and would close it itself.
         let this = self.clone();
         let handle = set_timeout_with_handle(
             move || {
@@ -336,7 +336,7 @@ impl Core {
         }
     }
 
-    /// Клик снаружи и изменение размера окна скрывают панель; прокрутка предка тоже.
+    /// Outside click and window resize hide the panel; an ancestor scroll does too.
     #[cfg(target_arch = "wasm32")]
     fn bind_window(self: &Arc<Self>) {
         let this = self.clone();
@@ -366,7 +366,7 @@ impl Core {
         }
     }
 
-    /// Панель только что скрыта.
+    /// The panel has just been hidden.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -387,61 +387,61 @@ impl Core {
     }
 }
 
-/// Выбор цвета.
+/// Color selection.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` — двусторонний сигнал. Панель выводится внутри корня
-/// (не в `body`), поэтому у предков не должно быть `overflow: hidden`.
+/// Each property accepts a value or a signal; `value` is a two-way signal. The panel is rendered inside the root
+/// (not in `body`), so ancestors must not have `overflow: hidden`.
 #[component]
 pub fn ColorPicker(
-    /// Двусторонний сигнал значения; `None` показывает `default_color`.
+    /// Two-way value signal; `None` shows `default_color`.
     #[prop(optional)]
     value: Option<RwSignal<Option<ColorValue>>>,
-    /// Формат значения.
+    /// Value format.
     #[prop(optional, into)]
     format: Prop<ColorFormat>,
-    /// Встроенная панель без образца.
+    /// Embedded panel without a swatch.
     #[prop(optional, into)]
     inline: Prop<bool>,
-    /// Цвет, пока значения нет (HEX, по умолчанию `ff0000`).
+    /// Color while there is no value (HEX, default `ff0000`).
     #[prop(optional, into)]
     default_color: OptProp<String>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Атрибут `tabindex` образца.
+    /// `tabindex` attribute of the swatch.
     #[prop(optional, into)]
     tabindex: OptProp<String>,
-    /// Атрибут `id` образца (для `label for`).
+    /// `id` attribute of the swatch (for `label for`).
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Фокус образца при загрузке.
+    /// Swatch focus on load.
     #[prop(optional, into)]
     autofocus: Prop<bool>,
-    /// Автоматически назначать `z-index` панели.
+    /// Automatically assign the panel `z-index`.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Атрибут `id` корня.
+    /// `id` attribute of the root.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при каждом изменении цвета пользователем.
+    /// Called on every color change by the user.
     #[prop(optional, into)]
     on_change: Option<Callback<ColorValue>>,
-    /// Вызывается после показа панели.
+    /// Called after the panel is shown.
     #[prop(optional, into)]
     on_show: Option<Callback<()>>,
-    /// Вызывается после скрытия панели.
+    /// Called after the panel is hidden.
     #[prop(optional, into)]
     on_hide: Option<Callback<()>>,
-    /// Управляющий объект панели.
+    /// Handle object of the panel.
     #[prop(optional)]
     color_picker_ref: Option<ColorPickerRef>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<ColorPickerPt>,
 ) -> impl IntoView {
@@ -478,7 +478,7 @@ pub fn ColorPicker(
         on_cleanup(move || core.release());
     }
 
-    // Внешнее изменение значения (не наша собственная запись) пересчитывает HSB — только в браузере.
+    // An external value change (not our own write) recomputes HSB — in the browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
@@ -495,7 +495,7 @@ pub fn ColorPicker(
         let core = core.clone();
         Effect::new(move |_| {
             let visible = core.r.visible.get();
-            // Панель попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
+            // The panel enters the DOM after this effect, so we also watch the reference to it.
             let mounted = core.panel.get().is_some();
             let was = core.was_visible.get_value();
             if visible && mounted && !was {
@@ -592,7 +592,7 @@ pub fn ColorPicker(
     }
 }
 
-/// Небольшое расширение для `bool`: значение, когда условие не выполнено.
+/// A small extension for `bool`: the value when the condition is not met.
 trait NotThen {
     fn not_then<T>(self, f: impl FnOnce() -> T) -> Option<T>;
 }

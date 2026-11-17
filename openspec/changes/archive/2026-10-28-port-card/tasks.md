@@ -1,27 +1,27 @@
 # Tasks
 
-## 1. Крейт
+## 1. Crate
 
-- [x] 1.1 Создать крейт `crates/prime-card` (`publish = false`, features `ssr`/`hydrate`, зависимость `prime-core`) и добавить в workspace; проверить `cargo check -p prime-card --all-features`
+- [x] 1.1 Create the crate `crates/prime-card` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`) and add it to the workspace; check `cargo check -p prime-card --all-features`
 
-## 2. Компонент
+## 2. Component
 
-- [x] 2.1 Реализовать `Card` с двумя ветвями отрисовки, блоками header/body/title/subtitle/content/footer, приоритетом слотов над текстом и `pt` (`CardPt`); проверить SSR-тестами всех сценариев спеки
-- [x] 2.2 Добавить таблицу паритета ветвей и rustdoc с примером; проверить `cargo test -p prime-card --all-features` и doc-тесты
+- [x] 2.1 Implement `Card` with two render branches, header/body/title/subtitle/content/footer blocks, slot priority over text and `pt` (`CardPt`); verify all spec scenarios with SSR tests
+- [x] 2.2 Add the branch parity table and rustdoc with an example; check `cargo test -p prime-card --all-features` and doc tests
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Добавить страницу `/card` (`basic`, `advanced` с Button в подвале), пункт меню и CSS `card` (уже в оболочке); проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
-- [x] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/card.spec.ts` (структура, порядок блоков, подвал с кнопками); проверить `npx playwright test card` локально
+- [x] 3.1 Add the `/card` page (`basic`, `advanced` with a Button in the footer), a menu item and the `card` CSS (already in the shell); check `cargo leptos build` and the page in Chrome without console errors
+- [x] 3.2 Add entries to `e2e/tests/pages.json` and `e2e/tests/card.spec.ts` (structure, block order, a footer with buttons); check `npx playwright test card` locally
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Добавить сценарии `card-1`, `card-1000` в `benches/render`, `case-card` в `benches/wasm-size`, бюджеты по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
+- [x] 4.1 Add scenarios `card-1`, `card-1000` to `benches/render`, `case-card` to `benches/wasm-size`, budgets by measurement; check `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` and `cargo xtask wasm-size`
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 Написать `docs/card.md` (соответствие PrimeNG, отличия); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-card`; убедиться, что CI на `dev` зелёный
+- [x] 5.1 Write `docs/card.md` (PrimeNG correspondence, differences); run `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (except apps), `cargo deny check`, `openspec validate port-card`; make sure CI on `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать change после прохождения CI; следующие компоненты волны 1: InputText, Checkbox, RadioButton, ToggleSwitch, Message, ProgressBar.
+- Archive the change after CI passes; next wave 1 components: InputText, Checkbox, RadioButton, ToggleSwitch, Message, ProgressBar.

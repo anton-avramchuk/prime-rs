@@ -1,93 +1,93 @@
 # core-runtime Specification
 
 ## Purpose
-Общее ядро компонентов: конфигурация через context, построение классов, общие пропсы, pass-through, z-index и DOM-хелперы для оверлеев.
+Shared component core: configuration via context, class building, shared props, pass-through, z-index and DOM helpers for overlays.
 
 ## Requirements
 
-### Requirement: Глобальная конфигурация через контекст
-`prime-core` SHALL предоставлять конфигурацию (locale, ripple, базовые z-index, вариант полей ввода, имя темы), которую компоненты получают из Leptos context. Если конфигурация не предоставлена, компоненты SHALL работать со значениями по умолчанию, как в PrimeNG.
+### Requirement: Global configuration via context
+`prime-core` SHALL provide a configuration (locale, ripple, base z-index, input field variant, theme name) that components obtain from the Leptos context. If no configuration is provided, components SHALL work with default values, as in PrimeNG.
 
-#### Scenario: Конфигурация не задана
-- **WHEN** компонент отрисован вне провайдера конфигурации
-- **THEN** он использует значения по умолчанию и не паникует
+#### Scenario: Configuration not set
+- **WHEN** a component is rendered outside a configuration provider
+- **THEN** it uses default values and does not panic
 
-#### Scenario: Конфигурация переопределена
-- **WHEN** приложение задаёт `ripple = true` через провайдер
-- **THEN** компоненты внутри провайдера получают это значение
+#### Scenario: Configuration overridden
+- **WHEN** the application sets `ripple = true` via the provider
+- **THEN** components inside the provider get this value
 
-### Requirement: Построение списка CSS-классов
-`prime-core` SHALL предоставлять способ собрать список классов `p-*` из базовых классов, условных модификаторов и пользовательских классов без лишних аллокаций, если набор классов не изменился.
+### Requirement: CSS class list building
+`prime-core` SHALL provide a way to assemble a list of `p-*` classes from base classes, conditional modifiers and user classes without extra allocations if the set of classes has not changed.
 
-#### Scenario: Условные классы
-- **WHEN** компонент в состоянии `disabled`
-- **THEN** итоговая строка классов содержит базовый класс и `p-disabled`, без пустых и повторяющихся элементов
+#### Scenario: Conditional classes
+- **WHEN** a component is in the `disabled` state
+- **THEN** the resulting class string contains the base class and `p-disabled`, without empty or duplicate items
 
-### Requirement: Базовые пропсы полей ввода
-`prime-core` SHALL определять общие пропсы `disabled`, `invalid`, `variant`, `size` с теми же значениями, что в PrimeNG, для повторного использования компонентами ввода.
+### Requirement: Base input props
+`prime-core` SHALL define the shared props `disabled`, `invalid`, `variant`, `size` with the same values as in PrimeNG, for reuse by input components.
 
-#### Scenario: Значения variant
-- **WHEN** задан `variant = filled`
-- **THEN** компонент добавляет тот же класс-модификатор, что и PrimeNG
+#### Scenario: Variant values
+- **WHEN** `variant = filled`
+- **THEN** the component adds the same modifier class as PrimeNG
 
-### Requirement: Pass-through корневого элемента
-Каждый компонент SHALL принимать `pt` для корневого элемента и основных частей, позволяющий добавить атрибуты и классы, не нарушая собственные классы компонента.
+### Requirement: Root element pass-through
+Each component SHALL accept `pt` for the root element and main parts, allowing attributes and classes to be added without breaking the component's own classes.
 
-#### Scenario: Добавление класса через pt
-- **WHEN** передан `pt` с классом `custom`
-- **THEN** корневой элемент содержит и `custom`, и собственные классы компонента
+#### Scenario: Adding a class via pt
+- **WHEN** a `pt` with the class `custom` is passed
+- **THEN** the root element contains both `custom` and the component's own classes
 
-### Requirement: Менеджер z-index
-`prime-core` SHALL выдавать возрастающие z-index для оверлеев по группам (`modal`, `overlay`, `menu`, `tooltip`) и освобождать их при закрытии.
+### Requirement: z-index manager
+`prime-core` SHALL issue increasing z-index values for overlays by group (`modal`, `overlay`, `menu`, `tooltip`) and release them on close.
 
-#### Scenario: Два оверлея подряд
-- **WHEN** открывается второй оверлей той же группы
-- **THEN** его z-index больше, чем у первого
+#### Scenario: Two overlays in a row
+- **WHEN** a second overlay of the same group opens
+- **THEN** its z-index is greater than the first's
 
-### Requirement: DOM-хелперы для оверлеев
-`prime-dom` SHALL предоставлять позиционирование относительно якоря с учётом границ окна, управление фокусом (focus trap) и портал в `body`. Эти функции SHALL быть безопасны для SSR: на сервере они не выполняют DOM-операций.
+### Requirement: DOM helpers for overlays
+`prime-dom` SHALL provide positioning relative to an anchor taking window bounds into account, focus management (focus trap) and a portal into `body`. These functions SHALL be SSR-safe: on the server they perform no DOM operations.
 
-#### Scenario: Недостаточно места снизу
-- **WHEN** оверлей не помещается под якорем
-- **THEN** он позиционируется так же, как в PrimeNG, и остаётся в пределах окна
+#### Scenario: Not enough space below
+- **WHEN** an overlay does not fit below the anchor
+- **THEN** it is positioned the same way as in PrimeNG and stays within the window
 
 #### Scenario: Focus trap
-- **WHEN** активна ловушка фокуса и пользователь нажимает Tab на последнем фокусируемом элементе
-- **THEN** фокус переходит на первый фокусируемый элемент
+- **WHEN** a focus trap is active and the user presses Tab on the last focusable element
+- **THEN** focus moves to the first focusable element
 
 #### Scenario: SSR
-- **WHEN** хелпер вызван при `ssr`
-- **THEN** он завершается без паники и без обращения к `window`
+- **WHEN** the helper is called under `ssr`
+- **THEN** it finishes without panicking and without touching `window`
 
-### Requirement: Свойство «значение или сигнал»
-`prime-core` SHALL предоставлять тип свойства компонента, принимающий либо готовое значение, либо сигнал (`Signal`, `ReadSignal`, `RwSignal`, `Memo`). Передача готового значения SHALL NOT создавать реактивных примитивов (записей в арене Leptos); значение по умолчанию SHALL быть статическим. Чтение свойства SHALL быть реактивным, если передан сигнал, и подписывать читающее замыкание на него.
+### Requirement: "Value or signal" property
+`prime-core` SHALL provide a component property type that accepts either a ready-made value or a signal (`Signal`, `ReadSignal`, `RwSignal`, `Memo`). Passing a ready-made value SHALL NOT create reactive primitives (Leptos arena entries); the default value SHALL be static. Reading the property SHALL be reactive if a signal is passed, and SHALL subscribe the reading closure to it.
 
-#### Scenario: Статическое значение
-- **WHEN** компоненту передано значение `"5"` или константа перечисления
-- **THEN** при создании свойства не создаётся ни сигнал, ни `Memo`, а чтение возвращает это значение
+#### Scenario: Static value
+- **WHEN** a component is passed the value `"5"` or an enum constant
+- **THEN** no signal or `Memo` is created when the property is created, and reading returns this value
 
-#### Scenario: Сигнал
-- **WHEN** компоненту передан `RwSignal`, значение которого затем меняется
-- **THEN** чтение свойства в реактивном замыкании возвращает новое значение и замыкание перезапускается
+#### Scenario: Signal
+- **WHEN** a component is passed an `RwSignal` whose value then changes
+- **THEN** reading the property in a reactive closure returns the new value and the closure restarts
 
-#### Scenario: Значение по умолчанию
-- **WHEN** необязательное свойство не передано
-- **THEN** оно равно значению по умолчанию типа и не создаёт реактивных примитивов
+#### Scenario: Default value
+- **WHEN** an optional property is not passed
+- **THEN** it equals the type's default value and creates no reactive primitives
 
-### Requirement: Определение статичности
-Тип свойства SHALL позволять узнать, что значение статическое, чтобы компонент мог пропустить подписки.
+### Requirement: Static detection
+The property type SHALL allow finding out that the value is static, so a component can skip subscriptions.
 
-#### Scenario: Все свойства статические
-- **WHEN** у компонента все свойства статические
-- **THEN** проверка статичности возвращает `true` для каждого из них
+#### Scenario: All properties static
+- **WHEN** all of a component's properties are static
+- **THEN** the static check returns `true` for each of them
 
-### Requirement: Проверка статичности набора свойств
-`prime-core` SHALL предоставлять способ проверить, что все свойства компонента статические (`Prop::Static`), чтобы компонент мог выбрать путь отрисовки без реактивных замыканий. Проверка SHALL быть дешёвой (без аллокаций и без подписок) и выполняться один раз при создании экземпляра.
+### Requirement: Static check of a property set
+`prime-core` SHALL provide a way to check that all of a component's properties are static (`Prop::Static`), so the component can choose a render path without reactive closures. The check SHALL be cheap (no allocations and no subscriptions) and performed once when an instance is created.
 
-#### Scenario: Все свойства статические
-- **WHEN** проверяется набор из `Prop::Static`-значений и значений по умолчанию
-- **THEN** результат `true`
+#### Scenario: All properties static
+- **WHEN** a set of `Prop::Static` values and default values is checked
+- **THEN** the result is `true`
 
-#### Scenario: Есть сигнал
-- **WHEN** среди проверяемых свойств хотя бы одно передано сигналом
-- **THEN** результат `false`
+#### Scenario: A signal is present
+- **WHEN** at least one of the checked properties is passed as a signal
+- **THEN** the result is `false`

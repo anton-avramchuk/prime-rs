@@ -1,8 +1,8 @@
-//! Поведение BlockUI в реальном браузере (wasm-bindgen-test): маска в цели и в документе, слой, прокрутка страницы,
-//! позиция цели, выход, повторное включение и размонтирование.
+//! BlockUI behaviour in a real browser (wasm-bindgen-test): the mask in a target and in the document, the layer, page scrolling,
+//! target position, exit, re-enabling and unmounting.
 //!
-//! Сценарии идут одним последовательным тестом: стек слоёв `z-index` и счётчик блокировки прокрутки общие на страницу,
-//! поэтому параллельные тесты влияли бы друг на друга.
+//! The scenarios run as one sequential test: the `z-index` layer stack and the scroll-lock counter are shared by the page,
+//! so parallel tests would affect each other.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -36,7 +36,7 @@ fn body_locked() -> bool {
     body().class_list().contains("p-overflow-hidden")
 }
 
-/// Даёт эффектам и `Portal` вставить маску и применить стили (несколько микрозадач).
+/// Gives effects and `Portal` time to insert the mask and apply the styles (several microtasks).
 async fn settle() {
     sleep(30).await;
 }
@@ -59,11 +59,11 @@ async fn mask_appears_inside_the_target_and_leaves_with_an_animation() {
         }
     });
     leptos::task::tick().await;
-    assert!(find(&host, ".p-blockui").is_none(), "без блокировки маски нет");
+    assert!(find(&host, ".p-blockui").is_none(), "there is no mask without blocking");
     blocked.set(true);
     settle().await;
     let target = find(&host, ".target").unwrap();
-    let mask = find(&target, ".p-blockui").expect("маска внутри цели");
+    let mask = find(&target, ".p-blockui").expect("mask inside the target");
     let class = mask.class_name();
     assert!(
         class.contains("p-blockui-mask") && class.contains("p-overlay-mask") && class.contains("p-overlay-mask-enter-active"),
@@ -72,19 +72,19 @@ async fn mask_appears_inside_the_target_and_leaves_with_an_animation() {
     assert!(!class.contains("p-blockui-mask-document"));
     assert_eq!(mask.get_attribute("aria-busy").as_deref(), Some("true"));
     assert_eq!(mask.style().get_property_value("display").unwrap(), "flex");
-    assert_eq!(target.style().get_property_value("position").unwrap(), "relative", "цель получила position: relative");
-    assert!(find(&mask, ".spinner").is_some(), "содержимое внутри маски");
-    assert!(!body_locked(), "прокрутка страницы не блокируется при цели");
+    assert_eq!(target.style().get_property_value("position").unwrap(), "relative", "the target got position: relative");
+    assert!(find(&mask, ".spinner").is_some(), "content inside the mask");
+    assert!(!body_locked(), "the page scroll is not blocked with a target");
     let z: i32 = mask.style().get_property_value("z-index").unwrap().parse().unwrap();
-    assert!(z >= 1100, "слой группы Modal: {z}");
+    assert!(z >= 1100, "layer of the Modal group: {z}");
     blocked.set(false);
     leptos::task::tick().await;
-    let leaving = find(&target, ".p-blockui").expect("маска ещё в DOM во время выхода");
+    let leaving = find(&target, ".p-blockui").expect("the mask is still in the DOM during the exit");
     assert!(leaving.class_name().contains("p-overlay-mask-leave-active"));
     assert_eq!(leaving.get_attribute("aria-busy").as_deref(), Some("false"));
     sleep(700).await;
-    assert!(find(&host, ".p-blockui").is_none(), "маска убрана после выхода");
-    assert_eq!(target.style().get_property_value("position").unwrap(), "static", "прежняя позиция возвращена");
+    assert!(find(&host, ".p-blockui").is_none(), "the mask is removed after the exit");
+    assert_eq!(target.style().get_property_value("position").unwrap(), "static", "the previous position is restored");
     host.remove();
 }
 
@@ -105,7 +105,7 @@ async fn target_without_inline_position_gets_it_removed_afterwards() {
     assert_eq!(target.style().get_property_value("position").unwrap(), "relative");
     blocked.set(false);
     sleep(700).await;
-    assert_eq!(target.style().get_property_value("position").unwrap(), "", "инлайн-свойство снято");
+    assert_eq!(target.style().get_property_value("position").unwrap(), "", "the inline property is removed");
     host.remove();
 }
 
@@ -116,14 +116,14 @@ async fn document_mask_lives_in_body_and_locks_the_page_scroll() {
     leptos::task::tick().await;
     blocked.set(true);
     settle().await;
-    let mask = find(&body(), "body > div > .p-blockui").expect("маска в body");
+    let mask = find(&body(), "body > div > .p-blockui").expect("mask in body");
     assert!(mask.class_name().contains("p-blockui-mask-document") && mask.class_name().contains("mine"), "{}", mask.class_name());
-    assert!(find(&host, ".p-blockui").is_none(), "маска не внутри хоста компонента");
-    assert!(body_locked(), "страница не прокручивается");
+    assert!(find(&host, ".p-blockui").is_none(), "the mask is not inside the component host");
+    assert!(body_locked(), "the page does not scroll");
     blocked.set(false);
     sleep(700).await;
     assert!(find(&body(), ".p-blockui").is_none());
-    assert!(!body_locked(), "блокировка снята");
+    assert!(!body_locked(), "the block is lifted");
     host.remove();
 }
 
@@ -132,7 +132,7 @@ async fn auto_z_index_can_be_turned_off() {
     let host = host();
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <BlockUI blocked=blocked auto_z_index=false /> });
     settle().await;
-    let mask = find(&body(), ".p-blockui").expect("маска показана сразу");
+    let mask = find(&body(), ".p-blockui").expect("mask shown immediately");
     assert_eq!(mask.style().get_property_value("z-index").unwrap(), "");
     blocked.set(false);
     sleep(700).await;
@@ -146,7 +146,7 @@ async fn base_z_index_shifts_the_layer() {
     settle().await;
     let mask = find(&body(), ".p-blockui").unwrap();
     let z: i32 = mask.style().get_property_value("z-index").unwrap().parse().unwrap();
-    assert!(z >= 1600, "сдвиг base_z_index учтён: {z}");
+    assert!(z >= 1600, "the base_z_index shift is applied: {z}");
     blocked.set(false);
     sleep(700).await;
     host.remove();
@@ -163,15 +163,15 @@ async fn reblocking_during_the_leave_animation_keeps_a_single_mask() {
     blocked.set(true);
     leptos::task::tick().await;
     let masks = body().query_selector_all(".p-blockui").unwrap().length();
-    assert_eq!(masks, 1, "маска одна");
+    assert_eq!(masks, 1, "one mask");
     let mask = find(&body(), ".p-blockui").unwrap();
     assert!(mask.class_name().contains("p-overlay-mask-enter-active") && mask.get_attribute("aria-busy").as_deref() == Some("true"));
     sleep(700).await;
-    assert!(find(&body(), ".p-blockui").is_some(), "после запасного таймера маска не пропала");
+    assert!(find(&body(), ".p-blockui").is_some(), "the mask did not disappear after the fallback timer");
     assert!(body_locked());
     blocked.set(false);
     sleep(700).await;
-    assert!(!body_locked(), "блокировка снята ровно один раз");
+    assert!(!body_locked(), "the block is lifted exactly once");
     host.remove();
 }
 
@@ -184,12 +184,12 @@ async fn unmounting_while_blocked_removes_the_mask_and_frees_the_page() {
     assert!(body_locked());
     drop(handle);
     leptos::task::tick().await;
-    assert!(find(&body(), ".p-blockui").is_none(), "маска убрана");
-    assert!(!body_locked(), "прокрутка страницы разрешена");
+    assert!(find(&body(), ".p-blockui").is_none(), "the mask is removed");
+    assert!(!body_locked(), "page scrolling is allowed again");
     host.remove();
 }
 
-/// Все сценарии подряд: каждый дожидается полного ухода маски, поэтому слои и блокировка прокрутки между ними свободны.
+/// All scenarios in a row: each waits for the mask to fully leave, so the layers and the scroll block are free between them.
 #[wasm_bindgen_test]
 async fn blockui_scenarios() {
     mask_appears_inside_the_target_and_leaves_with_an_animation().await;

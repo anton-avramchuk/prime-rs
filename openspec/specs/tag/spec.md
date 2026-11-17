@@ -1,57 +1,57 @@
 # tag Specification
 
 ## Purpose
-Компонент Tag (порт p-tag из PrimeNG): значение, серьёзность, скругление, иконка, содержимое, pass-through, статическая и реактивная ветви отрисовки.
+The Tag component (port of PrimeNG `p-tag`): value, severity, rounding, icon, content, pass-through, and static and reactive render branches.
 
 ## Requirements
 
-### Requirement: Свойства Tag
-Компонент `Tag` крейта `prime-tag` SHALL принимать `value` (текст метки), `severity` (`secondary`, `info`, `success`, `warn`, `danger`, `contrast`), `rounded`, `icon` (содержимое Leptos), `style`, `style_class`, `children` и `pt`. Все свойства необязательны; изменяемые во время работы SHALL принимать значение или сигнал.
+### Requirement: Tag properties
+The `Tag` component of the `prime-tag` crate SHALL accept `value` (label text), `severity` (`secondary`, `info`, `success`, `warn`, `danger`, `contrast`), `rounded`, `icon` (Leptos content), `style`, `style_class`, `children` and `pt`. All properties are optional; those that change at runtime SHALL accept a value or a signal.
 
-#### Scenario: Значение
-- **WHEN** `Tag` отрисован со значением `New`
-- **THEN** внутри есть `<span class="p-tag-label">New</span>`
+#### Scenario: Value
+- **WHEN** `Tag` is rendered with the value `New`
+- **THEN** it contains `<span class="p-tag-label">New</span>`
 
-#### Scenario: Пустой Tag
-- **WHEN** `Tag` отрисован без свойств
-- **THEN** есть корневой элемент с классами `p-tag p-component` и пустая метка `p-tag-label`, как в PrimeNG
+#### Scenario: Empty Tag
+- **WHEN** `Tag` is rendered without properties
+- **THEN** there is a root element with the classes `p-tag p-component` and an empty label `p-tag-label`, as in PrimeNG
 
-### Requirement: Классы и атрибуты Tag
-Корневой элемент SHALL иметь классы `p-tag p-component` и модификаторы: `p-tag-<severity>` для серьёзности (`info`, `success`, `warn`, `danger`, `secondary`, `contrast`) и `p-tag-rounded` при `rounded`. Атрибут `data-p` SHALL содержать через пробел `rounded` и серьёзность, как в PrimeNG. `style_class` и `style` SHALL добавляться без потери собственных классов.
+### Requirement: Tag classes and attributes
+The root element SHALL have the classes `p-tag p-component` and modifiers: `p-tag-<severity>` for severity (`info`, `success`, `warn`, `danger`, `secondary`, `contrast`) and `p-tag-rounded` with `rounded`. The `data-p` attribute SHALL contain `rounded` and the severity separated by a space, as in PrimeNG. `style_class` and `style` SHALL be appended without losing the component's own classes.
 
-#### Scenario: Серьёзность и скругление
-- **WHEN** заданы `severity = success` и `rounded = true`
-- **THEN** у корня классы `p-tag-success` и `p-tag-rounded`, а `data-p` равен `rounded success`
+#### Scenario: Severity and rounding
+- **WHEN** `severity = success` and `rounded = true` are set
+- **THEN** the root has the classes `p-tag-success` and `p-tag-rounded`, and `data-p` equals `rounded success`
 
-#### Scenario: Пользовательский класс и стиль
-- **WHEN** заданы `style_class = "custom"` и `style = "margin: 4px"`
-- **THEN** у корня есть `custom`, собственные классы остались, и стиль равен `margin: 4px`
+#### Scenario: Custom class and style
+- **WHEN** `style_class = "custom"` and `style = "margin: 4px"` are set
+- **THEN** the root has `custom`, the component's own classes remain, and the style equals `margin: 4px`
 
-### Requirement: Содержимое и иконка Tag
-`children`, если заданы, SHALL выводиться первыми, как проецируемое содержимое в PrimeNG; затем иконка в `<span class="p-tag-icon">`, затем метка `p-tag-label`. Иконка SHALL выводиться только если задана.
+### Requirement: Tag content and icon
+`children`, if set, SHALL be rendered first, like projected content in PrimeNG; then the icon in `<span class="p-tag-icon">`, then the `p-tag-label` label. The icon SHALL be rendered only if set.
 
-#### Scenario: Порядок содержимого
-- **WHEN** заданы `children`, `icon` и `value`
-- **THEN** порядок дочерних узлов: `children`, `span.p-tag-icon`, `span.p-tag-label`
+#### Scenario: Content order
+- **WHEN** `children`, `icon` and `value` are set
+- **THEN** the order of child nodes is: `children`, `span.p-tag-icon`, `span.p-tag-label`
 
-#### Scenario: Без иконки
-- **WHEN** `icon` не задана
-- **THEN** элемента `p-tag-icon` нет
+#### Scenario: Without an icon
+- **WHEN** `icon` is not set
+- **THEN** there is no `p-tag-icon` element
 
 ### Requirement: Pass-through Tag
-`Tag` SHALL принимать `pt` для корня, иконки и метки; классы и атрибуты из `pt` добавляются к собственным, не заменяя их.
+`Tag` SHALL accept `pt` for the root, icon and label; classes and attributes from `pt` are added to the component's own, not replacing them.
 
-#### Scenario: pt на метке
-- **WHEN** передан `pt` с классом `extra` для метки
-- **THEN** у `p-tag-label` есть и `p-tag-label`, и `extra`
+#### Scenario: pt on the label
+- **WHEN** a `pt` with the class `extra` is passed for the label
+- **THEN** `p-tag-label` has both `p-tag-label` and `extra`
 
-### Requirement: Стоимость отрисовки Tag
-`Tag` SHALL использовать статическую ветвь отрисовки, если все свойства статические, и реактивную иначе; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `tag` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `tag` в `benches/budgets.toml`.
+### Requirement: Tag rendering cost
+`Tag` SHALL use the static render branch if all properties are static, and the reactive one otherwise; both branches SHALL produce the same markup. The number of allocations per instance on SSR SHALL fit within the `tag` budget in `benches/alloc-budgets.toml`, the wasm contribution within the `tag` budget in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один и тот же набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** the same set of values is passed statically and as signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения Tag не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** Tag values do not exceed the budgets

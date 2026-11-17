@@ -1,7 +1,7 @@
-//! Сценарии бенчмарков: каждый рендерит компонент(ы) в HTML-строку через SSR.
+//! Benchmark scenarios: each renders component(s) into an HTML string via SSR.
 //!
-//! Новый компонент добавляет сюда свои сценарии (один экземпляр и 1000 экземпляров) — они автоматически попадают
-//! в `render` (divan, время), `alloc` (dhat, аллокации) и `time` (медиана в JSON для сравнения с базовой линией).
+//! A new component adds its scenarios here (one instance and 1000 instances); they automatically end up
+//! in `render` (divan, time), `alloc` (dhat, allocations) and `time` (median in JSON for comparison with the baseline).
 
 #![recursion_limit = "512"]
 
@@ -93,11 +93,11 @@ use prime_tree::{Tree, TreeNode};
 use prime_treeselect::TreeSelect;
 use prime_treetable::TreeTable;
 
-/// Сценарий: имя и функция, возвращающая HTML.
+/// Scenario: a name and a function returning HTML.
 pub struct Scenario {
-    /// Имя вида `<компонент>-<число экземпляров>`.
+    /// A name of the form `<component>-<instance count>`.
     pub name: &'static str,
-    /// Рендер в строку.
+    /// Render to a string.
     pub run: fn() -> String,
 }
 
@@ -118,12 +118,12 @@ fn badge_n(n: usize) -> String {
 }
 
 fn button_n(n: usize) -> String {
-    render((0..n).map(|_| view! { <Button label="Сохранить" severity=ButtonSeverity::Success /> }).collect_view())
+    render((0..n).map(|_| view! { <Button label="Save" severity=ButtonSeverity::Success /> }).collect_view())
 }
 
 fn button_full_n(n: usize) -> String {
     let icon = ViewFn::from(|| view! { <CheckIcon /> });
-    render((0..n).map(|_| view! { <Button label="Сохранить" icon=icon.clone() badge="2" /> }).collect_view())
+    render((0..n).map(|_| view! { <Button label="Save" icon=icon.clone() badge="2" /> }).collect_view())
 }
 
 fn tag_n(n: usize) -> String {
@@ -241,7 +241,7 @@ fn fieldset_n(n: usize) -> String {
 }
 
 fn accordion_n(n: usize) -> String {
-    // Accordion передаёт состояние через контекст, поэтому части создаются внутри владельца.
+    // Accordion passes state through context, so the parts are created inside the owner.
     Owner::new().with(|| {
         render(
             (0..n)
@@ -427,7 +427,7 @@ fn inputotp_n(n: usize) -> String {
 }
 
 fn tabs_n(n: usize) -> String {
-    // Tabs передаёт состояние через контекст, поэтому части создаются внутри владельца.
+    // Tabs passes state through context, so the parts are created inside the owner.
     Owner::new().with(|| {
         render(
             (0..n)
@@ -453,7 +453,7 @@ fn tabs_n(n: usize) -> String {
 }
 
 fn popover_n(n: usize) -> String {
-    // Скрытая панель: в разметке остаётся только `PopoverRef` без элементов.
+    // Hidden panel: only `PopoverRef` without elements remains in the markup.
     Owner::new().with(|| {
         render(
             (0..n)
@@ -470,7 +470,7 @@ fn popover_n(n: usize) -> String {
 }
 
 fn drawer_n(n: usize) -> String {
-    // Скрытая панель: в разметке остаётся только служебная разметка без элементов.
+    // Hidden panel: only service markup without elements remains in the markup.
     Owner::new().with(|| {
         render(
             (0..n)
@@ -487,7 +487,7 @@ fn drawer_n(n: usize) -> String {
 }
 
 fn dialog_n(n: usize) -> String {
-    // Скрытый диалог: в разметке остаётся только служебная разметка без элементов.
+    // Hidden dialog: only service markup without elements remains in the markup.
     Owner::new().with(|| {
         render(
             (0..n)
@@ -504,7 +504,7 @@ fn dialog_n(n: usize) -> String {
 }
 
 fn tooltip_n(n: usize) -> String {
-    // Директива в SSR не вызывается: измеряется построение параметров и разметка элемента.
+    // The directive is not invoked in SSR: parameter building and element markup are measured.
     render(
         (0..n)
             .map(|_| {
@@ -554,7 +554,7 @@ fn paginator_n(n: usize) -> String {
 }
 
 fn stepper_n(n: usize) -> String {
-    // Контекст группы шагов лежит в владельце.
+    // The step group context lives in the owner.
     Owner::new().with(|| {
         render(
             (0..n)
@@ -588,7 +588,7 @@ fn imagecompare_n(n: usize) -> String {
 }
 
 fn blockui_n(n: usize) -> String {
-    // На сервере маска не выводится: измеряется только обвязка компонента.
+    // The mask is not rendered on the server: only the component wiring is measured.
     render((0..n).map(|_| view! { <BlockUI blocked=true><span>"Loading"</span></BlockUI> }).collect_view())
 }
 
@@ -825,7 +825,7 @@ fn contextmenu_n(n: usize) -> String {
             MenuItem::new().label("Quit"),
         ]
     };
-    // Меню показано: иначе на сервере нечего выводить.
+    // Menu is shown: otherwise there is nothing to render on the server.
     Owner::new().with(|| {
         render(
             (0..n)
@@ -845,7 +845,7 @@ fn steps_n(n: usize) -> String {
 }
 
 fn toast_n(n: usize) -> String {
-    // Пустой контейнер: сообщений на сервере нет; сервис лежит в контексте владельца.
+    // Empty container: there are no messages on the server; the service lives in the context of the owner.
     Owner::new().with(|| {
         provide_message_service();
         render((0..n).map(|_| view! { <Toast /> }).collect_view())
@@ -899,7 +899,7 @@ fn card_n(n: usize) -> String {
     render((0..n).map(|_| view! { <Card header="Simple Card" subheader="Subtitle"><p>"Content"</p></Card> }).collect_view())
 }
 
-/// Все сценарии.
+/// All scenarios.
 pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "check-icon-1", run: || check_n(1) },
     Scenario { name: "check-icon-1000", run: || check_n(1000) },
@@ -1079,12 +1079,12 @@ pub const SCENARIOS: &[Scenario] = &[
     Scenario { name: "all-icons-20", run: || render((0..20).map(|_| view! { <AllIcons /> }).collect_view()) },
 ];
 
-/// Каталог для JSON-отчётов (`target/bench`).
+/// Directory for JSON reports (`target/bench`).
 pub fn out_dir() -> std::path::PathBuf {
     let target = std::env::var_os("CARGO_TARGET_DIR")
         .map(std::path::PathBuf::from)
         .unwrap_or_else(|| std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target"));
     let dir = target.join("bench");
-    std::fs::create_dir_all(&dir).expect("не удалось создать target/bench");
+    std::fs::create_dir_all(&dir).expect("failed to create target/bench");
     dir
 }

@@ -1,39 +1,39 @@
 # steps Specification
 
 ## Purpose
-Steps показывает нумерованные шаги мастера в ряд, отмечает текущий и при необходимости позволяет переходить между шагами.
+Steps shows numbered wizard steps in a row, marks the current one and, if needed, allows moving between steps.
 
 ## Requirements
 
-### Requirement: Разметка
-`Steps` крейта `prime-steps` SHALL выводить `nav.p-steps.p-component` (`p-readonly` при `readonly`; `style`, `style_class`, `pt`; `data-pc-name="steps"`) > `ul.p-steps-list` > `li.p-steps-item` на каждый пункт модели (`p-steps-item-active` у активного, `p-disabled` у отключённого, `aria-current="step"` у активного, `id`, `style`) > `a.p-steps-item-link[role=link]` (`href` из `url`, `target`, `tabindex`, `aria-expanded`, `aria-disabled`) с `span.p-steps-item-number` (номер пункта, считая с единицы) и `span.p-steps-item-label` (подпись). Пункт SHALL считаться отключённым, если у него `disabled` или включён `readonly`, а пункт не активен. Ссылка SHALL иметь `tabindex="-1"` у отключённого пункта, `tabindex` пункта (или `0`) у активного и `tabindex` пункта (или `-1`) у остальных; `aria-expanded` SHALL быть истинным у активного пункта, `aria-disabled` — равным признаку отключённости (у пункта с `disabled` или у неактивного при `readonly`).
+### Requirement: Markup
+`Steps` of the `prime-steps` crate SHALL render `nav.p-steps.p-component` (`p-readonly` with `readonly`; `style`, `style_class`, `pt`; `data-pc-name="steps"`) > `ul.p-steps-list` > `li.p-steps-item` for each model item (`p-steps-item-active` on the active one, `p-disabled` on a disabled one, `aria-current="step"` on the active one, `id`, `style`) > `a.p-steps-item-link[role=link]` (`href` from `url`, `target`, `tabindex`, `aria-expanded`, `aria-disabled`) with `span.p-steps-item-number` (the item number, counted from one) and `span.p-steps-item-label` (the label). An item SHALL be considered disabled if it has `disabled` or `readonly` is on and the item is not active. The link SHALL have `tabindex="-1"` on a disabled item, the item's `tabindex` (or `0`) on the active one and the item's `tabindex` (or `-1`) on the rest; `aria-expanded` SHALL be true on the active item, `aria-disabled` — equal to the disabled flag (on an item with `disabled` or on an inactive one with `readonly`).
 
-#### Scenario: Состав
-- **WHEN** отрисован `Steps` из трёх пунктов с `active_index = 1`
-- **THEN** выведены три `li`, у второго `p-steps-item-active` и `aria-current="step"`, номера 1, 2, 3
+#### Scenario: Composition
+- **WHEN** `Steps` of three items with `active_index = 1` is rendered
+- **THEN** three `li` are rendered, the second has `p-steps-item-active` and `aria-current="step"`, numbers 1, 2, 3
 
-#### Scenario: Только чтение
-- **WHEN** `readonly = true` (по умолчанию)
-- **THEN** у корня `p-readonly`, у неактивных пунктов `p-disabled` и `aria-disabled="true"`
+#### Scenario: Readonly
+- **WHEN** `readonly = true` (the default)
+- **THEN** the root has `p-readonly`, inactive items have `p-disabled` and `aria-disabled="true"`
 
-### Requirement: Клик
-В режиме `readonly` или по отключённому пункту клик SHALL отменять переход по ссылке и ничего не вызывать. В интерактивном режиме клик по доступному пункту SHALL вызывать `on_active_index_change(индекс)`, обновлять переданный сигнал `active_index_signal` (если задан), отменять переход по ссылке, если у пункта нет `url`, и вызывать `command` пункта с событием, пунктом и индексом.
+### Requirement: Click
+In `readonly` mode or on a disabled item a click SHALL cancel link navigation and call nothing. In interactive mode a click on an available item SHALL call `on_active_index_change(index)`, update the passed `active_index_signal` signal (if set), cancel link navigation if the item has no `url`, and call the item's `command` with the event, the item and the index.
 
-#### Scenario: Интерактивный клик
-- **WHEN** `readonly = false` и пользователь кликает по третьему пункту
-- **THEN** вызваны `on_active_index_change(2)` и `command` с индексом 2
+#### Scenario: Interactive click
+- **WHEN** `readonly = false` and the user clicks the third item
+- **THEN** `on_active_index_change(2)` and `command` with index 2 are called
 
-#### Scenario: Отключённый пункт
-- **WHEN** пользователь кликает по пункту с `disabled`
-- **THEN** ничего не вызывается
+#### Scenario: Disabled item
+- **WHEN** the user clicks an item with `disabled`
+- **THEN** nothing is called
 
-### Requirement: Клавиатура
-На ссылках пунктов → и ← SHALL переносить фокус на следующий и предыдущий пункты, `Home` и `End` — на первый и последний; фокус SHALL перемещаться и `tabindex="0"` переходить к сфокусированной ссылке (прежняя получает `-1`), на границах фокус остаётся. `Tab` SHALL возвращать `tabindex="0"` ссылке активного пункта. `Enter` и `Space` SHALL действовать как клик. Обработанные клавиши SHALL отменять действие по умолчанию.
+### Requirement: Keyboard
+On item links → and ← SHALL move focus to the next and previous items, `Home` and `End` — to the first and last; focus SHALL move and `tabindex="0"` SHALL pass to the focused link (the previous one gets `-1`), at the bounds focus stays. `Tab` SHALL return `tabindex="0"` to the active item's link. `Enter` and `Space` SHALL act as a click. Handled keys SHALL cancel the default action.
 
-#### Scenario: Стрелка вправо
-- **WHEN** фокус на первой ссылке и нажата →
-- **THEN** фокус и `tabindex="0"` у второй ссылки, у первой `tabindex="-1"`
+#### Scenario: Right arrow
+- **WHEN** focus is on the first link and → is pressed
+- **THEN** focus and `tabindex="0"` are on the second link, the first has `tabindex="-1"`
 
-#### Scenario: Конец списка
-- **WHEN** фокус на последнем пункте и нажата →
-- **THEN** фокус остаётся на нём
+#### Scenario: End of the list
+- **WHEN** focus is on the last item and → is pressed
+- **THEN** focus stays on it

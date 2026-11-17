@@ -1,4 +1,4 @@
-//! Avatar в реальном браузере (wasm-bindgen-test): ошибка загрузки изображения.
+//! Avatar in a real browser (wasm-bindgen-test): image load error.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;

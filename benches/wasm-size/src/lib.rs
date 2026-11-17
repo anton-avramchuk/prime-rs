@@ -1,10 +1,10 @@
-//! Приложение для измерения размера wasm: набор отрисованного определяется feature-флагом `case-*`.
+//! App for measuring wasm size: the set of rendered content is determined by the `case-*` feature flag.
 
 use leptos::prelude::*;
 use wasm_bindgen::prelude::*;
 
-// Случай выбирается по приоритету: при нескольких включённых features (например, `--all-features`) побеждает первый,
-// поэтому крейт собирается при любой комбинации, а в обычной сборке с одним `case-*` типы и размер не меняются.
+// The case is chosen by priority: when several features are enabled (e.g. `--all-features`) the first one wins,
+// so the crate builds with any combination, and in a normal build with a single `case-*` the types and size do not change.
 cfg_if::cfg_if! {
     if #[cfg(feature = "case-baseline")] {
         fn case() -> impl IntoView {
@@ -499,10 +499,10 @@ cfg_if::cfg_if! {
         }
     } else if #[cfg(feature = "case-button")] {
         fn case() -> impl IntoView {
-            view! { <prime_button::Button label="Сохранить" severity=prime_button::ButtonSeverity::Success /> }
+            view! { <prime_button::Button label="Save" severity=prime_button::ButtonSeverity::Success /> }
         }
     } else {
-        compile_error!("wasm-size: включите ровно один feature `case-*`");
+        compile_error!("wasm-size: enable exactly one `case-*` feature");
     }
 }
 
@@ -511,7 +511,7 @@ fn App() -> impl IntoView {
     case()
 }
 
-/// Точка входа wasm.
+/// wasm entry point.
 #[wasm_bindgen(start)]
 pub fn start() {
     leptos::mount::mount_to_body(App);

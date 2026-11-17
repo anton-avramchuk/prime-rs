@@ -1,7 +1,7 @@
-//! Страница SplitButton: демонстрации `basic`, `disabled`, `icons`, `outlined`, `raised`, `raisedtext`, `rounded`, `severity`, `sizes`,
-//! `template`, `text` из showcase PrimeNG (`apps/showcase/doc/splitbutton`). Демонстрация `nested` (подменю) не переносится до
-//! `TieredMenu`, `reversedkeys` — текст про токены темы. Значки PrimeIcons (`pi-check`, `pi-cog`) заменены значками `prime-icons`,
-//! логотип в `template` — текстом.
+//! SplitButton page: demos `basic`, `disabled`, `icons`, `outlined`, `raised`, `raisedtext`, `rounded`, `severity`, `sizes`,
+//! `template`, `text` from the PrimeNG showcase (`apps/showcase/doc/splitbutton`). The `nested` demo (submenus) is not ported until
+//! `TieredMenu`, `reversedkeys` is text about theme tokens. PrimeIcons icons (`pi-check`, `pi-cog`) are replaced with `prime-icons` icons,
+//! the logo in `template` with text.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -12,7 +12,7 @@ use prime_menu::{MenuCommand, MenuItem};
 use prime_splitbutton::SplitButton;
 use prime_toast::{Toast, ToastMessage, ToastSeverity, provide_message_service};
 
-/// Команды меню (как `items` в демонстрациях PrimeNG): сообщения через общий `Toast`.
+/// Menu commands (like `items` in the PrimeNG demos): messages via a shared `Toast`.
 fn items(service: prime_toast::MessageService) -> Vec<MenuItem> {
     let say = move |severity: ToastSeverity, summary: &'static str, detail: &'static str| {
         Callback::new(move |_: MenuCommand| service.add(ToastMessage::new(severity.clone(), summary, detail).life(3000)))
@@ -40,7 +40,7 @@ macro_rules! severities {
     };
 }
 
-/// Страница `/splitbutton`.
+/// `/splitbutton` page.
 #[component]
 pub fn SplitButtonPage() -> impl IntoView {
     let service = provide_message_service();

@@ -1,4 +1,4 @@
-//! Разметка Image (SSR): корень, `img`, кнопка просмотра, представления, `pt`. Просмотр на сервере не выводится.
+//! Image markup (SSR): root, `img`, preview button, views, `pt`. The preview is not rendered on the server.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -44,11 +44,11 @@ fn img_attributes_are_forwarded_and_absent_ones_omitted() {
         "class=\"pic\"",
         "border: 0",
     ] {
-        assert!(html.contains(needle), "нет {needle}: {html}");
+        assert!(html.contains(needle), "missing {needle}: {html}");
     }
     let bare = render(|| view! { <Image src="a.jpg" /> }.to_html());
     for absent in ["srcset", "sizes", "alt=", "width", "height", "loading"] {
-        assert!(!bare.contains(absent), "лишний {absent}: {bare}");
+        assert!(!bare.contains(absent), "unexpected {absent}: {bare}");
     }
     let eager = render(|| view! { <Image src="a.jpg" loading=ImageLoading::Eager /> }.to_html());
     assert!(eager.contains("loading=\"eager\""), "{eager}");
@@ -60,10 +60,10 @@ fn preview_adds_class_and_button_with_icon_and_size() {
     assert!(html.contains("p-image p-component p-image-preview"), "{html}");
     assert!(html.contains("class=\"p-image-preview-mask\"") && html.contains("type=\"button\""), "{html}");
     assert!(html.contains("aria-label=\"Zoom Image\""), "{html}");
-    assert!(html.contains("height: 100px; width: 250px"), "размер кнопки: {html}");
+    assert!(html.contains("height: 100px; width: 250px"), "button size: {html}");
     assert!(html.contains("p-image-preview-icon") && html.contains("<svg"), "{html}");
-    assert!(html.find("<img").unwrap() < html.find("<button").unwrap(), "кнопка после картинки: {html}");
-    assert!(!html.contains("p-image-mask p-overlay-mask") && !html.contains("role=\"dialog\""), "просмотр закрыт: {html}");
+    assert!(html.find("<img").unwrap() < html.find("<button").unwrap(), "button after the image: {html}");
+    assert!(!html.contains("p-image-mask p-overlay-mask") && !html.contains("role=\"dialog\""), "preview is closed: {html}");
 }
 
 #[test]

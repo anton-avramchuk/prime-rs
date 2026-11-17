@@ -1,6 +1,6 @@
-//! Страница Timeline: демонстрации `basic`, `alignment`, `horizontal`, `opposite` по `apps/showcase/doc/timeline` PrimeNG.
+//! Timeline page: demos `basic`, `alignment`, `horizontal`, `opposite` after PrimeNG `apps/showcase/doc/timeline`.
 //!
-//! Демонстрации `template` нет: она опирается на иконки и карточки, которых нет в `prime-icons`.
+//! There is no `template` demo: it relies on icons and cards that are not in `prime-icons`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -33,7 +33,7 @@ fn year() -> Callback<&'static str, AnyView> {
     Callback::new(|e: &'static str| e.into_any())
 }
 
-/// Страница `/timeline`.
+/// Page `/timeline`.
 #[component]
 pub fn TimelinePage() -> impl IntoView {
     view! {

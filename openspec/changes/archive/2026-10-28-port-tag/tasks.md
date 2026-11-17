@@ -1,28 +1,28 @@
 # Tasks
 
-## 1. Крейт и логика
+## 1. Crate and logic
 
-- [x] 1.1 Создать крейт `crates/prime-tag` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`) и добавить в workspace; проверить `cargo check -p prime-tag --all-features`
-- [x] 1.2 Реализовать `TagSeverity`, `TagState`, `write_classes`, `data_p` по `tagstyle.ts` и `Tag.dataP`; проверить таблицей юнит-тестов по сценариям спеки (серьёзности, `rounded`, `data-p`)
+- [x] 1.1 Create the crate `crates/prime-tag` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`) and add it to the workspace; check `cargo check -p prime-tag --all-features`
+- [x] 1.2 Implement `TagSeverity`, `TagState`, `write_classes`, `data_p` after `tagstyle.ts` and `Tag.dataP`; verify with a table of unit tests for the spec scenarios (severities, `rounded`, `data-p`)
 
-## 2. Компонент
+## 2. Component
 
-- [x] 2.1 Реализовать `Tag` с двумя ветвями отрисовки (`all_static!`, `Either`, разметка в макросе), блоками `children`, иконки и метки, `pt` (`TagPt`); проверить SSR-тестами всех сценариев спеки
-- [x] 2.2 Добавить таблицу паритета (значения и сигналы, HTML совпадает) и rustdoc с примером; проверить `cargo test -p prime-tag --all-features` и doc-тесты
+- [x] 2.1 Implement `Tag` with two render branches (`all_static!`, `Either`, markup in a macro), the `children`, icon and label blocks, `pt` (`TagPt`); verify with SSR tests of all spec scenarios
+- [x] 2.2 Add a parity table (values and signals, HTML matches) and rustdoc with an example; check `cargo test -p prime-tag --all-features` and doc tests
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Добавить страницу `/tag` (`basic`, `icon`, `pill`, `severity`, `template`) и пункт меню, включить CSS `tag` в оболочку; проверить `cargo leptos build` и страницу в Chrome без ошибок консоли
-- [x] 3.2 Добавить записи в `e2e/tests/pages.json` и `e2e/tests/tag.spec.ts` (демонстрации, классы серьёзности, порядок содержимого); проверить `npx playwright test tag` локально
+- [x] 3.1 Add the page `/tag` (`basic`, `icon`, `pill`, `severity`, `template`) and a menu item, include the `tag` CSS in the shell; check `cargo leptos build` and the page in Chrome without console errors
+- [x] 3.2 Add entries to `e2e/tests/pages.json` and `e2e/tests/tag.spec.ts` (demos, severity classes, content order); check `npx playwright test tag` locally
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Добавить сценарии `tag-1`, `tag-1000` в `benches/render`, `case-tag` в `benches/wasm-size`, бюджеты в `benches/alloc-budgets.toml` и `benches/budgets.toml` по измерению; проверить `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` и `cargo xtask wasm-size`
+- [x] 4.1 Add scenarios `tag-1`, `tag-1000` to `benches/render`, `case-tag` to `benches/wasm-size`, budgets in `benches/alloc-budgets.toml` and `benches/budgets.toml` by measurement; check `cargo bench -p render-bench --bench alloc`, `cargo xtask alloc-budget` and `cargo xtask wasm-size`
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 Написать `docs/tag.md` (соответствие PrimeNG, отличия); выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate port-tag`; убедиться, что CI на `dev` зелёный
+- [x] 5.1 Write `docs/tag.md` (correspondence to PrimeNG, differences); run `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (except applications), `cargo deny check`, `openspec validate port-tag`; make sure CI on `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать change после прохождения CI; следующий компонент волны 1: Chip.
+- Archive the change after CI passes; the next wave 1 component: Chip.

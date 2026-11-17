@@ -2,80 +2,80 @@
 
 ## Context
 
-Требования — в `specs/multiselect`. Исходники PrimeNG 21.1.10: `multiselect/multiselect.ts`, `multiselect/style/multiselectstyle.ts`; демонстрации `apps/showcase/doc/multiselect/*-doc.ts`. Образцы в проекте:
-- `prime-select` — корень, панель внутри корня, `align_overlay(Relative)`, z-index группы `Overlay`, слушатели `window` на время открытия, эффект открытия под `cfg(wasm32)`, значок очистки/загрузки, фокус поля поиска, поиск набором, `realign` после смены списка;
-- `prime-listbox` — модель вариантов, `visible_entries`, индексы, `select_multiple`, `select_range`, `select_all`, флажок как разметка `Checkbox` с состоянием из замыканий, клавиши с диапазонами.
+Requirements are in `specs/multiselect`. PrimeNG 21.1.10 sources: `multiselect/multiselect.ts`, `multiselect/style/multiselectstyle.ts`; demos `apps/showcase/doc/multiselect/*-doc.ts`. Models in the project:
+- `prime-select` — root, panel inside the root, `align_overlay(Relative)`, `Overlay` group z-index, `window` listeners while open, open effect under `cfg(wasm32)`, clear/loading icon, search field focus, type-ahead search, `realign` after the list changes;
+- `prime-listbox` — option model, `visible_entries`, indices, `select_multiple`, `select_range`, `select_all`, checkbox as `Checkbox` markup with state from closures, keys with ranges.
 
-Наблюдения по исходнику:
-- Фокус клавиатуры — на скрытом `input[role=combobox]` в `p-hidden-accessible`; он держит `aria-expanded`, `aria-controls`, `aria-activedescendant`.
-- Метка: `label()` = метки выбранных через «, » либо `selectedItemsLabel` при превышении `maxSelectedLabels` (по умолчанию 3), иначе `placeholder`. В режиме `chip` — `chipSelectedItems()` (первые `maxSelectedLabels`) в `p-chip` с `removable`.
-- `isOptionDisabled`: при `selectionLimit` и достигнутом пределе невыбранные варианты недоступны.
-- `onToggleAll`: итог = выбранные до поиска (если поиск и не все выбраны) + выбранные недоступные + видимые (все выбранные/допустимые, либо только выбранные-недопустимые, если всё выбрано) — без повторов.
-- Клавиши: как в Listbox, плюс открытие панели ↓ ↑ Home End и набором, `Alt+↑` — выбрать и закрыть, `Tab` — выбрать фокусный (если не выбран) и закрыть, `Escape` — закрыть.
-- В отличие от Select, выбор не закрывает панель; фокус остаётся на скрытом поле, список не принимает фокус.
-- `filter` по умолчанию `true`.
+Observations about the source:
+- Keyboard focus is on the hidden `input[role=combobox]` in `p-hidden-accessible`; it holds `aria-expanded`, `aria-controls`, `aria-activedescendant`.
+- Label: `label()` = labels of the selected ones joined with ", " or `selectedItemsLabel` when `maxSelectedLabels` is exceeded (3 by default), otherwise `placeholder`. In `chip` mode — `chipSelectedItems()` (the first `maxSelectedLabels`) in `p-chip` with `removable`.
+- `isOptionDisabled`: with `selectionLimit` and the limit reached, unselected options are disabled.
+- `onToggleAll`: result = selected before the search (if searching and not all are selected) + selected disabled + visible (all selected/valid, or only selected-invalid if everything is selected) — without duplicates.
+- Keys: as in Listbox, plus opening the panel with ↓ ↑ Home End and by typing, `Alt+↑` — select and close, `Tab` — select the focused one (if not selected) and close, `Escape` — close.
+- Unlike Select, selection does not close the panel; focus stays on the hidden field, the list does not take focus.
+- `filter` defaults to `true`.
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы и роли; поведение выбора, предела, «выбрать все», клавиш и закрытия; режим чипов; `values`/`open` как двусторонние сигналы.
+**Goals:** the same DOM, classes and roles; selection behaviour, limit, "select all", keys and closing; chip mode; `values`/`open` as two-way signals.
 
-**Non-Goals:** виртуальная прокрутка, `appendTo`/`overlayOptions`, `@primeuix/motion`, формы Angular, `optionLabel` и родственные, `tooltip*`, шаблоны `header`/`footer`/`filter`/`empty`/`loader`, внешнее `selectAll`.
+**Non-Goals:** virtual scrolling, `appendTo`/`overlayOptions`, `@primeuix/motion`, Angular forms, `optionLabel` and related, `tooltip*`, `header`/`footer`/`filter`/`empty`/`loader` templates, external `selectAll`.
 
 ## Decisions
 
-### D1. Крейт и модель
-`prime-multiselect` с `MultiSelect`, `MultiSelectOption`, `MultiSelectGroup`, `MultiSelectDisplay { Comma, Chip }`, `MultiSelectPt`. Типы совпадают по форме с `ListboxOption`/`ListboxGroup`, но свои — зависимость от `prime-listbox` ради структур тянула бы весь Listbox в бинарник.
+### D1. Crate and model
+`prime-multiselect` with `MultiSelect`, `MultiSelectOption`, `MultiSelectGroup`, `MultiSelectDisplay { Comma, Chip }`, `MultiSelectPt`. The types match `ListboxOption`/`ListboxGroup` in shape, but are our own — a dependency on `prime-listbox` just for the structs would pull the whole Listbox into the binary.
 
-### D2. Чистая логика (`logic.rs`)
-Копия нужных функций Listbox (плоский список, фильтр, индексы, поиск набором, диапазоны, `select_all`) плюс специфичные:
-- `option_disabled(option, selected, limit)` — учитывает предел выбора;
-- `entries_with_limit(...)` или параметр `limit` в `is_valid` — недоступность невыбранных при пределе;
-- `toggle_all(all_options, visible, selected, filter_active) -> Vec<String>` — формула PrimeNG без повторов;
+### D2. Pure logic (`logic.rs`)
+A copy of the needed Listbox functions (flat list, filter, indices, type-ahead search, ranges, `select_all`) plus specific ones:
+- `option_disabled(option, selected, limit)` — accounts for the selection limit;
+- `entries_with_limit(...)` or a `limit` parameter in `is_valid` — unselected options are disabled at the limit;
+- `toggle_all(all_options, visible, selected, filter_active) -> Vec<String>` — the PrimeNG formula without duplicates;
 - `all_selected(visible, selected)`;
-- `label_text(selected_labels, max, summary_template, placeholder, display_selected_label)` и `chip_labels(selected_labels, max)`;
-- `summary(template, n)` — подстановка `{0}`;
+- `label_text(selected_labels, max, summary_template, placeholder, display_selected_label)` and `chip_labels(selected_labels, max)`;
+- `summary(template, n)` — substituting `{0}`;
 - `root_classes`, `label_classes`, `option_classes`, `data_p`.
-Табличные тесты на каждую. Дублирование с Listbox намеренно оставлено до третьего потребителя.
+Table tests for each. Duplication with Listbox is intentionally left until a third consumer.
 
-### D3. Состояние и разметка
-`values`, `open`, `filter_text`, `focused_index: Option<usize>`, `start_range`, `focused` (поле), `clicked` (панель открыта мышью). Корневые классы и `data-p` — реактивные замыкания; метка читает `values` и варианты; список — как в Select (`ul` стабилен, элементы перестраиваются от вариантов, групп и строки поиска); состояние варианта (выбран, фокус, недоступен по пределу) — реактивные атрибуты, чтобы клик и навигация не пересоздавали элементы и не теряли прокрутку.
+### D3. State and markup
+`values`, `open`, `filter_text`, `focused_index: Option<usize>`, `start_range`, `focused` (field), `clicked` (panel opened by mouse). Root classes and `data-p` are reactive closures; the label reads `values` and the options; the list is as in Select (`ul` is stable, items are rebuilt from options, groups and the search string); option state (selected, focus, disabled by the limit) is reactive attributes so that clicks and navigation do not recreate elements and lose scroll position.
 
-### D4. Панель и окно
-По образцу Select: эффект открытия под `cfg(wasm32)` (`opened`/`closed`), `align_overlay(Relative)`, z-index `ZGroup::Overlay`, слушатели `click` и `resize` окна на время открытия, `realign` после ввода в поиск и после смены числа чипов, `release` в `on_cleanup`. Клик внутри корня панель не закрывает. Скрытые границы фокуса — как в Select.
+### D4. Panel and window
+Modelled on Select: open effect under `cfg(wasm32)` (`opened`/`closed`), `align_overlay(Relative)`, z-index `ZGroup::Overlay`, window `click` and `resize` listeners while open, `realign` after search input and after the chip count changes, `release` in `on_cleanup`. A click inside the root does not close the panel. Hidden focus boundaries are as in Select.
 
-### D5. Чипы
-`Chip` из `prime-chip` с `removable`; при `chip_icon` — свой значок удаления. Клик по удалению: `stop_propagation`, удаление значения, `on_remove`, `on_change`. Если у `Chip` нет нужных точек расширения — разметка чипа собирается вручную с теми же классами (`p-chip`, `p-chip-label`, `p-chip-remove-icon`), решение фиксируется в docs.
+### D5. Chips
+`Chip` from `prime-chip` with `removable`; with `chip_icon` — its own remove icon. Click on remove: `stop_propagation`, remove the value, `on_remove`, `on_change`. If `Chip` lacks the needed extension points, the chip markup is built by hand with the same classes (`p-chip`, `p-chip-label`, `p-chip-remove-icon`), and the decision is recorded in docs.
 
-### D6. Выбор и предел
-`select_option` (клик/Enter): `option.disabled` или предел → ничего; иначе переключение значения в `values`, `on_change`. Предел — `Prop<Option<usize>>`; недоступность невыбранных при `values.len() >= limit`. Все выборы идут через `update_model(values, event)`.
+### D6. Selection and limit
+`select_option` (click/Enter): `option.disabled` or the limit → nothing; otherwise toggle the value in `values`, `on_change`. The limit is `Prop<Option<usize>>`; unselected options are disabled when `values.len() >= limit`. All selections go through `update_model(values, event)`.
 
-### D7. Клавиши
-Два обработчика (`key_down(e, in_filter)`) — скрытое поле и поле поиска; таблица `match code`. Открытие панели из любой навигационной клавиши как в PrimeNG. Диапазоны и `Ctrl+A` берутся из логики. `PageUp`/`PageDown` — постраничная прокрутка контейнера, как в Listbox.
+### D7. Keys
+Two handlers (`key_down(e, in_filter)`) — the hidden field and the search field; a `match code` table. Opening the panel from any navigation key as in PrimeNG. Ranges and `Ctrl+A` come from the logic. `PageUp`/`PageDown` — page-wise container scrolling, as in Listbox.
 
-### D8. Представления
-`item: Option<Callback<(MultiSelectOption, bool), AnyView>>`, `group: Option<Callback<MultiSelectGroup, AnyView>>`, `selected_items: Option<Callback<Vec<MultiSelectOption>, AnyView>>`; значки — `Option<ViewFn>`.
+### D8. Views
+`item: Option<Callback<(MultiSelectOption, bool), AnyView>>`, `group: Option<Callback<MultiSelectGroup, AnyView>>`, `selected_items: Option<Callback<Vec<MultiSelectOption>, AnyView>>`; icons — `Option<ViewFn>`.
 
 ### D9. CSS
-`multiselect` в `theme.components` (блок `/* For PrimeNG */` содержит только селекторы `ng-invalid` Angular и не нужен, `primeng_extra` не используется); `iconfield` и `chip` уже подключены. Проверить `p-multiselect-*` в пресете.
+`multiselect` in `theme.components` (the `/* For PrimeNG */` block contains only Angular `ng-invalid` selectors and is not needed, `primeng_extra` is not used); `iconfield` and `chip` are already included. Check `p-multiselect-*` in the preset.
 
-### D10. Тесты
-SSR: разметка корня и метки (режимы `comma`/`chip`, сводка, подсказка), классы корня по состояниям, значки очистки/загрузки, `data-p`, `pt`, `style_class`, отсутствие панели. Браузерные `tests/web.rs` (слушатели окна общие → один последовательный прогон для тестов с открытой панелью): открытие/закрытие, выбор не закрывает, предел, «выбрать все» с поиском, чипы и удаление, очистка, клавиши (в т. ч. диапазоны, `Ctrl+A`, `Alt+↑`, `Tab`, `Escape`), поиск набором, фильтр, внешний `open`/`values`, z-index и положение, блокировки, отписка. e2e: настоящая мышь и клавиши, чипы, положение панели. Крейт добавляется в три места `ci.yml`.
+### D10. Tests
+SSR: root and label markup (`comma`/`chip` modes, summary, hint), root classes by state, clear/loading icons, `data-p`, `pt`, `style_class`, no panel. Browser `tests/web.rs` (window listeners are shared → one sequential run for tests with an open panel): open/close, selection does not close, limit, "select all" with search, chips and removal, clear, keys (including ranges, `Ctrl+A`, `Alt+↑`, `Tab`, `Escape`), type-ahead search, filter, external `open`/`values`, z-index and position, blocking, unsubscribing. e2e: real mouse and keys, chips, panel position. The crate is added in three places in `ci.yml`.
 
-### D11. Бенчмарки
-Сценарии `multiselect-1`/`-1000` (пять вариантов, закрытая панель, два выбранных) и `case-multiselect`; сначала `cargo bench -p render-bench --bench alloc`; для wasm — отдельный файл бюджетов `--budgets` только с этим случаем, затем бюджет в `benches/budgets.toml`.
+### D11. Benchmarks
+Scenarios `multiselect-1`/`-1000` (five options, closed panel, two selected) and `case-multiselect`; first `cargo bench -p render-bench --bench alloc`; for wasm — a separate budgets file `--budgets` with only this case, then the budget in `benches/budgets.toml`.
 
 ## Risks / Trade-offs
 
-- [Размер wasm] Select + Listbox + Chip в одном компоненте — бюджет подбирается по замеру.
-- [Фокус] Перестройка списка при выборе роняла бы прокрутку → только реактивные атрибуты у вариантов.
-- [Общие слушатели окна] Несколько MultiSelect в одном тесте → один последовательный прогон.
-- [Дублирование] Логика списка частично повторяет Listbox → вынос в общий модуль при третьем потребителе.
-- [Чип] Если `Chip` не позволяет подменить значок удаления — разметка вручную.
+- [wasm size] Select + Listbox + Chip in one component — the budget is chosen by measurement.
+- [Focus] Rebuilding the list on selection would drop scroll position → only reactive attributes on options.
+- [Shared window listeners] Several MultiSelects in one test → one sequential run.
+- [Duplication] The list logic partly repeats Listbox → extract into a shared module at the third consumer.
+- [Chip] If `Chip` does not allow replacing the remove icon — markup by hand.
 
 ## Open Questions
 
-- Нужна ли анимация показа: проверить, есть ли в теме `@keyframes` для `p-anchored-overlay`; если нет — без анимации (как в Select).
+- Whether a show animation is needed: check whether the theme has `@keyframes` for `p-anchored-overlay`; if not — no animation (as in Select).
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

@@ -1,9 +1,9 @@
-//! MegaMenu — порт `p-megamenu` из PrimeNG 21.1.10.
+//! MegaMenu â€” port of `p-megamenu` from PrimeNG 21.1.10.
 //!
-//! Панель корневых пунктов (горизонтальная или вертикальная), у каждого из которых раскрывается широкое наложение
-//! с колонками подменю. Модель — [`MegaMenuItem`]: обычный пункт и `columns` (колонка — список [`MegaMenuSubmenu`], а в нём
-//! плоские [`prime_menu::MenuItem`]). На узком окне (`breakpoint`) список сворачивается в кнопку. Слоты `start` и `end`
-//! выводятся по краям панели.
+//! A bar of root items (horizontal or vertical), each of which opens a wide overlay
+//! with submenu columns. The model is [`MegaMenuItem`]: a plain item and `columns` (a column is a list of [`MegaMenuSubmenu`], each holding
+//! flat [`prime_menu::MenuItem`]s). On a narrow window (`breakpoint`) the list collapses into a button. The `start` and `end` slots
+//! are rendered at the edges of the bar.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -34,59 +34,59 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Pass-through частей [`MegaMenu`].
+/// Pass-through parts of [`MegaMenu`].
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct MegaMenuPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Слот `start`.
+    /// `start` slot.
     pub start: Pt,
-    /// Кнопка меню.
+    /// Menu button.
     pub button: Pt,
-    /// Значок кнопки.
+    /// Button icon.
     pub button_icon: Pt,
-    /// Корневой список.
+    /// Root list.
     pub root_list: Pt,
-    /// Пункт `li`.
+    /// `li` item.
     pub item: Pt,
-    /// Содержимое пункта.
+    /// Item content.
     pub item_content: Pt,
-    /// Ссылка пункта.
+    /// Item link.
     pub item_link: Pt,
-    /// Значок пункта.
+    /// Item icon.
     pub item_icon: Pt,
-    /// Подпись пункта.
+    /// Item label.
     pub item_label: Pt,
-    /// Стрелка группы.
+    /// Group arrow.
     pub submenu_icon: Pt,
-    /// Наложение.
+    /// Overlay.
     pub overlay: Pt,
-    /// Сетка колонок.
+    /// Column grid.
     pub grid: Pt,
-    /// Колонка.
+    /// Column.
     pub column: Pt,
-    /// Подменю.
+    /// Submenu.
     pub submenu: Pt,
-    /// Заголовок подменю.
+    /// Submenu header.
     pub submenu_label: Pt,
-    /// Разделитель.
+    /// Separator.
     pub separator: Pt,
-    /// Слот `end`.
+    /// `end` slot.
     pub end: Pt,
 }
 
-/// Контекст представления `item`.
+/// Context of the `item` view.
 #[derive(Clone)]
 pub struct MegaMenuItemContext {
-    /// Пункт.
+    /// Item.
     pub item: MenuItem,
-    /// Есть ли у пункта наложение с подменю.
+    /// Whether the item has an overlay with a submenu.
     pub has_submenu: bool,
-    /// Пункт на корневом уровне.
+    /// Item at the root level.
     pub root: bool,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: String,
@@ -99,7 +99,7 @@ struct Core {
     mobile_active: RwSignal<bool>,
     auto_z_index: Prop<bool>,
     base_z_index: Prop<i32>,
-    /// `z-index` корневого списка на время открытой мобильной панели.
+    /// `z-index` of the root list while the mobile panel is open.
     z: RwSignal<Option<i32>>,
     root_el: NodeRef<leptos::html::Div>,
     list: NodeRef<leptos::html::Ul>,
@@ -113,7 +113,7 @@ struct Core {
     search_timer: StoredValue<Option<TimeoutHandle>, LocalStorage>,
 }
 
-/// Пункт по ключу (`"0"`, `"0_1_0_2"`).
+/// Item by key (`"0"`, `"0_1_0_2"`).
 fn item_by_key(model: &[MegaMenuItem], key: &str) -> Option<MenuItem> {
     let parts: Vec<usize> = key.split('_').map(str::parse).collect::<Result<_, _>>().ok()?;
     match parts[..] {
@@ -166,7 +166,7 @@ impl Core {
         }
     }
 
-    /// Закрывает всё; при открытой мобильной панели закрывает её и возвращает фокус на кнопку (`hide`).
+    /// Closes everything; with the mobile panel open, closes it and returns focus to the button (`hide`).
     fn hide_menu(&self) {
         if self.mobile_active.get_untracked() {
             self.mobile_active.set(false);
@@ -201,7 +201,7 @@ impl Core {
         self.release_z();
     }
 
-    /// Кнопка меню: открывает или закрывает мобильную панель (`toggle`).
+    /// Menu button: opens or closes the mobile panel (`toggle`).
     fn toggle(self: &Arc<Self>) {
         if self.mobile_active.get_untracked() {
             self.mobile_active.set(false);
@@ -223,13 +223,13 @@ impl Core {
         }
     }
 
-    /// Фокус на первый пункт и на список (`show`).
+    /// Focus on the first item and on the list (`show`).
     fn show(&self) {
         self.update(|t, st| st.focus = t.first_focused(st));
         self.focus_list();
     }
 
-    /// Клик по содержимому пункта.
+    /// Click on item content.
     fn item_click(&self, event: web_sys::MouseEvent, key: &str) {
         let Some(item) = self.item(key) else { return };
         if should_prevent_default(&item) || item.disabled {
@@ -258,7 +258,7 @@ impl Core {
         }
     }
 
-    /// Наведение на содержимое пункта.
+    /// Hover over item content.
     fn item_hover(&self, key: &str) {
         let mobile = self.mobile_active.get_untracked();
         self.update(|t, st| t.hover(st, key, mobile));
@@ -276,7 +276,7 @@ impl Core {
         }
     }
 
-    /// `Enter`/`Space`: клик по ссылке пункта под фокусом.
+    /// `Enter`/`Space`: click on the link of the focused item.
     fn enter(&self) {
         let Some(key) = self.state.get_untracked().focus else { return };
         let was_group = self.tree(|t| t.node(&key).is_some_and(|n| n.group));
@@ -290,7 +290,7 @@ impl Core {
         self.update(|t, st| t.after_enter(st, was_group));
     }
 
-    /// Печатаемый символ: поиск по началу подписи; строка поиска сбрасывается через 500 мс.
+    /// Printable character: search by label prefix; the search string is reset after 500 ms.
     fn type_char(&self, ch: &str) {
         self.search.update_value(|s| s.push_str(ch));
         let text = self.search.get_value();
@@ -364,7 +364,7 @@ impl Core {
         }
     }
 
-    /// Фокус в списке: снаружи — фокус на первый пункт (`onMenuFocus`).
+    /// Focus in the list: from outside, focus the first item (`onMenuFocus`).
     fn list_focus(&self, e: web_sys::FocusEvent) {
         self.focused.set(true);
         #[cfg(target_arch = "wasm32")]
@@ -380,7 +380,7 @@ impl Core {
         }
     }
 
-    /// Фокус ушёл из списка: если он остался внутри меню — ничего, иначе сброс (`onMenuBlur`).
+    /// Focus left the list: if it stayed inside the menu, nothing; otherwise reset (`onMenuBlur`).
     fn list_blur(self: &Arc<Self>, e: web_sys::FocusEvent) {
         #[cfg(target_arch = "wasm32")]
         {
@@ -422,7 +422,7 @@ impl Core {
         });
     }
 
-    /// Слушатели клика вне меню и `resize`.
+    /// Outside-click and `resize` listeners.
     #[cfg(target_arch = "wasm32")]
     fn bind_outside(self: &Arc<Self>) {
         let this = self.clone();
@@ -447,7 +447,7 @@ impl Core {
     }
 }
 
-/// Всё, что нужно для вывода уровней.
+/// Everything needed to render the levels.
 #[derive(Clone)]
 struct Ctx {
     core: Arc<Core>,
@@ -456,69 +456,69 @@ struct Ctx {
     submenu_icon: Option<ViewFn>,
 }
 
-/// Меню с широким наложением из колонок подменю.
+/// Menu with a wide overlay of submenu columns.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn MegaMenu(
-    /// Пункты.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<MegaMenuItem>>,
-    /// Ориентация корневого списка.
+    /// Orientation of the root list.
     #[prop(optional, into)]
     orientation: Prop<MegaMenuOrientation>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Ширина окна, до которой включён мобильный режим (по умолчанию `960px`).
+    /// Window width up to which mobile mode is enabled (default `960px`).
     #[prop(optional, into)]
     breakpoint: OptProp<String>,
-    /// Высота корневого списка, после которой он прокручивается.
+    /// Height of the root list after which it scrolls.
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-    /// Автоматически назначать `z-index` открытой мобильной панели.
+    /// Automatically assign `z-index` to the open mobile panel.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the config value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Отключает фокус корневого списка.
+    /// Disables focus of the root list.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Атрибут `id`.
+    /// `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `aria-label` корневого списка.
+    /// `aria-label` attribute of the root list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` корневого списка.
+    /// `aria-labelledby` attribute of the root list.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<MegaMenuPt>,
-    /// Слот в начале панели.
+    /// Slot at the start of the bar.
     #[prop(optional, into)]
     start: Option<ViewFn>,
-    /// Слот в конце панели.
+    /// Slot at the end of the bar.
     #[prop(optional, into)]
     end: Option<ViewFn>,
-    /// Своё содержимое пункта вместо ссылки.
+    /// Custom item content instead of a link.
     #[prop(optional)]
     item: Option<Callback<MegaMenuItemContext, AnyView>>,
-    /// Своя стрелка группы.
+    /// Custom group arrow.
     #[prop(optional, into)]
     submenu_icon: Option<ViewFn>,
-    /// Свой значок кнопки меню.
+    /// Custom menu button icon.
     #[prop(optional, into)]
     menu_icon: Option<ViewFn>,
-    /// Фокус вошёл в список.
+    /// Focus entered the list.
     #[prop(optional)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Фокус ушёл из меню.
+    /// Focus left the menu.
     #[prop(optional)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
 ) -> impl IntoView {
@@ -563,7 +563,7 @@ pub fn MegaMenu(
             c1.mobile_active.try_set(false);
             c1.release_z();
         });
-        // Слушатели клика вне и `resize`: пока раскрыт путь или открыта мобильная панель.
+        // Outside-click and `resize` listeners: while a path is expanded or the mobile panel is open.
         let c2 = core.clone();
         Effect::new(move |_| {
             let want = c2.state.with(|s| s.active.is_some()) || c2.mobile_active.get();
@@ -709,14 +709,14 @@ fn join(base: &str, extra: Option<&str>) -> String {
     }
 }
 
-/// Количество видимых пунктов без разделителей и позиция среди них (`aria-setsize`/`aria-posinset`).
+/// Number of visible items without separators and position among them (`aria-setsize`/`aria-posinset`).
 fn aria_pos(items: &[&MenuItem], index: usize) -> (usize, usize) {
     let size = items.iter().filter(|i| i.visible && !i.separator).count();
     let skipped = items.iter().take(index).filter(|i| !i.visible || i.separator).count();
     (size, index - skipped + 1)
 }
 
-/// Корневые пункты.
+/// Root items.
 fn roots_view(ctx: &Ctx) -> AnyView {
     let rows: Vec<MegaMenuItem> = ctx.core.model.with(|m| m.clone());
     let refs: Vec<&MenuItem> = rows.iter().map(|m| &m.item).collect();
@@ -741,12 +741,12 @@ fn separator_view(ctx: &Ctx, key: &str, item: &MenuItem) -> AnyView {
     view! { <li id={id} class={class} style={item.style.clone()} role="separator" {..ctx.pt.separator.attrs()}></li> }.into_any()
 }
 
-/// Корневой пункт с наложением.
-#[allow(clippy::clone_on_copy)] // замыкание над `Memo` — `Copy`, `clone()` оставлен для единообразия с остальными замыканиями
+/// Root item with an overlay.
+#[allow(clippy::clone_on_copy)] // the closure over `Memo` is `Copy`, `clone()` kept for consistency with the other closures
 fn root_view(ctx: &Ctx, index: usize, mega: &MegaMenuItem, set_size: usize, pos_inset: usize) -> AnyView {
     let key = index.to_string();
     let group = mega.columns.iter().any(|c| !c.is_empty());
-    // Memo: наложение перестраивается только при смене флага этого пункта, а не при любом изменении состояния.
+    // Memo: the overlay is rebuilt only when this item's flag changes, not on any state change.
     let active = {
         let (state, key) = (ctx.core.state, key.clone());
         let memo = Memo::new(move |_| state.with(|s| s.active.as_deref() == Some(key.as_str())));
@@ -759,7 +759,7 @@ fn root_view(ctx: &Ctx, index: usize, mega: &MegaMenuItem, set_size: usize, pos_
     item_view(ctx, &key, &mega.item, 1, set_size, pos_inset, group, true, active, overlay)
 }
 
-/// Наложение корневого пункта: сетка колонок с подменю.
+/// Overlay of a root item: a grid of columns with submenus.
 fn overlay_view(ctx: &Ctx, root: usize) -> AnyView {
     let columns: Vec<Vec<MegaMenuSubmenu>> = ctx.core.model.with(|m| m.get(root).map(|r| r.columns.clone()).unwrap_or_default());
     let count = columns.len();
@@ -817,7 +817,7 @@ fn submenu_view(ctx: &Ctx, root: usize, c: usize, s: usize, sub: &MegaMenuSubmen
     .into_any()
 }
 
-/// Пункт `li`: корневой (с наложением) или из подменю.
+/// `li` item: root (with overlay) or from a submenu.
 #[allow(clippy::too_many_arguments)]
 fn item_view<O, V>(
     ctx: &Ctx,
@@ -901,7 +901,7 @@ where
     .into_any()
 }
 
-/// Стандартное содержимое пункта: ссылка со значком, подписью и стрелкой группы.
+/// Standard item content: a link with icon, label and group arrow.
 fn link_view(ctx: &Ctx, item: &MenuItem, group: bool) -> AnyView {
     let pt = &ctx.pt;
     let icon = item.icon.clone().map(|icon| {
@@ -945,12 +945,12 @@ fn link_view(ctx: &Ctx, item: &MenuItem, group: bool) -> AnyView {
 
 #[cfg(target_arch = "wasm32")]
 mod client {
-    //! Мобильный режим: `matchMedia("(max-width: <breakpoint>)")`.
+    //! Mobile mode: `matchMedia("(max-width: <breakpoint>)")`.
 
     use leptos::prelude::*;
     use leptos::wasm_bindgen::{JsCast, closure::Closure};
 
-    /// Ведёт `mobile` по медиазапросу, вызывает `on_change` при смене и снимает слушатель при размонтировании.
+    /// Drives `mobile` from the media query, calls `on_change` on change and removes the listener on unmount.
     pub fn bind_media(breakpoint: String, mobile: RwSignal<bool>, on_change: impl Fn() + 'static) {
         let Some(window) = web_sys::window() else { return };
         let Some(query) = window.match_media(&format!("(max-width: {breakpoint})")).ok().flatten() else { return };

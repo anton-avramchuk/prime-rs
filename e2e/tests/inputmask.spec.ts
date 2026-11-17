@@ -4,21 +4,21 @@ test.describe('InputMask', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1000 });
         await page.goto('/inputmask');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_mask')).toBeAttached();
     });
 
     const field = (page, id: string) => page.locator(`#${id} input`);
 
-    test('стили темы: поле как InputText с рамкой и подсказкой', async ({ page }) => {
+    test('theme styles: the field looks like InputText with a border and a hint', async ({ page }) => {
         const i = field(page, 'basic_mask');
         expect(await i.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
         await expect(i).toHaveAttribute('placeholder', '99-999999');
         await expect(i).toHaveValue('');
     });
 
-    test('фокус показывает буфер, ввод заполняет маску и пропускает постоянные символы', async ({ page }) => {
+    test('focus shows the buffer, input fills the mask and skips constant characters', async ({ page }) => {
         const i = field(page, 'basic_mask');
         await i.click();
         await expect(i).toHaveValue('__-______');
@@ -26,7 +26,7 @@ test.describe('InputMask', () => {
         await expect(i).toHaveValue('12-345678');
     });
 
-    test('Backspace удаляет символ, неполное значение очищается при потере фокуса', async ({ page }) => {
+    test('Backspace removes a character, an incomplete value is cleared on blur', async ({ page }) => {
         const i = field(page, 'basic_mask');
         await i.click();
         await page.keyboard.type('1234');
@@ -37,7 +37,7 @@ test.describe('InputMask', () => {
         await expect(i).toHaveValue('');
     });
 
-    test('телефон и дата с собственным заполнителем', async ({ page }) => {
+    test('phone and date with their own placeholder', async ({ page }) => {
         const phone = field(page, 'phone_mask');
         await phone.scrollIntoViewIfNeeded();
         await phone.click();
@@ -51,7 +51,7 @@ test.describe('InputMask', () => {
         await expect(date).toHaveValue('12/25/2024');
     });
 
-    test('необязательная часть: значение без неё считается полным', async ({ page }) => {
+    test('optional part: a value without it counts as complete', async ({ page }) => {
         const i = field(page, 'optional_mask');
         await i.scrollIntoViewIfNeeded();
         await i.click();
@@ -60,7 +60,7 @@ test.describe('InputMask', () => {
         await expect(i).toHaveValue('(555) 123-4567');
     });
 
-    test('unmask отдаёт только введённые символы', async ({ page }) => {
+    test('unmask returns only the entered characters', async ({ page }) => {
         const i = field(page, 'unmask_mask');
         await i.scrollIntoViewIfNeeded();
         await i.click();
@@ -68,7 +68,7 @@ test.describe('InputMask', () => {
         await expect(page.locator('[data-testid="unmasked"]')).toHaveText('5551234567');
     });
 
-    test('значок очистки сбрасывает значение; отключённое и неверное состояния', async ({ page }) => {
+    test('the clear icon resets the value; disabled and invalid states', async ({ page }) => {
         const clear = page.locator('#clear_mask');
         await clear.scrollIntoViewIfNeeded();
         await expect(clear.locator('input')).toHaveValue('(555) 123-4567');
@@ -79,7 +79,7 @@ test.describe('InputMask', () => {
         await expect(field(page, 'invalid_mask')).toHaveClass(/p-invalid/);
     });
 
-    test('значок очистки расположен внутри поля справа', async ({ page }) => {
+    test('the clear icon is inside the field on the right', async ({ page }) => {
         const clear = page.locator('#clear_mask');
         await clear.scrollIntoViewIfNeeded();
         const input = (await clear.locator('input').boundingBox())!;

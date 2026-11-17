@@ -2,56 +2,56 @@
 
 ## Context
 
-Требования — в `specs/inputotp`. Исходники PrimeNG 21.1.10: `inputotp/inputotp.ts`, `inputotp/style/inputotpstyle.ts`; демонстрации `apps/showcase/doc/inputotp/{basic,mask,integeronly,sizes,template}-doc.ts`. Образцы в проекте: `crates/prime-inputtext` (модель значения `RwSignal<String>`, `write_classes`/`InputTextState`), `crates/prime-rating` и `prime-slider` (фокус и клавиши, `Effect` только под `cfg(wasm32)`), `prime_core::Pt`.
+Requirements are in `specs/inputotp`. PrimeNG 21.1.10 sources: `inputotp/inputotp.ts`, `inputotp/style/inputotpstyle.ts`; demos `apps/showcase/doc/inputotp/{basic,mask,integeronly,sizes,template}-doc.ts`. Reference implementations in the project: `crates/prime-inputtext` (value model `RwSignal<String>`, `write_classes`/`InputTextState`), `crates/prime-rating` and `prime-slider` (focus and keys, `Effect` only under `cfg(wasm32)`), `prime_core::Pt`.
 
-Наблюдения по исходнику:
-- Состояние — массив токенов; `updateModel` склеивает его в строку. Отдельная ячейка читает токен по индексу.
-- `onInput(event, index)`: если в первую ячейку попала строка длиннее одного символа — это вставка/автозаполнение (`handleOnPaste`); иначе записать токен и по `inputType` перейти назад (`deleteContentBackward`) или вперёд (`insertText`, `deleteContentForward`).
-- `onKeyDown`: комбинации с Alt/Ctrl/Meta пропускаются; `ArrowLeft/Right` — соседняя ячейка, `ArrowUp/Down` — отмена; `Backspace` в пустой ячейке — назад; остальное: при `integerOnly` не цифра — отмена, при заполненных `length` символах без выделения — отмена (кроме `Delete`).
-- `handleOnPaste`: берёт `length + 1` символов (в PrimeNG это не влияет — токены потом обрезаются значением), при `integerOnly` требует числа. Мы обрезаем строго до `length`.
-- Стиль только два класса: `p-inputotp p-component` и `p-inputotp-input`; блока `/* For PrimeNG */` нет.
+Observations about the source:
+- State is an array of tokens; `updateModel` joins it into a string. A single cell reads its token by index.
+- `onInput(event, index)`: if a string longer than one character lands in the first cell, it is a paste/autofill (`handleOnPaste`); otherwise write the token and by `inputType` move back (`deleteContentBackward`) or forward (`insertText`, `deleteContentForward`).
+- `onKeyDown`: combinations with Alt/Ctrl/Meta are skipped; `ArrowLeft/Right` move to the neighboring cell, `ArrowUp/Down` cancel; `Backspace` in an empty cell goes back; otherwise: with `integerOnly` a non-digit cancels, with `length` characters filled and no selection it cancels (except `Delete`).
+- `handleOnPaste`: takes `length + 1` characters (in PrimeNG this has no effect, since the tokens are later trimmed by value), with `integerOnly` requires numbers. We trim strictly to `length`.
+- Style is only two classes: `p-inputotp p-component` and `p-inputotp-input`; there is no `/* For PrimeNG */` block.
 
 ## Decisions
 
-### D1. Крейт и зависимости
-`prime-inputotp` с `InputOtp`, `InputOtpPt { root, input }`, `InputOtpSlot { token, index, events }`, `InputOtpEvents`. Зависит от `prime-core`, `prime-inputtext` (для `write_classes`/`InputTextState`) и `web-sys`. Сами ячейки рисуются как `<input>` с классами InputText плюс `p-inputotp-input`, а не вложенным `InputText`: у ячейки общее значение, а нужные ей обработчики другие.
+### D1. Crate and dependencies
+`prime-inputotp` with `InputOtp`, `InputOtpPt { root, input }`, `InputOtpSlot { token, index, events }`, `InputOtpEvents`. Depends on `prime-core`, `prime-inputtext` (for `write_classes`/`InputTextState`) and `web-sys`. The cells themselves are drawn as `<input>` with InputText classes plus `p-inputotp-input`, not as a nested `InputText`: the cell shares a value, and the handlers it needs are different.
 
-### D2. Чистая логика (`state.rs`)
-- `tokens_of(value: &str, length) -> Vec<String>`: символы значения по порядку, обрезанные до `length`.
+### D2. Pure logic (`state.rs`)
+- `tokens_of(value: &str, length) -> Vec<String>`: characters of the value in order, trimmed to `length`.
 - `join(tokens) -> String`.
-- `key_decision(key, mods, integer_only, has_selection, filled, length, cell_empty) -> KeyAction` (`Allow`, `Prevent`, `Prev`, `Next`) — по `onKeyDown`.
-- `paste_value(text, length, integer_only) -> Option<String>`: обрезка до `length`; `None`, если `integer_only` и в тексте не только цифры.
+- `key_decision(key, mods, integer_only, has_selection, filled, length, cell_empty) -> KeyAction` (`Allow`, `Prevent`, `Prev`, `Next`) after `onKeyDown`.
+- `paste_value(text, length, integer_only) -> Option<String>`: trimmed to `length`; `None` if `integer_only` and the text is not only digits.
 - `input_move(input_type) -> Move { Prev, Next, None }`.
-Все — с табличными тестами.
+All with table-driven tests.
 
-### D3. Значение
-`value: Option<RwSignal<String>>`. Токены вычисляются из сигнала (при `Some`) или лежат в локальном `RwSignal<Vec<String>>` (без `value`, неконтролируемый режим). Запись в `value` — склеенная строка токенов; пустые ячейки посреди кода сохраняются как пустые токены при расчёте, но склейка их пропускает (как `tokens.join('')` в PrimeNG).
+### D3. Value
+`value: Option<RwSignal<String>>`. Tokens are computed from the signal (with `Some`) or live in a local `RwSignal<Vec<String>>` (without `value`, uncontrolled mode). The write to `value` is the joined string of tokens; empty cells in the middle of the code are kept as empty tokens in the calculation, but the join skips them (like `tokens.join('')` in PrimeNG).
 
-### D4. Ячейки и события
-Ячейка — `<input>` с атрибутами по спецификации и `prop:value` из токена. Обработчики (`on:input`, `on:keydown`, `on:focus`, `on:blur`, `on:paste`) создаются один раз на ячейку; фокус на соседнюю ячейку — через `Element::next_element_sibling`/`previous_element_sibling` и `HtmlInputElement::focus`/`select`. Всё, что трогает DOM, — под `cfg(target_arch = "wasm32")` или в обработчиках (которые на SSR не вызываются). `autofocus` — атрибут первой ячейки. Для шаблона `input` обработчики оборачиваются в `InputOtpEvents` (`Callback<web_sys::Event>` и т. п.).
+### D4. Cells and events
+A cell is an `<input>` with attributes per the spec and `prop:value` from the token. Handlers (`on:input`, `on:keydown`, `on:focus`, `on:blur`, `on:paste`) are created once per cell; focus on a neighboring cell goes through `Element::next_element_sibling`/`previous_element_sibling` and `HtmlInputElement::focus`/`select`. Everything that touches the DOM is under `cfg(target_arch = "wasm32")` or in handlers (which are not called on SSR). `autofocus` is an attribute of the first cell. For the `input` template the handlers are wrapped in `InputOtpEvents` (`Callback<web_sys::Event>` and so on).
 
 ### D5. CSS
-`inputotp` добавляется в `theme.components`; `cargo xtask gen-theme`, проверка, что CSS остальных не изменился.
+`inputotp` is added to `theme.components`; `cargo xtask gen-theme`, check that the CSS of the others did not change.
 
-### D6. Тесты
-SSR на каждый сценарий разметки и значения; табличные тесты `state.rs`; браузерные тесты `tests/web.rs` (wasm-bindgen-test) на ввод, автопереход, `Backspace`, стрелки, вставку, `integer_only`; e2e с настоящими клавишами и `clipboard`-вставкой. Если браузерные тесты потребуют нового job, добавить крейт в три места `ci.yml`.
+### D6. Tests
+SSR for each markup and value scenario; table-driven `state.rs` tests; browser tests `tests/web.rs` (wasm-bindgen-test) for input, auto-advance, `Backspace`, arrows, paste, `integer_only`; e2e with real keys and `clipboard` paste. If the browser tests require a new job, add the crate in three places of `ci.yml`.
 
-### D7. Демонстрации
-`/inputotp`: `basic`, `mask`, `integeronly`, `sizes`, `template` (кастомная ячейка). Демонстрации форм (`reactiveforms`, `templatedrivenforms`) и `sample` не переносятся.
+### D7. Demos
+`/inputotp`: `basic`, `mask`, `integeronly`, `sizes`, `template` (custom cell). The form demos (`reactiveforms`, `templatedrivenforms`) and `sample` are not ported.
 
-### D8. Бенчмарки
-Сценарии `inputotp-1` и `-1000`, `case-inputotp`; сначала `cargo bench -p render-bench --bench alloc`, затем бюджеты.
+### D8. Benchmarks
+Scenarios `inputotp-1` and `-1000`, `case-inputotp`; first `cargo bench -p render-bench --bench alloc`, then the budgets.
 
 ## Risks / Trade-offs
 
-- [Автозаполнение из SMS и экранная клавиатура] → ведут себя по-разному в браузерах; проверяется только вставка и клавиши, остальное честно записано в `docs/inputotp.md`.
-- [Фокус через соседей по DOM] → как в PrimeNG; шаблон `input` обязан выводить `<input>` соседними элементами.
-- [Неконтролируемый режим] → токены в локальном сигнале; без `value` результат читается только через `on_change`.
+- [SMS autofill and on-screen keyboard] → behave differently across browsers; only paste and keys are verified, the rest is honestly recorded in `docs/inputotp.md`.
+- [Focus via DOM neighbors] → as in PrimeNG; the `input` template must output `<input>` as neighboring elements.
+- [Uncontrolled mode] → tokens in a local signal; without `value` the result is read only via `on_change`.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback is `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

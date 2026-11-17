@@ -5,46 +5,46 @@ TBD - created by archiving change port-inputgroup. Update Purpose after archive.
 
 ## Requirements
 
-### Requirement: Структура и классы InputGroup
-Компонент `InputGroup` крейта `prime-inputgroup` SHALL отрисовывать `<div class="p-inputgroup">` с проецируемым содержимым (`children`) без дополнительных обёрток и без `role`. `style_class` и `style` SHALL добавляться без потери собственного класса.
+### Requirement: InputGroup structure and classes
+The `InputGroup` component of the `prime-inputgroup` crate SHALL render `<div class="p-inputgroup">` with projected content (`children`) without extra wrappers and without `role`. `style_class` and `style` SHALL be added without losing the own class.
 
-#### Scenario: Содержимое
-- **WHEN** в `InputGroup` переданы `InputGroupAddon`, `InputText` и `Button`
-- **THEN** HTML содержит `div.p-inputgroup`, внутри которого они стоят в том же порядке
+#### Scenario: Content
+- **WHEN** `InputGroupAddon`, `InputText` and `Button` are passed into `InputGroup`
+- **THEN** the HTML contains `div.p-inputgroup`, inside which they stand in the same order
 
-#### Scenario: Свой класс
-- **WHEN** задан `style_class = "custom"`
-- **THEN** у корня есть и `p-inputgroup`, и `custom`
+#### Scenario: Custom class
+- **WHEN** `style_class = "custom"` is set
+- **THEN** the root has both `p-inputgroup` and `custom`
 
-### Requirement: Структура и классы InputGroupAddon
-Компонент `InputGroupAddon` SHALL отрисовывать `<div class="p-inputgroupaddon">` с проецируемым содержимым. `style_class` и `style` SHALL добавляться без потери собственного класса.
+### Requirement: InputGroupAddon structure and classes
+The `InputGroupAddon` component SHALL render `<div class="p-inputgroupaddon">` with projected content. `style_class` and `style` SHALL be added without losing the own class.
 
-#### Scenario: Текст и иконка
-- **WHEN** в `InputGroupAddon` передан текст или иконка
-- **THEN** они находятся внутри `div.p-inputgroupaddon`
+#### Scenario: Text and icon
+- **WHEN** text or an icon is passed into `InputGroupAddon`
+- **THEN** they are inside `div.p-inputgroupaddon`
 
-#### Scenario: Инлайн-стиль
-- **WHEN** задан `style = "width: 3rem"`
-- **THEN** у корня есть атрибут `style` с этим значением
+#### Scenario: Inline style
+- **WHEN** `style = "width: 3rem"` is set
+- **THEN** the root has a `style` attribute with this value
 
-### Requirement: Свойства и pass-through
-Свойства `style_class` и `style` обоих компонентов SHALL принимать значение или сигнал и обновлять разметку при смене сигнала. `pt` SHALL принимать часть `root`, добавляя классы, стиль и атрибуты без замены собственных.
+### Requirement: Properties and pass-through
+The `style_class` and `style` properties of both components SHALL accept a value or a signal and update the markup when the signal changes. `pt` SHALL accept the `root` part, adding classes, style and attributes without replacing the component's own.
 
-#### Scenario: Реактивный класс
-- **WHEN** `style_class` передан сигналом и меняется
-- **THEN** класс корня обновляется, собственный класс сохраняется
+#### Scenario: Reactive class
+- **WHEN** `style_class` is passed as a signal and changes
+- **THEN** the root class is updated, the own class is kept
 
-#### Scenario: Класс через pt
-- **WHEN** в `pt.root` передан класс `custom`
-- **THEN** у корня есть `custom` и собственный класс компонента
+#### Scenario: Class via pt
+- **WHEN** the class `custom` is passed in `pt.root`
+- **THEN** the root has `custom` and the component's own class
 
-### Requirement: Стоимость отрисовки InputGroup
-Компоненты со статическими свойствами SHALL использовать статическую ветвь; обе ветви SHALL давать одинаковую разметку. Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `inputgroup-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `inputgroup` в `benches/budgets.toml`.
+### Requirement: InputGroup rendering cost
+Components with static properties SHALL use the static branch; both branches SHALL produce identical markup. The number of allocations per instance in SSR SHALL fit the `inputgroup-1000` budget in `benches/alloc-budgets.toml`, and the wasm contribution the `inputgroup` budget in `benches/budgets.toml`.
 
-#### Scenario: Паритет ветвей
-- **WHEN** один набор значений передан статически и сигналами
-- **THEN** HTML совпадает
+#### Scenario: Branch parity
+- **WHEN** one set of values is passed statically and via signals
+- **THEN** the HTML matches
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения InputGroup не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the InputGroup values do not exceed the budgets

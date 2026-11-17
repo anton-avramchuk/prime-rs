@@ -1,4 +1,4 @@
-//! Разметка Galleria (SSR): кадр, миниатюры, индикаторы, кнопки, подпись, позиции, полноэкранный режим, `pt`.
+//! Galleria markup (SSR): frame, thumbnails, indicators, buttons, caption, positions, fullscreen mode, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -46,8 +46,8 @@ fn empty_value_renders_nothing_inside() {
 fn indicators_and_item_navigators() {
     let html = render(|| view! { <Galleria value=images(3) show_indicators=true show_item_navigators=true /> }.to_html());
     assert_eq!(html.matches("p-galleria-indicator ").count() + html.matches("class=\"p-galleria-indicator\"").count(), 3, "{html}");
-    assert!(html.contains("p-galleria-indicator p-galleria-indicator-active"), "первый активен: {html}");
-    assert!(html.contains("p-galleria-prev-button p-galleria-nav-button p-disabled"), "в начале «назад» недоступна: {html}");
+    assert!(html.contains("p-galleria-indicator p-galleria-indicator-active"), "first is active: {html}");
+    assert!(html.contains("p-galleria-prev-button p-galleria-nav-button p-disabled"), "at the start backward is disabled: {html}");
     assert!(html.contains("class=\"p-galleria-next-button p-galleria-nav-button\""), "{html}");
     assert!(html.contains("p-galleria-indicators-bottom"), "{html}");
 }
@@ -66,7 +66,7 @@ fn active_index_selects_the_item_and_window() {
     });
     assert!(html.contains("src=\"big4.jpg\"") && !html.contains("src=\"big0.jpg\""), "{html}");
     assert!(html.contains("p-galleria-thumbnail-item p-galleria-thumbnail-item-current p-galleria-thumbnail-item-active"), "{html}");
-    assert!(html.contains("translate3d(-100%, 0, 0)"), "активный 4 из 6 при трёх видимых: смещение −3 → {html}");
+    assert!(html.contains("translate3d(-100%, 0, 0)"), "active 4 of 6 with three visible: offset -3 → {html}");
 }
 
 #[test]
@@ -113,7 +113,7 @@ fn positions_and_flags() {
         html.contains("p-galleria p-component p-galleria-inset-indicators p-galleria-hover-navigators p-galleria-thumbnails-left p-galleria-indicators-top"),
         "{html}"
     );
-    assert!(html.contains("height: 300px"), "вертикальное окно миниатюр: {html}");
+    assert!(html.contains("height: 300px"), "vertical thumbnail window: {html}");
     assert!(html.contains("p-galleria-thumbnail-prev-button") && html.contains("<svg"), "{html}");
 }
 
@@ -130,10 +130,10 @@ fn num_visible_sets_thumbnail_width_and_is_limited_by_count() {
     let html = render(|| view! { <Galleria value=images(6) num_visible=4 /> }.to_html());
     assert!(html.contains("flex: 1 0 25%"), "{html}");
     let html = render(|| view! { <Galleria value=images(2) num_visible=5 /> }.to_html());
-    assert!(html.contains("flex: 1 0 50%"), "число видимых не больше числа изображений: {html}");
+    assert!(html.contains("flex: 1 0 50%"), "visible count does not exceed the image count: {html}");
     let responsive = vec![GalleriaResponsive { breakpoint: 960, num_visible: 4 }];
     let html = render(|| view! { <Galleria value=images(6) responsive_options=responsive /> }.to_html());
-    assert!(html.contains("flex: 1 0 33.33"), "на сервере ширины окна нет — базовое значение: {html}");
+    assert!(html.contains("flex: 1 0 33.33"), "no window width on the server: the base value: {html}");
 }
 
 #[test]

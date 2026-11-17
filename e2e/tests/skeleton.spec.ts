@@ -3,18 +3,18 @@ import { expect, test } from '@playwright/test';
 test.describe('Skeleton', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/skeleton');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm load) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=shapes] .p-skeleton').first()).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(3);
         const bg = await page.locator('[data-demo=shapes] .p-skeleton').first().evaluate((el) => getComputedStyle(el).overflow);
         expect(bg).toBe('hidden');
     });
 
-    test('круги и квадраты: размеры и форма', async ({ page }) => {
+    test('circles and squares: sizes and shape', async ({ page }) => {
         const circles = page.locator('[data-demo=shapes] .p-skeleton-circle');
         await expect(circles).toHaveCount(4);
         const box = await circles.nth(2).boundingBox();
@@ -24,7 +24,7 @@ test.describe('Skeleton', () => {
         expect(radius).toMatch(/50%|px/);
     });
 
-    test('aria-hidden, data-p и скругление', async ({ page }) => {
+    test('aria-hidden, data-p and rounding', async ({ page }) => {
         const first = page.locator('[data-demo=shapes] .p-skeleton').first();
         await expect(first).toHaveAttribute('aria-hidden', 'true');
         await expect(first).toHaveAttribute('data-p', 'rectangle');
@@ -32,7 +32,7 @@ test.describe('Skeleton', () => {
         await expect(rounded).toHaveCount(5);
     });
 
-    test('card и list содержат заглушки', async ({ page }) => {
+    test('card and list contain placeholders', async ({ page }) => {
         await expect(page.locator('[data-demo=card] .p-skeleton')).toHaveCount(7);
         await expect(page.locator('[data-demo=list] .p-skeleton')).toHaveCount(12);
     });

@@ -1,87 +1,87 @@
 # badge Specification
 
 ## Purpose
-Компонент Badge (порт p-badge из PrimeNG): значение, серьёзность, размер, точка и круг, скрытие, pass-through.
+The Badge component (port of p-badge from PrimeNG): value, severity, size, dot and circle, hiding, pass-through.
 
 ## Requirements
 
-### Requirement: Свойства Badge
-Компонент `Badge` крейта `prime-badge` SHALL принимать значение (`value`: строка или число), серьёзность (`severity`: `secondary`, `info`, `success`, `warn`, `danger`, `contrast`), размер (`size`: `small`, `large`, `xlarge`), признак скрытия (`badge_disabled`) и дополнительный класс (`style_class`). Все свойства необязательны. Свойства, которые меняются во время работы, SHALL быть реактивными.
+### Requirement: Badge properties
+The `Badge` component of the `prime-badge` crate SHALL accept a value (`value`: string or number), severity (`severity`: `secondary`, `info`, `success`, `warn`, `danger`, `contrast`), size (`size`: `small`, `large`, `xlarge`), a hide flag (`badge_disabled`) and an extra class (`style_class`). All properties are optional. Properties that change at runtime SHALL be reactive.
 
-#### Scenario: Значение выводится как текст
-- **WHEN** `Badge` отрисован со значением `5`
-- **THEN** корневой элемент содержит текст `5`
+#### Scenario: Value is rendered as text
+- **WHEN** `Badge` is rendered with the value `5`
+- **THEN** the root element contains the text `5`
 
-#### Scenario: Свойства по умолчанию
-- **WHEN** `Badge` отрисован без свойств
-- **THEN** он отрисован без текста, без классов серьёзности и размера
+#### Scenario: Default properties
+- **WHEN** `Badge` is rendered without properties
+- **THEN** it is rendered without text, without severity and size classes
 
-### Requirement: Классы и атрибуты Badge
-Корневой элемент SHALL иметь классы `p-badge p-component` и модификаторы, как в PrimeNG: `p-badge-circle` при значении из одного символа, `p-badge-dot` при пустом значении, `p-badge-sm`, `p-badge-lg`, `p-badge-xl` для размеров и `p-badge-<severity>` для серьёзности. Атрибут `data-p` SHALL содержать через пробел те же признаки, что и в PrimeNG (`circle`, `empty`, `disabled`, серьёзность, размер).
+### Requirement: Badge classes and attributes
+The root element SHALL have the classes `p-badge p-component` and modifiers, as in PrimeNG: `p-badge-circle` for a single-character value, `p-badge-dot` for an empty value, `p-badge-sm`, `p-badge-lg`, `p-badge-xl` for sizes and `p-badge-<severity>` for severity. The `data-p` attribute SHALL contain, space-separated, the same flags as in PrimeNG (`circle`, `empty`, `disabled`, severity, size).
 
-#### Scenario: Одиночный символ — круг
-- **WHEN** значение равно `5`
-- **THEN** у корня есть класс `p-badge-circle`, а `p-badge-dot` нет
+#### Scenario: A single character is a circle
+- **WHEN** the value is `5`
+- **THEN** the root has the class `p-badge-circle` and not `p-badge-dot`
 
-#### Scenario: Пустое значение — точка
-- **WHEN** значение не задано
-- **THEN** у корня есть класс `p-badge-dot`, а в `data-p` есть `empty`
+#### Scenario: An empty value is a dot
+- **WHEN** the value is not set
+- **THEN** the root has the class `p-badge-dot` and `data-p` contains `empty`
 
-#### Scenario: Серьёзность и размер
-- **WHEN** заданы `severity = danger` и `size = xlarge`
-- **THEN** у корня есть классы `p-badge-danger` и `p-badge-xl`
+#### Scenario: Severity and size
+- **WHEN** `severity = danger` and `size = xlarge` are set
+- **THEN** the root has the classes `p-badge-danger` and `p-badge-xl`
 
-#### Scenario: Дополнительный класс
-- **WHEN** задан `style_class = "custom"`
-- **THEN** у корня есть и `custom`, и собственные классы компонента
+#### Scenario: Extra class
+- **WHEN** `style_class = "custom"` is set
+- **THEN** the root has both `custom` and the component's own classes
 
-### Requirement: Скрытие Badge
-При `badge_disabled = true` компонент SHALL оставаться в DOM, но не отображаться (`display: none`); при `false` стиль `display` SHALL отсутствовать.
+### Requirement: Badge hiding
+With `badge_disabled = true` the component SHALL stay in the DOM but not be displayed (`display: none`); with `false` the `display` style SHALL be absent.
 
-#### Scenario: Скрытый бейдж
+#### Scenario: Hidden badge
 - **WHEN** `badge_disabled = true`
-- **THEN** у корня стиль `display: none`, а в `data-p` есть `disabled`
+- **THEN** the root has the style `display: none` and `data-p` contains `disabled`
 
 ### Requirement: Pass-through Badge
-`Badge` SHALL принимать `pt` для корневого элемента (дополнительные классы и атрибуты).
+`Badge` SHALL accept `pt` for the root element (extra classes and attributes).
 
-#### Scenario: Класс через pt
-- **WHEN** передан `pt` с классом `custom`
-- **THEN** корень содержит `custom` и собственные классы
+#### Scenario: Class via pt
+- **WHEN** a `pt` with the class `custom` is passed
+- **THEN** the root contains `custom` and the component's own classes
 
-### Requirement: Производительность Badge
-Рендер `Badge` SHALL укладываться в бюджеты, заданные `benches/budgets.toml`, и иметь сценарии на 1 и 1000 экземпляров в `render-bench`.
+### Requirement: Badge performance
+`Badge` rendering SHALL fit within the budgets set by `benches/budgets.toml` and have scenarios for 1 and 1000 instances in `render-bench`.
 
-#### Scenario: Бюджет размера
-- **WHEN** выполняется `cargo xtask wasm-size`
-- **THEN** вклад `case-badge` не превышает бюджет
+#### Scenario: Size budget
+- **WHEN** `cargo xtask wasm-size` is run
+- **THEN** the `case-badge` contribution does not exceed the budget
 
-### Requirement: Стоимость рендера Badge
-Рендер `Badge` со статическими свойствами SHALL NOT создавать сигналов и `Memo` (ни для свойств, ни для состояния), а число аллокаций на экземпляр при SSR SHALL укладываться в бюджет, заданный в `benches` и проверяемый командой бенчмарков. Классы и атрибуты SHALL вычисляться в реактивных замыканиях атрибутов и пересчитываться только при изменении входных свойств.
+### Requirement: Badge rendering cost
+Rendering a `Badge` with static properties SHALL NOT create signals or `Memo` (neither for properties nor for state), and the number of allocations per instance on SSR SHALL fit within the budget set in `benches` and checked by the benchmark command. Classes and attributes SHALL be computed in reactive attribute closures and recomputed only when input properties change.
 
-#### Scenario: Статический Badge
-- **WHEN** рендерится 1000 экземпляров `Badge` со статическими свойствами
-- **THEN** число аллокаций на экземпляр не превышает бюджет `badge`
+#### Scenario: Static Badge
+- **WHEN** 1000 `Badge` instances with static properties are rendered
+- **THEN** the number of allocations per instance does not exceed the `badge` budget
 
-#### Scenario: Реактивный Badge
-- **WHEN** свойство `value` передано сигналом и меняется
-- **THEN** текст и классы бейджа обновляются, а `class` не перезаписывается при изменении свойства, не влияющего на классы
+#### Scenario: Reactive Badge
+- **WHEN** the `value` property is passed as a signal and changes
+- **THEN** the badge text and classes are updated, and `class` is not overwritten when a property that does not affect classes changes
 
-#### Scenario: Поведение не изменилось
-- **WHEN** выполняются тесты спеки `badge` (классы, `data-p`, скрытие, `pt`)
-- **THEN** все они проходят без изменений ожидаемых значений
+#### Scenario: Behavior unchanged
+- **WHEN** the `badge` spec tests (classes, `data-p`, hiding, `pt`) are run
+- **THEN** all of them pass without changes to the expected values
 
-### Requirement: Статический путь отрисовки Badge
-Если все свойства `Badge` статические, он SHALL отрисовываться с готовыми значениями атрибутов и текста, без реактивных замыканий и `RenderEffect` в браузере; если хотя бы одно свойство передано сигналом, SHALL использоваться реактивный путь. Оба пути SHALL давать одинаковую разметку для одинаковых значений, а разметка SHALL быть описана один раз.
+### Requirement: Badge static render path
+If all `Badge` properties are static, it SHALL be rendered with ready-made attribute and text values, without reactive closures and `RenderEffect` in the browser; if at least one property is passed as a signal, the reactive path SHALL be used. Both paths SHALL produce the same markup for the same values, and the markup SHALL be described once.
 
-#### Scenario: Одинаковая разметка
-- **WHEN** один и тот же набор значений передан статически и через сигналы
-- **THEN** HTML обоих вариантов совпадает
+#### Scenario: Same markup
+- **WHEN** the same set of values is passed statically and via signals
+- **THEN** the HTML of both variants matches
 
-#### Scenario: Статический Badge в браузере
-- **WHEN** 1000 статических `Badge` монтируются в браузере
-- **THEN** прирост линейной памяти wasm заметно ниже, чем у реактивного пути (значения записаны в `docs/benchmarks.md`), и `RenderEffect` на атрибуты не создаются
+#### Scenario: Static Badge in the browser
+- **WHEN** 1000 static `Badge` instances are mounted in the browser
+- **THEN** the growth of wasm linear memory is noticeably lower than on the reactive path (values recorded in `docs/benchmarks.md`), and no `RenderEffect`s are created for attributes
 
-#### Scenario: Реактивный Badge
-- **WHEN** хотя бы одно свойство `Badge` передано сигналом и меняется
-- **THEN** текст, классы и `data-p` обновляются
+#### Scenario: Reactive Badge
+- **WHEN** at least one `Badge` property is passed as a signal and changes
+- **THEN** the text, classes and `data-p` are updated

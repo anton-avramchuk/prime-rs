@@ -1,4 +1,4 @@
-//! Разметка TieredMenu (SSR): корень, корневой список, пункты, группы, разделители, `aria-*`, шаблоны, `pt`, режим `popup`.
+//! TieredMenu markup (SSR): root, root list, items, groups, separators, `aria-*`, templates, `pt`, `popup` mode.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -34,7 +34,7 @@ fn markup_has_root_list_and_items() {
         "{html}"
     );
     assert!(html.contains("aria-orientation=\"vertical\"") && html.contains("tabindex=\"0\""), "{html}");
-    assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "File, Users, Quit: скрытый и разделитель не считаются: {html}");
+    assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "File, Users, Quit: hidden and separator items are not counted: {html}");
     assert_eq!(html.matches("role=\"separator\"").count(), 1, "{html}");
     assert!(html.contains("id=\"tm_0\"") && html.contains("id=\"tm_3\"") && html.contains("id=\"tm_4\""), "{html}");
     assert!(!html.contains("Hidden"), "{html}");
@@ -44,9 +44,12 @@ fn markup_has_root_list_and_items() {
 fn groups_carry_aria_and_an_arrow_but_no_submenu_until_opened() {
     let html = render(|| view! { <TieredMenu id="tm" model=model() /> }.to_html());
     assert!(html.contains("aria-haspopup=\"menu\"") && html.contains("aria-expanded=\"false\""), "{html}");
-    assert_eq!(html.matches("aria-haspopup=\"menu\"").count(), 1, "только File — группа: {html}");
+    assert_eq!(html.matches("aria-haspopup=\"menu\"").count(), 1, "only File is a group: {html}");
     assert!(html.contains("p-tieredmenu-submenu-icon"), "{html}");
-    assert!(!html.contains("p-tieredmenu-submenu\"") && !html.contains("Share"), "подменю выводится только у раскрытой группы: {html}");
+    assert!(
+        !html.contains("p-tieredmenu-submenu\"") && !html.contains("Share"),
+        "a submenu is rendered only for an expanded group: {html}"
+    );
 }
 
 #[test]
@@ -62,7 +65,7 @@ fn items_have_state_attributes_and_positions() {
         "{html}"
     );
     assert!(html.contains("aria-label=\"Users\"") && html.contains("aria-label=\"Quit\""), "{html}");
-    assert!(html.contains("p-tieredmenu-item quit"), "класс пункта: {html}");
+    assert!(html.contains("p-tieredmenu-item quit"), "item class: {html}");
 }
 
 #[test]
@@ -78,7 +81,7 @@ fn links_carry_attributes_icons_and_labels() {
         "{html}"
     );
     assert!(html.contains("p-tieredmenu-item-content") && html.contains("class=\"p-tieredmenu-item-label\""), "{html}");
-    assert_eq!(html.matches("p-tieredmenu-item-icon").count(), 1, "значок только у пункта со значком: {html}");
+    assert_eq!(html.matches("p-tieredmenu-item-icon").count(), 1, "icon only on the item that has one: {html}");
 }
 
 #[test]
@@ -142,7 +145,7 @@ fn style_class_style_and_pt() {
         "p-tieredmenu-submenu-icon s",
         "p-tieredmenu-separator sep",
     ] {
-        assert!(html.contains(needle), "нет {needle}: {html}");
+        assert!(html.contains(needle), "missing {needle}: {html}");
     }
 }
 

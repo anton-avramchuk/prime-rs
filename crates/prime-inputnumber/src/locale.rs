@@ -1,36 +1,36 @@
-//! Малая таблица локалей и валют для форматирования чисел (вместо `Intl.NumberFormat` PrimeNG).
+//! Small table of locales and currencies for number formatting (instead of PrimeNG's `Intl.NumberFormat`).
 //!
-//! Данные одинаковы при SSR и в браузере. Поддерживаются локали `en-US`, `en-GB`, `en-IN`, `de-DE`, `fr-FR`, `ja-JP`, `ru-RU`;
-//! неизвестная локаль заменяется на `en-US`.
+//! The data is identical in SSR and in the browser. Supported locales: `en-US`, `en-GB`, `en-IN`, `de-DE`, `fr-FR`, `ja-JP`, `ru-RU`;
+//! an unknown locale falls back to `en-US`.
 
-/// Неразрывный пробел.
+/// Non-breaking space.
 const NBSP: char = '\u{a0}';
-/// Узкий неразрывный пробел.
+/// Narrow non-breaking space.
 const NNBSP: char = '\u{202f}';
 
-/// Группировка разрядов.
+/// Digit grouping.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Grouping {
-    /// Группы по три цифры.
+    /// Groups of three digits.
     Standard,
-    /// Последние три цифры, затем группы по две (`12,34,567`).
+    /// The last three digits, then groups of two (`12,34,567`).
     Indian,
 }
 
-/// Данные локали.
+/// Locale data.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct LocaleData {
-    /// Тег локали.
+    /// Locale tag.
     pub tag: &'static str,
-    /// Десятичный разделитель.
+    /// Decimal separator.
     pub decimal: char,
-    /// Разделитель групп.
+    /// Group separator.
     pub group: char,
-    /// Знак минуса.
+    /// Minus sign.
     pub minus: char,
-    /// Группировка.
+    /// Grouping.
     pub grouping: Grouping,
-    /// Символ валюты стоит после числа (иначе перед ним).
+    /// The currency symbol goes after the number (otherwise before it).
     pub currency_suffix: bool,
 }
 
@@ -44,14 +44,14 @@ const LOCALES: [LocaleData; 7] = [
     LocaleData { tag: "ru-RU", decimal: ',', group: NBSP, minus: '\u{2212}', grouping: Grouping::Standard, currency_suffix: true },
 ];
 
-/// Локаль по умолчанию.
+/// Default locale.
 pub const DEFAULT_LOCALE: &LocaleData = &LOCALES[0];
 
-/// Локаль для вывода без форматирования (`format = false`): `.` и без групп.
+/// Locale for output without formatting (`format = false`): `.` and no groups.
 pub const RAW_LOCALE: LocaleData =
     LocaleData { tag: "raw", decimal: '.', group: '\0', minus: '-', grouping: Grouping::Standard, currency_suffix: false };
 
-/// Выбирает локаль по тегу: точное совпадение, затем по языку, иначе `en-US`.
+/// Picks a locale by tag: exact match, then by language, otherwise `en-US`.
 ///
 /// ```
 /// use prime_inputnumber::resolve_locale;
@@ -75,19 +75,19 @@ pub fn resolve_locale(tag: &str) -> &'static LocaleData {
     }
 }
 
-/// Данные валюты.
+/// Currency data.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Currency {
-    /// Код ISO 4217 в верхнем регистре.
+    /// ISO 4217 code in upper case.
     pub code: String,
-    /// Символ в данной локали (для неизвестных валют — код).
+    /// Symbol in the given locale (the code for unknown currencies).
     pub symbol: String,
-    /// Число знаков после запятой по умолчанию.
+    /// Default number of decimal places.
     pub digits: u32,
 }
 
 impl Currency {
-    /// Данные валюты для локали; неизвестная валюта показывается кодом и имеет два знака.
+    /// Currency data for a locale; an unknown currency is shown by its code and has two decimal places.
     ///
     /// ```
     /// use prime_inputnumber::{Currency, resolve_locale};
@@ -113,13 +113,13 @@ impl Currency {
         Self { symbol: symbol.to_owned(), digits, code }
     }
 
-    /// Известна ли валюта таблице (иначе символом служит код).
+    /// Whether the currency is known to the table (otherwise the code serves as the symbol).
     pub fn is_known(&self) -> bool {
         self.symbol != self.code
     }
 }
 
-/// Неразрывный пробел между кодом (или символом) валюты и числом.
+/// Non-breaking space between the currency code (or symbol) and the number.
 pub const CURRENCY_GAP: char = NBSP;
 
 #[cfg(test)]

@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('Select', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/select');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-select')).toBeAttached();
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos are rendered with theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(14);
         const label = page.locator('[data-demo=basic] .p-select-label');
         await expect(label).toHaveText('Select a City');
@@ -19,7 +19,7 @@ test.describe('Select', () => {
         expect(color).not.toBe(await page.locator('[data-demo=basic]').evaluate((el) => getComputedStyle(el).color));
     });
 
-    test('клик открывает панель под полем, выбор закрывает её', async ({ page }) => {
+    test('click opens the panel under the field, selection closes it', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-select');
         await root.click();
         const overlay = root.locator('.p-select-overlay');
@@ -37,7 +37,7 @@ test.describe('Select', () => {
         await expect(root.locator('.p-select-label')).toBeFocused();
     });
 
-    test('клавиатура: стрелки, Enter, Escape, набор символов', async ({ page }) => {
+    test('keyboard: arrows, Enter, Escape, type-ahead', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-select');
         const label = root.locator('.p-select-label');
         await label.focus();
@@ -63,7 +63,7 @@ test.describe('Select', () => {
         await expect(page.getByTestId('echo')).toHaveText('PRS');
     });
 
-    test('клик снаружи закрывает панель', async ({ page }) => {
+    test('click outside closes the panel', async ({ page }) => {
         const root = page.locator('[data-demo=basic] .p-select');
         await root.click();
         await expect(root.locator('.p-select-overlay')).toBeVisible();
@@ -71,7 +71,7 @@ test.describe('Select', () => {
         await expect(root.locator('.p-select-overlay')).toHaveCount(0);
     });
 
-    test('поиск, группы, галочка и очистка', async ({ page }) => {
+    test('search, groups, checkmark and clear', async ({ page }) => {
         const filter = page.locator('[data-demo=filter] .p-select');
         await filter.scrollIntoViewIfNeeded();
         await filter.click();
@@ -108,7 +108,7 @@ test.describe('Select', () => {
         await expect(clearable.locator('.p-select-overlay')).toHaveCount(0);
     });
 
-    test('disabled, loading, invalid, размеры, шаблон', async ({ page }) => {
+    test('disabled, loading, invalid, sizes, template', async ({ page }) => {
         for (const demo of ['disabled', 'loadingstate']) {
             const root = page.locator(`[data-demo=${demo}] .p-select`);
             await root.scrollIntoViewIfNeeded();
@@ -136,7 +136,7 @@ test.describe('Select', () => {
         await expect(template.locator('.p-select-label b')).toHaveText('BR');
     });
 
-    test('floatlabel: метка в обёртке и поднимается при вводе', async ({ page }) => {
+    test('floatlabel: label in a wrapper and rises on input', async ({ page }) => {
         await page.waitForLoadState('networkidle');
         const demo = page.locator('[data-demo=floatlabel]');
         await expect(demo.locator('.p-floatlabel.p-floatlabel-over .p-select')).toHaveCount(1);
@@ -147,7 +147,7 @@ test.describe('Select', () => {
         await expect.poll(async () => (await label.boundingBox())!.y).toBeLessThan(before);
     });
 
-    test('iftalabel: метка в обёртке над значением', async ({ page }) => {
+    test('iftalabel: label in a wrapper above the value', async ({ page }) => {
         const demo = page.locator('[data-demo=iftalabel]');
         await expect(demo.locator('.p-iftalabel .p-select')).toHaveCount(1);
         const label = demo.locator('.p-iftalabel > label');

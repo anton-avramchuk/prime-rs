@@ -1,7 +1,7 @@
-//! Статический CSS темы Aura, полученный из токенов и стилей PrimeNG командой `cargo xtask gen-theme`.
+//! Static CSS of the Aura theme, produced from PrimeNG tokens and styles by `cargo xtask gen-theme`.
 //!
-//! Базовый CSS (переменные `--p-*`, палитры, глобальные стили) подключается всегда, CSS компонентов — только
-//! для включённых feature-флагов, поэтому приложение не загружает стили неиспользуемых компонентов.
+//! The base CSS (`--p-*` variables, palettes, global styles) is always included; component CSS only
+//! for enabled feature flags, so an application does not load styles of unused components.
 //!
 //! ```
 //! let css = prime_theme::stylesheet(&[]);
@@ -10,18 +10,18 @@
 
 mod generated;
 
-/// Базовый CSS: переменные пресета, палитры и глобальные стили.
+/// Base CSS: preset variables, palettes and global styles.
 pub const BASE: &str = include_str!("../css/base.css");
 
-/// Селектор тёмного режима, с которым сгенерирован CSS (`dark_mode_selector` в `upstream.toml`).
+/// Dark mode selector the CSS was generated with (`dark_mode_selector` in `upstream.toml`).
 pub const DARK_MODE_SELECTOR: &str = ".p-dark";
 
-/// CSS компонента по имени каталога PrimeNG (`button`); `None`, если его feature не включён.
+/// Component CSS by PrimeNG directory name (`button`); `None` if its feature is not enabled.
 pub fn component(name: &str) -> Option<&'static str> {
     generated::COMPONENTS.iter().find(|(n, _)| *n == name).map(|(_, css)| *css)
 }
 
-/// Базовый CSS и CSS перечисленных компонентов одной строкой; неизвестные и не включённые имена пропускаются.
+/// The base CSS and the CSS of the listed components as one string; unknown and not enabled names are skipped.
 pub fn stylesheet(components: &[&str]) -> String {
     let mut out = String::from(BASE);
     for name in components {

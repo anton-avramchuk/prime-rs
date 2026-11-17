@@ -1,35 +1,35 @@
 # Fieldset
 
-Порт `p-fieldset` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-fieldset` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-fieldset::Fieldset` | `packages/primeng/src/fieldset/fieldset.ts`, `fieldset/style/fieldsetstyle.ts` |
-| Логика сворачивания | `prime-core::collapsible` (общая с Panel, см. `docs/panel.md`) |
-| CSS | `@primeuix/styles/fieldset`, базовые `p-collapsible-*` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/fieldset/*-doc.ts` (`basic`, `toggleable`, `template`) |
+| Collapsing logic | `prime-core::collapsible` (shared with Panel, see `docs/panel.md`) |
+| CSS | `@primeuix/styles/fieldset`, the base `p-collapsible-*` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/fieldset/*-doc.ts` (`basic`, `toggleable`, `template`) |
 
-Спека: `openspec/specs/fieldset`.
+Spec: `openspec/specs/fieldset`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Корень `<fieldset class="p-fieldset p-component">` с `<legend class="p-fieldset-legend">`; классы `p-fieldset-toggleable`, `p-fieldset-collapsed`, `p-fieldset-legend-label`, `p-fieldset-toggle-button`, `p-fieldset-toggle-icon`, `p-fieldset-content-container`, `p-fieldset-content-wrapper`, `p-fieldset-content`; `data-p="toggleable"` на корне и легенде.
-- При `toggleable` внутри легенды `<button>` с иконкой «плюс»/«минус», подписью и слотом; `aria-controls`, `aria-expanded`, `aria-label` (текст легенды).
-- Область содержимого: `role="region"`, `aria-labelledby` (id кнопки), `aria-hidden`, `tabindex="-1"` при сворачивании; фокусируемые потомки свёрнутой области получают `tabindex="-1"`.
-- Анимация `p-collapsible-enter-active`/`p-collapsible-leave-active`; `on_after_toggle` — по окончании анимации.
+- Root `<fieldset class="p-fieldset p-component">` with `<legend class="p-fieldset-legend">`; classes `p-fieldset-toggleable`, `p-fieldset-collapsed`, `p-fieldset-legend-label`, `p-fieldset-toggle-button`, `p-fieldset-toggle-icon`, `p-fieldset-content-container`, `p-fieldset-content-wrapper`, `p-fieldset-content`; `data-p="toggleable"` on the root and the legend.
+- With `toggleable`, a `<button>` inside the legend with a plus/minus icon, a label and a slot; `aria-controls`, `aria-expanded`, `aria-label` (the legend text).
+- The content region: `role="region"`, `aria-labelledby` (the button id), `aria-hidden`, `tabindex="-1"` when collapsed; focusable descendants of a collapsed region get `tabindex="-1"`.
+- Animation `p-collapsible-enter-active`/`p-collapsible-leave-active`; `on_after_toggle` — when the animation ends.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| `collapsed` — `RwSignal<bool>`; начальное значение без сигнала — `default_collapsed` | Как у Panel (`docs/panel.md`). |
-| Слоты — `ViewFn` (`header_template`, `expand_icon_template`, `collapse_icon_template`) вместо `ng-template` и `<p-header>` | В Leptos нет шаблонов Angular. |
-| Без `toggleable` атрибут `aria-labelledby` у области не выводится | В PrimeNG он указывает на отсутствующую кнопку. |
-| `pt.toggle_icon` у стандартных SVG-иконок применяет только класс | Компоненты иконок не принимают произвольные атрибуты; для слота применяются класс и атрибуты. |
-| Enter/Space обрабатывает нативная `<button>` | Отдельный `keydown` не нужен. |
-| Нет `BlockableUI`, `transitionOptions`, `motionOptions` | Вне объёма change; анимация настраивается CSS темы. |
+| `collapsed` is `RwSignal<bool>`; the initial value without a signal is `default_collapsed` | As for Panel (`docs/panel.md`). |
+| Slots are `ViewFn` (`header_template`, `expand_icon_template`, `collapse_icon_template`) instead of `ng-template` and `<p-header>` | Leptos has no Angular templates. |
+| Without `toggleable` the region has no `aria-labelledby` attribute | In PrimeNG it points to a missing button. |
+| `pt.toggle_icon` applies only the class to the standard SVG icons | Icon components do not accept arbitrary attributes; for a slot the class and the attributes are applied. |
+| Enter/Space are handled by the native `<button>` | A separate `keydown` is not needed. |
+| No `BlockableUI`, `transitionOptions`, `motionOptions` | Outside the scope of the change; the animation is configured by the theme CSS. |
 
-## Производительность
+## Performance
 
-SSR: 57 аллокаций на сворачиваемый Fieldset (бюджет 63); вклад в сырой wasm +220 КБ (бюджет 255 КБ) — основная часть это привязки `web-sys` и обработчики событий.
-Шаблон — как у Panel (`docs/panel.md`).
+SSR: 57 allocations per collapsible Fieldset (budget 63); contribution to raw wasm +220 KB (budget 255 KB) — most of it is the `web-sys` bindings and event handlers.
+Template — as for Panel (`docs/panel.md`).

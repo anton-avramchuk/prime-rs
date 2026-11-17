@@ -1,20 +1,20 @@
-//! Чистая логика ProgressBar: режим, классы и `data-p` (по `progressbarstyle.ts` и `ProgressBar.dataP` PrimeNG).
+//! Pure ProgressBar logic: mode, classes and `data-p` (after PrimeNG `progressbarstyle.ts` and `ProgressBar.dataP`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Режим индикатора.
+/// Indicator mode.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum ProgressBarMode {
-    /// Определённый: ширина по значению (по умолчанию).
+    /// Determinate: width by value (default).
     #[default]
     Determinate,
-    /// Неопределённый: анимация без значения.
+    /// Indeterminate: animation without a value.
     Indeterminate,
 }
 
 impl ProgressBarMode {
-    /// Значение, как в PrimeNG.
+    /// Value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Determinate => "determinate",
@@ -23,14 +23,14 @@ impl ProgressBarMode {
     }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct ProgressBarState {
-    /// Режим.
+    /// Mode.
     pub mode: ProgressBarMode,
 }
 
-/// Добавляет классы корня в порядке `progressbarstyle.ts`.
+/// Adds the root classes in the order of `progressbarstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &ProgressBarState) {
     cn.add("p-progressbar p-component").add(match s.mode {
         ProgressBarMode::Determinate => "p-progressbar-determinate",
@@ -38,7 +38,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &ProgressBarState) {
     });
 }
 
-/// Значение `data-p`: `determinate` или `indeterminate`.
+/// Value of `data-p`: `determinate` or `indeterminate`.
 pub fn data_p(s: &ProgressBarState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(s.mode.as_str());

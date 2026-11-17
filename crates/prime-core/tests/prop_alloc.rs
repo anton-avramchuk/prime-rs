@@ -1,4 +1,4 @@
-//! Статический `Prop` не создаёт записей в арене и не аллоцирует; сигнал — аллоцирует.
+//! A static `Prop` creates no arena entries and does not allocate; a signal does.
 
 use leptos::prelude::*;
 use prime_core::{OptProp, Prop, Size, all_static};
@@ -22,12 +22,12 @@ fn static_props_do_not_allocate_signals_do() {
         let static_blocks = blocks() - before;
         assert_eq!(read, (true, false, Some(Size::Small), None));
         assert!(all);
-        assert_eq!(static_blocks, 0, "статические свойства и проверка all_static! не должны аллоцировать");
+        assert_eq!(static_blocks, 0, "static properties and the all_static! check must not allocate");
 
         let before = blocks();
         let sig = RwSignal::new(true);
         let live: Prop<bool> = sig.into();
         assert!(live.get());
-        assert!(blocks() - before > 0, "контрольный случай: сигнал аллоцирует");
+        assert!(blocks() - before > 0, "control case: a signal allocates");
     });
 }

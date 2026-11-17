@@ -1,32 +1,32 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `steps` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился и что есть классы `p-steps*`
+- [x] 1.1 Add `steps` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of other components did not change and that the `p-steps*` classes are present
 
-## 2. Крейт `prime-steps`
+## 2. Crate `prime-steps`
 
-- [x] 2.1 `state.rs` (классы, отключённость, `tabindex`, `aria-disabled`, исход клика, целевой индекс клавиши, клавиши активации) с табличными тестами
-- [x] 2.2 Компонент `Steps`, `StepsItem`, `StepsCommand`, `StepsPt`: корень, список, пункты, номера и подписи, SSR-тесты, rustdoc
-- [x] 2.3 Клик: `readonly`, отключённые, `on_active_index_change`, `active_index_signal`, `command` с индексом, отмена перехода без `url`
-- [x] 2.4 Клавиатура: ←/→/`Home`/`End`, roving `tabindex`, `Tab`, `Enter`/`Space`
-- [x] 2.5 Браузерные `tests/web.rs` (один последовательный тест)
+- [x] 2.1 `state.rs` (classes, disabled state, `tabindex`, `aria-disabled`, click outcome, key target index, activation keys) with table-driven tests
+- [x] 2.2 `Steps`, `StepsItem`, `StepsCommand`, `StepsPt` component: root, list, items, numbers and labels, SSR tests, rustdoc
+- [x] 2.3 Click: `readonly`, disabled items, `on_active_index_change`, `active_index_signal`, `command` with the index, navigation cancelled without `url`
+- [x] 2.4 Keyboard: ←/→/`Home`/`End`, roving `tabindex`, `Tab`, `Enter`/`Space`
+- [x] 2.5 Browser `tests/web.rs` (one sequential test)
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/steps` (`basic`, `controlled`, `interactive`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `steps.spec.ts` (стили, клик, клавиши, кнопки управляемой демонстрации); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test steps`
+- [x] 3.1 `/steps` page (`basic`, `controlled`, `interactive`), menu, route, `stylesheet(&[..])`, the crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `steps.spec.ts` (styles, click, keys, buttons of the controlled demo); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test steps`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-steps` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`; замер wasm — в фоне, с отдельным файлом бюджетов)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-steps` and budgets (first `cargo bench -p render-bench --bench alloc`; wasm measurement — in the background, with a separate budgets file)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/steps.md` (отличия от PrimeNG, что не проверялось); `prime-steps` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с исключениями CI и `--all-features` (и для wasm-цели), тесты (SSR по одному: `--exact`; эффекты только под `cfg(wasm32)`), deny, machete, `openspec validate port-steps`; CI `dev` зелёный
+- [x] 5.1 `docs/steps.md` (differences from PrimeNG, what was not verified); `prime-steps` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with CI exclusions and `--all-features` (and for the wasm target), tests (SSR one by one: `--exact`; effects only under `cfg(wasm32)`), deny, machete, `openspec validate port-steps`; CI `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Следующее: ContextMenu.
+- Archive after CI.
+- Next: ContextMenu.

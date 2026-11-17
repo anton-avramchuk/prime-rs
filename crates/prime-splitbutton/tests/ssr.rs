@@ -1,4 +1,4 @@
-//! Разметка SplitButton (SSR): состав, модификаторы, наследование свойств кнопками, `content`, доступность, блокировки, `pt`.
+//! SplitButton markup (SSR): composition, modifiers, property inheritance by the buttons, `content`, accessibility, disabling, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -15,13 +15,13 @@ fn items() -> Vec<MenuItem> {
     vec![MenuItem::new().label("Update"), MenuItem::new().label("Delete")]
 }
 
-/// Открывающий тег первой кнопки с заданным классом.
+/// Opening tag of the first button with the given class.
 fn button_tag<'a>(html: &'a str, class: &str) -> &'a str {
     let at = html
         .split("<button")
         .skip(1)
         .find(|b| b.split('>').next().unwrap().contains(class))
-        .unwrap_or_else(|| panic!("нет {class}: {html}"));
+        .unwrap_or_else(|| panic!("no {class}: {html}"));
     at.split('>').next().unwrap()
 }
 
@@ -40,8 +40,8 @@ fn markup_has_root_two_buttons_and_a_closed_menu() {
     let dropdown = button_tag(&html, "p-splitbutton-dropdown");
     assert!(dropdown.contains("p-button-icon-only") && dropdown.contains("aria-haspopup=\"true\""), "{dropdown}");
     assert!(dropdown.contains("aria-expanded=\"false\"") && dropdown.contains("aria-controls=\"pn_id_"), "{dropdown}");
-    assert!(html.contains("<svg"), "стрелка по умолчанию: {html}");
-    assert!(!html.contains("p-menu-overlay") && !html.contains("Update"), "меню закрыто, панели нет: {html}");
+    assert!(html.contains("<svg"), "default arrow: {html}");
+    assert!(!html.contains("p-menu-overlay") && !html.contains("Update"), "menu is closed, no panel: {html}");
 }
 
 #[test]
@@ -109,7 +109,7 @@ fn aria_labels_tabindex_and_custom_icons() {
     assert!(button_tag(&html, "p-splitbutton-button").contains("tabindex=\"3\""), "{html}");
     assert!(button_tag(&html, "p-splitbutton-dropdown").contains("aria-label=\"More\""), "{html}");
     assert!(html.contains("class=\"cog\"") && html.contains("class=\"chk\""), "{html}");
-    assert!(!html.contains("<svg"), "обе иконки заменены: {html}");
+    assert!(!html.contains("<svg"), "both icons replaced: {html}");
 }
 
 #[test]
@@ -118,7 +118,7 @@ fn content_replaces_the_label() {
         view! { <SplitButton label="Ignored" model=items() content=ViewFn::from(|| view! { <b class="logo">"PrimeNG"</b> }) /> }.to_html()
     });
     assert!(html.contains("class=\"logo\"") && html.contains("PrimeNG"), "{html}");
-    assert!(!html.contains("p-button-label"), "метки нет: {html}");
+    assert!(!html.contains("p-button-label"), "no label: {html}");
 }
 
 #[test]

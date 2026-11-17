@@ -1,53 +1,53 @@
 # collapsible Specification
 
 ## Purpose
-TBD - created by archiving change port-panel. Update Purpose after archive.
+TBD - created by archiving change port-panel. Update Purpose after archiving.
 
 ## Requirements
 
-### Requirement: Состояние сворачивания
-Общая логика сворачивания в `prime-core` SHALL хранить флаг `collapsed`, принимая необязательный внешний `RwSignal<bool>` (двусторонняя привязка) либо начальное значение для внутреннего состояния. Переключение SHALL записывать новое значение во внешний сигнал, если он задан.
+### Requirement: Collapse state
+The shared collapse logic in `prime-core` SHALL keep a `collapsed` flag, accepting an optional external `RwSignal<bool>` (a two-way binding) or an initial value for the internal state. Toggling SHALL write the new value to the external signal, if it is set.
 
-#### Scenario: Внешний сигнал
-- **WHEN** передан `RwSignal<bool>` и вызвано переключение
-- **THEN** значение сигнала инвертируется
+#### Scenario: External signal
+- **WHEN** an `RwSignal<bool>` is passed and a toggle is called
+- **THEN** the value of the signal is inverted
 
-#### Scenario: Внутреннее состояние
-- **WHEN** сигнал не передан, начальное значение `true`
-- **THEN** состояние свёрнуто, переключение разворачивает его
+#### Scenario: Internal state
+- **WHEN** no signal is passed and the initial value is `true`
+- **THEN** the state is collapsed, and toggling expands it
 
-### Requirement: Атрибуты ARIA сворачиваемой области
-Логика SHALL порождать по базовому `id` производные идентификаторы (заголовка, области содержимого) и значения атрибутов: `aria-expanded` и `aria-controls` для переключателя; `role="region"`, `aria-labelledby`, `aria-hidden` и `tabindex="-1"` (только при свёрнутом) для области. Значения SHALL быть одинаковыми при SSR и на клиенте.
+### Requirement: ARIA attributes of a collapsible region
+The logic SHALL derive from the base `id` the identifiers (of the header, of the content region) and the attribute values: `aria-expanded` and `aria-controls` for the toggle; `role="region"`, `aria-labelledby`, `aria-hidden` and `tabindex="-1"` (only when collapsed) for the region. The values SHALL be the same during SSR and on the client.
 
-#### Scenario: Развёрнуто
+#### Scenario: Expanded
 - **WHEN** `collapsed = false`
-- **THEN** `aria-expanded="true"`, `aria-hidden="false"`, `tabindex` у области отсутствует
+- **THEN** `aria-expanded="true"`, `aria-hidden="false"`, and the region has no `tabindex`
 
-#### Scenario: Свёрнуто
+#### Scenario: Collapsed
 - **WHEN** `collapsed = true`
 - **THEN** `aria-expanded="false"`, `aria-hidden="true"`, `tabindex="-1"`
 
-### Requirement: Анимация и события сворачивания
-Логика SHALL на клиенте при смене состояния ставить области класс `p-collapsible-enter-active` либо `p-collapsible-leave-active` до события `animationend`, затем снимать его и вызывать обратный вызов завершения. Если анимация не запускается (нет `animationend`, например `prefers-reduced-motion` либо скрытый элемент), завершение SHALL всё равно произойти, чтобы `on_after_toggle` не терялся.
+### Requirement: Animation and events of collapsing
+On the client, when the state changes, the logic SHALL set the region the class `p-collapsible-enter-active` or `p-collapsible-leave-active` until the `animationend` event, then remove it and call the completion callback. If no animation starts (no `animationend`, for example with `prefers-reduced-motion` or a hidden element), the completion SHALL still happen, so that `on_after_toggle` is not lost.
 
-#### Scenario: Завершение без анимации
-- **WHEN** анимация отключена либо длится 0
-- **THEN** обратный вызов завершения вызван, класс не остаётся на элементе
+#### Scenario: Completion without animation
+- **WHEN** the animation is disabled or lasts 0
+- **THEN** the completion callback is called, and the class does not remain on the element
 
-### Requirement: Недоступность скрытого содержимого
-Логика SHALL при смене состояния проставлять `tabindex="-1"` фокусируемым потомкам области при сворачивании и снимать его при разворачивании.
+### Requirement: Unavailability of hidden content
+The logic SHALL, when the state changes, set `tabindex="-1"` on the focusable descendants of the region when collapsing, and remove it when expanding.
 
-#### Scenario: Разворачивание
-- **WHEN** область разворачивается
-- **THEN** у потомков, которым атрибут поставила логика, он снят
+#### Scenario: Expanding
+- **WHEN** the region expands
+- **THEN** the attribute is removed from the descendants to which the logic had set it
 
-### Requirement: Привязка области к производному состоянию
-Логика сворачивания SHALL позволять привязать область к состоянию «свёрнуто», которое вычисляется из другого источника (например, из списка активных значений группы) и не является записываемым сигналом. При смене такого состояния в браузере поведение SHALL совпадать с привязкой к `CollapseState`: анимация классами `p-collapsible-enter-active`/`p-collapsible-leave-active`, итоговое скрытие, `tabindex="-1"` у фокусируемых потомков свёрнутой области, вызов обратного вызова завершения с новым значением. Первое вычисление ничего не анимирует.
+### Requirement: Binding the region to a derived state
+The collapse logic SHALL allow binding the region to a "collapsed" state that is computed from another source (for example, from the list of active values of a group) and is not a writable signal. When such a state changes in the browser, the behaviour SHALL match binding to `CollapseState`: the animation with the classes `p-collapsible-enter-active`/`p-collapsible-leave-active`, the final hiding, `tabindex="-1"` on the focusable descendants of the collapsed region, and a call of the completion callback with the new value. The first computation animates nothing.
 
-#### Scenario: Производное состояние
-- **WHEN** состояние, из которого вычисляется «свёрнуто», меняется
-- **THEN** область анимируется и скрывается или показывается, а обратный вызов получает новое значение
+#### Scenario: Derived state
+- **WHEN** the state from which "collapsed" is computed changes
+- **THEN** the region is animated and hidden or shown, and the callback receives the new value
 
-#### Scenario: Первое значение
-- **WHEN** область привязана к производному состоянию, и оно уже «свёрнуто»
-- **THEN** анимации нет, потомки получают `tabindex="-1"`
+#### Scenario: First value
+- **WHEN** the region is bound to a derived state and it is already "collapsed"
+- **THEN** there is no animation, and the descendants get `tabindex="-1"`

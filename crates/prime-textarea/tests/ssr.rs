@@ -1,4 +1,4 @@
-//! Структура DOM, атрибуты, классы, значение и паритет ветвей Textarea (SSR).
+//! DOM structure, attributes, classes, value and static/reactive parity of Textarea (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

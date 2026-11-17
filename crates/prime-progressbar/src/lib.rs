@@ -1,8 +1,8 @@
-//! ProgressBar — порт `p-progressbar` из PrimeNG 21.1.10.
+//! ProgressBar - port of `p-progressbar` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-progressbar[role=progressbar]` (вместо хоста `<p-progressbar>`); в режиме
-//! `determinate` внутри `div.p-progressbar-value` (ширина по значению) с `div.p-progressbar-label`, в режиме `indeterminate` —
-//! только `div.p-progressbar-value`.
+//! Markup and classes as in PrimeNG: root `div.p-progressbar[role=progressbar]` (instead of the `<p-progressbar>` host); in
+//! `determinate` mode inside it `div.p-progressbar-value` (width by value) with `div.p-progressbar-label`, in `indeterminate` mode -
+//! only `div.p-progressbar-value`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -23,50 +23,50 @@ use std::sync::Arc;
 
 pub use state::{ProgressBarMode, ProgressBarState, data_p, write_classes};
 
-/// Pass-through частей ProgressBar.
+/// Pass-through of the ProgressBar parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ProgressBarPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Полоса (`div.p-progressbar-value`).
+    /// Bar (`div.p-progressbar-value`).
     pub value: Pt,
-    /// Подпись (`div.p-progressbar-label`).
+    /// Label (`div.p-progressbar-label`).
     pub label: Pt,
 }
 
-/// Индикатор выполнения.
+/// Progress indicator.
 ///
-/// Каждое свойство принимает значение или сигнал.
+/// Every property accepts a value or a signal.
 #[component]
 pub fn ProgressBar(
-    /// Значение от 0 до 100.
+    /// Value from 0 to 100.
     #[prop(optional, into)]
     value: OptProp<f64>,
-    /// Режим (по умолчанию `determinate`).
+    /// Mode (`determinate` by default).
     #[prop(optional, into)]
     mode: Prop<ProgressBarMode>,
-    /// Показывать значение в подписи.
+    /// Show the value in the label.
     #[prop(default = true)]
     show_value: bool,
-    /// Единица после значения (по умолчанию `%`).
+    /// Unit after the value (`%` by default).
     #[prop(optional, into)]
     unit: OptProp<String>,
-    /// Цвет полосы (CSS `background`).
+    /// Bar color (CSS `background`).
     #[prop(optional, into)]
     color: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Дополнительный класс полосы.
+    /// Extra class of the bar.
     #[prop(optional, into)]
     value_style_class: OptProp<String>,
-    /// Своё содержимое подписи; получает значение.
+    /// Custom label content; receives the value.
     #[prop(optional, into)]
     content_template: Option<Callback<Option<f64>, AnyView>>,
-    /// Pass-through частей.
+    /// Pass-through of the parts.
     #[prop(optional)]
     pt: Option<ProgressBarPt>,
 ) -> impl IntoView {
@@ -94,7 +94,7 @@ pub fn ProgressBar(
     }
 }
 
-/// Разметка корня ProgressBar: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// ProgressBar root markup: one for the static and reactive branches (only the attribute expressions change).
 macro_rules! progress_markup {
     ($root_class:expr, $root_style:expr, $valuenow:expr, $level:expr, $data:expr, $body:expr, $root_attrs:expr) => {
         view! {
@@ -116,7 +116,7 @@ macro_rules! progress_markup {
 }
 use progress_markup;
 
-/// Замыкание над свойствами экземпляра: клоны `Arc` и указатель на функцию без захвата.
+/// Closure over the instance properties: `Arc` clones and a function pointer without capture.
 fn rx<T>(
     props: &Arc<Props>,
     pt: &Arc<ProgressBarPt>,
@@ -162,7 +162,7 @@ fn root_style(props: &Props, pt: &ProgressBarPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Стиль полосы: ширина и `display: flex` в определённом режиме, цвет в обоих.
+/// Bar style: width and `display: flex` in determinate mode, color in both.
 fn value_style(props: &Props, determinate: bool) -> Option<String> {
     let mut style = String::new();
     if determinate {
@@ -178,7 +178,7 @@ fn value_style(props: &Props, determinate: bool) -> Option<String> {
     (!style.is_empty()).then_some(style)
 }
 
-// `&Cow` нужен, чтобы дёшево клонировать интернированное значение `data-p` в части разметки.
+// `&Cow` is needed to cheaply clone the interned `data-p` value in parts of the markup.
 #[allow(clippy::ptr_arg)]
 fn body_of(props: &Props, pt: &ProgressBarPt, data: &Cow<'static, str>) -> impl IntoView + use<> {
     let determinate = props.mode.get() == ProgressBarMode::Determinate;
@@ -215,7 +215,7 @@ fn body_of(props: &Props, pt: &ProgressBarPt, data: &Cow<'static, str>) -> impl 
     })
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     value: OptProp<f64>,
     mode: Prop<ProgressBarMode>,

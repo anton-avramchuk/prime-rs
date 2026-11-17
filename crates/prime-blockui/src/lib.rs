@@ -1,16 +1,16 @@
-//! BlockUI — порт `p-blockui` из PrimeNG 21.1.10.
+//! BlockUI — port of `p-blockui` from PrimeNG 21.1.10.
 //!
-//! Маска `div.p-blockui.p-blockui-mask` с произвольным содержимым по центру: блокирует весь документ (маска в `body`,
-//! прокрутка страницы заблокирована) либо выбранный элемент (`target`, маска внутри него). Пока `blocked = false`, в DOM
-//! ничего нет; при снятии блокировки играет анимация выхода, затем маска убирается. Маска выводится только в браузере и
-//! до гидратации не отдаётся сервером.
+//! A mask `div.p-blockui.p-blockui-mask` with arbitrary content in the center: it blocks the whole document (the mask is in `body`,
+//! page scrolling is blocked) or a chosen element (`target`, the mask is inside it). While `blocked = false`, nothing is in the DOM;
+//! when the block is lifted, the exit animation plays, then the mask is removed. The mask is rendered only in the browser and
+//! is not sent by the server before hydration.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_blockui::BlockUI;
 //!
 //! let html = view! { <BlockUI blocked=true><span>"Loading"</span></BlockUI> }.to_html();
-//! // на сервере маски нет
+//! // there is no mask on the server
 //! assert!(!html.contains("p-blockui") && !html.contains("Loading"));
 //! ```
 
@@ -35,16 +35,16 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Запасное время выхода: без стилей или при отключённой анимации `animationend` не придёт.
+/// Fallback exit time: without styles or with the animation disabled `animationend` will not arrive.
 #[cfg(target_arch = "wasm32")]
 const LEAVE_FALLBACK: Duration = Duration::from_millis(400);
 
-/// Блокируемый элемент: любой элемент, на который указывает `NodeRef`.
+/// Blocked element: any element that a `NodeRef` points to.
 #[derive(Clone)]
 pub struct BlockTarget(Arc<dyn Fn() -> Option<web_sys::Element> + Send + Sync>);
 
 impl BlockTarget {
-    /// Элемент цели, если он уже в DOM.
+    /// The target element, if it is already in the DOM.
     pub fn resolve(&self) -> Option<web_sys::Element> {
         (self.0)()
     }
@@ -60,19 +60,19 @@ where
     }
 }
 
-/// Состояние, общее для обработчиков маски.
+/// State shared by the mask handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     blocked: Prop<bool>,
     target: Option<BlockTarget>,
-    /// Маска в DOM (пока играет анимация выхода, она ещё в DOM).
+    /// The mask in the DOM (while the exit animation plays, it is still in the DOM).
     rendered: RwSignal<bool>,
-    /// Идёт анимация выхода.
+    /// The exit animation is playing.
     leaving: RwSignal<bool>,
     mask: NodeRef<leptos::html::Div>,
     auto_z_index: OptProp<bool>,
     base_z_index: Prop<i32>,
-    /// Выданный маске слой (он же часть её инлайн-стиля).
+    /// The layer assigned to the mask (also part of its inline style).
     z_index: RwSignal<Option<i32>>,
     scroll_blocked: StoredValue<bool>,
     was_open: StoredValue<bool>,
@@ -83,7 +83,7 @@ struct Core {
 }
 
 impl Core {
-    /// Освобождает слой, блокировку прокрутки и позицию цели.
+    /// Releases the layer, the scroll block and the target position.
     fn release_layer(&self) {
         if let Some(z) = self.z_index.try_update(Option::take).flatten() {
             prime_core::zindex::revert(z);
@@ -103,7 +103,7 @@ impl Core {
         }
     }
 
-    /// Полное освобождение при размонтировании компонента.
+    /// Full release when the component is unmounted.
     fn teardown(&self) {
         self.release_layer();
         #[cfg(target_arch = "wasm32")]
@@ -112,9 +112,9 @@ impl Core {
         }
     }
 
-    /// Маска только что попала в DOM: слой, блокировка прокрутки страницы или `position: relative` цели.
+    /// The mask has just entered the DOM: the layer, the page scroll block or `position: relative` of the target.
     ///
-    /// Повторное включение во время выхода вызывает это снова, пока слой и блокировка ещё удерживаются: второй раз их не берём.
+    /// Re-enabling during the exit calls this again while the layer and the block are still held: they are not taken a second time.
     #[cfg(target_arch = "wasm32")]
     fn opened(&self) {
         if self.auto_z_index.get_untracked().unwrap_or(true) && self.z_index.get_untracked().is_none() {
@@ -140,7 +140,7 @@ impl Core {
         }
     }
 
-    /// Блокировка снята: играет анимация выхода.
+    /// The block is lifted: the exit animation plays.
     #[cfg(target_arch = "wasm32")]
     fn begin_leave(self: &Arc<Self>) {
         self.leaving.set(true);
@@ -150,7 +150,7 @@ impl Core {
         }
     }
 
-    /// Анимация выхода закончилась: маска убирается из DOM, слой и блокировка освобождаются.
+    /// The exit animation has finished: the mask is removed from the DOM, the layer and the block are released.
     #[cfg(target_arch = "wasm32")]
     fn finish_leave(&self) {
         if self.rendered.is_disposed() || !self.leaving.get_untracked() {
@@ -165,33 +165,33 @@ impl Core {
     }
 }
 
-/// Маска, блокирующая документ или выбранный элемент.
+/// Mask that blocks the document or a chosen element.
 ///
-/// Свойства принимают значение или сигнал. Содержимое (`children`) строится заново при каждом показе.
+/// Properties accept a value or a signal. The content (`children`) is rebuilt on each show.
 #[component]
 pub fn BlockUI(
-    /// Включена ли блокировка.
+    /// Whether the block is enabled.
     #[prop(optional, into)]
     blocked: Prop<bool>,
-    /// Блокируемый элемент; без него блокируется документ.
+    /// Blocked element; without it the document is blocked.
     #[prop(optional, into)]
     target: Option<BlockTarget>,
-    /// Выдавать маске слой группы `Modal` (по умолчанию `true`).
+    /// Assign the mask a layer of the `Modal` group (default `true`).
     #[prop(optional, into)]
     auto_z_index: OptProp<bool>,
-    /// Смещение слоя относительно базового значения группы `Modal`.
+    /// Layer offset relative to the base value of the `Modal` group.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Встроенный стиль маски.
+    /// Inline style of the mask.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс маски.
+    /// Extra class of the mask.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through маски.
+    /// Pass-through of the mask.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Содержимое маски (например, индикатор загрузки).
+    /// Mask content (for example a loading indicator).
     #[prop(optional)]
     children: Option<ChildrenFn>,
 ) -> impl IntoView {
@@ -216,20 +216,20 @@ pub fn BlockUI(
         let core = core.clone();
         on_cleanup(move || core.teardown());
     }
-    // Показ, выход и побочные эффекты (слой, прокрутка, позиция цели) — только в браузере.
+    // Showing, exiting and side effects (layer, scroll, target position) — only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let core = core.clone();
         Effect::new(move |_| {
             let shown = core.blocked.get();
-            // Маска попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
+            // The mask enters the DOM after this effect, so we also watch the reference to it.
             let mounted = core.mask.get().is_some();
             let was_open = core.was_open.get_value();
             if shown {
                 if let Some(handle) = core.timer.try_update_value(Option::take).flatten() {
                     handle.clear();
                 }
-                // Повторное включение во время выхода: маска ещё в DOM, возвращаем её в состояние «заблокирована».
+                // Re-enabled during the exit: the mask is still in the DOM, so we return it to the "blocked" state.
                 if core.leaving.get_untracked() {
                     core.leaving.set(false);
                 }
@@ -244,7 +244,7 @@ pub fn BlockUI(
                 core.was_open.set_value(false);
                 core.begin_leave();
             } else if core.rendered.get_untracked() && !core.leaving.get_untracked() {
-                // Выключили, не дождавшись появления маски в DOM: ждать нечего.
+                // Turned off before the mask appeared in the DOM: nothing to wait for.
                 core.rendered.set(false);
             }
         });
@@ -256,7 +256,7 @@ pub fn BlockUI(
         core.rendered
             .get()
             .then(move || {
-                // Цель задана, но её элемента ещё нет: маска не выводится.
+                // A target is set, but its element is not there yet: the mask is not rendered.
                 let mount = match core.target.as_ref() {
                     Some(target) => Some(target.resolve()?),
                     None => None,
@@ -270,14 +270,14 @@ pub fn BlockUI(
     }
 }
 
-/// Свойства, нужные только при выводе маски.
+/// Properties needed only when the mask is rendered.
 struct Parts {
     style: OptProp<String>,
     style_class: OptProp<String>,
     children: Option<ChildrenFn>,
 }
 
-/// Маска с содержимым.
+/// Mask with content.
 fn build_mask(core: &Arc<Core>, pt: &Arc<Pt>, parts: &Arc<Parts>) -> impl IntoView + use<> {
     let document = core.target.is_none();
     let (leaving, z_index, mask_ref) = (core.leaving, core.z_index, core.mask);
@@ -310,7 +310,7 @@ fn build_mask(core: &Arc<Core>, pt: &Arc<Pt>, parts: &Arc<Parts>) -> impl IntoVi
     }
 }
 
-/// `animationend` самой маски (не вложенных элементов) завершает выход.
+/// `animationend` of the mask itself (not of nested elements) completes the exit.
 fn animation_end(core: &Arc<Core>, e: &web_sys::AnimationEvent) {
     #[cfg(target_arch = "wasm32")]
     {

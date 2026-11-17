@@ -1,6 +1,6 @@
 [package]
 name = "prime-progressspinner"
-description = "prime-rs: компонент ProgressSpinner (порт PrimeNG)"
+description = "prime-rs: ProgressSpinner component (port of PrimeNG)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -1,38 +1,38 @@
 # InputText
 
-Порт `pInputText` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of PrimeNG 21.1.10 `pInputText` (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-inputtext::InputText` | `packages/primeng/src/inputtext/inputtext.ts`, `inputtext/style/inputtextstyle.ts` |
-| CSS | `@primeuix/styles/inputtext` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/inputtext/*-doc.ts` (`basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel`) |
+| CSS | `@primeuix/styles/inputtext` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/inputtext/*-doc.ts` (`basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel`) |
 
-Спека: `openspec/specs/inputtext`.
+Spec: `openspec/specs/inputtext`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы `p-inputtext p-component`, `p-filled`, `p-inputtext-sm`/`-lg`, `p-invalid`, `p-variant-filled`, `p-inputtext-fluid` в порядке `inputtextstyle.ts`.
-- `data-p`: `invalid`, `fluid`, `filled` (при варианте `filled`), размер.
-- Вариант: свойство `variant`, иначе `PrimeConfig.input_variant`.
+- Classes `p-inputtext p-component`, `p-filled`, `p-inputtext-sm`/`-lg`, `p-invalid`, `p-variant-filled`, `p-inputtext-fluid` in the order of `inputtextstyle.ts`.
+- `data-p`: `invalid`, `fluid`, `filled` (with the `filled` variant), size.
+- Variant: the `variant` property, otherwise `PrimeConfig.input_variant`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Компонент `<InputText />`, а не директива на `<input>` | В Leptos нет директив на произвольный элемент. Чаще нужные атрибуты `<input>` — явные свойства. |
-| `value: RwSignal<String>` вместо `ngModel` | Двусторонняя привязка без форм-инфраструктуры. |
-| Без `value` поле неконтролируемое, `p-filled` не отслеживается | Статическому полю не нужен сигнал; в PrimeNG `p-filled` влияет только на плавающие подписи. |
-| Нет интеграции с формами и `KeyFilter` | Вне объёма change. |
-| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
+| An `<InputText />` component, not a directive on `<input>` | Leptos has no directives on an arbitrary element. The more commonly needed `<input>` attributes are explicit properties. |
+| `value: RwSignal<String>` instead of `ngModel` | Two-way binding without form infrastructure. |
+| Without `value` the field is uncontrolled, `p-filled` is not tracked | A static field does not need a signal; in PrimeNG `p-filled` affects only floating labels. |
+| No form integration and `KeyFilter` | Out of the change's scope. |
+| The `fluid` property is `OptProp<bool>`: without a value it is taken from the `Fluid` context | Like `hasFluid = fluid() ?? !!pcFluid` in PrimeNG; see `docs/field-wrappers.md`. |
 
-## Модель значения (образец для полей ввода)
+## Value model (a reference for input fields)
 
-- `value` — необязательный `RwSignal<String>`; поле читает его (`prop:value` плюс атрибут `value` для SSR) и пишет в него при `input`, затем вызывает `on_input`.
-- `on_input`/`on_change` получают исходное `web_sys::Event`, `on_focus`/`on_blur` — `FocusEvent`.
-- Статическая ветвь (`all_static!` и нет `value`) не создаёт замыканий и обработчиков значения.
+- `value` is an optional `RwSignal<String>`; the field reads it (`prop:value` plus the `value` attribute for SSR) and writes to it on `input`, then calls `on_input`.
+- `on_input`/`on_change` receive the original `web_sys::Event`, `on_focus`/`on_blur` — `FocusEvent`.
+- The static branch (`all_static!` and no `value`) creates no closures or value handlers.
 
-## Производительность
+## Performance
 
-SSR: 13 аллокаций на экземпляр (бюджет 16); вклад в сырой wasm +175 КБ (бюджет 225 КБ) — основная часть это обработчики событий `web-sys`.
-Шаблон — как у Button (`docs/button.md`).
+SSR: 13 allocations per instance (budget 16); contribution to raw wasm +175 KB (budget 225 KB) — most of it is `web-sys` event handlers.
+The template is the same as for Button (`docs/button.md`).

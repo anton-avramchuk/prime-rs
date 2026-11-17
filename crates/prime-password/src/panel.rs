@@ -1,4 +1,4 @@
-//! Панель-подсказка Password: фазы показа, анимация классами, z-index и выравнивание под полем.
+//! Password hint panel: show phases, class-based animation, z-index and alignment below the field.
 
 use crate::state::Phase;
 use leptos::html;
@@ -10,11 +10,11 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Длительность анимации (`300ms` в блоке `/* For PrimeNG */` темы).
+/// Animation duration (`300ms` in the theme's `/* For PrimeNG */` block).
 #[cfg(target_arch = "wasm32")]
 const TRANSITION: Duration = Duration::from_millis(300);
 
-/// Управление панелью одного экземпляра.
+/// Control of a single instance's panel.
 #[derive(Clone, Copy)]
 pub struct Panel {
     pub phase: RwSignal<Phase>,
@@ -39,21 +39,21 @@ impl Panel {
         }
     }
 
-    /// Показывает панель (если она скрыта или уходит).
+    /// Shows the panel (if it is hidden or leaving).
     pub fn open(&self) {
         if matches!(self.phase.get_untracked(), Phase::Hidden | Phase::Leaving) {
             self.enter();
         }
     }
 
-    /// Скрывает панель (если она показана или появляется).
+    /// Hides the panel (if it is shown or appearing).
     pub fn close(&self) {
         if self.phase.get_untracked().is_visible() {
             self.leave();
         }
     }
 
-    /// Снимает z-index при уничтожении компонента.
+    /// Releases the z-index when the component is destroyed.
     pub fn on_cleanup(&self) {
         let z_index = self.z_index;
         on_cleanup(move || {
@@ -121,7 +121,7 @@ impl Panel {
         );
     }
 
-    /// Выдаёт z-index и выравнивает панель под полем.
+    /// Issues a z-index and aligns the panel below the field.
     #[cfg(target_arch = "wasm32")]
     fn position(&self) {
         let (Some(panel), Some(root)) = (self.panel_ref.get_untracked(), self.root_ref.get_untracked()) else { return };

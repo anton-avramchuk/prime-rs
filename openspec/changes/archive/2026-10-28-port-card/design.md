@@ -2,33 +2,33 @@
 
 ## Context
 
-Требования — в `specs/card`. Исходники PrimeNG 21.1.10: `packages/primeng/src/card/card.ts`, `card/style/cardstyle.ts` (классы `root`, `header`, `body`, `title`, `subtitle`, `content`, `footer`; ещё `caption`, который в шаблоне не используется), демонстрации `apps/showcase/doc/card` (`basic`, `advanced`). Шаблон — `docs/button.md`.
+Requirements are in `specs/card`. PrimeNG 21.1.10 sources: `packages/primeng/src/card/card.ts`, `card/style/cardstyle.ts` (classes `root`, `header`, `body`, `title`, `subtitle`, `content`, `footer`; also `caption`, which is not used in the template), demos `apps/showcase/doc/card` (`basic`, `advanced`). Template — `docs/button.md`.
 
 ## Goals / Non-Goals
 
-**Goals:** Card с теми же блоками, порядком и приоритетом слотов; ветви без `RenderEffect` для статики; бюджеты.
-**Non-Goals:** `BlockableUI`, `unstyled`, `p-header` и `p-footer` как фасеты (в Leptos это слоты `ViewFn`).
+**Goals:** Card with the same blocks, order and slot priority; branches without `RenderEffect` for static; budgets.
+**Non-Goals:** `BlockableUI`, `unstyled`, `p-header` and `p-footer` as facets (in Leptos these are `ViewFn` slots).
 
 ## Decisions
 
-### D1. Слоты — `Option<ViewFn>`
-Четыре слота (`header_template`, `title_template`, `subtitle_template`, `footer_template`) — `Option<ViewFn>`, содержимое — `children`. Имена повторяют шаблоны PrimeNG (`#header`, `#title`, `#subtitle`, `#footer`).
+### D1. Slots — `Option<ViewFn>`
+Four slots (`header_template`, `title_template`, `subtitle_template`, `footer_template`) — `Option<ViewFn>`, content — `children`. The names repeat the PrimeNG templates (`#header`, `#title`, `#subtitle`, `#footer`).
 
-### D2. Статичность слотов
-`ViewFn` и `children` статичны по природе (замыкания отрисовки), поэтому ветвь выбирается по `all_static!(header, subheader, style, style_class)`; блоки считаются функциями `header_block`, `title_block`, `subtitle_block`, `footer_block` с общим результатом `Option<AnyView>`.
+### D2. Slot staticness
+`ViewFn` and `children` are static by nature (render closures), so the branch is chosen by `all_static!(header, subheader, style, style_class)`; the blocks are computed by the functions `header_block`, `title_block`, `subtitle_block`, `footer_block` with a shared result `Option<AnyView>`.
 
-### D3. Корень — `<div>`
-Хост `<p-card>` — деталь Angular; дополнительный `display: block` из `cardstyle.ts` для `<div>` не нужен.
+### D3. Root — `<div>`
+The `<p-card>` host is an Angular detail; the extra `display: block` from `cardstyle.ts` is not needed for `<div>`.
 
 ## Risks / Trade-offs
 
-- [Слоты вычисляются один раз, а не по сигналам] → слоты принимают `ViewFn`, который сам может быть реактивным внутри; реактивны только текстовые свойства.
-- [Расхождение ветвей] → параметризованный тест паритета.
+- [Slots are computed once, not by signals] → slots accept a `ViewFn`, which itself may be reactive inside; only the text properties are reactive.
+- [Branch divergence] → a parameterized parity test.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

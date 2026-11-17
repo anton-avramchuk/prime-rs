@@ -1,60 +1,60 @@
 # carousel Specification
 
 ## Purpose
-Carousel показывает ряд элементов страницами по `num_visible` штук и листает их кнопками, точками, автопрокруткой и свайпом.
+Carousel shows a row of items in pages of `num_visible` items and pages through them with buttons, dots, autoplay and swipe.
 
 ## Requirements
 
-### Requirement: Разметка
-`Carousel` крейта `prime-carousel` SHALL выводить `div.p-carousel.p-component.p-carousel-horizontal|vertical[role=region]` (`id`, `style`, `style_class`, `pt`) с содержимым: `div.p-carousel-header` (если задан `header`), `div.p-carousel-content-container` (+ `content_class`) > `div.p-carousel-content` (`aria-live="polite"`, пока автопрокрутка разрешена, иначе `off`) с кнопкой `p-carousel-prev-button`, окном `div.p-carousel-viewport` (при вертикальной ориентации высота `vertical_view_port_height`, иначе `auto`) и кнопкой `p-carousel-next-button` (обе — при `show_navigators`; текстовые круглые, `p-disabled`, когда листать нельзя, `aria-label` из переводов `aria.prevPageLabel`/`aria.nextPageLabel`; значки — шевроны по ориентации или `previous_icon`/`next_icon`). В окне SHALL лежать `div.p-carousel-item-list` с элементами `div.p-carousel-item[role=group]` (`p-carousel-item-active|start|end`, `data-p-carousel-item-active|start|end`, `aria-hidden`, `aria-label` из `aria.slideNumber`, `aria-roledescription` из `aria.slide`), а в бесконечном режиме — ещё клоны `p-carousel-item-clone` до и после. При `show_indicators` SHALL выводиться `ul.p-carousel-indicator-list` (+ `indicators_content_class`, `indicators_content_style`) с `li.p-carousel-indicator` (`-active`) и `button.p-carousel-indicator-button` (`aria-label` из `aria.pageLabel`, `aria-current="page"` у активной, `tabindex`), затем `div.p-carousel-footer` (если задан `footer`).
+### Requirement: Markup
+The `Carousel` of the `prime-carousel` crate SHALL render `div.p-carousel.p-component.p-carousel-horizontal|vertical[role=region]` (`id`, `style`, `style_class`, `pt`) with the content: `div.p-carousel-header` (if `header` is set), `div.p-carousel-content-container` (+ `content_class`) > `div.p-carousel-content` (`aria-live="polite"` while autoplay is allowed, otherwise `off`) with a `p-carousel-prev-button` button, a `div.p-carousel-viewport` viewport (in vertical orientation the height is `vertical_view_port_height`, otherwise `auto`) and a `p-carousel-next-button` button (both with `show_navigators`; text and round, `p-disabled` when paging is impossible, `aria-label` from the `aria.prevPageLabel`/`aria.nextPageLabel` translations; icons are chevrons by orientation or `previous_icon`/`next_icon`). The viewport SHALL contain `div.p-carousel-item-list` with `div.p-carousel-item[role=group]` items (`p-carousel-item-active|start|end`, `data-p-carousel-item-active|start|end`, `aria-hidden`, `aria-label` from `aria.slideNumber`, `aria-roledescription` from `aria.slide`), and in infinite mode also `p-carousel-item-clone` clones before and after. With `show_indicators` a `ul.p-carousel-indicator-list` SHALL be rendered (+ `indicators_content_class`, `indicators_content_style`) with `li.p-carousel-indicator` (`-active`) and `button.p-carousel-indicator-button` (`aria-label` from `aria.pageLabel`, `aria-current="page"` on the active one, `tabindex`), then `div.p-carousel-footer` (if `footer` is set).
 
-#### Scenario: Состав
-- **WHEN** отрисован `Carousel` из пяти элементов, `num_visible = 2`, `num_scroll = 1`
-- **THEN** выведены пять элементов, четыре точки, обе кнопки, у корня `p-carousel-horizontal`
+#### Scenario: Composition
+- **WHEN** a `Carousel` of five items is rendered, `num_visible = 2`, `num_scroll = 1`
+- **THEN** five items, four dots and both buttons are rendered, the root has `p-carousel-horizontal`
 
-#### Scenario: Без навигаторов и точек
+#### Scenario: Without navigators and dots
 - **WHEN** `show_navigators = false`, `show_indicators = false`
-- **THEN** кнопок и списка точек нет
+- **THEN** there are no buttons and no dot list
 
-### Requirement: Страницы и смещение
-Число страниц SHALL быть `⌈(n − num_visible)/num_scroll⌉ + 1` (0 при пустом значении). Кнопка «вперёд» SHALL быть отключена на последней странице (если не бесконечный режим) и при пустом значении, «назад» — на нулевой. Листание на страницу SHALL сдвигать список на `−num_scroll·страница` элементов (`translate3d` по оси ориентации в процентах `100/num_visible` на элемент) с переходом `transform 500ms ease`. Если элементы делятся на страницы с остатком, последняя страница SHALL показывать последние `num_visible` элементов. Активными SHALL быть элементы от `first_index` до `first_index + num_visible − 1`. При уменьшении числа страниц страница SHALL зажиматься на последней с событием `on_page`.
+### Requirement: Pages and offset
+The page count SHALL be `⌈(n − num_visible)/num_scroll⌉ + 1` (0 for an empty value). The "next" button SHALL be disabled on the last page (unless in infinite mode) and for an empty value, "previous" — on page zero. Paging to a page SHALL shift the list by `−num_scroll·page` items (`translate3d` along the orientation axis in percent `100/num_visible` per item) with a `transform 500ms ease` transition. If the items split into pages with a remainder, the last page SHALL show the last `num_visible` items. The active items SHALL be those from `first_index` to `first_index + num_visible − 1`. When the page count shrinks, the page SHALL be clamped to the last one with an `on_page` event.
 
-#### Scenario: Остаток
-- **WHEN** девять элементов, `num_visible = 3`, `num_scroll = 2`, пользователь листает вперёд до конца
-- **THEN** на последней (четвёртой) странице видны элементы 7–9
+#### Scenario: Remainder
+- **WHEN** nine items, `num_visible = 3`, `num_scroll = 2`, the user pages forward to the end
+- **THEN** on the last (fourth) page items 7–9 are visible
 
-#### Scenario: Границы
-- **WHEN** открыта последняя страница без бесконечного режима
-- **THEN** кнопка «вперёд» имеет `p-disabled`
+#### Scenario: Boundaries
+- **WHEN** the last page is open without infinite mode
+- **THEN** the "next" button has `p-disabled`
 
-### Requirement: Бесконечный режим
-При `circular` и `n ≥ num_visible` SHALL выводиться по `num_visible` клонов начала и конца. Листание вперёд с последней страницы SHALL уходить на клоны и после окончания перехода (`transitionend`) возвращаться без анимации на начало списка, на нулевой странице «назад» — наоборот; кнопки при этом не отключаются. При `n < num_visible` бесконечный режим SHALL не включаться.
+### Requirement: Infinite mode
+With `circular` and `n ≥ num_visible`, `num_visible` clones of the start and of the end SHALL be rendered. Paging forward from the last page SHALL go to the clones and, after the transition ends (`transitionend`), return without animation to the start of the list; on page zero "previous" does the opposite; the buttons are not disabled. With `n < num_visible` infinite mode SHALL NOT be enabled.
 
-#### Scenario: Переход через границу
-- **WHEN** открыта последняя страница бесконечного режима и нажата «вперёд»
-- **THEN** страница становится нулевой, а после окончания перехода список без анимации встаёт на начало
+#### Scenario: Crossing the boundary
+- **WHEN** the last page of infinite mode is open and "next" is pressed
+- **THEN** the page becomes zero, and after the transition ends the list snaps to the start without animation
 
-### Requirement: Автопрокрутка
-При `autoplay_interval > 0` SHALL запускаться таймер: каждые `autoplay_interval` мс SHALL открываться следующая страница, а с последней — нулевая. Любое ручное листание (кнопка, точка, внешнее изменение `page`) SHALL останавливать автопрокрутку навсегда для этого экземпляра. Таймер SHALL сниматься при размонтировании.
+### Requirement: Autoplay
+With `autoplay_interval > 0` a timer SHALL start: every `autoplay_interval` ms the next page SHALL open, and from the last one — page zero. Any manual paging (button, dot, external change of `page`) SHALL stop autoplay for good for this instance. The timer SHALL be cleared on unmount.
 
-#### Scenario: Остановка
-- **WHEN** идёт автопрокрутка и пользователь нажимает «вперёд»
-- **THEN** автопрокрутка останавливается, `aria-live` становится `off`
+#### Scenario: Stopping
+- **WHEN** autoplay is running and the user presses "next"
+- **THEN** autoplay stops, `aria-live` becomes `off`
 
-### Requirement: Адаптивность
-При `responsive_options` SHALL при монтировании и при `resize` окна выбираться последний вариант с `breakpoint ≥ ширина окна` (иначе значения по умолчанию), страница пересчитываться по формуле `⌊страница·старый_шаг/новый_шаг⌋`, клоны перестраиваться, `on_page` вызываться при смене страницы. Ширина каждого элемента SHALL задаваться инлайн-стилем `flex: 1 0 <100/num_visible>%`.
+### Requirement: Responsiveness
+With `responsive_options`, on mount and on window `resize` the last option with `breakpoint ≥ window width` SHALL be selected (otherwise the defaults), the page SHALL be recomputed by the formula `⌊page·old_step/new_step⌋`, clones SHALL be rebuilt, and `on_page` SHALL be called when the page changes. The width of each item SHALL be set by the inline style `flex: 1 0 <100/num_visible>%`.
 
-#### Scenario: Узкое окно
-- **WHEN** окно уже `breakpoint` варианта с `num_visible = 1`
-- **THEN** элементы занимают всю ширину окна, `num_visible` равен 1
+#### Scenario: Narrow window
+- **WHEN** the window is narrower than the `breakpoint` of an option with `num_visible = 1`
+- **THEN** items take the full viewport width, `num_visible` equals 1
 
-### Requirement: Точки, клавиатура и свайп
-Клик по точке SHALL открывать её страницу. У точки с фокусом `tabindex` SHALL быть `0`, у остальных `-1`; ←/→ на списке точек SHALL переносить фокус на соседнюю точку, не выходя за границы. Свайп по окну (touch-события) на расстояние больше 20 px SHALL листать вперёд (влево/вверх) или назад (вправо/вниз); `touchmove` SHALL не прокручивать страницу.
+### Requirement: Dots, keyboard and swipe
+A click on a dot SHALL open its page. The focused dot SHALL have `tabindex` `0`, the others `-1`; ←/→ on the dot list SHALL move focus to the adjacent dot without leaving the bounds. A swipe over the viewport (touch events) of more than 20 px SHALL page forward (left/up) or backward (right/down); `touchmove` SHALL NOT scroll the page.
 
-#### Scenario: Точка
-- **WHEN** нажата третья точка
-- **THEN** открыта третья страница, `on_page(2)`
+#### Scenario: Dot
+- **WHEN** the third dot is pressed
+- **THEN** the third page is open, `on_page(2)`
 
-#### Scenario: Свайп
-- **WHEN** пользователь свайпает влево на 50 px
-- **THEN** открывается следующая страница
+#### Scenario: Swipe
+- **WHEN** the user swipes left by 50 px
+- **THEN** the next page opens

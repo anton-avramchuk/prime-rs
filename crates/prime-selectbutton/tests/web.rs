@@ -1,5 +1,5 @@
-//! Поведение SelectButton в реальном браузере (wasm-bindgen-test): выбор и снятие, `allow_empty`, множественный выбор,
-//! `disabled`, клавиши, события, синхронность `aria-pressed` и реакция на внешние сигналы.
+//! SelectButton behavior in a real browser (wasm-bindgen-test): select and deselect, `allow_empty`, multiple selection,
+//! `disabled`, keys, events, `aria-pressed` synchronization and reaction to external signals.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -21,16 +21,16 @@ fn host() -> HtmlElement {
     el
 }
 
-/// Кнопка с номером `n` (с нуля).
+/// Button number `n` (zero-based).
 fn button(host: &HtmlElement, n: u32) -> HtmlElement {
     host.query_selector(&format!(".p-selectbutton > .p-togglebutton:nth-child({})", n + 1))
         .unwrap()
-        .unwrap_or_else(|| panic!("нет кнопки {n}"))
+        .unwrap_or_else(|| panic!("no button {n}"))
         .dyn_into()
         .unwrap()
 }
 
-/// Строка состояния: по символу на кнопку (`1` — включена).
+/// State string: one character per button (`1` — on).
 fn pressed(host: &HtmlElement) -> String {
     let list = host.query_selector_all(".p-selectbutton > .p-togglebutton").unwrap();
     (0..list.length())
@@ -57,7 +57,7 @@ fn press(el: &HtmlElement, code: &str) {
     el.dispatch_event(&KeyboardEvent::new_with_keyboard_event_init_dict("keydown", &init).unwrap()).unwrap();
 }
 
-/// Журнал событий: `change:<значение>` и `click:<индекс>`.
+/// Event log: `change:<value>` and `click:<index>`.
 fn log() -> (Arc<Mutex<Vec<String>>>, Callback<SelectButtonChange>, Callback<SelectButtonOptionClick>) {
     let log = Arc::new(Mutex::new(Vec::new()));
     let (a, b) = (log.clone(), log.clone());
@@ -120,7 +120,7 @@ async fn allow_empty_false_rejects_and_keeps_button_pressed() {
     button(&host, 1).click();
     leptos::task::tick().await;
     assert_eq!(value.get_untracked().as_deref(), Some("return"));
-    assert_eq!(pressed(&host), "010", "aria-pressed разошёлся со значением");
+    assert_eq!(pressed(&host), "010", "aria-pressed diverged from the value");
     assert!(log.lock().unwrap().is_empty());
     button(&host, 2).click();
     leptos::task::tick().await;
@@ -243,7 +243,7 @@ async fn selecting_keeps_button_elements_and_focus() {
     first.focus().unwrap();
     press(&first, "Space");
     leptos::task::tick().await;
-    assert!(first.is_same_node(Some(&button(&host, 0))), "кнопки пересозданы после выбора");
-    assert!(first.is_same_node(doc().active_element().as_deref()), "фокус потерян после выбора");
+    assert!(first.is_same_node(Some(&button(&host, 0))), "buttons were recreated after selection");
+    assert!(first.is_same_node(doc().active_element().as_deref()), "focus lost after selection");
     host.remove();
 }

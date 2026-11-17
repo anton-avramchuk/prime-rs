@@ -1,4 +1,4 @@
-//! Поведение Accordion в реальном браузере (wasm-bindgen-test): режимы, события, клавиатура, анимация, `tabindex`.
+//! Accordion behaviour in a real browser (wasm-bindgen-test): modes, events, keyboard, animation, `tabindex`.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -144,7 +144,7 @@ async fn events_report_open_and_close_with_the_panel_value() {
     leptos::task::tick().await;
     headers[1].click();
     leptos::task::tick().await;
-    assert_eq!(*log.lock().unwrap(), ["open 1", "close 1"], "закрытие панели 0 при открытии панели 1 событием не сопровождается");
+    assert_eq!(*log.lock().unwrap(), ["open 1", "close 1"], "closing panel 0 when opening panel 1 is not accompanied by an event");
 }
 
 #[wasm_bindgen_test]
@@ -157,7 +157,7 @@ async fn keyboard_toggles_and_navigates_skipping_disabled_and_wrapping() {
     headers[0].focus().unwrap();
     key(&headers[0], "Enter");
     leptos::task::tick().await;
-    assert_eq!(value.get_untracked(), v(&["0"]), "Enter переключает один раз");
+    assert_eq!(value.get_untracked(), v(&["0"]), "Enter toggles once");
     key(&headers[0], "Space");
     leptos::task::tick().await;
     assert!(value.get_untracked().is_empty());
@@ -165,11 +165,11 @@ async fn keyboard_toggles_and_navigates_skipping_disabled_and_wrapping() {
     key(&headers[0], "ArrowDown");
     assert_eq!(active_element().as_ref(), Some(headers[1].as_ref()));
     key(&headers[1], "ArrowDown");
-    assert_eq!(active_element().as_ref(), Some(headers[3].as_ref()), "отключённая панель пропущена");
+    assert_eq!(active_element().as_ref(), Some(headers[3].as_ref()), "the disabled panel is skipped");
     key(&headers[3], "ArrowDown");
-    assert_eq!(active_element().as_ref(), Some(headers[0].as_ref()), "по кругу к первой");
+    assert_eq!(active_element().as_ref(), Some(headers[0].as_ref()), "wraps around to the first");
     key(&headers[0], "ArrowUp");
-    assert_eq!(active_element().as_ref(), Some(headers[3].as_ref()), "по кругу к последней");
+    assert_eq!(active_element().as_ref(), Some(headers[3].as_ref()), "wraps around to the last");
     key(&headers[3], "Home");
     assert_eq!(active_element().as_ref(), Some(headers[0].as_ref()));
     key(&headers[0], "End");
@@ -184,7 +184,7 @@ async fn animation_class_hides_content_and_restores_tabindex() {
     leptos::task::tick().await;
     let motion = all(&host, ".p-motion")[0].clone();
     let inner = all(&host, ".inner")[0].clone();
-    assert_eq!(motion.style().get_property_value("display").unwrap(), "none", "скрыта с первого рендера");
+    assert_eq!(motion.style().get_property_value("display").unwrap(), "none", "hidden from the first render");
     assert_eq!(inner.get_attribute("tabindex").as_deref(), Some("-1"));
 
     all(&host, ".p-accordionheader")[0].click();

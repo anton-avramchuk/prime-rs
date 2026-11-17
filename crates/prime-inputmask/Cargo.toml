@@ -1,6 +1,6 @@
 [package]
 name = "prime-inputmask"
-description = "prime-rs: компонент InputMask (порт PrimeNG)"
+description = "prime-rs: InputMask component (port of PrimeNG)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -21,7 +21,7 @@ prime-icons = { workspace = true, features = ["times"] }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "FocusEvent", "KeyboardEvent", "MouseEvent", "ClipboardEvent", "InputEvent", "HtmlElement", "HtmlInputElement", "Element", "Node", "Window", "Document"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks the client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

@@ -1,41 +1,41 @@
 # SplitButton
 
-Порт `p-splitbutton` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-splitbutton` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-splitbutton::SplitButton`, `SplitButtonPt` | `packages/primeng/src/splitbutton/splitbutton.ts`, `splitbutton/style/splitbuttonstyle.ts` |
-| CSS | `@primeuix/styles/splitbutton` и пресет Aura — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет); кнопки и меню берут стили `button` и `menu` |
-| Демонстрации | `apps/showcase/doc/splitbutton/*-doc.ts` (`basic`, `disabled`, `icons`, `outlined`, `raised`, `raisedtext`, `rounded`, `severity`, `sizes`, `template`, `text`) |
+| CSS | `@primeuix/styles/splitbutton` and the Aura preset — `cargo xtask gen-theme` (no `/* For PrimeNG */` block); buttons and menu take the `button` and `menu` styles |
+| Demos | `apps/showcase/doc/splitbutton/*-doc.ts` (`basic`, `disabled`, `icons`, `outlined`, `raised`, `raisedtext`, `rounded`, `severity`, `sizes`, `template`, `text`) |
 
-Спека: `openspec/specs/splitbutton`.
+Spec: `openspec/specs/splitbutton`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-splitbutton.p-component` (`p-splitbutton-raised`, `-rounded`, `-outlined`, `-text`, `-sm`/`-lg`, `data-p-severity`) > основная кнопка `button.p-button.p-splitbutton-button` > кнопка раскрытия `button.p-button.p-splitbutton-dropdown.p-button-icon-only` > всплывающее меню.
-- `severity`, `text`, `outlined`, `plain`, `size` передаются обеим кнопкам; `raised` и `rounded` действуют классами корня.
-- Клик по основной кнопке: `on_click`, затем закрытие меню. Клик по стрелке: `on_dropdown_click`, затем переключение меню; ↓ и ↑ на стрелке делают то же и отменяют действие по умолчанию.
-- Меню выравнивается по всему компоненту (в PrimeNG `currentTarget` — хост), а не по стрелке; `aria-expanded` стрелки следует за показом меню (`on_menu_show`/`on_menu_hide`), `aria-controls` указывает на меню, `aria-haspopup="true"`.
-- `content` заменяет содержимое основной кнопки; `dropdown_icon` — стрелку; `disabled` блокирует обе кнопки, `button_disabled`/`menu_button_disabled` — по одной.
+- Markup and classes: `div.p-splitbutton.p-component` (`p-splitbutton-raised`, `-rounded`, `-outlined`, `-text`, `-sm`/`-lg`, `data-p-severity`) > main button `button.p-button.p-splitbutton-button` > dropdown button `button.p-button.p-splitbutton-dropdown.p-button-icon-only` > popup menu.
+- `severity`, `text`, `outlined`, `plain`, `size` are passed to both buttons; `raised` and `rounded` act via root classes.
+- Click on the main button: `on_click`, then closing the menu. Click on the arrow: `on_dropdown_click`, then toggling the menu; ↓ and ↑ on the arrow do the same and cancel the default action.
+- The menu is aligned to the whole component (in PrimeNG `currentTarget` is the host), not to the arrow; the arrow `aria-expanded` follows the menu show (`on_menu_show`/`on_menu_hide`), `aria-controls` points to the menu, `aria-haspopup="true"`.
+- `content` replaces the content of the main button; `dropdown_icon` — the arrow; `disabled` disables both buttons, `button_disabled`/`menu_button_disabled` — one each.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Меню — плоский `prime_menu::Menu` с группами, а не `TieredMenu`; демонстрация `nested` не перенесена | `TieredMenu` ещё не портирован (последний компонент волны 4). Когда он появится, внутренний `Menu` заменится без изменения API `SplitButton`. |
-| Кнопка раскрытия нарисована самим `SplitButton`, а не `Button` | `Button` не принимает реактивные `aria-expanded`/`aria-controls`; классы и `data-p` берутся из функций `prime-button`, чтобы не разойтись с ним. Ripple на ней подключается так же, как у `Button`. |
-| Корень — `<div>`, а не хост `<p-splitbutton>` | Хост в Angular — деталь фреймворка. |
-| Значки — `ViewFn` (`icon`, `dropdown_icon`), а не классы `pi pi-…`; `content` — `ViewFn` | Нет PrimeIcons и `ng-template`. |
-| Нет `tooltip`/`tooltipOptions`, `buttonProps`/`menuButtonProps`, `appendTo`, `dir`, `showTransitionOptions`, `hideTransitionOptions`, `motionOptions` | Подсказку можно добавить снаружи директивой `use:tooltip`; меню всегда внутри корня (как у остальных оверлеев проекта); анимация — классы темы. |
-| `button_aria_label`/`expand_aria_label` вместо полей `buttonProps.ariaLabel`/`menuButtonProps.ariaLabel`/`expandAriaLabel` | Плоские строковые свойства. |
-| В демонстрациях значки `pi-check`, `pi-cog` заменены `CheckIcon`, `RefreshIcon`; логотип в `template` — текстом; `reversedkeys` пропущена | В `prime-icons` нет `cog`; в PrimeNG `reversedkeys` — текст про токены темы, не про компонент. |
+| The menu is a flat `prime_menu::Menu` with groups, not `TieredMenu`; the `nested` demo is not ported | `TieredMenu` is not ported yet (the last component of wave 4). When it appears, the inner `Menu` will be replaced without changing the `SplitButton` API. |
+| The dropdown button is drawn by `SplitButton` itself, not by `Button` | `Button` does not accept reactive `aria-expanded`/`aria-controls`; classes and `data-p` are taken from `prime-button` functions so as not to diverge from it. Ripple on it is attached the same way as for `Button`. |
+| The root is a `<div>`, not the `<p-splitbutton>` host | The host in Angular is a framework detail. |
+| Icons are `ViewFn` (`icon`, `dropdown_icon`), not `pi pi-…` classes; `content` is a `ViewFn` | No PrimeIcons and `ng-template`. |
+| No `tooltip`/`tooltipOptions`, `buttonProps`/`menuButtonProps`, `appendTo`, `dir`, `showTransitionOptions`, `hideTransitionOptions`, `motionOptions` | A tooltip can be added from outside with the `use:tooltip` directive; the menu is always inside the root (like the other overlays of the project); animation uses theme classes. |
+| `button_aria_label`/`expand_aria_label` instead of the fields `buttonProps.ariaLabel`/`menuButtonProps.ariaLabel`/`expandAriaLabel` | Flat string properties. |
+| In the demos the icons `pi-check`, `pi-cog` are replaced with `CheckIcon`, `RefreshIcon`; the logo in `template` is text; `reversedkeys` is skipped | `prime-icons` has no `cog`; in PrimeNG `reversedkeys` is text about theme tokens, not about the component. |
 
-## Что не проверялось
+## Not verified
 
-- Раскладка справа налево и сенсорный ввод.
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Положение меню при нехватке места снизу — как у `Menu`, подробности в `docs/menu.md`.
+- Right-to-left layout and touch input.
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behavior was not.
+- Menu position when there is not enough room below — same as `Menu`, details in `docs/menu.md`.
 
-## Производительность
+## Performance
 
-См. `benches/` (`splitbutton-1`, `splitbutton-1000`, `case-splitbutton`) и `benches/*budgets.toml`.
+See `benches/` (`splitbutton-1`, `splitbutton-1000`, `case-splitbutton`) and `benches/*budgets.toml`.

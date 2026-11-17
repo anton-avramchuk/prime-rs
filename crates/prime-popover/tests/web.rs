@@ -1,5 +1,5 @@
-//! Поведение Popover в реальном браузере (wasm-bindgen-test): показ и скрытие, закрытие кликом снаружи и Escape,
-//! смена цели, явная цель, `dismissable`, фокус, `resize`, `z-index`, события.
+//! Popover behaviour in a real browser (wasm-bindgen-test): show and hide, closing on an outside click and Escape,
+//! target change, explicit target, `dismissable`, focus, `resize`, `z-index`, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -26,7 +26,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -48,7 +48,7 @@ fn escape() {
     web_sys::window().unwrap().dispatch_event(&event).unwrap();
 }
 
-/// Две кнопки-триггера, нейтральный блок и панель с полем `autofocus` и текстом.
+/// Two trigger buttons, a neutral block and a panel with an `autofocus` field and text.
 fn mount(host: &HtmlElement, dismissable: bool, events: Events) -> PopoverRef {
     let slot = Arc::new(Mutex::new(None));
     let s = slot.clone();
@@ -99,10 +99,10 @@ async fn click_outside_hides_but_inside_does_not() {
     sleep(20).await;
     q(&host, "#body").click();
     leptos::task::tick().await;
-    assert!(has(&host, ".p-popover"), "клик внутри не закрывает");
+    assert!(has(&host, ".p-popover"), "a click inside does not close");
     q(&host, "#outside").click();
     leptos::task::tick().await;
-    assert!(!has(&host, ".p-popover"), "клик снаружи закрывает");
+    assert!(!has(&host, ".p-popover"), "a click outside closes");
     host.remove();
 }
 
@@ -138,7 +138,7 @@ async fn toggling_from_another_target_keeps_the_panel_open() {
     sleep(20).await;
     q(&host, "#b").click();
     sleep(30).await;
-    assert!(has(&host, ".p-popover"), "панель остаётся у новой цели");
+    assert!(has(&host, ".p-popover"), "the panel stays at the new target");
     q(&host, "#b").click();
     leptos::task::tick().await;
     assert!(!has(&host, ".p-popover"));
@@ -154,7 +154,7 @@ async fn explicit_target_aligns_the_panel_to_it() {
     leptos::task::tick().await;
     let panel = q(&host, ".p-popover");
     let top: f64 = panel.style().get_property_value("top").unwrap().trim_end_matches("px").parse().unwrap();
-    assert!(top >= f64::from(target.offset_top()), "панель под явной целью: {top}");
+    assert!(top >= f64::from(target.offset_top()), "the panel is under the explicit target: {top}");
     op.hide();
     leptos::task::tick().await;
     assert!(!has(&host, ".p-popover"));
@@ -211,7 +211,7 @@ async fn listeners_are_removed_after_hide() {
     escape();
     q(&host, "#outside").click();
     leptos::task::tick().await;
-    assert_eq!(*events.lock().unwrap(), ["show", "hide"], "после скрытия слушатели молчат");
+    assert_eq!(*events.lock().unwrap(), ["show", "hide"], "after hiding the listeners are silent");
     host.remove();
 }
 
@@ -248,11 +248,11 @@ async fn scrolling_an_ancestor_of_the_target_hides_the_panel() {
     assert!(has(&host, ".p-popover"));
     scroller.dispatch_event(&Event::new("scroll").unwrap()).unwrap();
     leptos::task::tick().await;
-    assert!(!has(&host, ".p-popover"), "прокрутка предка цели скрывает панель");
+    assert!(!has(&host, ".p-popover"), "a scroll of the target's ancestor hides the panel");
     host.remove();
 }
 
-/// Сценарии идут по очереди: слушатели `window` у панелей общие, и параллельные тесты закрывали бы чужие панели.
+/// The scenarios run in turn: the panels' `window` listeners are shared, and parallel tests would close other tests' panels.
 #[wasm_bindgen_test]
 async fn popover_behaviour() {
     toggle_shows_and_hides_the_dialog().await;

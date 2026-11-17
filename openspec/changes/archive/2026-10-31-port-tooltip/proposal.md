@@ -2,27 +2,27 @@
 
 ## Why
 
-Tooltip — седьмой компонент волны 3 и единственный в ней, который в PrimeNG не компонент, а директива `pTooltip` на произвольном элементе (`<input pTooltip="Enter your username">`). Нужен простой способ подсказки у любого элемента, не меняющий разметку страницы; кроме того, подсказка — следующий потребитель позиционирования и слоёв (`ZGroup::Tooltip`) после `Popover` и `Select`.
+Tooltip is the seventh component of wave 3 and the only one in it that is not a component in PrimeNG but the `pTooltip` directive on an arbitrary element (`<input pTooltip="Enter your username">`). We need a simple way to attach a hint to any element without changing the page markup; besides, the tooltip is the next consumer of positioning and layers (`ZGroup::Tooltip`) after `Popover` and `Select`.
 
 ## What Changes
 
-- Новый крейт `prime-tooltip` (порт директивы `Tooltip` из PrimeNG 21.1.10). В Leptos аналог `pTooltip` — `use:`-директива: `<input use:tooltip=TooltipOptions::text("Enter your username") />`. Директива — функция `tooltip(el: web_sys::Element, options: TooltipOptions)`, которая вешает слушатели на элемент и создаёт подсказку при показе; разметка страницы не меняется (никаких обёрток).
-- `TooltipOptions` (строитель): `content` (`TooltipContent`: `Text(Prop<String>)`, `Html(String)` — аналог `[escape]="false"`, `View(ViewFn)` — аналог шаблона), `position` (`TooltipPosition`: `Right` по умолчанию, `Left`, `Top`, `Bottom`), `event` (`TooltipEvent`: `Hover` по умолчанию, `Focus`, `Both`), `show_delay`, `hide_delay`, `life` (мс), `position_top`, `position_left` (смещения, px), `auto_hide` (да), `fit_content` (да), `hide_on_escape` (да), `show_on_ellipsis` (нет), `disabled` (`Prop<bool>`), `position_style`, `style_class`, `z_index` (`None` — автоматически по `ZGroup::Tooltip`), `id`.
-- Подсказка — `div.p-tooltip.p-component.p-tooltip-<position>[role=tooltip]` в `body` с `div.p-tooltip-arrow` и `div.p-tooltip-text`. Позиция считается так же, как в PrimeNG: основная сторона, а при выходе за экран — следующие по приоритету (для `top`: top → bottom → right → left и т. д.); стрелка сдвигается к центру элемента.
-- Поведение: `Hover` — показ на `mouseenter` и касание, скрытие на `mouseleave`, `click` и конец касания; `Focus` — на `focus`/`blur` самого элемента (или поля внутри обёртки `p-inputwrapper`); `show_delay`/`hide_delay`/`life`; при `auto_hide` выключенном подсказку можно навести мышью, и она скрывается при уходе курсора; `Escape`, изменение размера окна и прокрутка предка скрывают подсказку; при смене текста активная подсказка обновляется и пересчитывается; при `show_on_ellipsis` показ только если текст элемента обрезан.
-- Страница showcase `/tooltip` с демонстрациями `position`, `event`, `delay`, `autohide`, `options`, `custom`; e2e с настоящей мышью и клавиатурой; бенчмарки и бюджеты; `docs/tooltip.md`.
-- Стили: `tooltip` добавляется в `theme.components`.
-- **Не входит:** `appendTo` (подсказка всегда в `body`; `target` и произвольный элемент не поддерживаются), `pTooltipPT` / `pTooltipUnstyled` (без `Bind`/`pt`), задержка 100 мс внутри `p-dialog` (в нашем `Dialog` она не нужна), анимация `fadeIn` как JS-утилита заменена CSS-переходом непрозрачности, демонстрация `accessibility` (текстовая страница).
+- New crate `prime-tooltip` (a port of the `Tooltip` directive from PrimeNG 21.1.10). In Leptos the analog of `pTooltip` is a `use:` directive: `<input use:tooltip=TooltipOptions::text("Enter your username") />`. The directive is a function `tooltip(el: web_sys::Element, options: TooltipOptions)` that attaches listeners to the element and creates the tooltip on show; the page markup does not change (no wrappers).
+- `TooltipOptions` (builder): `content` (`TooltipContent`: `Text(Prop<String>)`, `Html(String)` is the analog of `[escape]="false"`, `View(ViewFn)` is the analog of a template), `position` (`TooltipPosition`: `Right` by default, `Left`, `Top`, `Bottom`), `event` (`TooltipEvent`: `Hover` by default, `Focus`, `Both`), `show_delay`, `hide_delay`, `life` (ms), `position_top`, `position_left` (offsets, px), `auto_hide` (yes), `fit_content` (yes), `hide_on_escape` (yes), `show_on_ellipsis` (no), `disabled` (`Prop<bool>`), `position_style`, `style_class`, `z_index` (`None` means automatic by `ZGroup::Tooltip`), `id`.
+- The tooltip is `div.p-tooltip.p-component.p-tooltip-<position>[role=tooltip]` in `body` with `div.p-tooltip-arrow` and `div.p-tooltip-text`. The position is computed as in PrimeNG: the primary side, and when it goes off screen the next ones by priority (for `top`: top → bottom → right → left, etc.); the arrow shifts toward the element center.
+- Behavior: `Hover` shows on `mouseenter` and touch, hides on `mouseleave`, `click` and touch end; `Focus` on `focus`/`blur` of the element itself (or of the input inside a `p-inputwrapper` wrapper); `show_delay`/`hide_delay`/`life`; with `auto_hide` off the tooltip can be hovered with the mouse and it hides when the cursor leaves; `Escape`, window resize and ancestor scroll hide the tooltip; when the text changes the active tooltip is updated and recomputed; with `show_on_ellipsis` it is shown only if the element text is clipped.
+- A showcase page `/tooltip` with the `position`, `event`, `delay`, `autohide`, `options`, `custom` demos; e2e with a real mouse and keyboard; benchmarks and budgets; `docs/tooltip.md`.
+- Styles: `tooltip` is added to `theme.components`.
+- **Out of scope:** `appendTo` (the tooltip is always in `body`; `target` and an arbitrary element are not supported), `pTooltipPT` / `pTooltipUnstyled` (no `Bind`/`pt`), the 100 ms delay inside `p-dialog` (not needed in our `Dialog`), the `fadeIn` animation as a JS utility is replaced with a CSS opacity transition, the `accessibility` demo (a text page).
 
 ## Capabilities
 
 ### New Capabilities
-- `tooltip`: подсказка у элемента с показом по наведению или фокусу, задержками, выбором стороны и автоматическим переносом при нехватке места.
+- `tooltip`: a tooltip on an element shown on hover or focus, with delays, side selection and automatic fallback when there is not enough room.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-tooltip` (`publish = false`); зависимости: `prime-core`, `prime-dom`, `web-sys`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (браузерный job, три места).
+- New crate `crates/prime-tooltip` (`publish = false`); dependencies: `prime-core`, `prime-dom`, `web-sys`.
+- Changed: workspace `Cargo.toml`, `upstream.toml`, `showcase`, `benches/*`, `e2e/tests`, `docs/`, `ci.yml` (browser job, three places).

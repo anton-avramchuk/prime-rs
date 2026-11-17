@@ -2,54 +2,54 @@
 
 ## Context
 
-Требования — в `specs/menubar`. Исходники PrimeNG 21.1.10: `menubar/menubar.ts` (`MenubarSub` — уровень, `Menubar` — состояние, мобильная кнопка, автоскрытие), `menubar/style/menubarstyle.ts`; демонстрации `apps/showcase/doc/menubar/{basic,command,template}-doc.ts` (`router-doc` не переносится). Образцы — `prime-tieredmenu` и `prime-contextmenu` (модель, путь, фокус, поиск, сторона подменю, слушатели).
+The requirements are in `specs/menubar`. PrimeNG 21.1.10 sources: `menubar/menubar.ts` (`MenubarSub` — a level, `Menubar` — the state, the mobile button, auto-hide), `menubar/style/menubarstyle.ts`; demos `apps/showcase/doc/menubar/{basic,command,template}-doc.ts` (`router-doc` is not ported). Templates — `prime-tieredmenu` and `prime-contextmenu` (the model, the path, focus, search, the side of the submenu, listeners).
 
-Отличия от `TieredMenu`/`ContextMenu` по исходнику:
-- Корень горизонтальный (`role=menubar`): ← → ходят по корню, ↓ раскрывает группу (в `TieredMenu` ↓ — следующий пункт).
-- `mobileActive`, кнопка с `aria-expanded`, слой на корневом списке при открытии, возврат фокуса на кнопку; `queryMatches` по `breakpoint` даёт `p-menubar-mobile`.
-- `autoHide`/`autoHideDelay` — закрытие по `mouseleave` с задержкой (`Subject` с `debounce`).
-- Слушатели клика вне и `resize` висят, пока путь не пуст; клик вне при открытой мобильной панели закрывает её.
-- Слоты `start`/`end`.
+Differences from `TieredMenu`/`ContextMenu` according to the source:
+- The root is horizontal (`role=menubar`): ← → move along the root, ↓ opens the group (in `TieredMenu` ↓ is the next item).
+- `mobileActive`, the button with `aria-expanded`, the layer on the root list when opened, return of the focus to the button; `queryMatches` by `breakpoint` gives `p-menubar-mobile`.
+- `autoHide`/`autoHideDelay` — closing on `mouseleave` with a delay (`Subject` with `debounce`).
+- The click-outside and `resize` listeners hang while the path is not empty; a click outside while the mobile panel is open closes it.
+- The slots `start`/`end`.
 
 ## Goals / Non-Goals
 
-**Goals:** тот же DOM, классы, `aria-*`, клавиши и поведение.
+**Goals:** the same DOM, classes, `aria-*`, keys and behaviour.
 
-**Non-Goals:** `routerLink`, `Tooltip`/`Badge`, HTML-метки, `Ripple`, `Bind`, `pTemplate`, `appendTo`, анимации.
+**Non-Goals:** `routerLink`, `Tooltip`/`Badge`, HTML labels, `Ripple`, `Bind`, `pTemplate`, `appendTo`, animations.
 
 ## Decisions
 
-### D1. Модель
-Переиспользуем `Tree`/`State` из `prime-tieredmenu`. Различия корня (← → и ↓) — отдельные методы модели (например `root_arrow_left/right/down`), выбираемые после чтения `onArrowDownKey/onArrowRightKey/onArrowLeftKey` исходника, чтобы не менять поведение `TieredMenu`. Новые функции — с табличными тестами в `prime-tieredmenu`.
+### D1. Model
+We reuse `Tree`/`State` from `prime-tieredmenu`. The differences of the root (← → and ↓) are separate model methods (for example `root_arrow_left/right/down`), chosen after reading the source's `onArrowDownKey/onArrowRightKey/onArrowLeftKey`, so as not to change the behaviour of `TieredMenu`. The new functions get table tests in `prime-tieredmenu`.
 
-### D2. Разметка и состояние
-По образцу `ContextMenu`: `Core` с `state`, `focus`, `sides`, `mobile`, `mobile_active`, поиском; уровни рекурсивной функцией; классы `p-menubar-*`. Корневой список на узком окне скрыт стилями темы, показывается классом `p-menubar-mobile-active`.
+### D2. Markup and state
+Following the sample of `ContextMenu`: `Core` with `state`, `focus`, `sides`, `mobile`, `mobile_active`, the search; the levels by a recursive function; the classes `p-menubar-*`. The root list on a narrow window is hidden by the theme styles, shown by the class `p-menubar-mobile-active`.
 
-### D3. Подменю
-Сторона вложенных подменю — `submenu_side`, как у `TieredMenu`; подменю корня открываются вниз по CSS темы.
+### D3. Submenus
+The side of the nested submenus — `submenu_side`, as in `TieredMenu`; the submenus of the root open downwards by the theme CSS.
 
-### D4. Автоскрытие
-`mouseleave` корня запускает таймер `auto_hide_delay`, `mouseenter` отменяет; таймер в `StoredValue`, сбрасывается при размонтировании (только wasm).
+### D4. Auto-hide
+`mouseleave` of the root starts the timer `auto_hide_delay`, `mouseenter` cancels it; the timer is in `StoredValue`, reset on unmount (wasm only).
 
-### D5. Мобильная кнопка
-`mobile_active` — сигнал; открытие выдаёт слой `Menu` (`zindex::generate`) корневому списку и в следующем тике делает первый показ; закрытие — `hide` и фокус на кнопку (`set_timeout(0)`). Слушатель клика вне различает корневой список и кнопку.
+### D5. Mobile button
+`mobile_active` — a signal; opening issues the layer `Menu` (`zindex::generate`) to the root list and on the next tick makes the first showing; closing — `hide` and the focus on the button (`set_timeout(0)`). The click-outside listener distinguishes the root list and the button.
 
-### D6. Тесты
-SSR: разметка, слоты, кнопка, группы, разделители, `pt`, шаблоны. Браузерные `tests/web.rs` одним последовательным тестом: клик/повторный клик, лист и команда, наведение, `auto_hide`, клик вне, клавиши корня и подменю, поиск, мобильная кнопка (`breakpoint` больше окна), шаблоны, размонтирование. e2e: горизонтальная раскладка темы, подменю под пунктом, клавиатура, мобильная кнопка при узком окне.
+### D6. Tests
+SSR: markup, slots, the button, groups, separators, `pt`, templates. Browser `tests/web.rs` as one sequential test: click/repeated click, a leaf and a command, hovering, `auto_hide`, a click outside, the keys of the root and the submenu, search, the mobile button (`breakpoint` larger than the window), templates, unmounting. e2e: the horizontal layout of the theme, a submenu under the item, the keyboard, the mobile button on a narrow window.
 
-### D7. Демонстрации и бенчмарки
-`basic`, `command` (Toast), `template` (`start`/`end`, свой пункт). Бенч `menubar-1`/`-1000`, `case-menubar`.
+### D7. Demos and benchmarks
+`basic`, `command` (Toast), `template` (`start`/`end`, a custom item). Bench `menubar-1`/`-1000`, `case-menubar`.
 
 ## Risks / Trade-offs
 
-- [Горизонтальная навигация] Расхождение с `TieredMenu` в клавишах корня → отдельные функции модели с тестами, `TieredMenu` не трогаем.
-- [Мобильный режим] Зависит от стилей темы и `matchMedia`; проверяется e2e при узком окне.
-- [Дублирование разметки] Осознанно (как у ContextMenu); вынос — после MegaMenu/PanelMenu.
+- [Horizontal navigation] The divergence from `TieredMenu` in the keys of the root → separate model functions with tests, `TieredMenu` is not touched.
+- [Mobile mode] Depends on the theme styles and `matchMedia`; checked by e2e on a narrow window.
+- [Duplicated markup] Deliberate (as in ContextMenu); extraction — after MegaMenu/PanelMenu.
 
 ## Open Questions
 
-- Применяется ли слой `Menu` к подменю на десктопе (`autoZIndex` в `MenubarSub`) — уточнить по исходнику при apply.
+- Whether the `Menu` layer applies to submenus on desktop (`autoZIndex` in `MenubarSub`) — to be clarified against the source during apply.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.

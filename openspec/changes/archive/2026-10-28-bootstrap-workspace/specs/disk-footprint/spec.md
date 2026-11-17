@@ -1,40 +1,40 @@
 ## ADDED Requirements
 
-### Requirement: Экономные профили сборки
-Профили сборки SHALL быть настроены так, чтобы dev-сборка не содержала полной отладочной информации и использовала быстрый линкер, а инкрементальная компиляция была включена только в dev.
+### Requirement: Economical build profiles
+Build profiles SHALL be configured so that the dev build does not contain full debug information and uses a fast linker, and incremental compilation is enabled only in dev.
 
-#### Scenario: Dev-профиль
-- **WHEN** выполняется `cargo build` в dev-профиле
-- **THEN** отладочная информация ограничена таблицами строк, а инкрементальный кэш создаётся
+#### Scenario: Dev profile
+- **WHEN** `cargo build` is run in the dev profile
+- **THEN** debug information is limited to line tables, and the incremental cache is created
 
-#### Scenario: Release и CI
-- **WHEN** выполняется сборка release или сборка в CI
-- **THEN** инкрементальный кэш не создаётся
+#### Scenario: Release and CI
+- **WHEN** a release build or a CI build is run
+- **THEN** the incremental cache is not created
 
-### Requirement: Команда очистки
-Система SHALL предоставлять команду очистки, удаляющую устаревшие артефакты `target/` (не использовавшиеся дольше заданного срока) и сообщающую освобождённый объём.
+### Requirement: Cleanup command
+The system SHALL provide a cleanup command that removes stale `target/` artifacts (unused for longer than a set period) and reports the freed size.
 
-#### Scenario: Очистка
-- **WHEN** запускается команда очистки
-- **THEN** устаревшие артефакты удаляются, свежие сохраняются, выводится освобождённый объём
+#### Scenario: Cleanup
+- **WHEN** the cleanup command is run
+- **THEN** stale artifacts are removed, fresh ones are kept, the freed size is printed
 
-### Requirement: Ограничение зависимостей
-Внешние зависимости SHALL подключаться с `default-features = false` там, где это возможно, а CI SHALL проверять отсутствие неиспользуемых и запрещённых зависимостей.
+### Requirement: Dependency limits
+External dependencies SHALL be included with `default-features = false` where possible, and CI SHALL check for the absence of unused and forbidden dependencies.
 
-#### Scenario: Запрещённая зависимость
-- **WHEN** в PR добавляется зависимость, нарушающая политику `cargo-deny`
-- **THEN** проверка CI падает
+#### Scenario: Forbidden dependency
+- **WHEN** a PR adds a dependency that violates the `cargo-deny` policy
+- **THEN** the CI check fails
 
-### Requirement: Контроль размера кэша в CI
-CI SHALL удалять устаревшие артефакты перед сохранением кэша и SHALL не превышать заданный лимит размера кэша.
+### Requirement: CI cache size control
+CI SHALL remove stale artifacts before saving the cache and SHALL NOT exceed the set cache size limit.
 
-#### Scenario: Сохранение кэша
-- **WHEN** CI завершает job и сохраняет кэш `target/`
-- **THEN** устаревшие артефакты удалены, а размер кэша не превышает лимит
+#### Scenario: Saving the cache
+- **WHEN** CI finishes a job and saves the `target/` cache
+- **THEN** stale artifacts are removed, and the cache size does not exceed the limit
 
-### Requirement: Документированный общий каталог сборки
-Документация SHALL описывать вынос `CARGO_TARGET_DIR` в общий каталог как рекомендуемый для разработчика способ.
+### Requirement: Documented shared build directory
+The documentation SHALL describe moving `CARGO_TARGET_DIR` to a shared directory as the recommended approach for a developer.
 
-#### Scenario: Чтение документации
-- **WHEN** разработчик открывает раздел о сборке
-- **THEN** он находит инструкцию по `CARGO_TARGET_DIR` для Windows и Linux
+#### Scenario: Reading the documentation
+- **WHEN** a developer opens the build section
+- **THEN** they find instructions for `CARGO_TARGET_DIR` for Windows and Linux

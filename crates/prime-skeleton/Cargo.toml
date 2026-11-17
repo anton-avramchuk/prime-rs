@@ -1,6 +1,6 @@
 [package]
 name = "prime-skeleton"
-description = "prime-rs: компонент Skeleton (порт PrimeNG)"
+description = "prime-rs: Skeleton component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

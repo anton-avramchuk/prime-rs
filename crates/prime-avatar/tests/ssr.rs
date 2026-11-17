@@ -1,4 +1,4 @@
-//! Структура DOM, классы, приоритет блоков, `pt` и паритет ветвей Avatar (SSR).
+//! DOM structure, classes, block priority, `pt` and branch parity of Avatar (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -36,16 +36,16 @@ fn shape_and_size_classes_and_data_p() {
 
 #[test]
 fn image_sets_root_class_and_renders_img() {
-    let html = view! { <Avatar image="/a.png" aria_label="Фото" /> }.to_html();
+    let html = view! { <Avatar image="/a.png" aria_label="Photo" /> }.to_html();
     assert!(html.contains("p-avatar-image"), "{html}");
     assert!(html.contains("<img") && html.contains(r#"src="/a.png""#), "{html}");
-    assert_eq!(html.matches(r#"aria-label="Фото""#).count(), 2, "aria-label на корне и на img: {html}");
+    assert_eq!(html.matches(r#"aria-label="Photo""#).count(), 2, "aria-label on root and on img: {html}");
 }
 
 #[test]
 fn aria_attributes_go_to_the_root() {
-    let html = view! { <Avatar label="P" aria_label="Фото" aria_labelledby="id1" /> }.to_html();
-    assert!(html.contains(r#"aria-label="Фото""#) && html.contains(r#"aria-labelledby="id1""#), "{html}");
+    let html = view! { <Avatar label="P" aria_label="Photo" aria_labelledby="id1" /> }.to_html();
+    assert!(html.contains(r#"aria-label="Photo""#) && html.contains(r#"aria-labelledby="id1""#), "{html}");
 }
 
 #[test]
@@ -62,11 +62,11 @@ fn priority_label_then_icon_then_image() {
 fn children_come_first() {
     let html = view! {
         <Avatar label="P">
-            <i>"перед"</i>
+            <i>"before"</i>
         </Avatar>
     }
     .to_html();
-    assert!(html.find("<i>перед</i>").unwrap() < html.find("p-avatar-label").unwrap(), "{html}");
+    assert!(html.find("<i>before</i>").unwrap() < html.find("p-avatar-label").unwrap(), "{html}");
 }
 
 #[test]
@@ -109,7 +109,7 @@ fn parity_table_static_vs_reactive() {
     let cases: Vec<Case> = vec![
         (None, None, AvatarSize::Normal, AvatarShape::Square, None, None, None),
         (Some("P"), None, AvatarSize::XLarge, AvatarShape::Circle, None, None, None),
-        (None, Some("/a.png"), AvatarSize::Large, AvatarShape::Circle, Some("Фото"), None, None),
+        (None, Some("/a.png"), AvatarSize::Large, AvatarShape::Circle, Some("Photo"), None, None),
         (Some("U"), None, AvatarSize::Normal, AvatarShape::Square, None, Some("color: red;"), Some("a b")),
     ];
     let owner = Owner::new();

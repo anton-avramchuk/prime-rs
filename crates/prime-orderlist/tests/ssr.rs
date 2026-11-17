@@ -1,4 +1,4 @@
-//! Разметка OrderList (SSR): корень, панель кнопок и их состояние, список, положение кнопок, `pt`.
+//! OrderList markup (SSR): root, button panel and its state, list, button position, `pt`.
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 
@@ -15,9 +15,9 @@ fn items() -> RwSignal<Vec<ListboxOption>> {
     RwSignal::new(vec![ListboxOption::new("Apple", "a"), ListboxOption::new("Banana", "b"), ListboxOption::new("Cherry", "c")])
 }
 
-/// Открывающий тег элемента, в котором встречается класс.
+/// Opening tag of the element in which the class occurs.
 fn tag_of<'a>(html: &'a str, class: &str) -> &'a str {
-    let at = html.find(class).unwrap_or_else(|| panic!("нет {class}: {html}"));
+    let at = html.find(class).unwrap_or_else(|| panic!("no {class}: {html}"));
     let start = html[..at].rfind('<').unwrap();
     let end = at + html[at..].find('>').unwrap();
     &html[start..=end]
@@ -41,9 +41,9 @@ fn markup_and_buttons() {
     let top = html.find("p-orderlist-move-top-button").unwrap();
     let down = html.find("p-orderlist-move-down-button").unwrap();
     let bottom = html.find("p-orderlist-move-bottom-button").unwrap();
-    assert!(up < top && top < down && down < bottom, "порядок кнопок: вверх, в начало, вниз, в конец");
+    assert!(up < top && top < down && down < bottom, "button order: up, to top, down, to bottom");
     assert!(html.contains("p-listbox") && html.contains("Apple") && html.contains("Cherry"), "{html}");
-    assert!(html.contains("aria-multiselectable=\"true\""), "множественный выбор: {html}");
+    assert!(html.contains("aria-multiselectable=\"true\""), "multiple selection: {html}");
 }
 
 #[test]

@@ -1,39 +1,39 @@
 # dataview Specification
 
 ## Purpose
-DataView — данные в виде списка или сетки с пагинатором, сортировкой и фильтром.
+DataView is data as a list or a grid with a paginator, sorting and a filter.
 
 ## Requirements
 
-### Requirement: Отбор и страница
-Элементы SHALL проходить фильтр (предикат), затем устойчивую сортировку (`sort_order` 1 — по возрастанию, -1 — по убыванию, 0 — без сортировки), затем выбирается страница `[first, first + rows)`, если включён пагинатор. В режиме `lazy` значение SHALL показываться как есть, а число записей пагинатора — браться из `total_records`. `first`, вышедший за предел, SHALL возвращаться к первой записи последней страницы.
+### Requirement: Selection and page
+Items SHALL pass the filter (a predicate), then a stable sort (`sort_order` 1 ascending, -1 descending, 0 no sorting), then the page `[first, first + rows)` is selected if the paginator is enabled. In `lazy` mode the value SHALL be shown as is, and the paginator's record count SHALL be taken from `total_records`. A `first` beyond the range SHALL be returned to the first record of the last page.
 
-#### Scenario: Сортировка
-- **WHEN** `[5, 3, 8, 1]`, порядок -1
+#### Scenario: Sorting
+- **WHEN** `[5, 3, 8, 1]`, order -1
 - **THEN** `[8, 5, 3, 1]`
 
-#### Scenario: Страница
-- **WHEN** 25 элементов, `rows = 10`, `first = 20`
-- **THEN** показаны 5 последних элементов
+#### Scenario: Page
+- **WHEN** 25 items, `rows = 10`, `first = 20`
+- **THEN** the last 5 items are shown
 
-#### Scenario: Выход за предел
-- **WHEN** `first = 90` при 25 элементах и `rows = 10`
-- **THEN** `first` становится 20
+#### Scenario: Out of range
+- **WHEN** `first = 90` with 25 items and `rows = 10`
+- **THEN** `first` becomes 20
 
-### Requirement: Разметка
-`DataView` SHALL выводить `div.p-dataview.p-component.p-dataview-list` или `-grid` с блоками в порядке: загрузка (`p-dataview-loading` > `p-dataview-loading-overlay p-overlay-mask` > значок), заголовок, пагинатор сверху (`p-dataview-paginator-top`), `p-dataview-content` (шаблон `list` или `grid`, сообщение `p-dataview-empty-message` при пустых данных и отсутствии загрузки), пагинатор снизу, подвал.
+### Requirement: Markup
+`DataView` SHALL render `div.p-dataview.p-component.p-dataview-list` or `-grid` with blocks in the order: loading (`p-dataview-loading` > `p-dataview-loading-overlay p-overlay-mask` > icon), header, paginator on top (`p-dataview-paginator-top`), `p-dataview-content` (the `list` or `grid` template, the `p-dataview-empty-message` message when the data is empty and not loading), paginator at the bottom, footer.
 
-#### Scenario: Пусто
-- **WHEN** элементов нет
-- **THEN** выведено сообщение «No results found» (или заданное `empty_message`/`empty`)
+#### Scenario: Empty
+- **WHEN** there are no items
+- **THEN** the message "No results found" is shown (or the given `empty_message`/`empty`)
 
-#### Scenario: Загрузка
+#### Scenario: Loading
 - **WHEN** `loading = true`
-- **THEN** есть маска со значком, сообщения о пустых данных нет
+- **THEN** there is a mask with an icon, no empty data message
 
-### Requirement: События и режим lazy
-Смена страницы SHALL обновлять `first` и `rows` и вызывать `on_page`; в режиме `lazy` — и `on_lazy_load` (`first`, `rows`, `sort_order`). `on_lazy_load` SHALL вызываться при создании (если `lazy_load_on_init`) и при смене порядка сортировки; смена порядка возвращает на первую страницу.
+### Requirement: Events and lazy mode
+A page change SHALL update `first` and `rows` and call `on_page`; in `lazy` mode also `on_lazy_load` (`first`, `rows`, `sort_order`). `on_lazy_load` SHALL be called on creation (if `lazy_load_on_init`) and on a sort order change; an order change returns to the first page.
 
 #### Scenario: Lazy
-- **WHEN** режим `lazy`, переход на вторую страницу
-- **THEN** вызван `on_lazy_load` с `first = rows`
+- **WHEN** `lazy` mode, go to the second page
+- **THEN** `on_lazy_load` is called with `first = rows`

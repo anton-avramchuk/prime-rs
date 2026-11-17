@@ -1,8 +1,8 @@
-//! Страница Tooltip: демонстрации `position`, `event`, `delay`, `autohide`, `options`, `custom` по `apps/showcase/doc/tooltip` PrimeNG.
+//! Tooltip page: demos of `position`, `event`, `delay`, `autohide`, `options`, `custom` from `apps/showcase/doc/tooltip` of PrimeNG.
 //!
-//! В Leptos аналог директивы `pTooltip` — `use:tooltip=TooltipOptions::…` на любом элементе или корне компонента. Демонстрация
-//! `accessibility` (текстовая страница) не переносится; логотип из `custom` заменён текстовой меткой, а `Tailwind`-классы —
-//! встроенными стилями.
+//! In Leptos the analog of the `pTooltip` directive is `use:tooltip=TooltipOptions::…` on any element or component root. The
+//! `accessibility` demo (a text page) is not ported; the logo from `custom` is replaced with a text label, and `Tailwind` classes with
+//! inline styles.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -10,7 +10,7 @@ use prime_button::{Button, ButtonSeverity};
 use prime_inputtext::InputText;
 use prime_tooltip::{TooltipEvent, TooltipOptions, TooltipPosition, tooltip};
 
-/// Страница `/tooltip`.
+/// The `/tooltip` page.
 #[component]
 pub fn TooltipPage() -> impl IntoView {
     view! {

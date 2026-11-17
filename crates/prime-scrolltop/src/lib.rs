@@ -1,16 +1,16 @@
-//! ScrollTop — порт компонента `p-scrolltop` из PrimeNG 21.1.10.
+//! ScrollTop — port of PrimeNG 21.1.10 `p-scrolltop`.
 //!
-//! Кнопка «наверх» (`Button` с классом `p-scrolltop`), которая показывается, когда прокрутка окна (`target = Window`) или
-//! родительского элемента (`target = Parent`) строго больше `threshold` (по умолчанию 400). Клик прокручивает цель к началу.
+//! A "back to top" button (`Button` with the `p-scrolltop` class) that is shown when the window scroll (`target = Window`) or
+//! the parent element scroll (`target = Parent`) is strictly greater than `threshold` (400 by default). A click scrolls the target to the start.
 //!
-//! У окна кнопка монтируется только пока видна. Родителя до показа найти нельзя, поэтому при `Parent` кнопка всегда лежит в DOM и
-//! в скрытом состоянии прячется стилем `display: none`.
+//! For the window the button is mounted only while visible. The parent cannot be found before showing, so with `Parent` the button is always in the DOM and
+//! in the hidden state is hidden with the `display: none` style.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_scrolltop::{ScrollTop, ScrollTopTarget};
 //!
-//! // На сервере кнопка окна скрыта, у родителя — в разметке, но спрятана.
+//! // On the server the window button is hidden, the parent's one is in the markup but hidden.
 //! assert!(!view! { <ScrollTop /> }.to_html().contains("p-scrolltop"));
 //! let html = view! { <ScrollTop target=ScrollTopTarget::Parent /> }.to_html();
 //! assert!(html.contains("p-scrolltop-sticky") && html.contains("display: none"));
@@ -27,50 +27,50 @@ use prime_icons::ChevronUpIcon;
 
 pub use state::{Phase, ScrollTopBehavior, ScrollTopTarget, enter_classes, is_visible, leave_classes, root_classes};
 
-/// Порог прокрутки по умолчанию.
+/// Default scroll threshold.
 const DEFAULT_THRESHOLD: f64 = 400.0;
 
-/// Pass-through частей ScrollTop.
+/// Pass-through parts of ScrollTop.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ScrollTopPt {
-    /// Корневая кнопка.
+    /// Root button.
     pub root: Pt,
 }
 
-/// Кнопка возврата к началу страницы или прокручиваемого родителя.
+/// A button returning to the start of the page or of the scrollable parent.
 #[component]
 pub fn ScrollTop(
-    /// Что прокручивать: окно (по умолчанию) или родителя.
+    /// What to scroll: the window (default) or the parent.
     #[prop(optional)]
     target: ScrollTopTarget,
-    /// Прокрутка, после которой кнопка показывается (строго больше; по умолчанию 400).
+    /// Scroll after which the button is shown (strictly greater; 400 by default).
     #[prop(default = Prop::Static(DEFAULT_THRESHOLD), into)]
     threshold: Prop<f64>,
-    /// Поведение прокрутки по клику (по умолчанию плавное).
+    /// Scroll behavior on click (smooth by default).
     #[prop(optional)]
     behavior: ScrollTopBehavior,
-    /// Свой значок вместо `ChevronUpIcon`; оборачивается в `span.p-scrolltop-icon`.
+    /// Custom icon instead of `ChevronUpIcon`; wrapped in `span.p-scrolltop-icon`.
     #[prop(optional, into)]
     icon: Option<ViewFn>,
-    /// Атрибут `aria-label`; по умолчанию из локали (`aria.scrollTop`).
+    /// The `aria-label` attribute; by default from the locale (`aria.scrollTop`).
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Цвет кнопки.
+    /// Button color.
     #[prop(optional, into)]
     severity: OptProp<ButtonSeverity>,
-    /// Кнопка с тенью.
+    /// Button with a shadow.
     #[prop(optional, into)]
     raised: Prop<bool>,
-    /// Скруглённая кнопка (по умолчанию да).
+    /// Rounded button (yes by default).
     #[prop(default = Prop::Static(true), into)]
     rounded: Prop<bool>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<ScrollTopPt>,
 ) -> impl IntoView {
@@ -148,7 +148,7 @@ pub fn ScrollTop(
     }
 }
 
-/// Прокручивает цель к началу.
+/// Scrolls the target to the start.
 fn scroll_to_top(target: ScrollTopTarget, behavior: ScrollTopBehavior, id: usize) {
     let options = web_sys::ScrollToOptions::new();
     options.set_top(0.0);
@@ -170,7 +170,7 @@ fn scroll_to_top(target: ScrollTopTarget, behavior: ScrollTopBehavior, id: usize
     }
 }
 
-/// Родитель кнопки с номером `id`.
+/// Parent of the button with number `id`.
 pub(crate) fn parent_of(id: usize) -> Option<web_sys::Element> {
     let document = web_sys::window()?.document()?;
     document.query_selector(&format!(r#"[data-scrolltop="{id}"]"#)).ok().flatten()?.parent_element()

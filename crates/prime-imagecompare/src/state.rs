@@ -1,12 +1,12 @@
-//! Чистая логика ImageCompare: форма обрезки по значению ползунка (по `onSlide` PrimeNG).
+//! Pure ImageCompare logic: the clipping shape from the slider value (based on PrimeNG `onSlide`).
 
-/// Процент без хвостовых нулей: `30` → `30`, `33.5` → `33.5`.
+/// Percentage without trailing zeros: `30` → `30`, `33.5` → `33.5`.
 fn percent(value: f64) -> String {
     let rounded = (value * 100.0).round() / 100.0;
     if rounded.fract() == 0.0 { format!("{}", rounded as i64) } else { format!("{rounded}") }
 }
 
-/// Значение `clip-path` для значения ползунка `value` (0–100, прижимается): слева направо или справа налево (`rtl`).
+/// `clip-path` value for the slider value `value` (0–100, clamped): left to right or right to left (`rtl`).
 pub fn clip_path(value: f64, rtl: bool) -> String {
     let v = if value.is_nan() { 0.0 } else { value.clamp(0.0, 100.0) };
     if rtl {

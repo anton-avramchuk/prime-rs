@@ -2,36 +2,36 @@
 
 ## Context
 
-Требования — в `specs/avatar`. Исходники PrimeNG 21.1.10: `packages/primeng/src/avatar/avatar.ts`, `avatar/style/avatarstyle.ts`, демонстрации `apps/showcase/doc/avatar`. Хост `<p-avatar>` несёт классы, `aria-label`, `aria-labelledby`, `data-p`; внутри `ng-content` и один из трёх блоков (метка, иначе иконка, иначе изображение). `data-p` строится из формы и размера, у которых есть значения по умолчанию (`square`, `normal`), поэтому по умолчанию он равен `square normal`. Шаблон — `docs/button.md`.
+Requirements are in `specs/avatar`. PrimeNG 21.1.10 sources: `packages/primeng/src/avatar/avatar.ts`, `avatar/style/avatarstyle.ts`, demos `apps/showcase/doc/avatar`. The `<p-avatar>` host carries the classes, `aria-label`, `aria-labelledby`, `data-p`; inside it there are `ng-content` and one of three blocks (label, otherwise icon, otherwise image). `data-p` is built from the shape and size, which have default values (`square`, `normal`), so by default it equals `square normal`. Template — `docs/button.md`.
 
 ## Goals / Non-Goals
 
-**Goals:** Avatar с теми же классами, `data-p`, порядком и приоритетом блоков; ветви без `RenderEffect` для статики; бюджеты.
-**Non-Goals:** `AvatarGroup` (отдельный change), шрифтовые иконки.
+**Goals:** Avatar with the same classes, `data-p`, order and block priority; branches without `RenderEffect` for static values; budgets.
+**Non-Goals:** `AvatarGroup` (a separate change), icon fonts.
 
 ## Decisions
 
-### D1. Корень — `<div>`
-Как у Chip: хост `<p-avatar>` — деталь Angular.
+### D1. Root — `<div>`
+As for Chip: the `<p-avatar>` host is an Angular detail.
 
-### D2. Перечисления с умолчаниями
-`AvatarSize` (`Normal`, `Large`, `XLarge`) и `AvatarShape` (`Square`, `Circle`) реализуют `Default` (`Normal`, `Square`); свойства — `Prop<AvatarSize>`, `Prop<AvatarShape>`, значение по умолчанию статическое. Значения попадают в `data-p` всегда, как в PrimeNG.
+### D2. Enumerations with defaults
+`AvatarSize` (`Normal`, `Large`, `XLarge`) and `AvatarShape` (`Square`, `Circle`) implement `Default` (`Normal`, `Square`); the properties are `Prop<AvatarSize>`, `Prop<AvatarShape>`, the default value is static. The values always go into `data-p`, as in PrimeNG.
 
-### D3. Блоки
-`label_of`, `icon_of`, `image_of` возвращают `Option<AnyView>` с приоритетом метка → иконка → изображение; `p-avatar-image` на корне определяется по `image.is_some()` (как `!= null` в PrimeNG).
+### D3. Blocks
+`label_of`, `icon_of`, `image_of` return `Option<AnyView>` with the priority label → icon → image; `p-avatar-image` on the root is determined by `image.is_some()` (like `!= null` in PrimeNG).
 
-### D4. Состояние и ветви
-Чистые функции `write_classes`/`data_p` над `AvatarState`; ветвь по `all_static!(label, image, size, shape, style, style_class, aria_label, aria_labelledby)`.
+### D4. State and branches
+Pure functions `write_classes`/`data_p` over `AvatarState`; the branch is selected by `all_static!(label, image, size, shape, style, style_class, aria_label, aria_labelledby)`.
 
 ## Risks / Trade-offs
 
-- [Внешний вид зависит от CSS темы `avatar`] → CSS уже сгенерирован, подключается оболочкой showcase.
-- [Расхождение ветвей] → параметризованный тест паритета.
+- [The appearance depends on the CSS of the theme `avatar`] → the CSS is already generated and connected by the showcase wrapper.
+- [The branches diverge] → a parameterized parity test.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

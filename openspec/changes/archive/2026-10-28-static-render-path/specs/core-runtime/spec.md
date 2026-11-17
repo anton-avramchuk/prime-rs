@@ -1,12 +1,12 @@
 ## ADDED Requirements
 
-### Requirement: Проверка статичности набора свойств
-`prime-core` SHALL предоставлять способ проверить, что все свойства компонента статические (`Prop::Static`), чтобы компонент мог выбрать путь отрисовки без реактивных замыканий. Проверка SHALL быть дешёвой (без аллокаций и без подписок) и выполняться один раз при создании экземпляра.
+### Requirement: Checking that a set of properties is static
+`prime-core` SHALL provide a way to check that all properties of a component are static (`Prop::Static`), so that the component can select a render path without reactive closures. The check SHALL be cheap (without allocations and without subscriptions) and SHALL run once when the instance is created.
 
-#### Scenario: Все свойства статические
-- **WHEN** проверяется набор из `Prop::Static`-значений и значений по умолчанию
-- **THEN** результат `true`
+#### Scenario: All properties are static
+- **WHEN** a set of `Prop::Static` values and default values is checked
+- **THEN** the result is `true`
 
-#### Scenario: Есть сигнал
-- **WHEN** среди проверяемых свойств хотя бы одно передано сигналом
-- **THEN** результат `false`
+#### Scenario: There is a signal
+- **WHEN** at least one of the checked properties is passed as a signal
+- **THEN** the result is `false`

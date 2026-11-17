@@ -1,6 +1,6 @@
-//! Страница Stepper: демонстрации `basic`, `linear`, `vertical`, `template`, `stepsonly` из showcase PrimeNG
-//! (`apps/showcase/doc/stepper`). Значки PrimeIcons (`pi-user`, `pi-id-card`) заменены ближайшими из `prime-icons`, картинка с CDN
-//! в `template` — текстом; `ngModel` полей — сигналами.
+//! Stepper page: demos `basic`, `linear`, `vertical`, `template`, `stepsonly` from the PrimeNG showcase
+//! (`apps/showcase/doc/stepper`). PrimeIcons (`pi-user`, `pi-id-card`) are replaced by the nearest ones from `prime-icons`, the CDN image
+//! in `template` is text; the fields' `ngModel` is signals.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn icon<V: IntoView + 'static>(f: impl Fn() -> V + Send + Sync + 'static) -> Vie
     ViewFn::from(f)
 }
 
-/// Содержимое панели: пунктирный блок и кнопки перехода («Назад»/«Далее»).
+/// Panel content: a dashed block and navigation buttons ("Back"/"Next").
 fn panel(text: &'static str, back: Option<u32>, next: Option<u32>, c: StepContext) -> AnyView {
     let activate = c.activate;
     let justify = match (back, next) {
@@ -54,7 +54,7 @@ fn panel(text: &'static str, back: Option<u32>, next: Option<u32>, c: StepContex
     .into_any()
 }
 
-/// Те же три шага и панели для `basic` и `linear`.
+/// The same three steps and panels for `basic` and `linear`.
 macro_rules! wizard {
     ($value:expr, $linear:expr) => {
         view! {
@@ -74,7 +74,7 @@ macro_rules! wizard {
     };
 }
 
-/// Круглый значок шага для `template`: закрашен, пока значение не больше активного.
+/// Round step icon for `template`: filled while the value is not greater than the active one.
 fn round_step(active_step: RwSignal<Option<u32>>, value: u32, icon_view: fn() -> AnyView) -> Callback<StepContext, AnyView> {
     Callback::new(move |c: StepContext| {
         let filled = move || active_step.get().is_some_and(|a| value <= a);
@@ -103,7 +103,7 @@ fn round_step(active_step: RwSignal<Option<u32>>, value: u32, icon_view: fn() ->
     })
 }
 
-/// Страница `/stepper`.
+/// The page `/stepper`.
 #[component]
 pub fn StepperPage() -> impl IntoView {
     let basic = RwSignal::new(Some(1u32));

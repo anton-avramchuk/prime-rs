@@ -1,4 +1,4 @@
-//! Разметка Stepper (SSR): корень, шаги и их состояния, разделители, панели, вертикальная раскладка, `content`, `pt`.
+//! Stepper markup (SSR): root, steps and their states, separators, panels, vertical layout, `content`, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -9,7 +9,7 @@ fn render(f: impl FnOnce() -> String) -> String {
     Owner::new().with(f)
 }
 
-/// Горизонтальный мастер из трёх шагов и панелей.
+/// Horizontal wizard of three steps and panels.
 fn horizontal(default_value: Option<u32>, linear: bool) -> String {
     render(|| {
         view! {
@@ -50,7 +50,7 @@ fn steps_markup() {
     assert!(html.contains("p-step-title") && html.contains("Header II"), "{html}");
     assert_eq!(html.matches("class=\"p-step p-step-active\"").count(), 1, "{html}");
     assert_eq!(html.matches("aria-current=\"step\"").count(), 1, "{html}");
-    assert!(html.matches("data-p-active=\"true\"").count() >= 2, "шаг и панель: {html}");
+    assert!(html.matches("data-p-active=\"true\"").count() >= 2, "step and panel: {html}");
     assert!(html.contains("role=\"presentation\""), "{html}");
 }
 
@@ -84,7 +84,7 @@ fn only_the_active_horizontal_panel_has_content() {
         html.contains("id=\"s_steppanel_2\"") && html.contains("aria-controls=\"s_step_2\"") && html.contains("data-pc-name=\"steppanel\""),
         "{html}"
     );
-    assert!(!html.contains("p-steppanel-active"), "в горизонтальной раскладке класса нет: {html}");
+    assert!(!html.contains("p-steppanel-active"), "no such class in the horizontal layout: {html}");
 }
 
 #[test]
@@ -126,8 +126,8 @@ fn own_disabled_step_is_marked_unless_active() {
         }
         .to_html()
     });
-    assert_eq!(html.matches("class=\"p-step p-disabled\"").count(), 1, "заблокирован только неактивный шаг: {html}");
-    assert!(html.contains("class=\"p-step p-step-active\""), "активный шаг не блокируется: {html}");
+    assert_eq!(html.matches("class=\"p-step p-disabled\"").count(), 1, "only the inactive step is blocked: {html}");
+    assert!(html.contains("class=\"p-step p-step-active\""), "the active step is not blocked: {html}");
 }
 
 #[test]
@@ -155,11 +155,11 @@ fn vertical_layout_keeps_all_panels_and_marks_the_active_one() {
     assert_eq!(html.matches("p-stepitem-active").count(), 1, "{html}");
     assert_eq!(html.matches("p-steppanel-active").count(), 1, "{html}");
     for text in ["Content I<", "Content II<", "Content III<"] {
-        assert!(html.contains(text), "содержимое {text} в разметке: {html}");
+        assert!(html.contains(text), "content {text} in the markup: {html}");
     }
-    assert_eq!(html.matches("display: none").count(), 2, "две неактивные панели скрыты: {html}");
+    assert_eq!(html.matches("display: none").count(), 2, "two inactive panels are hidden: {html}");
     assert_eq!(html.matches("class=\"p-motion\"").count(), 3, "{html}");
-    // шаги внутри StepItem получают значение элемента и без разделителя; разделитель панели — кроме последнего элемента
+    // steps inside StepItem get the item's value and no separator; the panel separator - except for the last item
     assert!(html.contains("id=\"v_step_1\"") && html.contains("id=\"v_steppanel_3\""), "{html}");
     assert_eq!(html.matches("p-stepper-separator").count(), 2, "{html}");
     assert!(html.contains("p-step-number\">1<") && html.contains("p-step-number\">3<"), "{html}");
@@ -188,9 +188,9 @@ fn custom_content_replaces_the_header_and_the_panel_body() {
         .to_html()
     });
     assert!(html.contains("class=\"my\"") && html.contains("v1"), "{html}");
-    assert_eq!(html.matches("class=\"p-step-header\"").count(), 1, "кнопка только у второго шага: {html}");
+    assert_eq!(html.matches("class=\"p-step-header\"").count(), 1, "button only on the second step: {html}");
     assert!(html.contains("class=\"body\"") && html.contains("active=true"), "{html}");
-    assert_eq!(html.matches("p-stepper-separator").count(), 1, "разделитель остаётся после первого шага: {html}");
+    assert_eq!(html.matches("p-stepper-separator").count(), 1, "the separator remains after the first step: {html}");
 }
 
 #[test]
@@ -233,7 +233,7 @@ fn external_value_signal_is_used() {
 
 #[test]
 fn vertical_stepper_context_does_not_leak_to_a_following_horizontal_one() {
-    // оба Stepper в одном владельце: контекст StepItem не должен сделать вторую панель «вертикальной»
+    // both Steppers share one owner: the StepItem context must not make the second panel "vertical"
     let html = render(|| {
         view! {
             <Stepper default_value=1u32>
@@ -251,6 +251,6 @@ fn vertical_stepper_context_does_not_leak_to_a_following_horizontal_one() {
         .to_html()
     });
     assert!(html.contains("Horizontal one") && !html.contains("Horizontal two"), "{html}");
-    assert_eq!(html.matches("class=\"p-motion\"").count(), 2, "p-motion только у вертикальных панелей: {html}");
-    assert_eq!(html.matches("p-stepper-separator").count(), 1 + 1, "разделитель панели вертикального и шага горизонтального: {html}");
+    assert_eq!(html.matches("class=\"p-motion\"").count(), 2, "p-motion only on vertical panels: {html}");
+    assert_eq!(html.matches("p-stepper-separator").count(), 1 + 1, "separator of the vertical panel and of the horizontal step: {html}");
 }

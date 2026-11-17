@@ -1,11 +1,11 @@
-//! Rating — порт `p-rating` из PrimeNG 21.1.10.
+//! Rating — a port of PrimeNG 21.1.10's `p-rating`.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-rating` (вместо хоста `<p-rating>`), на каждую звезду `div.p-rating-option`
-//! со скрытой радиокнопкой (`span.p-hidden-accessible > input[type=radio]`) и иконкой `p-rating-icon`. Звёзды — группа нативных
-//! радиокнопок с общим `name`, поэтому стрелки клавиатуры работают без собственного кода.
+//! Markup and classes as in PrimeNG: root `div.p-rating` (instead of the `<p-rating>` host), for each star a `div.p-rating-option`
+//! with a hidden radio button (`span.p-hidden-accessible > input[type=radio]`) and the `p-rating-icon` icon. The stars are a group of native
+//! radio buttons with a shared `name`, so the keyboard arrows work without any code of our own.
 //!
-//! Состояние — двусторонний сигнал `value: RwSignal<Option<u32>>` (номера звёзд с 1); без него компонент ведёт внутреннее
-//! состояние, начинающееся с `default_value`. Клик по звезде выбирает её, повторный клик по текущему значению сбрасывает его.
+//! State is a two-way signal `value: RwSignal<Option<u32>>` (star numbers from 1); without it the component keeps internal
+//! state starting from `default_value`. A click on a star selects it, a repeated click on the current value resets it.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -29,101 +29,101 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 pub use state::{RatingState, data_p, next_value, write_classes, write_icon_classes, write_option_classes};
 
-/// Число звёзд по умолчанию.
+/// Default number of stars.
 const DEFAULT_STARS: u32 = 5;
 
-/// Событие выбора: новое значение и исходное событие браузера.
+/// Selection event: the new value and the original browser event.
 #[derive(Clone, Debug)]
 pub struct RatingRate {
-    /// Новое значение (`None` — сброшено).
+    /// New value (`None` means reset).
     pub value: Option<u32>,
-    /// Исходное событие (`click` по звезде или `change` радиокнопки).
+    /// Original event (`click` on a star or `change` of a radio button).
     pub original_event: web_sys::Event,
 }
 
-/// Контекст шаблона иконки (как `{ $implicit, class }` в PrimeNG).
+/// Icon template context (like `{ $implicit, class }` in PrimeNG).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RatingIcon {
-    /// Номер звезды (с 1).
+    /// Star number (from 1).
     pub star: u32,
-    /// Классы иконки: `p-rating-icon p-rating-on-icon` или `p-rating-icon p-rating-off-icon`, `p-invalid`.
+    /// Icon classes: `p-rating-icon p-rating-on-icon` or `p-rating-icon p-rating-off-icon`, `p-invalid`.
     pub class: String,
 }
 
-/// Pass-through частей Rating.
+/// Pass-through of the Rating parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RatingPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Опция звезды (`div.p-rating-option`).
+    /// Star option (`div.p-rating-option`).
     pub option: Pt,
-    /// Контейнер скрытой радиокнопки (`span.p-hidden-accessible`).
+    /// Hidden radio button container (`span.p-hidden-accessible`).
     pub hidden_option_input_container: Pt,
-    /// Скрытая радиокнопка.
+    /// Hidden radio button.
     pub hidden_option_input: Pt,
-    /// Включённая иконка.
+    /// On icon.
     pub on_icon: Pt,
-    /// Выключенная иконка.
+    /// Off icon.
     pub off_icon: Pt,
 }
 
-/// Выбор оценки звёздами.
+/// Star rating selection.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` — двусторонний сигнал.
+/// Every property accepts a value or a signal; `value` is a two-way signal.
 #[component]
 pub fn Rating(
-    /// Двусторонний сигнал значения.
+    /// Two-way value signal.
     #[prop(optional)]
     value: Option<RwSignal<Option<u32>>>,
-    /// Начальное значение, если `value` не передан.
+    /// Initial value if `value` is not passed.
     #[prop(optional, into)]
     default_value: OptProp<u32>,
-    /// Число звёзд (по умолчанию 5).
+    /// Number of stars (5 by default).
     #[prop(optional, into)]
     stars: OptProp<u32>,
-    /// Только чтение.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Обязателен.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Атрибут `name` радиокнопок (по умолчанию уникальный).
+    /// The `name` attribute of the radio buttons (unique by default).
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Иконка включённой звезды вместо звезды по умолчанию (в `span` с классами иконки).
+    /// Icon of an on star instead of the default star (in a `span` with the icon classes).
     #[prop(optional, into)]
     on_icon: Option<ViewFn>,
-    /// Иконка выключенной звезды вместо звезды по умолчанию (в `span` с классами иконки).
+    /// Icon of an off star instead of the default star (in a `span` with the icon classes).
     #[prop(optional, into)]
     off_icon: Option<ViewFn>,
-    /// Заменяет иконку включённой звезды целиком.
+    /// Replaces the on star icon entirely.
     #[prop(optional, into)]
     on_icon_template: Option<Callback<RatingIcon, AnyView>>,
-    /// Заменяет иконку выключенной звезды целиком.
+    /// Replaces the off star icon entirely.
     #[prop(optional, into)]
     off_icon_template: Option<Callback<RatingIcon, AnyView>>,
-    /// Вызывается после выбора или сброса пользователем.
+    /// Called after the user selects or resets.
     #[prop(optional, into)]
     on_rate: Option<Callback<RatingRate>>,
-    /// Вызывается при получении фокуса звездой.
+    /// Called when a star gets focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса звездой.
+    /// Called when a star loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<RatingPt>,
 ) -> impl IntoView {
@@ -174,7 +174,7 @@ pub fn Rating(
         let props = props.clone();
         move || data_p(&state_of(&props))
     };
-    // Замыкание списка читает только `stars`: чтение значения здесь пересоздавало бы звёзды и роняло фокус.
+    // The list closure reads only `stars`: reading the value here would recreate the stars and drop focus.
     let options = {
         let (props, pt) = (props.clone(), pt.clone());
         move || {
@@ -191,7 +191,7 @@ pub fn Rating(
     }
 }
 
-/// Одна звезда: опция со скрытой радиокнопкой и иконкой.
+/// One star: an option with a hidden radio button and an icon.
 fn star_view(props: &Arc<Props>, pt: &Arc<RatingPt>, star: u32) -> impl IntoView + use<> {
     let input_ref = NodeRef::<html::Input>::new();
     let option_class = {
@@ -211,14 +211,14 @@ fn star_view(props: &Arc<Props>, pt: &Arc<RatingPt>, star: u32) -> impl IntoView
     let click = {
         let props = props.clone();
         move |e: web_sys::MouseEvent| {
-            // Клик по самой радиокнопке (стрелки, программный `click()`) приходит вместе с `change`, его обрабатывает `change`.
+            // A click on the radio button itself (arrows, programmatic `click()`) arrives together with `change`, which `change` handles.
             if e.target().is_some_and(|t| t.is_instance_of::<web_sys::HtmlInputElement>()) {
                 return;
             }
             props.choose(star, e.into(), true);
             props.visible_focus.set(None);
             if let Some(input) = input_ref.get() {
-                // фокус после клика не считается видимым (`isFocusVisibleItem = false` в `onOptionClick`)
+                // focus after a click is not considered visible (`isFocusVisibleItem = false` in `onOptionClick`)
                 props.pointer_focus.store(true, Ordering::Relaxed);
                 let _ = input.focus();
                 props.pointer_focus.store(false, Ordering::Relaxed);
@@ -278,7 +278,7 @@ fn star_view(props: &Arc<Props>, pt: &Arc<RatingPt>, star: u32) -> impl IntoView
         move || icon_of(&props, &pt, star)
     };
     let container_class = pt.hidden_option_input_container.merge_class("p-hidden-accessible");
-    // У радиокнопки нет собственного класса: `class` выводится только из `pt` (атрибутом, иначе получился бы `class=""`).
+    // The radio button has no class of its own: `class` is output only from `pt` (as an attribute, otherwise it would be `class=""`).
     let input_pt = match pt.hidden_option_input.extra_class() {
         Some(class) => pt.hidden_option_input.clone().attr("class", class),
         None => pt.hidden_option_input.clone(),
@@ -310,7 +310,7 @@ fn star_view(props: &Arc<Props>, pt: &Arc<RatingPt>, star: u32) -> impl IntoView
     }
 }
 
-/// Иконка звезды: шаблон, затем `on_icon`/`off_icon`, затем звезда по умолчанию.
+/// Star icon: the template, then `on_icon`/`off_icon`, then the default star.
 fn icon_of(props: &Props, pt: &RatingPt, star: u32) -> AnyView {
     let on = props.value.get().is_some_and(|v| star <= v);
     let mut cn = ClassNames::new();
@@ -332,12 +332,12 @@ fn state_of(props: &Props) -> RatingState {
     RatingState { readonly: props.readonly.get(), disabled: props.disabled.get() }
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     value: RwSignal<Option<u32>>,
-    /// Звезда с клавиатурным (видимым) фокусом.
+    /// The star with keyboard (visible) focus.
     visible_focus: RwSignal<Option<u32>>,
-    /// Идёт программный фокус после клика по звезде.
+    /// A programmatic focus after a click on a star is in progress.
     pointer_focus: AtomicBool,
     stars: OptProp<u32>,
     readonly: Prop<bool>,
@@ -360,12 +360,12 @@ struct Props {
 }
 
 impl Props {
-    /// `aria-label` звезды: `aria.star` для первой, иначе `aria.stars` с подстановкой `{star}`.
+    /// A star's `aria-label`: `aria.star` for the first, otherwise `aria.stars` with `{star}` substituted.
     fn star_label(&self, star: u32) -> String {
         if star == 1 { self.label_one.clone() } else { self.label_many.replace("{star}", &star.to_string()) }
     }
 
-    /// Выбор звезды. `toggle` — сбрасывать ли повторный выбор текущего значения (клик; `change` всегда приносит новое значение).
+    /// Star selection. `toggle` is whether to reset on repeated selection of the current value (click; `change` always brings a new value).
     fn choose(&self, star: u32, original_event: web_sys::Event, toggle: bool) {
         if self.readonly.get_untracked() || self.disabled.get_untracked() {
             return;

@@ -1,4 +1,4 @@
-//! Разметка Drawer (SSR): панель и маска выводятся в `body` на клиенте, поэтому сервер не отдаёт ничего.
+//! Drawer markup (SSR): the panel and mask are rendered into `body` on the client, so the server emits nothing.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

@@ -1,4 +1,4 @@
-//! Тесты в реальном браузере (wasm-bindgen-test).
+//! Tests in a real browser (wasm-bindgen-test).
 #![cfg(target_arch = "wasm32")]
 
 use prime_dom::dom::{document, element_size};
@@ -68,16 +68,16 @@ fn focus_trap_wraps_from_last_to_first_and_back() {
     let trap = FocusTrap::attach(&container).unwrap();
 
     by_id("c").focus().unwrap();
-    // Tab с последнего элемента попадает на последний служебный элемент.
+    // Tab from the last element lands on the last service element.
     trap.last_sentinel().focus().unwrap();
     assert_eq!(doc.active_element().unwrap().id(), "a");
 
-    // Shift+Tab с первого элемента попадает на первый служебный элемент.
+    // Shift+Tab from the first element lands on the first service element.
     trap.first_sentinel().focus().unwrap();
     assert_eq!(doc.active_element().unwrap().id(), "c");
 
     drop(trap);
-    assert_eq!(container.children().length(), 3, "служебные элементы удалены");
+    assert_eq!(container.children().length(), 3, "service elements are removed");
     container.remove();
 }
 
@@ -110,14 +110,14 @@ async fn portal_renders_into_body_and_is_removed_on_unmount() {
     });
 
     leptos::task::tick().await;
-    let found = doc.get_element_by_id("portal-content").expect("содержимое портала в документе");
-    assert!(!host.contains(Some(&found)), "содержимое вынесено из host");
+    let found = doc.get_element_by_id("portal-content").expect("portal content in the document");
+    assert!(!host.contains(Some(&found)), "the content is moved out of the host");
     assert_eq!(found.parent_element().unwrap().tag_name(), "DIV");
     assert!(doc.body().unwrap().contains(Some(&found)));
 
     drop(handle);
     leptos::task::tick().await;
-    assert!(doc.get_element_by_id("portal-content").is_none(), "после размонтирования содержимое удалено");
+    assert!(doc.get_element_by_id("portal-content").is_none(), "after unmounting the content is removed");
     host.remove();
 }
 
@@ -131,12 +131,12 @@ fn body_scroll_lock_is_counted() {
     assert!(locked());
     assert!(!body.style().get_property_value("--p-scrollbar-width").unwrap().is_empty());
     prime_dom::unblock_body_scroll();
-    assert!(locked(), "вторая блокировка ещё держит класс");
+    assert!(locked(), "the second lock still holds the class");
     prime_dom::unblock_body_scroll();
     assert!(!locked());
     assert!(body.style().get_property_value("--p-scrollbar-width").unwrap().is_empty());
     prime_dom::unblock_body_scroll();
-    assert!(!locked(), "лишнее снятие безвредно");
+    assert!(!locked(), "an extra release is harmless");
 }
 
 async fn sleep(ms: i32) {
@@ -159,22 +159,22 @@ async fn scroll_watch_hides_for_an_ancestor_or_a_moved_target_only() {
 
     let count = Rc::new(Cell::new(0));
     let c = count.clone();
-    let unwatch = watch_scroll(target.clone(), move || c.set(c.get() + 1)).expect("подписка");
+    let unwatch = watch_scroll(target.clone(), move || c.set(c.get() + 1)).expect("subscription");
 
-    // прокрутка документа без сдвига цели ничего не закрывает
+    // scrolling the document without moving the target closes nothing
     doc.dispatch_event(&web_sys::Event::new("scroll").unwrap()).unwrap();
-    assert_eq!(count.get(), 0, "цель не сдвинулась");
-    // цель сдвинулась (как при прокрутке страницы): документ закрывает
+    assert_eq!(count.get(), 0, "the target did not move");
+    // the target moved (as when the page scrolls): the document closes it
     target.style().set_property("margin-top", "30px").unwrap();
     doc.dispatch_event(&web_sys::Event::new("scroll").unwrap()).unwrap();
-    assert_eq!(count.get(), 1, "цель сдвинулась");
+    assert_eq!(count.get(), 1, "the target moved");
     target.style().set_property("margin-top", "0").unwrap();
-    // прокрутка предка цели закрывает
+    // scrolling an ancestor of the target closes it
     scroller.set_scroll_top(60);
     sleep(150).await;
-    assert!(count.get() >= 2, "предок прокручен: {}", count.get());
+    assert!(count.get() >= 2, "the ancestor is scrolled: {}", count.get());
     let after = count.get();
-    // после отписки обработчик молчит
+    // after unsubscribing the handler stays silent
     unwatch();
     scroller.set_scroll_top(0);
     sleep(150).await;
@@ -189,12 +189,12 @@ fn focus_without_scroll_keeps_the_page_in_place() {
     let window = web_sys::window().unwrap();
     window.scroll_to_with_x_and_y(0.0, 0.0);
     focus_no_scroll(&far);
-    assert_eq!(window.scroll_y().unwrap(), 0.0, "страница не прокручена");
-    assert!(document().unwrap().active_element().unwrap().is_same_node(Some(&far)), "фокус всё же на кнопке");
-    // контроль: обычный focus() страницу прокручивает, значит проверка выше что-то доказывает
+    assert_eq!(window.scroll_y().unwrap(), 0.0, "the page is not scrolled");
+    assert!(document().unwrap().active_element().unwrap().is_same_node(Some(&far)), "the focus is still on the button");
+    // control: a regular focus() does scroll the page, so the check above proves something
     far.blur().unwrap();
     far.focus().unwrap();
-    assert!(window.scroll_y().unwrap() > 0.0, "обычный focus прокручивает страницу");
+    assert!(window.scroll_y().unwrap() > 0.0, "a regular focus scrolls the page");
     window.scroll_to_with_x_and_y(0.0, 0.0);
     tall.remove();
     far.remove();

@@ -1,4 +1,4 @@
-//! Разметка Dialog (SSR): маска и окно выводятся в `body` на клиенте, поэтому сервер не отдаёт ничего.
+//! Dialog markup (SSR): the mask and window are rendered into `body` on the client, so the server sends nothing.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

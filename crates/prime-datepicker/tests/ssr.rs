@@ -1,4 +1,4 @@
-//! Разметка DatePicker (SSR): поле, значки, панель, шапка, сетка дней, выбранные дни, ограничения, режимы, виды, `pt`.
+//! DatePicker markup (SSR): field, icons, panel, header, day grid, selected days, constraints, modes, views, `pt`.
 #![cfg(feature = "ssr")]
 #![recursion_limit = "512"]
 
@@ -17,9 +17,9 @@ fn d(y: i32, m: u32, day: u32) -> CalDate {
 
 const TODAY: CalDate = CalDate { year: 2026, month: 10, day: 5 };
 
-/// Открывающий тег элемента, в котором встречается подстрока.
+/// Opening tag of the element in which the substring occurs.
 fn tag_of<'a>(html: &'a str, needle: &str) -> &'a str {
-    let at = html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"));
+    let at = html.find(needle).unwrap_or_else(|| panic!("missing {needle}: {html}"));
     let start = html[..at].rfind('<').unwrap();
     let end = at + html[at..].find('>').unwrap();
     &html[start..=end]
@@ -31,7 +31,7 @@ fn closed_picker_has_field_and_no_panel() {
     assert!(html.contains("p-datepicker p-component p-inputwrapper"), "{html}");
     let input = tag_of(&html, "p-datepicker-input");
     assert!(input.contains("role=\"combobox\"") && input.contains("placeholder=\"Date\"") && input.contains("id=\"dp\""), "{input}");
-    assert!(input.contains("p-inputtext p-component"), "поле на классах InputText: {input}");
+    assert!(input.contains("p-inputtext p-component"), "field uses InputText classes: {input}");
     assert!(!html.contains("p-datepicker-panel") && !html.contains("p-datepicker-dropdown"), "{html}");
 }
 
@@ -67,12 +67,12 @@ fn inline_calendar_grid() {
     assert!(html.contains("p-datepicker-select-month") && html.contains(">November<"), "{html}");
     assert!(html.contains("p-datepicker-select-year") && html.contains(">2026<"), "{html}");
     for day in ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] {
-        assert!(html.contains(&format!(">{day}<")), "нет {day}: {html}");
+        assert!(html.contains(&format!(">{day}<")), "missing {day}: {html}");
     }
-    assert_eq!(html.matches("data-date=\"2026-10-").count(), 30, "30 дней ноября: {html}");
+    assert_eq!(html.matches("data-date=\"2026-10-").count(), 30, "30 days of November: {html}");
     assert!(html.contains("data-date=\"2026-10-5\""), "{html}");
-    assert!(html.contains("p-datepicker-today"), "сегодняшний день отмечен: {html}");
-    assert_eq!(html.matches("p-datepicker-other-month").count(), 5, "пять дней декабря: {html}");
+    assert!(html.contains("p-datepicker-today"), "today is marked: {html}");
+    assert_eq!(html.matches("p-datepicker-other-month").count(), 5, "five days of December: {html}");
     assert!(html.contains("p-datepicker-prev-button") && html.contains("p-datepicker-next-button"), "{html}");
 }
 
@@ -87,8 +87,8 @@ fn selected_and_range_classes() {
         let value = RwSignal::new(vec![d(2026, 10, 5), d(2026, 10, 9)]);
         view! { <DatePicker inline=true value=value selection_mode=SelectionMode::Range today=TODAY /> }.to_html()
     });
-    assert_eq!(html.matches("p-datepicker-day-selected-range").count(), 3, "дни 6–8: {html}");
-    assert_eq!(html.matches("p-datepicker-day p-datepicker-day-selected\"").count(), 2, "края диапазона: {html}");
+    assert_eq!(html.matches("p-datepicker-day-selected-range").count(), 3, "days 6-8: {html}");
+    assert_eq!(html.matches("p-datepicker-day p-datepicker-day-selected\"").count(), 2, "range edges: {html}");
 }
 
 #[test]
@@ -100,7 +100,7 @@ fn limits_disable_days() {
     let disabled = |day: u32| tag_of(&html, &format!("data-date=\"2026-10-{day}\"")).contains("p-disabled");
     assert!(disabled(9) && disabled(21) && disabled(15), "{html}");
     assert!(!disabled(10) && !disabled(20) && !disabled(16), "{html}");
-    assert!(disabled(22), "воскресенье 22? нет, 22 ноября — воскресенье и вне диапазона: {html}");
+    assert!(disabled(22), "Sunday 22? no, November 22 is a Sunday and out of range: {html}");
 }
 
 #[test]
@@ -108,16 +108,16 @@ fn first_day_of_week_and_weeks() {
     let html = render(|| view! { <DatePicker inline=true today=TODAY first_day_of_week=1u32 show_week=true /> }.to_html());
     let mo = html.find(">Mo<").unwrap();
     let su = html.find(">Su<").unwrap();
-    assert!(mo < su, "неделя с понедельника: {html}");
+    assert!(mo < su, "week starts on Monday: {html}");
     assert!(html.contains("p-datepicker-weekheader") && html.contains("p-datepicker-weeknumber") && html.contains(">Wk<"), "{html}");
-    assert!(html.contains("data-date=\"2026-9-26\""), "первая неделя начинается с 26 октября: {html}");
+    assert!(html.contains("data-date=\"2026-9-26\""), "the first week starts on October 26: {html}");
 }
 
 #[test]
 fn other_months_can_be_hidden() {
     let html = render(|| view! { <DatePicker inline=true today=TODAY show_other_months=false /> }.to_html());
     assert!(!html.contains("data-date=\"2026-11-"), "{html}");
-    assert!(html.contains("p-datepicker-other-month"), "ячейки остаются: {html}");
+    assert!(html.contains("p-datepicker-other-month"), "cells remain: {html}");
 }
 
 #[test]
@@ -155,7 +155,7 @@ fn icons_button_bar_and_clear() {
     });
     assert!(html.contains("p-datepicker-clear-icon"), "{html}");
     let html = render(|| view! { <DatePicker today=TODAY show_clear=true /> }.to_html());
-    assert!(!html.contains("p-datepicker-clear-icon"), "без значения значка нет: {html}");
+    assert!(!html.contains("p-datepicker-clear-icon"), "no icon without a value: {html}");
     let html = render(|| view! { <DatePicker inline=true today=TODAY show_button_bar=true /> }.to_html());
     assert!(
         html.contains("p-datepicker-buttonbar") && html.contains("p-datepicker-today-button") && html.contains("p-datepicker-clear-button"),

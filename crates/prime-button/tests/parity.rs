@@ -1,4 +1,4 @@
-//! Паритет статической и реактивной ветвей Button: одни и те же значения, переданные значением и сигналом, дают одинаковый HTML.
+//! Parity of the static and reactive Button paths: the same values passed as a plain value and as a signal produce identical HTML.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -11,7 +11,7 @@ fn icon() -> ViewFn {
     ViewFn::from(|| view! { <CheckIcon /> })
 }
 
-/// Значения всех свойств одного сценария.
+/// Values of all properties of one scenario.
 #[derive(Clone)]
 struct Case {
     label: Option<&'static str>,
@@ -61,7 +61,7 @@ fn cases() -> Vec<Case> {
     let b = Case::base;
     vec![
         b(),
-        Case { label: Some("Сохранить"), ..b() },
+        Case { label: Some("Save"), ..b() },
         Case {
             label: Some("x"),
             severity: Some(ButtonSeverity::Danger),
@@ -74,7 +74,7 @@ fn cases() -> Vec<Case> {
         Case { label: Some("x"), with_icon: true, icon_pos: IconPos::Right, badge: Some("3"), ..b() },
         Case { label: Some("x"), badge: Some("9"), badge_severity: Some(BadgeSeverity::Danger), ..b() },
         Case { label: Some("x"), with_icon: true, loading: true, ..b() },
-        Case { label: Some("x"), disabled: true, aria: Some("Закрыть"), tabindex: Some(2), ty: Some("submit"), ..b() },
+        Case { label: Some("x"), disabled: true, aria: Some("Close"), tabindex: Some(2), ty: Some("submit"), ..b() },
         Case { label: Some("x"), flags: [true, true, true, true, true, true], fluid: true, size: Some(Size::Large), ..b() },
         Case { label: Some("x"), style: Some("margin: 4px"), class: Some("custom extra"), ..b() },
     ]
@@ -116,7 +116,7 @@ macro_rules! button_with {
     }};
 }
 
-/// Источник значений: готовые значения (статический путь).
+/// Value source: ready values (static path).
 struct Fixed;
 impl Fixed {
     fn p<T: Send + Sync + 'static>(&self, v: T) -> Prop<T> {
@@ -130,7 +130,7 @@ impl Fixed {
     }
 }
 
-/// Источник значений: сигналы (реактивный путь).
+/// Value source: signals (reactive path).
 struct Live;
 impl Live {
     fn p<T: Send + Sync + 'static>(&self, v: T) -> Prop<T> {
@@ -157,7 +157,7 @@ fn every_case_renders_identically_static_and_reactive() {
     let owner = Owner::new();
     owner.with(|| {
         for (i, c) in cases().iter().enumerate() {
-            assert_eq!(fixed(c), live(c), "сценарий #{i}");
+            assert_eq!(fixed(c), live(c), "scenario #{i}");
         }
     });
 }

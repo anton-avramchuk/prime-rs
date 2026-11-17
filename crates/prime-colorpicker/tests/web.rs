@@ -1,8 +1,8 @@
-//! Поведение ColorPicker в реальном браузере (wasm-bindgen-test): открытие и закрытие, выбор цвета по полю и шкале,
-//! перетаскивание, форматы, внешнее значение, блокировка, встроенная панель.
+//! ColorPicker behavior in a real browser (wasm-bindgen-test): opening and closing, picking a color on the field and scale,
+//! dragging, formats, external value, disabled state, embedded panel.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели `window` общие на страницу. Стили темы не подключены,
-//! поэтому размеры областей задаёт локальный `<style>`.
+//! Scenarios run as one sequential test: `window` listeners are shared per page. Theme styles are not loaded,
+//! so the sizes of the areas are set by a local `<style>`.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -50,7 +50,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам и таймерам (подписки окна вешаются через `set_timeout(0)`) примениться.
+/// Lets effects and timers (window subscriptions are attached via `set_timeout(0)`) apply.
 async fn settle() {
     sleep(40).await;
 }
@@ -60,7 +60,7 @@ fn q(host: &HtmlElement, selector: &str) -> Option<HtmlElement> {
 }
 
 fn must(host: &HtmlElement, selector: &str) -> HtmlElement {
-    q(host, selector).unwrap_or_else(|| panic!("нет {selector}: {}", host.outer_html()))
+    q(host, selector).unwrap_or_else(|| panic!("no {selector}: {}", host.outer_html()))
 }
 
 fn mouse(target: &web_sys::EventTarget, kind: &str, x: f64, y: f64) {
@@ -72,7 +72,7 @@ fn mouse(target: &web_sys::EventTarget, kind: &str, x: f64, y: f64) {
     target.dispatch_event(&MouseEvent::new_with_mouse_event_init_dict(kind, &init).unwrap()).unwrap();
 }
 
-/// Точка внутри области: смещение от её левого верхнего угла.
+/// A point inside an area: offset from its top-left corner.
 fn at(el: &HtmlElement, dx: f64, dy: f64) -> (f64, f64) {
     let r = el.get_bounding_client_rect();
     (r.left() + dx, r.top() + dy)
@@ -95,7 +95,7 @@ fn key(el: &HtmlElement, code: &str) -> bool {
 fn hex(value: RwSignal<Option<ColorValue>>) -> String {
     match value.get_untracked() {
         Some(ColorValue::Hex(h)) => h,
-        other => panic!("ожидался hex: {other:?}"),
+        other => panic!("expected hex: {other:?}"),
     }
 }
 
@@ -112,51 +112,51 @@ async fn open_close_and_events() {
     });
     settle().await;
     let preview = must(&host, ".p-colorpicker-preview");
-    assert!(q(&host, ".p-colorpicker-panel").is_none(), "закрыт");
+    assert!(q(&host, ".p-colorpicker-panel").is_none(), "closed");
     preview.click();
     settle().await;
-    assert!(q(&host, ".p-colorpicker-panel").is_some(), "клик открывает");
+    assert!(q(&host, ".p-colorpicker-panel").is_some(), "click opens");
     assert_eq!(log.lock().unwrap().as_slice(), ["show"]);
     preview.click();
     settle().await;
-    assert!(q(&host, ".p-colorpicker-panel").is_none(), "повторный клик закрывает");
+    assert!(q(&host, ".p-colorpicker-panel").is_none(), "a second click closes");
     assert_eq!(log.lock().unwrap().as_slice(), ["show", "hide"]);
 
-    assert!(!key(&preview, "Space"), "Space поглощается (preventDefault)");
+    assert!(!key(&preview, "Space"), "Space is swallowed (preventDefault)");
     settle().await;
-    assert!(q(&host, ".p-colorpicker-panel").is_some(), "Space открывает");
+    assert!(q(&host, ".p-colorpicker-panel").is_some(), "Space opens");
     key(&preview, "Space");
     settle().await;
-    assert!(q(&host, ".p-colorpicker-panel").is_none(), "Space закрывает");
+    assert!(q(&host, ".p-colorpicker-panel").is_none(), "Space closes");
     key(&preview, "Space");
     settle().await;
     key(&preview, "Escape");
     settle().await;
-    assert!(q(&host, ".p-colorpicker-panel").is_none(), "Escape закрывает");
+    assert!(q(&host, ".p-colorpicker-panel").is_none(), "Escape closes");
     key(&preview, "Space");
     settle().await;
     key(&preview, "Tab");
     settle().await;
-    assert!(q(&host, ".p-colorpicker-panel").is_none(), "Tab закрывает");
+    assert!(q(&host, ".p-colorpicker-panel").is_none(), "Tab closes");
     let events = log.lock().unwrap().clone();
     assert_eq!(events.iter().filter(|l| *l == "show").count(), events.iter().filter(|l| *l == "hide").count());
 
-    // клик снаружи
+    // outside click
     preview.click();
     settle().await;
     assert!(q(&host, ".p-colorpicker-panel").is_some());
     let body = doc().body().unwrap();
     mouse(&body, "click", 5.0, 5.0);
     settle().await;
-    assert!(q(&host, ".p-colorpicker-panel").is_none(), "клик вне корня закрывает");
-    // клик внутри корня не закрывает
+    assert!(q(&host, ".p-colorpicker-panel").is_none(), "click outside the root closes");
+    // a click inside the root does not close
     preview.click();
     settle().await;
     let panel = must(&host, ".p-colorpicker-panel");
     let (x, y) = at(&panel, 5.0, 5.0);
     mouse(&panel, "click", x, y);
     settle().await;
-    assert!(q(&host, ".p-colorpicker-panel").is_some(), "клик по панели не закрывает");
+    assert!(q(&host, ".p-colorpicker-panel").is_some(), "click on the panel does not close");
     mouse(&body, "click", 5.0, 5.0);
     settle().await;
     host.remove();
@@ -184,7 +184,7 @@ async fn picking_dragging_and_formats() {
 
     click_at(&field, 150.0, 0.0);
     settle().await;
-    assert_eq!(hex(value), "#ff0000", "правый верхний угол: s = 100, b = 100");
+    assert_eq!(hex(value), "#ff0000", "top-right corner: s = 100, b = 100");
     click_at(&field, 75.0, 75.0);
     settle().await;
     assert_eq!(hex(value), "#804040", "s = 50, b = 50");
@@ -192,41 +192,41 @@ async fn picking_dragging_and_formats() {
     assert_eq!(handle.style().get_property_value("top").unwrap(), "75px");
     click_at(&hue, 8.0, 75.0);
     settle().await;
-    assert_eq!(hex(value), "#408080", "оттенок 180");
+    assert_eq!(hex(value), "#408080", "hue 180");
     assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "75px");
-    assert!(field.style().get_property_value("background-color").unwrap().contains("0, 255, 255"), "фон поля — чистый оттенок");
-    assert_eq!(log.lock().unwrap().len(), 3, "on_change на каждое изменение");
+    assert!(field.style().get_property_value("background-color").unwrap().contains("0, 255, 255"), "field background is the pure hue");
+    assert_eq!(log.lock().unwrap().len(), 3, "on_change for every change");
 
-    // перетаскивание: нажатие, выход за границы, отпускание
+    // dragging: press, leave the bounds, release
     let root = must(&host, ".p-colorpicker");
     let (x, y) = at(&field, 10.0, 10.0);
     mouse(&field, "mousedown", x, y);
     settle().await;
-    assert!(root.class_name().contains("p-colorpicker-dragging"), "во время жеста: {}", root.class_name());
+    assert!(root.class_name().contains("p-colorpicker-dragging"), "during the gesture: {}", root.class_name());
     let window: web_sys::EventTarget = web_sys::window().unwrap().into();
     let (fx, fy) = at(&field, 500.0, 500.0);
     mouse(&window, "mousemove", fx, fy);
     settle().await;
-    assert_eq!(hex(value), "#000000", "за правым нижним углом: s = 100, b = 0");
+    assert_eq!(hex(value), "#000000", "past the bottom-right corner: s = 100, b = 0");
     mouse(&window, "mouseup", fx, fy);
     settle().await;
     assert!(!root.class_name().contains("p-colorpicker-dragging"));
     let (bx, by) = at(&field, 0.0, 0.0);
     mouse(&window, "mousemove", bx, by);
     settle().await;
-    assert_eq!(hex(value), "#000000", "после отпускания движение значение не меняет");
+    assert_eq!(hex(value), "#000000", "movement after release does not change the value");
 
-    // шкала: ниже нижней границы оттенок 0
+    // scale: below the lower bound the hue is 0
     let (x, y) = at(&hue, 8.0, 10.0);
     mouse(&hue, "mousedown", x, y);
     let (lx, ly) = at(&hue, 8.0, 900.0);
     mouse(&window, "mousemove", lx, ly);
     mouse(&window, "mouseup", lx, ly);
     settle().await;
-    assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "150px", "оттенок ограничен 0");
+    assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "150px", "hue is clamped to 0");
     host.remove();
 
-    // форматы rgb и hsb
+    // rgb and hsb formats
     let host = host_for_format();
     let rgb = RwSignal::new(None);
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <ColorPicker inline=true format=ColorFormat::Rgb value=rgb /> });
@@ -259,13 +259,13 @@ async fn external_value_and_disabled() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <ColorPicker inline=true value=value disabled=disabled /> });
     settle().await;
     let hue_handle = must(&host, ".p-colorpicker-hue-handle");
-    assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "100px", "зелёный: оттенок 120");
+    assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "100px", "green: hue 120");
     value.set(Some(ColorValue::Hex("#0000ff".into())));
     settle().await;
-    assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "50px", "внешнее значение сдвигает указатель (синий: 240)");
+    assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "50px", "an external value moves the pointer (blue: 240)");
     value.set(None);
     settle().await;
-    assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "150px", "пустое значение — цвет по умолчанию (красный)");
+    assert_eq!(hue_handle.style().get_property_value("top").unwrap(), "150px", "empty value — the default color (red)");
 
     value.set(Some(ColorValue::Hex("#00ff00".into())));
     settle().await;
@@ -274,7 +274,7 @@ async fn external_value_and_disabled() {
     let field = must(&host, ".p-colorpicker-color-selector");
     click_at(&field, 150.0, 150.0);
     settle().await;
-    assert_eq!(hex(value), "#00ff00", "заблокированный не реагирует");
+    assert_eq!(hex(value), "#00ff00", "a disabled one does not react");
     host.remove();
 }
 

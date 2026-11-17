@@ -1,7 +1,7 @@
-//! Поведение SplitButton в реальном браузере (wasm-bindgen-test): клики по обеим кнопкам, клавиши, закрытие снаружи, команды
-//! пунктов, события показа и скрытия, положение панели.
+//! SplitButton behavior in a real browser (wasm-bindgen-test): clicks on both buttons, keys, closing from outside, item
+//! commands, show and hide events, panel position.
 //!
-//! Сценарии идут одним последовательным тестом: слушатели `window` у открытых меню общие на страницу.
+//! Scenarios run as one sequential test: `window` listeners of open menus are shared across the page.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -27,14 +27,14 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
     host.query_selector(sel).unwrap().is_some()
 }
 
-/// Нажатие клавиши на элементе; `false`, если действие по умолчанию отменено.
+/// Key press on an element; `false` if the default action was cancelled.
 fn key(el: &HtmlElement, code: &str) -> bool {
     let init = KeyboardEventInit::new();
     init.set_code(code);
@@ -56,7 +56,7 @@ fn model(log: &Log) -> Vec<MenuItem> {
     ]
 }
 
-/// Монтирует SplitButton с журналом событий.
+/// Mounts SplitButton with an event log.
 macro_rules! mount {
     ($host:expr, $log:expr, $($extra:tt)*) => {{
         let log = $log.clone();
@@ -77,7 +77,7 @@ macro_rules! mount {
     }};
 }
 
-/// Пауза: слушатели `window` у меню подключаются через `set_timeout(0)` после показа.
+/// Pause: the `window` listeners of the menu are attached via `set_timeout(0)` after show.
 async fn pause() {
     let promise = js_sys::Promise::new(&mut |resolve, _| {
         web_sys::window().unwrap().set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 30).unwrap();
@@ -99,12 +99,12 @@ async fn dropdown_opens_closes_and_reports() {
     assert!(!has(&host, ".p-menu-overlay"));
     q(&host, ".p-splitbutton-dropdown").click();
     settle().await;
-    assert!(has(&host, ".p-menu-overlay"), "меню открыто");
+    assert!(has(&host, ".p-menu-overlay"), "menu is open");
     assert_eq!(expanded(&host), "true");
     assert_eq!(*log.lock().unwrap(), ["dropdown", "show"]);
     q(&host, ".p-splitbutton-dropdown").click();
     settle().await;
-    assert!(!has(&host, ".p-menu-overlay"), "повторный клик закрывает меню");
+    assert!(!has(&host, ".p-menu-overlay"), "a repeated click closes the menu");
     assert_eq!(expanded(&host), "false");
     assert_eq!(*log.lock().unwrap(), ["dropdown", "show", "dropdown", "hide"]);
     host.remove();
@@ -119,7 +119,7 @@ async fn main_button_click_reports_and_closes_the_menu() {
     assert!(has(&host, ".p-menu-overlay"));
     q(&host, ".p-splitbutton-button").click();
     settle().await;
-    assert!(!has(&host, ".p-menu-overlay"), "основная кнопка закрывает меню");
+    assert!(!has(&host, ".p-menu-overlay"), "the main button closes the menu");
     assert_eq!(*log.lock().unwrap(), ["dropdown", "show", "click", "hide"]);
     host.remove();
 }
@@ -129,13 +129,13 @@ async fn arrow_keys_toggle_the_menu_and_prevent_the_default_action() {
     let _h = mount!(host, log,);
     settle().await;
     let dropdown = q(&host, ".p-splitbutton-dropdown");
-    assert!(!key(&dropdown, "ArrowDown"), "действие по умолчанию отменено");
+    assert!(!key(&dropdown, "ArrowDown"), "default action cancelled");
     settle().await;
-    assert!(has(&host, ".p-menu-overlay"), "стрелка вниз открыла меню");
+    assert!(has(&host, ".p-menu-overlay"), "arrow down opened the menu");
     assert!(!key(&dropdown, "ArrowUp"));
     settle().await;
-    assert!(!has(&host, ".p-menu-overlay"), "стрелка вверх переключила меню обратно");
-    assert!(key(&dropdown, "Enter"), "другие клавиши не отменяются");
+    assert!(!has(&host, ".p-menu-overlay"), "arrow up toggled the menu back");
+    assert!(key(&dropdown, "Enter"), "other keys are not cancelled");
     host.remove();
 }
 
@@ -163,8 +163,8 @@ async fn choosing_an_item_runs_its_command_and_closes_the_menu() {
     settle().await;
     q(&host, ".p-menu-item-link").click();
     settle().await;
-    assert!(log.lock().unwrap().contains(&"update".to_owned()), "команда первого пункта выполнена");
-    assert!(!has(&host, ".p-menu-overlay"), "выбор пункта закрыл меню");
+    assert!(log.lock().unwrap().contains(&"update".to_owned()), "the first item command was executed");
+    assert!(!has(&host, ".p-menu-overlay"), "selecting an item closed the menu");
     assert_eq!(expanded(&host), "false");
     host.remove();
 }
@@ -187,14 +187,14 @@ async fn panel_is_placed_inside_the_root_with_a_layer() {
     q(&host, ".p-splitbutton-dropdown").click();
     settle().await;
     let overlay = q(&host, ".p-menu-overlay");
-    assert!(q(&host, ".p-splitbutton").contains(Some(&overlay)), "панель внутри корня");
+    assert!(q(&host, ".p-splitbutton").contains(Some(&overlay)), "panel inside the root");
     let z: i32 = overlay.style().get_property_value("z-index").unwrap().parse().unwrap();
-    assert!(z >= 1000, "слой группы меню: {z}");
-    assert!(!overlay.style().get_property_value("top").unwrap().is_empty(), "положение рассчитано");
+    assert!(z >= 1000, "menu group layer: {z}");
+    assert!(!overlay.style().get_property_value("top").unwrap().is_empty(), "position is computed");
     host.remove();
 }
 
-/// Все сценарии подряд: меню закрывается в конце каждого.
+/// All scenarios in a row: the menu closes at the end of each.
 #[wasm_bindgen_test]
 async fn splitbutton_scenarios() {
     dropdown_opens_closes_and_reports().await;

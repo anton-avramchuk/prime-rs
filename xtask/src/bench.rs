@@ -1,11 +1,11 @@
-//! `wasm-size` (бюджеты размера wasm) и `bench-compare` (сравнение отчётов с базовой линией).
+//! `wasm-size` (wasm size budgets) and `bench-compare` (comparison of reports with the baseline).
 
 use serde::Deserialize;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-/// Один случай измерения из `benches/budgets.toml`.
+/// A single measurement case from `benches/budgets.toml`.
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct Case {
     pub name: String,
@@ -18,20 +18,20 @@ struct Budgets {
     case: Vec<Case>,
 }
 
-/// Читает бюджеты.
+/// Reads the budgets.
 pub fn read_budgets(path: &Path) -> Result<Vec<Case>, String> {
     let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
     toml::from_str::<Budgets>(&text).map(|b| b.case).map_err(|e| format!("{}: {e}", path.display()))
 }
 
-/// Сообщения о превышении бюджета: «компонент, размер, бюджет».
+/// Budget overrun messages: "component, size, budget".
 pub fn check_budgets(baseline: u64, measured: &[(String, u64)], cases: &[Case]) -> Vec<String> {
     cases
         .iter()
         .filter_map(|c| {
             let size = measured.iter().find(|(n, _)| *n == c.name)?.1;
             let delta = size.saturating_sub(baseline);
-            (delta > c.max_delta_bytes).then(|| format!("{}: вклад {delta} Б превышает бюджет {} Б", c.name, c.max_delta_bytes))
+            (delta > c.max_delta_bytes).then(|| format!("{}: contribution {delta} B exceeds the budget {} B", c.name, c.max_delta_bytes))
         })
         .collect()
 }
@@ -57,24 +57,24 @@ fn build_size(root: &Path, feature: &str) -> Result<u64, String> {
         .status()
         .map_err(|e| format!("cargo build: {e}"))?;
     if !status.success() {
-        return Err(format!("сборка wasm-size с {feature} не удалась"));
+        return Err(format!("wasm-size build with {feature} failed"));
     }
     let file = target_dir(root).join("wasm32-unknown-unknown/release/wasm_size.wasm");
     std::fs::metadata(&file).map(|m| m.len()).map_err(|e| format!("{}: {e}", file.display()))
 }
 
-/// Измеряет вклад каждого случая, пишет `target/bench/wasm.json` и возвращает ошибку при превышении бюджета.
+/// Measures the contribution of each case, writes `target/bench/wasm.json` and returns an error when the budget is exceeded.
 pub fn wasm_size(root: &Path, budgets: &Path) -> Result<(), String> {
     let cases = read_budgets(budgets)?;
     let baseline = build_size(root, "case-baseline")?;
-    println!("baseline: {baseline} Б");
+    println!("baseline: {baseline} B");
     let mut measured = Vec::new();
     let mut metrics = BTreeMap::new();
     metrics.insert("wasm.baseline.bytes".to_owned(), baseline as f64);
     for c in &cases {
         let size = build_size(root, &c.feature)?;
         let delta = size.saturating_sub(baseline);
-        println!("{:<12} {size} Б, вклад {delta} Б (бюджет {} Б)", c.name, c.max_delta_bytes);
+        println!("{:<12} {size} B, contribution {delta} B (budget {} B)", c.name, c.max_delta_bytes);
         metrics.insert(format!("wasm.{}.delta_bytes", c.name), delta as f64);
         measured.push((c.name.clone(), size));
     }
@@ -83,14 +83,10 @@ pub fn wasm_size(root: &Path, budgets: &Path) -> Result<(), String> {
     let json = serde_json::to_string_pretty(&serde_json::json!({ "metrics": metrics })).map_err(|e| e.to_string())?;
     std::fs::write(dir.join("wasm.json"), json).map_err(|e| e.to_string())?;
     let violations = check_budgets(baseline, &measured, &cases);
-    if violations.is_empty() {
-        Ok(())
-    } else {
-        Err(format!("превышен бюджет размера wasm:\n  {}", violations.join("\n  ")))
-    }
+    if violations.is_empty() { Ok(()) } else { Err(format!("wasm size budget exceeded:\n  {}", violations.join("\n  "))) }
 }
 
-/// Строка сравнения метрики.
+/// A metric comparison row.
 #[derive(Debug, PartialEq)]
 pub struct Row {
     pub name: String,
@@ -99,7 +95,7 @@ pub struct Row {
     pub pct: f64,
 }
 
-/// Сравнивает метрики (меньше — лучше); возвращает общие метрики по имени.
+/// Compares metrics (lower is better); returns the common metrics by name.
 pub fn compare(base: &BTreeMap<String, f64>, cur: &BTreeMap<String, f64>) -> Vec<Row> {
     cur.iter()
         .filter_map(|(name, &c)| {
@@ -110,15 +106,15 @@ pub fn compare(base: &BTreeMap<String, f64>, cur: &BTreeMap<String, f64>) -> Vec
         .collect()
 }
 
-/// Markdown-таблица для комментария в PR; регрессией считается рост больше `threshold` процентов.
+/// Markdown table for a PR comment; growth of more than `threshold` percent counts as a regression.
 pub fn render_markdown(rows: &[Row], threshold: f64) -> String {
     let regressions = rows.iter().filter(|r| r.pct > threshold).count();
     let mut s = if regressions == 0 {
-        format!("Регрессий больше {threshold}% нет.\n\n")
+        format!("No regressions over {threshold}%.\n\n")
     } else {
-        format!("**Регрессии больше {threshold}%: {regressions}**\n\n")
+        format!("**Regressions over {threshold}%: {regressions}**\n\n")
     };
-    s.push_str("| Метрика | База | Сейчас | Изменение |\n|---|---:|---:|---:|\n");
+    s.push_str("| Metric | Base | Now | Change |\n|---|---:|---:|---:|\n");
     for r in rows {
         let mark = if r.pct > threshold { " ⚠️" } else { "" };
         s.push_str(&format!("| {} | {} | {} | {:+.1}%{mark} |\n", r.name, r.base, r.cur, r.pct));
@@ -126,14 +122,14 @@ pub fn render_markdown(rows: &[Row], threshold: f64) -> String {
     s
 }
 
-/// Читает все `*.json` каталога в одну карту метрик.
+/// Reads all `*.json` files of a directory into a single metrics map.
 pub fn read_metrics(dir: &Path) -> Result<BTreeMap<String, f64>, String> {
     let mut all = BTreeMap::new();
     let entries = std::fs::read_dir(dir).map_err(|e| format!("{}: {e}", dir.display()))?;
     for e in entries.flatten().filter(|e| e.path().extension().is_some_and(|x| x == "json")) {
         let text = std::fs::read_to_string(e.path()).map_err(|er| format!("{}: {er}", e.path().display()))?;
         let v: serde_json::Value = serde_json::from_str(&text).map_err(|er| format!("{}: {er}", e.path().display()))?;
-        for (k, val) in v["metrics"].as_object().ok_or_else(|| format!("{}: нет metrics", e.path().display()))? {
+        for (k, val) in v["metrics"].as_object().ok_or_else(|| format!("{}: no metrics", e.path().display()))? {
             if let Some(n) = val.as_f64() {
                 all.insert(k.clone(), n);
             }
@@ -142,22 +138,22 @@ pub fn read_metrics(dir: &Path) -> Result<BTreeMap<String, f64>, String> {
     Ok(all)
 }
 
-/// Сравнивает каталоги отчётов и печатает таблицу; при `fail_over` ошибка, если есть регрессия больше порога.
+/// Compares report directories and prints a table; with `fail_over` it is an error if there is a regression above the threshold.
 pub fn bench_compare(base_dir: &Path, cur_dir: &Path, threshold: f64, fail_over: bool) -> Result<(), String> {
     let rows = compare(&read_metrics(base_dir)?, &read_metrics(cur_dir)?);
     print!("{}", render_markdown(&rows, threshold));
     let count = rows.iter().filter(|r| r.pct > threshold).count();
-    if fail_over && count > 0 { Err(format!("регрессий больше {threshold}%: {count}")) } else { Ok(()) }
+    if fail_over && count > 0 { Err(format!("regressions over {threshold}%: {count}")) } else { Ok(()) }
 }
 
-/// Бюджет аллокаций сценария `render-bench` на один экземпляр.
+/// Allocation budget of a `render-bench` scenario per instance.
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct AllocCase {
-    /// Имя сценария (`badge-1000`).
+    /// Scenario name (`badge-1000`).
     pub name: String,
-    /// Сколько экземпляров рендерит сценарий.
+    /// How many instances the scenario renders.
     pub instances: u64,
-    /// Максимум аллокаций на экземпляр.
+    /// Maximum allocations per instance.
     pub max_per_instance: f64,
 }
 
@@ -166,44 +162,40 @@ struct AllocBudgets {
     scenario: Vec<AllocCase>,
 }
 
-/// Читает бюджеты аллокаций.
+/// Reads the allocation budgets.
 pub fn read_alloc_budgets(path: &Path) -> Result<Vec<AllocCase>, String> {
     let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
     toml::from_str::<AllocBudgets>(&text).map(|b| b.scenario).map_err(|e| format!("{}: {e}", path.display()))
 }
 
-/// Сообщения о превышении: «сценарий, аллокаций на экземпляр, бюджет». Ошибка, если метрики сценария нет в отчёте.
+/// Overrun messages: "scenario, allocations per instance, budget". An error if the scenario metric is missing from the report.
 pub fn check_alloc_budgets(metrics: &BTreeMap<String, f64>, cases: &[AllocCase]) -> Result<Vec<String>, String> {
     let mut violations = Vec::new();
     for c in cases {
         let key = format!("alloc.{}.blocks", c.name);
         let blocks = metrics
             .get(&key)
-            .ok_or_else(|| format!("в отчёте нет метрики `{key}`: выполните `cargo bench -p render-bench --bench alloc`"))?;
+            .ok_or_else(|| format!("the report has no metric `{key}`: run `cargo bench -p render-bench --bench alloc`"))?;
         let per_instance = blocks / c.instances as f64;
         if per_instance > c.max_per_instance {
-            violations.push(format!("{}: {per_instance:.1} аллокаций на экземпляр превышает бюджет {}", c.name, c.max_per_instance));
+            violations.push(format!("{}: {per_instance:.1} allocations per instance exceeds the budget {}", c.name, c.max_per_instance));
         }
     }
     Ok(violations)
 }
 
-/// Проверяет `target/bench/alloc.json` по бюджетам; ошибка при превышении.
+/// Checks `target/bench/alloc.json` against the budgets; an error on overrun.
 pub fn alloc_budget(root: &Path, budgets: &Path) -> Result<(), String> {
     let cases = read_alloc_budgets(budgets)?;
     let dir = target_dir(root).join("bench");
     let all = read_metrics(&dir)?;
     for c in &cases {
         if let Some(blocks) = all.get(&format!("alloc.{}.blocks", c.name)) {
-            println!("{:<18} {:>6.1} аллокаций на экземпляр (бюджет {})", c.name, blocks / c.instances as f64, c.max_per_instance);
+            println!("{:<18} {:>6.1} allocations per instance (budget {})", c.name, blocks / c.instances as f64, c.max_per_instance);
         }
     }
     let violations = check_alloc_budgets(&all, &cases)?;
-    if violations.is_empty() {
-        Ok(())
-    } else {
-        Err(format!("превышен бюджет аллокаций:\n  {}", violations.join("\n  ")))
-    }
+    if violations.is_empty() { Ok(()) } else { Err(format!("allocation budget exceeded:\n  {}", violations.join("\n  "))) }
 }
 
 #[cfg(test)]
@@ -220,7 +212,7 @@ mod tests {
         let flagged: Vec<_> = rows.iter().filter(|r| r.pct > 10.0).map(|r| r.name.as_str()).collect();
         assert_eq!(flagged, vec!["b"]);
         let md = render_markdown(&rows, 10.0);
-        assert!(md.contains("Регрессии больше 10%: 1") && md.contains("+15.0% ⚠️") && md.contains("+5.0% |"));
+        assert!(md.contains("Regressions over 10%: 1") && md.contains("+15.0% ⚠️") && md.contains("+5.0% |"));
     }
 
     #[test]
@@ -232,7 +224,7 @@ mod tests {
     #[test]
     fn no_regressions_message() {
         let rows = compare(&map(&[("a", 100.0)]), &map(&[("a", 100.0)]));
-        assert!(render_markdown(&rows, 10.0).starts_with("Регрессий больше 10% нет"));
+        assert!(render_markdown(&rows, 10.0).starts_with("No regressions over 10%"));
     }
 
     #[test]
@@ -243,7 +235,7 @@ mod tests {
         std::fs::create_dir_all(&c).unwrap();
         std::fs::write(b.join("x.json"), r#"{"metrics":{"m":100}}"#).unwrap();
         std::fs::write(c.join("x.json"), r#"{"metrics":{"m":115}}"#).unwrap();
-        assert!(bench_compare(&b, &c, 10.0, false).is_ok(), "по умолчанию только отчёт");
+        assert!(bench_compare(&b, &c, 10.0, false).is_ok(), "report only by default");
         assert!(bench_compare(&b, &c, 10.0, true).is_err());
     }
 
@@ -252,7 +244,7 @@ mod tests {
         let cases = vec![Case { name: "one-icon".into(), feature: "f".into(), max_delta_bytes: 1000 }];
         assert!(check_budgets(10_000, &[("one-icon".into(), 10_900)], &cases).is_empty());
         let bad = check_budgets(10_000, &[("one-icon".into(), 11_500)], &cases);
-        assert_eq!(bad, vec!["one-icon: вклад 1500 Б превышает бюджет 1000 Б".to_owned()]);
+        assert_eq!(bad, vec!["one-icon: contribution 1500 B exceeds the budget 1000 B".to_owned()]);
     }
 
     #[test]
@@ -268,7 +260,7 @@ mod tests {
         let cases = vec![AllocCase { name: "badge-1000".into(), instances: 1000, max_per_instance: 10.0 }];
         assert!(check_alloc_budgets(&map(&[("alloc.badge-1000.blocks", 8017.0)]), &cases).unwrap().is_empty());
         let bad = check_alloc_budgets(&map(&[("alloc.badge-1000.blocks", 12000.0)]), &cases).unwrap();
-        assert_eq!(bad, vec!["badge-1000: 12.0 аллокаций на экземпляр превышает бюджет 10".to_owned()]);
+        assert_eq!(bad, vec!["badge-1000: 12.0 allocations per instance exceeds the budget 10".to_owned()]);
         let err = check_alloc_budgets(&map(&[]), &cases).unwrap_err();
         assert!(err.contains("alloc.badge-1000.blocks"), "{err}");
     }
@@ -289,8 +281,8 @@ mod tests {
         std::fs::write(bench.join("alloc.json"), r#"{"metrics":{"alloc.b-10.blocks":150}}"#).unwrap();
         let budgets = dir.path().join("b.toml");
         std::fs::write(&budgets, "[[scenario]]\nname = \"b-10\"\ninstances = 10\nmax_per_instance = 20\n").unwrap();
-        // 15 на экземпляр <= 20
-        // SAFETY-free: target_dir берёт CARGO_TARGET_DIR из окружения, поэтому проверяем через check_alloc_budgets напрямую.
+        // 15 per instance <= 20
+        // SAFETY-free: target_dir takes CARGO_TARGET_DIR from the environment, so we check via check_alloc_budgets directly.
         let metrics = read_metrics(&bench).unwrap();
         assert!(check_alloc_budgets(&metrics, &read_alloc_budgets(&budgets).unwrap()).unwrap().is_empty());
     }

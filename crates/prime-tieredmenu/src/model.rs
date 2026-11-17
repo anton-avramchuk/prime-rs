@@ -1,26 +1,26 @@
-//! Чистая модель TieredMenu: дерево узлов, путь активных пунктов, фокус и переходы (по `tieredmenu.ts` PrimeNG).
+//! Pure TieredMenu model: the node tree, the path of active items, focus and transitions (after PrimeNG's `tieredmenu.ts`).
 //!
-//! Пункты — `prime_menu::MenuItem` (поле `items` задаёт подменю). Узел дерева — [`Node`] с ключом вида `"0"`, `"0_1"`,
-//! `"0_1_2"`; путь активных пунктов хранит ключи раскрытых групп от корня вглубь.
+//! Items are `prime_menu::MenuItem` (the `items` field defines the submenu). A tree node is a [`Node`] with a key like `"0"`, `"0_1"`,
+//! `"0_1_2"`; the active item path stores the keys of expanded groups from the root down.
 
 use prime_menu::MenuItem;
 
-/// Узел дерева «обработанных пунктов» (`createProcessedItems`).
+/// A node of the "processed items" tree (`createProcessedItems`).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Node {
-    /// Ключ: индексы предков и собственный через `_`.
+    /// Key: ancestor indices and its own, joined by `_`.
     pub key: String,
-    /// Ключ родителя (пустая строка у корневых).
+    /// Parent key (empty string for root nodes).
     pub parent_key: String,
-    /// Глубина (корневые — `0`).
+    /// Depth (root nodes are `0`).
     pub level: usize,
-    /// Индекс среди соседей.
+    /// Index among siblings.
     pub index: usize,
-    /// Индексы от корня до пункта.
+    /// Indices from the root to the item.
     pub path: Vec<usize>,
 }
 
-/// Строит узлы в порядке обхода в глубину.
+/// Builds nodes in depth-first order.
 pub fn build(items: &[MenuItem]) -> Vec<Node> {
     fn walk(items: &[MenuItem], level: usize, parent_key: &str, parent_path: &[usize], out: &mut Vec<Node>) {
         for (index, item) in items.iter().enumerate() {
@@ -36,7 +36,7 @@ pub fn build(items: &[MenuItem]) -> Vec<Node> {
     out
 }
 
-/// Пункт по пути индексов.
+/// Item by index path.
 pub fn item_at<'a>(items: &'a [MenuItem], path: &[usize]) -> Option<&'a MenuItem> {
     let (first, rest) = path.split_first()?;
     let mut item = items.get(*first)?;
@@ -46,12 +46,12 @@ pub fn item_at<'a>(items: &'a [MenuItem], path: &[usize]) -> Option<&'a MenuItem
     Some(item)
 }
 
-/// Допустимый пункт: виден, не отключён и не разделитель (`isValidItem`).
+/// Valid item: visible, not disabled and not a separator (`isValidItem`).
 pub fn is_valid(item: &MenuItem) -> bool {
     item.visible && !item.disabled && !item.separator
 }
 
-/// Идентификатор элемента `li`: собственный `id` пункта или `<id меню>_<ключ>`.
+/// Identifier of the `li` element: the item's own `id` or `<menu id>_<key>`.
 pub fn item_id(menu_id: &str, item: &MenuItem, key: &str) -> String {
     match item.id.as_deref() {
         Some(id) if !id.is_empty() => id.to_owned(),
@@ -59,72 +59,72 @@ pub fn item_id(menu_id: &str, item: &MenuItem, key: &str) -> String {
     }
 }
 
-/// Является ли `ancestor` предком `key` (или им самим): сравнение по границам ключа, а не по строке (`"1"` не предок `"10"`).
+/// Whether `ancestor` is an ancestor of `key` (or `key` itself): compared by key boundaries, not as a string (`"1"` is not an ancestor of `"10"`).
 pub fn is_ancestor_or_self(ancestor: &str, key: &str) -> bool {
     key == ancestor || key.strip_prefix(ancestor).is_some_and(|rest| rest.starts_with('_'))
 }
 
-/// Фокус: индекс среди видимых пунктов текущего уровня и ключ родителя этого уровня.
+/// Focus: the index among the visible items of the current level and the parent key of that level.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Focus {
-    /// Индекс пункта на уровне.
+    /// Item index within the level.
     pub index: Option<usize>,
-    /// Ключ родителя уровня (пусто — корень).
+    /// Parent key of the level (empty means root).
     pub parent_key: String,
 }
 
-/// Результат клика по пункту.
+/// Result of a click on an item.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Click {
-    /// Ветка свёрнута, фокус остался на пункте.
+    /// The branch is collapsed, focus stays on the item.
     Collapsed,
-    /// Группа раскрыта.
+    /// The group is expanded.
     Expanded,
-    /// Лист: всё закрыто; фокус переходит на корневой пункт ветки (`Some(индекс)`).
+    /// Leaf: everything is closed; focus moves to the root item of the branch (`Some(index)`).
     Leaf(Option<usize>),
 }
 
-/// Состояние дерева: путь активных групп, фокус и признак «раскрывали кликом».
+/// Tree state: the path of active groups, focus and the "expanded by click" flag.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct State {
-    /// Ключи раскрытых групп от корня вглубь.
+    /// Keys of expanded groups from the root down.
     pub active: Vec<String>,
-    /// Фокус.
+    /// Focus.
     pub focus: Focus,
-    /// Группу раскрывали кликом или стрелкой (включает раскрытие при наведении).
+    /// A group was expanded by click or arrow (enables expansion on hover).
     pub dirty: bool,
 }
 
-/// Дерево с пунктами: всё, что нужно переходам.
+/// Tree with items: everything the transitions need.
 pub struct Tree<'a> {
-    /// Узлы.
+    /// Nodes.
     pub nodes: &'a [Node],
-    /// Корневые пункты модели.
+    /// Root items of the model.
     pub items: &'a [MenuItem],
 }
 
 impl<'a> Tree<'a> {
-    /// Узел по ключу.
+    /// Node by key.
     pub fn node(&self, key: &str) -> Option<&'a Node> {
         self.nodes.iter().find(|n| n.key == key)
     }
 
-    /// Пункт узла.
+    /// Item of the node.
     pub fn item(&self, node: &Node) -> &'a MenuItem {
-        item_at(self.items, &node.path).expect("узел указывает на существующий пункт")
+        item_at(self.items, &node.path).expect("the node points to an existing item")
     }
 
-    /// Группа ли узел (есть подпункты).
+    /// Whether the node is a group (has sub-items).
     pub fn is_group(&self, node: &Node) -> bool {
         !self.item(node).items.is_empty()
     }
 
-    /// Соседи с общим родителем.
+    /// Siblings sharing a parent.
     pub fn siblings(&self, parent_key: &str) -> Vec<&'a Node> {
         self.nodes.iter().filter(|n| n.parent_key == parent_key).collect()
     }
 
-    /// Пункты текущего уровня фокуса (`visibleItems`): дети активной группы с ключом фокуса, иначе корневые.
+    /// Items of the current focus level (`visibleItems`): children of the active group with the focus key, otherwise the root ones.
     pub fn visible(&self, state: &State) -> Vec<&'a Node> {
         let parent = state.active.iter().find(|k| **k == state.focus.parent_key);
         self.siblings(parent.map_or("", String::as_str))
@@ -138,37 +138,37 @@ impl<'a> Tree<'a> {
         state.active.contains(&node.key)
     }
 
-    /// Первый допустимый индекс (`findFirstItemIndex`).
+    /// First valid index (`findFirstItemIndex`).
     pub fn first(&self, visible: &[&Node]) -> Option<usize> {
         visible.iter().position(|n| self.valid(n))
     }
 
-    /// Последний допустимый индекс (`findLastItemIndex`).
+    /// Last valid index (`findLastItemIndex`).
     pub fn last(&self, visible: &[&Node]) -> Option<usize> {
         visible.iter().rposition(|n| self.valid(n))
     }
 
-    /// Следующий допустимый индекс; без него остаётся `index` (`findNextItemIndex`).
+    /// Next valid index; without one, `index` is kept (`findNextItemIndex`).
     pub fn next(&self, visible: &[&Node], index: usize) -> usize {
         visible.iter().enumerate().skip(index + 1).find(|(_, n)| self.valid(n)).map_or(index, |(i, _)| i)
     }
 
-    /// Предыдущий допустимый индекс; без него остаётся `index` (`findPrevItemIndex`).
+    /// Previous valid index; without one, `index` is kept (`findPrevItemIndex`).
     pub fn prev(&self, visible: &[&Node], index: usize) -> usize {
         visible.iter().enumerate().take(index).rfind(|(_, n)| self.valid(n)).map_or(index, |(i, _)| i)
     }
 
-    /// Индекс раскрытого допустимого пункта уровня (`findSelectedItemIndex`).
+    /// Index of the expanded valid item of the level (`findSelectedItemIndex`).
     pub fn selected_index(&self, state: &State, visible: &[&Node]) -> Option<usize> {
         visible.iter().position(|n| self.valid(n) && self.selected(state, n))
     }
 
-    /// Первый пункт для фокуса: раскрытый, а без него первый допустимый (`findFirstFocusedItemIndex`).
+    /// First item for focus: the expanded one, otherwise the first valid one (`findFirstFocusedItemIndex`).
     pub fn first_focused(&self, state: &State, visible: &[&Node]) -> Option<usize> {
         self.selected_index(state, visible).or_else(|| self.first(visible))
     }
 
-    /// Последний пункт для фокуса: раскрытый, а без него последний допустимый (`findLastFocusedItemIndex`).
+    /// Last item for focus: the expanded one, otherwise the last valid one (`findLastFocusedItemIndex`).
     pub fn last_focused(&self, state: &State, visible: &[&Node]) -> Option<usize> {
         self.selected_index(state, visible).or_else(|| self.last(visible))
     }
@@ -178,8 +178,8 @@ impl<'a> Tree<'a> {
         is_valid(item) && item.label.as_deref().unwrap_or_default().to_lowercase().starts_with(&search.to_lowercase())
     }
 
-    /// Поиск по началу подписи среди пунктов уровня (`searchItems`): от текущего пункта по кругу. Возвращает индекс, найден
-    /// ли пункт.
+    /// Search by label prefix among the level's items (`searchItems`): from the current item, wrapping around. Returns the index and whether
+    /// an item was found.
     pub fn search(&self, state: &State, visible: &[&Node], search: &str) -> (Option<usize>, bool) {
         let mut found = match state.focus.index {
             Some(current) => {
@@ -195,21 +195,21 @@ impl<'a> Tree<'a> {
         (found, matched)
     }
 
-    /// Ставит фокус на индекс уровня (`changeFocusedItemIndex`).
+    /// Sets focus to a level index (`changeFocusedItemIndex`).
     pub fn focus_index(&self, state: &mut State, index: Option<usize>) {
         if index.is_some() && state.focus.index != index {
             state.focus.index = index;
         }
     }
 
-    /// Закрывает всё: путь, фокус и признак (`hide`).
+    /// Closes everything: the path, focus and flag (`hide`).
     pub fn hide(&self, state: &mut State) {
         state.active.clear();
         state.focus = Focus::default();
         state.dirty = false;
     }
 
-    /// Смена пути при раскрытии пункта (`onItemChange`); при наведении на узком окне путь не меняется.
+    /// Path change when an item is expanded (`onItemChange`); on hover in a narrow window the path does not change.
     pub fn item_change(&self, state: &mut State, node: &Node, hover: bool, mobile: bool) {
         let group = self.is_group(node);
         let mut path: Vec<String> = state
@@ -231,7 +231,7 @@ impl<'a> Tree<'a> {
         state.active = path;
     }
 
-    /// Клик по пункту (`onItemClick`).
+    /// Click on an item (`onItemClick`).
     pub fn click(&self, state: &mut State, node: &Node) -> Click {
         if state.active.contains(&node.key) {
             state.active.retain(|k| *k != node.key && is_ancestor_or_self(k, &node.key));
@@ -253,14 +253,14 @@ impl<'a> Tree<'a> {
         }
     }
 
-    /// Наведение на пункт: меняет путь, только если уже раскрывали кликом (`onItemMouseEnter`); на касании — всегда.
+    /// Hover over an item: changes the path only if it was already expanded by click (`onItemMouseEnter`); on touch, always.
     pub fn hover(&self, state: &mut State, node: &Node, touch: bool, mobile: bool) {
         if touch || state.dirty {
             self.item_change(state, node, true, mobile);
         }
     }
 
-    /// ↓: следующий допустимый пункт (первый или раскрытый при пустом фокусе).
+    /// ↓: next valid item (the first or expanded one when focus is empty).
     pub fn arrow_down(&self, state: &mut State) {
         let visible = self.visible(state);
         let target = match state.focus.index {
@@ -270,7 +270,7 @@ impl<'a> Tree<'a> {
         self.focus_index(state, target);
     }
 
-    /// ↑: предыдущий допустимый пункт (последний или раскрытый при пустом фокусе).
+    /// ↑: previous valid item (the last or expanded one when focus is empty).
     pub fn arrow_up(&self, state: &mut State) {
         let visible = self.visible(state);
         let target = match state.focus.index {
@@ -280,7 +280,7 @@ impl<'a> Tree<'a> {
         self.focus_index(state, target);
     }
 
-    /// →: раскрывает группу под фокусом и переходит внутрь.
+    /// →: expands the focused group and moves inside.
     pub fn arrow_right(&self, state: &mut State) {
         let visible = self.visible(state);
         let Some(node) = state.focus.index.and_then(|i| visible.get(i).copied()) else { return };
@@ -291,7 +291,7 @@ impl<'a> Tree<'a> {
         }
     }
 
-    /// ←: поднимается к родителю и сворачивает его подменю.
+    /// ←: moves up to the parent and collapses its submenu.
     pub fn arrow_left(&self, state: &mut State) {
         let visible = self.visible(state);
         let Some(node) = state.focus.index.and_then(|i| visible.get(i).copied()) else { return };
@@ -309,7 +309,7 @@ impl<'a> Tree<'a> {
         state.active.retain(|k| self.node(k).is_some_and(|p| p.parent_key != parent_key));
     }
 
-    /// Узел под фокусом и признак «он в подменю» (родитель в пути раскрытых).
+    /// The focused node and the "it is in a submenu" flag (its parent is in the expanded path).
     fn focused_node(&self, state: &State) -> Option<(&'a Node, bool)> {
         let visible = self.visible(state);
         let node = state.focus.index.and_then(|i| visible.get(i).copied())?;
@@ -317,13 +317,13 @@ impl<'a> Tree<'a> {
         Some((node, in_submenu))
     }
 
-    /// Раскрывает группу под фокусом и ставит фокус «внутрь» с пустым индексом (общая часть стрелок меню-бара).
+    /// Expands the focused group and sets focus "inside" with an empty index (the shared part of the menubar arrows).
     fn enter_group(&self, state: &mut State, node: &Node) {
         self.item_change(state, node, false, false);
         state.focus = Focus { index: None, parent_key: node.key.clone() };
     }
 
-    /// Меню-бар, ↓: на группе корня раскрывает её и входит; на листе корня ничего; в подменю — следующий пункт.
+    /// Menubar, ↓: on a root group expands it and enters; on a root leaf nothing; in a submenu, the next item.
     pub fn bar_down(&self, state: &mut State) {
         match self.focused_node(state) {
             Some((node, _)) if node.level == 0 => {
@@ -336,7 +336,7 @@ impl<'a> Tree<'a> {
         }
     }
 
-    /// Меню-бар, →: в подменю на группе раскрывает её и входит, на листе ничего; на корне — следующий пункт.
+    /// Menubar, →: in a submenu on a group expands it and enters, on a leaf nothing; on the root, the next item.
     pub fn bar_right(&self, state: &mut State) {
         match self.focused_node(state) {
             Some((node, true)) => {
@@ -349,7 +349,7 @@ impl<'a> Tree<'a> {
         }
     }
 
-    /// Меню-бар, ←: в подменю поднимается на родителя и сворачивает его; на корне — предыдущий пункт.
+    /// Menubar, ←: in a submenu moves up to the parent and collapses it; on the root, the previous item.
     pub fn bar_left(&self, state: &mut State) {
         match self.focused_node(state) {
             Some((node, true)) => {
@@ -363,8 +363,8 @@ impl<'a> Tree<'a> {
         }
     }
 
-    /// Меню-бар, ↑: на группе корня раскрывает её и ставит фокус на последний пункт; на первом пункте подменю поднимается
-    /// на родителя и сворачивает его; иначе — предыдущий пункт.
+    /// Menubar, ↑: on a root group expands it and focuses the last item; on the first submenu item moves up
+    /// to the parent and collapses it; otherwise the previous item.
     pub fn bar_up(&self, state: &mut State) {
         match self.focused_node(state) {
             Some((node, _)) if node.level == 0 => {
@@ -400,14 +400,14 @@ impl<'a> Tree<'a> {
         self.focus_index(state, target);
     }
 
-    /// `Escape`: закрывает всё, фокус — на первый допустимый корневой пункт.
+    /// `Escape`: closes everything, focus goes to the first valid root item.
     pub fn escape(&self, state: &mut State) {
         self.hide(state);
         let visible = self.visible(state);
         state.focus.index = self.first_focused(state, &visible);
     }
 
-    /// `Tab`: лист под фокусом активируется (меняет фокус), затем всё закрывается.
+    /// `Tab`: the focused leaf is activated (changes focus), then everything closes.
     pub fn tab(&self, state: &mut State, mobile: bool) {
         let visible = self.visible(state);
         if let Some(node) = state.focus.index.and_then(|i| visible.get(i).copied())
@@ -418,7 +418,7 @@ impl<'a> Tree<'a> {
         self.hide(state);
     }
 
-    /// После `Enter` вне popup на листе фокус возвращается к первому пункту (`onEnterKey`).
+    /// After `Enter` on a leaf outside popup, focus returns to the first item (`onEnterKey`).
     pub fn after_enter(&self, state: &mut State) {
         let visible = self.visible(state);
         if let Some(node) = state.focus.index.and_then(|i| visible.get(i).copied())
@@ -428,7 +428,7 @@ impl<'a> Tree<'a> {
         }
     }
 
-    /// Идентификатор пункта под фокусом (`focusedItemId`).
+    /// Identifier of the focused item (`focusedItemId`).
     pub fn focused_id(&self, state: &State, menu_id: &str) -> Option<String> {
         let index = state.focus.index?;
         let node = self.siblings(&state.focus.parent_key).get(index).copied()?;
@@ -436,23 +436,23 @@ impl<'a> Tree<'a> {
     }
 }
 
-/// `aria-setsize`: число видимых пунктов без разделителей.
+/// `aria-setsize`: the number of visible items without separators.
 pub fn aria_set_size(siblings: &[&MenuItem]) -> usize {
     siblings.iter().filter(|i| i.visible && !i.separator).count()
 }
 
-/// `aria-posinset`: номер пункта среди видимых без разделителей (с единицы).
+/// `aria-posinset`: the item number among visible items without separators (one-based).
 pub fn aria_pos_inset(siblings: &[&MenuItem], index: usize) -> usize {
     let skipped = siblings.iter().take(index).filter(|i| !i.visible || (i.visible && i.separator)).count();
     index - skipped + 1
 }
 
-/// Сторона подменю (`nestedPosition`): `"100%"` — справа от пункта, `"-100%"` — слева.
+/// Submenu side (`nestedPosition`): `"100%"` is to the right of the item, `"-100%"` to the left.
 pub fn submenu_side(parent_left: f64, item_width: f64, sub_width: f64, viewport_width: f64, scrollbar: f64, level: usize) -> &'static str {
     let left = parent_left.trunc();
     if left + item_width + sub_width > viewport_width - scrollbar {
         if left < sub_width {
-            // слишком узкое окно
+            // window too narrow
             if level % 2 == 1 { "100%" } else { "-100%" }
         } else {
             "-100%"
@@ -462,7 +462,7 @@ pub fn submenu_side(parent_left: f64, item_width: f64, sub_width: f64, viewport_
     }
 }
 
-/// Печатаемый символ для поиска: один символ без Ctrl/Meta.
+/// Printable character for search: a single character without Ctrl/Meta.
 pub fn is_printable(key: &str, ctrl_or_meta: bool) -> bool {
     !ctrl_or_meta && key.chars().count() == 1
 }
@@ -536,7 +536,7 @@ mod tests {
         assert!(!is_valid(&MenuItem::separator()));
         assert!(is_ancestor_or_self("0", "0_1_2"));
         assert!(is_ancestor_or_self("0_1", "0_1"));
-        assert!(!is_ancestor_or_self("1", "10"), "по границе ключа, а не по строке");
+        assert!(!is_ancestor_or_self("1", "10"), "by key boundary, not as a string");
         assert!(!is_ancestor_or_self("0_1", "0_10"));
         assert!(!is_ancestor_or_self("0_1", "0"));
     }
@@ -549,13 +549,13 @@ mod tests {
         let root = tree.siblings("");
         assert_eq!(tree.first(&root), Some(0));
         assert_eq!(tree.last(&root), Some(4));
-        assert_eq!(tree.next(&root, 2), 4, "разделитель пропущен");
-        assert_eq!(tree.next(&root, 4), 4, "на границе остаётся");
+        assert_eq!(tree.next(&root, 2), 4, "separator skipped");
+        assert_eq!(tree.next(&root, 4), 4, "stays at the boundary");
         assert_eq!(tree.prev(&root, 4), 2);
         assert_eq!(tree.prev(&root, 0), 0);
         let file = tree.siblings("0");
         assert_eq!(keys(&file), ["0_0", "0_1", "0_2", "0_3"]);
-        assert_eq!(tree.last(&file), Some(1), "Print отключён, разделитель пропущен");
+        assert_eq!(tree.last(&file), Some(1), "Print is disabled, separator skipped");
         assert_eq!(tree.next(&file, 1), 1);
     }
 
@@ -567,7 +567,7 @@ mod tests {
         let mut st = State::default();
         assert_eq!(tree.visible(&st).len(), 5);
         st.focus.parent_key = "0".into();
-        assert_eq!(tree.visible(&st).len(), 5, "родитель не раскрыт — корневой уровень");
+        assert_eq!(tree.visible(&st).len(), 5, "parent not expanded: root level");
         st.active = vec!["0".into()];
         assert_eq!(keys(&tree.visible(&st)), ["0_0", "0_1", "0_2", "0_3"]);
     }
@@ -586,21 +586,21 @@ mod tests {
         let new = tree.node("0_0").unwrap();
         assert_eq!(tree.click(&mut st, new), Click::Expanded);
         assert_eq!(st.active, ["0", "0_0"]);
-        // повторный клик по File сворачивает ветку до него
+        // a repeated click on File collapses the branch down to it
         assert_eq!(tree.click(&mut st, file), Click::Collapsed);
-        assert_eq!(st.active, Vec::<String>::new(), "самого пункта в пути нет, предков нет");
-        // раскрыть заново и кликнуть по New дважды: свернётся New, File останется
+        assert_eq!(st.active, Vec::<String>::new(), "the item itself is not in the path, and there are no ancestors");
+        // expand again and click New twice: New collapses, File stays
         tree.click(&mut st, file);
         tree.click(&mut st, new);
         assert_eq!(tree.click(&mut st, new), Click::Collapsed);
         assert_eq!(st.active, ["0"]);
-        // лист глубоко внутри закрывает всё и ведёт фокус на корневой пункт ветки
+        // a deeply nested leaf closes everything and moves focus to the root item of the branch
         tree.click(&mut st, new);
         let share = tree.node("0_0_0").unwrap();
         assert_eq!(tree.click(&mut st, share), Click::Leaf(Some(0)));
         assert_eq!((st.active.clone(), st.dirty), (Vec::<String>::new(), false));
         assert_eq!(st.focus, Focus { index: Some(0), parent_key: String::new() });
-        // корневой лист
+        // root leaf
         let quit = tree.node("4").unwrap();
         assert_eq!(tree.click(&mut st, quit), Click::Leaf(Some(4)));
     }
@@ -613,7 +613,7 @@ mod tests {
         let mut st = State::default();
         tree.click(&mut st, tree.node("0").unwrap());
         tree.click(&mut st, tree.node("1").unwrap());
-        assert_eq!(st.active, ["1"], "File закрыт, Edit открыт");
+        assert_eq!(st.active, ["1"], "File closed, Edit open");
     }
 
     #[test]
@@ -624,17 +624,17 @@ mod tests {
         let mut st = State::default();
         let edit = tree.node("1").unwrap();
         tree.hover(&mut st, edit, false, false);
-        assert!(st.active.is_empty(), "до клика наведение ничего не раскрывает");
+        assert!(st.active.is_empty(), "hover expands nothing before a click");
         tree.click(&mut st, tree.node("0").unwrap());
         tree.hover(&mut st, edit, false, false);
         assert_eq!(st.active, ["1"]);
         let mut touch = State::default();
         tree.hover(&mut touch, edit, true, false);
-        assert_eq!(touch.active, ["1"], "на касании раскрывает сразу");
+        assert_eq!(touch.active, ["1"], "on touch it expands immediately");
         let mut mobile = State { dirty: true, ..State::default() };
         tree.hover(&mut mobile, edit, false, true);
-        assert!(mobile.active.is_empty(), "на узком окне путь не меняется");
-        assert_eq!(mobile.focus.index, Some(1), "но фокус переходит на пункт");
+        assert!(mobile.active.is_empty(), "in a narrow window the path does not change");
+        assert_eq!(mobile.focus.index, Some(1), "but focus moves to the item");
     }
 
     #[test]
@@ -644,41 +644,41 @@ mod tests {
         let tree = Tree { nodes: &nodes, items: &items };
         let mut st = State::default();
         tree.arrow_down(&mut st);
-        assert_eq!(st.focus.index, Some(0), "первый допустимый");
+        assert_eq!(st.focus.index, Some(0), "first valid");
         tree.arrow_down(&mut st);
         tree.arrow_down(&mut st);
         tree.arrow_down(&mut st);
-        assert_eq!(st.focus.index, Some(4), "Users → Quit, разделитель пропущен");
+        assert_eq!(st.focus.index, Some(4), "Users → Quit, separator skipped");
         tree.arrow_down(&mut st);
         assert_eq!(st.focus.index, Some(4));
         tree.arrow_up(&mut st);
         assert_eq!(st.focus.index, Some(2));
-        // → на листе ничего не делает
+        // → on a leaf does nothing
         tree.arrow_right(&mut st);
         assert!(st.active.is_empty());
-        // → на группе
+        // → on a group
         tree.home(&mut st);
         tree.arrow_right(&mut st);
         assert_eq!(st.active, ["0"]);
-        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() }, "первый пункт подменю");
+        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() }, "first submenu item");
         tree.arrow_down(&mut st);
         assert_eq!(st.focus.index, Some(1));
         tree.arrow_down(&mut st);
-        assert_eq!(st.focus.index, Some(1), "Print отключён: остаёмся на Open");
+        assert_eq!(st.focus.index, Some(1), "Print is disabled: stay on Open");
         tree.arrow_up(&mut st);
         assert_eq!(st.focus.index, Some(0), "New");
         tree.arrow_right(&mut st);
         assert_eq!(st.active, ["0", "0_0"]);
         assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0_0".into() });
-        // ← поднимается на New и сворачивает его подменю
+        // ← moves up to New and collapses its submenu
         tree.arrow_left(&mut st);
         assert_eq!(st.active, ["0"]);
-        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() }, "фокус на New (раскрытый пункт уровня)");
-        // ← ещё раз поднимается на File и сворачивает его
+        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() }, "focus on New (the expanded item of the level)");
+        // ← once more moves up to File and collapses it
         tree.arrow_left(&mut st);
         assert_eq!(st.active, Vec::<String>::new());
         assert_eq!(st.focus, Focus { index: Some(0), parent_key: String::new() });
-        // ← на корне ничего не меняет в фокусе
+        // ← on the root changes nothing in focus
         tree.arrow_left(&mut st);
         assert_eq!(st.focus.index, Some(0));
     }
@@ -689,46 +689,46 @@ mod tests {
         let nodes = build(&items);
         let tree = Tree { nodes: &nodes, items: &items };
         let mut st = State::default();
-        // → на пустом фокусе — первый допустимый
+        // → on empty focus: the first valid item
         tree.bar_right(&mut st);
         assert_eq!(st.focus.index, Some(0));
         tree.bar_right(&mut st);
         assert_eq!(st.focus.index, Some(1), "Edit");
         tree.bar_right(&mut st);
         tree.bar_right(&mut st);
-        assert_eq!(st.focus.index, Some(4), "Users → Quit, разделитель пропущен");
+        assert_eq!(st.focus.index, Some(4), "Users → Quit, separator skipped");
         tree.bar_right(&mut st);
-        assert_eq!(st.focus.index, Some(4), "дальше некуда");
+        assert_eq!(st.focus.index, Some(4), "nowhere further");
         tree.bar_left(&mut st);
-        assert_eq!(st.focus.index, Some(2), "← по корню — предыдущий");
-        // ↓ на листе корня ничего не делает
+        assert_eq!(st.focus.index, Some(2), "← on the root: the previous item");
+        // ↓ on a root leaf does nothing
         tree.bar_down(&mut st);
         assert!(st.active.is_empty() && st.focus.index == Some(2));
-        // ↓ на группе раскрывает её и входит
+        // ↓ on a group expands it and enters
         tree.home(&mut st);
         tree.bar_down(&mut st);
         assert_eq!(st.active, ["0"]);
         assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() });
-        // ↓ / ↑ внутри подменю
+        // ↓ / ↑ inside a submenu
         tree.bar_down(&mut st);
         assert_eq!(st.focus.index, Some(1));
         tree.bar_up(&mut st);
         assert_eq!(st.focus.index, Some(0), "New");
-        // → на группе раскрывает вложенную и входит
+        // → on a group expands the nested one and enters
         tree.bar_right(&mut st);
         assert_eq!(st.active, ["0", "0_0"]);
         assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0_0".into() });
-        // → на листе подменю ничего не делает
+        // → on a submenu leaf does nothing
         tree.bar_right(&mut st);
         assert_eq!(st.active, ["0", "0_0"]);
-        // ↑ на первом пункте возвращает на родителя и сворачивает его подменю
+        // ↑ on the first item returns to the parent and collapses its submenu
         tree.bar_up(&mut st);
         assert_eq!(st.active, ["0"]);
-        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() }, "фокус на New");
-        // ← поднимается на родителя и сворачивает ветку
+        assert_eq!(st.focus, Focus { index: Some(0), parent_key: "0".into() }, "focus on New");
+        // ← moves up to the parent and collapses the branch
         tree.bar_left(&mut st);
         assert_eq!(st.active, Vec::<String>::new());
-        assert_eq!(st.focus, Focus { index: Some(0), parent_key: String::new() }, "фокус на File");
+        assert_eq!(st.focus, Focus { index: Some(0), parent_key: String::new() }, "focus on File");
     }
 
     #[test]
@@ -743,7 +743,7 @@ mod tests {
         assert_eq!(
             st.focus,
             Focus { index: Some(1), parent_key: "0".into() },
-            "Print отключён, разделитель пропущен: последний допустимый — Open"
+            "Print is disabled, separator skipped: the last valid item is Open"
         );
     }
 
@@ -763,15 +763,15 @@ mod tests {
             (st.active.clone(), st.focus.clone(), st.dirty),
             (Vec::new(), Focus { index: Some(0), parent_key: String::new() }, false)
         );
-        // Tab на листе закрывает всё
+        // Tab on a leaf closes everything
         tree.end(&mut st);
         tree.tab(&mut st, false);
         assert_eq!(st.focus, Focus::default());
-        // Enter на листе вне popup возвращает фокус к первому пункту
+        // Enter on a leaf outside popup returns focus to the first item
         tree.end(&mut st);
         tree.after_enter(&mut st);
         assert_eq!(st.focus.index, Some(0));
-        // Enter на группе фокус не трогает
+        // Enter on a group does not touch focus
         tree.home(&mut st);
         tree.after_enter(&mut st);
         assert_eq!(st.focus.index, Some(0));
@@ -785,17 +785,21 @@ mod tests {
         let st = State::default();
         let root = tree.siblings("");
         assert_eq!(tree.search(&st, &root, "e"), (Some(1), true), "Edit");
-        assert_eq!(tree.search(&st, &root, "Q"), (Some(4), true), "без учёта регистра");
-        assert_eq!(tree.search(&st, &root, "z"), (Some(0), false), "не найдено и фокуса нет: первый пункт");
+        assert_eq!(tree.search(&st, &root, "Q"), (Some(4), true), "case-insensitive");
+        assert_eq!(tree.search(&st, &root, "z"), (Some(0), false), "not found and no focus: the first item");
         let at_edit = State { focus: Focus { index: Some(1), parent_key: String::new() }, ..State::default() };
-        assert_eq!(tree.search(&at_edit, &root, "u"), (Some(2), true), "Users после Edit");
+        assert_eq!(tree.search(&at_edit, &root, "u"), (Some(2), true), "Users after Edit");
         let at_quit = State { focus: Focus { index: Some(4), parent_key: String::new() }, ..State::default() };
-        assert_eq!(tree.search(&at_quit, &root, "f"), (Some(0), true), "по кругу к началу");
-        assert_eq!(tree.search(&at_quit, &root, "z"), (None, false), "есть фокус, но не найдено: ничего не меняется");
-        // отключённые пункты не находятся
+        assert_eq!(tree.search(&at_quit, &root, "f"), (Some(0), true), "wraps around to the start");
+        assert_eq!(tree.search(&at_quit, &root, "z"), (None, false), "there is focus but nothing found: nothing changes");
+        // disabled items are not found
         let file = State { active: vec!["0".into()], focus: Focus { index: None, parent_key: "0".into() }, dirty: true };
         let sub = tree.visible(&file);
-        assert_eq!(tree.search(&file, &sub, "p"), (Some(0), false), "Print отключён: найденным не считается, фокус на раскрытом/первом");
+        assert_eq!(
+            tree.search(&file, &sub, "p"),
+            (Some(0), false),
+            "Print is disabled: not counted as found, focus on the expanded/first item"
+        );
         assert!(is_printable("a", false) && !is_printable("a", true) && !is_printable("Enter", false) && !is_printable("", false));
     }
 
@@ -822,7 +826,7 @@ mod tests {
 
     #[test]
     fn submenu_side_table() {
-        // (левый край пункта, ширина пункта, ширина подменю, окно, полоса, уровень) → сторона
+        // (item left edge, item width, submenu width, window, scrollbar, level) → side
         let table = [
             (100.0, 200.0, 200.0, 1000.0, 0.0, 1, "100%"),
             (700.0, 200.0, 200.0, 1000.0, 0.0, 1, "-100%"),

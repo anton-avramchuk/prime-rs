@@ -1,4 +1,4 @@
-//! Структура DOM, классы, атрибуты, `pt` и a11y Button (SSR).
+//! DOM structure, classes, attributes, `pt` and a11y of Button (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -12,7 +12,7 @@ fn icon() -> ViewFn {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет `{needle}` в {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no `{needle}` in {html}"))
 }
 
 #[test]
@@ -26,9 +26,9 @@ fn default_button() {
 
 #[test]
 fn label_is_rendered_in_a_span() {
-    let html = view! { <Button label="Сохранить" /> }.to_html();
+    let html = view! { <Button label="Save" /> }.to_html();
     assert!(html.contains(r#"<span class="p-button-label""#) || html.contains("p-button-label"), "{html}");
-    assert!(html.contains(">Сохранить<"), "{html}");
+    assert!(html.contains(">Save<"), "{html}");
 }
 
 #[test]
@@ -79,7 +79,7 @@ fn loading_shows_spinner_instead_of_icon_and_disables() {
     assert!(html.contains("p-button-loading") && html.contains("disabled"), "{html}");
     assert!(html.contains("p-button-loading-icon") && html.contains("p-icon-spin"), "{html}");
     assert!(html.contains(r#"aria-hidden="true""#), "{html}");
-    assert!(!html.contains(r#"class="p-button-icon"#), "иконки быть не должно: {html}");
+    assert!(!html.contains(r#"class="p-button-icon"#), "the icon must not be present: {html}");
 }
 
 #[test]
@@ -101,18 +101,18 @@ fn badge_defaults_to_secondary_and_takes_severity() {
 #[test]
 fn children_come_first_and_replace_label_and_badge() {
     let html = view! {
-        <Button label="не будет" badge="9">
-            <i>"свой контент"</i>
+        <Button label="not rendered" badge="9">
+            <i>"custom content"</i>
         </Button>
     }
     .to_html();
-    assert!(html.contains("<i>свой контент</i>"), "{html}");
+    assert!(html.contains("<i>custom content</i>"), "{html}");
     assert!(!html.contains("p-button-label") && !html.contains("p-badge"), "{html}");
 }
 
 #[test]
 fn child_order_is_icon_label_badge() {
-    let html = view! { <Button icon=icon() label="Текст" badge="2" /> }.to_html();
+    let html = view! { <Button icon=icon() label="Text" badge="2" /> }.to_html();
     let (i, l, b) = (pos(&html, "p-button-icon"), pos(&html, "p-button-label"), pos(&html, "p-badge"));
     assert!(i < l && l < b, "{html}");
 }
@@ -144,8 +144,8 @@ fn pt_on_loading_icon() {
 
 #[test]
 fn a11y_attributes_and_native_button_type() {
-    let html = view! { <Button aria_label="Закрыть" tabindex=2 button_type="submit" /> }.to_html();
-    assert!(html.contains(r#"aria-label="Закрыть""#) && html.contains(r#"tabindex="2""#) && html.contains(r#"type="submit""#), "{html}");
+    let html = view! { <Button aria_label="Close" tabindex=2 button_type="submit" /> }.to_html();
+    assert!(html.contains(r#"aria-label="Close""#) && html.contains(r#"tabindex="2""#) && html.contains(r#"type="submit""#), "{html}");
 }
 
 #[test]
@@ -165,7 +165,7 @@ fn reactive_loading_and_label() {
 
 #[test]
 fn ssr_with_ripple_and_autofocus_never_touches_the_browser() {
-    // Effect-ы не выполняются при SSR: никакого window, фокуса и p-ink; тест падал бы паникой web-sys на нативной цели.
+    // Effects do not run during SSR: no window, focus or p-ink; the test would panic with a web-sys error on a native target.
     let owner = Owner::new();
     owner.with(|| {
         prime_core::provide_prime_config(prime_core::PrimeConfig { ripple: true, ..Default::default() });

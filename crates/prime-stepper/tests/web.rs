@@ -1,5 +1,5 @@
-//! Поведение Stepper в реальном браузере (wasm-bindgen-test): клик по шагу, линейный режим, переходы из содержимого панели,
-//! внешний сигнал, разделители при динамических шагах, вертикальная раскладка.
+//! Stepper behavior in a real browser (wasm-bindgen-test): click on a step, linear mode, transitions from panel content,
+//! external signal, separators with dynamic steps, vertical layout.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -21,7 +21,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("missing {sel}")).dyn_into().unwrap()
 }
 
 fn count(host: &HtmlElement, sel: &str) -> u32 {
@@ -69,7 +69,7 @@ async fn clicking_a_step_activates_it_and_swaps_the_panel() {
     assert_eq!(value.get_untracked(), Some(3));
     assert_eq!(active_steps(&host), ["3"]);
     assert_eq!(panel_text(&host), "Content III");
-    assert_eq!(count(&host, ".p-steppanel-content"), 1, "содержимое только у активной панели");
+    assert_eq!(count(&host, ".p-steppanel-content"), 1, "content only in the active panel");
     assert_eq!(q(&host, ".p-step-active").get_attribute("aria-current").as_deref(), Some("step"));
     assert!(q(&host, "[role=presentation]:not(.p-step-active)").get_attribute("aria-current").is_none());
     host.remove();
@@ -122,15 +122,15 @@ async fn linear_mode_blocks_clicks_but_not_programmatic_activation() {
     leptos::task::tick().await;
     assert!(q(&host, ".p-stepper").class_name().contains("p-readonly"));
     assert!(header(&host, 3).has_attribute("disabled"));
-    assert!(!header(&host, 1).has_attribute("disabled"), "активный шаг не блокируется");
+    assert!(!header(&host, 1).has_attribute("disabled"), "the active step is not blocked");
     header(&host, 3).click();
     leptos::task::tick().await;
-    assert_eq!(value.get_untracked(), Some(1), "клик по недоступному шагу ничего не меняет");
+    assert_eq!(value.get_untracked(), Some(1), "a click on an unavailable step changes nothing");
     q(&host, ".next").click();
     leptos::task::tick().await;
     assert_eq!(value.get_untracked(), Some(2));
     assert_eq!(panel_text(&host), "Two");
-    assert!(header(&host, 1).has_attribute("disabled"), "теперь недоступен шаг 1");
+    assert!(header(&host, 1).has_attribute("disabled"), "step 1 is now unavailable");
     host.remove();
 }
 
@@ -172,10 +172,10 @@ async fn separators_follow_dynamically_added_and_removed_steps() {
     assert_eq!(count(&host, ".p-stepper-separator"), 1);
     extra.set(true);
     leptos::task::tick().await;
-    assert_eq!(count(&host, ".p-stepper-separator"), 2, "второй шаг получил разделитель");
+    assert_eq!(count(&host, ".p-stepper-separator"), 2, "the second step got a separator");
     extra.set(false);
     leptos::task::tick().await;
-    assert_eq!(count(&host, ".p-stepper-separator"), 1, "разделитель снова только у первого");
+    assert_eq!(count(&host, ".p-stepper-separator"), 1, "the separator is only on the first again");
     host.remove();
 }
 
@@ -193,9 +193,9 @@ async fn vertical_layout_shows_and_hides_panels() {
     });
     leptos::task::tick().await;
     let motion = |i: u32| doc_motion(&host, i);
-    assert_eq!(count(&host, ".p-steppanel-content"), 2, "содержимое всех панелей в разметке");
-    assert_eq!(motion(2).style().get_property_value("display").unwrap(), "none", "неактивная панель скрыта");
-    assert_ne!(motion(1).style().get_property_value("display").unwrap(), "none", "активная показана");
+    assert_eq!(count(&host, ".p-steppanel-content"), 2, "content of all panels is in the markup");
+    assert_eq!(motion(2).style().get_property_value("display").unwrap(), "none", "inactive panel is hidden");
+    assert_ne!(motion(1).style().get_property_value("display").unwrap(), "none", "active one is shown");
     assert!(q(&host, ".p-stepitem-active").text_content().unwrap_or_default().contains("One"));
     header(&host, 2).click();
     leptos::task::tick().await;
@@ -221,16 +221,16 @@ async fn vertical_inactive_panel_is_hidden_after_the_collapse_animation() {
         }
     });
     leptos::task::tick().await;
-    assert_eq!(doc_motion(&host, 2).style().get_property_value("display").unwrap(), "none", "неактивная панель скрыта сразу");
+    assert_eq!(doc_motion(&host, 2).style().get_property_value("display").unwrap(), "none", "inactive panel is hidden immediately");
     value.set(Some(2));
     leptos::task::tick().await;
-    // запасной таймер анимации завершает сворачивание, даже если animationend не пришёл
+    // the animation fallback timer finishes collapsing even if animationend did not arrive
     wasm_bindgen_futures::JsFuture::from(js_sys::Promise::new(&mut |resolve, _| {
         web_sys::window().unwrap().set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 900).unwrap();
     }))
     .await
     .unwrap();
-    assert_eq!(doc_motion(&host, 1).style().get_property_value("display").unwrap(), "none", "бывшая активная панель скрыта");
-    assert_ne!(doc_motion(&host, 2).style().get_property_value("display").unwrap(), "none", "новая активная показана");
+    assert_eq!(doc_motion(&host, 1).style().get_property_value("display").unwrap(), "none", "the formerly active panel is hidden");
+    assert_ne!(doc_motion(&host, 2).style().get_property_value("display").unwrap(), "none", "the new active one is shown");
     host.remove();
 }

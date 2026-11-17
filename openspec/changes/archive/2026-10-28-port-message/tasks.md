@@ -1,29 +1,29 @@
 # Tasks
 
-## 1. Крейт и логика
+## 1. Crate and logic
 
-- [x] 1.1 Создать крейт `crates/prime-message` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `prime-icons` (`times`), `web-sys`), добавить в workspace; проверить `cargo check -p prime-message --all-features`
-- [x] 1.2 Реализовать `MessageSeverity`, `MessageVariant`, `MessageState`, `write_classes`, `data_p` по `messagestyle.ts` и `Message.dataP`; проверить таблицей юнит-тестов
+- [x] 1.1 Create the crate `crates/prime-message` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-icons` (`times`), `web-sys`), add to the workspace; check `cargo check -p prime-message --all-features`
+- [x] 1.2 Implement `MessageSeverity`, `MessageVariant`, `MessageState`, `write_classes`, `data_p` per `messagestyle.ts` and `Message.dataP`; verify with a table of unit tests
 
-## 2. Компонент
+## 2. Component
 
-- [x] 2.1 Реализовать `Message` (разметка, классы, текст и дети, слоты, `pt`, две ветви); проверить SSR-тестами и паритетом
-- [x] 2.2 Реализовать закрытие, `on_close` и `life`; проверить `wasm-bindgen-test`
-- [x] 2.3 Добавить rustdoc с примером; проверить `cargo test -p prime-message --all-features`
+- [x] 2.1 Implement `Message` (markup, classes, text and children, slots, `pt`, two branches); verify with SSR tests and parity
+- [x] 2.2 Implement closing, `on_close` and `life`; verify with `wasm-bindgen-test`
+- [x] 2.3 Add rustdoc with an example; check `cargo test -p prime-message --all-features`
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/message` (`basic`, `closable`, `severity`, `outlined`, `simple`, `sizes`, `icon`, `life`), меню, CSS `message`
-- [x] 3.2 `e2e/tests/pages.json` и `e2e/tests/message.spec.ts`; проверить `npx playwright test message`
+- [x] 3.1 The `/message` page (`basic`, `closable`, `severity`, `outlined`, `simple`, `sizes`, `icon`, `life`), menu, `message` CSS
+- [x] 3.2 `e2e/tests/pages.json` and `e2e/tests/message.spec.ts`; check `npx playwright test message`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `message-1`, `message-1000`, `case-message`, бюджеты по измерению
+- [x] 4.1 Scenarios `message-1`, `message-1000`, `case-message`, budgets from measurement
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/message.md`; clippy, тесты, deny, machete, `openspec validate port-message`; `prime-message` в браузерный job CI; CI `dev` зелёный
+- [x] 5.1 `docs/message.md`; clippy, tests, deny, machete, `openspec validate port-message`; `prime-message` in the CI browser job; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI; далее ProgressBar.
+- Archive after CI; next is ProgressBar.

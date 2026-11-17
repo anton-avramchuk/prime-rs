@@ -4,7 +4,7 @@ test.describe('PickList', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1400 });
         await page.goto('/picklist');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_picklist')).toBeAttached();
     });
@@ -13,7 +13,7 @@ test.describe('PickList', () => {
     const options = (page, id: string, side: 'source' | 'target') =>
         page.locator(`#${id} .p-picklist-${side}-list-container .p-listbox-option`).allTextContents().then((t) => t.map((s) => s.trim()));
 
-    test('стили темы: пять блоков в ряд, кнопки столбцом', async ({ page }) => {
+    test('theme styles: five blocks in a row, buttons in a column', async ({ page }) => {
         const picklist = root(page, 'basic_picklist');
         expect(await picklist.evaluate((el) => getComputedStyle(el).display)).toBe('flex');
         const controls = picklist.locator('.p-picklist-transfer-controls');
@@ -28,7 +28,7 @@ test.describe('PickList', () => {
         await expect(picklist.locator('.p-picklist-target-list-container')).toContainText('Selected');
     });
 
-    test('перенос выбранных и всех', async ({ page }) => {
+    test('transfer of selected and all', async ({ page }) => {
         const picklist = root(page, 'basic_picklist');
         await picklist.locator('.p-picklist-source-list-container .p-listbox-option', { hasText: 'Blue Band' }).click();
         await picklist.locator('.p-picklist-source-list-container .p-listbox-option', { hasText: 'Bracelet' }).first().click();
@@ -43,7 +43,7 @@ test.describe('PickList', () => {
         expect(await options(page, 'basic_picklist', 'target')).toHaveLength(0);
     });
 
-    test('перестановка в цели и двойной клик', async ({ page }) => {
+    test('reordering in the target and double click', async ({ page }) => {
         const picklist = root(page, 'basic_picklist');
         await picklist.getByLabel('Move All to Target').click();
         await picklist.locator('.p-picklist-target-list-container .p-listbox-option', { hasText: 'Bracelet' }).first().click();
@@ -51,12 +51,12 @@ test.describe('PickList', () => {
         expect((await options(page, 'basic_picklist', 'target'))[0]).toBe('Bracelet');
         await picklist.locator('.p-picklist-target-controls').getByLabel('Move Bottom').click();
         expect((await options(page, 'basic_picklist', 'target')).at(-1)).toBe('Bracelet');
-        // двойной клик по элементу цели возвращает выбранные
+        // a double click on a target item moves the selected ones back
         await picklist.locator('.p-picklist-target-list-container .p-listbox-option', { hasText: 'Bracelet' }).first().dblclick();
         expect(await options(page, 'basic_picklist', 'source')).toEqual(['Bracelet']);
     });
 
-    test('поиск и перенос только найденных', async ({ page }) => {
+    test('search and transfer of only the found ones', async ({ page }) => {
         const picklist = root(page, 'filter_picklist');
         await picklist.locator('.p-picklist-source-list-container input.p-listbox-filter').fill('Watch');
         await expect(picklist.locator('.p-picklist-source-list-container .p-listbox-option')).toHaveCount(2);

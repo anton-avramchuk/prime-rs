@@ -2,54 +2,54 @@
 
 ## Context
 
-Требования — в `specs/knob`. Исходники PrimeNG 21.1.10: `packages/primeng/src/knob/knob.ts`, `knob/style/knobstyle.ts`, демонстрации `apps/showcase/doc/knob`. Образец — `crates/prime-slider` (значение `RwSignal<f64>`, `window_event_listener` из обработчика с хранением handle в `StoredValue<_, LocalStorage>`, снятие в `on_cleanup`, правила без чтения значения в замыканиях списка; `docs/slider.md`).
+Requirements are in `specs/knob`. PrimeNG 21.1.10 sources: `packages/primeng/src/knob/knob.ts`, `knob/style/knobstyle.ts`, demos `apps/showcase/doc/knob`. Reference implementation - `crates/prime-slider` (value `RwSignal<f64>`, `window_event_listener` from a handler with the handle stored in `StoredValue<_, LocalStorage>`, removal in `on_cleanup`, rules without reading the value in list closures; `docs/slider.md`).
 
-Наблюдения по исходнику, влияющие на решения:
-- Геометрия: центр (50, 50), радиус 40, `minRadians = 4π/3` (нижний левый), `maxRadians = −π/3` (нижний правый), разрыв внизу между −120° и −60° (в радианах `−2π/3 … −π/3`). Угол точки считается из `atan2(size/2 − y, x − size/2)`, значение — `mapRange` по углу, при попадании в разрыв значение не меняется.
-- Дуга значения идёт от нуля шкалы: `zeroRadians` — позиция 0 в `min..max` (при `min > 0 && max > 0` — позиция `min`); флаги `largeArc` и `sweep` выбираются по углам.
-- `valueTemplate.replace('{value}', …)` в JS заменяет только первое вхождение.
-- Координаты указателя в PrimeNG — `offsetX/offsetY` события. У события `mousemove` на `window` они относительны текущей цели (дочернему элементу SVG или вообще другому элементу), поэтому при выходе указателя за шкалу значение вычисляется неверно; у клика по `path` смещение тоже относительно потомка.
-- `onMouseUp` снимает слушатель `mousemove`, но присвоением `null` теряет ссылку на слушатель `mouseup` и не снимает его — слушатель остаётся на `window`.
-- `mousedown` вызывает `preventDefault`, поэтому SVG не получает фокус от клика и клавиши работают только после Tab.
-- Округление по шагу `Math.round((mapped − min) / step) · step + min` не ограничивается отрезком (при `max − min`, не кратном `step`, возможен выход за `max`). Клавиши шагают на 1 и 10, `step` не учитывают.
-- `mouseup` после перетаскивания над SVG сопровождается `click`, который заново применяет то же значение и повторно вызывает `onChange`.
+Observations about the source that affect decisions:
+- Geometry: center (50, 50), radius 40, `minRadians = 4π/3` (bottom left), `maxRadians = -π/3` (bottom right), a gap at the bottom between -120 deg and -60 deg (in radians `-2π/3 ... -π/3`). The angle of a point is computed from `atan2(size/2 - y, x - size/2)`, the value from `mapRange` by angle; when the point falls in the gap the value does not change.
+- The value arc goes from the scale zero: `zeroRadians` is the position of 0 in `min..max` (with `min > 0 && max > 0` the position of `min`); the `largeArc` and `sweep` flags are chosen from the angles.
+- `valueTemplate.replace('{value}', ...)` in JS replaces only the first occurrence.
+- Pointer coordinates in PrimeNG are the event's `offsetX/offsetY`. For a `mousemove` event on `window` they are relative to the current target (an SVG child or another element altogether), so when the pointer leaves the scale the value is computed incorrectly; for a click on `path` the offset is also relative to the descendant.
+- `onMouseUp` removes the `mousemove` listener, but by assigning `null` it loses the reference to the `mouseup` listener and does not remove it - the listener stays on `window`.
+- `mousedown` calls `preventDefault`, so the SVG does not get focus from a click and keys work only after Tab.
+- Step rounding `Math.round((mapped - min) / step) · step + min` is not clamped to the range (when `max - min` is not a multiple of `step`, exceeding `max` is possible). Keys step by 1 and 10 and ignore `step`.
+- A `mouseup` after dragging over the SVG is accompanied by a `click`, which reapplies the same value and calls `onChange` again.
 
 ## Decisions
 
-### D1. Значение
-`value: Option<RwSignal<f64>>`; без него создаётся внутренний с `default_value` (`OptProp<f64>`, читается один раз), а при его отсутствии с `min`. Число — `f64`.
+### D1. Value
+`value: Option<RwSignal<f64>>`; without it an internal one is created with `default_value` (`OptProp<f64>`, read once), and if that is absent with `min`. The number is `f64`.
 
-### D2. Чистая логика (`state.rs`)
-Функции без DOM, каждая с табличным тестом: `map_range`, `value_from_angle(angle, min, max, step) -> Option<f64>` (разрыв — `None`; округление по шагу; ограничение `min..=max`), `zero_radians`, `value_radians`, `arc_point(radians)`, `range_path()`, `value_path(value, min, max)` (с флагами `large-arc` и `sweep`), `key_target(code, current, min, max) -> Option<f64>`, `display_text(template, value)` (первое вхождение), классы корня. Координаты в путях округляются до трёх знаков: результат не зависит от шума `f64`, а HTML короче.
+### D2. Pure logic (`state.rs`)
+Functions without DOM, each with a table-driven test: `map_range`, `value_from_angle(angle, min, max, step) -> Option<f64>` (the gap is `None`; rounding by step; clamping `min..=max`), `zero_radians`, `value_radians`, `arc_point(radians)`, `range_path()`, `value_path(value, min, max)` (with `large-arc` and `sweep` flags), `key_target(code, current, min, max) -> Option<f64>`, `display_text(template, value)` (first occurrence), root classes. Coordinates in paths are rounded to three decimals: the result does not depend on `f64` noise, and the HTML is shorter.
 
-### D3. Указатель
-Координаты — клиентские: `x = clientX − rect.left`, `y = clientY − rect.top` относительно `<svg>` (`getBoundingClientRect` в момент события), центр — `rect.width / 2`, `rect.height / 2`. Это устраняет зависимость от цели события; при `size`, не равном отрисованному размеру, масштаб берётся из `rect`. Клик, `mousemove` на `window` и `touchmove` на `window` (одно касание) идут одним путём `update_from_pointer`. Подписка на `window` создаётся из `mousedown`/`touchstart` и снимается при отпускании, окончании касания и размонтировании (`on_cleanup`), оба слушателя — без потери ссылки. `mousedown` фокусирует SVG и вызывает `preventDefault` (чтобы не выделялся текст). Клик сразу после перетаскивания, в котором значение уже менялось, пропускается (флаг `moved`), чтобы не повторять `on_change`.
+### D3. Pointer
+Coordinates are client ones: `x = clientX - rect.left`, `y = clientY - rect.top` relative to `<svg>` (`getBoundingClientRect` at the moment of the event), the center is `rect.width / 2`, `rect.height / 2`. This removes the dependence on the event target; when `size` differs from the rendered size, the scale is taken from `rect`. A click, `mousemove` on `window` and `touchmove` on `window` (a single touch) go through one path, `update_from_pointer`. The `window` subscription is created from `mousedown`/`touchstart` and removed on release, on touch end and on unmount (`on_cleanup`), both listeners without losing the reference. `mousedown` focuses the SVG and calls `preventDefault` (so that text is not selected). A click right after dragging, in which the value has already changed, is skipped (the `moved` flag) so as not to repeat `on_change`.
 
-### D4. Клавиши и обновление
-`update_value(raw, check_step)` ограничивает значение отрезком, пишет сигнал и вызывает `on_change` на каждое применение (как PrimeNG, даже если значение не изменилось). Клавиши шагают на 1 и 10 независимо от `step` и ограничиваются отрезком; `readonly` и `disabled` блокируют всё.
+### D4. Keys and update
+`update_value(raw, check_step)` clamps the value to the range, writes the signal and calls `on_change` on every application (like PrimeNG, even if the value did not change). Keys step by 1 and 10 regardless of `step` and are clamped to the range; `readonly` and `disabled` block everything.
 
-### D5. Разметка и реактивность
-Корень — `<div>`; `<svg>` строится один раз; всё, что зависит от значения и свойств (`d` дуг, текст, `aria-valuenow`), — замыкания. Ширина и высота SVG — `style="width: {size}px; height: {size}px"`; `viewBox="0 0 100 100"`. Цвета по умолчанию — `var(--p-knob-range-background)`, `var(--p-knob-value-background)`, `var(--p-knob-text-color)` (то, во что `$dt(...).variable` превращается в PrimeNG). `tabindex`: `-1` при `readonly` или `disabled`, иначе заданный или 0. Атрибут `name` у `<text>` выводится, если задан (как в PrimeNG). Значение вне отрезка рисуется прижатым к краю, текст и `aria-valuenow` показывают исходное.
+### D5. Markup and reactivity
+The root is a `<div>`; the `<svg>` is built once; everything that depends on the value and properties (the arcs' `d`, the text, `aria-valuenow`) is closures. SVG width and height are `style="width: {size}px; height: {size}px"`; `viewBox="0 0 100 100"`. Default colors are `var(--p-knob-range-background)`, `var(--p-knob-value-background)`, `var(--p-knob-text-color)` (what `$dt(...).variable` turns into in PrimeNG). `tabindex`: `-1` with `readonly` or `disabled`, otherwise the given one or 0. The `name` attribute on `<text>` is rendered if set (as in PrimeNG). A value outside the range is drawn clamped to the edge, while the text and `aria-valuenow` show the original.
 
 ### D6. CSS
-`knob` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; блока `/* For PrimeNG */` у `knobstyle.ts` нет, `primeng_extra` не меняется.
+`knob` in `theme.components` (`upstream.toml`), `cargo xtask gen-theme`; `knobstyle.ts` has no `/* For PrimeNG */` block, `primeng_extra` does not change.
 
-### D7. Демонстрации
-`basic`, `minmax`, `reactive`, `size`, `step`, `stroke`, `template`, `color`, `readonly`, `disabled`. В `reactive` кнопки плюс и минус — `Button` с `PlusIcon`/`MinusIcon`. В `basic` — `echo` значения для e2e.
+### D7. Demos
+`basic`, `minmax`, `reactive`, `size`, `step`, `stroke`, `template`, `color`, `readonly`, `disabled`. In `reactive` the plus and minus buttons are `Button` with `PlusIcon`/`MinusIcon`. In `basic` there is an `echo` of the value for e2e.
 
-### D8. Тесты
-SSR: структура, `aria-*`, размер и стили SVG, пути (ключевые точки), шаблон и цвета, `show_value`, `disabled`/`readonly`/`tabindex`, `pt`, паритет статических и реактивных свойств. Браузерные (`tests/web.rs`): клавиши (границы, `preventDefault`, фокус), клик по характерным точкам (верх, лево, право, разрыв внизу), шаг, перетаскивание с выходом указателя за пределы SVG, отсутствие реакции после `mouseup`, пропуск `click` после перетаскивания, `readonly`/`disabled`, внешний сигнал, реактивные границы. e2e: перетаскивание реальной мышью и клавиши. Касание — только чистой функцией, без проверки на сенсорном устройстве, как у Slider.
+### D8. Tests
+SSR: structure, `aria-*`, SVG size and styles, paths (key points), template and colors, `show_value`, `disabled`/`readonly`/`tabindex`, `pt`, parity of static and reactive properties. Browser (`tests/web.rs`): keys (bounds, `preventDefault`, focus), click at characteristic points (top, left, right, gap at the bottom), step, dragging with the pointer leaving the SVG, no reaction after `mouseup`, skipping `click` after dragging, `readonly`/`disabled`, external signal, reactive bounds. e2e: dragging with a real mouse and keys. Touch only via the pure function, with no check on a touch device, as with Slider.
 
 ## Risks / Trade-offs
 
-- [Отличия от PrimeNG в координатах, снятии слушателей, фокусе, ограничении по отрезку и подавлении повторного `click`] → каждое — исправление явного дефекта или улучшение доступности, фиксируется в `docs/knob.md`.
-- [Округление координат путей до 3 знаков меняет текст атрибута `d` по сравнению с PrimeNG] → визуально неразличимо (1/1000 единицы `viewBox`), тесты проверяют геометрию.
-- [Касание проверяется слабее мыши] → чистая функция; проверки на сенсорном устройстве нет, это зафиксировано в `docs/knob.md`.
+- [Differences from PrimeNG in coordinates, listener removal, focus, range clamping and suppression of a repeated `click`] -> each is a fix of an evident defect or an accessibility improvement, recorded in `docs/knob.md`.
+- [Rounding path coordinates to 3 decimals changes the text of the `d` attribute compared to PrimeNG] -> visually indistinguishable (1/1000 of a `viewBox` unit), tests check the geometry.
+- [Touch is verified less than mouse] -> a pure function; there is no touch-device check, recorded in `docs/knob.md`.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback is `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

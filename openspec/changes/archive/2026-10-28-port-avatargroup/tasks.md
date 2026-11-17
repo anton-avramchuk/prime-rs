@@ -1,23 +1,23 @@
 # Tasks
 
-## 1. Крейт и компонент
+## 1. Crate and component
 
-- [x] 1.1 Создать крейт `crates/prime-avatargroup` (`publish = false`, features `ssr`/`hydrate`, зависимость `prime-core`), добавить в workspace; проверить `cargo check -p prime-avatargroup --all-features`
-- [x] 1.2 Реализовать `AvatarGroup` (корень, классы, `style`, `style_class`, `pt`, две ветви) и rustdoc с примером; проверить SSR-тестами, паритетом и `cargo test -p prime-avatargroup --all-features`
+- [x] 1.1 Create the crate `crates/prime-avatargroup` (`publish = false`, features `ssr`/`hydrate`, dependency `prime-core`), add it to the workspace; check `cargo check -p prime-avatargroup --all-features`
+- [x] 1.2 Implement `AvatarGroup` (root, classes, `style`, `style_class`, `pt`, two branches) and rustdoc with an example; check with SSR tests, parity and `cargo test -p prime-avatargroup --all-features`
 
-## 2. Showcase и e2e
+## 2. Showcase and e2e
 
-- [x] 2.1 Добавить демонстрацию `avatargroup` на страницу `/avatar`, CSS темы уже подключён; проверить `cargo leptos build` и страницу в Chrome
-- [x] 2.2 Добавить запись в `e2e/tests/pages.json` и проверки в `e2e/tests/avatar.spec.ts` (перекрытие аватаров); проверить `npx playwright test avatar`
+- [x] 2.1 Add the `avatargroup` demo to the `/avatar` page; the theme CSS is already connected; check `cargo leptos build` and the page in Chrome
+- [x] 2.2 Add an entry to `e2e/tests/pages.json` and checks in `e2e/tests/avatar.spec.ts` (overlap of the avatars); check `npx playwright test avatar`
 
-## 3. Бенчмарки и бюджеты
+## 3. Benchmarks and budgets
 
-- [x] 3.1 Сценарии `avatargroup-1`, `avatargroup-1000`, `case-avatargroup`, бюджеты по измерению
+- [x] 3.1 Scenarios `avatargroup-1`, `avatargroup-1000`, `case-avatargroup`, budgets by measurement
 
-## 4. Интеграция
+## 4. Integration
 
-- [x] 4.1 `docs/avatargroup.md`, правка `docs/avatar.md`; clippy, тесты, deny, machete, `openspec validate port-avatargroup`; CI `dev` зелёный
+- [x] 4.1 `docs/avatargroup.md`, an edit of `docs/avatar.md`; clippy, tests, deny, machete, `openspec validate port-avatargroup`; CI on `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
+- Archive after CI.

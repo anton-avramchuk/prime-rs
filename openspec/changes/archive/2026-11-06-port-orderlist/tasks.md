@@ -1,31 +1,31 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 `orderlist` в `theme.components` и `primeng_extra`, `cargo xtask gen-theme`; есть `p-orderlist-controls`
-- [x] 1.2 Свериться с `moveUp/Top/Down/Bottom`, `moveDisabled` исходника
+- [x] 1.1 `orderlist` in `theme.components` and `primeng_extra`, `cargo xtask gen-theme`; `p-orderlist-controls` is present
+- [x] 1.2 Cross-check against the source's `moveUp/Top/Down/Bottom`, `moveDisabled`
 
-## 2. Крейт `prime-orderlist`
+## 2. Crate `prime-orderlist`
 
-- [x] 2.1 Модуль `reorder.rs` с табличными тестами
-- [x] 2.2 Компонент `OrderList`, `OrderListPt`: панель кнопок и `Listbox`, SSR-тесты, rustdoc
-- [x] 2.3 Действия кнопок, `on_reorder`, `on_selection_change`, `disabled`
-- [x] 2.4 Браузерные `tests/web.rs`
+- [x] 2.1 The module `reorder.rs` with table tests
+- [x] 2.2 The `OrderList`, `OrderListPt` component: the button panel and `Listbox`, SSR tests, rustdoc
+- [x] 2.3 The button actions, `on_reorder`, `on_selection_change`, `disabled`
+- [x] 2.4 Browser `tests/web.rs`
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/orderlist`, меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `orderlist.spec.ts`
+- [x] 3.1 The `/orderlist` page, the menu, the route, `stylesheet(&[..])`, the crate in the workspace and the showcase
+- [x] 3.2 `e2e/tests/pages.json` and `orderlist.spec.ts`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-orderlist`, бюджеты
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-orderlist`, budgets
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/orderlist.md`; `prime-orderlist` в браузерный job `ci.yml` (три места)
-- [x] 5.2 fmt, clippy, тесты, deny, machete, `openspec validate port-orderlist`
+- [x] 5.1 `docs/orderlist.md`; `prime-orderlist` in the browser job of `ci.yml` (three places)
+- [x] 5.2 fmt, clippy, tests, deny, machete, `openspec validate port-orderlist`
 
 ## Workflow follow-up
 
-- Волна 6 — CI один раз в конце волны; коммит и архив локально.
+- Wave 6 — CI once at the end of the wave; commit and archive locally.

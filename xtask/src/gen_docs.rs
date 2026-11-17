@@ -1,23 +1,23 @@
-//! `cargo xtask gen-docs`: данные сайта документации (`showcase/src/generated.rs`) из исходников.
+//! `cargo xtask gen-docs`: docs site data (`showcase/src/generated.rs`) from the sources.
 //!
-//! Для каждой страницы `showcase/src/pages/<имя>.rs` собираются: код демонстраций (компонент, на который ссылается
-//! `<Demo>`), строки `use`, свойства и события компонентов крейта `crates/prime-<имя>`, части Pass Through,
-//! CSS-классы темы, заметки из `docs/<имя>.md`. Разбор — текстовый: исходники отформатированы `rustfmt`.
+//! For each page `showcase/src/pages/<name>.rs` the following is collected: demo code (the component referenced by
+//! `<Demo>`), `use` lines, properties and events of the components of the crate `crates/prime-<name>`, Pass Through parts,
+//! theme CSS classes, notes from `docs/<name>.md`. Parsing is textual: the sources are formatted with `rustfmt`.
 
 use std::fmt::Write as _;
 use std::path::Path;
 
-/// Демонстрация страницы.
+/// Page demo.
 #[derive(Debug, Eq, PartialEq)]
 pub struct DemoRef {
     pub name: String,
     pub title: String,
     pub component: String,
-    /// Содержимое элемента `<Demo>` (на случай демо без отдельного компонента).
+    /// Content of the `<Demo>` element (for a demo without a separate component).
     pub inner: String,
 }
 
-/// Вид параметра компонента.
+/// Kind of a component parameter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Kind {
     Prop,
@@ -25,7 +25,7 @@ pub enum Kind {
     Pt,
 }
 
-/// Параметр `#[component]`.
+/// A `#[component]` parameter.
 #[derive(Debug, Eq, PartialEq)]
 pub struct Param {
     pub name: String,
@@ -36,21 +36,21 @@ pub struct Param {
     pub kind: Kind,
 }
 
-/// Компонент крейта.
+/// Crate component.
 #[derive(Debug, Eq, PartialEq)]
 pub struct Comp {
     pub name: String,
     pub params: Vec<Param>,
 }
 
-/// Структура Pass Through и её части.
+/// Pass Through structure and its parts.
 #[derive(Debug, Eq, PartialEq)]
 pub struct PtStruct {
     pub name: String,
     pub fields: Vec<(String, String)>,
 }
 
-/// Находит `<Demo name=".." title="..">` и компонент внутри.
+/// Finds `<Demo name=".." title="..">` and the component inside.
 pub fn parse_page_demos(src: &str) -> Vec<DemoRef> {
     let mut out = Vec::new();
     let mut rest = src;
@@ -80,12 +80,12 @@ fn attr(attrs: &str, key: &str) -> Option<String> {
     Some(attrs[at..at + end].to_owned())
 }
 
-/// Текст `#[component] fn Имя` вместе с атрибутами и `///` до закрывающей скобки на нулевом отступе.
+/// Text of `#[component] fn Name` together with attributes and `///` up to the closing brace at zero indent.
 pub fn extract_fn(src: &str, name: &str) -> Option<String> {
     let needle = [format!("\nfn {name}("), format!("\npub fn {name}(")];
     let at = needle.iter().filter_map(|n| src.find(n.as_str())).min()? + 1;
     let mut start = at;
-    // поднимаемся к атрибутам и документации над функцией
+    // go up to the attributes and docs above the function
     let head = &src[..at];
     let mut lines: Vec<&str> = head.lines().collect();
     while let Some(last) = lines.last() {
@@ -100,7 +100,7 @@ pub fn extract_fn(src: &str, name: &str) -> Option<String> {
     Some(src[start..end].to_owned())
 }
 
-/// Код демо без отдельного компонента: содержимое `<Demo>` как `view!`, с общим отступом снят.
+/// Demo code without a separate component: the content of `<Demo>` as `view!`, with the common indent removed.
 pub fn inline_code(inner: &str) -> String {
     let lines: Vec<&str> = inner.lines().filter(|l| !l.trim().is_empty()).collect();
     if lines.is_empty() {
@@ -119,7 +119,7 @@ pub fn inline_code(inner: &str) -> String {
     )
 }
 
-/// Операторы `use prime_…;` страницы.
+/// The page's `use prime_...;` statements.
 pub fn page_imports(src: &str) -> String {
     let mut out = Vec::new();
     let mut rest = src;
@@ -134,7 +134,7 @@ pub fn page_imports(src: &str) -> String {
     out.join("\n")
 }
 
-/// Первый абзац `//!`-документации крейта, одной строкой.
+/// First paragraph of the crate's `//!` docs, on one line.
 pub fn crate_description(lib: &str) -> String {
     let mut parts = Vec::new();
     for line in lib.lines() {
@@ -174,7 +174,7 @@ fn depth_delta(text: &str) -> i32 {
     depth
 }
 
-/// Содержимое скобок после `from` (первая `(` и её пара), без внешних скобок.
+/// Contents of the parentheses after `from` (the first `(` and its pair), without the outer parentheses.
 fn paren_body(text: &str, from: usize) -> Option<&str> {
     let open = from + text[from..].find('(')?;
     let mut depth = 0;
@@ -304,7 +304,7 @@ fn parse_params(body: &str) -> Vec<Param> {
     out
 }
 
-/// Все `#[component]` исходника с параметрами.
+/// All `#[component]`s of the source with their parameters.
 pub fn parse_components(src: &str) -> Vec<Comp> {
     let mut out = Vec::new();
     for chunk in src.split("#[component]").skip(1) {
@@ -317,7 +317,7 @@ pub fn parse_components(src: &str) -> Vec<Comp> {
     out
 }
 
-/// Структуры `*Pt` с полями.
+/// `*Pt` structs with fields.
 pub fn parse_pt(src: &str) -> Vec<PtStruct> {
     let mut out = Vec::new();
     for chunk in src.split("pub struct ").skip(1) {
@@ -342,7 +342,7 @@ pub fn parse_pt(src: &str) -> Vec<PtStruct> {
     out
 }
 
-/// Классы `p-…` из CSS.
+/// `p-...` classes from CSS.
 pub fn css_classes(css: &str) -> Vec<String> {
     let mut set = std::collections::BTreeSet::new();
     let mut i = 0;
@@ -369,7 +369,7 @@ const KEYWORDS: &[&str] = &[
     "as", "const", "static", "self", "Self", "where", "type", "mod", "crate", "super", "async", "await", "dyn",
 ];
 
-/// Подсветка Rust: HTML со `span` классов `tk-*`.
+/// Rust highlighting: HTML with `span`s of `tk-*` classes.
 pub fn highlight(code: &str) -> String {
     let chars: Vec<char> = code.chars().collect();
     let mut out = String::new();
@@ -427,8 +427,8 @@ pub fn highlight(code: &str) -> String {
     out
 }
 
-/// Markdown → HTML. Заголовок первого уровня (название документа) опускается, остальные сдвигаются до `h4`+,
-/// чтобы на странице оставался один `h2` и разделы `h3`.
+/// Markdown -> HTML. The level-one heading (document title) is dropped, the others are shifted to `h4`+,
+/// so that the page keeps a single `h2` and `h3` sections.
 pub fn markdown(md: &str) -> String {
     use pulldown_cmark::{Event, HeadingLevel, Tag, TagEnd};
     let shift = |l: HeadingLevel| match l {
@@ -460,16 +460,16 @@ pub fn markdown(md: &str) -> String {
     html
 }
 
-/// Пункты заметок о доступности: строки с `aria-`, `role=` или клавишами.
+/// Accessibility note items: lines with `aria-`, `role=` or keys.
 pub fn accessibility_notes(md: &str) -> String {
     let lines: Vec<&str> = md
         .lines()
-        .filter(|l| l.trim_start().starts_with("- ") && (l.contains("aria-") || l.contains("role=") || l.contains("клавиш")))
+        .filter(|l| l.trim_start().starts_with("- ") && (l.contains("aria-") || l.contains("role=") || l.contains("key")))
         .collect();
     if lines.is_empty() { String::new() } else { markdown(&lines.join("\n")) }
 }
 
-/// Данные одной страницы.
+/// Data of a single page.
 pub struct PageData {
     pub name: String,
     pub description: String,
@@ -486,16 +486,16 @@ fn q(s: &str) -> String {
     format!("{s:?}")
 }
 
-/// Rust-код модуля `generated`.
+/// Rust code of the `generated` module.
 pub fn render(pages: &[PageData]) -> String {
     let mut out = String::from(
-        "//! Данные сайта документации. Создан `cargo xtask gen-docs`; руками не править.\n\n\
-         /// Код демонстрации.\npub struct DemoDoc {\n    pub name: &'static str,\n    pub title: &'static str,\n    pub code: &'static str,\n    pub html: &'static str,\n}\n\n\
-         /// Параметр компонента: вид (`prop`, `event`, `pt`), имя, тип, значение по умолчанию, описание, обязательность.\npub struct ParamDoc {\n    pub kind: &'static str,\n    pub name: &'static str,\n    pub ty: &'static str,\n    pub default: &'static str,\n    pub doc: &'static str,\n    pub required: bool,\n}\n\n\
-         /// Компонент крейта.\npub struct CompDoc {\n    pub name: &'static str,\n    pub params: &'static [ParamDoc],\n}\n\n\
-         /// Структура Pass Through.\npub struct PtDoc {\n    pub name: &'static str,\n    pub fields: &'static [(&'static str, &'static str)],\n}\n\n\
-         /// Страница компонента.\npub struct PageDoc {\n    pub name: &'static str,\n    pub description: &'static str,\n    pub imports: &'static str,\n    pub demos: &'static [DemoDoc],\n    pub comps: &'static [CompDoc],\n    pub pt: &'static [PtDoc],\n    pub classes: &'static [&'static str],\n    pub notes: &'static str,\n    pub a11y: &'static str,\n}\n\n\
-         /// Страницы по имени.\npub static PAGES: &[PageDoc] = &[\n",
+        "//! Docs site data. Generated by `cargo xtask gen-docs`; do not edit by hand.\n\n\
+         /// Demo code.\npub struct DemoDoc {\n    pub name: &'static str,\n    pub title: &'static str,\n    pub code: &'static str,\n    pub html: &'static str,\n}\n\n\
+         /// Component parameter: kind (`prop`, `event`, `pt`), name, type, default value, description, required flag.\npub struct ParamDoc {\n    pub kind: &'static str,\n    pub name: &'static str,\n    pub ty: &'static str,\n    pub default: &'static str,\n    pub doc: &'static str,\n    pub required: bool,\n}\n\n\
+         /// Crate component.\npub struct CompDoc {\n    pub name: &'static str,\n    pub params: &'static [ParamDoc],\n}\n\n\
+         /// Pass Through structure.\npub struct PtDoc {\n    pub name: &'static str,\n    pub fields: &'static [(&'static str, &'static str)],\n}\n\n\
+         /// Component page.\npub struct PageDoc {\n    pub name: &'static str,\n    pub description: &'static str,\n    pub imports: &'static str,\n    pub demos: &'static [DemoDoc],\n    pub comps: &'static [CompDoc],\n    pub pt: &'static [PtDoc],\n    pub classes: &'static [&'static str],\n    pub notes: &'static str,\n    pub a11y: &'static str,\n}\n\n\
+         /// Pages by name.\npub static PAGES: &[PageDoc] = &[\n",
     );
     for p in pages {
         let _ = writeln!(
@@ -559,7 +559,7 @@ fn read(path: &Path) -> Option<String> {
     std::fs::read_to_string(path).ok().map(|t| t.replace("\r\n", "\n"))
 }
 
-/// Файл заметок страницы: общие документы нескольких компонентов.
+/// Page notes file: shared documents of several components.
 fn doc_file(name: &str) -> &str {
     match name {
         "badge" => "button",
@@ -569,7 +569,7 @@ fn doc_file(name: &str) -> &str {
     }
 }
 
-/// Собирает данные страниц из каталогов репозитория.
+/// Collects page data from the repository directories.
 pub fn collect(root: &Path) -> Result<Vec<PageData>, String> {
     let pages_dir = root.join("showcase/src/pages");
     let mut names: Vec<String> = std::fs::read_dir(&pages_dir)
@@ -581,7 +581,7 @@ pub fn collect(root: &Path) -> Result<Vec<PageData>, String> {
     names.sort();
     let mut pages = Vec::new();
     for name in names {
-        let src = read(&pages_dir.join(format!("{name}.rs"))).ok_or_else(|| format!("страница {name}"))?;
+        let src = read(&pages_dir.join(format!("{name}.rs"))).ok_or_else(|| format!("page {name}"))?;
         let demos = parse_page_demos(&src)
             .into_iter()
             .map(|d| {
@@ -611,19 +611,19 @@ pub fn collect(root: &Path) -> Result<Vec<PageData>, String> {
     Ok(pages)
 }
 
-/// Запуск: запись `showcase/src/generated.rs` или проверка актуальности (`check`).
+/// Run: write `showcase/src/generated.rs` or check that it is up to date (`check`).
 pub fn run(root: &Path, check: bool) -> Result<(), String> {
     let text = render(&collect(root)?);
     let path = root.join("showcase/src/generated.rs");
     if check {
         let current = std::fs::read_to_string(&path).unwrap_or_default();
         if current.replace("\r\n", "\n") != text {
-            return Err(format!("{} устарел: выполните `cargo xtask gen-docs`", path.display()));
+            return Err(format!("{} is stale: run `cargo xtask gen-docs`", path.display()));
         }
         return Ok(());
     }
     std::fs::write(&path, text).map_err(|e| format!("{}: {e}", path.display()))?;
-    println!("документация: {}", path.display());
+    println!("docs: {}", path.display());
     Ok(())
 }
 
@@ -666,7 +666,7 @@ mod tests {
         assert_eq!(page_imports(PAGE), "use prime_button::Button;\nuse prime_core::Size;");
     }
 
-    const LIB: &str = "//! Button — порт.\n//! Вторая строка.\n//!\n//! Далее.\n\n/// Pass-through частей.\n#[derive(Clone)]\npub struct ButtonPt {\n    /// Корень.\n    pub root: Pt,\n    pub icon: Pt,\n}\n\n/// Кнопка.\n#[component]\npub fn Button(\n    /// Подпись.\n    #[prop(optional, into)]\n    label: Prop<String>,\n    /// Порядок.\n    #[prop(optional, default = Prop::Static(5), into)]\n    page_links: Prop<usize>,\n    /// Обязательное.\n    key: Callback<Vec<(String, u8)>, String>,\n    /// Клик.\n    #[prop(optional, into)]\n    on_click: Option<Callback<MouseEvent>>,\n    /// Части.\n    #[prop(optional)]\n    pt: Option<ButtonPt>,\n    children: Children,\n) -> impl IntoView {\n}\n";
+    const LIB: &str = "//! Button - port.\n//! Second line.\n//!\n//! Next.\n\n/// Pass-through of the parts.\n#[derive(Clone)]\npub struct ButtonPt {\n    /// Root.\n    pub root: Pt,\n    pub icon: Pt,\n}\n\n/// Button.\n#[component]\npub fn Button(\n    /// Label.\n    #[prop(optional, into)]\n    label: Prop<String>,\n    /// Order.\n    #[prop(optional, default = Prop::Static(5), into)]\n    page_links: Prop<usize>,\n    /// Required.\n    key: Callback<Vec<(String, u8)>, String>,\n    /// Click.\n    #[prop(optional, into)]\n    on_click: Option<Callback<MouseEvent>>,\n    /// Parts.\n    #[prop(optional)]\n    pt: Option<ButtonPt>,\n    children: Children,\n) -> impl IntoView {\n}\n";
 
     #[test]
     fn components_and_pt() {
@@ -674,9 +674,9 @@ mod tests {
         assert_eq!(comps.len(), 1);
         assert_eq!(comps[0].name, "Button");
         let p = &comps[0].params;
-        assert_eq!(p.len(), 5, "children пропущен: {p:?}");
+        assert_eq!(p.len(), 5, "children skipped: {p:?}");
         assert_eq!((p[0].name.as_str(), p[0].required, p[0].ty.as_str()), ("label", false, "Prop<String>"));
-        assert_eq!(p[0].doc, "Подпись.");
+        assert_eq!(p[0].doc, "Label.");
         assert_eq!(p[1].default.as_deref(), Some("5"));
         assert!(p[2].required && p[2].ty == "Callback<Vec<(String, u8)>, String>", "{:?}", p[2]);
         assert_eq!(p[3].kind, Kind::Event);
@@ -684,11 +684,9 @@ mod tests {
         let pt = parse_pt(LIB);
         assert_eq!(
             pt,
-            vec![PtStruct {
-                name: "ButtonPt".into(), fields: vec![("root".into(), "Корень.".into()), ("icon".into(), String::new())]
-            }]
+            vec![PtStruct { name: "ButtonPt".into(), fields: vec![("root".into(), "Root.".into()), ("icon".into(), String::new())] }]
         );
-        assert_eq!(crate_description(LIB), "Button — порт. Вторая строка.");
+        assert_eq!(crate_description(LIB), "Button - port. Second line.");
     }
 
     #[test]
@@ -710,7 +708,7 @@ mod tests {
 
     #[test]
     fn markdown_and_accessibility() {
-        let md = "# T\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\n- Есть `aria-sort`.\n- Иное.\n";
+        let md = "# T\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\n- Has `aria-sort`.\n- Other.\n";
         let html = markdown(md);
         assert!(html.contains("<table>") && !html.contains("<h1>") && !html.contains(">T<"), "{html}");
         assert!(
@@ -730,8 +728,8 @@ mod tests {
                 .contains("<h5>B</h5>")
         );
         let a11y = accessibility_notes(md);
-        assert!(a11y.contains("aria-sort") && !a11y.contains("Иное"), "{a11y}");
-        assert_eq!(accessibility_notes("- нет\n"), "");
+        assert!(a11y.contains("aria-sort") && !a11y.contains("Other"), "{a11y}");
+        assert_eq!(accessibility_notes("- none\n"), "");
     }
 
     #[test]

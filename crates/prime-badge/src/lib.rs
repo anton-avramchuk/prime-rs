@@ -1,9 +1,9 @@
-//! Badge — порт `p-badge` из PrimeNG 21.1.10.
+//! Badge — port of `p-badge` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы совпадают с PrimeNG (`p-badge p-component` + модификаторы, `data-p`), но вместо
-//! хост-элемента `<p-badge>` отрисовывается `<span>`: CSS темы привязан к классам, а не к имени тега.
+//! Markup and classes match PrimeNG (`p-badge p-component` + modifiers, `data-p`), but instead of the
+//! `<p-badge>` host element a `<span>` is rendered: the theme CSS is bound to classes, not to the tag name.
 //!
-//! Свойства — [`Prop`]/[`OptProp`]: значение не создаёт реактивных примитивов, сигнал подписывает атрибуты.
+//! Properties are [`Prop`]/[`OptProp`]: a value creates no reactive primitives, a signal subscribes the attributes.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -23,31 +23,31 @@ use std::sync::Arc;
 
 pub use state::{BadgeSeverity, BadgeSize, BadgeState, classes, data_p, write_classes};
 
-/// Pass-through частей Badge.
+/// Pass-through of Badge parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct BadgePt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
-/// Бейдж: значение, серьёзность, размер; без значения — точка, из одного символа — круг.
+/// Badge: value, severity, size; without a value a dot, with a single character a circle.
 ///
-/// Каждое свойство принимает значение или сигнал; значение не создаёт реактивных примитивов.
+/// Each property accepts a value or a signal; a value creates no reactive primitives.
 #[component]
 pub fn Badge(
-    /// Значение (строка). Пусто — точка (`p-badge-dot`), один символ — круг (`p-badge-circle`).
+    /// Value (string). Empty is a dot (`p-badge-dot`), one character is a circle (`p-badge-circle`).
     #[prop(optional, into)]
     value: OptProp<String>,
-    /// Серьёзность.
+    /// Severity.
     #[prop(optional, into)]
     severity: OptProp<BadgeSeverity>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<BadgeSize>,
-    /// Скрыть бейдж (`display: none`), оставив его в DOM.
+    /// Hide the badge (`display: none`), keeping it in the DOM.
     #[prop(optional, into)]
     badge_disabled: Prop<bool>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
@@ -56,12 +56,12 @@ pub fn Badge(
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default().root);
     let is_static = all_static!(value, severity, size, badge_disabled, style_class);
-    // Все свойства в одном `Arc`: замыкания атрибутов клонируют счётчик ссылок, а не строки значений.
+    // All properties in one `Arc`: attribute closures clone the reference counter, not the value strings.
     let props = Props { value, severity, size, disabled: badge_disabled, style_class };
     let attrs = pt.attrs();
 
     if is_static {
-        // Статический путь: значения считаются один раз, замыканий и `RenderEffect` нет.
+        // Static path: values are computed once, there are no closures or `RenderEffect`.
         let (class, style, data, text) = (class_of(&props, &pt), style_of(&props, &pt), data_of(&props), props.value.get());
         Either::Left(badge_markup!(class, style, data, text, attrs))
     } else {
@@ -83,7 +83,7 @@ pub fn Badge(
     }
 }
 
-/// Разметка Badge: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// Badge markup: one for the static and reactive branches (only attribute expressions differ).
 macro_rules! badge_markup {
     ($class:expr, $style:expr, $data:expr, $text:expr, $attrs:expr) => {
         view! {
@@ -112,7 +112,7 @@ fn data_of(props: &Props) -> Cow<'static, str> {
     props.with_state(data_p)
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     value: OptProp<String>,
     severity: OptProp<BadgeSeverity>,
@@ -122,7 +122,7 @@ struct Props {
 }
 
 impl Props {
-    /// Вызывает `f` с заимствованным снимком состояния (без копирования значения).
+    /// Calls `f` with a borrowed state snapshot (without copying the value).
     fn with_state<R>(&self, f: impl FnOnce(&BadgeState) -> R) -> R {
         self.value.with(|v| {
             f(&BadgeState { value: v.as_deref(), severity: self.severity.get(), size: self.size.get(), disabled: self.disabled.get() })

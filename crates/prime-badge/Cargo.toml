@@ -1,6 +1,6 @@
 [package]
 name = "prime-badge"
-description = "prime-rs: компонент Badge (порт PrimeNG)"
+description = "prime-rs: Badge component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

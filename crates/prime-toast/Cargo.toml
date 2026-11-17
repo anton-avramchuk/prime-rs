@@ -1,6 +1,6 @@
 [package]
 name = "prime-toast"
-description = "prime-rs: компонент Toast и MessageService (порт PrimeNG)"
+description = "prime-rs: Toast component and MessageService (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -19,7 +19,7 @@ prime-icons = { workspace = true, features = ["times", "check", "infocircle", "t
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "EventTarget", "MouseEvent", "AnimationEvent", "HtmlElement", "Element", "Node", "Document", "Window", "HtmlHeadElement", "CssStyleDeclaration"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

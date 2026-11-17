@@ -1,4 +1,4 @@
-//! Разметка Steps (SSR): корень, список, пункты, номера, активный пункт, `readonly`, `aria-*`, `tabindex`, `pt`.
+//! Steps markup (SSR): root, list, items, numbers, active item, `readonly`, `aria-*`, `tabindex`, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -25,7 +25,7 @@ fn markup_has_nav_list_and_items() {
     assert_eq!(html.matches("data-pc-section=\"menuitem\"").count(), 3, "{html}");
     assert_eq!(html.matches("role=\"link\"").count(), 3, "{html}");
     for n in 1..=3 {
-        assert!(html.contains(&format!("class=\"p-steps-item-number\">{n}<")), "номер {n}: {html}");
+        assert!(html.contains(&format!("class=\"p-steps-item-number\">{n}<")), "number {n}: {html}");
     }
     assert!(html.contains("class=\"p-steps-item-label\">Seat<") && html.contains("id=\"s0\""), "{html}");
     assert!(html.contains("href=\"/personal\"") && html.contains("target=\"_blank\""), "{html}");
@@ -44,7 +44,7 @@ fn active_item_is_marked() {
 fn readonly_disables_inactive_items() {
     let html = render(|| view! { <Steps model=model() active_index=0usize /> }.to_html());
     assert!(html.contains("p-steps p-component p-readonly"), "{html}");
-    assert_eq!(html.matches("p-disabled").count(), 2, "два неактивных: {html}");
+    assert_eq!(html.matches("p-disabled").count(), 2, "two inactive: {html}");
     assert_eq!(html.matches("aria-disabled=\"true\"").count(), 2, "{html}");
     assert_eq!(html.matches("aria-disabled=\"false\"").count(), 1, "{html}");
 }
@@ -53,14 +53,14 @@ fn readonly_disables_inactive_items() {
 fn disabled_item_stays_disabled_in_interactive_mode() {
     let html = render(|| view! { <Steps model=model() active_index=0usize readonly=false /> }.to_html());
     assert_eq!(html.matches("p-disabled").count(), 1, "{html}");
-    assert!(html.contains("opacity: .5"), "стиль пункта: {html}");
+    assert!(html.contains("opacity: .5"), "item style: {html}");
 }
 
 #[test]
 fn tabindex_follows_active_disabled_and_own_values() {
     let html = render(|| view! { <Steps model=model() active_index=0usize readonly=false /> }.to_html());
-    assert_eq!(html.matches("tabindex=\"0\"").count(), 1, "активный: {html}");
-    assert_eq!(html.matches("tabindex=\"-1\"").count(), 2, "второй по умолчанию, третий отключён: {html}");
+    assert_eq!(html.matches("tabindex=\"0\"").count(), 1, "active: {html}");
+    assert_eq!(html.matches("tabindex=\"-1\"").count(), 2, "the second by default, the third is disabled: {html}");
     let enabled = render(|| {
         let model = vec![StepsItem::new().label("a"), StepsItem::new().label("b").tabindex(4)];
         view! { <Steps model=model active_index=0usize readonly=false /> }.to_html()
@@ -93,7 +93,7 @@ fn style_class_style_and_pt() {
         "{html}"
     );
     for needle in ["p-steps-list l", "p-steps-item-link k", "p-steps-item-number n", "p-steps-item-label t"] {
-        assert!(html.contains(needle), "нет {needle}: {html}");
+        assert!(html.contains(needle), "no {needle}: {html}");
     }
     assert!(html.contains("p-steps-item p-steps-item-active i") || html.contains("p-steps-item i"), "{html}");
 }

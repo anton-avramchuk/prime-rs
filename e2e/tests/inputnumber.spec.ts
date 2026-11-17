@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.describe('InputNumber', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/inputnumber');
-        // ввод до гидратации (загрузка wasm) теряется
+        // input before hydration (wasm loading) is lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=locale] .p-inputnumber').first()).toBeAttached();
     });
 
-    test('демонстрации отрисованы, форматы локалей и валют', async ({ page }) => {
+    test('demos are rendered, locale and currency formats', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(14);
         await expect(page.locator('#locale-us')).toHaveValue('1,234.50');
         await expect(page.locator('#locale-german')).toHaveValue('1.234,50');
@@ -27,7 +27,7 @@ test.describe('InputNumber', () => {
         expect(radius).not.toBe('0px');
     });
 
-    test('набор с клавиатуры форматирует на лету, Backspace и границы', async ({ page }) => {
+    test('keyboard typing formats on the fly, Backspace and bounds', async ({ page }) => {
         const field = page.locator('#locale-us');
         await field.click();
         await page.keyboard.press('Control+A');
@@ -51,7 +51,7 @@ test.describe('InputNumber', () => {
         await expect(page.getByTestId('echo-minmax')).toHaveText('100');
     });
 
-    test('стрелки меняют значение, а курсор остаётся рядом с цифрами', async ({ page }) => {
+    test('arrows change the value and the caret stays next to the digits', async ({ page }) => {
         const bounded = page.locator('#minmax');
         await bounded.click();
         await page.keyboard.press('ArrowUp');
@@ -72,7 +72,7 @@ test.describe('InputNumber', () => {
         expect(caret).toBeGreaterThanOrEqual(1);
     });
 
-    test('кнопки: шаг, удержание, раскладки и значки', async ({ page }) => {
+    test('buttons: step, hold, layouts and icons', async ({ page }) => {
         const root = page.locator('[data-demo=buttons] .p-inputnumber').first();
         await expect(root).toHaveClass(/p-inputnumber-stacked/);
         const up = root.locator('.p-inputnumber-increment-button');
@@ -98,7 +98,7 @@ test.describe('InputNumber', () => {
         await expect(page.locator('#vertical-input')).toHaveValue('49');
     });
 
-    test('очистка, размеры, вариант, invalid и disabled', async ({ page }) => {
+    test('clear, sizes, variant, invalid and disabled', async ({ page }) => {
         const clearable = page.locator('[data-demo=clearicon] .p-inputnumber');
         await expect(page.locator('#price_input')).toHaveValue('$3,000.00');
         await clearable.locator('.p-inputnumber-clear-icon').click();
@@ -118,7 +118,7 @@ test.describe('InputNumber', () => {
         await expect(invalid).not.toHaveClass(/p-invalid/);
     });
 
-    test('floatlabel: метка в обёртке и поднимается при вводе', async ({ page }) => {
+    test('floatlabel: label in the wrapper and rises on input', async ({ page }) => {
         await page.waitForLoadState('networkidle');
         const demo = page.locator('[data-demo=floatlabel]');
         await expect(demo.locator('.p-floatlabel.p-floatlabel-over input.p-inputnumber-input')).toHaveCount(1);
@@ -129,7 +129,7 @@ test.describe('InputNumber', () => {
         await expect.poll(async () => (await label.boundingBox())!.y).toBeLessThan(before);
     });
 
-    test('iftalabel: метка в обёртке над значением', async ({ page }) => {
+    test('iftalabel: label in the wrapper above the value', async ({ page }) => {
         const demo = page.locator('[data-demo=iftalabel]');
         await expect(demo.locator('.p-iftalabel input.p-inputnumber-input')).toHaveCount(1);
         const label = demo.locator('.p-iftalabel > label');

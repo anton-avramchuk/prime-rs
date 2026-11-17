@@ -2,25 +2,25 @@
 
 ## Why
 
-Slider — выбор числа или диапазона перетаскиванием ручки; один из базовых компонентов форм, заметно сложнее уже портированных: перетаскивание мышью и касанием, клавиатура, вертикальная ориентация, режим диапазона. Закрывает следующий шаг после Rating и задаёт образец для Knob.
+Slider — choosing a number or a range by dragging a handle; one of the basic form components, noticeably more complex than those already ported: mouse and touch dragging, keyboard, vertical orientation, range mode. It closes the next step after Rating and sets the model for Knob.
 
 ## What Changes
 
-- Новый крейт `prime-slider` с компонентом `Slider`: одиночное значение через двусторонний `value` (`RwSignal<f64>`) или диапазон (`range`) через `values` (`RwSignal<[f64; 2]>`); без сигнала компонент ведёт внутреннее состояние (`default_value`, `default_values`). Свойства `min` (0), `max` (100), `step`, `orientation` (`Horizontal`/`Vertical`), `animate`, `disabled`, `invalid`, `tabindex`, `aria_label`, `aria_labelledby`, `style`, `style_class`; события `on_change` (значение и исходное событие) и `on_slide_end`; `pt` (`root`, `range`, `handle`, `start_handler`, `end_handler`).
-- Разметка как в PrimeNG 21.1.10 (`slider.ts`, `sliderstyle.ts`): корень `<div class="p-slider p-component">` с `data-pc-name`, `data-pc-section`, `data-p`, `data-p-sliding`; внутри `span.p-slider-range` и одна (`role=slider`) или две ручки `span.p-slider-handle` с `aria-valuemin/now/max`, `aria-orientation`.
-- Взаимодействие как в PrimeNG: перетаскивание ручки мышью (обработчики на документе только на время перетаскивания) и касанием, клик по полосе, клавиши стрелок, `PageUp`/`PageDown`, `Home`/`End`; шаг и нормализация значения как в `handleStepChange` и `getNormalizedValue`; поддержка RTL.
-- Страница `/slider` (`basic`, `range`, `step`, `vertical`, `filter`, `input`), e2e, браузерные тесты, бенчмарки, бюджеты, `docs/slider.md`, CSS темы `slider`.
-- **Не входит:** Angular Forms (`ngModel`, реактивные формы); `autofocus`; устаревший `styleClass` в виде отдельной логики (есть `style_class`); демонстрации `reactiveforms` и `templatedrivenforms`; внешняя картинка в `filter` (вместо неё градиентный блок с CSS-фильтрами).
+- New crate `prime-slider` with the `Slider` component: a single value via a two-way `value` (`RwSignal<f64>`) or a range (`range`) via `values` (`RwSignal<[f64; 2]>`); without a signal the component keeps internal state (`default_value`, `default_values`). Properties `min` (0), `max` (100), `step`, `orientation` (`Horizontal`/`Vertical`), `animate`, `disabled`, `invalid`, `tabindex`, `aria_label`, `aria_labelledby`, `style`, `style_class`; events `on_change` (value and original event) and `on_slide_end`; `pt` (`root`, `range`, `handle`, `start_handler`, `end_handler`).
+- Markup as in PrimeNG 21.1.10 (`slider.ts`, `sliderstyle.ts`): root `<div class="p-slider p-component">` with `data-pc-name`, `data-pc-section`, `data-p`, `data-p-sliding`; inside `span.p-slider-range` and one (`role=slider`) or two `span.p-slider-handle` handles with `aria-valuemin/now/max`, `aria-orientation`.
+- Interaction as in PrimeNG: dragging a handle with the mouse (document handlers only for the duration of dragging) and touch, a click on the track, arrow keys, `PageUp`/`PageDown`, `Home`/`End`; step and value normalization as in `handleStepChange` and `getNormalizedValue`; RTL support.
+- The `/slider` page (`basic`, `range`, `step`, `vertical`, `filter`, `input`), e2e, browser tests, benchmarks, budgets, `docs/slider.md`, the `slider` theme CSS.
+- **Out of scope:** Angular Forms (`ngModel`, reactive forms); `autofocus`; the deprecated `styleClass` as separate logic (there is `style_class`); the `reactiveforms` and `templatedrivenforms` demos; an external image in `filter` (a gradient block with CSS filters instead).
 
 ## Capabilities
 
 ### New Capabilities
-- `slider`: компонент Slider — значение и диапазон, ввод мышью, касанием и клавиатурой, ориентации, шаг, структура и доступность, `pt`, производительность.
+- `slider`: the Slider component — value and range, mouse, touch and keyboard input, orientations, step, structure and accessibility, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-slider` (`publish = false`); зависимости `prime-core`.
-- Изменяются `Cargo.toml` workspace, `upstream.toml` (`slider` в `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (браузерный job для `tests/web.rs`).
+- New crate `crates/prime-slider` (`publish = false`); dependencies `prime-core`.
+- Changed: workspace `Cargo.toml`, `upstream.toml` (`slider` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, `ci.yml` (browser job for `tests/web.rs`).

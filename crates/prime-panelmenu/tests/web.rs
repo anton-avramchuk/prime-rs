@@ -1,7 +1,7 @@
-//! Поведение PanelMenu в реальном браузере (wasm-bindgen-test): раскрытие кликом в одиночном и множественном режиме,
-//! вложенные ветки, команды и отключённые пункты, клавиатура заголовков и дерева, поиск по символам, `PanelMenuRef`.
+//! PanelMenu behavior in a real browser (wasm-bindgen-test): expansion by click in single and multiple mode,
+//! nested branches, commands and disabled items, header and tree keyboard, character search, `PanelMenuRef`.
 //!
-//! Сценарии идут одним последовательным тестом: фокус и слушатели страницы общие. Стили темы не подключены.
+//! The scenarios run as one sequential test: focus and page listeners are shared. Theme styles are not loaded.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -28,11 +28,7 @@ fn host() -> HtmlElement {
 }
 
 fn by_id(host: &HtmlElement, id: &str) -> HtmlElement {
-    host.query_selector(&format!("[id=\"{id}\"]"))
-        .unwrap()
-        .unwrap_or_else(|| panic!("нет #{id}: {}", host.outer_html()))
-        .dyn_into()
-        .unwrap()
+    host.query_selector(&format!("[id=\"{id}\"]")).unwrap().unwrap_or_else(|| panic!("no #{id}: {}", host.outer_html())).dyn_into().unwrap()
 }
 
 async fn sleep(ms: i32) {
@@ -42,7 +38,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Даёт эффектам примениться, а анимации свёртывания — закончиться.
+/// Lets effects apply and the collapse animations finish.
 async fn settle() {
     sleep(60).await;
 }
@@ -58,9 +54,9 @@ fn region(host: &HtmlElement, i: usize) -> HtmlElement {
 fn expanded(host: &HtmlElement, i: usize) -> bool {
     let h = header(host, i);
     let (aria, highlight) = (h.get_attribute("aria-expanded").unwrap(), h.get_attribute("data-p-highlight").unwrap());
-    assert_eq!(aria, highlight, "aria-expanded и data-p-highlight расходятся у панели {i}");
+    assert_eq!(aria, highlight, "aria-expanded and data-p-highlight disagree for panel {i}");
     let class = region(host, i).class_name().contains("p-panelmenu-expanded");
-    assert_eq!(class, aria == "true", "класс раскрытия и aria-expanded расходятся у панели {i}");
+    assert_eq!(class, aria == "true", "the expanded class and aria-expanded disagree for panel {i}");
     aria == "true"
 }
 
@@ -89,7 +85,7 @@ fn press(el: &HtmlElement, code: &str, key: &str) {
     el.dispatch_event(&KeyboardEvent::new_with_keyboard_event_init_dict("keydown", &init).unwrap()).unwrap();
 }
 
-/// Нажатие клавиши и ожидание применения реактивных обновлений.
+/// A key press and waiting for the reactive updates to apply.
 async fn key(el: &HtmlElement, code: &str, key: &str) {
     press(el, code, key);
     sleep(10).await;
@@ -102,7 +98,7 @@ fn leaf(label: &str, log: &Log) -> MenuItem {
 }
 
 /// 0 Files{ 0_0 Docs{0_0_0 Invoices, 0_0_1 Clients(off), 0_0_2 Zebra}, 0_1 Open, 0_2 ─, 0_3 Print(off), 0_4 Images }, 1 Cloud{1_0 Upload},
-/// 2 Tasks(off){2_0 Add}, 3 Quit (лист с командой)
+/// 2 Tasks(off){2_0 Add}, 3 Quit (a leaf with a command)
 fn model(log: &Log) -> Vec<MenuItem> {
     vec![
         MenuItem::new().label("Files").items(vec![
@@ -124,25 +120,25 @@ async fn single_mode_keeps_one_panel_open() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <PanelMenu id="m" model=items.clone() /> });
     settle().await;
     assert!(!expanded(&host, 0) && !expanded(&host, 1));
-    assert_eq!(region(&host, 0).style().get_property_value("display").unwrap(), "none", "свёрнутая область скрыта");
+    assert_eq!(region(&host, 0).style().get_property_value("display").unwrap(), "none", "the collapsed area is hidden");
 
     header(&host, 0).click();
     settle().await;
     assert!(expanded(&host, 0) && !expanded(&host, 1));
-    assert_eq!(region(&host, 0).style().get_property_value("display").unwrap(), "", "раскрытая область показана");
+    assert_eq!(region(&host, 0).style().get_property_value("display").unwrap(), "", "the expanded area is shown");
     assert!(header(&host, 0).class_name().contains("p-panelmenu-header-active"));
 
     header(&host, 1).click();
     settle().await;
-    assert!(expanded(&host, 1) && !expanded(&host, 0), "одиночный режим сворачивает прежнюю панель");
+    assert!(expanded(&host, 1) && !expanded(&host, 0), "single mode collapses the previous panel");
     sleep(500).await;
-    assert_eq!(region(&host, 0).style().get_property_value("display").unwrap(), "none", "после анимации область скрыта");
+    assert_eq!(region(&host, 0).style().get_property_value("display").unwrap(), "none", "after the animation the area is hidden");
 
     header(&host, 1).click();
     settle().await;
-    assert!(!expanded(&host, 1), "повторный клик сворачивает");
+    assert!(!expanded(&host, 1), "a second click collapses");
 
-    // Быстрое повторное переключение: запоздавшее завершение прежней анимации не скрывает раскрытую область.
+    // Quick re-toggle: a late completion of the previous animation does not hide the expanded area.
     header(&host, 1).click();
     settle().await;
     header(&host, 1).click();
@@ -150,8 +146,8 @@ async fn single_mode_keeps_one_panel_open() {
     header(&host, 1).click();
     sleep(600).await;
     assert!(expanded(&host, 1));
-    assert_eq!(region(&host, 1).style().get_property_value("display").unwrap(), "", "раскрытая область не скрыта запоздавшим таймером");
-    assert!(!region(&host, 1).class_name().contains("p-collapsible"), "классы анимации сняты");
+    assert_eq!(region(&host, 1).style().get_property_value("display").unwrap(), "", "the expanded area is not hidden by a late timer");
+    assert!(!region(&host, 1).class_name().contains("p-collapsible"), "animation classes removed");
     host.remove();
 }
 
@@ -179,8 +175,8 @@ async fn nested_groups_commands_and_disabled() {
     settle().await;
     item_content(&host, "0_0").click();
     settle().await;
-    assert!(item_expanded(&host, "0_0"), "клик по группе раскрывает ветку");
-    assert!(expanded(&host, 0), "панель осталась раскрытой");
+    assert!(item_expanded(&host, "0_0"), "a click on a group expands the branch");
+    assert!(expanded(&host, 0), "the panel stayed expanded");
     assert!(
         by_id(&host, "m_0_0")
             .query_selector(":scope > .p-panelmenu-content-container")
@@ -192,23 +188,23 @@ async fn nested_groups_commands_and_disabled() {
     assert_eq!(by_id(&host, "m_0_0_0").query_selector("a").unwrap().unwrap().get_attribute("tabindex").as_deref(), Some("0"));
 
     item_content(&host, "0_0_0").click();
-    assert_eq!(log.lock().unwrap().as_slice(), ["Invoices"], "лист вызывает команду");
-    assert_eq!(focused_item(&host), None, "фокус показывается только при фокусе списка");
+    assert_eq!(log.lock().unwrap().as_slice(), ["Invoices"], "a leaf invokes the command");
+    assert_eq!(focused_item(&host), None, "focus is shown only when the list has focus");
 
     item_content(&host, "0_0_1").click();
-    assert_eq!(log.lock().unwrap().len(), 1, "отключённый пункт не вызывает команду");
+    assert_eq!(log.lock().unwrap().len(), 1, "a disabled item does not invoke the command");
 
     item_content(&host, "0_0").click();
     settle().await;
-    assert!(!item_expanded(&host, "0_0"), "повторный клик сворачивает ветку");
+    assert!(!item_expanded(&host, "0_0"), "a second click collapses the branch");
     assert_eq!(by_id(&host, "m_0_0_0").query_selector("a").unwrap().unwrap().get_attribute("tabindex").as_deref(), Some("-1"));
 
-    // Заголовок-лист вызывает команду; отключённый заголовок не реагирует.
+    // A leaf header invokes the command; a disabled header does not react.
     header(&host, 3).click();
     assert_eq!(log.lock().unwrap().last().map(String::as_str), Some("Quit"));
     header(&host, 2).click();
     settle().await;
-    assert!(!expanded(&host, 2), "отключённый заголовок не раскрывается");
+    assert!(!expanded(&host, 2), "a disabled header does not expand");
     host.remove();
 }
 
@@ -220,7 +216,7 @@ async fn keyboard_walks_headers_and_trees() {
     header(&host, 0).click();
     settle().await;
 
-    // ↓ на раскрытом заголовке — в дерево, на первый пункт.
+    // ↓ on an expanded header — into the tree, to the first item.
     header(&host, 0).focus().unwrap();
     key(&header(&host, 0), "ArrowDown", "ArrowDown").await;
     settle().await;
@@ -231,16 +227,16 @@ async fn keyboard_walks_headers_and_trees() {
     let list = by_id(&host, "m_0_list");
     key(&list, "ArrowRight", "ArrowRight").await;
     settle().await;
-    assert!(item_expanded(&host, "0_0"), "→ раскрывает ветку");
+    assert!(item_expanded(&host, "0_0"), "→ expands the branch");
     key(&list, "ArrowRight", "ArrowRight").await;
-    assert_eq!(focused_item(&host).as_deref(), Some("m_0_0_0"), "→ на раскрытой ветке — вниз");
+    assert_eq!(focused_item(&host).as_deref(), Some("m_0_0_0"), "→ on an expanded branch — down");
     key(&list, "ArrowDown", "ArrowDown").await;
-    assert_eq!(focused_item(&host).as_deref(), Some("m_0_0_2"), "отключённый пропущен");
+    assert_eq!(focused_item(&host).as_deref(), Some("m_0_0_2"), "disabled one skipped");
     key(&list, "ArrowLeft", "ArrowLeft").await;
-    assert_eq!(focused_item(&host).as_deref(), Some("m_0_0"), "← на листе — к родителю");
+    assert_eq!(focused_item(&host).as_deref(), Some("m_0_0"), "← on a leaf — to the parent");
     key(&list, "ArrowLeft", "ArrowLeft").await;
     settle().await;
-    assert!(!item_expanded(&host, "0_0"), "← на раскрытой ветке сворачивает её");
+    assert!(!item_expanded(&host, "0_0"), "← on an expanded branch collapses it");
     key(&list, "End", "End").await;
     assert_eq!(focused_item(&host).as_deref(), Some("m_0_4"));
     key(&list, "Home", "Home").await;
@@ -248,36 +244,36 @@ async fn keyboard_walks_headers_and_trees() {
     key(&list, "ArrowDown", "ArrowDown").await;
     assert_eq!(focused_item(&host).as_deref(), Some("m_0_1"));
     key(&list, "ArrowDown", "ArrowDown").await;
-    assert_eq!(focused_item(&host).as_deref(), Some("m_0_4"), "разделитель и отключённый пропущены");
+    assert_eq!(focused_item(&host).as_deref(), Some("m_0_4"), "separator and disabled one skipped");
 
-    // Поиск по началу подписи.
+    // Search by label prefix.
     key(&list, "KeyO", "o").await;
     assert_eq!(focused_item(&host).as_deref(), Some("m_0_1"));
 
-    // Enter на листе вызывает команду.
+    // Enter on a leaf invokes the command.
     key(&list, "Enter", "Enter").await;
     assert_eq!(log.lock().unwrap().as_slice(), ["Open"]);
 
-    // ↓ после последнего — на следующий заголовок, ↑ на первом — на свой заголовок.
+    // ↓ after the last one — to the next header, ↑ on the first — to its own header.
     key(&list, "End", "End").await;
     key(&list, "ArrowDown", "ArrowDown").await;
-    assert_eq!(active_id(), "m_1_header", "после последнего пункта — следующий заголовок");
+    assert_eq!(active_id(), "m_1_header", "after the last item — the next header");
     header(&host, 0).focus().unwrap();
     key(&header(&host, 0), "ArrowDown", "ArrowDown").await;
     settle().await;
     key(&by_id(&host, "m_0_list"), "ArrowUp", "ArrowUp").await;
-    assert_eq!(active_id(), "m_0_header", "↑ на первом пункте — заголовок панели");
+    assert_eq!(active_id(), "m_0_header", "↑ on the first item — the panel header");
 
-    // Заголовки: ↓ пропускает отключённый, по кругу; Home/End; Enter переключает.
+    // Headers: ↓ skips the disabled one, wraps around; Home/End; Enter toggles.
     header(&host, 0).click();
     settle().await;
     header(&host, 0).focus().unwrap();
     key(&header(&host, 0), "ArrowDown", "ArrowDown").await;
     assert_eq!(active_id(), "m_1_header");
     key(&header(&host, 1), "ArrowDown", "ArrowDown").await;
-    assert_eq!(active_id(), "m_3_header", "отключённая панель пропущена");
+    assert_eq!(active_id(), "m_3_header", "the disabled panel is skipped");
     key(&header(&host, 3), "ArrowDown", "ArrowDown").await;
-    assert_eq!(active_id(), "m_0_header", "по кругу");
+    assert_eq!(active_id(), "m_0_header", "wraps around");
     key(&header(&host, 0), "ArrowUp", "ArrowUp").await;
     assert_eq!(active_id(), "m_3_header");
     key(&header(&host, 3), "Home", "Home").await;
@@ -286,12 +282,12 @@ async fn keyboard_walks_headers_and_trees() {
     assert_eq!(active_id(), "m_3_header");
     key(&header(&host, 1), "Enter", "Enter").await;
     settle().await;
-    assert!(expanded(&host, 1), "Enter раскрывает панель");
+    assert!(expanded(&host, 1), "Enter expands the panel");
     key(&header(&host, 1), "Space", " ").await;
     settle().await;
-    assert!(!expanded(&host, 1), "Space сворачивает");
+    assert!(!expanded(&host, 1), "Space collapses");
 
-    // Уход фокуса из компонента сбрасывает подсветку.
+    // Focus leaving the component resets the highlight.
     header(&host, 0).click();
     settle().await;
     header(&host, 0).focus().unwrap();
@@ -318,10 +314,10 @@ async fn panel_ref_and_templates() {
     let r = handle.get_value().unwrap();
     r.expand_all();
     settle().await;
-    assert!(expanded(&host, 0) && expanded(&host, 1) && item_expanded(&host, "0_0"), "expand_all раскрывает все группы");
+    assert!(expanded(&host, 0) && expanded(&host, 1) && item_expanded(&host, "0_0"), "expand_all expands all groups");
     assert!(
         host.query_selector(".tpl").unwrap().is_some() && host.query_selector(".p-panelmenu-item-link").unwrap().is_none(),
-        "шаблон заменил ссылку"
+        "the template replaced the link"
     );
     r.collapse_all();
     settle().await;

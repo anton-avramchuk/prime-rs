@@ -1,35 +1,35 @@
 # SelectButton
 
-Порт `p-selectbutton` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-selectbutton` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-selectbutton::SelectButton` | `packages/primeng/src/selectbutton/selectbutton.ts`, `selectbutton/style/selectbuttonstyle.ts` |
-| CSS | `@primeuix/styles/selectbutton` и пресет Aura (`cargo xtask gen-theme`); стили кнопок — CSS `togglebutton` |
-| Демонстрации | `apps/showcase/doc/selectbutton/*-doc.ts` (`basic`, `disabled`, `fluid`, `invalid`, `multiple`, `sizes`, `template`) |
+| CSS | `@primeuix/styles/selectbutton` and the Aura preset (`cargo xtask gen-theme`); button styles — the `togglebutton` CSS |
+| Demos | `apps/showcase/doc/selectbutton/*-doc.ts` (`basic`, `disabled`, `fluid`, `invalid`, `multiple`, `sizes`, `template`) |
 
-Спека: `openspec/specs/selectbutton`.
+Spec: `openspec/specs/selectbutton`.
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Структура: корень `div.p-selectbutton[role=group]`, внутри по `ToggleButton` на вариант с `on_label = off_label = label` (в PrimeNG — `p-togglebutton`).
-- Классы корня и их порядок: `p-selectbutton p-component`, `p-invalid`, `p-selectbutton-fluid`; `data-p` — `invalid`.
-- `size`, `fluid` и `style_class` передаются каждой кнопке (`style_class` — не корню); `invalid` кнопкам не передаётся.
-- Выбор как в `onOptionSelect`: одиночный — повторный клик сбрасывает значение, `allow_empty = false` это запрещает; множественный — значение добавляется в конец списка или удаляется, `allow_empty = false` не даёт удалить последнее (`getAllowEmpty`).
-- События: `on_change` (значение и исходное событие), затем `on_option_click` (вариант, индекс, исходное событие).
-- `item_template` получает вариант и индекс и заменяет содержимое кнопки (`content_template` вложенного `ToggleButton`).
+- Structure: root `div.p-selectbutton[role=group]`, inside a `ToggleButton` per option with `on_label = off_label = label` (in PrimeNG — `p-togglebutton`).
+- Root classes and their order: `p-selectbutton p-component`, `p-invalid`, `p-selectbutton-fluid`; `data-p` — `invalid`.
+- `size`, `fluid` and `style_class` are passed to each button (`style_class` — not to the root); `invalid` is not passed to the buttons.
+- Selection as in `onOptionSelect`: single — a repeated click clears the value, `allow_empty = false` forbids this; multiple — a value is appended to the end of the list or removed, `allow_empty = false` does not allow removing the last one (`getAllowEmpty`).
+- Events: `on_change` (value and original event), then `on_option_click` (option, index, original event).
+- `item_template` receives the option and index and replaces the button content (the nested `ToggleButton`'s `content_template`).
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Корень — `<div>`, а не хост `<p-selectbutton>` | Хост в Angular — деталь фреймворка. |
-| Варианты — `SelectButtonOption { label, value, disabled }`, значения — строки; нет `optionLabel`, `optionValue`, `optionDisabled`, `dataKey` | Поля произвольного объекта в Rust заменены типизированным вариантом; обобщение до `T` возможно отдельным change. |
-| Одиночный режим — `value: RwSignal<Option<String>>`, множественный (`multiple`) — `values: RwSignal<Vec<String>>`; без сигнала внутреннее состояние (`default_value`, `default_values`) | Двусторонняя привязка без `ngModel`; два типа читаются проще, чем список из одного элемента. |
-| Нет `unselectable`, `autofocus`, `tabindex`, интеграции с формами, блока `/* For PrimeNG */` | `unselectable` заменён `allow_empty`; остальное вне объёма change или не используется шаблоном PrimeNG. |
-| Сигнал каждой кнопки выравнивается со значением явно (в браузере — ещё и `Effect`) | `ToggleButton` переключает свой `checked` до вызова `on_change`; без выравнивания отклонённый клик оставил бы кнопку включённой. |
-| В демонстрации `template` метка в `<strong>` вместо иконок `pi-align-*` | В `prime-icons` нет таких иконок. |
+| The root is a `<div>`, not the `<p-selectbutton>` host | The host in Angular is a framework detail. |
+| Options are `SelectButtonOption { label, value, disabled }`, values are strings; no `optionLabel`, `optionValue`, `optionDisabled`, `dataKey` | Arbitrary object fields are replaced in Rust by a typed option; generalizing to `T` is possible in a separate change. |
+| Single mode is `value: RwSignal<Option<String>>`, multiple (`multiple`) is `values: RwSignal<Vec<String>>`; without a signal, internal state (`default_value`, `default_values`) | Two-way binding without `ngModel`; two types read more easily than a one-element list. |
+| No `unselectable`, `autofocus`, `tabindex`, form integration, `/* For PrimeNG */` block | `unselectable` is replaced by `allow_empty`; the rest is out of the change's scope or not used by the PrimeNG template. |
+| Each button's signal is aligned with the value explicitly (in the browser also by an `Effect`) | `ToggleButton` toggles its `checked` before calling `on_change`; without alignment a rejected click would leave the button on. |
+| In the `template` demo the label is in `<strong>` instead of `pi-align-*` icons | `prime-icons` has no such icons. |
 
-## Производительность
+## Performance
 
-SSR: 77 аллокаций на экземпляр с двумя вариантами (бюджет 86); вклад в сырой wasm +282 КБ (бюджет 330 КБ) — вместе с `ToggleButton`.
+SSR: 77 allocations per instance with two options (budget 86); contribution to raw wasm +282 KB (budget 330 KB) — together with `ToggleButton`.

@@ -1,73 +1,73 @@
 # metergroup Specification
 
 ## Purpose
-MeterGroup показывает составную шкалу: несколько цветных отрезков, доли которых отсчитываются от диапазона `min`–`max`, и подписи к ним.
+MeterGroup shows a composite meter: several colored segments whose shares are counted from the `min`–`max` range, and labels for them.
 
 ## Requirements
 
-### Requirement: Корень MeterGroup
-Компонент `MeterGroup` крейта `prime-metergroup` SHALL выводить корень с `role="meter"`, классами `p-metergroup p-component p-metergroup-<orientation>` (`horizontal` по умолчанию или `vertical`), `aria-valuemin` и `aria-valuemax` (`min`, по умолчанию 0, и `max`, по умолчанию 100), `aria-valuenow` — суммарный процент, и `data-p` с ориентацией. `style_class` SHALL добавляться после собственных классов, `style` — задавать встроенный стиль, `pt.root` — добавлять классы, стиль и атрибуты.
+### Requirement: MeterGroup root
+The `MeterGroup` component of the `prime-metergroup` crate SHALL render a root with `role="meter"`, the classes `p-metergroup p-component p-metergroup-<orientation>` (`horizontal` by default or `vertical`), `aria-valuemin` and `aria-valuemax` (`min`, 0 by default, and `max`, 100 by default), `aria-valuenow` as the total percentage, and `data-p` with the orientation. `style_class` SHALL be added after the own classes, `style` SHALL set the inline style, `pt.root` SHALL add classes, style and attributes.
 
-#### Scenario: Значения по умолчанию
-- **WHEN** отрисован `MeterGroup` без свойств, кроме `value`
-- **THEN** корень имеет `role="meter"`, `aria-valuemin="0"`, `aria-valuemax="100"`, класс `p-metergroup-horizontal`
+#### Scenario: Default values
+- **WHEN** `MeterGroup` is rendered with no properties other than `value`
+- **THEN** the root has `role="meter"`, `aria-valuemin="0"`, `aria-valuemax="100"`, the class `p-metergroup-horizontal`
 
-#### Scenario: Суммарное значение
-- **WHEN** отрезки имеют значения 20 и 30 при `min = 0`, `max = 100`
+#### Scenario: Total value
+- **WHEN** the segments have values 20 and 30 with `min = 0`, `max = 100`
 - **THEN** `aria-valuenow="50"`
 
-#### Scenario: Вертикальная ориентация
+#### Scenario: Vertical orientation
 - **WHEN** `orientation = Vertical`
-- **THEN** класс корня `p-metergroup-vertical`, `data-p="vertical"`
+- **THEN** the root class is `p-metergroup-vertical`, `data-p="vertical"`
 
-### Requirement: Отрезки MeterGroup
-Внутри `div.p-metergroup-meters` SHALL выводиться `span.p-metergroup-meter` для каждого элемента со значением больше нуля, в исходном порядке; элементы с нулевым значением пропускаются. Процент отрезка SHALL вычисляться как `(value - min) / (max - min) * 100`, ограничиваться диапазоном 0–100 и округляться до целого; при `min == max` он равен 100. Горизонтально процент задаёт ширину, вертикально — высоту; цвет отрезка — фон.
+### Requirement: MeterGroup segments
+Inside `div.p-metergroup-meters` a `span.p-metergroup-meter` SHALL be rendered for each item with a value greater than zero, in the original order; items with a zero value are skipped. The segment percentage SHALL be computed as `(value - min) / (max - min) * 100`, clamped to 0–100 and rounded to an integer; when `min == max` it is 100. Horizontally the percentage sets the width, vertically the height; the segment color is the background.
 
-#### Scenario: Ширина
-- **WHEN** `min = 0`, `max = 200`, значение элемента 50, цвет `#f00`
-- **THEN** отрезок имеет `width: 25%` и `background-color: #f00`
+#### Scenario: Width
+- **WHEN** `min = 0`, `max = 200`, item value 50, color `#f00`
+- **THEN** the segment has `width: 25%` and `background-color: #f00`
 
-#### Scenario: Ограничение
-- **WHEN** значение элемента 150 при `max = 100`, и другое −10
-- **THEN** первый отрезок имеет ширину 100%, второй не выводится
+#### Scenario: Clamping
+- **WHEN** an item value is 150 with `max = 100`, and another is -10
+- **THEN** the first segment has a width of 100%, the second is not rendered
 
-#### Scenario: Вертикально
-- **WHEN** `orientation = Vertical`, значение 40
-- **THEN** отрезок имеет `height: 40%` и не имеет ширины в процентах
+#### Scenario: Vertical
+- **WHEN** `orientation = Vertical`, value 40
+- **THEN** the segment has `height: 40%` and has no percentage width
 
-#### Scenario: Свой отрезок
-- **WHEN** задан шаблон `meter`
-- **THEN** вместо стандартного отрезка выводится результат шаблона для каждого элемента
+#### Scenario: Custom segment
+- **WHEN** the `meter` template is set
+- **THEN** the template result is rendered for each item instead of the standard segment
 
-### Requirement: Подписи MeterGroup
-По умолчанию SHALL выводиться `ol.p-metergroup-label-list` (с модификатором `-vertical` или `-horizontal` по `label_orientation`, по умолчанию горизонтально) с `li.p-metergroup-label` на каждый элемент: маркер `p-metergroup-label-marker` с цветом фона (или значок `p-metergroup-label-icon`, если у элемента есть `icon`) и текст `p-metergroup-label-text` вида `Метка (процент%)`. При `label_position = End` (по умолчанию) подписи SHALL идти после отрезков, при `Start` — перед ними.
+### Requirement: MeterGroup labels
+By default an `ol.p-metergroup-label-list` SHALL be rendered (with the `-vertical` or `-horizontal` modifier per `label_orientation`, horizontal by default) with an `li.p-metergroup-label` for each item: a `p-metergroup-label-marker` marker with a background color (or a `p-metergroup-label-icon` icon if the item has an `icon`) and a `p-metergroup-label-text` text of the form `Label (percent%)`. With `label_position = End` (default) the labels SHALL go after the segments, with `Start` before them.
 
-#### Scenario: Подпись
-- **WHEN** элемент `{label: "Приложения", value: 16, color: "#34d399"}` при диапазоне 0–100
-- **THEN** подпись содержит маркер с фоном `#34d399` и текст `Приложения (16%)`
+#### Scenario: Label
+- **WHEN** an item `{label: "Apps", value: 16, color: "#34d399"}` with the range 0–100
+- **THEN** the label contains a marker with the background `#34d399` and the text `Apps (16%)`
 
-#### Scenario: Позиция
+#### Scenario: Position
 - **WHEN** `label_position = Start`
-- **THEN** список подписей находится перед `p-metergroup-meters`
+- **THEN** the label list is before `p-metergroup-meters`
 
-#### Scenario: Ориентация подписей
+#### Scenario: Label orientation
 - **WHEN** `label_orientation = Vertical`
-- **THEN** список подписей имеет класс `p-metergroup-label-list-vertical`
+- **THEN** the label list has the class `p-metergroup-label-list-vertical`
 
-#### Scenario: Значок элемента
-- **WHEN** у элемента задан `icon`
-- **THEN** вместо маркера выводится значок с цветом элемента
+#### Scenario: Item icon
+- **WHEN** an item has an `icon`
+- **THEN** an icon with the item color is rendered instead of the marker
 
-### Requirement: Шаблоны MeterGroup
-Шаблон `label` SHALL заменять весь список подписей, `start` и `end` — выводиться до и после отрезков, `icon` — заменять маркер подписи. Шаблоны SHALL получать элементы, суммарный процент и накопленные проценты.
+### Requirement: MeterGroup templates
+The `label` template SHALL replace the whole label list, `start` and `end` SHALL render before and after the segments, `icon` SHALL replace the label marker. Templates SHALL receive the items, the total percentage and the cumulative percentages.
 
-#### Scenario: Свои подписи
-- **WHEN** задан шаблон `label`
-- **THEN** стандартный список подписей не выводится
+#### Scenario: Custom labels
+- **WHEN** the `label` template is set
+- **THEN** the standard label list is not rendered
 
-### Requirement: Стоимость отрисовки MeterGroup
-Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `metergroup-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `metergroup` в `benches/budgets.toml`.
+### Requirement: MeterGroup rendering cost
+The number of allocations per instance in SSR SHALL fit the `metergroup-1000` budget in `benches/alloc-budgets.toml`, and the wasm contribution the `metergroup` budget in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения MeterGroup не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the MeterGroup values do not exceed the budgets

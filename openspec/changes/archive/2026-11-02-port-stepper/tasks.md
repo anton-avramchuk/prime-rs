@@ -1,31 +1,31 @@
 # Tasks
 
-## 1. Основа
+## 1. Foundation
 
-- [x] 1.1 Добавить `stepper` в `theme.components` и `primeng_extra` (`upstream.toml`), `cargo xtask gen-theme`; проверить, что CSS остальных компонентов не изменился, что есть классы `p-step*`, `p-steppanel*`, `p-stepitem*`, `p-stepper-separator` и правило `.p-steppanel .p-motion`
+- [x] 1.1 Add `stepper` to `theme.components` and `primeng_extra` (`upstream.toml`), `cargo xtask gen-theme`; check that the CSS of the other components did not change, that the `p-step*`, `p-steppanel*`, `p-stepitem*`, `p-stepper-separator` classes and the `.p-steppanel .p-motion` rule are present
 
-## 2. Крейт
+## 2. Crate
 
-- [x] 2.1 `crates/prime-stepper`: `state.rs` (`step_id`, `panel_id`, `is_active`, `step_disabled`, `is_last`, классы) с табличными тестами
-- [x] 2.2 `Stepper`, `StepList`, `Step`, `StepContext`, `StepperPt`: корень, значение, шаги с состояниями и разделителями, реестр шагов, SSR-тесты, rustdoc
-- [x] 2.3 `StepPanels`, `StepPanel` (горизонтальная раскладка), `content`, переходы `activate`, линейный режим; браузерные `tests/web.rs`
-- [x] 2.4 `StepItem` и вертикальная раскладка: значение элемента для `Step` и `StepPanel`, разделитель панели, скрытие и анимация раскрытия
+- [x] 2.1 `crates/prime-stepper`: `state.rs` (`step_id`, `panel_id`, `is_active`, `step_disabled`, `is_last`, classes) with table-driven tests
+- [x] 2.2 `Stepper`, `StepList`, `Step`, `StepContext`, `StepperPt`: root, value, steps with states and separators, step registry, SSR tests, rustdoc
+- [x] 2.3 `StepPanels`, `StepPanel` (horizontal layout), `content`, `activate` transitions, linear mode; browser `tests/web.rs`
+- [x] 2.4 `StepItem` and vertical layout: item value for `Step` and `StepPanel`, panel separator, hiding and expansion animation
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/stepper` (`basic`, `linear`, `vertical`, `template`, `stepsonly`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 3.2 `e2e/tests/pages.json` и `stepper.spec.ts` (разметка, клик по шагу, линейный режим, кнопки «Далее»/«Назад», вертикальный режим); ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test stepper`
+- [x] 3.1 The `/stepper` page (`basic`, `linear`, `vertical`, `template`, `stepsonly`), menu, route, `stylesheet(&[..])`, crate in the workspace and showcase
+- [x] 3.2 `e2e/tests/pages.json` and `stepper.spec.ts` (markup, click on a step, linear mode, "Next"/"Back" buttons, vertical mode); wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test stepper`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `-1` и `-1000`, `case-stepper` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`; замер wasm — в фоне, с отдельным файлом бюджетов)
+- [x] 4.1 Scenarios `-1` and `-1000`, `case-stepper` and budgets (first `cargo bench -p render-bench --bench alloc`; the wasm measurement in the background, with a separate budgets file)
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/stepper.md` (отличия от PrimeNG, что не проверялось); `prime-stepper` в браузерный job `ci.yml` (три места)
-- [x] 5.2 `cargo fmt --all -- --check`, clippy с исключениями CI и `--all-features` (и для wasm-цели), тесты, deny, machete, `openspec validate port-stepper`; CI `dev` зелёный
+- [x] 5.1 `docs/stepper.md` (differences from PrimeNG, what was not verified); `prime-stepper` in the browser job of `ci.yml` (three places)
+- [x] 5.2 `cargo fmt --all -- --check`, clippy with the CI exclusions and `--all-features` (and for the wasm target), tests, deny, machete, `openspec validate port-stepper`; CI `dev` green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
-- Волна 3 закончена; дальше — по решению пользователя.
+- Archive after CI.
+- Wave 3 is done; next - at the user's decision.

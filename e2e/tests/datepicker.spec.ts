@@ -4,7 +4,7 @@ test.describe('DatePicker', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1400 });
         await page.goto('/datepicker');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_dp')).toBeAttached();
     });
@@ -13,7 +13,7 @@ test.describe('DatePicker', () => {
     const panel = (page) => page.locator(POPUP);
     const day = (page, d: number, month = 10) => page.locator(`${POPUP} [data-date="2026-${month}-${d}"]`);
 
-    test('стили темы: поле и панель с сеткой 7 столбцов', async ({ page }) => {
+    test('theme styles: field and panel with a 7-column grid', async ({ page }) => {
         const field = page.locator('#basic_dp');
         expect(await field.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
         await field.click();
@@ -31,20 +31,20 @@ test.describe('DatePicker', () => {
         await expect(page.locator(`${POPUP} .p-datepicker-today`)).toHaveCount(1);
     });
 
-    test('выбор даты закрывает панель и заполняет поле', async ({ page }) => {
+    test('selecting a date closes the panel and fills the field', async ({ page }) => {
         await page.locator('#basic_dp').click();
         await day(page, 12).click();
         await expect(panel(page)).toHaveCount(0);
         await expect(page.locator('#basic_dp')).toHaveValue('11/12/2026');
         await expect(page.getByTestId('basic-echo')).toHaveText('2026-11-12');
-        // Escape закрывает без выбора
+        // Escape closes without selecting
         await page.locator('#basic_dp').click();
         await expect(panel(page)).toBeVisible();
         await page.keyboard.press('Escape');
         await expect(panel(page)).toHaveCount(0);
     });
 
-    test('ввод текста выбирает дату, а клик снаружи закрывает панель', async ({ page }) => {
+    test('typing text selects a date, and an outside click closes the panel', async ({ page }) => {
         const field = page.locator('#basic_dp');
         await field.click();
         await field.fill('11/20/2026');
@@ -54,11 +54,11 @@ test.describe('DatePicker', () => {
         await expect(panel(page)).toHaveCount(0);
     });
 
-    test('формат даты', async ({ page }) => {
+    test('date format', async ({ page }) => {
         await expect(page.locator('#format_dp')).toHaveValue('Thursday, 5 November 2026');
     });
 
-    test('inline: листание месяцев и виды', async ({ page }) => {
+    test('inline: month paging and views', async ({ page }) => {
         const inline = page.locator('#inline_dp');
         await inline.scrollIntoViewIfNeeded();
         await expect(inline.locator('.p-datepicker-panel-inline')).toBeVisible();
@@ -79,7 +79,7 @@ test.describe('DatePicker', () => {
         await expect(page.getByTestId('inline-echo')).toHaveText('2029-6-15');
     });
 
-    test('multiple и range', async ({ page }) => {
+    test('multiple and range', async ({ page }) => {
         const multiple = page.locator('#multiple_dp');
         await multiple.click();
         await day(page, 3).click();
@@ -101,13 +101,13 @@ test.describe('DatePicker', () => {
         expect(await day(page, 7).evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
     });
 
-    test('min/max и выходные недоступны', async ({ page }) => {
+    test('min/max and weekends are unavailable', async ({ page }) => {
         const field = page.locator('#minmax_dp');
         await field.scrollIntoViewIfNeeded();
         await field.click();
         await expect(day(page, 9)).toHaveClass(/p-disabled/);
         await expect(day(page, 26)).toHaveClass(/p-disabled/);
-        await expect(day(page, 14)).toHaveClass(/p-disabled/); // суббота
+        await expect(day(page, 14)).toHaveClass(/p-disabled/); // Saturday
         await expect(day(page, 12)).not.toHaveClass(/p-disabled/);
         await day(page, 9).click({ force: true });
         await expect(field).toHaveValue('');
@@ -115,7 +115,7 @@ test.describe('DatePicker', () => {
         await expect(field).toHaveValue('11/12/2026');
     });
 
-    test('кнопки «Сегодня» и «Очистить»', async ({ page }) => {
+    test('"Today" and "Clear" buttons', async ({ page }) => {
         const field = page.locator('#buttonbar_dp');
         await field.scrollIntoViewIfNeeded();
         await field.click();
@@ -126,7 +126,7 @@ test.describe('DatePicker', () => {
         await expect(field).toHaveValue('');
     });
 
-    test('выбор месяца и года целиком', async ({ page }) => {
+    test('selecting a whole month and year', async ({ page }) => {
         const month = page.locator('#month_dp');
         await month.scrollIntoViewIfNeeded();
         await month.click();
@@ -140,7 +140,7 @@ test.describe('DatePicker', () => {
         await expect(year).toHaveValue('2024');
     });
 
-    test('значки календаря, номера недель, два месяца, заблокированное поле', async ({ page }) => {
+    test('calendar icons, week numbers, two months, disabled field', async ({ page }) => {
         const icon = page.locator('#icon_button_dp');
         await icon.scrollIntoViewIfNeeded();
         await icon.locator('xpath=following-sibling::button[contains(@class,"p-datepicker-dropdown")]').click();

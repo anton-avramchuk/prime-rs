@@ -1,5 +1,5 @@
-//! Поведение DataView в реальном браузере (wasm-bindgen-test): переключение страниц пагинатором, возврат `first`,
-//! смена порядка сортировки, режим `lazy` и его события. Сценарии идут одним последовательным тестом.
+//! DataView behavior in a real browser (wasm-bindgen-test): switching pages with the paginator, `first` returning,
+//! sort order change, `lazy` mode and its events. The scenarios run as one sequential test.
 #![cfg(target_arch = "wasm32")]
 #![recursion_limit = "512"]
 
@@ -82,21 +82,21 @@ async fn paging_and_layout() {
     assert_eq!(shown(&host)[0], "1");
     all(&host, "button.p-paginator-next")[0].click();
     settle().await;
-    assert_eq!(shown(&host)[0], "11", "следующая страница");
+    assert_eq!(shown(&host)[0], "11", "next page");
     assert_eq!(first.get_untracked(), 10);
     all(&host, "button.p-paginator-last")[0].click();
     settle().await;
-    assert_eq!(shown(&host), ["21", "22", "23", "24", "25"], "последняя страница короче");
-    // внешняя смена first вне диапазона возвращается на допустимую страницу
+    assert_eq!(shown(&host), ["21", "22", "23", "24", "25"], "the last page is shorter");
+    // an external change of first out of range returns to a valid page
     first.set(500);
     settle().await;
-    assert_eq!(first.get_untracked(), 20, "first возвращён на последнюю страницу");
+    assert_eq!(first.get_untracked(), 20, "first is returned to the last page");
     layout.set(DataViewLayout::Grid);
     settle().await;
     assert!(host.query_selector(".p-dataview-grid").unwrap().is_some() && host.query_selector("b.item").unwrap().is_some());
     let log = log.lock().unwrap().clone();
     assert_eq!(&log[..2], ["page:10:10", "page:20:10"], "{log:?}");
-    assert!(log[2..].iter().all(|e| e == "page:20:10"), "возврат first может повторить событие последней страницы: {log:?}");
+    assert!(log[2..].iter().all(|e| e == "page:20:10"), "returning first may repeat the last page event: {log:?}");
     host.remove();
 }
 
@@ -126,11 +126,11 @@ async fn sort_and_filter_react() {
     assert_eq!(shown(&host), ["5", "7", "8"]);
     order.set(-1);
     settle().await;
-    assert_eq!(first.get_untracked(), 0, "смена порядка возвращает на первую страницу");
+    assert_eq!(first.get_untracked(), 0, "a sort order change returns to the first page");
     assert_eq!(shown(&host), ["9", "8", "7"]);
     min.set(5);
     settle().await;
-    assert_eq!(shown(&host), ["9", "8", "7"], "фильтр: 7, 8, 9");
+    assert_eq!(shown(&host), ["9", "8", "7"], "filter: 7, 8, 9");
     all(&host, "button.p-paginator-next")[0].click();
     settle().await;
     assert!(shown(&host).is_empty() || shown(&host).len() <= 3);
@@ -156,8 +156,8 @@ async fn lazy_mode_events() {
         }
     });
     settle().await;
-    assert_eq!(log.lock().unwrap().as_slice(), ["lazy:0:3:0"], "начальная загрузка");
-    assert_eq!(shown(&host), ["1", "2", "3"], "значение показывается как есть");
+    assert_eq!(log.lock().unwrap().as_slice(), ["lazy:0:3:0"], "initial load");
+    assert_eq!(shown(&host), ["1", "2", "3"], "the value is shown as is");
     all(&host, "button.p-paginator-next")[0].click();
     settle().await;
     order.set(1);
@@ -176,7 +176,7 @@ async fn empty_and_loading() {
     loading.set(true);
     settle().await;
     assert!(host.query_selector(".p-dataview-loading-overlay").unwrap().is_some());
-    assert!(host.query_selector(".p-dataview-empty-message").unwrap().is_none(), "при загрузке сообщения нет");
+    assert!(host.query_selector(".p-dataview-empty-message").unwrap().is_none(), "no message while loading");
     host.remove();
 }
 

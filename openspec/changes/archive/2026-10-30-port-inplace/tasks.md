@@ -1,27 +1,27 @@
 # Tasks
 
-## 1. Крейт
+## 1. Crate
 
-- [x] 1.1 `crates/prime-inplace`: `state.rs` (`display_classes`, `next_state`) с табличными тестами
-- [x] 1.2 Компонент `Inplace`: свойства, разметка, кнопка закрытия, `InplacePt`, SSR-тесты, rustdoc
-- [x] 1.3 Поведение: клик, `Enter`, `prevent_click`, `disabled`, закрытие, внешний сигнал, колбэки; браузерные тесты `tests/web.rs`
+- [x] 1.1 `crates/prime-inplace`: `state.rs` (`display_classes`, `next_state`) with table tests
+- [x] 1.2 The `Inplace` component: properties, markup, the close button, `InplacePt`, SSR tests, rustdoc
+- [x] 1.3 Behaviour: click, `Enter`, `prevent_click`, `disabled`, closing, the external signal, the callbacks; browser tests `tests/web.rs`
 
-## 2. Тема, showcase, e2e
+## 2. Theme, showcase, e2e
 
-- [x] 2.1 Добавить `inplace` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, убедиться, что CSS других компонентов не изменился
-- [x] 2.2 Страница `/inplace` (`basic`, `input`, `image`, `lazy`), меню, маршрут, `stylesheet(&[..])`, крейт в workspace и showcase
-- [x] 2.3 `e2e/tests/pages.json` и `inplace.spec.ts`; ждать `networkidle`, перезапустить сервер showcase; `PW_CHANNEL=chrome npx playwright test inplace`
+- [x] 2.1 Add `inplace` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, check that the CSS of the other components did not change
+- [x] 2.2 The `/inplace` page (`basic`, `input`, `image`, `lazy`), the menu, the route, `stylesheet(&[..])`, the crate in the workspace and the showcase
+- [x] 2.3 `e2e/tests/pages.json` and `inplace.spec.ts`; wait for `networkidle`, restart the showcase server; `PW_CHANNEL=chrome npx playwright test inplace`
 
-## 3. Бенчмарки и бюджеты
+## 3. Benchmarks and budgets
 
-- [x] 3.1 Сценарии `-1` и `-1000`, `case-inplace` и бюджеты (сначала `cargo bench -p render-bench --bench alloc`)
+- [x] 3.1 Scenarios `-1` and `-1000`, `case-inplace` and the budgets (first `cargo bench -p render-bench --bench alloc`)
 
-## 4. Интеграция
+## 4. Integration
 
-- [x] 4.1 `docs/inplace.md` (отличия от PrimeNG, что не проверялось); `prime-inplace` в браузерный job `ci.yml` (три места)
-- [x] 4.2 `cargo fmt --all -- --check`, clippy с `--all-features`, тесты, deny, machete, `openspec validate port-inplace`; CI `dev` зелёный
+- [x] 4.1 `docs/inplace.md` (differences from PrimeNG, what was not verified); `prime-inplace` in the browser job of `ci.yml` (three places)
+- [x] 4.2 `cargo fmt --all -- --check`, clippy with `--all-features`, tests, deny, machete, `openspec validate port-inplace`; CI `dev` is green
 
 ## Workflow follow-up
 
-- Архивировано после CI.
-- Следующее: Splitter.
+- Archived after CI.
+- Next: Splitter.

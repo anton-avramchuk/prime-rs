@@ -1,49 +1,49 @@
 # inputmask Specification
 
 ## Purpose
-InputMask — поле ввода, принимающее только символы, подходящие под маску.
+InputMask — an input field that accepts only characters matching the mask.
 
 ## Requirements
 
-### Requirement: Маска
-Маска SHALL состоять из символов-шаблонов `9` (цифра), `a` (буква по `character_pattern`, по умолчанию ASCII), `*` (буква или цифра), знака `?` (всё после него необязательно) и постоянных символов. Движок SHALL строить буфер (постоянные символы и заполнитель `slot_char` на местах шаблонов) и проверять каждый вводимый символ по шаблону позиции.
+### Requirement: Mask
+The mask SHALL consist of the template characters `9` (digit), `a` (letter per `character_pattern`, ASCII by default), `*` (letter or digit), the `?` sign (everything after it is optional) and constant characters. The engine SHALL build the buffer (constant characters and the `slot_char` placeholder in the template positions) and check each entered character against the template of its position.
 
-#### Scenario: Буфер
-- **WHEN** маска `(999) 999-9999`, заполнитель `_`
-- **THEN** пустой буфер `(___) ___-____`
+#### Scenario: Buffer
+- **WHEN** the mask is `(999) 999-9999` and the placeholder is `_`
+- **THEN** the empty buffer is `(___) ___-____`
 
-#### Scenario: Необязательная часть
-- **WHEN** маска `99-9?99`
-- **THEN** значение с тремя цифрами `12-3` считается полным
+#### Scenario: Optional part
+- **WHEN** the mask is `99-9?99`
+- **THEN** a value with three digits `12-3` counts as complete
 
-### Requirement: Разметка
-`InputMask` SHALL выводить `span.p-inputmask.p-component.p-inputwrapper` (`p-variant-filled` при варианте `filled`) с `input.p-inputtext.p-component` (классы `p-filled`, `p-invalid`, размер, `p-inputtext-fluid`; атрибуты `type`, `placeholder`, `title`, `autocomplete`, `tabindex`, `aria-label`, `aria-labelledby`, `aria-required`, `readonly`, `disabled`) и, при `show_clear`, непустом значении и доступном поле, значком `p-inputmask-clear-icon`.
+### Requirement: Markup
+`InputMask` SHALL render `span.p-inputmask.p-component.p-inputwrapper` (`p-variant-filled` for the `filled` variant) with `input.p-inputtext.p-component` (the classes `p-filled`, `p-invalid`, the size, `p-inputtext-fluid`; the attributes `type`, `placeholder`, `title`, `autocomplete`, `tabindex`, `aria-label`, `aria-labelledby`, `aria-required`, `readonly`, `disabled`) and, with `show_clear`, a non-empty value and an available field, the icon `p-inputmask-clear-icon`.
 
-#### Scenario: Начальное значение
-- **WHEN** значение `5551234567` при маске `(999) 999-9999`
-- **THEN** поле содержит `(555) 123-4567`
+#### Scenario: Initial value
+- **WHEN** the value is `5551234567` with the mask `(999) 999-9999`
+- **THEN** the field contains `(555) 123-4567`
 
-### Requirement: Ввод
-При фокусе поле SHALL показывать буфер маски и ставить каретку на первую свободную позицию (у полностью заполненной маски — выделять всё). Печатный символ, подходящий шаблону, SHALL вставляться со сдвигом уже введённых символов вправо и перемещать каретку к следующей позиции шаблона; неподходящий символ SHALL игнорироваться. `Backspace` и `Delete` SHALL удалять символ либо выделение со сдвигом влево, `Escape` — возвращать текст на момент фокуса. Вставка SHALL разбирать текст по маске. Заполнение обязательной части SHALL вызывать `on_complete`.
+### Requirement: Input
+On focus the field SHALL show the mask buffer and place the caret at the first free position (for a fully filled mask everything is selected). A printable character that matches the template SHALL be inserted, shifting the already entered characters to the right, and move the caret to the next template position; a non-matching character SHALL be ignored. `Backspace` and `Delete` SHALL remove a character or the selection with a shift to the left, and `Escape` — return the text as it was at focus. Paste SHALL parse the text according to the mask. Filling the required part SHALL call `on_complete`.
 
-#### Scenario: Ввод цифр
-- **WHEN** маска `99-99`, пользователь печатает `1`, `2`, `3`, `4`
-- **THEN** поле `12-34`, `on_complete` вызван
+#### Scenario: Typing digits
+- **WHEN** the mask is `99-99` and the user types `1`, `2`, `3`, `4`
+- **THEN** the field is `12-34`, and `on_complete` is called
 
-#### Scenario: Неподходящий символ
-- **WHEN** пользователь печатает букву в позиции цифры
-- **THEN** текст не меняется
+#### Scenario: Non-matching character
+- **WHEN** the user types a letter in a digit position
+- **THEN** the text does not change
 
-### Requirement: Потеря фокуса и значение
-При потере фокуса неполное значение SHALL очищаться (`auto_clear`), иначе оставаться; при `keep_buffer` буфер SHALL сохраняться. Значение SHALL обновляться после изменений: маскированный текст либо введённые символы при `unmask`. Значок очистки SHALL сбрасывать значение и вызывать `on_clear`.
+### Requirement: Blur and value
+On blur an incomplete value SHALL be cleared (`auto_clear`), otherwise it SHALL stay; with `keep_buffer` the buffer SHALL be kept. The value SHALL update after changes: the masked text, or the entered characters with `unmask`. The clear icon SHALL reset the value and call `on_clear`.
 
-#### Scenario: Неполное значение
-- **WHEN** введено `12` при маске `99-99` и фокус потерян
-- **THEN** поле пусто, значение пусто
+#### Scenario: Incomplete value
+- **WHEN** `12` is entered with the mask `99-99` and the focus is lost
+- **THEN** the field is empty, and the value is empty
 
-### Requirement: Недоступность
-При `readonly` ввод SHALL игнорироваться; при `disabled` поле SHALL быть неактивным.
+### Requirement: Unavailability
+With `readonly` the input SHALL be ignored; with `disabled` the field SHALL be inactive.
 
-#### Scenario: Только чтение
-- **WHEN** `readonly` и нажата цифра
-- **THEN** текст не меняется
+#### Scenario: Read-only
+- **WHEN** `readonly` is set and a digit is pressed
+- **THEN** the text does not change

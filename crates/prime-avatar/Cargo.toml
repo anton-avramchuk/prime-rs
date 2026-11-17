@@ -1,6 +1,6 @@
 [package]
 name = "prime-avatar"
-description = "prime-rs: компонент Avatar (порт PrimeNG)"
+description = "prime-rs: Avatar component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -17,7 +17,7 @@ leptos = { workspace = true }
 prime-core = { workspace = true }
 web-sys = { workspace = true, features = ["Event"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client-side event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

@@ -1,6 +1,6 @@
-//! Страница Avatar: демонстрации `label`, `icon`, `image`, `shape`, `size`, `template`, `avatargroup` из showcase PrimeNG (`apps/showcase/doc/avatar`).
+//! Avatar page: demos of `label`, `icon`, `image`, `shape`, `size`, `template`, `avatargroup` from the PrimeNG showcase (`apps/showcase/doc/avatar`).
 //!
-//! Иконка `pi-user` заменена `HomeIcon` из `prime-icons`; изображения берутся с CDN PrimeNG, как в оригинале.
+//! The `pi-user` icon is replaced with `HomeIcon` from `prime-icons`; images are taken from the PrimeNG CDN, as in the original.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -14,7 +14,7 @@ fn user() -> ViewFn {
 
 const AVATARS: &str = "https://primefaces.org/cdn/primeng/images/demo/avatar";
 
-/// Страница `/avatar`.
+/// The `/avatar` page.
 #[component]
 pub fn AvatarPage() -> impl IntoView {
     let violet = "background-color: #ece9fc; color: #2a1261; margin-right: 0.5rem";

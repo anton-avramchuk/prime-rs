@@ -1,9 +1,9 @@
-//! Tag — порт `p-tag` из PrimeNG 21.1.10.
+//! Tag — port of `p-tag` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы совпадают с PrimeNG (`p-tag p-component` + модификаторы, `data-p`, порядок `children`, иконка, метка),
-//! но вместо хост-элемента `<p-tag>` отрисовывается `<span>`: CSS темы привязан к классам, а не к имени тега.
+//! Markup and classes match PrimeNG (`p-tag p-component` + modifiers, `data-p`, order of `children`, icon, label),
+//! but a `<span>` is rendered instead of the `<p-tag>` host element: the theme CSS is bound to classes, not to the tag name.
 //!
-//! Свойства — [`Prop`]/[`OptProp`]; если все они статические, компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! Properties are [`Prop`]/[`OptProp`]; if all of them are static, the component renders ready-made values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -23,44 +23,44 @@ use std::sync::Arc;
 
 pub use state::{TagSeverity, TagState, data_p, write_classes};
 
-/// Pass-through частей Tag.
+/// Pass-through of Tag parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TagPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Оболочка иконки (`span.p-tag-icon`).
+    /// Icon wrapper (`span.p-tag-icon`).
     pub icon: Pt,
-    /// Метка (`span.p-tag-label`).
+    /// Label (`span.p-tag-label`).
     pub label: Pt,
 }
 
-/// Тег: значение, серьёзность, скругление, иконка и произвольное содержимое.
+/// Tag: value, severity, rounding, icon and arbitrary content.
 ///
-/// Каждое свойство принимает значение или сигнал. `children` выводятся первыми, затем иконка и метка (как в PrimeNG).
+/// Each property accepts a value or a signal. `children` are rendered first, then the icon and the label (as in PrimeNG).
 #[component]
 pub fn Tag(
-    /// Текст метки.
+    /// Label text.
     #[prop(optional, into)]
     value: OptProp<String>,
-    /// Серьёзность.
+    /// Severity.
     #[prop(optional, into)]
     severity: OptProp<TagSeverity>,
-    /// Скруглённые края.
+    /// Rounded edges.
     #[prop(optional, into)]
     rounded: Prop<bool>,
-    /// Иконка; выводится в `span.p-tag-icon`.
+    /// Icon; rendered in `span.p-tag-icon`.
     #[prop(optional, into)]
     icon: Option<ViewFn>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<TagPt>,
-    /// Содержимое перед иконкой и меткой.
+    /// Content before the icon and label.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -93,7 +93,7 @@ pub fn Tag(
     }
 }
 
-/// Разметка Tag: одна для статической и реактивной ветвей (меняются только выражения атрибутов и текста).
+/// Tag markup: one for the static and reactive branches (only attribute and text expressions differ).
 macro_rules! tag_markup {
     ($class:expr, $style:expr, $data:expr, $attrs:expr, $content:expr, $icon:expr, $label_class:expr, $label_attrs:expr, $value:expr) => {
         view! {
@@ -129,7 +129,7 @@ fn data_of(props: &Props) -> Cow<'static, str> {
     data_p(&state_of(props))
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     value: OptProp<String>,
     severity: OptProp<TagSeverity>,

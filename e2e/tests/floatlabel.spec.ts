@@ -7,7 +7,7 @@ test.describe('FloatLabel', () => {
         await expect(page.locator('[data-demo=basic] .p-floatlabel')).toBeVisible();
     });
 
-    test('демонстрации и классы вариантов', async ({ page }) => {
+    test('demos and variant classes', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(3);
         await expect(page.locator('[data-demo=basic] .p-floatlabel')).toHaveClass(/p-floatlabel-over/);
         await expect(page.locator('[data-demo=variants] .p-floatlabel-in')).toHaveCount(1);
@@ -15,7 +15,7 @@ test.describe('FloatLabel', () => {
         await expect(page.locator('[data-demo=variants] .p-floatlabel-over')).toHaveCount(1);
     });
 
-    test('over: метка поднимается при фокусе и остаётся при вводе', async ({ page }) => {
+    test('over: the label rises on focus and stays while typing', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         const label = demo.locator('label');
         const input = demo.locator('input');
@@ -30,7 +30,7 @@ test.describe('FloatLabel', () => {
         await expect.poll(async () => (await label.boundingBox())!.y).toBeCloseTo(before, 0);
     });
 
-    test('in: метка остаётся внутри поля', async ({ page }) => {
+    test('in: the label stays inside the field', async ({ page }) => {
         const demo = page.locator('[data-demo=variants] .p-floatlabel-in');
         const input = demo.locator('input');
         await input.focus();
@@ -41,7 +41,7 @@ test.describe('FloatLabel', () => {
         expect(label.y + label.height).toBeLessThanOrEqual(field.y + field.height);
     });
 
-    test('on: метка садится на верхнюю границу поля', async ({ page }) => {
+    test('on: the label sits on the top border of the field', async ({ page }) => {
         const demo = page.locator('[data-demo=variants] .p-floatlabel-on');
         const input = demo.locator('input');
         await input.focus();
@@ -51,7 +51,7 @@ test.describe('FloatLabel', () => {
         expect(label.y + label.height).toBeGreaterThan(field.y);
     });
 
-    test('invalid: класс p-invalid следует за пустотой поля', async ({ page }) => {
+    test('invalid: the p-invalid class follows whether the field is empty', async ({ page }) => {
         const input = page.locator('[data-demo=invalid] input');
         await expect(input).toHaveClass(/p-invalid/);
         await input.fill('x');

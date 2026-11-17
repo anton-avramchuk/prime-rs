@@ -1,4 +1,4 @@
-//! Рендер корня с pass-through (SSR).
+//! Root rendering with pass-through (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

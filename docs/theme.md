@@ -1,25 +1,25 @@
-# Тема
+# Theme
 
-`prime-theme` содержит статический CSS темы Aura. Он не генерируется в рантайме и не требует Node при сборке:
-файлы лежат в `crates/prime-theme/css/` и подключаются через `include_str!`.
+`prime-theme` contains the static CSS of the Aura theme. It is not generated at runtime and does not require Node at build time:
+the files live in `crates/prime-theme/css/` and are included via `include_str!`.
 
 ```rust
-let css = prime_theme::stylesheet(&["button", "badge"]); // базовый CSS + CSS выбранных компонентов
+let css = prime_theme::stylesheet(&["button", "badge"]); // base CSS + CSS of the selected components
 ```
 
-- `BASE` — переменные `--p-*` (палитры, семантические токены, светлая и тёмная схема), глобальные стили и `.p-hidden-accessible`.
-- Тёмная схема включается селектором `DARK_MODE_SELECTOR` (`.p-dark`) на корневом элементе.
-- CSS компонента доступен, если включён его feature (`button`, `badge`, …, `all-components`); остальные имена пропускаются.
+- `BASE`: the `--p-*` variables (palettes, semantic tokens, light and dark scheme), global styles and `.p-hidden-accessible`.
+- The dark scheme is enabled by the `DARK_MODE_SELECTOR` selector (`.p-dark`) on the root element.
+- A component's CSS is available if its feature is enabled (`button`, `badge`, ..., `all-components`); other names are skipped.
 
-## Регенерация
+## Regeneration
 
 ```sh
 cargo xtask gen-theme
 ```
 
-Нужны Node и npm. Команда ставит `@primeuix/themes`, `@primeuix/styles`, `@primeuix/styled` и `@primeuix/utils` версий из `upstream.toml`
-в кэш вне репозитория (`~/.cache/prime-rs`, переопределяется `PRIME_RS_CACHE`) без запуска скриптов пакетов, затем `xtask/theme/extract.mjs`
-строит CSS тем же кодом, что и PrimeNG (`Theme.getCommon`, `Theme.getComponent`, разрешение `dt()`). Результат детерминирован.
+Node and npm are required. The command installs `@primeuix/themes`, `@primeuix/styles`, `@primeuix/styled` and `@primeuix/utils` at the versions from `upstream.toml`
+into a cache outside the repository (`~/.cache/prime-rs`, overridable with `PRIME_RS_CACHE`) without running package scripts, then `xtask/theme/extract.mjs`
+builds the CSS with the same code as PrimeNG (`Theme.getCommon`, `Theme.getComponent`, `dt()` resolution). The result is deterministic.
 
-Список компонентов задаётся в `upstream.toml` (`[theme] components`): новый компонент добавляется в список вместе со своим портом.
-Размер: `base.css` ≈ 19 КБ, CSS компонента — от 3 до 35 КБ (минифицированный).
+The component list is set in `upstream.toml` (`[theme] components`): a new component is added to the list together with its port.
+Size: `base.css` is about 19 KB, a component's CSS is 3 to 35 KB (minified).

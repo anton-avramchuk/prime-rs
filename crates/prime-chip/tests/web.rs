@@ -1,4 +1,4 @@
-//! Поведение Chip в реальном браузере (wasm-bindgen-test): удаление мышью и клавиатурой, ошибка изображения, `disabled`.
+//! Chip behaviour in a real browser (wasm-bindgen-test): removal by mouse and keyboard, image error, `disabled`.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -33,7 +33,7 @@ fn counter() -> (Arc<AtomicUsize>, Callback<Event>) {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn key(el: &HtmlElement, key: &str) {
@@ -71,8 +71,8 @@ async fn enter_and_backspace_remove_other_keys_do_not() {
         leptos::task::tick().await;
         key(&q(&host, ".p-chip-remove-icon"), k);
         leptos::task::tick().await;
-        assert_eq!(n.load(Ordering::SeqCst), usize::from(removes), "клавиша {k}");
-        assert_eq!(display(&q(&host, ".p-chip")) == "none", removes, "клавиша {k}");
+        assert_eq!(n.load(Ordering::SeqCst), usize::from(removes), "key {k}");
+        assert_eq!(display(&q(&host, ".p-chip")) == "none", removes, "key {k}");
         host.remove();
     }
 }
@@ -98,7 +98,7 @@ async fn remove_element_is_focusable_unless_disabled() {
 async fn image_error_calls_on_image_error_once() {
     let (n, cb) = counter();
     let host = host();
-    // несуществующий адрес: браузер сообщит об ошибке загрузки
+    // a non-existent address: the browser will report a loading error
     let _h = leptos::mount::mount_to(
         host.clone(),
         move || view! { <Chip label="x" image="http://127.0.0.1:1/missing.png" on_image_error=cb /> },
@@ -114,7 +114,7 @@ async fn image_error_calls_on_image_error_once() {
     host.remove();
 }
 
-/// Ожидание ~100 мс без внешних зависимостей.
+/// Waits about 100 ms without external dependencies.
 async fn gloo_timers_sleep() {
     let promise = js_sys::Promise::new(&mut |resolve, _| {
         web_sys::window().unwrap().set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 100).unwrap();

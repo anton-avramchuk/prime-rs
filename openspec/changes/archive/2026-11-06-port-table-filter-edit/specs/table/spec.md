@@ -1,33 +1,33 @@
 ## ADDED Requirements
 
-### Requirement: Фильтры
-Столбец с `filterable` SHALL получать в `thead` вторую строку `tr` с ячейкой `p-datatable-filter`, содержащей поле ввода и кнопку очистки. Ввод SHALL задавать фильтр столбца с режимом сравнения (по умолчанию `startsWith`; `Column::filter_match_mode`), оставлять строки, для которых значение поля удовлетворяет всем фильтрам, возвращать на первую страницу и вызывать `on_filter`. Пустое значение SHALL снимать фильтр. Сравнение строк SHALL быть без учёта регистра, числовые режимы — по числу. Глобальный фильтр `global_filter` SHALL оставлять строки, у которых хотя бы одно из `global_filter_fields` содержит значение. Пагинатор SHALL работать по отфильтрованным данным; при отсутствии подходящих строк SHALL показываться сообщение пустой таблицы.
+### Requirement: Filters
+A column with `filterable` SHALL get a second `tr` row in `thead` with a `p-datatable-filter` cell containing an input and a clear button. Input SHALL set the column filter with a match mode (default `startsWith`; `Column::filter_match_mode`), keep the rows whose field value satisfies all filters, return to the first page and call `on_filter`. An empty value SHALL clear the filter. String comparison SHALL be case-insensitive, numeric modes compare by number. The global filter `global_filter` SHALL keep the rows in which at least one of `global_filter_fields` contains the value. The paginator SHALL work over the filtered data; when no rows match, the empty table message SHALL be shown.
 
-#### Scenario: Фильтр столбца
-- **WHEN** в поле столбца «Name» введено «bam»
-- **THEN** остаются только строки, чьё имя начинается с «bam», страница первая
+#### Scenario: Column filter
+- **WHEN** "bam" is entered in the "Name" column input
+- **THEN** only the rows whose name starts with "bam" remain, the page is the first
 
-#### Scenario: Глобальный фильтр
-- **WHEN** `global_filter` = «acc», поля — name и category
-- **THEN** остаются строки, где «acc» встречается в любом из полей
+#### Scenario: Global filter
+- **WHEN** `global_filter` = "acc", fields are name and category
+- **THEN** the rows where "acc" occurs in any of the fields remain
 
-### Requirement: Правка ячеек
-В режиме `edit_mode = cell` ячейка столбца `editable` SHALL иметь класс `p-editable-column`; клик по ней SHALL открывать редактор (класс `p-cell-editing`) и вызывать `on_edit_init`. `Enter` или потеря фокуса SHALL завершать правку событием `on_edit_complete` с новой строкой и закрывать редактор; `Escape` SHALL отменять правку событием `on_edit_cancel`. Данные `value` не изменяются.
+### Requirement: Cell editing
+In `edit_mode = cell` mode a cell of an `editable` column SHALL have the class `p-editable-column`; a click on it SHALL open the editor (class `p-cell-editing`) and call `on_edit_init`. `Enter` or blur SHALL complete editing with the `on_edit_complete` event carrying the new row and close the editor; `Escape` SHALL cancel editing with the `on_edit_cancel` event. The `value` data is not changed.
 
-#### Scenario: Завершение
-- **WHEN** клик по ячейке, ввод «X», `Enter`
-- **THEN** событие complete содержит строку с новым значением, редактор закрыт
+#### Scenario: Completion
+- **WHEN** click on the cell, input "X", `Enter`
+- **THEN** the complete event contains the row with the new value, the editor is closed
 
-### Requirement: Правка строк
-В режиме `edit_mode = row` столбец `row_editor` SHALL показывать кнопку «изменить»; её нажатие SHALL открывать редакторы `editable` столбцов в строке и показывать кнопки «сохранить» и «отменить». Сохранение SHALL вызывать `on_row_edit_save` с новой строкой, отмена — `on_row_edit_cancel` без изменений. Ключи строк в правке SHALL храниться в сигнале `editing_keys`.
+### Requirement: Row editing
+In `edit_mode = row` mode a `row_editor` column SHALL show an "edit" button; pressing it SHALL open the editors of the `editable` columns in the row and show "save" and "cancel" buttons. Saving SHALL call `on_row_edit_save` with the new row, cancelling SHALL call `on_row_edit_cancel` without changes. The keys of the rows being edited SHALL be stored in the `editing_keys` signal.
 
-#### Scenario: Сохранение
-- **WHEN** нажата «изменить», изменено значение, нажата «сохранить»
-- **THEN** вызвано `on_row_edit_save` с новой строкой, строка вышла из правки
+#### Scenario: Saving
+- **WHEN** "edit" is pressed, the value is changed, "save" is pressed
+- **THEN** `on_row_edit_save` is called with the new row, the row left editing
 
-### Requirement: Ленивая загрузка
-При `lazy` таблица SHALL не сортировать, не фильтровать и не обрезать страницы сама, показывать `value` как есть, считать страницы по `total_records` и вызывать `on_lazy_load` с `first`, `rows`, сортировкой, фильтрами и глобальным фильтром при монтировании и после каждого их изменения.
+### Requirement: Lazy loading
+With `lazy` the table SHALL NOT sort, filter or slice pages itself, SHALL show `value` as is, count pages by `total_records` and call `on_lazy_load` with `first`, `rows`, the sort, the filters and the global filter on mount and after each change of them.
 
-#### Scenario: Смена страницы
-- **WHEN** `lazy`, `total_records = 100`, переход на вторую страницу
-- **THEN** вызвано `on_lazy_load` с `first = 10`
+#### Scenario: Page change
+- **WHEN** `lazy`, `total_records = 100`, go to the second page
+- **THEN** `on_lazy_load` is called with `first = 10`

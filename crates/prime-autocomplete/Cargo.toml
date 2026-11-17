@@ -1,6 +1,6 @@
 [package]
 name = "prime-autocomplete"
-description = "prime-rs: компонент AutoComplete (порт PrimeNG)"
+description = "prime-rs: AutoComplete component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -22,7 +22,7 @@ prime-icons = { workspace = true, features = ["chevrondown", "times", "timescirc
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "FocusEvent", "KeyboardEvent", "MouseEvent", "ClipboardEvent", "DataTransfer", "HtmlElement", "HtmlInputElement", "Element", "Node", "Window", "ScrollIntoViewOptions", "ScrollLogicalPosition"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

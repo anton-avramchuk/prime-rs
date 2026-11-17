@@ -1,7 +1,7 @@
-//! Galleria — порт `p-galleria` из PrimeNG 21.1.10.
+//! Galleria: a port of `p-galleria` from PrimeNG 21.1.10.
 //!
-//! Галерея изображений: крупный кадр, миниатюры с прокруткой, индикаторы, подписи, автоматическая смена кадров
-//! и полноэкранный режим (маска в `body`). Окно миниатюр считает чистая [`model`].
+//! Image gallery: a large frame, scrollable thumbnails, indicators, captions, automatic frame advance
+//! and fullscreen mode (a mask in `body`). The thumbnail window is computed by the pure [`model`].
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -40,100 +40,100 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Запасное время выхода: анимация идёт 300 мс, но без стилей `animationend` не придёт.
+/// Fallback leave time: the animation takes 300 ms, but without styles `animationend` will not arrive.
 #[cfg(target_arch = "wasm32")]
 const LEAVE_FALLBACK: Duration = Duration::from_millis(700);
 
-/// Изображение галереи.
+/// Gallery image.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GalleriaImage {
-    /// Адрес крупного изображения.
+    /// Large image URL.
     pub item_image_src: String,
-    /// Адрес миниатюры (по умолчанию — крупное изображение).
+    /// Thumbnail URL (the large image by default).
     pub thumbnail_image_src: Option<String>,
-    /// Атрибут `alt`.
+    /// `alt` attribute.
     pub alt: String,
-    /// Заголовок (для подписи).
+    /// Title (for the caption).
     pub title: String,
 }
 
 impl GalleriaImage {
-    /// Изображение с адресом крупного кадра.
+    /// Image with the URL of the large frame.
     pub fn new(item_image_src: impl Into<String>) -> Self {
         Self { item_image_src: item_image_src.into(), ..Self::default() }
     }
 
-    /// Адрес миниатюры.
+    /// Thumbnail URL.
     pub fn thumbnail(mut self, src: impl Into<String>) -> Self {
         self.thumbnail_image_src = Some(src.into());
         self
     }
 
-    /// Текст `alt`.
+    /// `alt` text.
     pub fn alt(mut self, alt: impl Into<String>) -> Self {
         self.alt = alt.into();
         self
     }
 
-    /// Заголовок.
+    /// Title.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = title.into();
         self
     }
 }
 
-/// Pass-through частей [`Galleria`].
+/// Pass-through parts of [`Galleria`].
 #[derive(Clone, Debug, Default)]
 pub struct GalleriaPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Маска полноэкранного режима.
+    /// Fullscreen mode mask.
     pub mask: Pt,
-    /// Кнопка закрытия.
+    /// Close button.
     pub close_button: Pt,
-    /// Заголовок.
+    /// Header.
     pub header: Pt,
-    /// Содержимое.
+    /// Content.
     pub content: Pt,
-    /// Подвал.
+    /// Footer.
     pub footer: Pt,
-    /// Контейнер кадров.
+    /// Frames container.
     pub items_container: Pt,
-    /// Обёртка кадра и кнопок.
+    /// Wrapper of the frame and buttons.
     pub items: Pt,
-    /// Кнопка «назад» кадра.
+    /// Frame "backward" button.
     pub prev_button: Pt,
-    /// Кадр.
+    /// Frame.
     pub item: Pt,
-    /// Кнопка «вперёд» кадра.
+    /// Frame "forward" button.
     pub next_button: Pt,
-    /// Подпись.
+    /// Caption.
     pub caption: Pt,
-    /// Список индикаторов.
+    /// Indicators list.
     pub indicator_list: Pt,
-    /// Индикатор.
+    /// Indicator.
     pub indicator: Pt,
-    /// Кнопка индикатора.
+    /// Indicator button.
     pub indicator_button: Pt,
-    /// Миниатюры.
+    /// Thumbnails.
     pub thumbnails: Pt,
-    /// Содержимое миниатюр.
+    /// Thumbnails content.
     pub thumbnail_content: Pt,
-    /// Кнопка «назад» миниатюр.
+    /// Thumbnails "backward" button.
     pub thumbnail_prev_button: Pt,
-    /// Окно миниатюр.
+    /// Thumbnails window.
     pub thumbnails_viewport: Pt,
-    /// Лента миниатюр.
+    /// Thumbnails strip.
     pub thumbnail_items: Pt,
-    /// Элемент ленты.
+    /// Strip item.
     pub thumbnail_item: Pt,
-    /// Миниатюра.
+    /// Thumbnail.
     pub thumbnail: Pt,
-    /// Кнопка «вперёд» миниатюр.
+    /// Thumbnails "forward" button.
     pub thumbnail_next_button: Pt,
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     value: Prop<Vec<GalleriaImage>>,
@@ -143,12 +143,12 @@ struct Core {
     leaving: RwSignal<bool>,
     slide_show_active: RwSignal<bool>,
     num_visible: Prop<usize>,
-    /// Число видимых миниатюр с учётом адаптивных вариантов.
+    /// Number of visible thumbnails taking responsive options into account.
     num_visible_now: RwSignal<usize>,
     responsive_options: Vec<GalleriaResponsive>,
     items_hidden: RwSignal<bool>,
     transition_on: RwSignal<bool>,
-    /// Миниатюра, доступная по Tab (после стрелок); `None` — активная.
+    /// The thumbnail reachable by Tab (after arrow keys); `None` means the active one.
     tab_index_override: RwSignal<Option<usize>>,
     full_screen: bool,
     show_item_navigators: Prop<bool>,
@@ -212,7 +212,7 @@ impl Core {
         self.show_thumbnails.get() && self.thumbnails_position.get().is_vertical()
     }
 
-    /// Меняет активный индекс: лента миниатюр анимируется, скрытые миниатюры снова видны.
+    /// Changes the active index: the thumbnail strip is animated, hidden thumbnails become visible again.
     fn set_active(&self, index: usize) {
         if self.active.get_untracked() != index {
             self.active.set(index);
@@ -222,7 +222,7 @@ impl Core {
         self.tab_index_override.set(None);
     }
 
-    /// Остановка автосмены (`stopSlideShow`): при `auto_play` без `should_stop_autoplay_by_click` не действует.
+    /// Stops auto-advance (`stopSlideShow`): with `auto_play` it has no effect without `should_stop_autoplay_by_click`.
     fn stop_slide_show(&self) {
         if self.auto_play.get_untracked() && !self.should_stop_autoplay_by_click.get_untracked() {
             return;
@@ -284,7 +284,7 @@ impl Core {
         }
     }
 
-    /// Клавиши миниатюры: `Enter`/`Space` выбирают, стрелки, `Home`, `End` двигают фокус, `Tab` возвращает активную.
+    /// Thumbnail keys: `Enter`/`Space` select, arrows, `Home`, `End` move focus, `Tab` returns to the active one.
     fn thumb_keydown(&self, index: usize, e: &web_sys::KeyboardEvent) {
         let len = self.len();
         let focus_to = |target: usize| {
@@ -326,7 +326,7 @@ impl Core {
         let _ = index;
     }
 
-    /// Снимает слушатели, ловушку фокуса, слой, блокировку прокрутки, автосмену и таймеры.
+    /// Removes listeners, the focus trap, the layer, the scroll lock, auto-advance and timers.
     fn teardown(&self) {
         for cleanup in self.cleanups.try_update_value(std::mem::take).unwrap_or_default() {
             cleanup();
@@ -357,7 +357,7 @@ impl Core {
         }
     }
 
-    /// Маска только что попала в DOM: слой, блокировка прокрутки, ловушка фокуса, фокус на кнопке закрытия.
+    /// The mask has just entered the DOM: layer, scroll lock, focus trap, focus on the close button.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let (Some(panel), Some(mask)) = (self.panel.get_untracked(), self.mask.get_untracked()) else { return };
@@ -405,112 +405,112 @@ impl Core {
     }
 }
 
-/// Галерея изображений.
+/// Image gallery.
 ///
-/// Каждое свойство принимает значение или сигнал; `active_index` и `visible` — двусторонние сигналы. В режиме
-/// `full_screen` маска выводится в `body` и до гидратации не отдаётся сервером.
+/// Every property accepts a value or a signal; `active_index` and `visible` are two-way signals. In
+/// `full_screen` mode the mask is rendered into `body` and is not sent by the server before hydration.
 #[component]
 pub fn Galleria(
-    /// Изображения.
+    /// Images.
     #[prop(optional, into)]
     value: Prop<Vec<GalleriaImage>>,
-    /// Двусторонний сигнал индекса активного кадра.
+    /// Two-way signal of the active frame index.
     #[prop(optional)]
     active_index: Option<RwSignal<usize>>,
-    /// Двусторонний сигнал видимости (только `full_screen`).
+    /// Two-way visibility signal (`full_screen` only).
     #[prop(optional)]
     visible: Option<RwSignal<bool>>,
-    /// Полноэкранный режим: галерея в маске поверх страницы.
+    /// Fullscreen mode: the gallery in a mask over the page.
     #[prop(optional)]
     full_screen: bool,
-    /// Число видимых миниатюр.
+    /// Number of visible thumbnails.
     #[prop(optional, default = Prop::Static(3), into)]
     num_visible: Prop<usize>,
-    /// Адаптивные варианты числа видимых миниатюр.
+    /// Responsive options for the number of visible thumbnails.
     #[prop(optional, into)]
     responsive_options: Vec<GalleriaResponsive>,
-    /// Кнопки навигации по кадрам.
+    /// Frame navigation buttons.
     #[prop(optional, into)]
     show_item_navigators: Prop<bool>,
-    /// Кнопки страниц миниатюр.
+    /// Thumbnail page buttons.
     #[prop(optional, default = Prop::Static(true), into)]
     show_thumbnail_navigators: Prop<bool>,
-    /// Кнопки навигации по кадрам только при наведении.
+    /// Frame navigation buttons only on hover.
     #[prop(optional, into)]
     show_item_navigators_on_hover: Prop<bool>,
-    /// Менять кадр при наведении на индикатор.
+    /// Change the frame when hovering over an indicator.
     #[prop(optional, into)]
     change_item_on_indicator_hover: Prop<bool>,
-    /// Зациклить навигацию.
+    /// Wrap navigation around.
     #[prop(optional, into)]
     circular: Prop<bool>,
-    /// Автоматическая смена кадров.
+    /// Automatic frame advance.
     #[prop(optional, into)]
     auto_play: Prop<bool>,
-    /// Останавливать автосмену по действию пользователя.
+    /// Stop auto-advance on user action.
     #[prop(optional, default = Prop::Static(true), into)]
     should_stop_autoplay_by_click: Prop<bool>,
-    /// Интервал автосмены, мс.
+    /// Auto-advance interval, ms.
     #[prop(optional, default = Prop::Static(4000), into)]
     transition_interval: Prop<u32>,
-    /// Показывать миниатюры.
+    /// Show thumbnails.
     #[prop(optional, default = Prop::Static(true), into)]
     show_thumbnails: Prop<bool>,
-    /// Положение миниатюр.
+    /// Thumbnail position.
     #[prop(optional, into)]
     thumbnails_position: Prop<GalleriaPosition>,
-    /// Высота окна вертикальных миниатюр.
+    /// Height of the vertical thumbnails window.
     #[prop(optional, default = Prop::Static("300px".to_owned()), into)]
     vertical_thumbnail_view_port_height: Prop<String>,
-    /// Показывать индикаторы.
+    /// Show indicators.
     #[prop(optional, into)]
     show_indicators: Prop<bool>,
-    /// Индикаторы поверх кадра.
+    /// Indicators over the frame.
     #[prop(optional, into)]
     show_indicators_on_item: Prop<bool>,
-    /// Положение индикаторов.
+    /// Indicator position.
     #[prop(optional, into)]
     indicators_position: Prop<GalleriaPosition>,
-    /// Базовый `z-index` маски поверх значения конфигурации.
+    /// Base `z-index` of the mask on top of the configuration value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Атрибут `id` корня.
+    /// `id` attribute of the root.
     #[prop(optional, into)]
     id: Option<String>,
-    /// Дополнительный класс маски (полноэкранный режим).
+    /// Additional class of the mask (fullscreen mode).
     #[prop(optional, into)]
     mask_class: OptProp<String>,
-    /// Дополнительный класс корня в полноэкранном режиме.
+    /// Additional class of the root in fullscreen mode.
     #[prop(optional, into)]
     container_class: OptProp<String>,
-    /// Встроенный стиль корня в полноэкранном режиме.
+    /// Inline style of the root in fullscreen mode.
     #[prop(optional, into)]
     container_style: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Свой вид кадра.
+    /// Custom frame view.
     #[prop(optional, into)]
     item: Option<Callback<GalleriaImage, AnyView>>,
-    /// Свой вид миниатюры.
+    /// Custom thumbnail view.
     #[prop(optional, into)]
     thumbnail: Option<Callback<GalleriaImage, AnyView>>,
-    /// Подпись кадра.
+    /// Frame caption.
     #[prop(optional, into)]
     caption: Option<Callback<GalleriaImage, AnyView>>,
-    /// Свой вид индикатора (по индексу).
+    /// Custom indicator view (by index).
     #[prop(optional, into)]
     indicator: Option<Callback<usize, AnyView>>,
-    /// Заголовок галереи.
+    /// Gallery header.
     #[prop(optional, into)]
     header: Option<ViewFn>,
-    /// Подвал галереи.
+    /// Gallery footer.
     #[prop(optional, into)]
     footer: Option<ViewFn>,
-    /// Pass-through частей.
+    /// Pass-through parts.
     #[prop(optional)]
     pt: Option<GalleriaPt>,
 ) -> impl IntoView {
@@ -579,7 +579,7 @@ pub fn Galleria(
         on_cleanup(move || core.teardown());
     }
 
-    // Автосмена, адаптивные варианты, показ и закрытие маски — только в браузере.
+    // Auto-advance, responsive options, showing and closing the mask happen only in the browser.
     #[cfg(target_arch = "wasm32")]
     {
         let c = core.clone();
@@ -592,7 +592,7 @@ pub fn Galleria(
         });
         let c = core.clone();
         Effect::new(move |_| {
-            // базовое число видимых изменилось — пересчитать с учётом ширины окна
+            // the base visible count changed: recompute taking the window width into account
             c.num_visible.get();
             update_responsive(&c);
         });
@@ -654,7 +654,7 @@ fn update_responsive(core: &Arc<Core>) {
     }
 }
 
-/// Маска полноэкранного режима с галереей.
+/// Fullscreen mode mask with the gallery.
 fn mask_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
     let (mask, leaving) = (core.mask, core.leaving);
     let class = {
@@ -686,7 +686,7 @@ fn mask_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
             on:animationend=move |e: web_sys::AnimationEvent| {
                 #[cfg(target_arch = "wasm32")]
                 {
-                    // анимация корня галереи (не вложенных элементов) завершает выход
+                    // the animation of the gallery root (not nested elements) finishes the leave
                     let own = e.target().is_some_and(|t| t.dyn_ref::<web_sys::Element>().is_some_and(|el| el.class_list().contains("p-galleria")));
                     if own && end_core.leaving.get_untracked() {
                         end_core.finish_leave();
@@ -702,7 +702,7 @@ fn mask_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
     }
 }
 
-/// Корень галереи с содержимым (`GalleriaContent`).
+/// Gallery root with content (`GalleriaContent`).
 fn content_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
     let panel = core.panel;
     let class = {
@@ -752,7 +752,7 @@ fn push_class(cn: &mut String, extra: Option<&str>) {
     }
 }
 
-/// Кнопка закрытия, заголовок, содержимое и подвал.
+/// Close button, header, content and footer.
 fn body_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
     let close = core.full_screen.then(|| {
         let visible = core.visible;
@@ -794,7 +794,7 @@ fn body_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
     }
 }
 
-/// Кадр, кнопки, подпись и индикаторы (`GalleriaItem`).
+/// Frame, buttons, caption and indicators (`GalleriaItem`).
 fn items_container_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
     let nav = |forward: bool| {
         let core = core.clone();
@@ -936,7 +936,7 @@ fn indicators_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + us
     view! { <ul class={pt.indicator_list.merge_class("p-galleria-indicator-list")} {..pt.indicator_list.attrs()}>{items}</ul> }
 }
 
-/// Лента миниатюр (`GalleriaThumbnails`).
+/// Thumbnail strip (`GalleriaThumbnails`).
 fn thumbnails_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
     let nav = |forward: bool| {
         let (core, pt) = (core.clone(), pt.clone());

@@ -1,6 +1,6 @@
-//! Ядро prime-rs: конфигурация, построитель классов, общие пропсы, pass-through и z-index.
+//! prime-rs core: configuration, class builder, shared props, pass-through and z-index.
 //!
-//! Компоненты зависят от этого крейта и не дублируют его код.
+//! Components depend on this crate and do not duplicate its code.
 
 pub mod class_names;
 pub mod collapsible;

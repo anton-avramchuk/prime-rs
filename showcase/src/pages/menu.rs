@@ -1,9 +1,9 @@
-//! Страница Menu: демонстрации `basic`, `group`, `command`, `popup`, `template` по `apps/showcase/doc/menu` PrimeNG.
+//! Menu page: the `basic`, `group`, `command`, `popup`, `template` demos after PrimeNG `apps/showcase/doc/menu`.
 //!
-//! Демонстрация `router` не переносится (у `MenuItem` нет полей маршрутизатора). Значков `cog`, `sign-out` и
-//! `ellipsis-v` в `prime-icons` нет — подставлены `Refresh`, `Upload` и `Bars`; в `template` вместо логотипа текст,
-//! вместо аватара — инициалы, подпись-сочетание клавиш берётся из таблицы по подписи пункта. Всплывающее меню лежит
-//! в обёртке с `position: relative`: панель выводится внутри корня, а не в `body`.
+//! The `router` demo is not ported (`MenuItem` has no router fields). `prime-icons` has no `cog`, `sign-out` or
+//! `ellipsis-v` icons — `Refresh`, `Upload` and `Bars` are used instead; in `template` there is text instead of a logo,
+//! initials instead of an avatar, and the key-combination label is taken from a table by the item label. The popup menu sits
+//! in a wrapper with `position: relative`: the panel is rendered inside the root, not in `body`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -144,7 +144,7 @@ fn TemplateDemo() -> impl IntoView {
     }
 }
 
-/// Страница `/menu`.
+/// Page `/menu`.
 #[component]
 pub fn MenuPage() -> impl IntoView {
     view! {

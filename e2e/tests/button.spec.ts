@@ -3,21 +3,21 @@ import { expect, test } from '@playwright/test';
 test.describe('Button', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/button');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
-        // ждём гидрацию: клик по Loading работает только после неё
+        // wait for hydration: a click on Loading works only after it
         await expect(page.locator('[data-demo=loading] button')).toBeVisible();
         await page.waitForTimeout(500);
     });
 
-    test('все демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('all demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(15);
         const bg = await page.locator('[data-demo=severity] button.p-button-danger').evaluate((el) => getComputedStyle(el).backgroundColor);
         expect(bg).not.toBe('rgba(0, 0, 0, 0)');
         expect(bg).not.toBe('rgb(239, 239, 239)');
     });
 
-    test('loading: кнопка блокируется на время загрузки', async ({ page }) => {
+    test('loading: the button is blocked while loading', async ({ page }) => {
         const button = page.locator('[data-demo=loading] button');
         await expect(button).toBeEnabled();
         await button.click();
@@ -28,23 +28,23 @@ test.describe('Button', () => {
         await expect(button).not.toHaveClass(/p-button-loading/);
     });
 
-    test('disabled: кнопка недоступна', async ({ page }) => {
+    test('disabled: the button is unavailable', async ({ page }) => {
         const button = page.locator('[data-demo=disabled] button');
         await expect(button).toBeDisabled();
         await expect(button).toHaveAttribute('data-p-disabled', 'true');
     });
 
-    test('ripple: при нажатии активируется p-ink', async ({ page }) => {
+    test('ripple: p-ink is activated on press', async ({ page }) => {
         const button = page.locator('[data-demo=ripple] button');
         const ink = button.locator('.p-ink');
         await expect(ink).toHaveCount(1);
         await button.dispatchEvent('mousedown');
         await expect(ink).toHaveAttribute('data-p-ink-active', 'true');
-        // без включённого ripple p-ink нет
+        // without ripple enabled there is no p-ink
         await expect(page.locator('[data-demo=basic] .p-ink')).toHaveCount(0);
     });
 
-    test('иконки: позиция и режим «только иконка»', async ({ page }) => {
+    test('icons: position and the icon-only mode', async ({ page }) => {
         await expect(page.locator('[data-demo=icons] .p-button-icon-right')).toHaveCount(1);
         await expect(page.locator('[data-demo=icons] .p-button-vertical')).toHaveCount(2);
         await expect(page.locator('[data-demo=iconsonly] .p-button-icon-only')).toHaveCount(9);

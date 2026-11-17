@@ -1,12 +1,12 @@
-//! InputText — порт директивы `pInputText` из PrimeNG 21.1.10.
+//! InputText — port of the PrimeNG 21.1.10 `pInputText` directive.
 //!
-//! В PrimeNG это директива на нативном `<input>`; здесь компонент отрисовывает `<input>` с теми же классами (`p-inputtext p-component`,
-//! `p-filled`, `p-inputtext-sm`/`-lg`, `p-invalid`, `p-variant-filled`, `p-inputtext-fluid`) и `data-p`.
+//! In PrimeNG it is a directive on a native `<input>`; here the component renders an `<input>` with the same classes (`p-inputtext p-component`,
+//! `p-filled`, `p-inputtext-sm`/`-lg`, `p-invalid`, `p-variant-filled`, `p-inputtext-fluid`) and `data-p`.
 //!
-//! Значение — необязательное двустороннее `value: RwSignal<String>`: поле показывает сигнал, ввод пользователя пишется обратно.
-//! Без `value` поле неконтролируемое: значение живёт в DOM, а `p-filled` не отслеживается.
+//! The value is an optional two-way `value: RwSignal<String>`: the field shows the signal, user input is written back.
+//! Without `value` the field is uncontrolled: the value lives in the DOM, and `p-filled` is not tracked.
 //!
-//! Если все свойства статические и `value` не задан, компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! If all properties are static and `value` is not set, the component renders ready values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -28,78 +28,78 @@ use std::sync::Arc;
 
 pub use state::{InputTextState, data_p, write_classes};
 
-/// Поле ввода текста.
+/// Text input field.
 ///
-/// Каждое свойство принимает значение или сигнал. `value` — двусторонняя привязка (`RwSignal<String>`).
+/// Each property accepts a value or a signal. `value` is a two-way binding (`RwSignal<String>`).
 #[component]
 pub fn InputText(
-    /// Двусторонне связанное значение; без него поле неконтролируемое.
+    /// Two-way bound value; without it the field is uncontrolled.
     #[prop(optional)]
     value: Option<RwSignal<String>>,
-    /// Атрибут `type` (по умолчанию `text`).
+    /// `type` attribute (`text` by default).
     #[prop(optional, into)]
     input_type: OptProp<String>,
-    /// Атрибут `id`.
+    /// `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `name`.
+    /// `name` attribute.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Подсказка в пустом поле.
+    /// Hint in an empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Атрибут `autocomplete`.
+    /// `autocomplete` attribute.
     #[prop(optional, into)]
     autocomplete: OptProp<String>,
-    /// Атрибут `aria-label`.
+    /// `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-describedby`.
+    /// `aria-describedby` attribute.
     #[prop(optional, into)]
     aria_describedby: OptProp<String>,
-    /// Недоступно.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Только для чтения.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Обязательное.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Максимальная длина (`maxlength`).
+    /// Maximum length (`maxlength`).
     #[prop(optional, into)]
     maxlength: OptProp<i32>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Вариант; если не задан, берётся `PrimeConfig.input_variant`.
+    /// Variant; if not set, `PrimeConfig.input_variant` is used.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// На всю ширину контейнера.
+    /// Full container width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Вызывается при вводе, после записи значения в `value`.
+    /// Called on input, after the value is written to `value`.
     #[prop(optional, into)]
     on_input: Option<Callback<web_sys::Event>>,
-    /// Вызывается при фиксации значения (потеря фокуса или Enter).
+    /// Called when the value is committed (blur or Enter).
     #[prop(optional, into)]
     on_change: Option<Callback<web_sys::Event>>,
-    /// Вызывается при получении фокуса.
+    /// Called on focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса.
+    /// Called on blur.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Pass-through корневого элемента.
+    /// Pass-through of the root element.
     #[prop(optional)]
     pt: Option<Pt>,
 ) -> impl IntoView {
@@ -251,7 +251,7 @@ pub fn InputText(
     }
 }
 
-/// Разметка InputText: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// InputText markup: one for the static and reactive branches (only the attribute expressions change).
 macro_rules! input_markup {
     (
         $ty:expr, $class:expr, $style:expr, $data:expr, $id:expr, $name:expr, $placeholder:expr, $autocomplete:expr, $aria_label:expr,
@@ -317,7 +317,7 @@ fn type_of(props: &Props) -> Cow<'static, str> {
     props.input_type.with(|t| t.as_deref().map_or(Cow::Borrowed("text"), |s| Cow::Owned(s.to_owned())))
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     value: Option<RwSignal<String>>,
     input_type: OptProp<String>,

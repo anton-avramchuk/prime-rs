@@ -1,6 +1,6 @@
 [package]
 name = "prime-steps"
-description = "prime-rs: компонент Steps (порт PrimeNG)"
+description = "prime-rs: Steps component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -18,7 +18,7 @@ prime-core = { workspace = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true, features = ["Event", "KeyboardEvent", "MouseEvent", "HtmlElement", "Element", "HtmlCollection"] }
 
-# ssr только для нативных тестов: на wasm он ломает клиентские обработчики событий.
+# ssr only for native tests: on wasm it breaks client event handlers.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 leptos = { workspace = true, features = ["ssr"] }
 

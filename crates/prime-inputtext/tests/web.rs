@@ -1,4 +1,4 @@
-//! Поведение InputText в реальном браузере (wasm-bindgen-test): двусторонняя привязка, события, `disabled`/`readonly`.
+//! InputText behaviour in a real browser (wasm-bindgen-test): two-way binding, events, `disabled`/`readonly`.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn input(host: &HtmlElement) -> HtmlInputElement {
-    host.query_selector("input").unwrap().expect("нет input").dyn_into().unwrap()
+    host.query_selector("input").unwrap().expect("no input").dyn_into().unwrap()
 }
 
 fn typed(el: &HtmlInputElement, text: &str) {

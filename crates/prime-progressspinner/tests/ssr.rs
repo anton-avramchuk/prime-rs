@@ -1,4 +1,4 @@
-//! Структура DOM, значения по умолчанию, ARIA, `style`, `pt` и паритет ветвей ProgressSpinner (SSR).
+//! DOM structure, default values, ARIA, `style`, `pt` and static/reactive parity of ProgressSpinner (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

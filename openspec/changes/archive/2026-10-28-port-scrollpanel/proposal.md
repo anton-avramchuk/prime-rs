@@ -2,26 +2,26 @@
 
 ## Why
 
-ScrollPanel — кроссбраузерная тематизируемая замена нативной полосы прокрутки. Это первый компонент, который читает геометрию DOM (`scrollWidth`, `clientHeight`, `scrollTop`…), двигает полосы по `requestAnimationFrame`, перетаскивает их мышью через слушатели документа и управляется с клавиатуры. На нём отрабатывается клиентский слой «измерить → записать стиль» без SSR-зависимостей, нужный в дальнейшем Listbox, Table и виртуальной прокрутке.
+ScrollPanel is a cross-browser themable replacement for the native scrollbar. It is the first component that reads DOM geometry (`scrollWidth`, `clientHeight`, `scrollTop`…), moves bars with `requestAnimationFrame`, drags them with the mouse via document listeners and is controlled from the keyboard. It rehearses the client "measure → write style" layer without SSR dependencies, needed later by Listbox, Table and virtual scroll.
 
 ## What Changes
 
-- Новый крейт `prime-scrollpanel` с компонентом `ScrollPanel`: `step` (шаг клавиатуры, по умолчанию 5), `style`, `style_class`, слот содержимого `content_template` (замена шаблона `#content`), `children`, `pt` (части `root`, `content_container`, `content`, `bar_x`, `bar_y`).
-- Разметка и классы как в PrimeNG 21.1.10 (`scrollpanelstyle.ts`): корень `div.p-scrollpanel.p-component`, `p-scrollpanel-content-container`, `p-scrollpanel-content`, две полосы `p-scrollpanel-bar p-scrollpanel-bar-x|bar-y` (`role="scrollbar"`, `tabindex="0"`, `aria-orientation`, `aria-valuenow`, `aria-controls`, `data-pc-group-section="bar"`).
-- Клиентское поведение: пересчёт полос (`moveBar`) при `scroll`, `mouseenter` на содержимом и `resize` окна; класс/атрибут `p-scrollpanel-hidden`/`data-p-scrollpanel-hidden`, когда прокрутка по оси не нужна; расчёт высоты контейнера при `max-height` (`calculateContainerHeight`); перетаскивание полос мышью с `p-scrollpanel-grabbed` на полосе и `body`; стрелки при фокусе на полосе (повтор через 40 мс до `keyup`).
-- Публичные методы `refresh()` и `scroll_top(value)` — через `ScrollPanelRef` (ручка, передаваемая свойством `panel_ref`).
-- Страница `/scrollpanel` (`basic`, `custom`), e2e, бенчмарки, бюджеты, `docs/scrollpanel.md`, CSS темы `scrollpanel`.
-- **Не входит:** `BlockableUI`, шаблон-синонимы, `appendTo`; метод `scrollTop` как публичный метод экземпляра Angular заменён ручкой.
+- New crate `prime-scrollpanel` with the `ScrollPanel` component: `step` (keyboard step, default 5), `style`, `style_class`, the content slot `content_template` (replacing the `#content` template), `children`, `pt` (parts `root`, `content_container`, `content`, `bar_x`, `bar_y`).
+- Markup and classes as in PrimeNG 21.1.10 (`scrollpanelstyle.ts`): root `div.p-scrollpanel.p-component`, `p-scrollpanel-content-container`, `p-scrollpanel-content`, two bars `p-scrollpanel-bar p-scrollpanel-bar-x|bar-y` (`role="scrollbar"`, `tabindex="0"`, `aria-orientation`, `aria-valuenow`, `aria-controls`, `data-pc-group-section="bar"`).
+- Client behavior: bar recalculation (`moveBar`) on `scroll`, `mouseenter` on the content and window `resize`; the `p-scrollpanel-hidden` class/`data-p-scrollpanel-hidden` attribute when scrolling on an axis is not needed; container height calculation with `max-height` (`calculateContainerHeight`); bar dragging with the mouse with `p-scrollpanel-grabbed` on the bar and `body`; arrows when the bar is focused (repeat after 40 ms until `keyup`).
+- Public methods `refresh()` and `scroll_top(value)` via `ScrollPanelRef` (a handle passed through the `panel_ref` property).
+- Page `/scrollpanel` (`basic`, `custom`), e2e, benchmarks, budgets, `docs/scrollpanel.md`, the `scrollpanel` theme CSS.
+- **Out of scope:** `BlockableUI`, template synonyms, `appendTo`; the `scrollTop` method as a public method of the Angular instance is replaced by a handle.
 
 ## Capabilities
 
 ### New Capabilities
-- `scrollpanel`: компонент ScrollPanel — структура и классы, ARIA полос, расчёт и скрытие полос, перетаскивание, клавиатура, `refresh`/`scroll_top`, свойства и `pt`, производительность.
+- `scrollpanel`: the ScrollPanel component: structure and classes, bar ARIA, bar calculation and hiding, dragging, keyboard, `refresh`/`scroll_top`, properties and `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-scrollpanel` (`publish = false`); зависимости `prime-core`, `web-sys` (элементы, `MouseEvent`, `KeyboardEvent`).
-- Изменяются `Cargo.toml` workspace, `upstream.toml` (`scrollpanel` в `theme.components`), `showcase`, `benches/*`, `e2e/tests`, браузерный job CI.
+- New crate `crates/prime-scrollpanel` (`publish = false`); dependencies `prime-core`, `web-sys` (elements, `MouseEvent`, `KeyboardEvent`).
+- Changed: workspace `Cargo.toml`, `upstream.toml` (`scrollpanel` in `theme.components`), `showcase`, `benches/*`, `e2e/tests`, the browser CI job.

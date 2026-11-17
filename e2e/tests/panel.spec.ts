@@ -3,28 +3,28 @@ import { expect, test } from '@playwright/test';
 test.describe('Panel', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/panel');
-        // клики до гидратации (загрузка wasm) теряются
+        // clicks before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('[data-demo=basic] .p-panel')).toBeVisible();
-        // дожидаемся гидратации: первая кнопка получает обработчик
+        // wait for hydration: the first button gets its handler
         await page.waitForFunction(() => document.querySelector('[data-demo=toggleable] .p-panel-toggle-button') !== null);
         await page.waitForTimeout(300);
     });
 
-    test('демонстрации отрисованы со стилями темы', async ({ page }) => {
+    test('demos render with the theme styles', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(4);
         const border = await page.locator('[data-demo=basic] .p-panel').evaluate((el) => getComputedStyle(el).borderTopWidth);
         expect(border).toBe('1px');
     });
 
-    test('basic: шапка, заголовок и содержимое без переключателя', async ({ page }) => {
+    test('basic: header, title and content without a toggle', async ({ page }) => {
         const panel = page.locator('[data-demo=basic] .p-panel');
         await expect(panel.locator('.p-panel-title')).toHaveText('Header');
         await expect(panel.locator('.p-panel-content')).toContainText('Lorem ipsum');
         await expect(panel.locator('.p-panel-toggle-button, .p-panel-footer')).toHaveCount(0);
     });
 
-    test('toggleable: кнопка сворачивает и разворачивает с aria-expanded и анимацией', async ({ page }) => {
+    test('toggleable: the button collapses and expands with aria-expanded and animation', async ({ page }) => {
         const panel = page.locator('[data-demo=toggleable] .p-panel');
         const button = panel.locator('.p-panel-toggle-button');
         const container = panel.locator('.p-panel-content-container');
@@ -51,7 +51,7 @@ test.describe('Panel', () => {
         await expect(page.getByTestId('collapsed-state')).toHaveText('expanded');
     });
 
-    test('toggleable: Enter и Space на кнопке переключают панель', async ({ page }) => {
+    test('toggleable: Enter and Space on the button toggle the panel', async ({ page }) => {
         const panel = page.locator('[data-demo=toggleable] .p-panel');
         const button = panel.locator('.p-panel-toggle-button');
         await button.focus();
@@ -61,7 +61,7 @@ test.describe('Panel', () => {
         await expect(button).toHaveAttribute('aria-expanded', 'true');
     });
 
-    test('header-toggler: свёрнута при загрузке, переключается щелчком по шапке', async ({ page }) => {
+    test('header-toggler: collapsed on load, toggled by clicking the header', async ({ page }) => {
         const panel = page.locator('[data-demo=header-toggler] .p-panel');
         const container = panel.locator('.p-panel-content-container');
         await expect(container).toBeHidden();
@@ -72,7 +72,7 @@ test.describe('Panel', () => {
         await expect(container).toBeHidden();
     });
 
-    test('template: слоты шапки, действий и подвала', async ({ page }) => {
+    test('template: header, actions and footer slots', async ({ page }) => {
         const panel = page.locator('[data-demo=template] .p-panel');
         await expect(panel.locator('.p-panel-header')).toContainText('Amy Elsner');
         const actions = await panel.locator('.p-panel-header-actions').evaluate((el) => [...el.children].map((c) => c.className.includes('p-panel-toggle-button')));

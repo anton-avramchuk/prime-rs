@@ -1,13 +1,13 @@
-//! Страница IftaLabel: демонстрации `basic`, `invalid` по `apps/showcase/doc/iftalabel` PrimeNG.
+//! IftaLabel page: the `basic`, `invalid` demos from `apps/showcase/doc/iftalabel` in PrimeNG.
 //!
-//! Демонстрации с Angular Forms не переносятся; в `invalid` состояние следует за пустотой поля.
+//! Demos with Angular Forms are not ported; in `invalid` the state follows whether the field is empty.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_iftalabel::IftaLabel;
 use prime_inputtext::InputText;
 
-/// Страница `/iftalabel`.
+/// `/iftalabel` page.
 #[component]
 pub fn IftaLabelPage() -> impl IntoView {
     let invalid_value = RwSignal::new(String::new());

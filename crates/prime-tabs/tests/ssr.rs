@@ -1,4 +1,4 @@
-//! Разметка Tabs (SSR): части, активность, связь `id`, `hidden`, `disabled`, `lazy`, `scrollable`, `pt`.
+//! Tabs markup (SSR): parts, activity, `id` linkage, `hidden`, `disabled`, `lazy`, `scrollable`, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -66,7 +66,7 @@ fn active_tab_and_panel() {
     assert_eq!(count(&html, "p-tab-active"), 1, "{html}");
     assert!(html.contains(r#"aria-selected="true""#) && html.contains(r#"aria-selected="false""#), "{html}");
     assert_eq!(count(&html, "p-tabpanel-active"), 1, "{html}");
-    assert_eq!(count(&html, "hidden"), 1, "скрыта только неактивная панель: {html}");
+    assert_eq!(count(&html, "hidden"), 1, "only the inactive panel is hidden: {html}");
 }
 
 #[test]
@@ -197,7 +197,7 @@ fn scrollable_class_and_no_buttons_on_server() {
         }
     });
     assert!(html.contains("p-tabs-scrollable"), "{html}");
-    assert!(!html.contains("p-tablist-nav-button"), "кнопки появляются только на клиенте: {html}");
+    assert!(!html.contains("p-tablist-nav-button"), "buttons appear only on the client: {html}");
 }
 
 #[test]

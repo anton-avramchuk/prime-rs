@@ -1,12 +1,12 @@
-//! MultiSelect — порт `p-multiselect` из PrimeNG 21.1.10.
+//! MultiSelect — port of `p-multiselect` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-multiselect`, скрытое поле `combobox`, метка `p-multiselect-label` (значения
-//! через запятую или чипы), значок очистки, кнопка `p-multiselect-dropdown` и панель `p-multiselect-overlay` с шапкой
-//! («выбрать все» и поиск), списком вариантов с флажками (`ul.p-multiselect-list`, группы, пустое сообщение) и скрытыми
-//! фокусируемыми границами. Панель лежит внутри корня и позиционируется через `prime-dom`.
+//! Markup and classes as in PrimeNG: root `div.p-multiselect`, hidden `combobox` field, `p-multiselect-label` label (comma-separated
+//! values or chips), clear icon, `p-multiselect-dropdown` button and `p-multiselect-overlay` panel with a header
+//! ("select all" and search), an option list with checkboxes (`ul.p-multiselect-list`, groups, empty message) and hidden
+//! focusable boundaries. The panel lives inside the root and is positioned through `prime-dom`.
 //!
-//! Значения — двусторонний сигнал `values: RwSignal<Vec<String>>`, открытость панели — `open: RwSignal<bool>`; без них
-//! компонент ведёт внутреннее состояние. Варианты задаются списком `options` или группами `groups`.
+//! Values are a two-way signal `values: RwSignal<Vec<String>>`, panel openness is `open: RwSignal<bool>`; without them
+//! the component keeps internal state. Options are given as a list `options` or as groups `groups`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -45,283 +45,283 @@ pub use logic::{
     write_root_classes,
 };
 
-/// Сколько миллисекунд копятся символы поиска набором.
+/// How many milliseconds typed search characters accumulate.
 const SEARCH_RESET_MS: u64 = 500;
 
-/// Как показываются выбранные значения в метке.
+/// How selected values are shown in the label.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum MultiSelectDisplay {
-    /// Метки через запятую.
+    /// Comma-separated labels.
     #[default]
     Comma,
-    /// Чипы с кнопкой удаления.
+    /// Chips with a remove button.
     Chip,
 }
 
-/// Событие изменения выбора: новые значения и исходное событие.
+/// Selection change event: new values and the original event.
 #[derive(Clone, Debug)]
 pub struct MultiSelectChange {
-    /// Новые значения.
+    /// New values.
     pub values: Vec<String>,
-    /// Исходное событие.
+    /// Original event.
     pub original_event: web_sys::Event,
 }
 
-/// Событие поиска: строка и исходное событие.
+/// Search event: the string and the original event.
 #[derive(Clone, Debug)]
 pub struct MultiSelectFilter {
-    /// Строка поиска.
+    /// Search string.
     pub filter: String,
-    /// Исходное событие `input`.
+    /// Original `input` event.
     pub original_event: web_sys::Event,
 }
 
-/// Событие удаления значения через чип.
+/// Event for removing a value via a chip.
 #[derive(Clone, Debug)]
 pub struct MultiSelectRemove {
-    /// Удалённое значение.
+    /// Removed value.
     pub removed: String,
-    /// Значения после удаления.
+    /// Values after removal.
     pub values: Vec<String>,
 }
 
-/// Событие флажка «выбрать все».
+/// "Select all" checkbox event.
 #[derive(Clone, Debug)]
 pub struct MultiSelectSelectAll {
-    /// Выбраны ли все варианты после клика.
+    /// Whether all options are selected after the click.
     pub checked: bool,
-    /// Исходное событие.
+    /// Original event.
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей MultiSelect.
+/// Pass-through of MultiSelect parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct MultiSelectPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Контейнер скрытого поля.
+    /// Hidden field container.
     pub hidden_input_container: Pt,
-    /// Скрытое поле.
+    /// Hidden field.
     pub hidden_input: Pt,
-    /// Контейнер метки.
+    /// Label container.
     pub label_container: Pt,
-    /// Метка.
+    /// Label.
     pub label: Pt,
-    /// Элемент чипа.
+    /// Chip item.
     pub chip_item: Pt,
-    /// Чип.
+    /// Chip.
     pub chip: Pt,
-    /// Значок очистки.
+    /// Clear icon.
     pub clear_icon: Pt,
-    /// Кнопка раскрытия.
+    /// Dropdown button.
     pub dropdown: Pt,
-    /// Значок кнопки раскрытия.
+    /// Dropdown button icon.
     pub dropdown_icon: Pt,
-    /// Значок загрузки.
+    /// Loading icon.
     pub loading_icon: Pt,
-    /// Панель.
+    /// Panel.
     pub overlay: Pt,
-    /// Шапка панели.
+    /// Panel header.
     pub header: Pt,
-    /// Контейнер поля поиска.
+    /// Filter field container.
     pub filter_container: Pt,
-    /// Поле поиска.
+    /// Filter field.
     pub filter: Pt,
-    /// Контейнер списка.
+    /// List container.
     pub list_container: Pt,
-    /// Список.
+    /// List.
     pub list: Pt,
-    /// Заголовок группы.
+    /// Group header.
     pub option_group: Pt,
-    /// Вариант.
+    /// Option.
     pub option: Pt,
-    /// Сообщение пустого списка.
+    /// Empty list message.
     pub empty_message: Pt,
 }
 
-/// Выбор нескольких значений из списка в выпадающей панели.
+/// Selecting several values from a list in a dropdown panel.
 ///
-/// Каждое свойство принимает значение или сигнал; `values` и `open` — двусторонние сигналы.
+/// Every property accepts a value or a signal; `values` and `open` are two-way signals.
 #[component]
 pub fn MultiSelect(
-    /// Варианты (без групп).
+    /// Options (no groups).
     #[prop(optional, into)]
     options: Prop<Vec<MultiSelectOption>>,
-    /// Группы вариантов; если заданы, `options` не используется.
+    /// Option groups; if set, `options` is not used.
     #[prop(optional, into)]
     groups: Prop<Vec<MultiSelectGroup>>,
-    /// Двусторонний сигнал выбранных значений.
+    /// Two-way signal of the selected values.
     #[prop(optional)]
     values: Option<RwSignal<Vec<String>>>,
-    /// Начальные значения, если `values` не передан.
+    /// Initial values if `values` is not passed.
     #[prop(optional)]
     default_values: Vec<String>,
-    /// Двусторонний сигнал открытости панели.
+    /// Two-way signal of the panel openness.
     #[prop(optional)]
     open: Option<RwSignal<bool>>,
-    /// Подсказка при отсутствии выбора.
+    /// Hint shown when nothing is selected.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Вид метки: значения через запятую или чипы.
+    /// Label mode: comma-separated values or chips.
     #[prop(optional, into)]
     display: Prop<MultiSelectDisplay>,
-    /// Сколько меток показывать, прежде чем перейти к сводке (по умолчанию 3).
+    /// How many labels to show before switching to a summary (default 3).
     #[prop(optional, into)]
     max_selected_labels: OptProp<usize>,
-    /// Сводка при превышении `max_selected_labels`; `{0}` заменяется числом выбранных (по умолчанию из перевода).
+    /// Summary when `max_selected_labels` is exceeded; `{0}` is replaced by the selected count (default from the translation).
     #[prop(optional, into)]
     selected_items_label: OptProp<String>,
-    /// Показывать метки выбранных значений (по умолчанию `true`); иначе — подсказку.
+    /// Show labels of the selected values (default `true`); otherwise the hint.
     #[prop(optional, into)]
     display_selected_label: OptProp<bool>,
-    /// Наибольшее число выбранных значений.
+    /// Maximum number of selected values.
     #[prop(optional, into)]
     selection_limit: OptProp<usize>,
-    /// Флажок «выбрать все» в шапке (по умолчанию `true`).
+    /// "Select all" checkbox in the header (default `true`).
     #[prop(optional, into)]
     show_toggle_all: OptProp<bool>,
-    /// Шапка панели (по умолчанию `true`).
+    /// Panel header (default `true`).
     #[prop(optional, into)]
     show_header: OptProp<bool>,
-    /// Поле поиска в шапке (по умолчанию `true`).
+    /// Search field in the header (default `true`).
     #[prop(optional, into)]
     filter: OptProp<bool>,
-    /// Подсказка поля поиска.
+    /// Search field hint.
     #[prop(optional, into)]
     filter_placeholder: OptProp<String>,
-    /// Сбрасывать строку поиска при закрытии.
+    /// Reset the search string on close.
     #[prop(optional, into)]
     reset_filter_on_hide: Prop<bool>,
-    /// Ставить фокус в поле поиска при открытии.
+    /// Focus the search field on open.
     #[prop(optional, into)]
     autofocus_filter: Prop<bool>,
-    /// Показывать значок очистки.
+    /// Show the clear icon.
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-    /// Идёт загрузка: вместо стрелки значок загрузки, ввод заблокирован.
+    /// Loading in progress: a loading icon instead of the arrow, input is blocked.
     #[prop(optional, into)]
     loading: Prop<bool>,
-    /// Подсвечивать выбранные варианты (по умолчанию `true`).
+    /// Highlight the selected options (default `true`).
     #[prop(optional, into)]
     highlight_on_select: OptProp<bool>,
-    /// Переносить фокус на вариант под указателем (по умолчанию `true`).
+    /// Move focus to the option under the pointer (default `true`).
     #[prop(optional, into)]
     focus_on_hover: OptProp<bool>,
-    /// Выбирать вариант при переносе на него фокуса клавишами.
+    /// Select an option when focus is moved to it with the keys.
     #[prop(optional, into)]
     select_on_focus: Prop<bool>,
-    /// Фокусировать первый вариант при открытии панели.
+    /// Focus the first option when the panel opens.
     #[prop(optional, into)]
     auto_option_focus: Prop<bool>,
-    /// Высота списка, при превышении которой появляется прокрутка (по умолчанию `200px`).
+    /// List height above which scrolling appears (default `200px`).
     #[prop(optional, into)]
     scroll_height: OptProp<String>,
-    /// Сообщение пустого списка.
+    /// Empty list message.
     #[prop(optional, into)]
     empty_message: OptProp<String>,
-    /// Сообщение пустого результата поиска.
+    /// Empty search result message.
     #[prop(optional, into)]
     empty_filter_message: OptProp<String>,
-    /// Недоступен.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Только чтение.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Вариант оформления.
+    /// Style variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину.
+    /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Атрибут `id` корня; по нему строятся идентификаторы панели и вариантов.
+    /// `id` attribute of the root; panel and option ids are built from it.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `id` скрытого поля.
+    /// `id` attribute of the hidden field.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Атрибут `tabindex` скрытого поля (по умолчанию 0).
+    /// `tabindex` attribute of the hidden field (default 0).
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label` поля.
+    /// `aria-label` attribute of the field.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` поля.
+    /// `aria-labelledby` attribute of the field.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Атрибут `aria-label` поля поиска.
+    /// `aria-label` attribute of the search field.
     #[prop(optional, into)]
     aria_filter_label: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Встроенный стиль панели.
+    /// Inline style of the panel.
     #[prop(optional, into)]
     panel_style: OptProp<String>,
-    /// Дополнительный класс панели.
+    /// Extra class of the panel.
     #[prop(optional, into)]
     panel_style_class: OptProp<String>,
-    /// Значок кнопки раскрытия вместо стрелки.
+    /// Dropdown button icon instead of the arrow.
     #[prop(optional, into)]
     dropdown_icon: Option<ViewFn>,
-    /// Значок очистки вместо крестика.
+    /// Clear icon instead of the cross.
     #[prop(optional, into)]
     clear_icon: Option<ViewFn>,
-    /// Значок удаления чипа.
+    /// Chip remove icon.
     #[prop(optional, into)]
     chip_icon: Option<ViewFn>,
-    /// Значок загрузки вместо спиннера.
+    /// Loading icon instead of the spinner.
     #[prop(optional, into)]
     loading_icon: Option<ViewFn>,
-    /// Содержимое варианта; получает вариант и признак выбора.
+    /// Option content; receives the option and the selected flag.
     #[prop(optional, into)]
     item: Option<Callback<(MultiSelectOption, bool), AnyView>>,
-    /// Содержимое заголовка группы.
+    /// Group header content.
     #[prop(optional, into)]
     group: Option<Callback<MultiSelectGroup, AnyView>>,
-    /// Содержимое метки; получает выбранные варианты.
+    /// Label content; receives the selected options.
     #[prop(optional, into)]
     selected_items: Option<Callback<Vec<MultiSelectOption>, AnyView>>,
-    /// Вызывается после смены выбора пользователем.
+    /// Called after the user changes the selection.
     #[prop(optional, into)]
     on_change: Option<Callback<MultiSelectChange>>,
-    /// Вызывается при вводе в поле поиска.
+    /// Called on input in the search field.
     #[prop(optional, into)]
     on_filter: Option<Callback<MultiSelectFilter>>,
-    /// Вызывается при получении фокуса полем.
+    /// Called when the field gains focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса полем.
+    /// Called when the field loses focus.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при клике по полю.
+    /// Called on click on the field.
     #[prop(optional, into)]
     on_click: Option<Callback<web_sys::MouseEvent>>,
-    /// Вызывается при очистке.
+    /// Called on clear.
     #[prop(optional, into)]
     on_clear: Option<Callback<()>>,
-    /// Вызывается после открытия панели.
+    /// Called after the panel opens.
     #[prop(optional, into)]
     on_show: Option<Callback<()>>,
-    /// Вызывается после закрытия панели.
+    /// Called after the panel closes.
     #[prop(optional, into)]
     on_hide: Option<Callback<()>>,
-    /// Вызывается при удалении значения через чип.
+    /// Called when a value is removed via a chip.
     #[prop(optional, into)]
     on_remove: Option<Callback<MultiSelectRemove>>,
-    /// Вызывается при клике по флажку «выбрать все».
+    /// Called on click on the "select all" checkbox.
     #[prop(optional, into)]
     on_select_all_change: Option<Callback<MultiSelectSelectAll>>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<MultiSelectPt>,
 ) -> impl IntoView {
@@ -411,12 +411,12 @@ pub fn MultiSelect(
         z_index: StoredValue::new(None),
         was_open: StoredValue::new(false),
     });
-    // Подписки на `window`, таймер поиска и z-index живут только пока панель открыта; при размонтировании снимаются.
+    // `window` subscriptions, the search timer and z-index live only while the panel is open; they are released on unmount.
     {
         let props = props.clone();
         on_cleanup(move || props.release());
     }
-    // Побочные эффекты открытия и закрытия панели (положение, z-index, слушатели, прокрутка, фокус) — только в браузере.
+    // Side effects of opening and closing the panel (position, z-index, listeners, scrolling, focus) — browser only.
     #[cfg(target_arch = "wasm32")]
     {
         let props = props.clone();
@@ -547,17 +547,17 @@ pub fn MultiSelect(
     }
 }
 
-/// Булев атрибут `data-p-*`: `"true"` при истине, иначе атрибута нет.
+/// Boolean `data-p-*` attribute: `"true"` when true, otherwise no attribute.
 fn flag(f: impl Fn() -> bool + Send + Sync + 'static) -> impl Fn() -> Option<&'static str> + Send + Sync + 'static {
     move || f().then_some("true")
 }
 
-/// Реактивный атрибут с произвольным именем; `None` — атрибута нет.
+/// Reactive attribute with an arbitrary name; `None` means no attribute.
 fn reactive_attr(name: &'static str, f: impl Fn() -> Option<String> + Send + Sync + 'static) -> AnyAttribute {
     custom_attribute(name, f).into_any_attr()
 }
 
-/// Значок очистки.
+/// Clear icon.
 fn clear_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + use<> {
     let class = pt.clear_icon.merge_class("p-multiselect-clear-icon");
     let attrs = pt.clear_icon.clone().attr("data-pc-section", "clearicon").attrs();
@@ -571,7 +571,7 @@ fn clear_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + us
     }
 }
 
-/// Содержимое кнопки раскрытия: загрузка или стрелка.
+/// Dropdown button content: loading or the arrow.
 fn dropdown_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> AnyView {
     if props.loading.get() {
         let (class, attrs) = (pt.loading_icon.merge_class("p-multiselect-loading-icon"), pt.loading_icon.attrs());
@@ -592,7 +592,7 @@ fn dropdown_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> AnyView {
     }
 }
 
-/// Панель: скрытые границы, шапка, список вариантов.
+/// Panel: hidden boundaries, header, option list.
 fn panel_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + use<> {
     let class = {
         let (props, pt) = (props.clone(), pt.clone());
@@ -631,7 +631,7 @@ fn panel_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + us
         let (a, b) = (props.clone(), props.clone());
         (move |e: web_sys::FocusEvent| a.first_hidden_focus(e), move |_: web_sys::FocusEvent| b.last_hidden_focus())
     };
-    // Нажатие мыши внутри панели не должно уводить фокус со скрытого поля, кроме нажатия в поле поиска.
+    // A mouse press inside the panel must not move focus away from the hidden field, except a press in the search field.
     let mouse_down = move |e: web_sys::MouseEvent| {
         let on_input = e
             .target()
@@ -672,7 +672,7 @@ fn panel_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + us
     }
 }
 
-/// Шапка панели: флажок «выбрать все» и поле поиска.
+/// Panel header: "select all" checkbox and search field.
 fn header_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + use<> {
     let (class, attrs) = (pt.header.merge_class("p-multiselect-header"), pt.header.attrs());
     let toggle = {
@@ -698,7 +698,7 @@ fn header_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + u
     view! { <div class={class} {..attrs}>{toggle}{search}</div> }
 }
 
-/// Поле поиска со значком.
+/// Search field with an icon.
 fn filter_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + use<> {
     let (container_class, container_attrs) =
         (pt.filter_container.merge_class("p-iconfield p-multiselect-filter-container"), pt.filter_container.attrs());
@@ -754,7 +754,7 @@ fn filter_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + u
     }
 }
 
-/// Флажок как в `Checkbox`: разметка и классы те же, состояние берётся из замыканий. Клик по полю не меняет его сам.
+/// Checkbox as in `Checkbox`: same markup and classes, state comes from closures. A click on the field does not change it by itself.
 fn checkbox_view(
     filled: bool,
     checked: Arc<dyn Fn() -> bool + Send + Sync>,
@@ -831,7 +831,7 @@ fn checkbox_view(
     .into_any()
 }
 
-/// Список элементов: варианты, заголовки групп, сообщение пустого списка. Читает только варианты, группы и строку поиска.
+/// Item list: options, group headers, empty list message. Reads only the options, groups and the search string.
 fn items_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + use<> {
     let entries = props.entries();
     if entries.is_empty() {
@@ -851,7 +851,7 @@ fn items_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>) -> impl IntoView + us
     Either::Right(views)
 }
 
-/// Заголовок группы.
+/// Group header.
 fn group_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>, index: usize, group: usize, label: &str) -> AnyView {
     let id = format!("{}_{}", props.id, index);
     let (class, attrs) = (pt.option_group.merge_class("p-multiselect-option-group"), pt.option_group.attrs());
@@ -862,7 +862,7 @@ fn group_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>, index: usize, group: 
     view! { <li id={id} class={class} role="option" {..attrs}>{content}</li> }.into_any()
 }
 
-/// Вариант.
+/// Option.
 fn option_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>, index: usize, option: &MultiSelectOption, size: usize, pos: usize) -> AnyView {
     let id = format!("{}_{}", props.id, index);
     let selected = {
@@ -941,21 +941,21 @@ fn option_view(props: &Arc<Props>, pt: &Arc<MultiSelectPt>, index: usize, option
     .into_any()
 }
 
-/// Свойства и состояние экземпляра.
+/// Instance props and state.
 struct Props {
     options: Prop<Vec<MultiSelectOption>>,
     groups: Prop<Vec<MultiSelectGroup>>,
     values: RwSignal<Vec<String>>,
     open: RwSignal<bool>,
-    /// Строка поиска.
+    /// Search string.
     filter_text: RwSignal<String>,
-    /// Индекс элемента с фокусом в плоском списке.
+    /// Index of the focused item in the flat list.
     focused_index: RwSignal<Option<usize>>,
-    /// Опорный индекс диапазона (`startRangeIndex`).
+    /// Range anchor index (`startRangeIndex`).
     start_range: RwSignal<Option<usize>>,
-    /// Скрытое поле в фокусе.
+    /// Hidden field is focused.
     focused: RwSignal<bool>,
-    /// Панель открыта мышью (не используется для навигации, но сбрасывается как в Select).
+    /// Panel opened by the mouse (not used for navigation, but reset as in Select).
     clicked: RwSignal<bool>,
     id: String,
     placeholder: OptProp<String>,
@@ -1023,22 +1023,22 @@ struct Props {
     overlay_ref: NodeRef<html::Div>,
     list_ref: NodeRef<html::Ul>,
     filter_ref: NodeRef<html::Input>,
-    /// Накопленные символы поиска набором.
+    /// Accumulated type-ahead search characters.
     search: StoredValue<String>,
     search_timer: StoredValue<Option<TimeoutHandle>, LocalStorage>,
-    /// Подписки на `window`, пока панель открыта.
+    /// `window` subscriptions while the panel is open.
     listeners: StoredValue<Vec<WindowListenerHandle>, LocalStorage>,
-    /// Выданный панели z-index.
+    /// z-index assigned to the panel.
     z_index: StoredValue<Option<i32>>,
-    /// Предыдущее состояние открытости (для побочных эффектов только при смене).
+    /// Previous openness state (for side effects only on change).
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     was_open: StoredValue<bool>,
 }
 
 impl Props {
-    // ---- данные ----
+    // ---- data ----
 
-    /// Плоский список видимых элементов без учёта предела выбора (с подпиской на варианты, группы и строку поиска).
+    /// Flat list of visible items ignoring the selection limit (subscribes to options, groups and the search string).
     fn entries(&self) -> Vec<Entry> {
         visible_entries(&self.options.get(), &self.groups.get(), &self.filter_text.get())
     }
@@ -1047,7 +1047,7 @@ impl Props {
         untrack(|| self.entries())
     }
 
-    /// Список для навигации и выбора: недоступность невыбранных при достигнутом пределе учтена.
+    /// List for navigation and selection: unselected items are disabled when the limit is reached.
     fn nav_entries(&self) -> Vec<Entry> {
         apply_limit(self.entries_untracked(), &self.values.get_untracked(), self.limit_untracked())
     }
@@ -1060,7 +1060,7 @@ impl Props {
         untrack(|| self.all())
     }
 
-    /// Выбранные значения, существующие среди вариантов, в порядке выбора (с подпиской).
+    /// Selected values that exist among the options, in selection order (subscribes).
     fn known_values(&self) -> Vec<String> {
         let all = self.all();
         self.values.get().into_iter().filter(|v| all.iter().any(|o| &o.value == v)).collect()
@@ -1074,7 +1074,7 @@ impl Props {
         self.values.with(|vs| vs.iter().any(|v| v == value))
     }
 
-    /// Недоступен ли вариант (собственный `disabled` или предел выбора), с подпиской.
+    /// Whether an option is disabled (its own `disabled` or the selection limit), subscribes.
     fn option_disabled_now(&self, option: &MultiSelectOption) -> bool {
         self.values.with(|vs| option_disabled(option, vs, self.selection_limit.get()))
     }
@@ -1113,7 +1113,7 @@ impl Props {
         self.placeholder.get().filter(|p| !p.is_empty())
     }
 
-    /// Содержимое метки по режиму.
+    /// Label content by mode.
     fn content(&self) -> Content {
         let known = self.known_values();
         let placeholder = self.placeholder_text();
@@ -1133,7 +1133,7 @@ impl Props {
         }
     }
 
-    /// (показана ли подсказка, метка пуста).
+    /// (whether the hint is shown, label is empty).
     fn label_flags(&self) -> (bool, bool) {
         let empty = self.known_values().is_empty();
         let placeholder = match self.content() {
@@ -1211,7 +1211,7 @@ impl Props {
         }
     }
 
-    /// Идентификатор варианта под фокусом (для `aria-activedescendant`); `enabled` — элемент в фокусе.
+    /// Id of the focused option (for `aria-activedescendant`); `enabled` is the focused item.
     fn active_descendant(&self, enabled: bool) -> Option<String> {
         let index = self.focused_index.get()?;
         enabled.then(|| format!("{}_{}", self.id, index))
@@ -1221,12 +1221,12 @@ impl Props {
         if self.all_selected_now() { self.select_all_label.clone() } else { self.unselect_all_label.clone() }
     }
 
-    /// Показывать ли флажок «выбрать все»: включён и нет предела выбора.
+    /// Whether to show the "select all" checkbox: enabled and no selection limit.
     fn toggle_all_visible(&self) -> bool {
         self.show_toggle_all.get().unwrap_or(true) && self.selection_limit.get().is_none_or(|l| l == 0)
     }
 
-    /// Недоступно, только чтение или идёт загрузка: ввод заблокирован.
+    /// Disabled, read-only or loading: input is blocked.
     fn blocked(&self) -> bool {
         self.disabled.get_untracked() || self.readonly.get_untracked() || self.loading.get_untracked()
     }
@@ -1237,9 +1237,9 @@ impl Props {
         }
     }
 
-    // ---- открытие и закрытие ----
+    // ---- open and close ----
 
-    /// `show()`: открывает панель; фокус варианта — прежний, иначе первый (`auto_option_focus`) или выбранный.
+    /// `show()`: opens the panel; focused option stays the previous one, otherwise the first (`auto_option_focus`) or the selected one.
     fn show(&self, focus: bool) {
         self.open.set(true);
         if self.focused_index.get_untracked().is_none() {
@@ -1254,7 +1254,7 @@ impl Props {
         }
     }
 
-    /// `hide()`: закрывает панель и сбрасывает состояние списка.
+    /// `hide()`: closes the panel and resets the list state.
     fn hide(&self, focus: bool) {
         self.open.set(false);
         self.focused_index.set(None);
@@ -1269,7 +1269,7 @@ impl Props {
         }
     }
 
-    /// Панель только что открылась: z-index, положение, подписки, прокрутка и фокус поля поиска, `on_show`.
+    /// The panel has just opened: z-index, position, subscriptions, scrolling and search field focus, `on_show`.
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     fn opened(self: &Arc<Self>) {
         if let (Some(overlay), Some(root)) = (self.overlay_ref.get_untracked(), self.root_ref.get_untracked()) {
@@ -1295,7 +1295,7 @@ impl Props {
         }
     }
 
-    /// Панель только что закрылась: подписки и z-index освобождаются, `on_hide`.
+    /// The panel has just closed: subscriptions and z-index are released, `on_hide`.
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     fn closed(&self) {
         self.release();
@@ -1304,7 +1304,7 @@ impl Props {
         }
     }
 
-    /// Снимает подписки на `window`, таймер поиска и z-index.
+    /// Releases the `window` subscriptions, the search timer and z-index.
     fn release(&self) {
         for handle in self.listeners.try_update_value(std::mem::take).unwrap_or_default() {
             handle.remove();
@@ -1317,7 +1317,7 @@ impl Props {
         }
     }
 
-    /// Закрытие по клику вне компонента и по изменению размера окна.
+    /// Closing on a click outside the component and on window resize.
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     fn bind_window(self: &Arc<Self>) {
         let this = self.clone();
@@ -1338,7 +1338,7 @@ impl Props {
         self.listeners.update_value(|l| l.extend([outside, resize]));
     }
 
-    /// Пересчитывает положение панели после перерисовки списка или метки.
+    /// Recomputes the panel position after the list or label is re-rendered.
     fn realign(self: &Arc<Self>) {
         let this = self.clone();
         set_timeout(
@@ -1368,9 +1368,9 @@ impl Props {
         }
     }
 
-    // ---- выбор ----
+    // ---- selection ----
 
-    /// `updateModel`: записывает значения в модель и вызывает `on_change`.
+    /// `updateModel`: writes the values into the model and calls `on_change`.
     fn update_model(self: &Arc<Self>, values: Vec<String>, event: web_sys::Event) {
         self.values.set(values.clone());
         if let Some(cb) = self.on_change {
@@ -1381,7 +1381,7 @@ impl Props {
         }
     }
 
-    /// `onOptionSelect`: переключает значение варианта.
+    /// `onOptionSelect`: toggles the option value.
     fn select_option(self: &Arc<Self>, option: &MultiSelectOption, event: web_sys::Event, index: Option<usize>) {
         if self.disabled.get_untracked() || self.readonly.get_untracked() {
             return;
@@ -1396,7 +1396,7 @@ impl Props {
         }
     }
 
-    /// Удаление значения через чип (`removeOption`).
+    /// Removing a value via a chip (`removeOption`).
     fn remove_value(self: &Arc<Self>, value: &str, event: web_sys::Event) {
         event.stop_propagation();
         if self.disabled.get_untracked() || self.readonly.get_untracked() {
@@ -1409,7 +1409,7 @@ impl Props {
         }
     }
 
-    /// Очистка: значения пусты, `on_change`, `on_clear`, сброс строки поиска.
+    /// Clear: values are empty, `on_change`, `on_clear`, search string reset.
     fn clear(self: &Arc<Self>, event: web_sys::Event) {
         event.stop_propagation();
         self.filter_text.set(String::new());
@@ -1419,7 +1419,7 @@ impl Props {
         }
     }
 
-    /// `onToggleAll`: клик по флажку «выбрать все».
+    /// `onToggleAll`: click on the "select all" checkbox.
     fn toggle_all_event(self: &Arc<Self>, event: web_sys::Event) {
         if self.disabled.get_untracked() || self.readonly.get_untracked() {
             return;
@@ -1436,16 +1436,16 @@ impl Props {
         }
     }
 
-    // ---- фокус ----
+    // ---- focus ----
 
-    /// Переносит подсветку на элемент без выбора и без прокрутки (мышь).
+    /// Moves the highlight to an item without selecting and without scrolling (mouse).
     fn option_mouse_enter(&self, index: usize) {
         if self.focus_on_hover.get_untracked().unwrap_or(true) && !self.disabled.get_untracked() {
             self.focused_index.set(Some(index));
         }
     }
 
-    /// `changeFocusedOptionIndex`: перенос фокуса клавишами; при `select_on_focus` — с выбором.
+    /// `changeFocusedOptionIndex`: moves focus with the keys; with `select_on_focus` it also selects.
     fn change_focused(self: &Arc<Self>, event: &web_sys::Event, index: Option<usize>, shift: bool) {
         if self.focused_index.get_untracked() == index {
             return;
@@ -1495,7 +1495,7 @@ impl Props {
         self.start_range.set(None);
     }
 
-    /// Первая скрытая граница получила фокус: из поля — в поле поиска, иначе — назад на поле.
+    /// The first hidden boundary got focus: from the field to the search field, otherwise back to the field.
     fn first_hidden_focus(&self, e: web_sys::FocusEvent) {
         let from_input = e
             .related_target()
@@ -1509,12 +1509,12 @@ impl Props {
         }
     }
 
-    /// Последняя скрытая граница получила фокус: панель закрывается, фокус на поле.
+    /// The last hidden boundary got focus: the panel closes, focus goes to the field.
     fn last_hidden_focus(&self) {
         self.hide(true);
     }
 
-    // ---- события контейнера ----
+    // ---- container events ----
 
     fn container_click(&self, e: web_sys::MouseEvent) {
         if self.blocked() {
@@ -1540,7 +1540,7 @@ impl Props {
         }
     }
 
-    // ---- поиск ----
+    // ---- search ----
 
     fn filter_input(self: &Arc<Self>, e: web_sys::Event) {
         let Some(input) = self.filter_ref.get_untracked() else { return };
@@ -1554,7 +1554,7 @@ impl Props {
         self.realign();
     }
 
-    /// Поиск набором (`searchOptions`): символы копятся 500 мс.
+    /// Type-ahead search (`searchOptions`): characters accumulate for 500 ms.
     fn search_by_typing(self: &Arc<Self>, event: &web_sys::Event, key: &str) {
         let typed = {
             let mut typed = self.search.get_value();
@@ -1587,9 +1587,9 @@ impl Props {
         self.search_timer.set_value(handle);
     }
 
-    // ---- клавиатура ----
+    // ---- keyboard ----
 
-    /// `onKeyDown` скрытого поля и `onFilterKeyDown` поля поиска (`in_filter`).
+    /// `onKeyDown` of the hidden field and `onFilterKeyDown` of the search field (`in_filter`).
     fn key_down(self: &Arc<Self>, e: web_sys::KeyboardEvent, in_filter: bool) {
         if self.disabled.get_untracked() {
             e.prevent_default();
@@ -1635,7 +1635,7 @@ impl Props {
         }
     }
 
-    /// `onOptionSelectRange`: выбор диапазона между опорным индексом и фокусным.
+    /// `onOptionSelectRange`: selects the range between the anchor index and the focused one.
     fn select_range_event(self: &Arc<Self>, event: &web_sys::Event, start: Option<usize>, end: Option<usize>) {
         let entries = self.nav_entries();
         let values = self.values.get_untracked();
@@ -1693,7 +1693,7 @@ impl Props {
         e.stop_propagation();
     }
 
-    /// `Home` и `End`: в поле поиска двигают курсор, иначе фокус на первый или последний вариант.
+    /// `Home` and `End`: in the search field they move the cursor, otherwise focus goes to the first or last option.
     fn home_end(self: &Arc<Self>, e: &web_sys::KeyboardEvent, in_filter: bool, home: bool) {
         if in_filter {
             if let Some(input) = self.filter_ref.get_untracked() {
@@ -1725,7 +1725,7 @@ impl Props {
         e.prevent_default();
     }
 
-    /// `PageDown`/`PageUp`: прокрутка списка на высоту видимой области.
+    /// `PageDown`/`PageUp`: scrolls the list by the visible area height.
     fn page(&self, e: &web_sys::KeyboardEvent, down: bool) {
         if let Some(list) = self.list_ref.get_untracked()
             && let Some(container) = list.parent_element()
@@ -1754,7 +1754,7 @@ impl Props {
         if in_filter {
             return;
         }
-        // с полем поиска Tab из скрытого поля ведёт в него через первую скрытую границу панели
+        // with a search field, Tab from the hidden field leads into it through the first hidden panel boundary
         let goes_to_filter = self.open.get_untracked() && self.filter.get_untracked().unwrap_or(true);
         if goes_to_filter {
             return;
@@ -1774,7 +1774,7 @@ impl Props {
     }
 }
 
-/// Содержимое метки по режиму отображения.
+/// Label content by display mode.
 enum Content {
     Comma(LabelContent),
     Chip(ChipContent),

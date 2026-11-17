@@ -1,22 +1,22 @@
-//! Чистая логика InputNumber: раскладка кнопок, классы и `data-p` (по `inputnumberstyle.ts` и `InputNumber.dataP` PrimeNG).
+//! Pure InputNumber logic: button layout, classes and `data-p` (after PrimeNG's `inputnumberstyle.ts` and `InputNumber.dataP`).
 
 use prime_core::{ClassNames, DataP, Size};
 use std::borrow::Cow;
 
-/// Раскладка кнопок «больше/меньше».
+/// Layout of the increment/decrement buttons.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum ButtonLayout {
-    /// Две кнопки в столбце справа от поля.
+    /// Two buttons in a column to the right of the field.
     #[default]
     Stacked,
-    /// Кнопки по краям поля.
+    /// Buttons on the sides of the field.
     Horizontal,
-    /// Кнопки сверху и снизу.
+    /// Buttons above and below.
     Vertical,
 }
 
 impl ButtonLayout {
-    /// Строковое значение, как в PrimeNG.
+    /// String value, as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Stacked => "stacked",
@@ -26,32 +26,32 @@ impl ButtonLayout {
     }
 }
 
-/// Снимок свойств, влияющих на классы и `data-p` корня.
+/// Snapshot of the properties that affect the root classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct InputNumberState {
-    /// Поле не пусто.
+    /// The field is not empty.
     pub filled: bool,
-    /// `allow_empty = false`: поле считается заполненным всегда.
+    /// `allow_empty = false`: the field is always considered filled.
     pub always_filled: bool,
-    /// Поле в фокусе.
+    /// The field is focused.
     pub focused: bool,
-    /// Кнопки показаны.
+    /// Buttons are shown.
     pub show_buttons: bool,
-    /// Раскладка кнопок.
+    /// Button layout.
     pub layout: ButtonLayout,
-    /// На всю ширину.
+    /// Full width.
     pub fluid: bool,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
-    /// Недоступно.
+    /// Disabled.
     pub disabled: bool,
-    /// Вариант `filled`.
+    /// The `filled` variant.
     pub variant_filled: bool,
-    /// Размер.
+    /// Size.
     pub size: Option<Size>,
 }
 
-/// Добавляет классы корня в порядке `inputnumberstyle.ts`.
+/// Adds the root classes in the order of `inputnumberstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &InputNumberState) {
     cn.add("p-inputnumber p-component p-inputwrapper")
         .add_if(s.filled || s.always_filled, "p-inputwrapper-filled")
@@ -63,7 +63,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &InputNumberState) {
         .add_if(s.invalid, "p-invalid");
 }
 
-/// Значение `data-p`: `invalid`, `disabled`, `focus`, `fluid`, `filled`, `empty`, размер, раскладка.
+/// The `data-p` value: `invalid`, `disabled`, `focus`, `fluid`, `filled`, `empty`, size, layout.
 pub fn data_p(s: &InputNumberState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.invalid, "invalid")
@@ -116,7 +116,7 @@ mod tests {
                 "p-inputnumber p-component p-inputwrapper p-inputnumber-vertical",
                 "empty vertical",
             ),
-            // раскладка без кнопок не влияет
+            // a layout without buttons has no effect
             (InputNumberState { layout: ButtonLayout::Vertical, ..base }, "p-inputnumber p-component p-inputwrapper", "empty"),
             (InputNumberState { fluid: true, ..base }, "p-inputnumber p-component p-inputwrapper p-inputnumber-fluid", "fluid empty"),
             (InputNumberState { invalid: true, ..base }, "p-inputnumber p-component p-inputwrapper p-invalid", "invalid empty"),

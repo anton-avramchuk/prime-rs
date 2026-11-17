@@ -1,10 +1,10 @@
-//! Страница ProgressSpinner: демонстрации `basic` и `custom` из showcase PrimeNG (`apps/showcase/doc/progressspinner`).
+//! ProgressSpinner page: the `basic` and `custom` demos from the PrimeNG showcase (`apps/showcase/doc/progressspinner`).
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_progressspinner::ProgressSpinner;
 
-/// Страница `/progressspinner`.
+/// `/progressspinner` page.
 #[component]
 pub fn ProgressSpinnerPage() -> impl IntoView {
     view! {

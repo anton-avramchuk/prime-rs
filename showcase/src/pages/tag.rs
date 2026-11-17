@@ -1,7 +1,7 @@
-//! Страница Tag: демонстрации `basic`, `icon`, `pill`, `severity`, `template` из showcase PrimeNG (`apps/showcase/doc/tag`).
+//! Tag page: demos `basic`, `icon`, `pill`, `severity`, `template` from the PrimeNG showcase (`apps/showcase/doc/tag`).
 //!
-//! Иконки PrimeIcons заменены ближайшими из `prime-icons` (`pi-user` → `HomeIcon`, `pi-cog` → `RefreshIcon`); флаг из демонстрации
-//! `template` не воспроизводится (внешняя картинка).
+//! PrimeIcons icons are replaced by the closest ones from `prime-icons` (`pi-user` → `HomeIcon`, `pi-cog` → `RefreshIcon`); the flag from the demo
+//! `template` is not reproduced (an external image).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -12,7 +12,7 @@ fn icon<V: IntoView + 'static>(f: impl Fn() -> V + Send + Sync + 'static) -> Vie
     ViewFn::from(f)
 }
 
-/// Теги всех серьёзностей с общей настройкой.
+/// Tags of all severities with a shared setup.
 macro_rules! severities {
     ($($extra:tt)*) => {
         view! {
@@ -27,7 +27,7 @@ macro_rules! severities {
     };
 }
 
-/// Страница `/tag`.
+/// Page `/tag`.
 #[component]
 pub fn TagPage() -> impl IntoView {
     view! {

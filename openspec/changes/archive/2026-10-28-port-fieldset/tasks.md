@@ -1,30 +1,30 @@
 # Tasks
 
-## 1. Крейт и логика
+## 1. Crate and logic
 
-- [x] 1.1 Создать крейт `crates/prime-fieldset` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `prime-icons` с `minus`, `plus`, `web-sys`), добавить в workspace; проверить `cargo check -p prime-fieldset --all-features`
-- [x] 1.2 Реализовать `write_root_classes`, `data_p` (`state.rs`) с таблицей юнит-тестов
+- [x] 1.1 Create the crate `crates/prime-fieldset` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-icons` with `minus`, `plus`, `web-sys`), add it to the workspace; check `cargo check -p prime-fieldset --all-features`
+- [x] 1.2 Implement `write_root_classes`, `data_p` (`state.rs`) with a table of unit tests
 
-## 2. Компонент
+## 2. Component
 
-- [x] 2.1 Реализовать `Fieldset` и `FieldsetPt` (разметка `macro_rules!`, две ветви, легенда, кнопка, иконки и слоты, `bind_region`); проверить SSR-тестами (структура, классы, ARIA, слоты, `pt`) и паритетом ветвей
-- [x] 2.2 Переключение, `on_before_toggle`, `on_after_toggle`; проверить `wasm-bindgen-test` (клик, сигнал, `aria-expanded`, анимация, `tabindex`)
-- [x] 2.3 rustdoc с примером; `cargo test -p prime-fieldset --all-features`
+- [x] 2.1 Implement `Fieldset` and `FieldsetPt` (the `macro_rules!` markup, two branches, the legend, the button, the icons and slots, `bind_region`); check with SSR tests (structure, classes, ARIA, slots, `pt`) and branch parity
+- [x] 2.2 Toggling, `on_before_toggle`, `on_after_toggle`; check with `wasm-bindgen-test` (click, signal, `aria-expanded`, animation, `tabindex`)
+- [x] 2.3 rustdoc with an example; `cargo test -p prime-fieldset --all-features`
 
-## 3. Тема, showcase, e2e
+## 3. Theme, showcase, e2e
 
-- [x] 3.1 Добавить `fieldset` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, подключить CSS
-- [x] 3.2 Страница `/fieldset` (`basic`, `toggleable`, `template`), меню, маршрут, `stylesheet(&[..])`
-- [x] 3.3 `e2e/tests/pages.json` и `e2e/tests/fieldset.spec.ts`; `npx playwright test fieldset`
+- [x] 3.1 Add `fieldset` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, connect the CSS
+- [x] 3.2 The `/fieldset` page (`basic`, `toggleable`, `template`), the menu, the route, `stylesheet(&[..])`
+- [x] 3.3 `e2e/tests/pages.json` and `e2e/tests/fieldset.spec.ts`; `npx playwright test fieldset`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `fieldset-1`, `fieldset-1000`, `case-fieldset`, бюджеты по измерению
+- [x] 4.1 Scenarios `fieldset-1`, `fieldset-1000`, `case-fieldset`, budgets by measurement
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/fieldset.md`; clippy, тесты, deny, machete, `openspec validate port-fieldset`; `prime-fieldset` в браузерный job CI; CI `dev` зелёный
+- [x] 5.1 `docs/fieldset.md`; clippy, tests, deny, machete, `openspec validate port-fieldset`; `prime-fieldset` in the browser CI job; CI on `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI.
+- Archive after CI.

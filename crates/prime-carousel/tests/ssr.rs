@@ -1,4 +1,4 @@
-//! Разметка Carousel (SSR): корень, навигаторы, элементы, клоны, индикаторы, ориентация, шапка и подвал, `pt`.
+//! Carousel markup (SSR): root, navigators, items, clones, indicators, orientation, header and footer, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -25,12 +25,12 @@ fn markup_has_all_parts() {
     for part in
         ["p-carousel-content-container", "p-carousel-content", "p-carousel-viewport", "p-carousel-item-list", "p-carousel-indicator-list"]
     {
-        assert!(html.contains(part), "нет {part}: {html}");
+        assert!(html.contains(part), "missing {part}: {html}");
     }
     assert!(html.contains("p-carousel-prev-button") && html.contains("p-carousel-next-button"), "{html}");
     assert!(html.contains("aria-label=\"Previous Page\"") && html.contains("aria-label=\"Next Page\""), "{html}");
-    assert_eq!(html.matches("class=\"n\"").count(), 5, "ровно пять элементов, клонов нет: {html}");
-    assert_eq!(html.matches("p-carousel-indicator-button").count(), 4, "четыре страницы: {html}");
+    assert_eq!(html.matches("class=\"n\"").count(), 5, "exactly five items, no clones: {html}");
+    assert_eq!(html.matches("p-carousel-indicator-button").count(), 4, "four pages: {html}");
     assert!(html.contains("aria-live=\"off\""), "{html}");
 }
 
@@ -42,9 +42,9 @@ fn items_carry_roles_labels_and_ranges() {
         html.contains("aria-roledescription=\"Slide\"") && html.contains("aria-label=\"1\"") && html.contains("aria-label=\"5\""),
         "{html}"
     );
-    assert_eq!(html.matches("class=\"p-carousel-item p-carousel-item-active").count(), 2, "активны первые два: {html}");
+    assert_eq!(html.matches("class=\"p-carousel-item p-carousel-item-active").count(), 2, "the first two are active: {html}");
     assert!(html.contains("p-carousel-item p-carousel-item-active p-carousel-item-start"), "{html}");
-    assert!(html.contains("flex: 1 0 50%"), "ширина элемента по числу видимых: {html}");
+    assert!(html.contains("flex: 1 0 50%"), "item width by visible count: {html}");
     assert!(html.contains("data-p-carousel-item-start=\"true\"") && html.contains("data-p-carousel-item-end=\"true\""), "{html}");
     assert_eq!(html.matches("role=\"group\" aria-hidden=\"false\"").count(), 2, "{html}");
     assert_eq!(html.matches("role=\"group\" aria-hidden=\"true\"").count(), 3, "{html}");
@@ -85,12 +85,12 @@ fn edge_buttons_are_disabled_without_circular() {
 #[test]
 fn circular_renders_clones_on_both_sides() {
     let html = render(|| view! { <Carousel value=five() num_visible=2 circular=true item=Callback::new(show) /> }.to_html());
-    assert_eq!(html.matches("p-carousel-item-clone").count(), 4, "по два клона: {html}");
+    assert_eq!(html.matches("p-carousel-item-clone").count(), 4, "two clones each: {html}");
     assert_eq!(html.matches("class=\"n\"").count(), 9, "5 + 2 + 2: {html}");
-    assert!(html.contains("translate3d(-100%, 0, 0)"), "список стоит за клонами начала: {html}");
-    assert!(!html.contains("p-disabled"), "в бесконечном режиме кнопки не отключаются: {html}");
+    assert!(html.contains("translate3d(-100%, 0, 0)"), "the list sits behind the start clones: {html}");
+    assert!(!html.contains("p-disabled"), "buttons are not disabled in infinite mode: {html}");
     let short = render(|| view! { <Carousel value=vec![1] num_visible=2 circular=true item=Callback::new(show) /> }.to_html());
-    assert!(!short.contains("p-carousel-item-clone"), "элементов меньше видимых: бесконечный режим не включается: {short}");
+    assert!(!short.contains("p-carousel-item-clone"), "fewer items than visible: infinite mode is not enabled: {short}");
 }
 
 #[test]
@@ -99,7 +99,7 @@ fn page_and_scroll_set_the_initial_shift() {
         let page = RwSignal::new(2usize);
         view! { <Carousel value=five() num_visible=2 page=page item=Callback::new(show) /> }.to_html()
     });
-    assert!(html.contains("translate3d(-100%, 0, 0)"), "две страницы по шагу 1 = −2 элемента по 50%: {html}");
+    assert!(html.contains("translate3d(-100%, 0, 0)"), "two pages at step 1 = −2 items of 50%: {html}");
     assert!(html.contains("p-carousel-indicator-active"), "{html}");
 }
 
@@ -156,7 +156,7 @@ fn header_footer_icons_and_classes() {
         "mine",
         "width: 10rem",
     ] {
-        assert!(html.contains(needle), "нет {needle}: {html}");
+        assert!(html.contains(needle), "missing {needle}: {html}");
     }
 }
 
@@ -193,5 +193,5 @@ fn pt_adds_classes_and_attributes() {
 fn responsive_options_do_not_change_the_server_markup() {
     let opts = vec![Responsive { breakpoint: "767px".into(), num_visible: 1, num_scroll: 1 }];
     let html = render(|| view! { <Carousel value=five() num_visible=3 responsive_options=opts item=Callback::new(show) /> }.to_html());
-    assert!(html.contains("flex: 1 0 33.333333333333336%"), "на сервере действуют значения по умолчанию: {html}");
+    assert!(html.contains("flex: 1 0 33.333333333333336%"), "defaults apply on the server: {html}");
 }

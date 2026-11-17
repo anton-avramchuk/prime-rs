@@ -1,13 +1,13 @@
-//! Страница OverlayBadge: демонстрация `basic` по `apps/showcase/doc/badge/overlay-doc.ts` PrimeNG.
+//! OverlayBadge page: the `basic` demo from `apps/showcase/doc/badge/overlay-doc.ts` in PrimeNG.
 //!
-//! В `prime-icons` нет иконок `bell` и `envelope`, поэтому взяты `calendar`, `info-circle` и `exclamation-triangle`.
+//! `prime-icons` has no `bell` and `envelope` icons, so `calendar`, `info-circle` and `exclamation-triangle` are used.
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_icons::{CalendarIcon, ExclamationTriangleIcon, InfoCircleIcon};
 use prime_overlaybadge::{BadgeSeverity, OverlayBadge};
 
-/// Страница `/overlaybadge`.
+/// `/overlaybadge` page.
 #[component]
 pub fn OverlayBadgePage() -> impl IntoView {
     view! {

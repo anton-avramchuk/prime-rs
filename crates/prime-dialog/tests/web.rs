@@ -1,5 +1,5 @@
-//! Поведение Dialog в реальном браузере (wasm-bindgen-test): показ в `body`, кнопки, закрытие кнопкой, Escape и маской,
-//! модальность, позиции, перетаскивание, изменение размера, максимизация, `breakpoints`, фокус, слои, события.
+//! Dialog behavior in a real browser (wasm-bindgen-test): showing in `body`, buttons, closing via button, Escape and mask,
+//! modality, positions, dragging, resizing, maximizing, `breakpoints`, focus, layers, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -29,7 +29,7 @@ fn find(sel: &str) -> Option<HtmlElement> {
 }
 
 fn q(sel: &str) -> HtmlElement {
-    find(sel).unwrap_or_else(|| panic!("нет {sel}"))
+    find(sel).unwrap_or_else(|| panic!("no {sel}"))
 }
 
 fn count(sel: &str) -> u32 {
@@ -47,7 +47,7 @@ async fn sleep(ms: i32) {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Реактивные обновления, `Portal` (монтирует содержимое в эффекте) и снятие эффектов.
+/// Reactive updates, `Portal` (mounts content in an effect) and effect teardown.
 async fn settle() {
     leptos::task::tick().await;
     sleep(30).await;
@@ -93,11 +93,11 @@ async fn shows_in_body_with_mask_header_and_close_button() {
         view! { <Dialog visible=visible header="Header"><p id="body">"Body"</p></Dialog> }
     });
     settle().await;
-    assert_eq!(count(".p-dialog") + count(".p-dialog-mask"), 0, "скрыт, пока visible ложно");
+    assert_eq!(count(".p-dialog") + count(".p-dialog-mask"), 0, "hidden while visible is false");
     visible.set(true);
     settle().await;
     let (mask, panel) = (q(".p-dialog-mask"), q(".p-dialog-mask > .p-dialog"));
-    assert!(!host.contains(Some(&panel)), "диалог вынесен из места объявления");
+    assert!(!host.contains(Some(&panel)), "dialog is moved out of its declaration place");
     assert_eq!(panel.get_attribute("role").as_deref(), Some("dialog"));
     assert_eq!(panel.get_attribute("aria-modal").as_deref(), Some("true"));
     for class in ["p-component", "p-dialog-enter-active"] {
@@ -109,12 +109,12 @@ async fn shows_in_body_with_mask_header_and_close_button() {
     assert_eq!(q(".p-dialog-content #body").text_content().as_deref(), Some("Body"));
     assert_eq!(q(".p-dialog-header-actions .p-dialog-close-button").get_attribute("aria-label").as_deref(), Some("Close"));
     assert_eq!((count(".p-dialog-maximize-button"), count(".p-dialog-footer")), (0, 0));
-    assert!(!mask.class_name().contains("p-overlay-mask"), "не модальный: маска без p-overlay-mask");
+    assert!(!mask.class_name().contains("p-overlay-mask"), "non-modal: mask without p-overlay-mask");
     assert!(mask.style().get_property_value("pointer-events").unwrap() == "none");
-    assert!(!locked(), "не модальный: прокрутка не блокируется");
+    assert!(!locked(), "non-modal: scrolling is not locked");
     drop(handle);
     settle().await;
-    assert_eq!(count(".p-dialog") + count(".p-dialog-mask"), 0, "после размонтирования всё убрано");
+    assert_eq!(count(".p-dialog") + count(".p-dialog-mask"), 0, "everything removed after unmount");
     host.remove();
 }
 
@@ -145,18 +145,18 @@ async fn modal_blocks_scroll_and_mask_closes_only_when_dismissable() {
             view! { <Dialog visible=visible modal=true dismissable_mask=dismissable><p id="in">"Body"</p></Dialog> }
         });
         settle().await;
-        assert!(locked(), "модальный: прокрутка заблокирована");
+        assert!(locked(), "modal: scrolling is locked");
         assert!(q(".p-dialog-mask").class_name().contains("p-overlay-mask"));
         assert_eq!(q(".p-dialog-mask").style().get_property_value("pointer-events").unwrap(), "auto");
         mouse(&q("#in"), "mousedown", 5, 5);
         settle().await;
-        assert!(visible.get_untracked(), "нажатие внутри окна не закрывает");
+        assert!(visible.get_untracked(), "a click inside the window does not close it");
         mouse(&q(".p-dialog-mask"), "mousedown", 1, 1);
         settle().await;
         assert_eq!(visible.get_untracked(), !dismissable, "dismissable_mask={dismissable}");
         visible.set(false);
         sleep(800).await;
-        assert!(!locked(), "после закрытия блокировка снята (dismissable={dismissable})");
+        assert!(!locked(), "lock released after closing (dismissable={dismissable})");
         drop(handle);
         settle().await;
         host.remove();
@@ -180,7 +180,7 @@ async fn escape_respects_close_on_escape_and_closable() {
             escape();
             escape();
             settle().await;
-            assert_eq!(*log.lock().unwrap(), ["hide"], "после закрытия слушатель снят");
+            assert_eq!(*log.lock().unwrap(), ["hide"], "listener removed after closing");
         }
         assert_eq!(count(".p-dialog-close-button"), usize::from(closable) as u32);
         drop(handle);
@@ -216,24 +216,24 @@ async fn dragging_the_header_moves_the_window_within_the_viewport() {
     settle().await;
     let (panel, header) = (q(".p-dialog"), q(".p-dialog-header"));
     let start = panel.get_bounding_client_rect();
-    // нажатие на кнопку закрытия не начинает перетаскивание
+    // a click on the close button does not start dragging
     mouse(&q(".p-dialog-close-button"), "mousedown", 50, 50);
     mouse(&window(), "mousemove", 80, 80);
-    assert_eq!(panel.style().get_property_value("position").unwrap(), "", "кнопки заголовка не тянут окно");
+    assert_eq!(panel.style().get_property_value("position").unwrap(), "", "header buttons do not drag the window");
     mouse(&window(), "mouseup", 80, 80);
 
     mouse(&header, "mousedown", 100, 100);
     mouse(&window(), "mousemove", 130, 120);
     assert_eq!(panel.style().get_property_value("position").unwrap(), "fixed");
-    assert!((px(&panel, "left") - (start.left() + 30.0)).abs() < 1.0, "left {} от {}", px(&panel, "left"), start.left());
-    assert!((px(&panel, "top") - (start.top() + 20.0)).abs() < 1.0, "top {} от {}", px(&panel, "top"), start.top());
+    assert!((px(&panel, "left") - (start.left() + 30.0)).abs() < 1.0, "left {} from {}", px(&panel, "left"), start.left());
+    assert!((px(&panel, "top") - (start.top() + 20.0)).abs() < 1.0, "top {} from {}", px(&panel, "top"), start.top());
     let moved = px(&panel, "left");
     mouse(&window(), "mousemove", -4000, 120);
-    assert_eq!(px(&panel, "left"), moved, "keep_in_viewport: левее экрана не уходит");
+    assert_eq!(px(&panel, "left"), moved, "keep_in_viewport: does not go left of the screen");
     mouse(&window(), "mouseup", 130, 120);
     assert_eq!(*log.lock().unwrap(), ["dragend"]);
     mouse(&window(), "mousemove", 300, 300);
-    assert_eq!(px(&panel, "left"), moved, "после отпускания окно стоит");
+    assert_eq!(px(&panel, "left"), moved, "window stays put after release");
     drop(handle);
     settle().await;
     host.remove();
@@ -257,7 +257,7 @@ async fn draggable_false_and_keep_in_viewport_false() {
     let panel = q(".p-dialog");
     mouse(&q(".p-dialog-header"), "mousedown", 100, 100);
     mouse(&window(), "mousemove", -2000, 100);
-    assert!(px(&panel, "left") < -1000.0, "без keep_in_viewport окно уходит за экран: {}", px(&panel, "left"));
+    assert!(px(&panel, "left") < -1000.0, "without keep_in_viewport the window goes off screen: {}", px(&panel, "left"));
     mouse(&window(), "mouseup", -2000, 100);
     drop(handle);
     settle().await;
@@ -280,18 +280,18 @@ async fn resizing_the_handle_changes_the_size_and_reports_events() {
     mouse(&q(".p-resizable-handle"), "mousedown", 200, 200);
     mouse(&window(), "mousemove", 220, 210);
     let after = px(&panel, "width");
-    assert!(after > before, "ширина выросла: {before} → {after}");
-    assert!(!q(".p-dialog-content").style().get_property_value("height").unwrap().is_empty(), "высота содержимого обновлена");
+    assert!(after > before, "width grew: {before} → {after}");
+    assert!(!q(".p-dialog-content").style().get_property_value("height").unwrap().is_empty(), "content height updated");
     mouse(&window(), "mouseup", 220, 210);
     assert_eq!(*log.lock().unwrap(), ["init", "end"]);
     mouse(&window(), "mousemove", 400, 400);
-    assert_eq!(px(&panel, "width"), after, "после отпускания размер не меняется");
+    assert_eq!(px(&panel, "width"), after, "size does not change after release");
     drop(handle);
     settle().await;
 
     let handle = leptos::mount::mount_to(host.clone(), move || view! { <Dialog visible=visible resizable=false><p>"Body"</p></Dialog> });
     settle().await;
-    assert_eq!(count(".p-resizable-handle"), 0, "resizable=false убирает ручку");
+    assert_eq!(count(".p-resizable-handle"), 0, "resizable=false removes the handle");
     drop(handle);
     settle().await;
     host.remove();
@@ -313,7 +313,7 @@ async fn maximize_toggles_class_labels_events_and_scroll_lock() {
     settle().await;
     assert!(panel.class_name().contains("p-dialog-maximized"), "{}", panel.class_name());
     assert_eq!(button.get_attribute("aria-label").as_deref(), Some("Minimize"));
-    assert!(locked(), "немодальный максимизированный блокирует прокрутку");
+    assert!(locked(), "non-modal maximized locks scrolling");
     button.click();
     settle().await;
     assert!(!panel.class_name().contains("p-dialog-maximized"));
@@ -325,7 +325,7 @@ async fn maximize_toggles_class_labels_events_and_scroll_lock() {
     assert!(locked());
     visible.set(false);
     sleep(800).await;
-    assert!(!locked(), "закрытие снимает блокировку максимизации");
+    assert!(!locked(), "closing releases the maximize lock");
     drop(handle);
     settle().await;
     host.remove();
@@ -338,7 +338,8 @@ async fn breakpoints_add_media_rules_and_remove_them_on_close() {
     });
     settle().await;
     let panel = q(".p-dialog");
-    let attr = panel.get_attribute_names().iter().filter_map(|n| n.as_string()).find(|n| n.starts_with("data-dlg-")).expect("атрибут окна");
+    let attr =
+        panel.get_attribute_names().iter().filter_map(|n| n.as_string()).find(|n| n.starts_with("data-dlg-")).expect("window attribute");
     let rules = doc().head().unwrap().inner_html();
     assert!(
         rules.contains(&format!(".p-dialog[{attr}]:not(.p-dialog-maximized)"))
@@ -348,7 +349,7 @@ async fn breakpoints_add_media_rules_and_remove_them_on_close() {
     );
     visible.set(false);
     sleep(800).await;
-    assert!(!doc().head().unwrap().inner_html().contains(&attr), "правила убраны после закрытия");
+    assert!(!doc().head().unwrap().inner_html().contains(&attr), "rules removed after closing");
     drop(handle);
     host.remove();
 }
@@ -357,8 +358,8 @@ async fn focus_goes_to_the_first_focusable_in_the_content() {
     let (host, visible) = (host(), RwSignal::new(true));
     let handle = leptos::mount::mount_to(host.clone(), move || view! { <Dialog visible=visible><input id="field" /></Dialog> });
     settle().await;
-    assert!(q("#field").is_same_node(doc().active_element().as_deref()), "фокус на поле содержимого");
-    assert!(q(".p-dialog").query_selector("[data-pc-section=firstfocusableelement]").unwrap().is_some(), "ловушка фокуса включена");
+    assert!(q("#field").is_same_node(doc().active_element().as_deref()), "focus on the content field");
+    assert!(q(".p-dialog").query_selector("[data-pc-section=firstfocusableelement]").unwrap().is_some(), "focus trap enabled");
     drop(handle);
     settle().await;
 
@@ -386,13 +387,13 @@ async fn two_dialogs_stack_and_escape_closes_the_top_one() {
     settle().await;
     let z = |sel: &str| q(sel).style().get_property_value("z-index").unwrap().parse::<i32>().unwrap();
     let (z1, z2) = (z(".p-dialog-left .p-dialog"), z(".p-dialog-right .p-dialog"));
-    assert!(z2 > z1, "поздний выше: {z1} {z2}");
-    assert_eq!((z(".p-dialog-left"), z(".p-dialog-right")), (z1 - 1, z2 - 1), "маска на единицу ниже окна");
+    assert!(z2 > z1, "later is higher: {z1} {z2}");
+    assert_eq!((z(".p-dialog-left"), z(".p-dialog-right")), (z1 - 1, z2 - 1), "mask is one below the window");
     escape();
     settle().await;
-    assert!(!second.get_untracked() && first.get_untracked(), "Escape закрыл только верхний");
+    assert!(!second.get_untracked() && first.get_untracked(), "Escape closed only the topmost");
     sleep(800).await;
-    assert!(locked(), "первый модальный ещё держит блокировку");
+    assert!(locked(), "the first modal still holds the lock");
     drop(handle);
     settle().await;
     assert!(!locked());
@@ -435,7 +436,7 @@ async fn header_content_footer_headless_and_hidden_header() {
     });
     settle().await;
     assert_eq!(q(".p-dialog-header #custom-title").text_content().as_deref(), Some("Custom"));
-    assert_eq!(count(".p-dialog-title"), 0, "своё содержимое заменяет название");
+    assert_eq!(count(".p-dialog-title"), 0, "custom content replaces the title");
     assert_eq!(q(".p-dialog-footer #ok").text_content().as_deref(), Some("OK"));
     drop(handle);
     settle().await;
@@ -458,7 +459,7 @@ async fn header_content_footer_headless_and_hidden_header() {
     host.remove();
 }
 
-/// Сценарии идут по очереди: диалоги выводятся в общий `body`, а слушатели окна общие.
+/// Scenarios run one after another: dialogs are rendered into the shared `body`, and window listeners are shared.
 #[wasm_bindgen_test]
 async fn dialog_behaviour() {
     shows_in_body_with_mask_header_and_close_button().await;

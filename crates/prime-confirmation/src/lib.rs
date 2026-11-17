@@ -1,8 +1,8 @@
-//! Confirmation и ConfirmationService — порт `api/confirmation.ts` и `api/confirmationservice.ts` из PrimeNG 21.1.10.
+//! Confirmation and ConfirmationService — port of `api/confirmation.ts` and `api/confirmationservice.ts` from PrimeNG 21.1.10.
 //!
-//! Описание подтверждения ([`Confirmation`]) и общий сервис ([`ConfirmationService`]): приложение вызывает `confirm`, а
-//! компоненты `ConfirmPopup` и `ConfirmDialog` показывают те подтверждения, чей `key` совпадает с их собственным. Крейт без
-//! интерфейса и стилей.
+//! Confirmation description ([`Confirmation`]) and the shared service ([`ConfirmationService`]): the application calls `confirm`, and
+//! the `ConfirmPopup` and `ConfirmDialog` components show the confirmations whose `key` matches their own. The crate without
+//! any UI or styles.
 //!
 //! ```
 //! use leptos::prelude::*;

@@ -1,4 +1,4 @@
-//! Структура DOM, `aria-*`, размер, дуги, текст, цвета, `disabled`/`readonly` и `pt` Knob (SSR).
+//! DOM structure, `aria-*`, size, arcs, text, colors, `disabled`/`readonly` and `pt` of Knob (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -48,11 +48,11 @@ fn default_structure() {
 fn paths_follow_the_value() {
     let range = r#"d="M 30 84.641 A 40 40 0 1 1 70 84.641""#;
     assert!(view! { <Knob default_value=50.0 /> }.to_html().contains(range));
-    // 50 из 0..100 — верх шкалы; дуга значения идёт от нуля (нижний левый край)
+    // 50 of 0..100 is the top of the scale; the value arc goes from zero (bottom left edge)
     assert!(view! { <Knob default_value=50.0 /> }.to_html().contains(r#"d="M 30 84.641 A 40 40 0 0 1 50 10""#));
-    // 0 из -50..50 — верх шкалы: дуга нулевой длины
+    // 0 of -50..50 is the top of the scale: a zero-length arc
     assert!(view! { <Knob default_value=0.0 min=-50.0 max=50.0 /> }.to_html().contains(r#"d="M 50 10 A 40 40 0 0 1 50 10""#));
-    // максимум — большая дуга до нижнего правого края
+    // maximum - the large arc to the bottom right edge
     assert!(view! { <Knob default_value=100.0 /> }.to_html().contains(r#"d="M 30 84.641 A 40 40 0 1 1 70 84.641""#));
 }
 
@@ -105,7 +105,7 @@ fn size_stroke_colors_and_labels() {
     ] {
         assert!(html.contains(expected), "{expected}: {html}");
     }
-    assert!(!html.contains("--p-knob"), "цвета по умолчанию не должны остаться: {html}");
+    assert!(!html.contains("--p-knob"), "default colors must not remain: {html}");
 }
 
 #[test]

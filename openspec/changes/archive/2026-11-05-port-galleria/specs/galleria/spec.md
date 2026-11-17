@@ -1,68 +1,68 @@
 # galleria Specification
 
 ## Purpose
-Galleria — галерея изображений с миниатюрами, индикаторами, автосменой и полноэкранным режимом.
+Galleria is an image gallery with thumbnails, indicators, auto-advance and fullscreen mode.
 
 ## ADDED Requirements
 
-### Requirement: Окно миниатюр
-Модель SHALL вычислять смещение ленты миниатюр по активному индексу по формулам PrimeNG: медианный индекс `floor(n/2)` (для чётного `n` — на единицу меньше), смещение `0`, пока `active <= median`; `n_visible − len` у конца; иначе `−active + median` (`+1` для чётного `n` у конца списка). Кнопки страниц SHALL быть недоступны, если миниатюр не больше видимых либо (без `circular`) активна крайняя.
+### Requirement: Thumbnail window
+The model SHALL compute the thumbnail strip offset from the active index using the PrimeNG formulas: median index `floor(n/2)` (one less for even `n`), offset `0` while `active <= median`; `n_visible - len` at the end; otherwise `-active + median` (`+1` for even `n` at the end of the list). Page buttons SHALL be disabled if there are no more thumbnails than visible ones or (without `circular`) an edge one is active.
 
-#### Scenario: Начало
+#### Scenario: Start
 - **WHEN** `len = 6`, `n_visible = 3`, `active = 1`
-- **THEN** смещение `0`
+- **THEN** offset `0`
 
-#### Scenario: Середина
+#### Scenario: Middle
 - **WHEN** `len = 6`, `n_visible = 3`, `active = 3`
-- **THEN** смещение `−2`
+- **THEN** offset `-2`
 
-#### Scenario: Конец
+#### Scenario: End
 - **WHEN** `len = 6`, `n_visible = 3`, `active = 5`
-- **THEN** смещение `−3`
+- **THEN** offset `-3`
 
-### Requirement: Разметка
-`Galleria` SHALL выводить `div.p-galleria.p-component` (`role=region`, классы позиций `p-galleria-thumbnails-<pos>` и `p-galleria-indicators-<pos>` при показе, `p-galleria-inset-indicators`, `p-galleria-hover-navigators`, `p-galleria-fullscreen`) > `.p-galleria-content` > `.p-galleria-items-container` (`.p-galleria-items` > кнопки навигации при `show_item_navigators`, `.p-galleria-item` с `role=group`, `aria-label` «N», `.p-galleria-caption` при шаблоне подписи; `ul.p-galleria-indicator-list` при `show_indicators`) и `.p-galleria-thumbnails` при `show_thumbnails`. При пустом `value` содержимое SHALL отсутствовать.
+### Requirement: Markup
+`Galleria` SHALL render `div.p-galleria.p-component` (`role=region`, position classes `p-galleria-thumbnails-<pos>` and `p-galleria-indicators-<pos>` when shown, `p-galleria-inset-indicators`, `p-galleria-hover-navigators`, `p-galleria-fullscreen`) > `.p-galleria-content` > `.p-galleria-items-container` (`.p-galleria-items` > navigation buttons with `show_item_navigators`, `.p-galleria-item` with `role=group`, `aria-label` "N", `.p-galleria-caption` with a caption template; `ul.p-galleria-indicator-list` with `show_indicators`) and `.p-galleria-thumbnails` with `show_thumbnails`. With an empty `value` the content SHALL be absent.
 
-#### Scenario: Основа
-- **WHEN** три изображения, значения по умолчанию
-- **THEN** есть `.p-galleria-item` с первым кадром, три `.p-galleria-thumbnail-item`, нет индикаторов и кнопок кадра
+#### Scenario: Basics
+- **WHEN** three images, default values
+- **THEN** there is a `.p-galleria-item` with the first frame, three `.p-galleria-thumbnail-item`, no indicators and no frame buttons
 
-#### Scenario: Индикаторы
+#### Scenario: Indicators
 - **WHEN** `show_indicators = true`
-- **THEN** три `li.p-galleria-indicator`, первый с `p-galleria-indicator-active`
+- **THEN** three `li.p-galleria-indicator`, the first with `p-galleria-indicator-active`
 
-### Requirement: Навигация по кадрам
-Кнопки кадра, индикаторы и миниатюры SHALL менять активный индекс и вызывать обновление `active_index`. Следующий кадр: `circular` и последний → `0`, иначе `+1`; предыдущий: `circular` и первый → последний, иначе `−1` (не ниже 0). Кнопка недоступна (`p-disabled`) на краю без `circular`. Индикатор: клик, `Enter`/`Space`; при `change_item_on_indicator_hover` — наведение. Миниатюра: клик, `Enter`/`Space`; `ArrowLeft`/`ArrowRight`/`Home`/`End` двигают фокус по миниатюрам.
+### Requirement: Frame navigation
+Frame buttons, indicators and thumbnails SHALL change the active index and trigger an `active_index` update. Next frame: `circular` and last → `0`, otherwise `+1`; previous: `circular` and first → last, otherwise `-1` (not below 0). A button is disabled (`p-disabled`) at an edge without `circular`. Indicator: click, `Enter`/`Space`; with `change_item_on_indicator_hover`, hover. Thumbnail: click, `Enter`/`Space`; `ArrowLeft`/`ArrowRight`/`Home`/`End` move focus across thumbnails.
 
-#### Scenario: Кнопка вперёд
-- **WHEN** `show_item_navigators`, активен 0, клик по следующей
-- **THEN** активный индекс `1`, показан второй кадр
+#### Scenario: Forward button
+- **WHEN** `show_item_navigators`, 0 is active, click on next
+- **THEN** the active index is `1`, the second frame is shown
 
-#### Scenario: Круг
-- **WHEN** `circular`, активен последний, клик по следующей
-- **THEN** активный индекс `0`
+#### Scenario: Loop
+- **WHEN** `circular`, the last is active, click on next
+- **THEN** the active index is `0`
 
-### Requirement: Автосмена
-При `auto_play` кадр SHALL меняться каждые `transition_interval` мс (после последнего — на первый при `circular`, иначе дальше не двигаться); действие пользователя (кнопки, индикаторы, миниатюры) SHALL останавливать смену, если `should_stop_autoplay_by_click`.
+### Requirement: Auto-advance
+With `auto_play` the frame SHALL change every `transition_interval` ms (after the last one, to the first with `circular`, otherwise it SHALL NOT move further); a user action (buttons, indicators, thumbnails) SHALL stop the advance if `should_stop_autoplay_by_click`.
 
-#### Scenario: Остановка
-- **WHEN** идёт автосмена, пользователь кликает по миниатюре
-- **THEN** автосмена остановлена
+#### Scenario: Stop
+- **WHEN** auto-advance is running, the user clicks a thumbnail
+- **THEN** auto-advance is stopped
 
-### Requirement: Адаптивность
-`responsive_options` (`breakpoint` в пикселях, `num_visible`) SHALL выбирать число видимых миниатюр по ширине окна: наименьший `breakpoint`, не меньший ширины окна; иначе `num_visible` компонента. Число видимых SHALL не превышать число изображений.
+### Requirement: Responsiveness
+`responsive_options` (`breakpoint` in pixels, `num_visible`) SHALL choose the number of visible thumbnails by window width: the smallest `breakpoint` not less than the window width; otherwise the component `num_visible`. The visible count SHALL NOT exceed the number of images.
 
-#### Scenario: Узкое окно
-- **WHEN** `[{960, 4}, {640, 2}]`, ширина 600
-- **THEN** видимых `2`
+#### Scenario: Narrow window
+- **WHEN** `[{960, 4}, {640, 2}]`, width 600
+- **THEN** visible is `2`
 
-### Requirement: Полноэкранный режим
-При `full_screen` галерея SHALL выводиться в `Portal` внутри маски `p-galleria-mask p-overlay-mask` при `visible`, с кнопкой закрытия `p-galleria-close-button`, блокировкой прокрутки страницы и ловушкой фокуса; клик по самой маске и кнопка закрытия SHALL сбрасывать `visible`; выход SHALL играть анимацию `p-galleria-leave-active` до удаления из DOM.
+### Requirement: Fullscreen mode
+With `full_screen` the gallery SHALL be rendered in a `Portal` inside the `p-galleria-mask p-overlay-mask` mask when `visible`, with the `p-galleria-close-button` close button, page scroll lock and a focus trap; a click on the mask itself and the close button SHALL reset `visible`; leaving SHALL play the `p-galleria-leave-active` animation before removal from the DOM.
 
-#### Scenario: Открытие и закрытие
-- **WHEN** `visible = true`, затем клик по кнопке закрытия
-- **THEN** сначала маска и содержимое в DOM, затем `visible = false` и удаление после анимации
+#### Scenario: Open and close
+- **WHEN** `visible = true`, then a click on the close button
+- **THEN** first the mask and content are in the DOM, then `visible = false` and removal after the animation
 
-#### Scenario: Клик внутри
-- **WHEN** клик по кадру внутри маски
-- **THEN** галерея остаётся открытой
+#### Scenario: Click inside
+- **WHEN** a click on the frame inside the mask
+- **THEN** the gallery stays open

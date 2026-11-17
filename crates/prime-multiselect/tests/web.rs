@@ -1,5 +1,5 @@
-//! Поведение MultiSelect в реальном браузере (wasm-bindgen-test): открытие и закрытие, выбор без закрытия, предел, «выбрать все»,
-//! чипы, очистка, клавиши (диапазоны, `Ctrl+A`, `Alt+↑`, `Tab`), поиск набором и полем, блокировки, внешние сигналы, положение.
+//! MultiSelect behaviour in a real browser (wasm-bindgen-test): open and close, selection without closing, limit, "select all",
+//! chips, clear, keys (ranges, `Ctrl+A`, `Alt+↑`, `Tab`), type-ahead and field search, blocking, external signals, position.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -25,7 +25,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn has(host: &HtmlElement, sel: &str) -> bool {
@@ -36,9 +36,9 @@ fn count(host: &HtmlElement, sel: &str) -> u32 {
     host.query_selector_all(sel).unwrap().length()
 }
 
-/// Клик по SVG-элементу (у него нет `click()`).
+/// Click on an SVG element (it has no `click()`).
 fn click_svg(host: &HtmlElement, sel: &str) {
-    let el = host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}"));
+    let el = host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}"));
     let init = web_sys::MouseEventInit::new();
     init.set_bubbles(true);
     init.set_cancelable(true);
@@ -50,7 +50,7 @@ fn input(host: &HtmlElement) -> HtmlElement {
 }
 
 fn opt(host: &HtmlElement, i: u32) -> HtmlElement {
-    host.query_selector_all(".p-multiselect-option").unwrap().item(i).unwrap_or_else(|| panic!("нет варианта {i}")).dyn_into().unwrap()
+    host.query_selector_all(".p-multiselect-option").unwrap().item(i).unwrap_or_else(|| panic!("no option {i}")).dyn_into().unwrap()
 }
 
 fn label_text(host: &HtmlElement) -> String {
@@ -132,7 +132,7 @@ async fn click_opens_and_closes_the_panel_and_reports_show_and_hide() {
     assert!(has(&host, ".p-multiselect-overlay"));
     assert_eq!(input(&host).get_attribute("aria-expanded").as_deref(), Some("true"));
     assert!(root.class_name().contains("p-multiselect-open"));
-    assert!(active_is(&input(&host)), "после клика фокус на скрытом поле");
+    assert!(active_is(&input(&host)), "after the click focus is on the hidden field");
     root.click();
     leptos::task::tick().await;
     assert!(!has(&host, ".p-multiselect-overlay"));
@@ -155,7 +155,7 @@ async fn choosing_options_keeps_the_panel_open_and_updates_label_and_model() {
     opt(&host, 0).click();
     opt(&host, 2).click();
     leptos::task::tick().await;
-    assert!(has(&host, ".p-multiselect-overlay"), "панель осталась открытой");
+    assert!(has(&host, ".p-multiselect-overlay"), "the panel stayed open");
     assert_eq!(values.get_untracked(), ["NY", "LDN"]);
     assert_eq!(label_text(&host), "New York, London");
     assert_eq!(opt(&host, 0).get_attribute("aria-selected").as_deref(), Some("true"));
@@ -167,7 +167,7 @@ async fn choosing_options_keeps_the_panel_open_and_updates_label_and_model() {
     assert_eq!(*log.lock().unwrap(), ["NY", "NY,LDN", "LDN"]);
     opt(&host, 1).click();
     leptos::task::tick().await;
-    assert_eq!(values.get_untracked(), ["LDN"], "недоступный вариант");
+    assert_eq!(values.get_untracked(), ["LDN"], "disabled option");
     host.remove();
 }
 
@@ -180,18 +180,18 @@ async fn outside_click_escape_and_resize_close_the_panel() {
     leptos::task::tick().await;
     doc().body().unwrap().click();
     leptos::task::tick().await;
-    assert!(!has(&host, ".p-multiselect-overlay"), "клик снаружи не закрыл панель");
+    assert!(!has(&host, ".p-multiselect-overlay"), "a click outside did not close the panel");
     q(&host, ".p-multiselect").click();
     leptos::task::tick().await;
     press(&host, "Escape");
     leptos::task::tick().await;
     assert!(!has(&host, ".p-multiselect-overlay"));
-    assert!(active_is(&input(&host)), "после Escape фокус на поле");
+    assert!(active_is(&input(&host)), "after Escape focus is on the field");
     q(&host, ".p-multiselect").click();
     leptos::task::tick().await;
     web_sys::window().unwrap().dispatch_event(&Event::new("resize").unwrap()).unwrap();
     leptos::task::tick().await;
-    assert!(!has(&host, ".p-multiselect-overlay"), "resize не закрыл панель");
+    assert!(!has(&host, ".p-multiselect-overlay"), "resize did not close the panel");
     host.remove();
 }
 
@@ -218,8 +218,8 @@ async fn panel_gets_a_z_index_and_position_while_open() {
     leptos::task::tick().await;
     let overlay = q(&host, ".p-multiselect-overlay");
     let z: i32 = overlay.style().get_property_value("z-index").unwrap().parse().unwrap();
-    assert!(z >= 1000, "z-index группы оверлеев: {z}");
-    assert!(!overlay.style().get_property_value("top").unwrap().is_empty(), "положение не рассчитано");
+    assert!(z >= 1000, "overlay group z-index: {z}");
+    assert!(!overlay.style().get_property_value("top").unwrap().is_empty(), "position not computed");
     host.remove();
 }
 
@@ -259,14 +259,14 @@ async fn selection_limit_blocks_unselected_options_and_removing_frees_them() {
     leptos::task::tick().await;
     q(&host, ".p-multiselect").click();
     leptos::task::tick().await;
-    assert!(!has(&host, ".p-multiselect-header .p-checkbox"), "флажка «выбрать все» нет");
+    assert!(!has(&host, ".p-multiselect-header .p-checkbox"), "no \"select all\" checkbox");
     opt(&host, 0).click();
     opt(&host, 1).click();
     opt(&host, 2).click();
     leptos::task::tick().await;
-    assert_eq!(values.get_untracked(), ["NY", "RM"], "предел достигнут");
+    assert_eq!(values.get_untracked(), ["NY", "RM"], "limit reached");
     assert!(opt(&host, 2).class_name().contains("p-disabled"));
-    assert!(!opt(&host, 0).class_name().contains("p-disabled"), "выбранный остаётся доступным");
+    assert!(!opt(&host, 0).class_name().contains("p-disabled"), "the selected one stays enabled");
     opt(&host, 0).click();
     leptos::task::tick().await;
     assert_eq!(values.get_untracked(), ["RM"]);
@@ -291,12 +291,12 @@ async fn toggle_all_selects_visible_enabled_options_with_the_filter() {
     let toggle = q(&host, ".p-multiselect-header .p-checkbox-input");
     toggle.click();
     leptos::task::tick().await;
-    assert_eq!(values.get_untracked(), ["NY", "LDN", "IST", "PRS"], "недоступный Rome пропущен");
+    assert_eq!(values.get_untracked(), ["NY", "LDN", "IST", "PRS"], "disabled Rome skipped");
     assert!(q(&host, ".p-multiselect-header .p-checkbox").class_name().contains("p-checkbox-checked"));
     toggle.click();
     leptos::task::tick().await;
     assert!(values.get_untracked().is_empty());
-    // с поиском «n»: выбираются только NY, LDN, IST; прежний выбор вне поиска (PRS) сохраняется
+    // with search "n": only NY, LDN, IST are selected; the previous selection outside the search (PRS) is kept
     values.set(vec!["PRS".to_owned()]);
     let filter: HtmlInputElement = q(&host, ".p-multiselect-filter").dyn_into().unwrap();
     filter.set_value("n");
@@ -306,7 +306,7 @@ async fn toggle_all_selects_visible_enabled_options_with_the_filter() {
     leptos::task::tick().await;
     assert_eq!(values.get_untracked(), ["PRS", "NY", "LDN", "IST"]);
     assert_eq!(log.lock().unwrap().len(), 3);
-    assert_eq!(*all.lock().unwrap(), [false], "как в PrimeNG: только пустой итог или итог из всех вариантов (Rome недоступен)");
+    assert_eq!(*all.lock().unwrap(), [false], "as in PrimeNG: only an empty result or a result of all options (Rome is disabled)");
     host.remove();
 }
 
@@ -331,12 +331,12 @@ async fn chips_render_and_remove_without_opening_the_panel() {
     leptos::task::tick().await;
     assert_eq!(values.get_untracked(), ["LDN"]);
     assert_eq!(count(&host, ".p-multiselect-chip-item"), 1);
-    assert!(!has(&host, ".p-multiselect-overlay"), "удаление чипа не открывает панель");
+    assert!(!has(&host, ".p-multiselect-overlay"), "removing a chip does not open the panel");
     assert_eq!(*removed.lock().unwrap(), ["NY->LDN"]);
     assert_eq!(*log.lock().unwrap(), ["LDN"]);
     values.set(vec!["NY".to_owned(), "LDN".to_owned(), "IST".to_owned()]);
     leptos::task::tick().await;
-    assert_eq!(label_text(&host), "3 items selected", "как в PrimeNG: len == max");
+    assert_eq!(label_text(&host), "3 items selected", "as in PrimeNG: len == max");
     host.remove();
 }
 
@@ -356,7 +356,7 @@ async fn clear_icon_resets_the_values_without_opening() {
     leptos::task::tick().await;
     assert!(values.get_untracked().is_empty());
     assert!(!has(&host, ".p-multiselect-overlay"));
-    assert!(!has(&host, ".p-multiselect-clear-icon"), "значок пропал вместе с выбором");
+    assert!(!has(&host, ".p-multiselect-clear-icon"), "the icon disappeared along with the selection");
     assert_eq!((*cleared.lock().unwrap(), log.lock().unwrap().len()), (1, 1));
     host.remove();
 }
@@ -370,19 +370,19 @@ async fn arrow_keys_open_the_panel_navigate_and_enter_toggles() {
     input(&host).focus().unwrap();
     press(&host, "ArrowDown");
     leptos::task::tick().await;
-    assert!(has(&host, ".p-multiselect-overlay"), "стрелка вниз открывает панель");
+    assert!(has(&host, ".p-multiselect-overlay"), "arrow down opens the panel");
     assert_eq!(focused_label(&host).as_deref(), Some("New York"));
     assert_eq!(input(&host).get_attribute("aria-activedescendant").as_deref(), Some("kb_0"));
     press(&host, "ArrowDown");
     leptos::task::tick().await;
-    assert_eq!(focused_label(&host).as_deref(), Some("London"), "Rome пропущен");
+    assert_eq!(focused_label(&host).as_deref(), Some("London"), "Rome skipped");
     press(&host, "Enter");
     leptos::task::tick().await;
     assert_eq!(values.get_untracked(), ["LDN"]);
-    assert!(has(&host, ".p-multiselect-overlay"), "Enter не закрывает панель");
+    assert!(has(&host, ".p-multiselect-overlay"), "Enter does not close the panel");
     press(&host, "Space");
     leptos::task::tick().await;
-    assert!(values.get_untracked().is_empty(), "Space снимает выбор");
+    assert!(values.get_untracked().is_empty(), "Space deselects");
     press(&host, "End");
     leptos::task::tick().await;
     assert_eq!(focused_label(&host).as_deref(), Some("Paris"));
@@ -417,15 +417,15 @@ async fn shift_arrows_ctrl_a_and_alt_up_work_on_selection() {
     key_with(&input(&host), "ArrowDown", "ArrowDown", true, false, false);
     key_with(&input(&host), "ArrowDown", "ArrowDown", true, false, false);
     leptos::task::tick().await;
-    assert_eq!(values.get_untracked(), ["NY", "RM", "LDN"], "диапазон от опорного");
+    assert_eq!(values.get_untracked(), ["NY", "RM", "LDN"], "range from the anchor");
     key_with(&input(&host), "KeyA", "a", false, true, false);
     leptos::task::tick().await;
     assert_eq!(values.get_untracked(), ["NY", "RM", "LDN", "IST", "PRS"]);
     values.set(Vec::new());
     key_with(&input(&host), "ArrowUp", "ArrowUp", false, false, true);
     leptos::task::tick().await;
-    assert!(!has(&host, ".p-multiselect-overlay"), "Alt+↑ закрывает панель");
-    assert_eq!(values.get_untracked(), ["LDN"], "и выбирает вариант под фокусом");
+    assert!(!has(&host, ".p-multiselect-overlay"), "Alt+↑ closes the panel");
+    assert_eq!(values.get_untracked(), ["LDN"], "and selects the focused option");
     host.remove();
 }
 
@@ -489,7 +489,7 @@ async fn filter_narrows_the_list_reports_and_resets_on_hide() {
     leptos::task::tick().await;
     q(&host, ".p-multiselect").click();
     leptos::task::tick().await;
-    assert_eq!(count(&host, ".p-multiselect-option"), 5, "строка поиска сброшена при закрытии");
+    assert_eq!(count(&host, ".p-multiselect-option"), 5, "search string reset on close");
     host.remove();
 }
 
@@ -505,7 +505,7 @@ async fn filter_arrows_move_focus_and_enter_toggles() {
     q(&host, ".p-multiselect").click();
     leptos::task::tick().await;
     let filter = q(&host, ".p-multiselect-filter");
-    assert!(active_is(&filter) || has(&host, ".p-multiselect-filter"), "поле поиска есть");
+    assert!(active_is(&filter) || has(&host, ".p-multiselect-filter"), "the search field exists");
     filter.focus().unwrap();
     key_with(&filter, "ArrowDown", "ArrowDown", false, false, false);
     leptos::task::tick().await;
@@ -532,7 +532,7 @@ async fn external_open_and_values_signals_drive_the_component() {
     leptos::task::tick().await;
     assert!(has(&host, ".p-multiselect-overlay"));
     let overlay = q(&host, ".p-multiselect-overlay");
-    assert!(!overlay.style().get_property_value("z-index").unwrap().is_empty(), "эффект открытия выполнен");
+    assert!(!overlay.style().get_property_value("z-index").unwrap().is_empty(), "open effect executed");
     values.set(vec!["NY".to_owned(), "IST".to_owned()]);
     leptos::task::tick().await;
     assert_eq!(label_text(&host), "New York, Istanbul");

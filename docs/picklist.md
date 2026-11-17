@@ -1,45 +1,45 @@
 # PickList
 
-Порт `p-picklist` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-picklist` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
 | `prime-picklist::PickList`, `PickListPt` | `packages/primeng/src/picklist/picklist.ts`, `picklist/style/pickliststyle.ts` |
-| Перенос между списками | `prime-picklist::transfer` — чистая логика вместо `moveRight/AllRight/Left/AllLeft`, табличные тесты |
-| Перестановка | `prime_orderlist::reorder` (общая с OrderList) |
-| Списки, выбор, поиск | `prime-listbox::Listbox` (в PrimeNG — `p-listbox`); для заголовков в `Listbox` добавлено свойство `header_content` |
-| CSS | `@primeuix/styles/picklist` (`picklist` в `theme.components`) |
-| Демонстрации | `apps/showcase/doc/picklist/*-doc.ts` (`basic`, `filter`) |
+| Transfer between lists | `prime-picklist::transfer` — pure logic instead of `moveRight/AllRight/Left/AllLeft`, table tests |
+| Reordering | `prime_orderlist::reorder` (shared with OrderList) |
+| Lists, selection, search | `prime-listbox::Listbox` (in PrimeNG — `p-listbox`); a `header_content` property was added to `Listbox` for the headers |
+| CSS | `@primeuix/styles/picklist` (`picklist` in `theme.components`) |
+| Demos | `apps/showcase/doc/picklist/*-doc.ts` (`basic`, `filter`) |
 
-Спека: `openspec/specs/picklist`. Источник и цель — `RwSignal<Vec<ListboxOption>>`, выбор — `RwSignal<Vec<String>>`.
+Spec: `openspec/specs/picklist`. Source and target are `RwSignal<Vec<ListboxOption>>`, selection is `RwSignal<Vec<String>>`.
 
 ```rust
 let (source, target) = (RwSignal::new(items), RwSignal::new(Vec::new()));
 view! { <PickList source=source target=target source_header="Available" target_header="Selected" filter=true /> }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка: пять блоков (`p-picklist-source-controls`, `-source-list-container`, `-transfer-controls`, `-target-list-container`, `-target-controls`), по четыре кнопки в каждой панели, `aria-label` из перевода.
-- Перенос выбранных в порядке выбора без дубликатов, «всё» — только видимые при поиске, очистка выбора источника, `keep_selection`, двойной клик по элементу.
-- Правила недоступности кнопок и `disabled`.
+- Markup: five blocks (`p-picklist-source-controls`, `-source-list-container`, `-transfer-controls`, `-target-list-container`, `-target-controls`), four buttons in each panel, `aria-label` from the translation.
+- Transfer of the selected items in selection order without duplicates, "all" — only those visible under the search, clearing the source selection, `keep_selection`, double click on an item.
+- Button disabled rules and `disabled`.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Выбранные при перестановке сохраняют взаимный порядок (см. OrderList) | Исправление ошибки PrimeNG. |
-| Нет перетаскивания (`dragdrop`) между списками | Построено на Angular CDK; общего решения для drag-and-drop в проекте пока нет. |
-| Нет вертикального вида (`responsive`/`breakpoint`), значки не меняются на «вниз/вверх» | Вне объёма порта. |
-| Нет шаблонов (`item`, `filter`, `empty`…), `filterBy`/`filterMatchMode`/`filterLocale`, `buttonProps`, `trackBy`, `dataKey` | У `Listbox` поиск идёт по метке; остальное вне объёма порта. |
-| `show_source_controls`/`show_target_controls` читаются при создании, а не реактивно | Представление кнопок нельзя собрать повторно из сигнала. |
-| При `keep_selection` и «всё в цель/источник» выбираются перенесённые элементы, а не прежний выбор источника | В PrimeNG `moveAllRight` дописывает `selectedItemsSource` (ошибка), `moveLeft` — вложенный массив. |
+| Selected items keep their relative order when reordering (see OrderList) | A fix for a PrimeNG bug. |
+| No drag and drop (`dragdrop`) between lists | Built on Angular CDK; there is no shared drag-and-drop solution in the project yet. |
+| No vertical view (`responsive`/`breakpoint`), icons do not change to "down/up" | Outside the port scope. |
+| No templates (`item`, `filter`, `empty`…), `filterBy`/`filterMatchMode`/`filterLocale`, `buttonProps`, `trackBy`, `dataKey` | `Listbox` searches by label; the rest is outside the port scope. |
+| `show_source_controls`/`show_target_controls` are read at creation, not reactively | The button view cannot be rebuilt from a signal. |
+| With `keep_selection` and "all to target/source" the transferred items are selected, not the previous source selection | In PrimeNG `moveAllRight` appends to `selectedItemsSource` (a bug), `moveLeft` — a nested array. |
 
-## Что не проверялось
+## What was not verified
 
-- Перенос клавиатурой внутри списков (стандартное поведение `Listbox`).
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
+- Keyboard transfer inside the lists (standard `Listbox` behaviour).
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behaviour was not.
 
-## Производительность
+## Performance
 
-См. `benches/` (`picklist-1`, `picklist-1000`, `case-picklist`) и `benches/*budgets.toml`.
+See `benches/` (`picklist-1`, `picklist-1000`, `case-picklist`) and `benches/*budgets.toml`.

@@ -1,8 +1,8 @@
-//! Tabs — порт `p-tabs`, `p-tablist`, `p-tab`, `p-tabpanels`, `p-tabpanel` из PrimeNG 21.1.10.
+//! Tabs: port of PrimeNG 21.1.10 `p-tabs`, `p-tablist`, `p-tab`, `p-tabpanels`, `p-tabpanel`.
 //!
-//! Составной компонент из пяти частей, как в PrimeNG: [`Tabs`] хранит активное значение, [`TabList`] содержит вкладки,
-//! полосу-индикатор и кнопки прокрутки, [`Tab`] — вкладка, [`TabPanels`] и [`TabPanel`] — панели. Вкладка и панель связаны
-//! одинаковым `value`; части общаются через контекст Leptos.
+//! A compound component of five parts, as in PrimeNG: [`Tabs`] holds the active value, [`TabList`] contains the tabs,
+//! the indicator bar and scroll buttons, [`Tab`] is a tab, [`TabPanels`] and [`TabPanel`] are the panels. A tab and a panel are linked
+//! by the same `value`; the parts communicate through the Leptos context.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -38,24 +38,24 @@ pub use state::{
     root_classes, should_render, tab_classes, tab_id, tabindex_for, wrap_target,
 };
 
-/// Pass-through частей [`TabList`].
+/// Pass-through of [`TabList`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct TabListPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Прокручиваемая область.
+    /// Scrollable area.
     pub content: Pt,
-    /// Список вкладок.
+    /// Tab list.
     pub tab_list: Pt,
-    /// Полоса-индикатор.
+    /// Indicator bar.
     pub active_bar: Pt,
-    /// Кнопка «назад».
+    /// "Back" button.
     pub prev_button: Pt,
-    /// Кнопка «вперёд».
+    /// "Forward" button.
     pub next_button: Pt,
 }
 
-/// Общее состояние группы, доступное частям.
+/// Group state shared with the parts.
 #[derive(Clone)]
 struct TabsCtx {
     id: String,
@@ -64,55 +64,55 @@ struct TabsCtx {
     select_on_focus: Prop<bool>,
     show_navigators: Prop<bool>,
     tabindex: Prop<i32>,
-    /// Ширина и смещение полосы-индикатора.
+    /// Width and offset of the indicator bar.
     ink: RwSignal<Option<(f64, f64)>>,
 }
 
-const NO_TABS: &str = "TabList, Tab, TabPanels и TabPanel должны находиться внутри Tabs";
+const NO_TABS: &str = "TabList, Tab, TabPanels and TabPanel must be inside Tabs";
 
 fn bool_attr(v: bool) -> &'static str {
     if v { "true" } else { "false" }
 }
 
-/// Группа вкладок: хранит активное значение.
+/// Tab group: holds the active value.
 ///
-/// `value` — двусторонний сигнал; без него состояние собственное, начальное — `default_value`.
+/// `value` is a two-way signal; without it the state is internal, starting from `default_value`.
 #[component]
 pub fn Tabs(
-    /// Основа для `id` вкладок и панелей; по умолчанию уникальная.
+    /// Basis for the `id` of tabs and panels; unique by default.
     #[prop(optional, into)]
     id: Option<String>,
-    /// Двусторонний сигнал активного значения.
+    /// Two-way active value signal.
     #[prop(optional)]
     value: Option<RwSignal<Option<String>>>,
-    /// Начальное значение, когда `value` не передан.
+    /// Initial value when `value` is not passed.
     #[prop(optional, into)]
     default_value: Option<String>,
-    /// Горизонтальная прокрутка списка вкладок.
+    /// Horizontal scrolling of the tab list.
     #[prop(optional, into)]
     scrollable: Prop<bool>,
-    /// Выводить содержимое панелей только после первой активации.
+    /// Render panel content only after the first activation.
     #[prop(optional, into)]
     lazy: Prop<bool>,
-    /// Активировать вкладку при получении фокуса.
+    /// Activate a tab when it receives focus.
     #[prop(optional, into)]
     select_on_focus: Prop<bool>,
-    /// Кнопки прокрутки (по умолчанию да).
+    /// Scroll buttons (on by default).
     #[prop(default = Prop::Static(true), into)]
     show_navigators: Prop<bool>,
-    /// `tabindex` активной вкладки и кнопок прокрутки (по умолчанию 0).
+    /// `tabindex` of the active tab and scroll buttons (default 0).
     #[prop(default = Prop::Static(0), into)]
     tabindex: Prop<i32>,
-    /// Встроенный стиль корня.
+    /// Root inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra root class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through корня.
+    /// Root pass-through.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Список вкладок и панели.
+    /// Tab list and panels.
     children: Children,
 ) -> impl IntoView {
     let pt = Arc::new(pt.unwrap_or_default());
@@ -149,19 +149,19 @@ pub fn Tabs(
     }
 }
 
-/// Список вкладок с полосой-индикатором и кнопками прокрутки.
+/// Tab list with an indicator bar and scroll buttons.
 #[component]
 pub fn TabList(
-    /// Значок кнопки «назад» вместо `ChevronLeftIcon`.
+    /// "Back" button icon instead of `ChevronLeftIcon`.
     #[prop(optional, into)]
     prev_icon: Option<ViewFn>,
-    /// Значок кнопки «вперёд» вместо `ChevronRightIcon`.
+    /// "Forward" button icon instead of `ChevronRightIcon`.
     #[prop(optional, into)]
     next_icon: Option<ViewFn>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<TabListPt>,
-    /// Вкладки.
+    /// Tabs.
     children: Children,
 ) -> impl IntoView {
     let ctx = use_context::<TabsCtx>().expect(NO_TABS);
@@ -260,7 +260,7 @@ pub fn TabList(
     }
 }
 
-/// Ссылки на элементы списка и видимость кнопок прокрутки.
+/// References to list elements and scroll button visibility.
 #[derive(Clone, Copy)]
 struct Nav {
     root_ref: NodeRef<html::Div>,
@@ -279,7 +279,7 @@ impl Nav {
             .is_some_and(|direction| direction == "rtl")
     }
 
-    /// Обновляет видимость кнопок по текущей прокрутке.
+    /// Updates button visibility from the current scroll position.
     fn update_buttons(&self) {
         let (Some(content), Some(root)) = (self.content_ref.get_untracked(), self.root_ref.get_untracked()) else { return };
         let scroll_left = f64::from(content.scroll_left());
@@ -318,19 +318,19 @@ impl Nav {
     }
 }
 
-/// Вкладка.
+/// Tab.
 #[component]
 pub fn Tab(
-    /// Значение, связывающее вкладку с панелью.
+    /// Value linking the tab to a panel.
     #[prop(into)]
     value: String,
-    /// Недоступна.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Pass-through вкладки.
+    /// Tab pass-through.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Заголовок.
+    /// Title.
     children: Children,
 ) -> impl IntoView {
     let ctx = use_context::<TabsCtx>().expect(NO_TABS);
@@ -415,7 +415,7 @@ pub fn Tab(
     }
 }
 
-/// Переносит фокус (или прокручивает) к вкладке, выбранной действием клавиши.
+/// Moves focus (or scrolls) to the tab selected by the key action.
 fn navigate(element: NodeRef<html::Div>, action: KeyAction) {
     use leptos::wasm_bindgen::JsCast;
     let Some(current) = element.get_untracked() else { return };
@@ -445,13 +445,13 @@ fn scroll_in_view(element: &web_sys::HtmlElement) {
     element.scroll_into_view_with_scroll_into_view_options(&options);
 }
 
-/// Контейнер панелей.
+/// Panel container.
 #[component]
 pub fn TabPanels(
-    /// Pass-through контейнера.
+    /// Container pass-through.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Панели.
+    /// Panels.
     children: Children,
 ) -> impl IntoView {
     let pt = pt.unwrap_or_default();
@@ -462,19 +462,19 @@ pub fn TabPanels(
     }
 }
 
-/// Панель вкладки.
+/// Tab panel.
 #[component]
 pub fn TabPanel(
-    /// Значение, связывающее панель с вкладкой.
+    /// Value linking the panel to a tab.
     #[prop(into)]
     value: String,
-    /// Выводить содержимое только после первой активации (в дополнение к `lazy` у `Tabs`).
+    /// Render content only after the first activation (in addition to `lazy` on `Tabs`).
     #[prop(optional, into)]
     lazy: Prop<bool>,
-    /// Pass-through панели.
+    /// Panel pass-through.
     #[prop(optional)]
     pt: Option<Pt>,
-    /// Содержимое.
+    /// Content.
     children: ChildrenFn,
 ) -> impl IntoView {
     let ctx = use_context::<TabsCtx>().expect(NO_TABS);
@@ -515,7 +515,7 @@ pub fn TabPanel(
 
 #[cfg(target_arch = "wasm32")]
 mod client {
-    //! Клиентская часть TabList: полоса-индикатор, кнопки прокрутки и наблюдатель за размерами.
+    //! Client part of TabList: indicator bar, scroll buttons and size observer.
 
     use super::{Nav, TabsCtx};
     use leptos::prelude::*;
@@ -524,7 +524,7 @@ mod client {
     use leptos::web_sys;
     use std::time::Duration;
 
-    /// Измеряет активную вкладку и обновляет полосу.
+    /// Measures the active tab and updates the bar.
     fn update_ink(ctx: &TabsCtx, nav: Nav) {
         let Some(list) = nav.list_ref.get_untracked() else { return };
         let active = list.query_selector(r#"[role="tab"][data-p-active="true"]"#).ok().flatten();

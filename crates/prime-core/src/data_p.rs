@@ -1,9 +1,9 @@
-//! Атрибут `data-p`: признаки состояния через пробел (аналог `cn({...})` в PrimeNG).
+//! The `data-p` attribute: space-separated state flags (analogous to `cn({...})` in PrimeNG).
 
 use crate::class_names::ClassNames;
 use std::borrow::Cow;
 
-/// Собирает значение `data-p`: без пустых и повторяющихся признаков.
+/// Builds the `data-p` value: without empty or duplicate flags.
 ///
 /// ```
 /// use prime_core::DataP;
@@ -16,35 +16,35 @@ use std::borrow::Cow;
 pub struct DataP(ClassNames);
 
 impl DataP {
-    /// Пустой набор признаков.
+    /// Empty set of flags.
     pub fn new() -> Self {
         Self(ClassNames::with_capacity(48))
     }
 
-    /// Добавляет признак(и) через пробел.
+    /// Adds flag(s) separated by spaces.
     pub fn add(&mut self, flags: &str) -> &mut Self {
         self.0.add(flags);
         self
     }
 
-    /// Добавляет признак, если условие истинно.
+    /// Adds a flag if the condition is true.
     pub fn add_if(&mut self, condition: bool, flag: &str) -> &mut Self {
         self.0.add_if(condition, flag);
         self
     }
 
-    /// Добавляет признак, если он задан.
+    /// Adds a flag if it is set.
     pub fn add_opt(&mut self, flag: Option<&str>) -> &mut Self {
         self.0.add_opt(flag);
         self
     }
 
-    /// Готовое значение атрибута.
+    /// The finished attribute value.
     pub fn finish(self) -> String {
         self.0.finish()
     }
 
-    /// Готовое значение без аллокации для повторяющихся комбинаций признаков (интернирование).
+    /// The finished value without allocation for repeated flag combinations (interning).
     pub fn finish_cow(self) -> Cow<'static, str> {
         self.0.finish_cow()
     }

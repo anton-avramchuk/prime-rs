@@ -1,15 +1,15 @@
 # Menubar
 
-Порт `p-menubar` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-menubar` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
-| `prime-menubar::Menubar`, `MenubarPt`, `MenubarItemContext` | `packages/primeng/src/menubar/menubar.ts` (`Menubar` и `MenubarSub`), `menubar/style/menubarstyle.ts` |
-| Модель переходов (путь, фокус, поиск) | общая с `TieredMenu`: `prime_tieredmenu::{Tree, State, Node, …}`; клавиши горизонтального корня — `Tree::bar_down/bar_up/bar_left/bar_right` |
-| CSS | `@primeuix/styles/menubar` и пресет Aura — `cargo xtask gen-theme` (блока `/* For PrimeNG */` нет) |
-| Демонстрации | `apps/showcase/doc/menubar/*-doc.ts` (`basic`, `command`, `template`) |
+| `prime-menubar::Menubar`, `MenubarPt`, `MenubarItemContext` | `packages/primeng/src/menubar/menubar.ts` (`Menubar` and `MenubarSub`), `menubar/style/menubarstyle.ts` |
+| Transition model (path, focus, search) | shared with `TieredMenu`: `prime_tieredmenu::{Tree, State, Node, …}`; horizontal root keys — `Tree::bar_down/bar_up/bar_left/bar_right` |
+| CSS | `@primeuix/styles/menubar` and the Aura preset — `cargo xtask gen-theme` (no `/* For PrimeNG */` block) |
+| Demos | `apps/showcase/doc/menubar/*-doc.ts` (`basic`, `command`, `template`) |
 
-Спека: `openspec/specs/menubar`. Модель пунктов — `prime_menu::MenuItem` (поле `items` задаёт подменю), команды — `MenuCommand`.
+Spec: `openspec/specs/menubar`. The item model is `prime_menu::MenuItem` (the `items` field defines a submenu), commands are `MenuCommand`.
 
 ```rust
 view! {
@@ -21,32 +21,32 @@ view! {
 }
 ```
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Разметка и классы: `div.p-menubar.p-component` (`p-menubar-mobile`, `p-menubar-mobile-active`) > `div.p-menubar-start`, `a.p-menubar-button[role=button]`, `ul.p-menubar-root-list[role=menubar]` > `li.p-menubar-item` (`-item-active`, `p-focus`, `p-disabled`, `data-p-*`, `aria-*`) > `div.p-menubar-item-content` > `a.p-menubar-item-link`; вложенные `ul.p-menubar-submenu` (инлайн `display: flex`, пока группа раскрыта); разделители; `div.p-menubar-end`. Стрелка группы: вниз у корня, вправо у вложенных.
-- Клавиатура: ← → по корню, ↓ на группе корня раскрывает её и входит, ↑ на группе корня — на последний пункт, ↑ на первом пункте подменю — на родителя; внутри подменю ↓ ↑ → ←; `Home` `End` `Enter` `Space` `Escape` `Tab`; поиск по началу подписи с буфером на 500 мс. Фокус снаружи сразу ставит первый пункт.
-- Наведение раскрывает группы только после клика/нажатия мыши по меню (`dirty`) и при `auto_display`; на узком окне путь не меняется. Повторный клик по раскрытому пункту сворачивает его (после наведения, которое уже раскрыло пункт, клик, как в PrimeNG, его закроет).
-- Клик вне и `resize` (не на сенсорных) закрывают подменю; клик вне при открытой мобильной панели закрывает её.
-- Мобильный режим по `matchMedia` с `breakpoint` (по умолчанию `960px`): кнопка, `aria-expanded`, слой группы `Menu` у открытого списка, возврат фокуса на кнопку; смена размера окна через порог закрывает панель.
+- Markup and classes: `div.p-menubar.p-component` (`p-menubar-mobile`, `p-menubar-mobile-active`) > `div.p-menubar-start`, `a.p-menubar-button[role=button]`, `ul.p-menubar-root-list[role=menubar]` > `li.p-menubar-item` (`-item-active`, `p-focus`, `p-disabled`, `data-p-*`, `aria-*`) > `div.p-menubar-item-content` > `a.p-menubar-item-link`; nested `ul.p-menubar-submenu` (inline `display: flex` while the group is expanded); separators; `div.p-menubar-end`. Group arrow: down at the root, right for nested ones.
+- Keyboard: ← → along the root, ↓ on a root group expands it and enters, ↑ on a root group — to the last item, ↑ on the first item of a submenu — to the parent; inside a submenu ↓ ↑ → ←; `Home` `End` `Enter` `Space` `Escape` `Tab`; search by label prefix with a 500 ms buffer. Focus from outside immediately sets the first item.
+- Hover expands groups only after a mouse click/press on the menu (`dirty`) and with `auto_display`; in a narrow window the path does not change. A repeated click on an expanded item collapses it (after a hover that already expanded the item, a click, as in PrimeNG, will close it).
+- A click outside and `resize` (not on touch devices) close the submenu; a click outside with the mobile panel open closes it.
+- Mobile mode by `matchMedia` with `breakpoint` (default `960px`): button, `aria-expanded`, `Menu` group layer on the open list, focus returns to the button; resizing the window across the threshold closes the panel.
 
-## Отличия
+## Differences
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| `auto_hide`: возврат курсора в меню до истечения `auto_hide_delay` отменяет закрытие | В PrimeNG закрытие идёт через `debounce` без отмены и срабатывает, даже если курсор вернулся. |
-| Подменю не отзеркаливаются у правого края окна | В PrimeNG у меню-бара этого тоже нет: положение задаёт CSS темы (`left: 100%`). |
-| ↑ ↓ → ← всегда отменяют действие по умолчанию | В PrimeNG ↓ на листе корня и → на листе подменю оставляют его; прокрутка страницы от стрелок в меню не нужна. |
-| `aria-label` кнопки берётся из `locale` (`aria.navigation`) | Так же в PrimeNG (`config.translation.aria.navigation`). |
-| Нет `routerLink`, `Tooltip`/`Badge` пунктов, `escape = false`, `Ripple`, `Bind`, `pTemplate`; значки — `ViewFn` | Нет маршрутизатора, `innerHTML` и PrimeIcons. |
-| Нет `appendTo` и анимаций | Подменю позиционирует CSS темы. |
-| Демонстрация `router` не перенесена; значки без аналога в `prime-icons` заменены близкими | Нет маршрутизатора и PrimeIcons. |
+| `auto_hide`: the cursor returning to the menu before `auto_hide_delay` elapses cancels the close | In PrimeNG the close goes through `debounce` without cancellation and fires even if the cursor returned. |
+| Submenus are not mirrored at the right edge of the window | PrimeNG's menubar does not do this either: the position is set by the theme CSS (`left: 100%`). |
+| ↑ ↓ → ← always cancel the default action | In PrimeNG ↓ on a root leaf and → on a submenu leaf leave it; page scrolling from arrows in the menu is not needed. |
+| The button's `aria-label` comes from `locale` (`aria.navigation`) | Same in PrimeNG (`config.translation.aria.navigation`). |
+| No `routerLink`, item `Tooltip`/`Badge`, `escape = false`, `Ripple`, `Bind`, `pTemplate`; icons are `ViewFn` | No router, `innerHTML` and PrimeIcons. |
+| No `appendTo` and animations | The submenu is positioned by the theme CSS. |
+| The `router` demo is not ported; icons without an analog in `prime-icons` are replaced by similar ones | No router and PrimeIcons. |
 
-## Что не проверялось
+## What was not verified
 
-- Раскладка справа налево и сенсорный ввод (на касании наведение раскрывает группы сразу, как в PrimeNG, но реальных касаний в тестах нет).
-- Чтение с экрана: `aria-*` сверены с PrimeNG, поведение скринридеров — нет.
-- Подменю у самого правого края окна (вылезают за окно, как и в PrimeNG).
+- Right-to-left layout and touch input (on touch, hover expands groups immediately, as in PrimeNG, but there are no real touches in tests).
+- Screen reading: `aria-*` were checked against PrimeNG, screen reader behavior was not.
+- A submenu at the very right edge of the window (it overflows the window, as in PrimeNG).
 
-## Производительность
+## Performance
 
-См. `benches/` (`menubar-1`, `menubar-1000`, `case-menubar`) и `benches/*budgets.toml`.
+See `benches/` (`menubar-1`, `menubar-1000`, `case-menubar`) and `benches/*budgets.toml`.

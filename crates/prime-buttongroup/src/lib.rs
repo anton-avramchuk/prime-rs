@@ -1,8 +1,8 @@
-//! ButtonGroup — порт `p-buttongroup` из PrimeNG 21.1.10.
+//! ButtonGroup — port of `p-buttongroup` from PrimeNG 21.1.10.
 //!
-//! Вместо хоста `<p-buttongroup>` отрисовывается `<span class="p-buttongroup p-component" role="group">`
-//! с проецируемыми кнопками. Слитный вид (общая граница, скругления только у крайних кнопок) задаёт CSS темы.
-//! Блок `/* For PrimeNG */` из `buttongroupstyle.ts` нацелен на хосты `p-button` и здесь не нужен.
+//! Instead of the host `<p-buttongroup>` a `<span class="p-buttongroup p-component" role="group">` is rendered
+//! with projected buttons. The joined look (a shared border, rounded corners only on the outer buttons) is set by the theme CSS.
+//! The `/* For PrimeNG */` block from `buttongroupstyle.ts` targets the `p-button` hosts and is not needed here.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -18,28 +18,28 @@ use prime_core::wrapper::{root_class, root_style};
 use prime_core::{OptProp, Pt, all_static};
 use std::sync::Arc;
 
-/// Pass-through ButtonGroup.
+/// Pass-through for ButtonGroup.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ButtonGroupPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
-/// Группа слитных кнопок.
+/// Group of joined buttons.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn ButtonGroup(
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<ButtonGroupPt>,
-    /// Содержимое.
+    /// Content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -61,7 +61,7 @@ pub fn ButtonGroup(
     }
 }
 
-/// Разметка: одна для статической и реактивной ветвей (меняются только выражения атрибутов корня).
+/// Markup: one for the static and reactive branches (only the root attribute expressions differ).
 macro_rules! buttongroup_markup {
     ($class:expr, $style:expr, $attrs:expr, $content:expr) => {
         view! { <span class={$class} style={$style} role="group" {..$attrs}>{$content}</span> }

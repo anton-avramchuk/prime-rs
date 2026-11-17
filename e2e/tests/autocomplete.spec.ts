@@ -4,7 +4,7 @@ test.describe('AutoComplete', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1000 });
         await page.goto('/autocomplete');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_ac')).toBeAttached();
     });
@@ -13,7 +13,7 @@ test.describe('AutoComplete', () => {
     const input = (page, id: string) => root(page, id).locator('input.p-autocomplete-input');
     const options = (page, id: string) => root(page, id).locator('li.p-autocomplete-option');
 
-    test('стили темы: поле как InputText, подсказка', async ({ page }) => {
+    test('theme styles: field like InputText, placeholder', async ({ page }) => {
         const i = input(page, 'basic_ac');
         expect(await i.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
         await expect(i).toHaveAttribute('placeholder', 'Search');
@@ -21,7 +21,7 @@ test.describe('AutoComplete', () => {
         await expect(root(page, 'basic_ac').locator('.p-autocomplete-overlay')).toHaveCount(0);
     });
 
-    test('ввод запрашивает варианты и открывает панель под полем; клик выбирает', async ({ page }) => {
+    test('typing requests options and opens the panel under the field; click selects', async ({ page }) => {
         await input(page, 'basic_ac').fill('alg');
         const panel = root(page, 'basic_ac').locator('.p-autocomplete-overlay');
         await expect(panel).toBeVisible();
@@ -35,7 +35,7 @@ test.describe('AutoComplete', () => {
         await expect(panel).toHaveCount(0);
     });
 
-    test('клавиатура: ↓ ходит по вариантам, Enter выбирает, Escape закрывает', async ({ page }) => {
+    test('keyboard: down arrow walks the options, Enter selects, Escape closes', async ({ page }) => {
         const i = input(page, 'basic_ac');
         await i.fill('an');
         await expect(options(page, 'basic_ac').first()).toBeVisible();
@@ -52,7 +52,7 @@ test.describe('AutoComplete', () => {
         await expect(root(page, 'basic_ac').locator('.p-autocomplete-overlay')).toHaveCount(0);
     });
 
-    test('кнопка-стрелка запрашивает все варианты', async ({ page }) => {
+    test('arrow button requests all options', async ({ page }) => {
         const r = root(page, 'dropdown_ac');
         await r.scrollIntoViewIfNeeded();
         await r.locator('.p-autocomplete-dropdown').click();
@@ -62,7 +62,7 @@ test.describe('AutoComplete', () => {
         await expect(r.locator('.p-autocomplete-overlay')).toHaveCount(0);
     });
 
-    test('множественный режим: чипы, повтор не добавляется, удаление', async ({ page }) => {
+    test('multiple mode: chips, duplicates are not added, removal', async ({ page }) => {
         const r = root(page, 'multiple_ac');
         await r.scrollIntoViewIfNeeded();
         const i = input(page, 'multiple_ac');
@@ -80,7 +80,7 @@ test.describe('AutoComplete', () => {
         await expect(r.locator('.p-autocomplete-chip-item')).toHaveCount(1);
     });
 
-    test('группы: заголовки не выбираются', async ({ page }) => {
+    test('groups: headers are not selectable', async ({ page }) => {
         const r = root(page, 'group_ac');
         await r.scrollIntoViewIfNeeded();
         await r.locator('.p-autocomplete-dropdown').click();
@@ -90,7 +90,7 @@ test.describe('AutoComplete', () => {
         await expect(input(page, 'group_ac')).toHaveValue('');
     });
 
-    test('очистка, отключённое и неверное состояния', async ({ page }) => {
+    test('clear, disabled and invalid states', async ({ page }) => {
         const clear = root(page, 'clear_ac');
         await clear.scrollIntoViewIfNeeded();
         await expect(input(page, 'clear_ac')).toHaveValue('Canada');
@@ -100,7 +100,7 @@ test.describe('AutoComplete', () => {
         await expect(root(page, 'invalid_ac')).toHaveClass(/p-invalid/);
     });
 
-    test('шаблон варианта', async ({ page }) => {
+    test('template option', async ({ page }) => {
         const r = root(page, 'template_ac');
         await r.scrollIntoViewIfNeeded();
         await input(page, 'template_ac').fill('jap');

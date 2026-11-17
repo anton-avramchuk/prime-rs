@@ -1,19 +1,19 @@
-//! Менеджер z-index оверлеев (порт `ZIndexUtils` из PrimeNG).
+//! Overlay z-index manager (port of `ZIndexUtils` from PrimeNG).
 //!
-//! Состояние хранится в потоке: в браузере поток один; на сервере (SSR) оверлеи не открываются.
+//! State is kept per thread: in the browser there is one thread; on the server (SSR) overlays are not opened.
 
 use std::cell::RefCell;
 
-/// Группа оверлеев.
+/// Overlay group.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ZGroup {
-    /// Модальные окна (Dialog, Drawer).
+    /// Modal windows (Dialog, Drawer).
     Modal,
-    /// Оверлеи (Select, Popover).
+    /// Overlays (Select, Popover).
     Overlay,
-    /// Меню.
+    /// Menus.
     Menu,
-    /// Подсказки.
+    /// Tooltips.
     Tooltip,
 }
 
@@ -21,7 +21,7 @@ thread_local! {
     static STACK: RefCell<Vec<(ZGroup, i32)>> = const { RefCell::new(Vec::new()) };
 }
 
-/// Выдаёт z-index для группы: следующий выше предыдущего, при смене группы добавляется её база.
+/// Issues a z-index for a group: the next one is higher than the previous, on a group change its base is added.
 pub fn generate(group: ZGroup, base: i32) -> i32 {
     STACK.with_borrow_mut(|stack| {
         let (last_group, last_value) = stack.last().copied().unwrap_or((group, base));
@@ -31,12 +31,12 @@ pub fn generate(group: ZGroup, base: i32) -> i32 {
     })
 }
 
-/// Освобождает ранее выданный z-index.
+/// Releases a previously issued z-index.
 pub fn revert(z_index: i32) {
     STACK.with_borrow_mut(|stack| stack.retain(|&(_, v)| v != z_index));
 }
 
-/// Текущий верхний z-index или 0.
+/// Current top z-index or 0.
 pub fn current() -> i32 {
     STACK.with_borrow(|stack| stack.last().map_or(0, |&(_, v)| v))
 }

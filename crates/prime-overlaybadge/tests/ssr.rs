@@ -1,4 +1,4 @@
-//! Структура DOM, свойства бейджа и `pt` OverlayBadge (SSR).
+//! DOM structure, badge properties and `pt` of OverlayBadge (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;

@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 const dialog = (page: Page) => page.locator('.p-dialog');
 const box = async (page: Page) => (await dialog(page).boundingBox())!;
 
-// окно появляется 300 мс: размеры и положение сравниваем после анимации входа
+// the window appears over 300 ms: compare sizes and position after the enter animation
 const settled = (page: Page) =>
     expect
         .poll(async () => {
@@ -21,13 +21,13 @@ test.describe('Dialog', () => {
         await expect(page.locator('[data-demo=basic] button')).toBeVisible();
     });
 
-    test('окна нет, пока его не открыли', async ({ page }) => {
+    test('no window until opened', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(9);
         await expect(dialog(page)).toHaveCount(0);
         await expect(page.locator('.p-dialog-mask')).toHaveCount(0);
     });
 
-    test('basic: диалог по центру в body, маска, закрытие кнопкой', async ({ page }) => {
+    test('basic: dialog centered in body, mask, close via button', async ({ page }) => {
         await page.locator('[data-demo=basic] button').click();
         const d = dialog(page);
         await expect(d).toBeVisible();
@@ -44,7 +44,7 @@ test.describe('Dialog', () => {
         await expect(page.locator('.p-dialog-mask')).toHaveCount(0);
     });
 
-    test('Cancel закрывает, Escape закрывает, клик по маске нет', async ({ page }) => {
+    test('Cancel closes, Escape closes, a mask click does not', async ({ page }) => {
         const demo = page.locator('[data-demo=basic]');
         await demo.getByRole('button', { name: 'Show' }).click();
         await page.locator('.p-dialog-mask').click({ position: { x: 5, y: 5 } });
@@ -56,7 +56,7 @@ test.describe('Dialog', () => {
         await expect(dialog(page)).toHaveCount(0);
     });
 
-    test('модальный блокирует прокрутку, немодальный пропускает клики', async ({ page }) => {
+    test('modal locks scrolling, non-modal lets clicks through', async ({ page }) => {
         await page.locator('[data-demo=modal]').getByRole('button', { name: 'Show' }).click();
         await expect(page.locator('body')).toHaveClass(/p-overflow-hidden/);
         await page.keyboard.press('Escape');
@@ -66,12 +66,12 @@ test.describe('Dialog', () => {
         await page.locator('[data-demo=withoutmodal]').getByRole('button', { name: 'Show' }).click();
         await expect(dialog(page)).toBeVisible();
         await expect(page.locator('body')).not.toHaveClass(/p-overflow-hidden/);
-        // клик по странице за окном достигает её (маска не перехватывает) и окно остаётся
+        // a click on the page behind the window reaches it (the mask does not intercept) and the window stays
         await page.locator('h2').click();
         await expect(dialog(page)).toBeVisible();
     });
 
-    test('position: правый нижний угол', async ({ page }) => {
+    test('position: bottom right corner', async ({ page }) => {
         await page.locator('[data-demo=position]').getByRole('button', { name: 'BottomRight', exact: true }).click();
         await expect(page.locator('.p-dialog-mask')).toHaveClass(/p-dialog-bottomright/);
         await settled(page);
@@ -80,7 +80,7 @@ test.describe('Dialog', () => {
         expect(b.y + b.height + 16).toBeGreaterThan(v.height - 2);
     });
 
-    test('перетаскивание за заголовок настоящей мышью', async ({ page }) => {
+    test('dragging by the header with a real mouse', async ({ page }) => {
         await page.locator('[data-demo=basic] button').click();
         await settled(page);
         const before = await box(page);
@@ -93,12 +93,12 @@ test.describe('Dialog', () => {
         const after = await box(page);
         expect(Math.abs(after.x - before.x - 120)).toBeLessThan(3);
         expect(Math.abs(after.y - before.y - 60)).toBeLessThan(3);
-        // после отпускания окно стоит
+        // after release the window stays put
         await page.mouse.move(10, 10);
         expect(Math.abs((await box(page)).x - after.x)).toBeLessThan(1);
     });
 
-    test('окно нельзя утащить за границу экрана', async ({ page }) => {
+    test('window cannot be dragged off screen', async ({ page }) => {
         await page.locator('[data-demo=basic] button').click();
         await settled(page);
         const t = (await dialog(page).locator('.p-dialog-title').boundingBox())!;
@@ -109,7 +109,7 @@ test.describe('Dialog', () => {
         expect((await box(page)).x).toBeGreaterThanOrEqual(-1);
     });
 
-    test('изменение размера за ручку', async ({ page }) => {
+    test('resizing by the handle', async ({ page }) => {
         await page.locator('[data-demo=basic] button').click();
         await settled(page);
         const before = await box(page);
@@ -122,7 +122,7 @@ test.describe('Dialog', () => {
         expect(after.width).toBeGreaterThan(before.width + 30);
     });
 
-    test('maximizable: разворачивается на весь экран и возвращается', async ({ page }) => {
+    test('maximizable: expands to full screen and restores', async ({ page }) => {
         await page.locator('[data-demo=maximizable]').getByRole('button', { name: 'Show' }).click();
         await settled(page);
         const normal = await box(page);
@@ -136,7 +136,7 @@ test.describe('Dialog', () => {
         await expect.poll(async () => Math.round((await box(page)).width)).toBe(Math.round(normal.width));
     });
 
-    test('longcontent: содержимое прокручивается внутри окна', async ({ page }) => {
+    test('longcontent: content scrolls inside the window', async ({ page }) => {
         await page.locator('[data-demo=longcontent]').getByRole('button', { name: 'Show' }).click();
         const content = dialog(page).locator('.p-dialog-content');
         const [scroll, client] = await content.evaluate((el) => [el.scrollHeight, el.clientHeight]);
@@ -145,14 +145,14 @@ test.describe('Dialog', () => {
         expect((await box(page)).height).toBeLessThanOrEqual(v.height * 0.9 + 2);
     });
 
-    test('responsive: на узком экране ширина 90vw', async ({ page }) => {
+    test('responsive: 90vw width on a narrow screen', async ({ page }) => {
         await page.setViewportSize({ width: 500, height: 800 });
         await page.locator('[data-demo=responsive]').getByRole('button', { name: 'Show' }).click();
         await settled(page);
         expect(Math.abs((await box(page)).width - 450)).toBeLessThan(3);
     });
 
-    test('template: своё содержимое заголовка и подвал', async ({ page }) => {
+    test('template: custom header content and footer', async ({ page }) => {
         await page.locator('[data-demo=template]').getByRole('button', { name: 'Show' }).click();
         const d = dialog(page);
         await expect(d.locator('.p-dialog-header')).toContainText('Amy Elsner');
@@ -161,7 +161,7 @@ test.describe('Dialog', () => {
         await expect(d).toHaveCount(0);
     });
 
-    test('headless: только своё содержимое', async ({ page }) => {
+    test('headless: only custom content', async ({ page }) => {
         await page.locator('[data-demo=headless]').getByRole('button', { name: 'Login' }).click();
         const d = dialog(page);
         await expect(d).toContainText('Your Logo');
@@ -170,11 +170,11 @@ test.describe('Dialog', () => {
         await expect(d).toHaveCount(0);
     });
 
-    test('Tab и Shift+Tab не уводят фокус за пределы окна', async ({ page }) => {
+    test('Tab and Shift+Tab do not move focus outside the window', async ({ page }) => {
         await page.locator('[data-demo=basic] button').click();
         await expect(dialog(page)).toBeVisible();
         const inside = () => page.evaluate(() => !!document.activeElement?.closest('.p-dialog'));
-        await expect.poll(inside).toBe(true); // фокус перешёл на первое поле
+        await expect.poll(inside).toBe(true); // focus moved to the first field
         for (let i = 0; i < 6; i++) {
             await page.keyboard.press('Tab');
             expect(await inside()).toBe(true);

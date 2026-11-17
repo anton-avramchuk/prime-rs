@@ -2,25 +2,25 @@
 
 ## Why
 
-Textarea — многострочное поле ввода, второй компонент волны 2. Он переиспользует модель значения InputText (двусторонний `RwSignal<String>`, события, вариант из `PrimeConfig`) и добавляет клиентское поведение — автоматическую подгонку высоты (`autoResize`) с событием `onResize`.
+Textarea is a multi-line input field, the second component of wave 2. It reuses the value model of InputText (a two-way `RwSignal<String>`, events, the variant from `PrimeConfig`) and adds client behaviour — automatic height adjustment (`autoResize`) with the `onResize` event.
 
 ## What Changes
 
-- Новый крейт `prime-textarea` с компонентом `Textarea` (`<textarea>`): двусторонний `value`, `rows`, `cols`, `id`, `name`, `placeholder`, `disabled`, `readonly`, `required`, `maxlength`, `aria_label`, `aria_describedby`, `auto_resize`, `size`, `variant`, `invalid`, `fluid`, `style`, `style_class`, события `on_input`, `on_change`, `on_focus`, `on_blur`, `on_resize`, `pt`.
-- Классы как в PrimeNG 21.1.10: `p-textarea p-component` и `p-filled`, `p-textarea-resizable`, `p-variant-filled`, `p-textarea-fluid`, `p-inputfield-sm p-textarea-sm`, `p-textarea-lg p-inputfield-lg`, `p-invalid` (у директивы PrimeNG нет `data-p`).
-- `auto_resize`: при монтировании и при каждом изменении значения высота выставляется по `scrollHeight` (с учётом `max-height`), только в браузере.
-- Страница `/textarea` (`basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`), e2e, бенчмарки, бюджеты.
-- **Не входит:** интеграция с формами, `KeyFilter`, `FloatLabel`/`IftaLabel`, контекст `Fluid`.
+- A new crate `prime-textarea` with the `Textarea` component (`<textarea>`): a two-way `value`, `rows`, `cols`, `id`, `name`, `placeholder`, `disabled`, `readonly`, `required`, `maxlength`, `aria_label`, `aria_describedby`, `auto_resize`, `size`, `variant`, `invalid`, `fluid`, `style`, `style_class`, the events `on_input`, `on_change`, `on_focus`, `on_blur`, `on_resize`, `pt`.
+- Classes as in PrimeNG 21.1.10: `p-textarea p-component` and `p-filled`, `p-textarea-resizable`, `p-variant-filled`, `p-textarea-fluid`, `p-inputfield-sm p-textarea-sm`, `p-textarea-lg p-inputfield-lg`, `p-invalid` (the PrimeNG directive has no `data-p`).
+- `auto_resize`: on mounting and on each change of the value the height is set by `scrollHeight` (taking `max-height` into account), only in the browser.
+- The `/textarea` page (`basic`, `autoresize`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`), e2e, benchmarks, budgets.
+- **Not included:** form integration, `KeyFilter`, `FloatLabel`/`IftaLabel`, the `Fluid` context.
 
 ## Capabilities
 
 ### New Capabilities
-- `textarea`: компонент Textarea — значение и события, атрибуты, классы, автоподгонка высоты, `pt`, производительность.
+- `textarea`: the Textarea component — value and events, attributes, classes, height auto-resize, `pt`, performance.
 
 ### Modified Capabilities
-<!-- Нет. -->
+<!-- None. -->
 
 ## Impact
 
-- Новый крейт `crates/prime-textarea` (`publish = false`); зависимости `prime-core`, `web-sys`.
-- Изменяются `showcase`, `benches/*`, `e2e/tests`, браузерный job CI.
+- A new crate `crates/prime-textarea` (`publish = false`); dependencies `prime-core`, `web-sys`.
+- Changes to `showcase`, `benches/*`, `e2e/tests`, the CI browser job.

@@ -1,6 +1,6 @@
-//! Страница ConfirmPopup: демонстрации `basic`, `template` и `headless` из showcase PrimeNG (`apps/showcase/doc/confirmpopup`).
-//! У каждой демонстрации свои `ConfirmationService` и `MessageService` (как `providers` в PrimeNG). Значки PrimeIcons заменены
-//! значками `prime-icons`.
+//! ConfirmPopup page: demos of `basic`, `template` and `headless` from the PrimeNG showcase (`apps/showcase/doc/confirmpopup`).
+//! Each demo has its own `ConfirmationService` and `MessageService` (like `providers` in PrimeNG). PrimeIcons icons are replaced
+//! with `prime-icons` icons.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -119,7 +119,7 @@ fn HeadlessDemo() -> impl IntoView {
     }
 }
 
-/// Страница `/confirmpopup`.
+/// The `/confirmpopup` page.
 #[component]
 pub fn ConfirmPopupPage() -> impl IntoView {
     view! {

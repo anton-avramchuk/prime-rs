@@ -3,42 +3,42 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 
-// Сравнение страниц компонентов с оригиналом PrimeNG. Это отчёт о соответствии, а не блокировщик PR:
-// расхождение не валит тест, а попадает в results/visual.json. Эталон снимается заново с запущенного PrimeNG showcase.
+// Comparison of component pages with the PrimeNG original. This is a conformance report, not a PR blocker:
+// a difference does not fail the test, it goes to results/visual.json. The reference is captured anew from the running PrimeNG showcase.
 //
 // pages.json: [{ "name": "button-basic", "ours": "/button", "upstream": "/button", "oursSelector": "[data-demo=\"basic\"]", "upstreamSelector": "basic-doc .card" }]
 const UPSTREAM = process.env.UPSTREAM_URL;
 const pages: { name: string; ours: string; upstream: string; oursSelector?: string; upstreamSelector?: string }[] = JSON.parse(readFileSync(new URL('./pages.json', import.meta.url), 'utf8'));
 const report: Record<string, number> = {};
 const errors: Record<string, string> = {};
-// Воркер Playwright перезапускается после упавшего теста и теряет накопленное в памяти, поэтому отчёт сливается с уже записанным файлом.
+// The Playwright worker restarts after a failed test and loses what it accumulated in memory, so the report is merged with the file already written.
 const save = () => {
     mkdirSync('results', { recursive: true });
     let prev: { metrics?: Record<string, number>; errors?: Record<string, string> } = {};
     try {
         prev = JSON.parse(readFileSync('results/visual.json', 'utf8'));
     } catch {
-        /* первый тест */
+        /* the first test */
     }
     writeFileSync('results/visual.json', JSON.stringify({ metrics: { ...prev.metrics, ...report }, errors: { ...prev.errors, ...errors } }, null, 2));
 };
 
-test.skip(!UPSTREAM, 'UPSTREAM_URL не задан: нечего сравнивать');
+test.skip(!UPSTREAM, 'UPSTREAM_URL is not set: nothing to compare');
 
 for (const p of pages) {
-    test(`визуальное сравнение: ${p.name}`, async ({ page, baseURL }) => {
+    test(`visual comparison: ${p.name}`, async ({ page, baseURL }) => {
         test.setTimeout(120_000);
-        // Диагностика страницы: ошибки консоли и неуспешные ответы (попадают в отчёт при сбое).
+        // Page diagnostics: console errors and failed responses (they go to the report on failure).
         const diag: string[] = [];
         page.on('console', (m) => m.type() === 'error' && diag.length < 8 && diag.push(`console: ${m.text().slice(0, 120)}`));
         page.on('pageerror', (e) => diag.length < 8 && diag.push(`pageerror: ${e.message.slice(0, 120)}`));
         page.on('response', (r) => r.status() >= 400 && diag.length < 8 && diag.push(`HTTP ${r.status()} ${r.url().slice(0, 100)}`));
         let side = 'ours';
         const shot = async (url: string, selector?: string) => {
-            // networkidle не используем: у showcase PrimeNG есть фоновые запросы, страница не «затихает»
+            // networkidle is not used: the PrimeNG showcase has background requests, so the page never goes quiet
             const response = await page.goto(url, { waitUntil: 'load', timeout: 20_000 });
             if (!response?.ok()) throw new Error(`${url}: HTTP ${response?.status()}`);
-            // Ждём, пока в карточке появится сам компонент: у showcase PrimeNG блоки ниже экрана рендерятся лениво.
+            // Wait until the component itself appears in the card: in the PrimeNG showcase, blocks below the fold render lazily.
             const target = selector ? page.locator(`${selector}:has(.p-component)`).first() : page;
             if (selector) {
                 for (let i = 0; i < 40 && (await target.count()) === 0; i++) {
@@ -71,7 +71,7 @@ for (const p of pages) {
             writeFileSync(`results/${p.name}-upstream.png`, PNG.sync.write(upstream));
             writeFileSync(`results/${p.name}-diff.png`, PNG.sync.write(diff));
         } catch (e) {
-            // отчёт, а не блокировщик: причину сохраняем в visual.json, тест не падает
+            // a report, not a blocker: the reason is saved to visual.json, the test does not fail
             errors[p.name] = `${side}: ${String((e as Error).message).split('\n')[0]} | ${diag.join(' ; ')}`.slice(0, 700);
             mkdirSync('results', { recursive: true });
             await page.screenshot({ path: `results/${p.name}-${side}-fail.png` }).catch(() => undefined);

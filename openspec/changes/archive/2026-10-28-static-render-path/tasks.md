@@ -1,30 +1,30 @@
 # Tasks
 
-## 1. Помощник и спайк (go/no-go)
+## 1. Helper and spike (go/no-go)
 
-- [x] 1.1 Добавить в `prime-core` проверку «все свойства статические» (функция или макрос над несколькими `Prop`) и проверить юнит-тестами сценарии спеки `core-runtime` (все статические, есть сигнал) и отсутствие аллокаций (dhat)
-- [x] 1.2 Спайк на `Badge`: статическая ветвь с готовыми атрибутами и `Either`; собрать showcase, замерить в браузере (`memory.spec.ts`, 1000 бейджей) прирост памяти wasm до и после и записать в `docs/benchmarks.md`; **go**, если прирост на экземпляр ≥ 40 % ниже, иначе остановиться и записать вывод, не продолжая группы 2–5
+- [x] 1.1 Add to `prime-core` a check "all properties are static" (a function or a macro over several `Prop`s) and check the scenarios of the `core-runtime` spec (all static, a signal is present) with unit tests, and the absence of allocations (dhat)
+- [x] 1.2 A spike on `Badge`: a static branch with ready attributes and `Either`; build the showcase, measure in the browser (`memory.spec.ts`, 1000 badges) the growth of wasm memory before and after and record it in `docs/benchmarks.md`; **go** if the growth per instance is ≥ 40 % lower, otherwise stop and record the conclusion, without continuing groups 2–5
 
 ## 2. Badge
 
-- [x] 2.1 Вынести разметку Badge в макрос, подставить в статическую и реактивную ветви, выбирать ветвь по `all_static`; проверить, что существующие SSR-тесты `prime-badge` проходят без изменений ожидаемых значений
-- [x] 2.2 Добавить параметризованные тесты паритета (каждый сценарий статически и через `RwSignal`, HTML совпадает); проверить `cargo test -p prime-badge --all-features`
+- [x] 2.1 Move the Badge markup into a macro, substitute it into the static and reactive branches, select the branch by `all_static`; check that the existing SSR tests of `prime-badge` pass without changes to the expected values
+- [x] 2.2 Add parameterized parity tests (each scenario statically and through an `RwSignal`, the HTML matches); check `cargo test -p prime-badge --all-features`
 
 ## 3. Button
 
-- [x] 3.1 Вынести разметку Button в макрос, добавить статическую ветвь (готовые строки, блоки иконки/метки/бейджа как `Option<View>`), выбирать ветвь по `all_static`; проверить, что все SSR-тесты `prime-button` проходят без изменений ожидаемых значений
-- [x] 3.2 Добавить параметризованные тесты паритета SSR и выполнить браузерные тесты событий (клик, `disabled`/`loading`, фокус, автофокус, ripple, перезапись `class`) в обеих ветвях; проверить `cargo test -p prime-button --target wasm32-unknown-unknown --test web`
+- [x] 3.1 Move the Button markup into a macro, add a static branch (ready strings, the icon/label/badge blocks as `Option<View>`), select the branch by `all_static`; check that all SSR tests of `prime-button` pass without changes to the expected values
+- [x] 3.2 Add parameterized SSR parity tests and run the browser event tests (click, `disabled`/`loading`, focus, autofocus, ripple, rewriting of `class`) in both branches; check `cargo test -p prime-button --target wasm32-unknown-unknown --test web`
 
-## 4. Измерения и бюджеты
+## 4. Measurements and budgets
 
-- [x] 4.1 Добавить в showcase и `memory.spec.ts` сценарии «статические кнопки» и «реактивные кнопки» (с сигналом `loading`); проверить `npx playwright test memory` локально и записать значения до и после в `docs/benchmarks.md`
-- [x] 4.2 Измерить `cargo xtask wasm-size` и `cargo bench -p render-bench --bench alloc`; пересмотреть `benches/budgets.toml` и `benches/alloc-budgets.toml`; проверить `cargo xtask wasm-size` и `alloc-budget`
+- [x] 4.1 Add the scenarios "static buttons" and "reactive buttons" (with the `loading` signal) to the showcase and `memory.spec.ts`; check `npx playwright test memory` locally and record the values before and after in `docs/benchmarks.md`
+- [x] 4.2 Measure `cargo xtask wasm-size` and `cargo bench -p render-bench --bench alloc`; revise `benches/budgets.toml` and `benches/alloc-budgets.toml`; check `cargo xtask wasm-size` and `alloc-budget`
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 Обновить `docs/button.md` (правило «одна разметка в макросе, две ветви» для следующих компонентов) и `docs/benchmarks.md`; выполнить `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (кроме приложений), `cargo deny check`, `openspec validate static-render-path`; убедиться, что CI на `dev` зелёный и еженедельный job публикует новые метрики памяти
+- [x] 5.1 Update `docs/button.md` (the rule "one markup in a macro, two branches" for the next components) and `docs/benchmarks.md`; run `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-features` (except the applications), `cargo deny check`, `openspec validate static-render-path`; make sure CI on `dev` is green and the weekly job publishes the new memory metrics
 
 ## Workflow follow-up
 
-- Архивировать change после прохождения CI.
-- Следующие компоненты волны 1 используют `Prop` и пару «статическая/реактивная ветвь» как шаблон.
+- Archive the change after CI passes.
+- The next wave-1 components use `Prop` and the "static/reactive branch" pair as the template.

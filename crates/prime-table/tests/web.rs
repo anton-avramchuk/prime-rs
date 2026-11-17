@@ -1,5 +1,5 @@
-//! Поведение Table в реальном браузере (wasm-bindgen-test): сортировка кликом и клавишей, многоуровневая сортировка,
-//! выбор строк кликом, флажки и радиокнопки, флажок в заголовке, раскрытие, пагинатор. Сценарии идут одним последовательным тестом.
+//! Table behavior in a real browser (wasm-bindgen-test): sorting by click and key, multi-level sorting,
+//! row selection by click, checkboxes and radio buttons, the header checkbox, expansion, paginator. The scenarios run as one sequential test.
 #![cfg(target_arch = "wasm32")]
 #![recursion_limit = "512"]
 
@@ -120,7 +120,7 @@ async fn single_and_multiple_sort() {
         }
     });
     settle().await;
-    assert_eq!(names(&host), "Watch Band Shirt Purse Ring", "исходный порядок");
+    assert_eq!(names(&host), "Watch Band Shirt Purse Ring", "initial order");
     header(&host, 1).click();
     settle().await;
     assert_eq!(names(&host), "Band Purse Ring Shirt Watch");
@@ -128,15 +128,15 @@ async fn single_and_multiple_sort() {
     assert!(header(&host, 1).class_name().contains("p-datatable-column-sorted"));
     header(&host, 1).click();
     settle().await;
-    assert_eq!(names(&host), "Watch Shirt Ring Purse Band", "повторный клик — по убыванию");
+    assert_eq!(names(&host), "Watch Shirt Ring Purse Band", "repeated click: descending");
     assert_eq!(header(&host, 1).get_attribute("aria-sort").as_deref(), Some("descending"));
     key_down(&header(&host, 2), "Enter");
     settle().await;
-    assert_eq!(names(&host), "Shirt Ring Watch Band Purse", "Enter сортирует по количеству; равные сохраняют порядок");
-    assert_eq!(header(&host, 1).get_attribute("aria-sort").as_deref(), Some("none"), "прежний столбец сброшен");
+    assert_eq!(names(&host), "Shirt Ring Watch Band Purse", "Enter sorts by quantity; equal ones keep their order");
+    assert_eq!(header(&host, 1).get_attribute("aria-sort").as_deref(), Some("none"), "previous column is reset");
     assert_eq!(log.lock().unwrap().as_slice(), ["name:1", "name:-1", "quantity:1"]);
 
-    // многоуровневая сортировка с клавишей Ctrl
+    // multi-level sorting with the Ctrl key
     mode.set(SortMode::Multiple);
     header(&host, 2).click();
     settle().await;
@@ -144,7 +144,7 @@ async fn single_and_multiple_sort() {
     settle().await;
     let meta_log = log.lock().unwrap().clone();
     assert!(meta_log.last().unwrap().contains("quantity") && meta_log.last().unwrap().contains("name"), "{meta_log:?}");
-    assert!(host.query_selector(".p-sortable-column-badge").unwrap().is_some(), "счётчики порядка");
+    assert!(host.query_selector(".p-sortable-column-badge").unwrap().is_some(), "order counters");
     host.remove();
 }
 
@@ -179,19 +179,19 @@ async fn selection_by_click_and_checkbox() {
     assert_eq!(selection.get_untracked(), ["c2", "c4"]);
     all(&host, "tbody > tr")[1].click();
     settle().await;
-    assert_eq!(selection.get_untracked(), ["c4"], "повторный клик снимает");
+    assert_eq!(selection.get_untracked(), ["c4"], "repeated click deselects");
 
-    // флажок строки отмечается тоже
+    // the row checkbox is checked too
     let boxes = all(&host, "tbody .p-checkbox-input");
     assert!(
         boxes[3].has_attribute("checked") || boxes[3].get_attribute("aria-checked").as_deref() == Some("true"),
-        "флажок строки отражает выбор"
+        "the row checkbox reflects the selection"
     );
     boxes[0].click();
     settle().await;
-    assert_eq!(selection.get_untracked(), ["c4", "c1"], "клик по флажку добавляет, строка не переключается дважды");
+    assert_eq!(selection.get_untracked(), ["c4", "c1"], "a checkbox click adds, the row does not toggle twice");
 
-    // флажок в заголовке: выбрать все и снять все
+    // header checkbox: select all and clear all
     let header_box = all(&host, "thead .p-checkbox-input")[0].clone();
     header_box.click();
     settle().await;
@@ -219,7 +219,7 @@ async fn radio_and_meta_key() {
     assert_eq!(selection.get_untracked(), ["c3"]);
     all(&host, "tbody .p-radiobutton-input")[4].click();
     settle().await;
-    assert_eq!(selection.get_untracked(), ["c5"], "радиокнопки выбирают одну строку");
+    assert_eq!(selection.get_untracked(), ["c5"], "radio buttons select one row");
     host.remove();
 
     let host = host_again();
@@ -240,13 +240,13 @@ async fn radio_and_meta_key() {
     click_with(&all(&host, "tbody > tr")[0], false);
     click_with(&all(&host, "tbody > tr")[2], false);
     settle().await;
-    assert_eq!(selection.get_untracked(), ["c3"], "без Ctrl выбор заменяется");
+    assert_eq!(selection.get_untracked(), ["c3"], "without Ctrl the selection is replaced");
     click_with(&all(&host, "tbody > tr")[0], true);
     settle().await;
-    assert_eq!(selection.get_untracked(), ["c3", "c1"], "с Ctrl выбор дополняется");
+    assert_eq!(selection.get_untracked(), ["c3", "c1"], "with Ctrl the selection is extended");
     click_with(&all(&host, "tbody > tr")[2], true);
     settle().await;
-    assert_eq!(selection.get_untracked(), ["c1"], "с Ctrl выбранная снимается");
+    assert_eq!(selection.get_untracked(), ["c1"], "with Ctrl a selected row is deselected");
     host.remove();
 }
 
@@ -290,7 +290,7 @@ async fn expansion_and_paging() {
     assert_eq!(log.lock().unwrap().as_slice(), ["expand:c2", "expand:c4", "collapse:c2"]);
     host.remove();
 
-    // пагинатор и возврат на первую страницу при сортировке
+    // paginator and return to the first page on sort
     let host = host_again();
     let first = RwSignal::new(0usize);
     let _h = leptos::mount::mount_to(host.clone(), move || {
@@ -304,7 +304,7 @@ async fn expansion_and_paging() {
     assert_eq!(names(&host), "Shirt Purse");
     header(&host, 1).click();
     settle().await;
-    assert_eq!(first.get_untracked(), 0, "сортировка возвращает на первую страницу");
+    assert_eq!(first.get_untracked(), 0, "sorting returns to the first page");
     assert_eq!(names(&host), "Band Purse");
     host.remove();
 }
@@ -372,31 +372,30 @@ async fn column_and_global_filters() {
         }
     });
     settle().await;
-    assert_eq!(first_column(&host), "Shirt Purse", "третья пара строк при first = 2");
+    assert_eq!(first_column(&host), "Shirt Purse", "third pair of rows at first = 2");
     let inputs = all(&host, "thead .p-datatable-filter input");
     assert_eq!(inputs.len(), 2);
     type_into(&inputs[0], "r");
     settle().await;
-    assert_eq!(first.get_untracked(), 0, "фильтр возвращает на первую страницу");
-    assert_eq!(first_column(&host), "Ring", "начинаются на r: Ring");
+    assert_eq!(first.get_untracked(), 0, "the filter returns to the first page");
+    assert_eq!(first_column(&host), "Ring", "starting with r: Ring");
     assert_eq!(filters.get_untracked().len(), 1);
     assert_eq!(*log.lock().unwrap(), 1);
-    // кнопка очистки появляется и снимает фильтр
-    let clear =
-        host.query_selector(".p-datatable-filter-clear-button").unwrap().expect("кнопка очистки").dyn_into::<HtmlElement>().unwrap();
+    // the clear button appears and clears the filter
+    let clear = host.query_selector(".p-datatable-filter-clear-button").unwrap().expect("clear button").dyn_into::<HtmlElement>().unwrap();
     clear.click();
     settle().await;
     assert!(filters.get_untracked().is_empty());
     assert_eq!(first_column(&host), "Watch Band");
-    // числовой режим >=
+    // numeric mode >=
     type_into(&all(&host, "thead .p-datatable-filter input")[1], "61");
     settle().await;
     assert_eq!(first_column(&host), "Band Purse");
-    // глобальный фильтр
+    // global filter
     filters.set(Vec::new());
     global.set("i".to_owned());
     settle().await;
-    assert_eq!(first_column(&host), "Shirt Ring", "«i» содержат Shirt и Ring");
+    assert_eq!(first_column(&host), "Shirt Ring", "\"i\" is contained in Shirt and Ring");
     host.remove();
 }
 
@@ -429,24 +428,24 @@ async fn cell_and_row_editing() {
         }
     });
     settle().await;
-    // клик открывает редактор; Enter завершает
+    // a click opens the editor; Enter completes
     let cell = || all(&host, "tbody tr:nth-child(1) td:nth-child(1)")[0].clone();
     cell().click();
     settle().await;
     assert!(cell().class_name().contains("p-cell-editing"));
-    let input = || cell().query_selector("input").unwrap().expect("редактор").dyn_into::<HtmlElement>().unwrap();
+    let input = || cell().query_selector("input").unwrap().expect("editor").dyn_into::<HtmlElement>().unwrap();
     type_into(&input(), "Clock");
     key_down(&cell(), "Enter");
     settle().await;
     assert!(!cell().class_name().contains("p-cell-editing"));
-    // Escape отменяет
+    // Escape cancels
     cell().click();
     settle().await;
     type_into(&input(), "Zzz");
     key_down(&cell(), "Escape");
     settle().await;
     assert!(!cell().class_name().contains("p-cell-editing"));
-    // потеря фокуса завершает
+    // blur completes
     cell().click();
     settle().await;
     type_into(&input(), "Lamp");
@@ -456,11 +455,11 @@ async fn cell_and_row_editing() {
     assert_eq!(
         log.lock().unwrap().as_slice(),
         ["init:name", "done:Watch>Clock", "init:name", "cancel:Watch", "init:name", "done:Watch>Lamp"],
-        "данные Table не мутируются, поэтому original остаётся Watch"
+        "Table data is not mutated, so original stays Watch"
     );
     log.lock().unwrap().clear();
 
-    // правка строки
+    // row editing
     mode.set(Some(EditMode::Row));
     settle().await;
     let init = || all(&host, "tbody tr:nth-child(2) .p-datatable-row-editor-init");
@@ -506,21 +505,21 @@ async fn lazy_requests() {
         }
     });
     settle().await;
-    assert_eq!(log.lock().unwrap().len(), 1, "запрос при монтировании");
+    assert_eq!(log.lock().unwrap().len(), 1, "request on mount");
     assert_eq!(log.lock().unwrap()[0].first, 0);
-    assert_eq!(first_column(&host), "Watch Band Shirt Purse Ring", "строки показаны как есть");
+    assert_eq!(first_column(&host), "Watch Band Shirt Purse Ring", "rows are shown as is");
     all(&host, "button.p-paginator-next")[0].click();
     settle().await;
     assert_eq!(log.lock().unwrap().last().unwrap().first, 2);
     header(&host, 0).click();
     settle().await;
     let last = log.lock().unwrap().last().unwrap().clone();
-    assert_eq!((last.first, last.sort.len()), (0, 1), "сортировка возвращает на первую страницу");
+    assert_eq!((last.first, last.sort.len()), (0, 1), "sorting returns to the first page");
     type_into(&all(&host, "thead .p-datatable-filter input")[0], "w");
     settle().await;
     let last = log.lock().unwrap().last().unwrap().clone();
     assert_eq!(last.filters.len(), 1);
-    assert_eq!(first_column(&host), "Watch Band Shirt Purse Ring", "фильтрацию делает приложение");
+    assert_eq!(first_column(&host), "Watch Band Shirt Purse Ring", "the application does the filtering");
     host.remove();
 }
 

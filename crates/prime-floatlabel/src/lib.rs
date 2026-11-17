@@ -1,15 +1,15 @@
-//! FloatLabel — порт `p-floatlabel` из PrimeNG 21.1.10.
+//! FloatLabel — port of `p-floatlabel` from PrimeNG 21.1.10.
 //!
-//! Рисует `<span class="p-floatlabel p-floatlabel-over|on|in">` со вложенными полем и `<label>`; положение и подъём
-//! метки задаёт CSS темы по состоянию поля. Блок `/* For PrimeNG */` (`.ng-invalid.ng-dirty`) здесь не нужен:
-//! цвет недопустимого значения даёт базовое правило `:has(.p-invalid) label`.
+//! Renders `<span class="p-floatlabel p-floatlabel-over|on|in">` with a nested field and `<label>`; the position and lift
+//! of the label are set by the theme CSS according to the field state. The `/* For PrimeNG */` block (`.ng-invalid.ng-dirty`) is not needed here:
+//! the color of an invalid value comes from the base rule `:has(.p-invalid) label`.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_floatlabel::{FloatLabel, FloatLabelVariant};
 //!
 //! let html = view! {
-//!     <FloatLabel variant=FloatLabelVariant::On><input class="p-inputtext" id="u" /><label for="u">"Имя"</label></FloatLabel>
+//!     <FloatLabel variant=FloatLabelVariant::On><input class="p-inputtext" id="u" /><label for="u">"Name"</label></FloatLabel>
 //! }.to_html();
 //! assert!(html.contains("p-floatlabel p-floatlabel-on"));
 //! ```
@@ -21,19 +21,19 @@ use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
-/// Вариант расположения метки.
+/// Label placement variant.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum FloatLabelVariant {
-    /// Метка над полем при подъёме (по умолчанию).
+    /// Label above the field when lifted (default).
     #[default]
     Over,
-    /// Метка садится на верхнюю границу поля.
+    /// Label sits on the top border of the field.
     On,
-    /// Метка внутри поля.
+    /// Label inside the field.
     In,
 }
 
-/// Дописывает собственные классы корня: `p-floatlabel` и ровно один класс варианта.
+/// Appends the own root classes: `p-floatlabel` and exactly one variant class.
 pub fn write_classes(cn: &mut ClassNames, variant: FloatLabelVariant) {
     cn.add(match variant {
         FloatLabelVariant::Over => "p-floatlabel p-floatlabel-over",
@@ -42,31 +42,31 @@ pub fn write_classes(cn: &mut ClassNames, variant: FloatLabelVariant) {
     });
 }
 
-/// Pass-through FloatLabel.
+/// Pass-through for FloatLabel.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct FloatLabelPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
-/// Метка, поднимающаяся при фокусе или вводе.
+/// Label that rises on focus or input.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn FloatLabel(
-    /// Положение метки.
+    /// Label placement.
     #[prop(optional, into)]
     variant: Prop<FloatLabelVariant>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<FloatLabelPt>,
-    /// Содержимое.
+    /// Content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -88,7 +88,7 @@ pub fn FloatLabel(
     }
 }
 
-/// Разметка: одна для статической и реактивной ветвей (меняются только выражения атрибутов корня).
+/// Markup: one for the static and reactive branches (only the root attribute expressions differ).
 macro_rules! floatlabel_markup {
     ($class:expr, $style:expr, $attrs:expr, $content:expr) => {
         view! { <span class={$class} style={$style} {..$attrs}>{$content}</span> }

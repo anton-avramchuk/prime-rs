@@ -1,6 +1,6 @@
-//! Страница Card: демонстрации `basic` и `advanced` из showcase PrimeNG (`apps/showcase/doc/card`).
+//! Card page: demos `basic` and `advanced` from the PrimeNG showcase (`apps/showcase/doc/card`).
 //!
-//! Изображение в шапке берётся с CDN PrimeNG, как в оригинале; кнопки подвала — наш `Button`.
+//! The header image is taken from the PrimeNG CDN, as in the original; the footer buttons are our `Button`.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -9,7 +9,7 @@ use prime_card::Card;
 
 const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!";
 
-/// Страница `/card`.
+/// Page `/card`.
 #[component]
 pub fn CardPage() -> impl IntoView {
     view! {

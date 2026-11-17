@@ -1,7 +1,7 @@
-//! Страница TreeTable (этап 1): демонстрации `basic`, `controlled`, `sortsinglecolumn`, `paginatorbasic`,
-//! `selectionsingle`, `selectionmultiple`, `selectioncheckbox`, `gridlines`/`size` и `loadingmask` из showcase PrimeNG
-//! (`apps/showcase/doc/treetable`; фильтры, правка, изменение и перестановка столбцов, заморозка и ленивая загрузка —
-//! следующие этапы).
+//! TreeTable page (stage 1): demos `basic`, `controlled`, `sortsinglecolumn`, `paginatorbasic`,
+//! `selectionsingle`, `selectionmultiple`, `selectioncheckbox`, `gridlines`/`size` and `loadingmask` from the PrimeNG showcase
+//! (`apps/showcase/doc/treetable`; filters, editing, resizing and reordering of columns, freezing and lazy loading —
+//! later stages).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -173,7 +173,7 @@ fn Loading() -> impl IntoView {
     }
 }
 
-/// Страница `/treetable`.
+/// `/treetable` page.
 #[component]
 pub fn TreeTablePage() -> impl IntoView {
     view! {

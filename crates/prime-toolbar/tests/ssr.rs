@@ -1,4 +1,4 @@
-//! Структура DOM, порядок областей, роль, атрибуты, `style`, `pt` и паритет ветвей Toolbar (SSR).
+//! DOM structure, order of areas, role, attributes, `style`, `pt` and static/reactive parity of Toolbar (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 fn slot(text: &'static str) -> ViewFn {

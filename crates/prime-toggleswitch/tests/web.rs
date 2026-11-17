@@ -1,4 +1,4 @@
-//! Поведение ToggleSwitch в реальном браузере (wasm-bindgen-test): клик по корню и по `<input>`, `readonly`, `disabled`, события.
+//! ToggleSwitch behaviour in a real browser (wasm-bindgen-test): click on the root and on `<input>`, `readonly`, `disabled`, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn q<T: JsCast>(host: &HtmlElement, sel: &str) -> T {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 fn counter() -> (Arc<AtomicUsize>, Callback<ToggleSwitchChange>) {

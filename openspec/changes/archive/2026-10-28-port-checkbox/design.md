@@ -2,44 +2,44 @@
 
 ## Context
 
-Требования — в `specs/checkbox`. Исходники PrimeNG 21.1.10: `packages/primeng/src/checkbox/checkbox.ts`, `checkbox/style/checkboxstyle.ts`, демонстрации `apps/showcase/doc/checkbox`. Корень `<p-checkbox>` содержит скрытый `<input type="checkbox">` и `<div class="p-checkbox-box">` с иконкой. Модель значения и шаблон компонента — `docs/inputtext.md`, `docs/button.md`.
+The requirements are in `specs/checkbox`. PrimeNG 21.1.10 sources: `packages/primeng/src/checkbox/checkbox.ts`, `checkbox/style/checkboxstyle.ts`, demos `apps/showcase/doc/checkbox`. The `<p-checkbox>` root contains a hidden `<input type="checkbox">` and a `<div class="p-checkbox-box">` with an icon. The value model and the component template — `docs/inputtext.md`, `docs/button.md`.
 
 ## Goals / Non-Goals
 
-**Goals:** классы и `data-p` как в PrimeNG; два режима значения; статическая ветвь для случая без сигналов значения.
-**Non-Goals:** формы (валидаторы, dirty/touched), произвольные `trueValue`/`falseValue`, `checkboxIcon` как CSS-класс.
+**Goals:** classes and `data-p` as in PrimeNG; two value modes; a static branch for the case without value signals.
+**Non-Goals:** forms (validators, dirty/touched), arbitrary `trueValue`/`falseValue`, `checkboxIcon` as a CSS class.
 
 ## Decisions
 
-### D1. Корень — `<div>`
-Вместо хоста `<p-checkbox>` (как у остальных компонентов). Атрибуты `data-p*` ставятся на корень.
+### D1. Root — `<div>`
+Instead of the `<p-checkbox>` host (as for the other components). The `data-p*` attributes are put on the root.
 
-### D2. Два режима значения
+### D2. Two value modes
 - `binary=true`: `checked: Option<RwSignal<bool>>`.
-- иначе: `value: String` и `model: Option<RwSignal<Vec<String>>>`; отмечен, если `model` содержит `value`; переключение добавляет или удаляет `value`.
-Без сигнала состояние неконтролируемое: начальное значение из `default_checked`, дальше состояние живёт в DOM, классы корня не отслеживаются.
-*Альтернатива*: обобщённый тип значения (`T: PartialEq`) — отвергнута ради простоты и размера wasm.
+- otherwise: `value: String` and `model: Option<RwSignal<Vec<String>>>`; checked if `model` contains `value`; toggling adds or removes `value`.
+Without a signal the state is uncontrolled: the initial value comes from `default_checked`, after that the state lives in the DOM, and the root classes are not tracked.
+*Alternative*: a generic value type (`T: PartialEq`) — rejected for the sake of simplicity and wasm size.
 
-### D3. Вычисление состояния
-`checked = !indeterminate && (binary ? checked_signal : model.contains(value))`. `indeterminate` — двусторонний `RwSignal<bool>` (с ним статическая ветвь не выбирается); при изменении пользователем он сбрасывается в `false`, `on_change` получает `CheckboxChange { checked, original_event }`; при `readonly` изменение игнорируется (нативное состояние `<input>` возвращается к сигналу).
+### D3. Computing the state
+`checked = !indeterminate && (binary ? checked_signal : model.contains(value))`. `indeterminate` is a two-way `RwSignal<bool>` (with it the static branch is not selected); when the user changes it, it is reset to `false`, `on_change` receives `CheckboxChange { checked, original_event }`; with `readonly` the change is ignored (the native state of `<input>` returns to the signal).
 
-### D4. Иконка
-`check` при `checked`, `minus` при `indeterminate`; слот `icon_template` (`ViewFn`) заменяет иконку; иконки из `prime-icons`.
+### D4. Icon
+`check` when `checked`, `minus` when `indeterminate`; the `icon_template` slot (`ViewFn`) replaces the icon; the icons are from `prime-icons`.
 
-### D5. Ветви
-Статическая — при `all_static!` и отсутствии сигналов значения; иначе реактивная. Разметка одна, в `macro_rules!`.
+### D5. Branches
+Static — when `all_static!` holds and there are no value signals; otherwise reactive. One markup, in a `macro_rules!`.
 
-### D6. Тесты
-SSR: структура, классы, `data-p*`, атрибуты, режимы, `pt`, паритет. Браузер: клик меняет сигнал, набор значений, `indeterminate`, `readonly`, `disabled`, события.
+### D6. Tests
+SSR: structure, classes, `data-p*`, attributes, modes, `pt`, parity. Browser: a click changes the signal, a set of values, `indeterminate`, `readonly`, `disabled`, events.
 
 ## Risks / Trade-offs
 
-- [`<input>` скрыт, клик идёт по нему поверх бокса] → CSS темы `p-checkbox-input` накрывает бокс; проверяется e2e.
+- [`<input>` is hidden and the click goes to it over the box] → the theme CSS `p-checkbox-input` covers the box; checked by e2e.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

@@ -1,23 +1,23 @@
 ## ADDED Requirements
 
-### Requirement: Свойство «значение или сигнал»
-`prime-core` SHALL предоставлять тип свойства компонента, принимающий либо готовое значение, либо сигнал (`Signal`, `ReadSignal`, `RwSignal`, `Memo`). Передача готового значения SHALL NOT создавать реактивных примитивов (записей в арене Leptos); значение по умолчанию SHALL быть статическим. Чтение свойства SHALL быть реактивным, если передан сигнал, и подписывать читающее замыкание на него.
+### Requirement: "Value or signal" property
+`prime-core` SHALL provide a component property type that accepts either a ready value or a signal (`Signal`, `ReadSignal`, `RwSignal`, `Memo`). Passing a ready value SHALL NOT create reactive primitives (entries in the Leptos arena); the default value SHALL be static. Reading the property SHALL be reactive if a signal is passed, and SHALL subscribe the reading closure to it.
 
-#### Scenario: Статическое значение
-- **WHEN** компоненту передано значение `"5"` или константа перечисления
-- **THEN** при создании свойства не создаётся ни сигнал, ни `Memo`, а чтение возвращает это значение
+#### Scenario: Static value
+- **WHEN** the value `"5"` or an enum constant is passed to a component
+- **THEN** no signal or `Memo` is created when the property is created, and reading returns this value
 
-#### Scenario: Сигнал
-- **WHEN** компоненту передан `RwSignal`, значение которого затем меняется
-- **THEN** чтение свойства в реактивном замыкании возвращает новое значение и замыкание перезапускается
+#### Scenario: Signal
+- **WHEN** an `RwSignal` whose value then changes is passed to a component
+- **THEN** reading the property in a reactive closure returns the new value and the closure reruns
 
-#### Scenario: Значение по умолчанию
-- **WHEN** необязательное свойство не передано
-- **THEN** оно равно значению по умолчанию типа и не создаёт реактивных примитивов
+#### Scenario: Default value
+- **WHEN** an optional property is not passed
+- **THEN** it equals the type's default value and creates no reactive primitives
 
-### Requirement: Определение статичности
-Тип свойства SHALL позволять узнать, что значение статическое, чтобы компонент мог пропустить подписки.
+### Requirement: Determining staticness
+The property type SHALL make it possible to find out that the value is static so that a component can skip subscriptions.
 
-#### Scenario: Все свойства статические
-- **WHEN** у компонента все свойства статические
-- **THEN** проверка статичности возвращает `true` для каждого из них
+#### Scenario: All properties static
+- **WHEN** all of a component's properties are static
+- **THEN** the staticness check returns `true` for each of them

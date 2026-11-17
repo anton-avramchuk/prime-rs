@@ -1,29 +1,29 @@
 # Tasks
 
-## 1. Крейт и логика
+## 1. Crate and logic
 
-- [x] 1.1 Создать крейт `crates/prime-radiobutton` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `web-sys`), добавить в workspace; проверить `cargo check -p prime-radiobutton --all-features`
-- [x] 1.2 Реализовать `RadioButtonState`, `write_classes`, `data_p` по `radiobuttonstyle.ts` и `RadioButton.dataP`; проверить таблицей юнит-тестов
+- [x] 1.1 Create the crate `crates/prime-radiobutton` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `web-sys`), add it to the workspace; check `cargo check -p prime-radiobutton --all-features`
+- [x] 1.2 Implement `RadioButtonState`, `write_classes`, `data_p` per `radiobuttonstyle.ts` and `RadioButton.dataP`; check with a table of unit tests
 
-## 2. Компонент
+## 2. Component
 
-- [x] 2.1 Реализовать `RadioButton` (разметка, классы, атрибуты, `pt`, две ветви); проверить SSR-тестами и паритетом
-- [x] 2.2 Реализовать выбор через `model`, `disabled` и события; проверить `wasm-bindgen-test`
-- [x] 2.3 Добавить rustdoc с примером; проверить `cargo test -p prime-radiobutton --all-features`
+- [x] 2.1 Implement `RadioButton` (markup, classes, attributes, `pt`, two branches); check with SSR tests and parity
+- [x] 2.2 Implement the selection through `model`, `disabled` and events; check with `wasm-bindgen-test`
+- [x] 2.3 Add rustdoc with an example; check `cargo test -p prime-radiobutton --all-features`
 
-## 3. Showcase и e2e
+## 3. Showcase and e2e
 
-- [x] 3.1 Страница `/radiobutton` (`group`, `filled`, `sizes`, `invalid`, `disabled`), меню, CSS `radiobutton`
-- [x] 3.2 `e2e/tests/pages.json` и `e2e/tests/radiobutton.spec.ts`; проверить `npx playwright test radiobutton`
+- [x] 3.1 The `/radiobutton` page (`group`, `filled`, `sizes`, `invalid`, `disabled`), the menu, the CSS `radiobutton`
+- [x] 3.2 `e2e/tests/pages.json` and `e2e/tests/radiobutton.spec.ts`; check `npx playwright test radiobutton`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `radiobutton-1`, `radiobutton-1000`, `case-radiobutton`, бюджеты по измерению
+- [x] 4.1 Scenarios `radiobutton-1`, `radiobutton-1000`, `case-radiobutton`, budgets by measurement
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/radiobutton.md`; clippy, тесты, deny, machete, `openspec validate port-radiobutton`; `prime-radiobutton` в браузерный job CI; CI `dev` зелёный
+- [x] 5.1 `docs/radiobutton.md`; clippy, tests, deny, machete, `openspec validate port-radiobutton`; `prime-radiobutton` in the browser CI job; CI on `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI; далее ToggleSwitch, Message, ProgressBar.
+- Archive after CI; next are ToggleSwitch, Message, ProgressBar.

@@ -1,11 +1,11 @@
-//! Страница ImageCompare: демонстрации `basic` и `responsive` из showcase PrimeNG (`apps/showcase/doc/imagecompare`).
-//! Фотографии с CDN заменены двумя встроенными SVG-картинками (независимость от сети).
+//! ImageCompare page: the `basic` and `responsive` demos from the PrimeNG showcase (`apps/showcase/doc/imagecompare`).
+//! Photos from the CDN are replaced by two built-in SVG images (no network dependency).
 
 use super::Demo;
 use leptos::prelude::*;
 use prime_imagecompare::ImageCompare;
 
-/// SVG-картинка 16:9 с градиентом и подписью как `data:`-ссылка.
+/// A 16:9 SVG image with a gradient and a caption, as a `data:` link.
 fn picture(from: &str, to: &str, label: &str) -> String {
     format!(
         "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='none'%3E\
@@ -15,7 +15,7 @@ fn picture(from: &str, to: &str, label: &str) -> String {
     )
 }
 
-/// Страница `/imagecompare`.
+/// `/imagecompare` page.
 #[component]
 pub fn ImageComparePage() -> impl IntoView {
     let (left, right) = (picture("0ea5e9", "1e3a8a", "Before"), picture("f59e0b", "9a3412", "After"));

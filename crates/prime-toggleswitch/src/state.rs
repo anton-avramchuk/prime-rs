@@ -1,20 +1,20 @@
-//! Чистая логика ToggleSwitch: классы и `data-p` (по `toggleswitchstyle.ts` и `ToggleSwitch.dataP` PrimeNG).
+//! Pure ToggleSwitch logic: classes and `data-p` (based on `toggleswitchstyle.ts` and `ToggleSwitch.dataP` in PrimeNG).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 
-/// Снимок свойств, влияющих на классы и `data-p`.
+/// Snapshot of the properties that affect classes and `data-p`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct ToggleSwitchState {
-    /// Включён.
+    /// Enabled.
     pub checked: bool,
-    /// Недоступен.
+    /// Unavailable.
     pub disabled: bool,
-    /// Недопустимое значение.
+    /// Invalid value.
     pub invalid: bool,
 }
 
-/// Добавляет классы корня в порядке `toggleswitchstyle.ts`.
+/// Adds the root classes in the order of `toggleswitchstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, s: &ToggleSwitchState) {
     cn.add("p-toggleswitch p-component")
         .add_if(s.checked, "p-toggleswitch-checked")
@@ -22,7 +22,7 @@ pub fn write_classes(cn: &mut ClassNames, s: &ToggleSwitchState) {
         .add_if(s.invalid, "p-invalid");
 }
 
-/// Значение `data-p`: `checked`, `disabled`, `invalid`.
+/// `data-p` value: `checked`, `disabled`, `invalid`.
 pub fn data_p(s: &ToggleSwitchState) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add_if(s.checked, "checked").add_if(s.disabled, "disabled").add_if(s.invalid, "invalid");

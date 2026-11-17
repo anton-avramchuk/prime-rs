@@ -9,12 +9,12 @@ test.describe('Tooltip', () => {
         await expect(page.locator('[data-demo=position] input').first()).toBeVisible();
     });
 
-    test('подсказок нет, пока не навели мышь', async ({ page }) => {
+    test('no tooltips until the mouse hovers', async ({ page }) => {
         await expect(page.locator('[data-demo]')).toHaveCount(6);
         await expect(tip(page)).toHaveCount(0);
     });
 
-    test('наведение показывает подсказку справа, уход скрывает', async ({ page }) => {
+    test('hover shows the tooltip on the right, leaving hides it', async ({ page }) => {
         const input = page.locator('[data-demo=position] input[placeholder=Right]');
         await input.hover();
         await expect(tip(page)).toBeVisible();
@@ -28,7 +28,7 @@ test.describe('Tooltip', () => {
         await expect(tip(page)).toHaveCount(0);
     });
 
-    test('верх, низ и лево расположены с нужной стороны', async ({ page }) => {
+    test('top, bottom and left are placed on the correct side', async ({ page }) => {
         const cases: [string, (i: any, t: any) => boolean][] = [
             ['Top', (i, t) => t.y + t.height <= i.y + 1],
             ['Bottom', (i, t) => t.y >= i.y + i.height - 1],
@@ -46,7 +46,7 @@ test.describe('Tooltip', () => {
         }
     });
 
-    test('event=focus: наведение не показывает, фокус показывает, blur скрывает', async ({ page }) => {
+    test('event=focus: hover does not show, focus shows, blur hides', async ({ page }) => {
         const input = page.locator('[data-demo=event] input');
         await input.hover();
         await page.waitForTimeout(300);
@@ -57,7 +57,7 @@ test.describe('Tooltip', () => {
         await expect(tip(page)).toHaveCount(0);
     });
 
-    test('delay: показ не сразу', async ({ page }) => {
+    test('delay: not shown immediately', async ({ page }) => {
         const button = page.locator('[data-demo=delay]').getByRole('button', { name: 'Save' });
         await button.hover();
         await page.waitForTimeout(500);
@@ -66,7 +66,7 @@ test.describe('Tooltip', () => {
         await expect(tip(page)).toContainText('Confirm to proceed');
     });
 
-    test('autohide=false: подсказку можно навести мышью, autohide=true — нет', async ({ page }) => {
+    test('autohide=false: the tooltip can be hovered with the mouse, autohide=true: it cannot', async ({ page }) => {
         const sticky = page.locator('[data-demo=autohide] input[placeholder="autoHide: false"]');
         await sticky.hover();
         await expect(tip(page)).toBeVisible();
@@ -83,14 +83,14 @@ test.describe('Tooltip', () => {
         await expect(tip(page)).toHaveCSS('pointer-events', 'none');
     });
 
-    test('Escape скрывает подсказку', async ({ page }) => {
+    test('Escape hides the tooltip', async ({ page }) => {
         await page.locator('[data-demo=position] input[placeholder=Top]').hover();
         await expect(tip(page)).toBeVisible();
         await page.keyboard.press('Escape');
         await expect(tip(page)).toHaveCount(0);
     });
 
-    test('custom: своё содержимое', async ({ page }) => {
+    test('custom: custom content', async ({ page }) => {
         await page.locator('[data-demo=custom]').getByRole('button', { name: 'Button' }).hover();
         await expect(tip(page)).toBeVisible();
         await expect(tip(page)).toContainText('PrimeRS');
@@ -98,20 +98,20 @@ test.describe('Tooltip', () => {
         await expect(tip(page)).toHaveClass(/p-tooltip-bottom/);
     });
 
-    test('подсказка у правого края окна переносится влево', async ({ page }) => {
+    test('a tooltip at the right edge of the window moves to the left', async ({ page }) => {
         const input = page.locator('[data-demo=position] input[placeholder=Right]');
         await input.evaluate((el) => {
             (el as HTMLElement).style.position = 'fixed';
             (el as HTMLElement).style.right = '0px';
             (el as HTMLElement).style.top = '300px';
-            (el as HTMLElement).style.zIndex = '1000'; // над боковым оглавлением страницы
+            (el as HTMLElement).style.zIndex = '1000'; // above the page side table of contents
         });
         await input.hover();
         await expect(tip(page)).toBeVisible();
         await expect(tip(page)).toHaveClass(/p-tooltip-left/);
     });
 
-    test('подсказка видна поверх обычных элементов (слой подсказок)', async ({ page }) => {
+    test('the tooltip is visible on top of regular elements (tooltip layer)', async ({ page }) => {
         await page.locator('[data-demo=position] input[placeholder=Right]').hover();
         await expect(tip(page)).toBeVisible();
         const z = await tip(page).evaluate((el) => parseInt(getComputedStyle(el).zIndex || '0', 10));

@@ -4,7 +4,7 @@ test.describe('ContextMenu', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 900 });
         await page.goto('/contextmenu');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_target')).toBeAttached();
     });
@@ -12,7 +12,7 @@ test.describe('ContextMenu', () => {
     const item = (page, menu: string, key: string) => page.locator(`li[id="${menu}_${key}"]`);
     const content = (page, menu: string, key: string) => item(page, menu, key).locator('> .p-contextmenu-item-content');
 
-    test('меню нет, пока не нажата правая кнопка; затем оно у курсора и со стилями темы', async ({ page }) => {
+    test('no menu until the right button is pressed; then it is at the cursor with theme styles', async ({ page }) => {
         await expect(page.locator('#basic_menu')).toHaveCount(0);
         const target = page.locator('#basic_target');
         await target.scrollIntoViewIfNeeded();
@@ -21,7 +21,7 @@ test.describe('ContextMenu', () => {
         await target.click({ button: 'right', position: at });
         const menu = page.locator('#basic_menu');
         await expect(menu).toBeVisible();
-        // Положение — в координатах страницы; страница могла быть прокручена
+        // Position is in page coordinates; the page may have been scrolled
         await expect
             .poll(async () => {
                 const m = (await menu.boundingBox())!;
@@ -37,7 +37,7 @@ test.describe('ContextMenu', () => {
         await expect(page.locator('#basic_menu_list')).toBeFocused();
     });
 
-    test('левый клик вне закрывает меню, Escape тоже', async ({ page }) => {
+    test('a left click outside closes the menu, so does Escape', async ({ page }) => {
         const target = page.locator('#basic_target');
         await target.click({ button: 'right' });
         await expect(page.locator('#basic_menu')).toBeVisible();
@@ -49,12 +49,12 @@ test.describe('ContextMenu', () => {
         await expect(page.locator('#basic_menu')).toHaveCount(0);
     });
 
-    test('у правого нижнего края окна меню переворачивается внутрь окна', async ({ page }) => {
+    test('at the bottom-right window edge the menu flips into the window', async ({ page }) => {
         await page.setViewportSize({ width: 600, height: 500 });
         const target = page.locator('#basic_target');
         await target.scrollIntoViewIfNeeded();
         const box = (await target.boundingBox())!;
-        // правый нижний угол цели, в пределах окна
+        // bottom-right corner of the target, within the window
         const x = Math.min(box.width - 4, 590 - box.x);
         const y = Math.min(box.height - 4, 490 - box.y);
         await target.click({ button: 'right', position: { x, y } });
@@ -66,7 +66,7 @@ test.describe('ContextMenu', () => {
         expect(m.x).toBeLessThan(box.x + x);
     });
 
-    test('подменю раскрывается справа, клавиатура ходит по уровням', async ({ page }) => {
+    test('a submenu expands to the right, the keyboard walks the levels', async ({ page }) => {
         const target = page.locator('#nested_target');
         await target.scrollIntoViewIfNeeded();
         await target.click({ button: 'right' });
@@ -91,7 +91,7 @@ test.describe('ContextMenu', () => {
         await expect(page.locator('#nested_menu .p-contextmenu-submenu')).toHaveCount(0);
     });
 
-    test('command: правый клик по пользователю, лист вызывает команду и закрывает меню', async ({ page }) => {
+    test('command: right click on a user, a leaf calls the command and closes the menu', async ({ page }) => {
         const user = page.locator('[data-testid=user]').first();
         await user.scrollIntoViewIfNeeded();
         await user.click({ button: 'right' });
@@ -101,7 +101,7 @@ test.describe('ContextMenu', () => {
         await expect(page.locator('.p-toast-message')).toContainText('View requested');
     });
 
-    test('template: свой пункт вместо ссылки', async ({ page }) => {
+    test('template: a custom item instead of a link', async ({ page }) => {
         const target = page.locator('#template_target');
         await target.scrollIntoViewIfNeeded();
         await target.click({ button: 'right' });

@@ -1,31 +1,31 @@
 # Tasks
 
-## 1. Общая логика сворачивания
+## 1. Shared collapsing logic
 
-- [x] 1.1 Модуль `prime-core::collapsible`: `CollapseState` (внешний `RwSignal<bool>` либо внутренний), `CollapseIds`, функции атрибутов ARIA; проверить юнит-тестами (таблица состояний, идентификаторы)
-- [x] 1.2 Клиентская `animate` (классы `p-collapsible-*-active`, `animationend` + запасной таймер, завершение) и проставление `tabindex` потомкам; проверить `wasm-bindgen-test`
+- [x] 1.1 The module `prime-core::collapsible`: `CollapseState` (an external `RwSignal<bool>` or an internal one), `CollapseIds`, the ARIA attribute functions; check with unit tests (a state table, identifiers)
+- [x] 1.2 The client `animate` (the classes `p-collapsible-*-active`, `animationend` + a fallback timer, completion) and setting `tabindex` on the descendants; check with `wasm-bindgen-test`
 
-## 2. Крейт и компонент
+## 2. Crate and component
 
-- [x] 2.1 Создать крейт `crates/prime-panel` (`publish = false`, features `ssr`/`hydrate`, зависимости `prime-core`, `prime-icons` с `minus`, `plus`), добавить в workspace; проверить `cargo check -p prime-panel --all-features`
-- [x] 2.2 Реализовать `PanelPt`, классы по `panelstyle.ts`, разметку (`macro_rules!`), две ветви, слоты; проверить SSR-тестами (структура, классы, ARIA, `show_header`, `icon_pos`, `pt`) и паритетом ветвей
-- [x] 2.3 Переключение (`toggler = icon|header`), `on_before_toggle`, `on_after_toggle`, смена иконки; проверить `wasm-bindgen-test` (клик, клавиатура, нет двойного переключения, `aria-expanded`, `tabindex`)
-- [x] 2.4 rustdoc с примером; `cargo test -p prime-panel --all-features`
+- [x] 2.1 Create the crate `crates/prime-panel` (`publish = false`, features `ssr`/`hydrate`, dependencies `prime-core`, `prime-icons` with `minus`, `plus`), add it to the workspace; check `cargo check -p prime-panel --all-features`
+- [x] 2.2 Implement `PanelPt`, the classes per `panelstyle.ts`, the markup (`macro_rules!`), two branches, slots; check with SSR tests (structure, classes, ARIA, `show_header`, `icon_pos`, `pt`) and branch parity
+- [x] 2.3 Toggling (`toggler = icon|header`), `on_before_toggle`, `on_after_toggle`, the icon change; check with `wasm-bindgen-test` (click, keyboard, no double toggle, `aria-expanded`, `tabindex`)
+- [x] 2.4 rustdoc with an example; `cargo test -p prime-panel --all-features`
 
-## 3. Тема, showcase, e2e
+## 3. Theme, showcase, e2e
 
-- [x] 3.1 Добавить `panel` в `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, подключить CSS
-- [x] 3.2 Страница `/panel` (`basic`, `toggleable`, `header-toggler`, `template`), меню, маршрут, `stylesheet(&[..])`
-- [x] 3.3 `e2e/tests/pages.json` и `e2e/tests/panel.spec.ts` (раскрытие/сворачивание, `aria-expanded`, анимационный класс); `npx playwright test panel`
+- [x] 3.1 Add `panel` to `theme.components` (`upstream.toml`), `cargo xtask gen-theme`, connect the CSS
+- [x] 3.2 The `/panel` page (`basic`, `toggleable`, `header-toggler`, `template`), the menu, the route, `stylesheet(&[..])`
+- [x] 3.3 `e2e/tests/pages.json` and `e2e/tests/panel.spec.ts` (expanding/collapsing, `aria-expanded`, the animation class); `npx playwright test panel`
 
-## 4. Бенчмарки и бюджеты
+## 4. Benchmarks and budgets
 
-- [x] 4.1 Сценарии `panel-1`, `panel-1000`, `case-panel` в `benches/render`, `benches/wasm-size`, бюджеты по измерению
+- [x] 4.1 Scenarios `panel-1`, `panel-1000`, `case-panel` in `benches/render`, `benches/wasm-size`, budgets by measurement
 
-## 5. Интеграция
+## 5. Integration
 
-- [x] 5.1 `docs/panel.md` (соответствие PrimeNG, отличия, производительность); clippy, тесты, deny, machete, `openspec validate port-panel`; `prime-panel` в браузерный job `ci.yml` (3 места); CI `dev` зелёный
+- [x] 5.1 `docs/panel.md` (conformance with PrimeNG, differences, performance); clippy, tests, deny, machete, `openspec validate port-panel`; `prime-panel` in the browser job of `ci.yml` (3 places); CI on `dev` is green
 
 ## Workflow follow-up
 
-- Архивировать после CI; следующим change — `port-fieldset` поверх `prime-core::collapsible`.
+- Archive after CI; the next change is `port-fieldset` on top of `prime-core::collapsible`.

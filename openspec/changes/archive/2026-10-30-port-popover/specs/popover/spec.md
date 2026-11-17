@@ -1,83 +1,83 @@
 # popover Specification
 
 ## Purpose
-Popover показывает плавающую панель с произвольным содержимым рядом с элементом-триггером; панель открывается и закрывается императивно, закрывается кликом вне её, клавишей Escape, прокруткой и изменением размера окна.
+Popover shows a floating panel with arbitrary content next to a trigger element; the panel opens and closes imperatively, closes on a click outside it, the Escape key, scrolling and window resize.
 
 ## ADDED Requirements
 
-### Requirement: Разметка
-Пока панель скрыта, `Popover` крейта `prime-popover` SHALL не выводить ничего. Видимая панель SHALL быть `div.p-popover.p-component[role=dialog]` с `aria-modal="true"` и единственным дочерним `div.p-popover-content`, содержащим `children`. `id`, `style`, `style_class`, `aria_label` (`aria-label`), `aria_labelledby` (`aria-labelledby`) и `pt` SHALL применяться к корню панели.
+### Requirement: Markup
+While the panel is hidden, `Popover` of the `prime-popover` crate SHALL render nothing. A visible panel SHALL be a `div.p-popover.p-component[role=dialog]` with `aria-modal="true"` and a single child `div.p-popover-content` containing `children`. `id`, `style`, `style_class`, `aria_label` (`aria-label`), `aria_labelledby` (`aria-labelledby`) and `pt` SHALL be applied to the panel root.
 
-#### Scenario: Скрыта по умолчанию
-- **WHEN** отрисован `Popover`, который ни разу не показывали
-- **THEN** в разметке нет `.p-popover`
+#### Scenario: Hidden by default
+- **WHEN** a `Popover` that was never shown is rendered
+- **THEN** there is no `.p-popover` in the markup
 
-#### Scenario: Показана
-- **WHEN** вызван `show` по событию клика
-- **THEN** выведен `.p-popover[role=dialog]` с содержимым внутри `.p-popover-content`
+#### Scenario: Shown
+- **WHEN** `show` is called on a click event
+- **THEN** a `.p-popover[role=dialog]` is rendered with the content inside `.p-popover-content`
 
-### Requirement: Показ и скрытие
-Управляющий объект `PopoverRef` SHALL предоставлять `show`, `hide`, `toggle` и `visible`. `toggle` SHALL показывать скрытую панель и скрывать видимую. Целью выравнивания SHALL быть элемент, на котором сработало событие (`currentTarget`), либо явно переданный элемент. Если видимую панель переключают с другой целью, она SHALL скрыться и тут же показаться у новой цели.
+### Requirement: Show and hide
+The control object `PopoverRef` SHALL provide `show`, `hide`, `toggle` and `visible`. `toggle` SHALL show a hidden panel and hide a visible one. The alignment target SHALL be the element on which the event fired (`currentTarget`), or an explicitly passed element. If a visible panel is toggled with a different target, it SHALL hide and immediately show at the new target.
 
-#### Scenario: Переключение
-- **WHEN** `toggle` вызван дважды подряд с одной целью
-- **THEN** после первого вызова панель видима, после второго скрыта
+#### Scenario: Toggle
+- **WHEN** `toggle` is called twice in a row with the same target
+- **THEN** after the first call the panel is visible, after the second it is hidden
 
-#### Scenario: Другая цель
-- **WHEN** панель видима у кнопки A и `toggle` вызван с кнопкой B
-- **THEN** панель остаётся видимой и выровнена по кнопке B
+#### Scenario: Different target
+- **WHEN** the panel is visible at button A and `toggle` is called with button B
+- **THEN** the panel stays visible and is aligned to button B
 
-#### Scenario: Явная цель
-- **WHEN** `show` вызван по клику на кнопку с явной целью — другим элементом
-- **THEN** панель выровнена по явной цели, а не по кнопке
+#### Scenario: Explicit target
+- **WHEN** `show` is called on a button click with an explicit target — a different element
+- **THEN** the panel is aligned to the explicit target, not to the button
 
-### Requirement: Позиционирование
-Видимая панель SHALL быть выровнена относительно цели так же, как оверлей `Select`: под целью, а при нехватке места внизу — над ней. При размещении над целью корень SHALL получать `p-popover-flipped` и `data-p-popover-flipped="true"`. Горизонтальный сдвиг стрелки SHALL записываться в пользовательское свойство `--p-popover-arrow-left` корня. Слой SHALL задаваться `z-index` по группе оверлеев, если `auto_z_index` включён, со смещением `base_z_index`.
+### Requirement: Positioning
+A visible panel SHALL be aligned to the target in the same way as the `Select` overlay: below the target, and above it when there is not enough room below. When placed above the target the root SHALL get `p-popover-flipped` and `data-p-popover-flipped="true"`. The horizontal arrow shift SHALL be written to the root's `--p-popover-arrow-left` custom property. The layer SHALL be given a `z-index` from the overlay group if `auto_z_index` is on, offset by `base_z_index`.
 
-#### Scenario: Место снизу
-- **WHEN** цель находится у верхнего края окна
-- **THEN** панель расположена под целью и без `p-popover-flipped`
+#### Scenario: Room below
+- **WHEN** the target is at the top edge of the window
+- **THEN** the panel is below the target and without `p-popover-flipped`
 
-#### Scenario: Нет места снизу
-- **WHEN** цель находится у нижнего края окна
-- **THEN** панель расположена над целью, корень имеет `p-popover-flipped`
+#### Scenario: No room below
+- **WHEN** the target is at the bottom edge of the window
+- **THEN** the panel is above the target, the root has `p-popover-flipped`
 
-### Requirement: Закрытие
-При `dismissable` клик вне панели и вне цели SHALL скрывать панель; клик внутри панели — нет. Клавиша `Escape` SHALL скрывать панель независимо от `dismissable`. Изменение размера окна SHALL скрывать панель на несенсорных устройствах. Прокрутка любого прокручиваемого предка цели SHALL скрывать панель. После скрытия слушатели окна и документа SHALL быть сняты.
+### Requirement: Closing
+With `dismissable` a click outside the panel and the target SHALL hide the panel; a click inside the panel — no. The `Escape` key SHALL hide the panel regardless of `dismissable`. A window resize SHALL hide the panel on non-touch devices. A scroll of any scrollable ancestor of the target SHALL hide the panel. After hiding, the window and document listeners SHALL be removed.
 
-#### Scenario: Клик вне панели
-- **WHEN** панель видима и пользователь кликает по пустому месту страницы
-- **THEN** панель скрыта
+#### Scenario: Click outside the panel
+- **WHEN** the panel is visible and the user clicks an empty place on the page
+- **THEN** the panel is hidden
 
-#### Scenario: Клик внутри панели
-- **WHEN** панель видима и пользователь кликает по её содержимому
-- **THEN** панель остаётся видимой
+#### Scenario: Click inside the panel
+- **WHEN** the panel is visible and the user clicks its content
+- **THEN** the panel stays visible
 
-#### Scenario: Клик по цели
-- **WHEN** панель видима и пользователь кликает по цели
-- **THEN** панель закрывается один раз и не открывается заново от того же клика
+#### Scenario: Click on the target
+- **WHEN** the panel is visible and the user clicks the target
+- **THEN** the panel closes once and does not reopen from the same click
 
-#### Scenario: Недопустимое закрытие
-- **WHEN** `dismissable` выключен и пользователь кликает вне панели
-- **THEN** панель остаётся видимой, а по Escape скрывается
+#### Scenario: Non-dismissable
+- **WHEN** `dismissable` is off and the user clicks outside the panel
+- **THEN** the panel stays visible, and hides on Escape
 
-### Requirement: Фокус
-При показе, если `focus_on_show` включён, фокус SHALL получать первый элемент панели с атрибутом `autofocus`; без такого элемента фокус не двигается.
+### Requirement: Focus
+On show, if `focus_on_show` is on, the first panel element with the `autofocus` attribute SHALL get focus; without such an element focus does not move.
 
-#### Scenario: Элемент с autofocus
-- **WHEN** в содержимом есть `input[autofocus]` и панель показана
-- **THEN** фокус на этом поле
+#### Scenario: Element with autofocus
+- **WHEN** the content has an `input[autofocus]` and the panel is shown
+- **THEN** focus is on that field
 
-### Requirement: События
-`on_show` SHALL вызываться после того, как панель показана и выровнена; `on_hide` — после того, как панель скрыта и убрана.
+### Requirement: Events
+`on_show` SHALL be called after the panel is shown and aligned; `on_hide` — after the panel is hidden and removed.
 
-#### Scenario: Порядок событий
-- **WHEN** панель показана и скрыта
-- **THEN** `on_show` вызван один раз до `on_hide`, `on_hide` — один раз
+#### Scenario: Event order
+- **WHEN** the panel is shown and hidden
+- **THEN** `on_show` is called once before `on_hide`, `on_hide` — once
 
-### Requirement: Рендер без браузера
-Вне браузера (SSR) `Popover` SHALL отрисовываться скрытым и не обращаться к `window` и `document`; с гидратацией SHALL не расходиться с серверной разметкой.
+### Requirement: Rendering without a browser
+Outside the browser (SSR) `Popover` SHALL render hidden and not access `window` and `document`; with hydration it SHALL NOT diverge from the server markup.
 
 #### Scenario: SSR
-- **WHEN** страница с `Popover` отрисована на сервере
-- **THEN** панели в разметке нет и гидратация проходит без ошибок
+- **WHEN** a page with `Popover` is rendered on the server
+- **THEN** there is no panel in the markup and hydration passes without errors

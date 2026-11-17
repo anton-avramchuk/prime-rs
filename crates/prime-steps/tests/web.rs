@@ -1,5 +1,5 @@
-//! Поведение Steps в реальном браузере (wasm-bindgen-test): клик в режимах чтения и интерактивном, отключённые пункты,
-//! переход по ссылке, клавиши и roving `tabindex`, `Enter`/`Space`, двусторонний сигнал.
+//! Steps behaviour in a real browser (wasm-bindgen-test): click in readonly and interactive modes, disabled items,
+//! link navigation, keys and roving `tabindex`, `Enter`/`Space`, the two-way signal.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -36,7 +36,7 @@ async fn settle() {
     JsFuture::from(promise).await.unwrap();
 }
 
-/// Клик с возможностью отмены: `false`, если переход отменён.
+/// Click that can be cancelled: `false` if navigation was cancelled.
 fn click(el: &HtmlElement) -> bool {
     let init = MouseEventInit::new();
     init.set_bubbles(true);
@@ -78,10 +78,10 @@ async fn readonly_ignores_clicks_and_prevents_navigation() {
         view! { <Steps model=items.clone() active_index=0usize on_active_index_change=Callback::new(move |i| changes.lock().unwrap().push(format!("change:{i}"))) /> }
     });
     settle().await;
-    assert!(!click(&links(&host)[1]), "в режиме чтения переход отменён даже у пункта с url");
+    assert!(!click(&links(&host)[1]), "in readonly mode navigation is cancelled even for an item with a url");
     assert!(!click(&links(&host)[0]));
     settle().await;
-    assert!(log.lock().unwrap().is_empty(), "команды и события не вызваны");
+    assert!(log.lock().unwrap().is_empty(), "commands and events are not called");
     host.remove();
 }
 
@@ -102,21 +102,21 @@ async fn interactive_click_reports_the_index_and_runs_the_command() {
         }
     });
     settle().await;
-    assert!(!click(&links(&host)[3]), "без url переход отменён");
+    assert!(!click(&links(&host)[3]), "without a url navigation is cancelled");
     settle().await;
-    assert_eq!(active.get_untracked(), 3, "сигнал обновлён");
+    assert_eq!(active.get_untracked(), 3, "the signal is updated");
     assert_eq!(*log.lock().unwrap(), ["change:3", "d:3"]);
     let items_li = host.query_selector_all(".p-steps-item").unwrap();
     assert!(items_li.item(3).unwrap().dyn_into::<HtmlElement>().unwrap().class_name().contains("p-steps-item-active"));
     assert_eq!(links(&host)[3].get_attribute("aria-expanded").as_deref(), Some("true"));
-    assert!(click(&links(&host)[1]), "у пункта с url переход не отменяется");
+    assert!(click(&links(&host)[1]), "for an item with a url navigation is not cancelled");
     settle().await;
     assert_eq!(active.get_untracked(), 1);
     assert_eq!(log.lock().unwrap().last().map(String::as_str), Some("b:1"));
     let before = log.lock().unwrap().len();
     click(&links(&host)[2]);
     settle().await;
-    assert_eq!(log.lock().unwrap().len(), before, "отключённый пункт игнорируется");
+    assert_eq!(log.lock().unwrap().len(), before, "a disabled item is ignored");
     assert_eq!(active.get_untracked(), 1);
     host.remove();
 }
@@ -128,27 +128,27 @@ async fn arrow_keys_move_focus_with_a_roving_tabindex() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <Steps model=items.clone() active_index=0usize readonly=false /> });
     settle().await;
     let ls = links(&host);
-    assert_eq!(tabs(&host), ["0", "-1", "-1", "-1"], "по умолчанию — активный пункт");
-    assert!(!press(&ls[0], "ArrowRight"), "стрелка перехвачена");
+    assert_eq!(tabs(&host), ["0", "-1", "-1", "-1"], "by default — the active item");
+    assert!(!press(&ls[0], "ArrowRight"), "the arrow is intercepted");
     settle().await;
     assert_eq!(tabs(&host), ["-1", "0", "-1", "-1"]);
     assert!(doc().active_element().unwrap().is_same_node(Some(&ls[1])));
     press(&ls[1], "End");
     settle().await;
-    assert_eq!(tabs(&host), ["-1", "-1", "-1", "0"], "End: последний, даже если он не активен");
+    assert_eq!(tabs(&host), ["-1", "-1", "-1", "0"], "End: the last one, even if it is not active");
     press(&ls[3], "ArrowRight");
     settle().await;
-    assert!(doc().active_element().unwrap().is_same_node(Some(&ls[3])), "правее последнего не уходит");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&ls[3])), "it does not go right of the last");
     press(&ls[3], "Home");
     settle().await;
     assert!(doc().active_element().unwrap().is_same_node(Some(&ls[0])));
     press(&ls[0], "ArrowLeft");
-    assert!(doc().active_element().unwrap().is_same_node(Some(&ls[0])), "левее первого не уходит");
+    assert!(doc().active_element().unwrap().is_same_node(Some(&ls[0])), "it does not go left of the first");
     press(&ls[0], "ArrowRight");
     settle().await;
-    assert!(press(&ls[1], "Tab"), "Tab не перехватывается");
+    assert!(press(&ls[1], "Tab"), "Tab is not intercepted");
     settle().await;
-    assert_eq!(tabs(&host), ["0", "-1", "-1", "-1"], "Tab возвращает tabindex активному пункту");
+    assert_eq!(tabs(&host), ["0", "-1", "-1", "-1"], "Tab returns tabindex to the active item");
     host.remove();
 }
 
@@ -162,7 +162,7 @@ async fn enter_and_space_act_like_a_click() {
     });
     settle().await;
     let ls = links(&host);
-    assert!(!press(&ls[3], "Enter"), "Enter обработан");
+    assert!(!press(&ls[3], "Enter"), "Enter is handled");
     settle().await;
     assert_eq!(active.get_untracked(), 3);
     assert_eq!(*log.lock().unwrap(), ["d:3"]);
@@ -171,8 +171,8 @@ async fn enter_and_space_act_like_a_click() {
     assert_eq!(active.get_untracked(), 0);
     press(&ls[2], "Enter");
     settle().await;
-    assert_eq!(active.get_untracked(), 0, "отключённый пункт Enter не выбирает");
-    assert_eq!(tabs(&host), ["0", "-1", "-1", "-1"], "после смены шага фокусный tabindex у нового активного");
-    assert!(press(&ls[0], "KeyA"), "посторонняя клавиша не перехватывается");
+    assert_eq!(active.get_untracked(), 0, "Enter does not select a disabled item");
+    assert_eq!(tabs(&host), ["0", "-1", "-1", "-1"], "after the step changes the focus tabindex is on the new active one");
+    assert!(press(&ls[0], "KeyA"), "an unrelated key is not intercepted");
     host.remove();
 }

@@ -1,13 +1,13 @@
-//! Чистая модель Carousel: страницы, смещение, остаток, клоны и адаптивность (по `carousel.ts` PrimeNG).
+//! Pure Carousel model: pages, offset, remainder, clones and responsiveness (after PrimeNG `carousel.ts`).
 //!
-//! Все числа — как в исходнике: смещение `total_shifted` отрицательно и выражено в элементах, страницы считаются от нуля.
+//! All numbers match the source: the `total_shifted` offset is negative and expressed in items, pages are counted from zero.
 
-/// Направление листания.
+/// Scroll direction.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Dir {
-    /// Вперёд (`dir = -1` в PrimeNG).
+    /// Forward (`dir = -1` in PrimeNG).
     Forward,
-    /// Назад (`dir = 1`).
+    /// Backward (`dir = 1`).
     Backward,
 }
 
@@ -20,40 +20,40 @@ impl Dir {
     }
 }
 
-/// Вариант адаптивности (`CarouselResponsiveOptions`).
+/// Responsive option (`CarouselResponsiveOptions`).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Responsive {
-    /// Предел ширины окна, например `"991px"` (берётся число в начале строки).
+    /// Window width limit, e.g. `"991px"` (the number at the start of the string is taken).
     pub breakpoint: String,
-    /// Число видимых элементов.
+    /// Number of visible items.
     pub num_visible: usize,
-    /// Число элементов за прокрутку.
+    /// Number of items per scroll.
     pub num_scroll: usize,
 }
 
-/// Состояние листания.
+/// Scroll state.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Track {
-    /// Текущая страница.
+    /// Current page.
     pub page: usize,
-    /// Число видимых элементов.
+    /// Number of visible items.
     pub num_visible: usize,
-    /// Число элементов за прокрутку.
+    /// Number of items per scroll.
     pub num_scroll: usize,
-    /// Логическое смещение списка, в элементах (`totalShiftedItems`).
+    /// Logical list offset, in items (`totalShiftedItems`).
     pub total_shifted: i32,
-    /// Остаток элементов на последней странице (`remainingItems`).
+    /// Remaining items on the last page (`remainingItems`).
     pub remaining: i32,
-    /// Остаток уже учтён в смещении (`isRemainingItemsAdded`).
+    /// The remainder is already included in the offset (`isRemainingItemsAdded`).
     pub remaining_added: bool,
 }
 
-/// Бесконечный режим действует, пока элементов не меньше числа видимых (`isCircular`).
+/// Infinite mode is active while there are at least as many items as visible ones (`isCircular`).
 pub fn is_circular(circular: bool, len: usize, num_visible: usize) -> bool {
     circular && len >= num_visible
 }
 
-/// Число страниц (`totalDots`); при пустом значении и отрицательных вычислениях — `0`.
+/// Number of pages (`totalDots`); with an empty value and negative computations — `0`.
 pub fn total_dots(len: usize, num_visible: usize, num_scroll: usize) -> usize {
     if len == 0 || num_scroll == 0 {
         return 0;
@@ -62,7 +62,7 @@ pub fn total_dots(len: usize, num_visible: usize, num_scroll: usize) -> usize {
     pages.max(0) as usize
 }
 
-/// Число шагов смещения в процентах → строка `translate3d` (`translate3d(0, X%, 0)` или `translate3d(X%, 0, 0)`).
+/// Number of offset steps in percent → `translate3d` string (`translate3d(0, X%, 0)` or `translate3d(X%, 0, 0)`).
 pub fn translate(shift: i32, num_visible: usize, vertical: bool) -> String {
     let mut percent = f64::from(shift) * (100.0 / num_visible.max(1) as f64);
     if percent == 0.0 {
@@ -71,13 +71,13 @@ pub fn translate(shift: i32, num_visible: usize, vertical: bool) -> String {
     if vertical { format!("translate3d(0, {percent}%, 0)") } else { format!("translate3d({percent}%, 0, 0)") }
 }
 
-/// Ширина элемента, процент (`flex: 1 0 <100/numVisible>%`).
+/// Item width, percent (`flex: 1 0 <100/numVisible>%`).
 pub fn item_flex(num_visible: usize) -> String {
     format!("1 0 {}%", 100.0 / num_visible.max(1) as f64)
 }
 
 impl Track {
-    /// Начальное состояние (конструктор PrimeNG и первая проверка `afterContentChecked`).
+    /// Initial state (PrimeNG constructor and the first `afterContentChecked` check).
     pub fn new(page: usize, num_visible: usize, num_scroll: usize, len: usize, circular: bool) -> Self {
         let mut t =
             Self { page, num_visible, num_scroll, total_shifted: -((page * num_scroll) as i32), remaining: 0, remaining_added: false };
@@ -85,33 +85,33 @@ impl Track {
         t
     }
 
-    /// Число страниц.
+    /// Number of pages.
     pub fn dots(&self, len: usize) -> usize {
         total_dots(len, self.num_visible, self.num_scroll)
     }
 
-    /// Первый видимый элемент (`firstIndex`).
+    /// First visible item (`firstIndex`).
     pub fn first_index(&self, circular: bool, len: usize) -> i32 {
         if is_circular(circular, len, self.num_visible) { -(self.total_shifted + self.num_visible as i32) } else { -self.total_shifted }
     }
 
-    /// Последний видимый элемент (`lastIndex`).
+    /// Last visible item (`lastIndex`).
     pub fn last_index(&self, circular: bool, len: usize) -> i32 {
         self.first_index(circular, len) + self.num_visible as i32 - 1
     }
 
-    /// «Вперёд» недоступна (`isForwardNavDisabled`).
+    /// "Forward" is unavailable (`isForwardNavDisabled`).
     pub fn forward_disabled(&self, circular: bool, len: usize) -> bool {
         len == 0 || (self.page + 1 >= self.dots(len) && !is_circular(circular, len, self.num_visible))
     }
 
-    /// «Назад» недоступна (`isBackwardNavDisabled`).
+    /// "Backward" is unavailable (`isBackwardNavDisabled`).
     pub fn backward_disabled(&self, circular: bool, len: usize) -> bool {
         len == 0 || (self.page == 0 && !is_circular(circular, len, self.num_visible))
     }
 
-    /// Пересчёт при смене `num_visible`, `num_scroll` или длины (блок в `onAfterContentChecked`).
-    /// Возвращает `true`, если страница была зажата и нужно сообщить о ней.
+    /// Recompute on a change of `num_visible`, `num_scroll` or length (the block in `onAfterContentChecked`).
+    /// Returns `true` if the page was clamped and has to be reported.
     pub fn recalc(&mut self, len: usize, circular: bool) -> bool {
         let circ = is_circular(circular, len, self.num_visible);
         let scroll = self.num_scroll.max(1) as i32;
@@ -137,8 +137,8 @@ impl Track {
         clamped
     }
 
-    /// Приведение логического смещения после шага (конец `onAfterContentChecked`): страница `0` → `−numVisible`,
-    /// нулевое смещение → `−длина`.
+    /// Settling the logical offset after a step (end of `onAfterContentChecked`): page `0` → `−numVisible`,
+    /// zero offset → `−length`.
     pub fn settle(&mut self, len: usize, circular: bool) {
         if !is_circular(circular, len, self.num_visible) {
             return;
@@ -155,8 +155,8 @@ impl Track {
         self.total_shifted = total;
     }
 
-    /// Шаг на соседнюю страницу или на `page` (`step`). Возвращает смещение для `transform` сразу после шага (до
-    /// приведения [`Track::settle`], которое вызывающий делает следом).
+    /// Step to the adjacent page or to `page` (`step`). Returns the offset for `transform` right after the step (before
+    /// [`Track::settle`], which the caller does next).
     pub fn step(&mut self, len: usize, circular: bool, dir: Dir, page: Option<usize>) -> i32 {
         let circ = is_circular(circular, len, self.num_visible);
         let (nv, ns) = (self.num_visible as i32, self.num_scroll.max(1) as i32);
@@ -199,16 +199,16 @@ impl Track {
         total
     }
 
-    /// Смещение для `transform` после окончания перехода (`onTransitionEnd`): в бесконечном режиме на крайних страницах
-    /// список без анимации встаёт по логическому смещению; иначе `None` (ничего не меняется).
+    /// Offset for `transform` after the transition ends (`onTransitionEnd`): in infinite mode on the edge pages
+    /// the list snaps to the logical offset without animation; otherwise `None` (nothing changes).
     pub fn after_transition(&self, len: usize, circular: bool) -> Option<i32> {
         let dots = self.dots(len);
         let edge = self.page == 0 || (dots > 0 && self.page == dots - 1);
         (edge && is_circular(circular, len, self.num_visible)).then_some(self.total_shifted)
     }
 
-    /// Применяет вариант адаптивности (`calculatePosition`): пересчитывает страницу, шаг и число видимых и приводит смещение.
-    /// `defaults` — значения свойств компонента. Возвращает `true`, если нужно сообщить о странице.
+    /// Applies a responsive option (`calculatePosition`): recomputes the page, step and visible count and settles the offset.
+    /// `defaults` — the component's prop values. Returns `true` if the page has to be reported.
     pub fn apply_responsive(
         &mut self,
         options: &[Responsive],
@@ -231,8 +231,8 @@ impl Track {
     }
 }
 
-/// Выбор варианта адаптивности: варианты упорядочиваются по убыванию предела, берётся последний с `предел ≥ ширина окна`;
-/// иначе значения по умолчанию.
+/// Responsive option selection: options are sorted by descending limit, the last one with `limit ≥ window width` is taken;
+/// otherwise the defaults.
 pub fn match_responsive(options: &[Responsive], window_width: f64, defaults: (usize, usize)) -> (usize, usize) {
     let mut sorted: Vec<&Responsive> = options.iter().collect();
     sorted.sort_by_key(|o| std::cmp::Reverse(parse_int(&o.breakpoint)));
@@ -245,32 +245,32 @@ pub fn match_responsive(options: &[Responsive], window_width: f64, defaults: (us
     matched
 }
 
-/// `parseInt` JavaScript: целое число в начале строки, иначе `0`.
+/// JavaScript `parseInt`: the integer at the start of the string, otherwise `0`.
 fn parse_int(s: &str) -> i32 {
     let s = s.trim();
     let digits: String = s.chars().take_while(char::is_ascii_digit).collect();
     digits.parse().unwrap_or(0)
 }
 
-/// Порог свайпа, px.
+/// Swipe threshold, px.
 pub const SWIPE_THRESHOLD: f64 = 20.0;
 
-/// Направление свайпа по разности координат (`changePageOnTouch`): влево/вверх (`< 0`) — вперёд, вправо/вниз — назад.
+/// Swipe direction by the coordinate difference (`changePageOnTouch`): left/up (`< 0`) — forward, right/down — backward.
 pub fn swipe(diff: f64) -> Option<Dir> {
     if diff.abs() > SWIPE_THRESHOLD { Some(if diff < 0.0 { Dir::Forward } else { Dir::Backward }) } else { None }
 }
 
-/// Следующая страница автопрокрутки: с последней — на нулевую; без страниц — `None`.
+/// Next autoplay page: from the last one — to zero; without pages — `None`.
 pub fn autoplay_next(page: usize, dots: usize) -> Option<usize> {
     (dots > 0).then(|| if page + 1 >= dots { 0 } else { page + 1 })
 }
 
-/// Подстановка в строку перевода (`{slideNumber}`, `{page}`).
+/// Substitution into a translation string (`{slideNumber}`, `{page}`).
 pub fn fill(template: &str, key: &str, value: usize) -> String {
     template.replace(&format!("{{{key}}}"), &value.to_string())
 }
 
-/// Куда переносится фокус индикатора по стрелке: `delta = +1` — вправо, `-1` — влево; на границах остаётся.
+/// Where the indicator focus moves on an arrow: `delta = +1` — right, `-1` — left; stays at the edges.
 pub fn indicator_focus(current: usize, count: usize, delta: i32) -> usize {
     let last = count.saturating_sub(1);
     ((current as i64 + i64::from(delta)).clamp(0, last as i64)) as usize
@@ -286,7 +286,7 @@ mod tests {
 
     #[test]
     fn dots_table() {
-        // (длина, видимых, шаг, страниц)
+        // (length, visible, step, pages)
         for (len, nv, ns, want) in
             [(0, 3, 1, 0), (5, 2, 1, 4), (9, 3, 3, 3), (9, 3, 2, 4), (3, 3, 1, 1), (2, 3, 1, 0), (1, 3, 1, 0), (10, 1, 1, 10), (7, 3, 3, 3)]
         {
@@ -311,7 +311,7 @@ mod tests {
         let c = t(0, 3, 2, 8, false);
         assert_eq!((c.remaining, c.dots(8)), (1, 4), "(8−3) % 2 = 1");
         let circular = t(0, 3, 1, 6, true);
-        assert_eq!(circular.total_shifted, -3, "в бесконечном режиме список стоит за клонами начала");
+        assert_eq!(circular.total_shifted, -3, "in infinite mode the list sits behind the start clones");
     }
 
     #[test]
@@ -331,17 +331,17 @@ mod tests {
 
     #[test]
     fn remainder_page_shows_the_last_items() {
-        // 8 элементов, по 3 видимых, шаг 2: страницы 0..3, на последней сдвиг 5 (видны элементы 5–7)
+        // 8 items, 3 visible, step 2: pages 0..3, shift 5 on the last one (items 5-7 visible)
         let mut a = t(0, 3, 2, 8, false);
         let mut shifts = Vec::new();
         for _ in 0..3 {
             shifts.push(a.step(8, false, Dir::Forward, None));
         }
         assert_eq!(a.page, 3);
-        assert_eq!(shifts, [-2, -4, -5], "последний шаг короче на остаток");
+        assert_eq!(shifts, [-2, -4, -5], "the last step is shorter by the remainder");
         assert!(a.remaining_added);
         assert_eq!((a.first_index(false, 8), a.last_index(false, 8)), (5, 7));
-        // назад возвращает ровно на шаг
+        // backward returns exactly one step
         assert_eq!(a.step(8, false, Dir::Backward, None), -4);
         assert_eq!(a.page, 2);
         assert!(!a.remaining_added);
@@ -363,7 +363,7 @@ mod tests {
         let len = 6;
         let mut a = t(0, 3, 1, len, true);
         assert_eq!(a.total_shifted, -3);
-        // вперёд до последней страницы
+        // forward to the last page
         for want in [-4, -5, -6] {
             let applied = a.step(len, true, Dir::Forward, None);
             a.settle(len, true);
@@ -371,19 +371,19 @@ mod tests {
         }
         assert_eq!(a.page, 3);
         assert_eq!(a.after_transition(len, true), Some(-6));
-        // с последней страницы вперёд — на клоны конца
+        // from the last page forward — to the end clones
         let applied = a.step(len, true, Dir::Forward, None);
-        assert_eq!(applied, -9, "−(длина + видимых)");
+        assert_eq!(applied, -9, "−(length + visible)");
         a.settle(len, true);
         assert_eq!(a.page, 0);
-        assert_eq!(a.total_shifted, -3, "после перехода список встаёт на начало без анимации");
+        assert_eq!(a.total_shifted, -3, "after the transition the list snaps to the start without animation");
         assert_eq!(a.after_transition(len, true), Some(-3));
-        // с нулевой назад — на клоны начала
+        // from zero backward — to the start clones
         let applied = a.step(len, true, Dir::Backward, None);
         assert_eq!(applied, 0);
         a.settle(len, true);
         assert_eq!(a.page, 3);
-        assert_eq!(a.total_shifted, -6, "нулевое смещение приводится к −длина");
+        assert_eq!(a.total_shifted, -6, "zero offset settles to −length");
         assert!(!a.forward_disabled(true, len) && !a.backward_disabled(true, len));
     }
 
@@ -402,9 +402,9 @@ mod tests {
         let mut a = t(3, 3, 1, 6, false);
         assert_eq!(a.page, 3);
         assert!(!a.recalc(6, false));
-        assert!(a.recalc(4, false), "элементов стало 4: страниц две, страница зажата");
+        assert!(a.recalc(4, false), "now 4 items: two pages, the page is clamped");
         assert_eq!((a.page, a.total_shifted), (1, -1));
-        assert!(a.recalc(0, false) || a.page == 1, "пустое значение страницу не трогает");
+        assert!(a.recalc(0, false) || a.page == 1, "an empty value leaves the page alone");
     }
 
     #[test]
@@ -424,7 +424,7 @@ mod tests {
         a.step(5, false, Dir::Forward, None);
         assert_eq!((a.first_index(false, 5), a.last_index(false, 5)), (1, 2));
         let c = t(0, 2, 1, 5, true);
-        assert_eq!((c.first_index(true, 5), c.last_index(true, 5)), (0, 1), "в бесконечном режиме смещение учитывает клоны");
+        assert_eq!((c.first_index(true, 5), c.last_index(true, 5)), (0, 1), "in infinite mode the offset accounts for clones");
     }
 
     #[test]
@@ -449,12 +449,12 @@ mod tests {
     #[test]
     fn responsive_matching() {
         let defaults = (3, 3);
-        assert_eq!(match_responsive(&options(), 1920.0, defaults), (3, 3), "шире всех пределов — значения по умолчанию");
+        assert_eq!(match_responsive(&options(), 1920.0, defaults), (3, 3), "wider than all limits — defaults");
         assert_eq!(match_responsive(&options(), 1300.0, defaults), (2, 1), "1400");
         assert_eq!(match_responsive(&options(), 1100.0, defaults), (3, 1), "1199");
         assert_eq!(match_responsive(&options(), 700.0, defaults), (2, 1), "767");
         assert_eq!(match_responsive(&options(), 500.0, defaults), (1, 1), "575");
-        assert_eq!(match_responsive(&options(), 575.0, defaults), (1, 1), "предел включительно");
+        assert_eq!(match_responsive(&options(), 575.0, defaults), (1, 1), "limit is inclusive");
         assert_eq!(match_responsive(&[], 500.0, defaults), defaults);
     }
 
@@ -472,7 +472,7 @@ mod tests {
         let notify = a.apply_responsive(&options(), 1920.0, (3, 3), len, false);
         assert!(notify);
         assert_eq!((a.num_visible, a.num_scroll, a.page), (3, 3, 1), "⌊3·1/3⌋");
-        assert!(!a.apply_responsive(&options(), 1920.0, (3, 3), len, false), "без изменений событие не нужно");
+        assert!(!a.apply_responsive(&options(), 1920.0, (3, 3), len, false), "no changes, no event needed");
     }
 
     #[test]

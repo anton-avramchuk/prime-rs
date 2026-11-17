@@ -4,7 +4,7 @@ test.describe('TieredMenu', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 900 });
         await page.goto('/tieredmenu');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_menu')).toBeAttached();
     });
@@ -12,7 +12,7 @@ test.describe('TieredMenu', () => {
     const item = (page, menu: string, key: string) => page.locator(`li[id="${menu}_${key}"]`);
     const content = (page, menu: string, key: string) => item(page, menu, key).locator('> .p-tieredmenu-item-content');
 
-    test('стили темы: меню вертикальное, подпись и стрелка группы в одной строке', async ({ page }) => {
+    test('theme styles: the menu is vertical, the label and the group arrow are on one line', async ({ page }) => {
         const root = page.locator('#basic_menu');
         expect(await root.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
         expect(await root.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
@@ -28,7 +28,7 @@ test.describe('TieredMenu', () => {
         await expect(page.locator('#basic_menu .p-tieredmenu-submenu')).toHaveCount(0);
     });
 
-    test('клик раскрывает подменю справа от пункта, вложенное — правее', async ({ page }) => {
+    test('a click expands the submenu to the right of the item, the nested one further right', async ({ page }) => {
         await content(page, 'basic_menu', '0').click();
         const sub = item(page, 'basic_menu', '0').locator('> .p-tieredmenu-submenu');
         await expect(sub).toBeVisible();
@@ -37,18 +37,18 @@ test.describe('TieredMenu', () => {
         const box = (await sub.boundingBox())!;
         expect(box.x).toBeGreaterThanOrEqual(parent.x + parent.width - 2);
         expect(Math.abs(box.y - parent.y)).toBeLessThan(3);
-        // наведение после клика раскрывает вложенную группу (последующий клик по ней, как в PrimeNG, свернёт её)
+        // hover after a click expands the nested group (a subsequent click on it collapses it, as in PrimeNG)
         await content(page, 'basic_menu', '0_0').hover();
         const deeper = item(page, 'basic_menu', '0_0').locator('> .p-tieredmenu-submenu');
         await expect(deeper).toBeVisible();
         const sub2 = (await deeper.boundingBox())!;
-        // вложенное подменю начинается у правого края пункта родителя (он уже рамки и отступов подменю)
+        // the nested submenu starts at the right edge of the parent item (which is narrower than the submenu's border and padding)
         expect(sub2.x).toBeGreaterThanOrEqual(box.x + box.width - 10);
         await content(page, 'basic_menu', '0_0').click();
         await expect(deeper).toHaveCount(0);
     });
 
-    test('после клика наведение раскрывает соседние группы, клик вне закрывает', async ({ page }) => {
+    test('after a click, hover expands sibling groups, an outside click closes', async ({ page }) => {
         await content(page, 'basic_menu', '0').click();
         await content(page, 'basic_menu', '1').hover();
         await expect(item(page, 'basic_menu', '1')).toHaveClass(/p-tieredmenu-item-active/);
@@ -57,7 +57,7 @@ test.describe('TieredMenu', () => {
         await expect(page.locator('#basic_menu .p-tieredmenu-submenu')).toHaveCount(0);
     });
 
-    test('клавиатура: стрелки по уровням, Escape закрывает', async ({ page }) => {
+    test('keyboard: arrows across levels, Escape closes', async ({ page }) => {
         await page.locator('#basic_menu_list').focus();
         await page.keyboard.press('ArrowDown');
         await expect(item(page, 'basic_menu', '0')).toHaveClass(/p-focus/);
@@ -78,7 +78,7 @@ test.describe('TieredMenu', () => {
         await expect(item(page, 'basic_menu', '2')).toHaveClass(/p-focus/);
     });
 
-    test('popup: кнопка открывает меню под собой, лист и клик вне закрывают', async ({ page }) => {
+    test('popup: the button opens the menu below itself, a leaf and an outside click close it', async ({ page }) => {
         const button = page.locator('[data-demo=popup]').getByRole('button', { name: 'Toggle' });
         await button.click();
         const menu = page.locator('#popup_menu');
@@ -86,7 +86,7 @@ test.describe('TieredMenu', () => {
         await expect(menu).toHaveClass(/p-tieredmenu-overlay/);
         const m = (await menu.boundingBox())!;
         const b = (await button.boundingBox())!;
-        // меню рядом с кнопкой: под ней или (если снизу нет места) над ней
+        // the menu is next to the button: below it or (if there is no room below) above it
         expect(m.y >= b.y + b.height - 2 || m.y + m.height <= b.y + 2).toBe(true);
         await content(page, 'popup_menu', '2').click();
         await expect(menu).toHaveCount(0);
@@ -100,14 +100,14 @@ test.describe('TieredMenu', () => {
         await expect(button).toBeFocused();
     });
 
-    test('у правого края окна подменю открывается слева', async ({ page }) => {
+    test('at the right edge of the window the submenu opens to the left', async ({ page }) => {
         await page.setViewportSize({ width: 360, height: 700 });
-        // узкое окно включает мобильный режим, где подменю идёт внутри пункта: проверяем всплывающее меню у правого края
+        // a narrow window enables mobile mode, where the submenu goes inside the item: we check the popup menu at the right edge
         await page.evaluate(() => {
             const wrap = document.querySelector('[data-demo=popup] > div, [data-demo=popup]') as HTMLElement;
             wrap.style.cssText += 'display:flex;justify-content:flex-end';
         });
-        await page.waitForTimeout(400); // дать отработать resize, иначе он закроет только что открытое меню
+        await page.waitForTimeout(400); // let resize run, otherwise it closes the menu that was just opened
         const button = page.locator('[data-demo=popup]').getByRole('button', { name: 'Toggle' });
         await button.click();
         await expect(page.locator('#popup_menu')).toBeVisible();
@@ -120,7 +120,7 @@ test.describe('TieredMenu', () => {
         expect(box.x + box.width).toBeLessThanOrEqual(view.width + 1);
     });
 
-    test('команда показывает сообщение, шаблон заменяет ссылку', async ({ page }) => {
+    test('a command shows a message, a template replaces the link', async ({ page }) => {
         await content(page, 'command_menu', '0').click();
         await content(page, 'command_menu', '0_1').click();
         await expect(page.locator('.p-toast-message').first()).toContainText('Preparing to print');

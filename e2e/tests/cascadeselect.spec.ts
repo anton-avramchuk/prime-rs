@@ -4,7 +4,7 @@ test.describe('CascadeSelect', () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 1000 });
         await page.goto('/cascadeselect');
-        // события до гидратации (загрузка wasm) теряются
+        // events before hydration (wasm loading) are lost
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#basic_select')).toBeAttached();
     });
@@ -13,7 +13,7 @@ test.describe('CascadeSelect', () => {
     const option = (page, key: string) => page.locator(`li[id="basic_select_${key}"]`);
     const content = (page, key: string) => option(page, key).locator('> .p-cascadeselect-option-content');
 
-    test('стили темы: поле с рамкой, подсказка, кнопка со стрелкой', async ({ page }) => {
+    test('theme styles: field with a border, placeholder, button with an arrow', async ({ page }) => {
         const root = field(page);
         expect(await root.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
         await expect(root.locator('.p-cascadeselect-label')).toHaveText('Select a City');
@@ -22,14 +22,14 @@ test.describe('CascadeSelect', () => {
         await expect(root.locator('.p-cascadeselect-overlay')).toHaveCount(0);
     });
 
-    test('клик открывает панель под полем; вложенный список правее родителя', async ({ page }) => {
+    test('click opens the panel under the field; nested list to the right of the parent', async ({ page }) => {
         await field(page).click();
         const panel = field(page).locator('.p-cascadeselect-overlay').first();
         await expect(panel).toBeVisible();
         const fb = (await field(page).boundingBox())!;
         const pb = (await panel.boundingBox())!;
         expect(pb.y).toBeGreaterThanOrEqual(fb.y + fb.height - 2);
-        // наведение раскрывает группу (как в PrimeNG; последующий клик по раскрытой группе её свернул бы)
+        // hover expands the group (as in PrimeNG; a following click on an expanded group would collapse it)
         await content(page, '0').hover();
         const sub = option(page, '0').locator('> ul.p-cascadeselect-option-list');
         await expect(sub).toBeVisible();
@@ -43,7 +43,7 @@ test.describe('CascadeSelect', () => {
         await expect(option(page, '0').locator('.p-cascadeselect-group-icon svg').first()).toBeVisible();
     });
 
-    test('выбор листа подставляет подпись и закрывает панель', async ({ page }) => {
+    test('selecting a leaf fills in the label and closes the panel', async ({ page }) => {
         await field(page).click();
         await content(page, '1').hover();
         await content(page, '1_1').hover();
@@ -57,7 +57,7 @@ test.describe('CascadeSelect', () => {
         await expect(field(page).locator('.p-cascadeselect-overlay')).toHaveCount(0);
     });
 
-    test('клавиатура: ↓ открывает, → входит в группу, Enter выбирает лист', async ({ page }) => {
+    test('keyboard: ↓ opens, → enters a group, Enter selects a leaf', async ({ page }) => {
         const input = field(page).locator('input');
         await input.focus();
         await page.keyboard.press('ArrowDown');
@@ -73,7 +73,7 @@ test.describe('CascadeSelect', () => {
         await expect(field(page).locator('.p-cascadeselect-overlay')).toHaveCount(0);
     });
 
-    test('значок очистки сбрасывает значение', async ({ page }) => {
+    test('clear icon resets the value', async ({ page }) => {
         const clear = page.locator('#clear_select');
         await clear.scrollIntoViewIfNeeded();
         await expect(clear.locator('.p-cascadeselect-label')).toHaveText('Sydney');
@@ -82,7 +82,7 @@ test.describe('CascadeSelect', () => {
         await expect(clear.locator('.p-cascadeselect-overlay')).toHaveCount(0);
     });
 
-    test('отключённое поле, загрузка и неверное значение', async ({ page }) => {
+    test('disabled field, loading and invalid value', async ({ page }) => {
         const disabled = page.locator('#disabled_select');
         await disabled.scrollIntoViewIfNeeded();
         await expect(disabled).toHaveClass(/p-disabled/);
@@ -92,7 +92,7 @@ test.describe('CascadeSelect', () => {
         await expect(page.locator('#invalid_select')).toHaveClass(/p-invalid/);
     });
 
-    test('шаблон варианта', async ({ page }) => {
+    test('template of an option', async ({ page }) => {
         const t = page.locator('#template_select');
         await t.scrollIntoViewIfNeeded();
         await t.click();

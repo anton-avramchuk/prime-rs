@@ -1,60 +1,60 @@
 # splitter Specification
 
 ## Purpose
-Splitter делит область на панели, размеры которых меняются разделителями.
+Splitter divides an area into panels whose sizes are changed by gutters.
 
 ## Requirements
 
-### Requirement: Разметка Splitter
-Компонент `Splitter` крейта `prime-splitter` SHALL выводить корень `div.p-splitter.p-component.p-splitter-<layout>` со стилем `display: flex; flex-wrap: nowrap` (и `flex-direction: column` при `Vertical`) и `data-p` с раскладкой (и `nested` при `nested`). Для каждой панели из `panels` SHALL выводиться `div.p-splitterpanel` (с `p-splitterpanel-nested` при `nested`, `tabindex="-1"`, `data-pc-section="panel"`), затем (кроме последней панели) `div.p-splitter-gutter[role=separator][tabindex="-1"][data-p-gutter-resizing="false"]` с вложенной `div.p-splitter-gutter-handle[tabindex="0"]`, у которой `aria-orientation` равен раскладке, `aria-valuenow` — размеру предыдущей панели с четырьмя знаками, а размер по оси раскладки — `gutter_size` пикселей. `style`, `style_class`, `panel_style`, `panel_style_class`, `pt` SHALL применяться к корню и панелям.
+### Requirement: Splitter markup
+The `Splitter` component of the `prime-splitter` crate SHALL render a root `div.p-splitter.p-component.p-splitter-<layout>` with the style `display: flex; flex-wrap: nowrap` (and `flex-direction: column` with `Vertical`) and `data-p` with the layout (and `nested` with `nested`). For each panel in `panels` a `div.p-splitterpanel` SHALL be rendered (with `p-splitterpanel-nested` with `nested`, `tabindex="-1"`, `data-pc-section="panel"`), then (except after the last panel) `div.p-splitter-gutter[role=separator][tabindex="-1"][data-p-gutter-resizing="false"]` with a nested `div.p-splitter-gutter-handle[tabindex="0"]`, whose `aria-orientation` equals the layout, `aria-valuenow` the size of the previous panel with four decimals, and whose size along the layout axis is `gutter_size` pixels. `style`, `style_class`, `panel_style`, `panel_style_class`, `pt` SHALL apply to the root and panels.
 
-#### Scenario: Две панели
-- **WHEN** отрисован `Splitter` с двумя панелями
-- **THEN** есть две `.p-splitterpanel` и один `.p-splitter-gutter` между ними, у ручки `tabindex="0"`
+#### Scenario: Two panels
+- **WHEN** a `Splitter` with two panels is rendered
+- **THEN** there are two `.p-splitterpanel` and one `.p-splitter-gutter` between them, the handle has `tabindex="0"`
 
-#### Scenario: Вертикальная раскладка
+#### Scenario: Vertical layout
 - **WHEN** `layout = Vertical`
-- **THEN** корень имеет `p-splitter-vertical` и `flex-direction: column`, ручка — `aria-orientation="vertical"` и высоту `gutter_size`
+- **THEN** the root has `p-splitter-vertical` and `flex-direction: column`, the handle has `aria-orientation="vertical"` and a height of `gutter_size`
 
-### Requirement: Начальные размеры
-Размер каждой панели SHALL быть `panel_sizes[i]`, а если значения нет или оно равно нулю — `100 / n` процентов. Панель SHALL получать `flex-basis: calc(<размер>% - <(n-1)*gutter_size>px)`.
+### Requirement: Initial sizes
+The size of each panel SHALL be `panel_sizes[i]`, and if there is no value or it is zero, `100 / n` percent. A panel SHALL get `flex-basis: calc(<size>% - <(n-1)*gutter_size>px)`.
 
-#### Scenario: Поровну
-- **WHEN** `panel_sizes` не задан и панелей две
-- **THEN** у обеих `flex-basis: calc(50% - 4px)`
+#### Scenario: Equal
+- **WHEN** `panel_sizes` is not set and there are two panels
+- **THEN** both have `flex-basis: calc(50% - 4px)`
 
-#### Scenario: Заданные
+#### Scenario: Given
 - **WHEN** `panel_sizes = [20, 80]`
-- **THEN** первая панель `calc(20% - 4px)`, вторая `calc(80% - 4px)`
+- **THEN** the first panel is `calc(20% - 4px)`, the second `calc(80% - 4px)`
 
-### Requirement: Перетаскивание
-Нажатие мыши на разделитель SHALL начать изменение размеров, вызвать `on_resize_start` с текущими размерами и добавить корню `p-splitter-resizing`, разделителю — `p-splitter-gutter-resizing` и `data-p-gutter-resizing="true"`. Движение мыши по документу SHALL переносить долю процента между предыдущей и следующей панелями пропорционально смещению относительно размера корня по оси раскладки (в `rtl` горизонтальное смещение инвертируется). Отпускание SHALL завершить изменение, вызвать `on_resize_end` и снять классы и подписки. Касание SHALL работать так же.
+### Requirement: Dragging
+Pressing the mouse on a gutter SHALL start a resize, call `on_resize_start` with the current sizes and add `p-splitter-resizing` to the root and `p-splitter-gutter-resizing` and `data-p-gutter-resizing="true"` to the gutter. Mouse movement over the document SHALL transfer a share of a percent between the previous and next panels in proportion to the offset relative to the root size along the layout axis (in `rtl` the horizontal offset is inverted). Release SHALL finish the resize, call `on_resize_end` and remove the classes and subscriptions. Touch SHALL work the same way.
 
-#### Scenario: Смещение
-- **WHEN** корень шириной 400 px, две панели по 50 %, мышь сдвинута на 40 px вправо
-- **THEN** размеры равны 60 % и 40 %
+#### Scenario: Offset
+- **WHEN** the root is 400 px wide, two panels of 50 %, the mouse is moved 40 px to the right
+- **THEN** the sizes are 60 % and 40 %
 
-#### Scenario: Завершение
-- **WHEN** мышь отпущена
-- **THEN** `on_resize_end` вызван с итоговыми размерами, классы изменения сняты
+#### Scenario: Finish
+- **WHEN** the mouse is released
+- **THEN** `on_resize_end` is called with the final sizes, the resize classes are removed
 
-### Requirement: Минимальные размеры
-Изменение SHALL отвергаться целиком, если новый размер предыдущей панели меньше `min_sizes[i]` или следующей меньше `min_sizes[i+1]` (нулевое или отсутствующее значение не ограничивает). `aria-valuenow` SHALL обновляться и при отвергнутом изменении.
+### Requirement: Minimum sizes
+A change SHALL be rejected entirely if the new size of the previous panel is below `min_sizes[i]` or of the next one below `min_sizes[i+1]` (a zero or missing value does not constrain). `aria-valuenow` SHALL be updated even on a rejected change.
 
-#### Scenario: Ограничение
-- **WHEN** `min_sizes = [10, 0]` и перетаскивание делает первую панель 5 %
-- **THEN** размеры не меняются
+#### Scenario: Constraint
+- **WHEN** `min_sizes = [10, 0]` and dragging makes the first panel 5 %
+- **THEN** the sizes do not change
 
-### Requirement: Клавиатура
-`keydown` на ручке SHALL смещать границу на `step` пикселей: для `Horizontal` — `ArrowRight` увеличивает предыдущую панель, `ArrowLeft` уменьшает; для `Vertical` — `ArrowUp` увеличивает, `ArrowDown` уменьшает; остальные направления и клавиши SHALL игнорироваться. Действие по умолчанию стрелок SHALL отменяться всегда. `keyup` SHALL завершать изменение: сохранить состояние и вызвать `on_resize_end`.
+### Requirement: Keyboard
+`keydown` on the handle SHALL shift the boundary by `step` pixels: for `Horizontal` `ArrowRight` enlarges the previous panel and `ArrowLeft` shrinks it; for `Vertical` `ArrowUp` enlarges and `ArrowDown` shrinks; other directions and keys SHALL be ignored. The default action of arrows SHALL always be cancelled. `keyup` SHALL finish the resize: save the state and call `on_resize_end`.
 
-#### Scenario: Стрелка вправо
-- **WHEN** на ручке нажат `ArrowRight`, корень шириной 400 px, `step = 5`
-- **THEN** предыдущая панель вырастает на 1.25 процентного пункта, следующая уменьшается на столько же
+#### Scenario: Right arrow
+- **WHEN** `ArrowRight` is pressed on the handle, the root is 400 px wide, `step = 5`
+- **THEN** the previous panel grows by 1.25 percentage points, the next shrinks by the same amount
 
-### Requirement: Сохранение состояния
-При заданном `state_key` размеры SHALL сохраняться при завершении изменения в `localStorage` (`state_storage = Local`) или `sessionStorage` (`Session`) как JSON-массив и восстанавливаться при монтировании, если там есть значение.
+### Requirement: State persistence
+With `state_key` set, sizes SHALL be saved when a resize finishes into `localStorage` (`state_storage = Local`) or `sessionStorage` (`Session`) as a JSON array and restored on mount if there is a value.
 
-#### Scenario: Восстановление
-- **WHEN** в хранилище под ключом лежит `[30,70]` и компонент смонтирован
-- **THEN** первая панель `calc(30% - 4px)`
+#### Scenario: Restore
+- **WHEN** storage holds `[30,70]` under the key and the component is mounted
+- **THEN** the first panel is `calc(30% - 4px)`

@@ -1,5 +1,5 @@
-//! Страница Slider: демонстрации `basic`, `range`, `step`, `vertical`, `filter`, `input` из showcase PrimeNG
-//! (`apps/showcase/doc/slider`). Демонстрации с Angular Forms не переносятся; в `filter` вместо внешней картинки градиентный блок.
+//! Slider page: demos `basic`, `range`, `step`, `vertical`, `filter`, `input` from the PrimeNG showcase
+//! (`apps/showcase/doc/slider`). Demos with Angular Forms are not ported; in `filter` a gradient block replaces the external image.
 
 use super::Demo;
 use leptos::prelude::*;
@@ -7,7 +7,7 @@ use prime_inputtext::InputText;
 use prime_selectbutton::{SelectButton, SelectButtonOption};
 use prime_slider::{Slider, SliderOrientation};
 
-/// Страница `/slider`.
+/// The `/slider` page.
 #[component]
 pub fn SliderPage() -> impl IntoView {
     let basic = RwSignal::new(0.0);

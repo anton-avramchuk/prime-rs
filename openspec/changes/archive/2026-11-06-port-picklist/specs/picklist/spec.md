@@ -1,39 +1,39 @@
 # picklist Specification
 
 ## Purpose
-PickList — перенос элементов между двумя списками с изменением порядка.
+PickList — moving items between two lists with reordering.
 
 ## ADDED Requirements
 
-### Requirement: Перенос
-`move_selected` SHALL переносить выбранные элементы источника в конец цели в порядке выбора, пропуская элементы, значения которых уже есть в цели; `move_all` — все элементы источника, видимые при текущем поиске, в исходном порядке. Перенесённые элементы SHALL удаляться из источника; симметрично — из цели в источник.
+### Requirement: Transfer
+`move_selected` SHALL move the selected source items to the end of the target in selection order, skipping items whose values are already in the target; `move_all` — all source items visible under the current search, in the original order. Moved items SHALL be removed from the source; symmetrically — from the target to the source.
 
-#### Scenario: Выбранные
-- **WHEN** источник `A B C D`, цель `X`, выбраны `C A` (в таком порядке)
-- **THEN** источник `B D`, цель `X C A`
+#### Scenario: Selected
+- **WHEN** source `A B C D`, target `X`, `C A` are selected (in that order)
+- **THEN** source `B D`, target `X C A`
 
-#### Scenario: Дубликат
-- **WHEN** в цели уже есть элемент со значением `A`, выбран `A` источника
-- **THEN** элемент не переносится и остаётся в источнике
+#### Scenario: Duplicate
+- **WHEN** the target already has an item with value `A`, source `A` is selected
+- **THEN** the item is not moved and stays in the source
 
-#### Scenario: Все при поиске
-- **WHEN** источник `Apple Banana Avocado`, поиск `ap`
-- **THEN** `move_all` переносит только `Apple`
+#### Scenario: All under search
+- **WHEN** source `Apple Banana Avocado`, search `ap`
+- **THEN** `move_all` moves only `Apple`
 
-### Requirement: Разметка
-`PickList` SHALL выводить `div.p-picklist.p-component` с пятью блоками в порядке: управление источником (`p-picklist-controls p-picklist-source-controls`, при `show_source_controls`), контейнер списка источника (`p-picklist-list-container p-picklist-source-list-container`), управление переносом (`p-picklist-controls p-picklist-transfer-controls`), контейнер списка цели, управление целью (при `show_target_controls`). Кнопки источника и цели — «вверх», «в начало», «вниз», «в конец»; кнопки переноса — «в цель», «всё в цель», «в источник», «всё в источник» с `aria-label` из перевода.
+### Requirement: Markup
+`PickList` SHALL render `div.p-picklist.p-component` with five blocks in the order: source controls (`p-picklist-controls p-picklist-source-controls`, with `show_source_controls`), the source list container (`p-picklist-list-container p-picklist-source-list-container`), transfer controls (`p-picklist-controls p-picklist-transfer-controls`), the target list container, target controls (with `show_target_controls`). The source and target buttons are "up", "to top", "down", "to bottom"; the transfer buttons are "to target", "all to target", "to source", "all to source" with `aria-label` from the translation.
 
-#### Scenario: Пустой выбор
-- **WHEN** выбор пуст, оба списка непусты
-- **THEN** недоступны кнопки перестановки и «в цель»/«в источник», доступны «всё в цель» и «всё в источник»
+#### Scenario: Empty selection
+- **WHEN** the selection is empty, both lists are non-empty
+- **THEN** the reorder buttons and "to target"/"to source" are disabled, "all to target" and "all to source" are enabled
 
-### Requirement: Действия
-Кнопки переноса SHALL менять `source` и `target` и вызывать события с перенесёнными элементами; после переноса выбор источника SHALL очищаться (при `keep_selection` — выбор цели дополняется перенесёнными). Кнопки перестановки SHALL менять порядок выбранных в своём списке и вызывать `on_source_reorder`/`on_target_reorder`. Двойной клик по элементу SHALL переносить выбранные. При `disabled` все кнопки недоступны.
+### Requirement: Actions
+The transfer buttons SHALL change `source` and `target` and call the events with the moved items; after the transfer the source selection SHALL be cleared (with `keep_selection` — the target selection is extended with the moved ones). The reorder buttons SHALL change the order of the selected ones in their own list and call `on_source_reorder`/`on_target_reorder`. A double click on an item SHALL move the selected ones. With `disabled` all buttons are disabled.
 
-#### Scenario: В цель
-- **WHEN** выбран `B` источника, клик «в цель»
-- **THEN** `B` в конце цели, выбор источника пуст, вызван `on_move_to_target`
+#### Scenario: To target
+- **WHEN** source `B` is selected, click "to target"
+- **THEN** `B` is at the end of the target, the source selection is empty, `on_move_to_target` was called
 
-#### Scenario: Двойной клик
-- **WHEN** двойной клик по элементу источника
-- **THEN** выбранные элементы перенесены в цель
+#### Scenario: Double click
+- **WHEN** a double click on a source item
+- **THEN** the selected items are moved to the target

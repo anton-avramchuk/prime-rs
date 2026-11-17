@@ -2,18 +2,18 @@
 source: xtask/src/gen_spec.rs
 expression: "render(\"badge\", \"fe82b291d6\", \"21.1.10\", &e)"
 ---
-<!-- Заготовка создана `cargo xtask gen-spec badge`; довести вручную. -->
-<!-- Источник: packages/primeng/src/badge/badge.ts, PrimeNG 21.1.10, коммит fe82b291d6. -->
+<!-- Skeleton created by `cargo xtask gen-spec badge`; finish by hand. -->
+<!-- Source: packages/primeng/src/badge/badge.ts, PrimeNG 21.1.10, commit fe82b291d6. -->
 
 ## ADDED Requirements
 
 ### Requirement: Props
-Компонент `prime-badge` SHALL принимать те же свойства, что и PrimeNG (имена приведены к snake_case Rust).
+The `prime-badge` component SHALL accept the same properties as PrimeNG (names converted to Rust snake_case).
 
-Селекторы PrimeNG:
+PrimeNG selectors:
 - `p-badge`
 
-Входы PrimeNG:
+PrimeNG inputs:
 - `fluid`
 - `label`
 - `size`
@@ -24,10 +24,10 @@ expression: "render(\"badge\", \"fe82b291d6\", \"21.1.10\", &e)"
 - **WHEN** TODO
 - **THEN** TODO
 
-### Requirement: События
-Компонент SHALL вызывать те же события, что и PrimeNG.
+### Requirement: Events
+The component SHALL emit the same events as PrimeNG.
 
-Выходы PrimeNG:
+PrimeNG outputs:
 - `closed`
 - `onClick`
 
@@ -35,10 +35,10 @@ expression: "render(\"badge\", \"fe82b291d6\", \"21.1.10\", &e)"
 - **WHEN** TODO
 - **THEN** TODO
 
-### Requirement: DOM и классы
-Разметка SHALL совпадать с PrimeNG и использовать те же классы.
+### Requirement: DOM and classes
+The markup SHALL match PrimeNG and use the same classes.
 
-Классы PrimeNG:
+PrimeNG classes:
 - `p-badge`
 - `p-badge-label`
 - `p-badge-sm`
@@ -48,22 +48,22 @@ expression: "render(\"badge\", \"fe82b291d6\", \"21.1.10\", &e)"
 - **WHEN** TODO
 - **THEN** TODO
 
-### Requirement: Доступность
-Компонент SHALL выставлять те же ARIA-атрибуты и роли, что и PrimeNG.
+### Requirement: Accessibility
+The component SHALL expose the same ARIA attributes and roles as PrimeNG.
 
 #### Scenario: TODO
 - **WHEN** TODO
 - **THEN** TODO
 
-### Requirement: Клавиатура
-Компонент SHALL поддерживать те же клавиши, что и PrimeNG.
+### Requirement: Keyboard
+The component SHALL support the same keys as PrimeNG.
 
 #### Scenario: TODO
 - **WHEN** TODO
 - **THEN** TODO
 
-### Requirement: Производительность
-Рендер компонента SHALL укладываться в бюджеты `benches/budgets.toml`.
+### Requirement: Performance
+Component rendering SHALL stay within the budgets of `benches/budgets.toml`.
 
 #### Scenario: TODO
 - **WHEN** TODO

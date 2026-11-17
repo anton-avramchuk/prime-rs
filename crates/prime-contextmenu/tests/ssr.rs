@@ -1,4 +1,4 @@
-//! Разметка ContextMenu (SSR): скрыт до показа, корень, пункты, группы, разделители, `aria-*`, шаблоны, `pt`.
+//! ContextMenu markup (SSR): hidden until shown, root, items, groups, separators, `aria-*`, templates, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -20,7 +20,7 @@ fn model() -> Vec<MenuItem> {
     ]
 }
 
-/// Рендерит меню, показанное в точке (10, 20).
+/// Renders a menu shown at the point (10, 20).
 fn shown(f: impl FnOnce(ContextMenuRef) -> String) -> String {
     Owner::new().with(|| {
         let r = ContextMenuRef::new();
@@ -52,22 +52,22 @@ fn shown_markup_has_root_list_and_items() {
         "{html}"
     );
     assert!(html.contains("tabindex=\"0\""), "{html}");
-    assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "File, Users, Quit: скрытый и разделитель не считаются: {html}");
+    assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "File, Users, Quit: the hidden one and the separator do not count: {html}");
     assert_eq!(html.matches("role=\"separator\"").count(), 1, "{html}");
     assert!(html.contains("id=\"cm_0\"") && html.contains("id=\"cm_3\"") && html.contains("id=\"cm_4\""), "{html}");
     assert!(!html.contains("Hidden"), "{html}");
-    assert!(html.contains("position: absolute"), "панель вне потока: {html}");
-    assert!(html.contains("visibility: hidden"), "до расчёта положения панель скрыта: {html}");
-    assert!(!html.contains("p-tieredmenu"), "классы только contextmenu: {html}");
+    assert!(html.contains("position: absolute"), "panel is out of flow: {html}");
+    assert!(html.contains("visibility: hidden"), "panel is hidden until the position is computed: {html}");
+    assert!(!html.contains("p-tieredmenu"), "contextmenu classes only: {html}");
 }
 
 #[test]
 fn groups_carry_aria_and_an_arrow_but_no_submenu_until_opened() {
     let html = shown(|r| view! { <ContextMenu id="cm" model=model() popup_ref=r /> }.to_html());
     assert!(html.contains("aria-haspopup=\"menu\"") && html.contains("aria-expanded=\"false\""), "{html}");
-    assert_eq!(html.matches("aria-haspopup=\"menu\"").count(), 1, "только File — группа: {html}");
+    assert_eq!(html.matches("aria-haspopup=\"menu\"").count(), 1, "only File is a group: {html}");
     assert!(html.contains("p-contextmenu-submenu-icon"), "{html}");
-    assert!(!html.contains("p-contextmenu-submenu\"") && !html.contains("Share"), "подменю выводится только у раскрытой группы: {html}");
+    assert!(!html.contains("p-contextmenu-submenu\"") && !html.contains("Share"), "a submenu is output only for an expanded group: {html}");
 }
 
 #[test]
@@ -83,7 +83,7 @@ fn items_have_state_attributes_and_positions() {
         "{html}"
     );
     assert!(html.contains("aria-label=\"Users\"") && html.contains("aria-label=\"Quit\""), "{html}");
-    assert!(html.contains("p-contextmenu-item quit"), "класс пункта: {html}");
+    assert!(html.contains("p-contextmenu-item quit"), "item class: {html}");
 }
 
 #[test]
@@ -99,7 +99,7 @@ fn links_carry_attributes_icons_and_labels() {
         "{html}"
     );
     assert!(html.contains("p-contextmenu-item-content") && html.contains("class=\"p-contextmenu-item-label\""), "{html}");
-    assert_eq!(html.matches("p-contextmenu-item-icon").count(), 1, "значок только у пункта со значком: {html}");
+    assert_eq!(html.matches("p-contextmenu-item-icon").count(), 1, "icon only on the item with an icon: {html}");
 }
 
 #[test]
@@ -153,7 +153,7 @@ fn style_class_style_and_pt() {
         "p-contextmenu-submenu-icon s",
         "p-contextmenu-separator sep",
     ] {
-        assert!(html.contains(needle), "нет {needle}: {html}");
+        assert!(html.contains(needle), "no {needle}: {html}");
     }
 }
 

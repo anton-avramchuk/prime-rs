@@ -1,4 +1,4 @@
-//! Поведение Fieldset в реальном браузере (wasm-bindgen-test): клик, `aria-expanded`, анимация, `tabindex`, события.
+//! Fieldset behaviour in a real browser (wasm-bindgen-test): click, `aria-expanded`, animation, `tabindex`, events.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -22,7 +22,7 @@ fn host() -> HtmlElement {
 }
 
 fn q(host: &HtmlElement, sel: &str) -> HtmlElement {
-    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("нет {sel}")).dyn_into().unwrap()
+    host.query_selector(sel).unwrap().unwrap_or_else(|| panic!("no {sel}")).dyn_into().unwrap()
 }
 
 async fn sleep(ms: i32) {
@@ -51,7 +51,7 @@ async fn click_toggles_signal_aria_and_icon() {
     assert_eq!(region.get_attribute("aria-hidden").as_deref(), Some("true"));
     assert_eq!(region.get_attribute("tabindex").as_deref(), Some("-1"));
     assert!(root.class_name().contains("p-fieldset-collapsed"));
-    assert_ne!(button.inner_html(), minus, "иконка сменилась на «плюс»");
+    assert_ne!(button.inner_html(), minus, "icon changed to plus");
     button.click();
     leptos::task::tick().await;
     assert!(!collapsed.get_untracked());
@@ -99,7 +99,7 @@ async fn animation_class_is_set_and_removed_and_events_fire() {
     assert!(container.class_name().contains("p-collapsible-enter-active"), "{}", container.class_name());
     sleep(700).await;
     assert!(!container.class_name().contains("p-collapsible-enter-active"));
-    assert_eq!((before.load(Ordering::SeqCst), after.load(Ordering::SeqCst)), (10, 1), "до — прежнее состояние, после — новое");
+    assert_eq!((before.load(Ordering::SeqCst), after.load(Ordering::SeqCst)), (10, 1), "before — the previous state, after — the new one");
 
     q(&host, ".p-fieldset-toggle-button").click();
     leptos::task::tick().await;

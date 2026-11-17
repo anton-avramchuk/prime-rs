@@ -1,8 +1,8 @@
-//! ImageCompare — порт `p-imagecompare` из PrimeNG 21.1.10.
+//! ImageCompare — port of `p-imagecompare` from PrimeNG 21.1.10.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-imagecompare` с двумя представлениями (`left`, `right`, обычно `<img>`) и
-//! ползунком `input[type=range].p-imagecompare-slider`. Ввод в ползунок обрезает `clip-path` элемент, стоящий перед ним
-//! (правое изображение); правило темы `img + img` задаёт обрезку по умолчанию (50 %).
+//! Markup and classes as in PrimeNG: root `div.p-imagecompare` with two views (`left`, `right`, usually `<img>`) and
+//! a slider `input[type=range].p-imagecompare-slider`. Input on the slider clips the `clip-path` of the element in front of it
+//! (the right image); the theme rule `img + img` sets the default clipping (50 %).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -22,42 +22,42 @@ use std::sync::Arc;
 
 pub use state::clip_path;
 
-/// Pass-through частей ImageCompare.
+/// Pass-through for the parts of ImageCompare.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ImageComparePt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Ползунок.
+    /// Slider.
     pub slider: Pt,
 }
 
-/// Сравнение двух изображений ползунком.
+/// Comparison of two images with a slider.
 ///
-/// `left` и `right` выводятся без обёрток; для правила темы `img + img` оба должны быть `<img>`.
+/// `left` and `right` are rendered without wrappers; for the theme rule `img + img` both should be `<img>`.
 #[component]
 pub fn ImageCompare(
-    /// Левое представление (нижнее изображение).
+    /// Left view (the bottom image).
     #[prop(into)]
     left: ViewFn,
-    /// Правое представление (верхнее изображение; его обрезает ползунок).
+    /// Right view (the top image; the slider clips it).
     #[prop(into)]
     right: ViewFn,
-    /// Атрибут `tabindex` корня.
+    /// `tabindex` attribute of the root.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label` корня.
+    /// `aria-label` attribute of the root.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` корня.
+    /// `aria-labelledby` attribute of the root.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Pass-through частей.
+    /// Pass-through for the parts.
     #[prop(optional)]
     pt: Option<ImageComparePt>,
 ) -> impl IntoView {
@@ -92,7 +92,7 @@ pub fn ImageCompare(
     }
 }
 
-/// Обработчик ввода (`onSlide`): обрезает элемент перед ползунком; направление берётся из ближайшего `dir="rtl"`.
+/// Input handler (`onSlide`): clips the element in front of the slider; the direction is taken from the nearest `dir="rtl"`.
 fn slide(event: &leptos::web_sys::Event) {
     let Some(input) = event.target().and_then(|t| t.dyn_into::<leptos::web_sys::HtmlInputElement>().ok()) else { return };
     let Ok(value) = input.value().parse::<f64>() else { return };

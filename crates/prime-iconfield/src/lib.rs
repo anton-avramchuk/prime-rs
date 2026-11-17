@@ -1,9 +1,9 @@
-//! IconField и InputIcon — порт `p-iconfield` и `p-inputicon` из PrimeNG 21.1.10.
+//! IconField and InputIcon — port of `p-iconfield` and `p-inputicon` from PrimeNG 21.1.10.
 //!
-//! `IconField` рисует `<span class="p-iconfield p-iconfield-left|right">`, `InputIcon` — `<span class="p-inputicon">`.
-//! Положение значка внутри поля задаёт CSS темы по порядку дочерних элементов (`:first-child`/`:last-child`), класс
-//! `p-iconfield-left|right` информационный. Значок передаётся дочерним элементом (например, SVG из `prime-icons`).
-//! У `InputIcon` в PrimeNG нет собственной темы: его правила входят в `iconfield`.
+//! `IconField` renders `<span class="p-iconfield p-iconfield-left|right">`, `InputIcon` — `<span class="p-inputicon">`.
+//! The icon position inside the field is set by the theme CSS according to the order of child elements (`:first-child`/`:last-child`); the class
+//! `p-iconfield-left|right` is informational. The icon is passed as a child element (for example an SVG from `prime-icons`).
+//! `InputIcon` has no theme of its own in PrimeNG: its rules are part of `iconfield`.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -20,17 +20,17 @@ use prime_core::{ClassNames, OptProp, Prop, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
-/// Положение значка относительно поля.
+/// Icon position relative to the field.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum IconPosition {
-    /// Значок слева (по умолчанию).
+    /// Icon on the left (default).
     #[default]
     Left,
-    /// Значок справа.
+    /// Icon on the right.
     Right,
 }
 
-/// Дописывает собственные классы корня `IconField`.
+/// Appends the own root classes of `IconField`.
 pub fn write_classes(cn: &mut ClassNames, position: IconPosition) {
     cn.add(match position {
         IconPosition::Left => "p-iconfield p-iconfield-left",
@@ -38,31 +38,31 @@ pub fn write_classes(cn: &mut ClassNames, position: IconPosition) {
     });
 }
 
-/// Pass-through IconField.
+/// Pass-through for IconField.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct IconFieldPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
-/// Поле со значком внутри.
+/// Field with an icon inside.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn IconField(
-    /// Положение значка.
+    /// Icon position.
     #[prop(optional, into)]
     icon_position: Prop<IconPosition>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<IconFieldPt>,
-    /// Содержимое.
+    /// Content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -84,7 +84,7 @@ pub fn IconField(
     }
 }
 
-/// Разметка: одна для статической и реактивной ветвей (меняются только выражения атрибутов корня).
+/// Markup: one for the static and reactive branches (only the root attribute expressions differ).
 macro_rules! iconfield_markup {
     ($class:expr, $style:expr, $attrs:expr, $content:expr) => {
         view! { <span class={$class} style={$style} {..$attrs}>{$content}</span> }
@@ -100,28 +100,28 @@ fn class_of(icon_position: IconPosition, style_class: &OptProp<String>, root: &P
     cn.finish_cow()
 }
 
-/// Pass-through InputIcon.
+/// Pass-through for InputIcon.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct InputIconPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
 }
 
-/// Значок внутри `IconField`.
+/// Icon inside `IconField`.
 ///
-/// Свойства принимают значение или сигнал.
+/// Properties accept a value or a signal.
 #[component]
 pub fn InputIcon(
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<InputIconPt>,
-    /// Содержимое.
+    /// Content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -143,7 +143,7 @@ pub fn InputIcon(
     }
 }
 
-/// Разметка: одна для статической и реактивной ветвей (меняются только выражения атрибутов корня).
+/// Markup: one for the static and reactive branches (only the root attribute expressions differ).
 macro_rules! inputicon_markup {
     ($class:expr, $style:expr, $attrs:expr, $content:expr) => {
         view! { <span class={$class} style={$style} {..$attrs}>{$content}</span> }

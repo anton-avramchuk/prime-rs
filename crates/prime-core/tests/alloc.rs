@@ -1,11 +1,11 @@
-//! ClassNames: одна аллокация в `finish()`, ноль в `finish_cow()` для константных строк (после первого интернирования).
+//! ClassNames: one allocation in `finish()`, zero in `finish_cow()` for constant strings (after the first interning).
 
 use prime_core::ClassNames;
 
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
-// dhat допускает один профайлер за раз, поэтому обе проверки идут в одном тесте.
+// dhat allows one profiler at a time, so both checks run in one test.
 #[test]
 fn class_names_allocations() {
     single_allocation_in_finish();
@@ -22,7 +22,7 @@ fn single_allocation_in_finish() {
 
     let after = dhat::HeapStats::get();
     assert_eq!(s, "p-button p-component p-button-sm p-button-outlined");
-    assert_eq!(after.total_blocks - before.total_blocks, 1, "ожидалась одна аллокация");
+    assert_eq!(after.total_blocks - before.total_blocks, 1, "one allocation expected");
 }
 
 fn finish_cow_does_not_allocate_for_constant_strings() {
@@ -37,5 +37,5 @@ fn finish_cow_does_not_allocate_for_constant_strings() {
     let second = build();
     let after = dhat::HeapStats::get();
     assert_eq!(first, second);
-    assert_eq!(after.total_blocks - before.total_blocks, 0, "повторная сборка константной строки не должна аллоцировать");
+    assert_eq!(after.total_blocks - before.total_blocks, 0, "rebuilding a constant string must not allocate");
 }

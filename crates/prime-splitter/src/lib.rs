@@ -1,8 +1,8 @@
-//! Splitter — порт `p-splitter` из PrimeNG 21.1.10.
+//! Splitter - port of PrimeNG 21.1.10 `p-splitter`.
 //!
-//! Панели в ряд или столбец, между ними разделители: размеры меняются перетаскиванием (мышь, касание) и стрелками на ручке.
-//! Содержимое панелей — `panels` (вместо `ng-template #panel`). Размеры хранятся в процентах и выводятся как
-//! `flex-basis: calc(<доля>% - <(n-1)·gutter_size>px)`; при заданном `state_key` они сохраняются в хранилище браузера.
+//! Panels in a row or column with gutters between them: sizes change by dragging (mouse, touch) and with arrows on the handle.
+//! Panel content is `panels` (instead of `ng-template #panel`). Sizes are stored in percent and rendered as
+//! `flex-basis: calc(<share>% - <(n-1)·gutter_size>px)`; with `state_key` set they are saved in browser storage.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -26,27 +26,27 @@ pub use state::{
     is_valid_resize, key_step, panel_classes, parse_json, root_classes, root_style, to_json,
 };
 
-/// Событие изменения размеров.
+/// Resize event.
 #[derive(Clone, Debug, PartialEq)]
 pub struct SplitterResizeEvent {
-    /// Размеры панелей в процентах.
+    /// Panel sizes in percent.
     pub sizes: Vec<f64>,
 }
 
-/// Pass-through частей [`Splitter`].
+/// Pass-through for [`Splitter`] parts.
 #[derive(Clone, Debug, Default)]
 pub struct SplitterPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Панель.
+    /// Panel.
     pub panel: Pt,
-    /// Разделитель.
+    /// Gutter.
     pub gutter: Pt,
-    /// Ручка разделителя.
+    /// Gutter handle.
     pub gutter_handle: Pt,
 }
 
-/// Перетаскивание в процессе.
+/// Drag in progress.
 #[derive(Clone, Copy)]
 struct Drag {
     index: usize,
@@ -57,7 +57,7 @@ struct Drag {
     rtl: bool,
 }
 
-/// Состояние и действия одного экземпляра.
+/// State and actions of a single instance.
 #[derive(Clone, Copy)]
 struct Ctl {
     layout: SplitterLayout,
@@ -80,7 +80,7 @@ impl Ctl {
         self.layout == SplitterLayout::Horizontal
     }
 
-    /// Размер корня по оси раскладки и направление письма.
+    /// Root size along the layout axis and the writing direction.
     fn measure(&self) -> Option<(f64, bool)> {
         let root = self.root_ref.get_untracked()?;
         let rect = web_sys::Element::get_bounding_client_rect(&root);
@@ -99,7 +99,7 @@ impl Ctl {
         }
     }
 
-    /// Применяет новые размеры пары `(index, index + 1)`, если они допустимы.
+    /// Applies new sizes of the pair `(index, index + 1)` if they are valid.
     fn apply(&self, index: usize, new_prev: f64, new_next: f64) {
         let allowed = self.min_sizes.with_value(|min| {
             is_valid_resize(new_prev, new_next, min.get(index).copied().unwrap_or(0.0), min.get(index + 1).copied().unwrap_or(0.0))
@@ -220,56 +220,56 @@ impl Ctl {
     }
 }
 
-/// Панели с изменяемыми размерами.
+/// Panels with resizable sizes.
 ///
-/// Число панелей, раскладка, шаг и ограничения читаются один раз при создании.
+/// The panel count, layout, step and constraints are read once on creation.
 #[component]
 pub fn Splitter(
-    /// Содержимое панелей по порядку.
+    /// Panel content in order.
     panels: Vec<ViewFn>,
-    /// Раскладка (по умолчанию в ряд).
+    /// Layout (row by default).
     #[prop(optional)]
     layout: SplitterLayout,
-    /// Начальные размеры в процентах; недостающие и нулевые — поровну.
+    /// Initial sizes in percent; missing and zero ones are split equally.
     #[prop(optional)]
     panel_sizes: Vec<f64>,
-    /// Минимальные размеры в процентах; нулевые и отсутствующие не ограничивают.
+    /// Minimum sizes in percent; zero and missing ones do not constrain.
     #[prop(optional)]
     min_sizes: Vec<f64>,
-    /// Толщина разделителя в пикселях.
+    /// Gutter thickness in pixels.
     #[prop(default = 4.0)]
     gutter_size: f64,
-    /// Шаг клавиш в пикселях.
+    /// Key step in pixels.
     #[prop(default = 5.0)]
     step: f64,
-    /// Ключ хранилища; без него состояние не сохраняется.
+    /// Storage key; without it the state is not saved.
     #[prop(optional, into)]
     state_key: Option<String>,
-    /// Хранилище (по умолчанию `sessionStorage`).
+    /// Storage (`sessionStorage` by default).
     #[prop(optional)]
     state_storage: SplitterStorage,
-    /// Панели содержат вложенный Splitter (в PrimeNG определяется автоматически).
+    /// Panels contain a nested Splitter (detected automatically in PrimeNG).
     #[prop(optional, into)]
     nested: Prop<bool>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Встроенный стиль панелей.
+    /// Inline style of the panels.
     #[prop(optional, into)]
     panel_style: OptProp<String>,
-    /// Дополнительный класс панелей.
+    /// Extra class of the panels.
     #[prop(optional, into)]
     panel_style_class: OptProp<String>,
-    /// Вызывается в начале изменения размеров.
+    /// Called at the start of a resize.
     #[prop(optional, into)]
     on_resize_start: Option<Callback<SplitterResizeEvent>>,
-    /// Вызывается в конце изменения размеров.
+    /// Called at the end of a resize.
     #[prop(optional, into)]
     on_resize_end: Option<Callback<SplitterResizeEvent>>,
-    /// Pass-through частей.
+    /// Pass-through for parts.
     #[prop(optional)]
     pt: Option<SplitterPt>,
 ) -> impl IntoView {

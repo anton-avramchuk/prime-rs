@@ -1,4 +1,4 @@
-//! Структура DOM, классы, ARIA, слоты, `pt` и паритет ветвей Panel (SSR).
+//! DOM structure, classes, ARIA, slots, `pt` and static/reactive parity of Panel (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 #[test]
@@ -100,7 +100,7 @@ fn toggle_button_markup_matches_primeng() {
     );
     let open = view! { <Panel header="H" toggleable=true>"x"</Panel> }.to_html();
     let icon = |s: &str| s.split("p-button-icon\"").nth(1).and_then(|r| r.split("</button>").next()).map(str::to_owned);
-    assert_ne!(icon(&closed), icon(&open), "плюс и минус различаются");
+    assert_ne!(icon(&closed), icon(&open), "plus and minus differ");
 }
 
 #[test]

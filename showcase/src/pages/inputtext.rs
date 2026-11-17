@@ -1,4 +1,4 @@
-//! Страница InputText: демонстрации `basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` из showcase PrimeNG (`apps/showcase/doc/inputtext`).
+//! InputText page: demos `basic`, `filled`, `sizes`, `invalid`, `disabled`, `fluid`, `floatlabel`, `iftalabel` from the PrimeNG showcase (`apps/showcase/doc/inputtext`).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -7,13 +7,13 @@ use prime_floatlabel::FloatLabel;
 use prime_iftalabel::IftaLabel;
 use prime_inputtext::InputText;
 
-/// Страница `/inputtext`.
+/// Page `/inputtext`.
 #[component]
 pub fn InputTextPage() -> impl IntoView {
     let value = RwSignal::new(String::new());
     view! {
         <Demo name="basic" title="Basic">
-            <InputText value=value placeholder="Введите текст" />
+            <InputText value=value placeholder="Enter text" />
             <span data-testid="echo">{move || value.get()}</span>
         </Demo>
         <Demo name="filled" title="Filled">

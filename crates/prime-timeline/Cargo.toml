@@ -1,6 +1,6 @@
 [package]
 name = "prime-timeline"
-description = "prime-rs: компонент Timeline (порт PrimeNG)"
+description = "prime-rs: Timeline component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -1,4 +1,4 @@
-//! Оболочка страницы, меню и маршруты.
+//! Page shell, menu and routes.
 
 use crate::doc::{DOC_CSS, DocNav, DocPage};
 use crate::pages::{
@@ -20,7 +20,7 @@ use leptos_router::components::{Route, Router, Routes};
 
 const DARK_CLASS: &str = "p-dark";
 
-/// HTML-оболочка: тема подключается встроенным `<style>` (базовый CSS и CSS компонентов).
+/// HTML shell: the theme is included via an inline `<style>` (base CSS and component CSS).
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     let css = prime_theme::stylesheet(&[
         "button",
@@ -125,14 +125,14 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         }
 }
 
-/// Переключает класс тёмной схемы на `<html>`; на сервере ничего не делает.
+/// Toggles the dark scheme class on `<html>`; does nothing on the server.
 fn toggle_dark() {
     if let Some(root) = web_sys::window().and_then(|w| w.document()).and_then(|d| d.document_element()) {
         let _ = root.class_list().toggle(DARK_CLASS);
     }
 }
 
-/// Корневой компонент showcase.
+/// Root component of the showcase.
 #[component]
 pub fn App() -> impl IntoView {
     view! {
@@ -141,13 +141,13 @@ pub fn App() -> impl IntoView {
                     <header style="display: flex; align-items: center; justify-content: space-between">
                         <h1>"prime-rs"</h1>
                                             <button type="button" data-testid="toggle-dark" on:click=|_| toggle_dark()>
-                            "Светлая / тёмная схема"
+                            "Light / dark scheme"
                         </button>
                     </header>
                     <div class="doc-shell">
     <DocNav />
     <main>
-                        <Routes fallback=|| "Страница не найдена">
+                        <Routes fallback=|| "Page not found">
                             <Route path=StaticSegment("") view=HomePage />
                             <Route path=StaticSegment("button") view=|| view! { <DocPage name="button"><ButtonPage /></DocPage> } />
                             <Route path=StaticSegment("badge") view=|| view! { <DocPage name="badge"><BadgePage /></DocPage> } />

@@ -1,8 +1,8 @@
-//! Страница Table (этап 2, пакет 1): демонстрации `basic`, `singlecolumnsort`, `multiplecolumnssort`, `paginatorbasic`,
+//! Table page (stage 2, package 1): demos `basic`, `singlecolumnsort`, `multiplecolumnssort`, `paginatorbasic`,
 //! `singleselection`, `multipleselection`, `checkboxselection`, `radiobuttonselection`, `rowexpansion`, `striped`,
-//! `gridlines`, `size`, `verticalscroll`, `loadingmask`, `style`, а также `filterrow`, `filterglobal`, `celledit`, `rowedit`
-//! и `lazyload` из showcase PrimeNG (`apps/showcase/doc/table`; изменение столбцов, заморозка, виртуальная прокрутка и
-//! группировка — следующие пакеты).
+//! `gridlines`, `size`, `verticalscroll`, `loadingmask`, `style`, as well as `filterrow`, `filterglobal`, `celledit`, `rowedit`
+//! and `lazyload` from the PrimeNG showcase (`apps/showcase/doc/table`; column changes, freezing, virtual scrolling and
+//! grouping are the next packages).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -229,7 +229,7 @@ fn Loading() -> impl IntoView {
     }
 }
 
-/// Строка с изменяемым названием для демонстраций правки.
+/// Row with an editable name for the edit demos.
 #[derive(Clone, Debug)]
 struct Item {
     code: &'static str,
@@ -363,7 +363,7 @@ fn LazyLoad() -> impl IntoView {
     }
 }
 
-/// Страница `/table`.
+/// The `/table` page.
 #[component]
 pub fn TablePage() -> impl IntoView {
     view! {

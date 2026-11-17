@@ -1,4 +1,4 @@
-//! Эффект ripple (порт директивы `pRipple`): элемент `span.p-ink` внутри хоста, активируемый при `mousedown`.
+//! Ripple effect (port of the `pRipple` directive): a `span.p-ink` element inside the host, activated on `mousedown`.
 
 use crate::dom::{document, window};
 use std::cell::Cell;
@@ -14,7 +14,7 @@ fn set_active(ink: &Element, active: bool) {
     let _ = ink.set_attribute("data-p-ink-active", if active { "true" } else { "false" });
 }
 
-/// Подключённый ripple. При `Drop` удаляет `span.p-ink` и обработчики.
+/// Attached ripple. On `Drop` it removes `span.p-ink` and the handlers.
 pub struct Ripple {
     host: HtmlElement,
     ink: HtmlElement,
@@ -25,7 +25,7 @@ pub struct Ripple {
 }
 
 impl Ripple {
-    /// Подключает ripple к `host` (добавляет класс `p-ripple` и элемент `p-ink`). Вне браузера возвращает `None`.
+    /// Attaches the ripple to `host` (adds the `p-ripple` class and the `p-ink` element). Outside the browser returns `None`.
     pub fn attach(host: &HtmlElement) -> Option<Self> {
         let doc = document()?;
         let win = window()?;
@@ -95,7 +95,7 @@ impl Ripple {
         })
     }
 
-    /// Элемент `span.p-ink`.
+    /// The `span.p-ink` element.
     pub fn ink(&self) -> &HtmlElement {
         &self.ink
     }

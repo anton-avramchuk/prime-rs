@@ -2,59 +2,59 @@
 
 ## Context
 
-Требования — в `specs/scrolltop`. Исходники PrimeNG 21.1.10: `scrolltop/scrolltop.ts`, `scrolltop/style/scrolltopstyle.ts`; демонстрации `apps/showcase/doc/scrolltop/{basic,element}-doc.ts`. Образцы в проекте: `prime-button` (кнопка), `prime-slider` (подписка на `window` из обработчика, handle в `StoredValue<_, LocalStorage>`, снятие в `on_cleanup`), `prime-select` (z-index группы `Overlay`, проверка `is_disposed()` в замыканиях таймеров), `prime_core::zindex`.
+Requirements are in `specs/scrolltop`. PrimeNG 21.1.10 sources: `scrolltop/scrolltop.ts`, `scrolltop/style/scrolltopstyle.ts`; demos `apps/showcase/doc/scrolltop/{basic,element}-doc.ts`. Models in the project: `prime-button` (button), `prime-slider` (a `window` subscription from a handler, the handle in `StoredValue<_, LocalStorage>`, removal in `on_cleanup`), `prime-select` (`Overlay` group z-index, an `is_disposed()` check in timer closures), `prime_core::zindex`.
 
-Наблюдения по исходнику:
-- Корень — сам `p-button` с `styleClass = cn(cx('root'), styleClass)`; `buttonProps` по умолчанию `{ rounded: true }`. Значок: свой класс (`icon`), иначе `ChevronUpIcon` с классом `p-scrolltop-icon`.
-- `checkVisibility(scrollY)`: `scrollY > threshold` → `visible = true` и `render = true`; иначе `visible = false`. Элемент снимается (`render = false`) в `onAfterLeave` анимации `pMotion` (имя `p-scrolltop`).
-- `onBeforeEnter`: `position = sticky` для `parent`, иначе `fixed`; `ZIndexUtils.set('overlay', …)`; `onBeforeLeave` освобождает z-index.
-- `onClick`: цель — `defaultView` или родитель хоста; `scroll({ top: 0, behavior })`.
-- Начальная видимость не вычисляется: пока не придёт первое событие `scroll`, кнопки нет, даже если страница уже прокручена. Мы начальную проверку делаем (в спеке).
+Observations on the source:
+- The root is `p-button` itself with `styleClass = cn(cx('root'), styleClass)`; `buttonProps` default to `{ rounded: true }`. Icon: a custom class (`icon`), otherwise `ChevronUpIcon` with the `p-scrolltop-icon` class.
+- `checkVisibility(scrollY)`: `scrollY > threshold` → `visible = true` and `render = true`; otherwise `visible = false`. The element is removed (`render = false`) in `onAfterLeave` of the `pMotion` animation (name `p-scrolltop`).
+- `onBeforeEnter`: `position = sticky` for `parent`, otherwise `fixed`; `ZIndexUtils.set('overlay', …)`; `onBeforeLeave` releases the z-index.
+- `onClick`: the target is `defaultView` or the host's parent; `scroll({ top: 0, behavior })`.
+- The initial visibility is not computed: until the first `scroll` event arrives there is no button, even if the page is already scrolled. We do the initial check (in the spec).
 
 ## Decisions
 
-### D1. Крейт и зависимости
-`prime-scrolltop` с `ScrollTop`, `ScrollTopTarget { Window, Parent }`, `ScrollTopBehavior { Smooth, Auto }`, `ScrollTopPt`. Зависит от `prime-core`, `prime-button`, `prime-icons` (feature `chevronup`) и `web-sys`. Кнопка — `Button` с `rounded` (по умолчанию `true`), `severity` и `raised` из свойств; классы корня добавляются через `style_class`.
+### D1. Crate and dependencies
+`prime-scrolltop` with `ScrollTop`, `ScrollTopTarget { Window, Parent }`, `ScrollTopBehavior { Smooth, Auto }`, `ScrollTopPt`. Depends on `prime-core`, `prime-button`, `prime-icons` (feature `chevronup`) and `web-sys`. The button is a `Button` with `rounded` (default `true`), `severity` and `raised` from props; root classes are added via `style_class`.
 
-### D2. Чистая логика (`state.rs`)
-- `is_visible(scroll: f64, threshold: f64) -> bool` — строгое `>`.
-- `root_classes(target) -> &'static str` — `p-scrolltop` или `p-scrolltop p-scrolltop-sticky`.
-- `enter_classes(started)` / `leave_classes(started)` — классы анимации.
-Табличные тесты.
+### D2. Pure logic (`state.rs`)
+- `is_visible(scroll: f64, threshold: f64) -> bool` — strict `>`.
+- `root_classes(target) -> &'static str` — `p-scrolltop` or `p-scrolltop p-scrolltop-sticky`.
+- `enter_classes(started)` / `leave_classes(started)` — animation classes.
+Table tests.
 
-### D3. Видимость и жизненный цикл
-Состояние `phase: RwSignal<Phase>`, `Phase { Hidden, Shown, Leaving }`. Подписка на `scroll` ставится только под `cfg(target_arch = "wasm32")`.
+### D3. Visibility and lifecycle
+State `phase: RwSignal<Phase>`, `Phase { Hidden, Shown, Leaving }`. The `scroll` subscription is set only under `cfg(target_arch = "wasm32")`.
 
-Родитель: у `Parent` нужен `parent_element()` самого компонента, а пока кнопка скрыта, элемента у компонента нет. Поэтому для `Parent` кнопка всегда лежит в DOM, а в фазе `Hidden` скрыта стилем `display: none` (у `Window` кнопка в фазе `Hidden` вообще не выводится). После монтирования родитель берётся через `NodeRef` кнопки; подписка ставится на него, и сразу выполняется начальная проверка. Для `Window` подписка и проверка делаются в `Effect` после монтирования, слушатель — `window_event_listener`, handle в `StoredValue<_, LocalStorage>`, снятие в `on_cleanup`. Это отличие фиксируется в `docs/scrolltop.md`.
+Parent: `Parent` needs the component's own `parent_element()`, and while the button is hidden the component has no element. So for `Parent` the button is always in the DOM, and in the `Hidden` phase is hidden with `display: none` (for `Window` the button is not rendered at all in the `Hidden` phase). After mounting the parent is taken via the button's `NodeRef`; the subscription is set on it, and the initial check runs immediately. For `Window` the subscription and the check are done in an `Effect` after mounting, the listener is `window_event_listener`, the handle in `StoredValue<_, LocalStorage>`, removal in `on_cleanup`. This difference is recorded in `docs/scrolltop.md`.
 
-### D4. Анимация
-Классы `p-scrolltop-enter-from|active|to` и `leave-*` берутся из CSS темы: при входе ставятся `enter-from` + `enter-active`, на следующем кадре `enter-from` заменяется на `enter-to`; по окончании (таймер 300 мс по `transition: opacity 300ms` из темы, с проверкой `is_disposed()` и счётчиком поколений против устаревших таймеров) классы снимаются. Для выхода то же с `leave-*`, затем фаза `Hidden` и освобождение z-index. Таймеры и слушатели снимаются в `on_cleanup`.
+### D4. Animation
+The classes `p-scrolltop-enter-from|active|to` and `leave-*` come from the theme CSS: on enter `enter-from` + `enter-active` are set, on the next frame `enter-from` is replaced with `enter-to`; on completion (a 300 ms timer per the theme's `transition: opacity 300ms`, with an `is_disposed()` check and a generation counter against stale timers) the classes are removed. For exit the same with `leave-*`, then the `Hidden` phase and z-index release. Timers and listeners are removed in `on_cleanup`.
 
-### D5. Положение и z-index
-Положение задаёт CSS темы (`position: fixed !important` для `.p-scrolltop`, `sticky !important` для `.p-scrolltop-sticky`), inline остаётся только `z-index: N`, где `N = zindex::generate(Overlay, config.z_index.base(Overlay))`; при выходе — `zindex::revert`. На SSR кнопка у `Window` не выводится, поэтому z-index не выдаётся.
+### D5. Position and z-index
+The position is set by the theme CSS (`position: fixed !important` for `.p-scrolltop`, `sticky !important` for `.p-scrolltop-sticky`), only `z-index: N` stays inline, where `N = zindex::generate(Overlay, config.z_index.base(Overlay))`; on exit — `zindex::revert`. On SSR the `Window` button is not rendered, so no z-index is issued.
 
-### D6. Действие
-Обработчик клика вызывает `Window::scroll_with_scroll_to_options` или `Element::scroll_with_scroll_to_options` родителя с `top = 0` и `behavior`.
+### D6. Action
+The click handler calls `Window::scroll_with_scroll_to_options` or the parent's `Element::scroll_with_scroll_to_options` with `top = 0` and `behavior`.
 
 ### D7. CSS
-`scrolltop` добавляется в `theme.components`; `cargo xtask gen-theme`, проверка, что CSS остальных не изменился. Если в CSS окажется блок `/* For PrimeNG */`, он подхватывается через `primeng_extra`.
+`scrolltop` is added to `theme.components`; `cargo xtask gen-theme`, check that the CSS of the others did not change. If the CSS turns out to have a `/* For PrimeNG */` block, it is picked up via `primeng_extra`.
 
-### D8. Тесты
-SSR: скрыт по умолчанию, классы по `target`. Браузерные `tests/web.rs`: порог (400/401), возврат, начальная проверка, `Parent`, клик, позиция, z-index и его возврат. e2e: настоящая прокрутка окна и вложенного контейнера, клик, клавиши `Enter`/`Space`. Крейт добавляется в три места `ci.yml`.
+### D8. Tests
+SSR: hidden by default, classes by `target`. Browser `tests/web.rs`: threshold (400/401), return, initial check, `Parent`, click, position, z-index and its return. e2e: real scrolling of the window and a nested container, click, `Enter`/`Space` keys. The crate is added in three places of `ci.yml`.
 
-### D9. Бенчмарки
-Сценарии `scrolltop-1` и `-1000` (в SSR `Window`-вариант скрыт, поэтому измеряется «пустой» экземпляр; для честности второй сценарий не нужен), `case-scrolltop` для wasm; сначала `cargo bench -p render-bench --bench alloc`.
+### D9. Benchmarks
+Scenarios `scrolltop-1` and `-1000` (in SSR the `Window` variant is hidden, so an "empty" instance is measured; for honesty a second scenario is not needed), `case-scrolltop` for wasm; first `cargo bench -p render-bench --bench alloc`.
 
 ## Risks / Trade-offs
 
-- [`Parent` всегда в DOM, `Window` — только при показе] → единственный способ найти родителя до первого показа; фиксируется в docs.
-- [Нет `@primeuix/motion`] → анимация классами и таймер по длительности перехода из темы (300 мс).
-- [Касание и инерционная прокрутка на мобильных] → не проверялось, честно записано в docs.
+- [`Parent` always in the DOM, `Window` only when shown] → the only way to find the parent before the first show; recorded in docs.
+- [No `@primeuix/motion`] → animation by classes and a timer by the transition duration from the theme (300 ms).
+- [Touch and inertial scrolling on mobile] → not verified, honestly recorded in docs.
 
 ## Migration Plan
 
-Миграции нет. Откат — `git revert`.
+No migration. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

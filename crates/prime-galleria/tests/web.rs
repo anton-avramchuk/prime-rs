@@ -1,5 +1,5 @@
-//! Поведение Galleria в реальном браузере (wasm-bindgen-test): навигация по кадрам, индикаторам и миниатюрам,
-//! клавиши, автосмена, полноэкранный режим. Сценарии идут одним последовательным тестом. Стили темы не подключены.
+//! Galleria behavior in a real browser (wasm-bindgen-test): navigation by frames, indicators and thumbnails,
+//! keys, auto-advance, fullscreen mode. Scenarios run as one sequential test. Theme styles are not attached.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -41,7 +41,7 @@ fn q(root: &impl AsRef<web_sys::Element>, selector: &str) -> Option<HtmlElement>
 }
 
 fn must(root: &impl AsRef<web_sys::Element>, selector: &str) -> HtmlElement {
-    q(root, selector).unwrap_or_else(|| panic!("нет {selector}: {}", root.as_ref().outer_html()))
+    q(root, selector).unwrap_or_else(|| panic!("no {selector}: {}", root.as_ref().outer_html()))
 }
 
 fn all(root: &impl AsRef<web_sys::Element>, selector: &str) -> Vec<HtmlElement> {
@@ -87,10 +87,10 @@ async fn item_navigation_and_indicators() {
     next.click();
     settle().await;
     assert_eq!(active.get_untracked(), 3);
-    assert!(next.class_name().contains("p-disabled"), "в конце без circular «вперёд» недоступна");
+    assert!(next.class_name().contains("p-disabled"), "at the end without circular forward is disabled");
     next.click();
     settle().await;
-    assert_eq!(active.get_untracked(), 3, "дальше последнего не идёт");
+    assert_eq!(active.get_untracked(), 3, "does not go past the last");
     prev.click();
     settle().await;
     assert_eq!(active.get_untracked(), 2);
@@ -105,7 +105,7 @@ async fn item_navigation_and_indicators() {
         indicators[0].class_name().contains("p-galleria-indicator-active")
             && !indicators[2].class_name().contains("p-galleria-indicator-active")
     );
-    assert!(!key(&indicators[3], "Enter"), "Enter на индикаторе поглощается");
+    assert!(!key(&indicators[3], "Enter"), "Enter on an indicator is swallowed");
     settle().await;
     assert_eq!(active.get_untracked(), 3);
     key(&indicators[1], "Space");
@@ -123,14 +123,14 @@ async fn circular_and_hover_indicators() {
     settle().await;
     must(&host, ".p-galleria-prev-button").click();
     settle().await;
-    assert_eq!(active.get_untracked(), 2, "circular: назад с первого — на последний");
+    assert_eq!(active.get_untracked(), 2, "circular: backward from the first goes to the last");
     must(&host, ".p-galleria-next-button").click();
     settle().await;
-    assert_eq!(active.get_untracked(), 0, "circular: вперёд с последнего — на первый");
+    assert_eq!(active.get_untracked(), 0, "circular: forward from the last goes to the first");
     let indicators = all(&host, ".p-galleria-indicator");
     mouse(&indicators[2], "mouseenter");
     settle().await;
-    assert_eq!(active.get_untracked(), 2, "наведение меняет кадр");
+    assert_eq!(active.get_untracked(), 2, "hover changes the frame");
     host.remove();
 }
 
@@ -147,7 +147,7 @@ async fn thumbnails_click_keys_and_buttons() {
     settle().await;
     assert_eq!((active.get_untracked(), shown_src(&host).as_str()), (3, "big3.jpg"));
     let ribbon = must(&host, ".p-galleria-thumbnail-items");
-    assert!(ribbon.get_attribute("style").unwrap().contains("translate3d(-66.66"), "лента сдвинулась: {:?}", ribbon.get_attribute("style"));
+    assert!(ribbon.get_attribute("style").unwrap().contains("translate3d(-66.66"), "strip shifted: {:?}", ribbon.get_attribute("style"));
     let items = all(&host, ".p-galleria-thumbnail-item");
     assert!(items[3].class_name().contains("p-galleria-thumbnail-item-current"));
     assert!(
@@ -155,11 +155,11 @@ async fn thumbnails_click_keys_and_buttons() {
             && items[4].class_name().contains("p-galleria-thumbnail-item-end")
     );
 
-    // клавиши: стрелки двигают фокус, Enter выбирает
+    // keys: arrows move focus, Enter selects
     key(&items[3], "ArrowRight");
     settle().await;
     assert_eq!(thumbs[4].get_attribute("tabindex").as_deref(), Some("0"));
-    assert_eq!(active.get_untracked(), 3, "стрелка только переносит фокус");
+    assert_eq!(active.get_untracked(), 3, "an arrow only moves focus");
     key(&items[4], "Enter");
     settle().await;
     assert_eq!(active.get_untracked(), 4);
@@ -172,7 +172,7 @@ async fn thumbnails_click_keys_and_buttons() {
     settle().await;
     assert_eq!(active.get_untracked(), 5);
 
-    // кнопки страниц
+    // page buttons
     let next = must(&host, ".p-galleria-thumbnail-next-button");
     let prev = must(&host, ".p-galleria-thumbnail-prev-button");
     assert!(next.class_name().contains("p-disabled"));
@@ -190,15 +190,15 @@ async fn autoplay_stops_on_user_action() {
     });
     sleep(200).await;
     let moved = active.get_untracked();
-    assert!(moved >= 2, "автосмена продвинулась: {moved}");
+    assert!(moved >= 2, "auto-advance progressed: {moved}");
     all(&host, ".p-galleria-thumbnail")[0].click();
     settle().await;
     assert_eq!(active.get_untracked(), 0);
     sleep(250).await;
-    assert_eq!(active.get_untracked(), 0, "клик остановил автосмену");
+    assert_eq!(active.get_untracked(), 0, "click stopped auto-advance");
     host.remove();
 
-    // не останавливать по клику
+    // do not stop on click
     let host = host_again();
     let active = RwSignal::new(0usize);
     let _h = leptos::mount::mount_to(host.clone(), move || {
@@ -206,9 +206,9 @@ async fn autoplay_stops_on_user_action() {
     });
     settle().await;
     all(&host, ".p-galleria-thumbnail")[0].click();
-    // две-три смены из пяти кадров по кругу: больше — и круг замкнётся на 0
+    // two or three advances out of five frames in a loop: more and the loop wraps back to 0
     sleep(130).await;
-    assert!(active.get_untracked() > 0, "автосмена продолжается: {}", active.get_untracked());
+    assert!(active.get_untracked() > 0, "auto-advance continues: {}", active.get_untracked());
     host.remove();
 }
 
@@ -222,7 +222,7 @@ async fn full_screen_lifecycle() {
     let _h = leptos::mount::mount_to(host.clone(), move || view! { <Galleria value=images(3) full_screen=true visible=visible /> });
     settle().await;
     let body = doc().body().unwrap();
-    assert!(q(&body, ".p-galleria-mask").is_none(), "закрыта: маски нет");
+    assert!(q(&body, ".p-galleria-mask").is_none(), "closed: no mask");
     visible.set(true);
     sleep(100).await;
     let mask = must(&body, ".p-galleria-mask");
@@ -233,24 +233,24 @@ async fn full_screen_lifecycle() {
     assert!(
         body.style().get_property_value("overflow").unwrap_or_default().contains("hidden")
             || body.class_name().contains("p-overflow-hidden"),
-        "прокрутка страницы заблокирована"
+        "page scrolling is blocked"
     );
-    assert!(mask.style().get_property_value("z-index").unwrap().parse::<i32>().is_ok(), "слой назначен");
+    assert!(mask.style().get_property_value("z-index").unwrap().parse::<i32>().is_ok(), "layer assigned");
 
-    // клик по содержимому не закрывает
+    // click on the content does not close
     must(&mask, ".p-galleria-item").click();
     settle().await;
     assert!(visible.get_untracked());
-    // клик по самой маске закрывает
+    // click on the mask itself closes
     mouse(&mask, "click");
     settle().await;
     assert!(!visible.get_untracked());
-    assert!(q(&body, ".p-galleria-mask").is_some(), "во время выхода маска ещё в DOM");
+    assert!(q(&body, ".p-galleria-mask").is_some(), "during leave the mask is still in the DOM");
     assert!(must(&body, ".p-galleria").class_name().contains("p-galleria-leave-active"));
     sleep(900).await;
-    assert!(q(&body, ".p-galleria-mask").is_none(), "после выхода убрана");
+    assert!(q(&body, ".p-galleria-mask").is_none(), "removed after leave");
 
-    // кнопка закрытия
+    // close button
     visible.set(true);
     sleep(100).await;
     let mask = must(&body, ".p-galleria-mask");

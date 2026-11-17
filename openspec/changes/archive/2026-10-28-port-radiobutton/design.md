@@ -2,41 +2,41 @@
 
 ## Context
 
-Требования — в `specs/radiobutton`. Исходники PrimeNG 21.1.10: `packages/primeng/src/radiobutton/radiobutton.ts`, `radiobutton/style/radiobuttonstyle.ts`, демонстрации `apps/showcase/doc/radiobutton`. Шаблон компонента и модель значения — `docs/checkbox.md`, `docs/inputtext.md`.
+The requirements are in `specs/radiobutton`. PrimeNG 21.1.10 sources: `packages/primeng/src/radiobutton/radiobutton.ts`, `radiobutton/style/radiobuttonstyle.ts`, demos `apps/showcase/doc/radiobutton`. The component template and the value model are in `docs/checkbox.md` and `docs/inputtext.md`.
 
 ## Goals / Non-Goals
 
-**Goals:** классы и `data-p*` как в PrimeNG; выбор одного значения группы через общий сигнал; статическая ветвь для случая без сигнала.
-**Non-Goals:** формы, `RadioControlRegistry`, `binary`, `autofocus`.
+**Goals:** classes and `data-p*` as in PrimeNG; selecting one value of a group through a shared signal; a static branch for the case without a signal.
+**Non-Goals:** forms, `RadioControlRegistry`, `binary`, `autofocus`.
 
 ## Decisions
 
-### D1. Корень — `<div>`
-Вместо хоста `<p-radiobutton>`; `data-p*` — на корне.
+### D1. Root — `<div>`
+Instead of the `<p-radiobutton>` host; `data-p*` — on the root.
 
-### D2. Группа через общий сигнал
-`model: Option<RwSignal<Option<String>>>` и `value: OptProp<String>`: отмечен, если `model == Some(value)`. Выбор записывает `Some(value)` в `model`; остальные кнопки группы обновляются реактивно, реестр не нужен. Без `model` — неконтролируемая кнопка с `default_checked` (нативная группировка по `name`).
+### D2. Group through a shared signal
+`model: Option<RwSignal<Option<String>>>` and `value: OptProp<String>`: checked if `model == Some(value)`. A choice writes `Some(value)` to `model`; the other buttons of the group update reactively, no registry is needed. Without `model` — an uncontrolled button with `default_checked` (native grouping by `name`).
 
-### D3. Атрибут `value`
-В PrimeNG `[attr.value]="modelValue()"` выводит булево состояние. Мы выводим собственное `value` (иначе нативная форма теряет смысл); отличие фиксируется в `docs/radiobutton.md`.
+### D3. The `value` attribute
+In PrimeNG `[attr.value]="modelValue()"` renders the boolean state. We render our own `value` (otherwise the native form loses its meaning); the difference is recorded in `docs/radiobutton.md`.
 
-### D4. События
-`on_click` получает `RadioButtonClick { value, original_event }` после записи в `model`; при `disabled` выбор игнорируется (состояние возвращается к `model`).
+### D4. Events
+`on_click` receives `RadioButtonClick { value, original_event }` after writing to `model`; with `disabled` the choice is ignored (the state returns to `model`).
 
-### D5. Ветви
-Статическая — при `all_static!` и `model.is_none()`; иначе реактивная. Разметка и помощник `rx(props, pt, fn)` — как у Checkbox.
+### D5. Branches
+Static — when `all_static!` holds and `model.is_none()`; otherwise reactive. The markup and the helper `rx(props, pt, fn)` — as in Checkbox.
 
-### D6. Тесты
-SSR: структура, классы, `data-p*`, атрибуты, группа, `pt`, паритет. Браузер: клик выбирает значение, группа снимает остальные, `disabled`, события.
+### D6. Tests
+SSR: structure, classes, `data-p*`, attributes, group, `pt`, parity. Browser: a click selects the value, the group clears the others, `disabled`, events.
 
 ## Risks / Trade-offs
 
-- [Две кнопки с одним `name` без `model` ведут себя нативно] → документируется.
+- [Two buttons with one `name` without `model` behave natively] → documented.
 
 ## Migration Plan
 
-Миграции нет: новый крейт. Откат — `git revert`.
+No migration: a new crate. Rollback — `git revert`.
 
 ## Open Questions
 
-Нет.
+None.

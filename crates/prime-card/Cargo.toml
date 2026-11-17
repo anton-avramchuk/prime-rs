@@ -1,6 +1,6 @@
 [package]
 name = "prime-card"
-description = "prime-rs: компонент Card (порт PrimeNG)"
+description = "prime-rs: Card component (PrimeNG port)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

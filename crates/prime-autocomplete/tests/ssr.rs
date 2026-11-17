@@ -1,5 +1,5 @@
-//! Разметка AutoComplete (SSR): корень, одиночное поле, множественный режим с чипами, очистка, кнопка, состояния, `pt`.
-//! Панель выводится только в открытом состоянии и проверяется в браузерных тестах.
+//! AutoComplete markup (SSR): root, single field, multiple mode with chips, clear, button, states, `pt`.
+//! The panel is rendered only when open and is checked in browser tests.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -48,7 +48,7 @@ fn value_shows_the_option_label() {
         let value = RwSignal::new("typed".to_owned());
         view! { <AutoComplete suggestions=options() value=value /> }.to_html()
     });
-    assert!(html.contains("value=\"typed\""), "несовпавшее значение показывается как есть: {html}");
+    assert!(html.contains("value=\"typed\""), "an unmatched value is shown as is: {html}");
 }
 
 #[test]
@@ -66,7 +66,7 @@ fn multiple_markup_has_chips_and_an_input() {
     assert_eq!(html.matches("p-autocomplete-chip-item").count(), 2, "{html}");
     assert!(html.contains("p-autocomplete-chip") && html.contains("Apple") && html.contains("Banana"), "{html}");
     assert!(html.contains("p-autocomplete-input-chip") && html.contains("p-inputwrapper-filled"), "{html}");
-    assert!(!html.contains("placeholder=\"Add\""), "при выбранных чипах подсказка скрыта: {html}");
+    assert!(!html.contains("placeholder=\"Add\""), "the placeholder is hidden when chips are selected: {html}");
     assert!(
         html.contains("aria-setsize=\"2\"")
             && html.contains("aria-posinset=\"2\"")

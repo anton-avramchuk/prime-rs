@@ -1,5 +1,5 @@
-//! Страница DataView: демонстрации `basic`, `layout`, `pagination`, `sorting` и `loading` из showcase PrimeNG
-//! (`apps/showcase/doc/dataview`; сортировка и фильтр задаются сравнением и предикатом, шаблоны — функциями).
+//! DataView page: demos `basic`, `layout`, `pagination`, `sorting` and `loading` from the PrimeNG showcase
+//! (`apps/showcase/doc/dataview`; sorting and filter are set by a comparison and a predicate, templates are functions).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -163,7 +163,7 @@ fn Loading() -> impl IntoView {
     }
 }
 
-/// Страница `/dataview`.
+/// The `/dataview` page.
 #[component]
 pub fn DataViewPage() -> impl IntoView {
     view! {

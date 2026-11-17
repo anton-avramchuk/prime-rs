@@ -1,30 +1,30 @@
-//! Чистая логика Image: классы, границы и шаги масштаба, `transform` (по `image.ts` и `imagestyle.ts` PrimeNG).
+//! Pure Image logic: classes, zoom bounds and steps, `transform` (after PrimeNG's `image.ts` and `imagestyle.ts`).
 
 use prime_core::ClassNames;
 use std::borrow::Cow;
 
-/// Шаг масштаба.
+/// Zoom step.
 pub const ZOOM_STEP: f64 = 0.1;
-/// Наименьший масштаб.
+/// Minimum zoom.
 pub const ZOOM_MIN: f64 = 0.5;
-/// Наибольший масштаб.
+/// Maximum zoom.
 pub const ZOOM_MAX: f64 = 1.5;
-/// Масштаб по умолчанию.
+/// Default zoom.
 pub const ZOOM_DEFAULT: f64 = 1.0;
-/// Допуск сравнения дробных масштабов.
+/// Tolerance for comparing fractional zooms.
 const EPS: f64 = 1e-9;
 
-/// Значение `loading` картинки.
+/// Value of the image's `loading`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ImageLoading {
-    /// Отложенная загрузка.
+    /// Lazy loading.
     Lazy,
-    /// Немедленная загрузка.
+    /// Eager loading.
     Eager,
 }
 
 impl ImageLoading {
-    /// Значение атрибута.
+    /// Attribute value.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Lazy => "lazy",
@@ -33,29 +33,29 @@ impl ImageLoading {
     }
 }
 
-/// Кнопка панели действий.
+/// Toolbar action button.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ActionKind {
-    /// Поворот вправо.
+    /// Rotate right.
     RotateRight,
-    /// Поворот влево.
+    /// Rotate left.
     RotateLeft,
-    /// Уменьшение.
+    /// Zoom out.
     ZoomOut,
-    /// Увеличение.
+    /// Zoom in.
     ZoomIn,
-    /// Закрытие.
+    /// Close.
     Close,
 }
 
-/// Классы корня: `p-image p-component`, `p-image-preview` и пользовательский класс.
+/// Root classes: `p-image p-component`, `p-image-preview` and the user class.
 pub fn root_classes(preview: bool, extra: Option<&str>) -> Cow<'static, str> {
     let mut cn = ClassNames::new();
     cn.add("p-image p-component").add_if(preview, "p-image-preview").add_user(extra);
     cn.finish_cow()
 }
 
-/// Классы кнопки панели; у уменьшения и увеличения — `p-disabled`, когда шаг невозможен.
+/// Toolbar button classes; zoom out and zoom in get `p-disabled` when the step is impossible.
 pub fn action_classes(kind: ActionKind, disabled: bool) -> &'static str {
     match (kind, disabled) {
         (ActionKind::RotateRight, _) => "p-image-action p-image-rotate-right-button",
@@ -68,22 +68,22 @@ pub fn action_classes(kind: ActionKind, disabled: bool) -> &'static str {
     }
 }
 
-/// Нельзя ли уменьшить: шаг не оставляет масштаб выше наименьшего (`scale - step <= min`).
+/// Whether zooming out is impossible: the step does not leave the zoom above the minimum (`scale - step <= min`).
 pub fn zoom_out_disabled(scale: f64) -> bool {
     scale - ZOOM_STEP <= ZOOM_MIN + EPS
 }
 
-/// Нельзя ли увеличить: шаг не оставляет масштаб ниже наибольшего (`scale + step >= max`).
+/// Whether zooming in is impossible: the step does not leave the zoom below the maximum (`scale + step >= max`).
 pub fn zoom_in_disabled(scale: f64) -> bool {
     scale + ZOOM_STEP >= ZOOM_MAX - EPS
 }
 
-/// Масштаб после шага вверх (округлён до сотых).
+/// Zoom after a step up (rounded to hundredths).
 pub fn zoom_in(scale: f64) -> f64 {
     round2(scale + ZOOM_STEP)
 }
 
-/// Масштаб после шага вниз (округлён до сотых).
+/// Zoom after a step down (rounded to hundredths).
 pub fn zoom_out(scale: f64) -> f64 {
     round2(scale - ZOOM_STEP)
 }
@@ -92,18 +92,18 @@ fn round2(v: f64) -> f64 {
     (v * 100.0).round() / 100.0
 }
 
-/// Значение `transform` увеличенной картинки.
+/// The `transform` value of the enlarged image.
 pub fn transform(rotate: i32, scale: f64) -> String {
     format!("rotate({rotate}deg) scale({scale})")
 }
 
-/// Стиль `transform` увеличенной картинки.
+/// The `transform` style of the enlarged image.
 pub fn preview_style(rotate: i32, scale: f64) -> String {
     format!("transform: {}", transform(rotate, scale))
 }
 
-/// Размер кнопки просмотра по `width` и `height` картинки: числа получают `px` (в PrimeNG — `height + 'px'`), прочее
-/// (`50%`, `10rem`) берётся как есть; без размеров стиля нет.
+/// Preview button size from the image's `width` and `height`: numbers get `px` (in PrimeNG, `height + 'px'`), anything else
+/// (`50%`, `10rem`) is taken as is; without sizes there is no style.
 pub fn dimension_style(width: Option<&str>, height: Option<&str>) -> Option<String> {
     let css = |v: &str| {
         let v = v.trim();
@@ -119,7 +119,7 @@ pub fn dimension_style(width: Option<&str>, height: Option<&str>) -> Option<Stri
     (!parts.is_empty()).then(|| parts.join("; "))
 }
 
-/// Закрывает ли клик по маске просмотр (не после действия панели или клика по картинке).
+/// Whether a click on the mask closes the preview (not after a toolbar action or a click on the image).
 pub fn mask_should_close(preview_click: bool) -> bool {
     !preview_click
 }
@@ -147,8 +147,8 @@ mod tests {
     #[test]
     fn zoom_bounds() {
         assert!(!zoom_in_disabled(1.0) && !zoom_out_disabled(1.0));
-        assert!(!zoom_in_disabled(1.3) && zoom_in_disabled(1.4), "из 1.4 шаг даст 1.5");
-        assert!(!zoom_out_disabled(0.7) && zoom_out_disabled(0.6), "из 0.6 шаг даст 0.5");
+        assert!(!zoom_in_disabled(1.3) && zoom_in_disabled(1.4), "from 1.4 the step gives 1.5");
+        assert!(!zoom_out_disabled(0.7) && zoom_out_disabled(0.6), "from 0.6 the step gives 0.5");
         assert!(zoom_in_disabled(1.5) && zoom_out_disabled(0.5));
     }
 

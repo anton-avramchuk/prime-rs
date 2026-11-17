@@ -1,16 +1,16 @@
-//! Card — порт `p-card` из PrimeNG 21.1.10.
+//! Card — port of `p-card` from PrimeNG 21.1.10.
 //!
-//! Структура и классы совпадают с PrimeNG: шапка (`p-card-header`, если задан `header_template`), тело `p-card-body` с заголовком,
-//! подзаголовком, содержимым `p-card-content` и подвалом (`p-card-footer`, если задан `footer_template`). Вместо хост-элемента `<p-card>`
-//! отрисовывается `<div class="p-card …">`. Слоты — `ViewFn` (аналог шаблонов `#header`, `#title`, `#subtitle`, `#footer`).
+//! Structure and classes match PrimeNG: a header (`p-card-header`, if `header_template` is set), a `p-card-body` body with a title,
+//! a subtitle, `p-card-content` content and a footer (`p-card-footer`, if `footer_template` is set). Instead of the `<p-card>` host element
+//! a `<div class="p-card …">` is rendered. Slots are `ViewFn` (the counterpart of the `#header`, `#title`, `#subtitle`, `#footer` templates).
 //!
-//! Свойства — [`Prop`]/[`OptProp`]; если все они статические, компонент рисует готовые значения без замыканий и `RenderEffect`.
+//! Properties are [`Prop`]/[`OptProp`]; if all of them are static, the component renders ready values without closures and `RenderEffect`.
 //!
 //! ```
 //! use leptos::prelude::*;
 //! use prime_card::Card;
 //!
-//! let html = view! { <Card header="Simple Card"><p>"Содержимое"</p></Card> }.to_html();
+//! let html = view! { <Card header="Simple Card"><p>"Content"</p></Card> }.to_html();
 //! assert!(html.contains("p-card-title") && html.contains("Simple Card") && html.contains("p-card-content"));
 //! ```
 
@@ -20,58 +20,58 @@ use prime_core::{ClassNames, OptProp, Pt, all_static};
 use std::borrow::Cow;
 use std::sync::Arc;
 
-/// Pass-through частей Card.
+/// Pass-through of the Card parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CardPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Шапка (`div.p-card-header`).
+    /// Header (`div.p-card-header`).
     pub header: Pt,
-    /// Тело (`div.p-card-body`).
+    /// Body (`div.p-card-body`).
     pub body: Pt,
-    /// Заголовок (`div.p-card-title`).
+    /// Title (`div.p-card-title`).
     pub title: Pt,
-    /// Подзаголовок (`div.p-card-subtitle`).
+    /// Subtitle (`div.p-card-subtitle`).
     pub subtitle: Pt,
-    /// Содержимое (`div.p-card-content`).
+    /// Content (`div.p-card-content`).
     pub content: Pt,
-    /// Подвал (`div.p-card-footer`).
+    /// Footer (`div.p-card-footer`).
     pub footer: Pt,
 }
 
-/// Карточка: шапка, заголовок, подзаголовок, содержимое, подвал.
+/// Card: header, title, subtitle, content, footer.
 ///
-/// Текстовые свойства принимают значение или сигнал. Слот имеет приоритет над соответствующим текстом.
+/// Text properties accept a value or a signal. A slot takes priority over the corresponding text.
 #[component]
 pub fn Card(
-    /// Текст заголовка (`p-card-title`), если нет `title_template`.
+    /// Title text (`p-card-title`), if there is no `title_template`.
     #[prop(optional, into)]
     header: OptProp<String>,
-    /// Текст подзаголовка (`p-card-subtitle`), если нет `subtitle_template`.
+    /// Subtitle text (`p-card-subtitle`), if there is no `subtitle_template`.
     #[prop(optional, into)]
     subheader: OptProp<String>,
-    /// Слот шапки (`p-card-header`), например изображение.
+    /// Header slot (`p-card-header`), e.g. an image.
     #[prop(optional, into)]
     header_template: Option<ViewFn>,
-    /// Слот заголовка; заменяет текст `header`.
+    /// Title slot; replaces the `header` text.
     #[prop(optional, into)]
     title_template: Option<ViewFn>,
-    /// Слот подзаголовка; заменяет текст `subheader`.
+    /// Subtitle slot; replaces the `subheader` text.
     #[prop(optional, into)]
     subtitle_template: Option<ViewFn>,
-    /// Слот подвала (`p-card-footer`).
+    /// Footer slot (`p-card-footer`).
     #[prop(optional, into)]
     footer_template: Option<ViewFn>,
-    /// Встроенный стиль.
+    /// Inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс.
+    /// Extra class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
     /// Pass-through.
     #[prop(optional)]
     pt: Option<CardPt>,
-    /// Содержимое (`p-card-content`).
+    /// Content (`p-card-content`).
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -145,7 +145,7 @@ pub fn Card(
     }
 }
 
-/// Разметка Card: одна для статической и реактивной ветвей (меняются только выражения атрибутов и блоков).
+/// Card markup: one for the static and reactive branches (only the attribute and block expressions differ).
 macro_rules! card_markup {
     ($class:expr, $style:expr, $attrs:expr, $head:expr, $body_class:expr, $body_attrs:expr, $title:expr, $subtitle:expr, $content_class:expr, $content_attrs:expr, $content:expr, $footer:expr) => {
         view! {
@@ -177,7 +177,7 @@ fn style_of(props: &Props, pt: &CardPt) -> Option<String> {
     props.style.with(|st| (st.is_some() || pt.root.has_style()).then(|| pt.root.merge_style(st.as_deref().unwrap_or(""))))
 }
 
-/// Шапка: только при заданном слоте.
+/// Header: only when the slot is set.
 fn header_of(props: &Props, pt: &CardPt) -> Option<AnyView> {
     props
         .header_template
@@ -185,17 +185,17 @@ fn header_of(props: &Props, pt: &CardPt) -> Option<AnyView> {
         .map(|slot| view! { <div class=pt.header.merge_class("p-card-header") {..pt.header.attrs()}>{slot.run()}</div> }.into_any())
 }
 
-/// Заголовок: слот заменяет текст.
+/// Title: a slot replaces the text.
 fn title_of(props: &Props, pt: &CardPt) -> Option<AnyView> {
     block(&pt.title, "p-card-title", props.title_template.clone(), props.header.get())
 }
 
-/// Подзаголовок: слот заменяет текст.
+/// Subtitle: a slot replaces the text.
 fn subtitle_of(props: &Props, pt: &CardPt) -> Option<AnyView> {
     block(&pt.subtitle, "p-card-subtitle", props.subtitle_template.clone(), props.subheader.get())
 }
 
-/// Подвал: только при заданном слоте.
+/// Footer: only when the slot is set.
 fn footer_of(props: &Props, pt: &CardPt) -> Option<AnyView> {
     props
         .footer_template
@@ -203,7 +203,7 @@ fn footer_of(props: &Props, pt: &CardPt) -> Option<AnyView> {
         .map(|slot| view! { <div class=pt.footer.merge_class("p-card-footer") {..pt.footer.attrs()}>{slot.run()}</div> }.into_any())
 }
 
-/// Блок с текстом или слотом (слот приоритетнее); `None`, если нет ни того, ни другого.
+/// A block with text or a slot (the slot takes priority); `None` if there is neither.
 fn block(pt: &Pt, class: &'static str, slot: Option<ViewFn>, text: Option<String>) -> Option<AnyView> {
     let inner = match (slot, text.filter(|t| !t.is_empty())) {
         (Some(slot), _) => slot.run(),
@@ -213,7 +213,7 @@ fn block(pt: &Pt, class: &'static str, slot: Option<ViewFn>, text: Option<String
     Some(view! { <div class=pt.merge_class(class) {..pt.attrs()}>{inner}</div> }.into_any())
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     header: OptProp<String>,
     subheader: OptProp<String>,

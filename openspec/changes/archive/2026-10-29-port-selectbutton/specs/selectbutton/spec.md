@@ -1,71 +1,71 @@
 ## Purpose
-SelectButton выбирает одно или несколько значений из списка вариантов, показанных кнопками, и сообщает об изменении выбора.
+SelectButton selects one or several values from a list of options shown as buttons and reports changes of the selection.
 
 ## ADDED Requirements
 
-### Requirement: Варианты и отображение
-Компонент `SelectButton` крейта `prime-selectbutton` SHALL выводить по одной кнопке `ToggleButton` на каждый вариант из `options` в заданном порядке; метка кнопки SHALL быть `label` варианта в обоих состояниях. Выбранные варианты SHALL быть включены (`aria-pressed="true"`), остальные выключены. Вариант с `disabled`, а также все варианты при `disabled` у компонента SHALL быть недоступны. При смене `options` и значения разметка SHALL обновляться.
+### Requirement: Options and display
+The `SelectButton` component of the `prime-selectbutton` crate SHALL render one `ToggleButton` button per option from `options` in the given order; the button label SHALL be the option's `label` in both states. Selected options SHALL be on (`aria-pressed="true"`), the rest off. An option with `disabled`, and also all options when the component is `disabled`, SHALL be unavailable. When `options` and the value change, the markup SHALL update.
 
-#### Scenario: Кнопки по вариантам
-- **WHEN** передано три варианта
-- **THEN** выводятся три кнопки с их метками в том же порядке
+#### Scenario: Buttons per option
+- **WHEN** three options are passed
+- **THEN** three buttons with their labels are rendered in the same order
 
-#### Scenario: Выбранный вариант
-- **WHEN** значение равно значению второго варианта
-- **THEN** вторая кнопка включена, остальные выключены
+#### Scenario: Selected option
+- **WHEN** the value equals the value of the second option
+- **THEN** the second button is on, the rest are off
 
-#### Scenario: Недоступный вариант
-- **WHEN** у варианта `disabled = true`
-- **THEN** его кнопка имеет `p-disabled`, клик по ней не меняет значение
+#### Scenario: Unavailable option
+- **WHEN** an option has `disabled = true`
+- **THEN** its button has `p-disabled`, clicking it does not change the value
 
-### Requirement: Одиночный выбор
-Без `multiple` компонент SHALL принимать двусторонний `value` (`RwSignal<Option<String>>`); без него SHALL вести внутреннее состояние, начинающееся с `default_value`. Клик по кнопке, а также Enter и Space на ней SHALL выбирать её значение, снимая выбор с остальных, и вызывать `on_change` один раз с новым значением и исходным событием, а затем `on_option_click` с вариантом, его индексом и исходным событием. Повторный клик по выбранной кнопке SHALL сбрасывать значение в `None`, если `allow_empty` не равен `false`; при `allow_empty = false` значение SHALL остаться, а `on_change` и `on_option_click` не вызываться.
+### Requirement: Single selection
+Without `multiple` the component SHALL accept a two-way `value` (`RwSignal<Option<String>>`); without it SHALL keep internal state starting with `default_value`. A click on a button, as well as Enter and Space on it, SHALL select its value, deselecting the others, and call `on_change` once with the new value and the original event, and then `on_option_click` with the option, its index and the original event. A repeated click on the selected button SHALL reset the value to `None` unless `allow_empty` is `false`; with `allow_empty = false` the value SHALL remain, and `on_change` and `on_option_click` SHALL NOT be called.
 
-#### Scenario: Выбор
-- **WHEN** выбран вариант «One-Way» и пользователь кликает по «Return»
-- **THEN** значение становится значением «Return», «One-Way» выключается, `on_change` вызван один раз
+#### Scenario: Selection
+- **WHEN** the option "One-Way" is selected and the user clicks "Return"
+- **THEN** the value becomes the value of "Return", "One-Way" turns off, `on_change` is called once
 
-#### Scenario: Снятие выбора
-- **WHEN** выбранную кнопку кликают повторно и `allow_empty` не задан
-- **THEN** значение становится `None`
+#### Scenario: Deselection
+- **WHEN** the selected button is clicked again and `allow_empty` is not set
+- **THEN** the value becomes `None`
 
-#### Scenario: Нельзя снять выбор
-- **WHEN** `allow_empty = false` и выбранную кнопку кликают повторно
-- **THEN** кнопка остаётся включённой, `on_change` не вызывается
+#### Scenario: Cannot deselect
+- **WHEN** `allow_empty = false` and the selected button is clicked again
+- **THEN** the button stays on, `on_change` is not called
 
-### Requirement: Множественный выбор
-При `multiple` компонент SHALL принимать двусторонний `values` (`RwSignal<Vec<String>>`); без него SHALL вести внутреннее состояние, начинающееся с `default_values`. Клик SHALL добавлять значение варианта в конец списка либо удалять его, если оно уже выбрано. При `allow_empty = false` единственное выбранное значение SHALL быть нельзя удалить.
+### Requirement: Multiple selection
+With `multiple` the component SHALL accept a two-way `values` (`RwSignal<Vec<String>>`); without it SHALL keep internal state starting with `default_values`. A click SHALL append the option's value to the end of the list or remove it if it is already selected. With `allow_empty = false` the only selected value SHALL NOT be removable.
 
-#### Scenario: Добавление и удаление
-- **WHEN** выбрано `[1]` и пользователь кликает по вариантам 2 и затем 1
-- **THEN** значения последовательно равны `[1, 2]` и `[2]`
+#### Scenario: Adding and removing
+- **WHEN** `[1]` is selected and the user clicks options 2 and then 1
+- **THEN** the values are successively `[1, 2]` and `[2]`
 
-#### Scenario: Последнее значение
-- **WHEN** `allow_empty = false` и выбрано одно значение, по нему кликают
-- **THEN** список не меняется, `on_change` не вызывается
+#### Scenario: Last value
+- **WHEN** `allow_empty = false` and one value is selected, and it is clicked
+- **THEN** the list does not change, `on_change` is not called
 
-### Requirement: Структура и атрибуты SelectButton
-Корень SHALL быть `<div class="p-selectbutton p-component">` с модификаторами `p-invalid` и `p-selectbutton-fluid`, `role="group"`, `aria-labelledby` (только заданный) и `data-p`, равным `invalid` при `invalid`. `size` и `fluid` SHALL передаваться каждой кнопке; `style_class` SHALL добавляться каждой кнопке, а не корню (как в PrimeNG). `item_template`, если задан, SHALL заменять содержимое кнопки, получая вариант и его индекс. `pt` SHALL принимать части `root` и `toggle_button` (передаётся каждой вложенной кнопке) и добавлять классы, стиль и атрибуты без замены собственных.
+### Requirement: SelectButton structure and attributes
+The root SHALL be `<div class="p-selectbutton p-component">` with the modifiers `p-invalid` and `p-selectbutton-fluid`, `role="group"`, `aria-labelledby` (only if set) and `data-p` equal to `invalid` when `invalid`. `size` and `fluid` SHALL be passed to each button; `style_class` SHALL be added to each button, not the root (as in PrimeNG). `item_template`, if set, SHALL replace the button content, receiving the option and its index. `pt` SHALL accept the parts `root` and `toggle_button` (passed to each nested button) and add classes, style and attributes without replacing the component's own.
 
-#### Scenario: Корень
+#### Scenario: Root
 - **WHEN** `invalid = true`, `fluid = true`, `aria_labelledby = "lbl"`
-- **THEN** у корня `p-selectbutton p-component p-invalid p-selectbutton-fluid`, `role="group"`, `aria-labelledby="lbl"`, `data-p="invalid"`
+- **THEN** the root has `p-selectbutton p-component p-invalid p-selectbutton-fluid`, `role="group"`, `aria-labelledby="lbl"`, `data-p="invalid"`
 
-#### Scenario: Размер
-- **WHEN** задан `size = Small`
-- **THEN** у каждой кнопки есть `p-togglebutton-sm`
+#### Scenario: Size
+- **WHEN** `size = Small` is set
+- **THEN** each button has `p-togglebutton-sm`
 
-#### Scenario: Класс кнопок
-- **WHEN** задан `style_class = "mine"`
-- **THEN** класс `mine` есть у каждой кнопки и нет у корня
+#### Scenario: Button class
+- **WHEN** `style_class = "mine"` is set
+- **THEN** the class `mine` is on each button and not on the root
 
-#### Scenario: Свой контент
-- **WHEN** задан `item_template`
-- **THEN** кнопки содержат результат шаблона, метка по умолчанию не выводится
+#### Scenario: Custom content
+- **WHEN** `item_template` is set
+- **THEN** the buttons contain the template's result, the default label is not rendered
 
-### Requirement: Стоимость отрисовки SelectButton
-Число аллокаций на экземпляр при SSR SHALL укладываться в бюджет `selectbutton-1000` в `benches/alloc-budgets.toml`, вклад в wasm — в бюджет `selectbutton` в `benches/budgets.toml`.
+### Requirement: SelectButton render cost
+The allocation count per instance in SSR SHALL fit within the `selectbutton-1000` budget in `benches/alloc-budgets.toml`, the wasm contribution within the `selectbutton` budget in `benches/budgets.toml`.
 
-#### Scenario: Бюджеты
-- **WHEN** выполняются `cargo xtask alloc-budget` и `cargo xtask wasm-size`
-- **THEN** значения SelectButton не превышают бюджеты
+#### Scenario: Budgets
+- **WHEN** `cargo xtask alloc-budget` and `cargo xtask wasm-size` are run
+- **THEN** the SelectButton values do not exceed the budgets

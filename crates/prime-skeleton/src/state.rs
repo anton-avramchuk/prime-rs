@@ -1,21 +1,21 @@
-//! Чистая логика Skeleton: формы, анимация, классы, `data-p` и встроенный стиль (по `skeleton.ts` и `skeletonstyle.ts` PrimeNG).
+//! Pure Skeleton logic: shapes, animation, classes, `data-p` and the inline style (from PrimeNG's `skeleton.ts` and `skeletonstyle.ts`).
 
 use prime_core::{ClassNames, DataP};
 use std::borrow::Cow;
 use std::fmt::Write;
 
-/// Форма заглушки (`shape`).
+/// Placeholder shape (`shape`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum SkeletonShape {
-    /// Прямоугольник (по умолчанию).
+    /// Rectangle (default).
     #[default]
     Rectangle,
-    /// Круг.
+    /// Circle.
     Circle,
 }
 
 impl SkeletonShape {
-    /// Значение, как в PrimeNG.
+    /// Value as in PrimeNG.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Rectangle => "rectangle",
@@ -24,31 +24,31 @@ impl SkeletonShape {
     }
 }
 
-/// Анимация заглушки (`animation`).
+/// Placeholder animation (`animation`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum SkeletonAnimation {
-    /// Волна (по умолчанию).
+    /// Wave (default).
     #[default]
     Wave,
-    /// Без анимации.
+    /// No animation.
     None,
 }
 
-/// Добавляет классы корня в порядке `skeletonstyle.ts`.
+/// Adds the root classes in the order of `skeletonstyle.ts`.
 pub fn write_classes(cn: &mut ClassNames, shape: SkeletonShape, animation: SkeletonAnimation) {
     cn.add("p-skeleton p-component")
         .add_if(shape == SkeletonShape::Circle, "p-skeleton-circle")
         .add_if(animation == SkeletonAnimation::None, "p-skeleton-animation-none");
 }
 
-/// Значение `data-p`: имя формы.
+/// `data-p` value: the shape name.
 pub fn data_p(shape: SkeletonShape) -> Cow<'static, str> {
     let mut d = DataP::new();
     d.add(shape.as_str());
     d.finish_cow()
 }
 
-/// Встроенный стиль (без завершающей `;`, её добавляет Leptos): `position: relative`, `width`, `height`, `border-radius`; при `size` ширина и высота равны ему.
+/// Inline style (without the trailing `;`, which Leptos adds): `position: relative`, `width`, `height`, `border-radius`; with `size` the width and height equal it.
 pub fn container_style(size: Option<&str>, width: Option<&str>, height: Option<&str>, border_radius: Option<&str>) -> String {
     let mut out = String::with_capacity(80);
     out.push_str("position: relative;");

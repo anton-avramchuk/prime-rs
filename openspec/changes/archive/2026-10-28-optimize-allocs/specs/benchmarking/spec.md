@@ -1,19 +1,19 @@
 ## ADDED Requirements
 
-### Requirement: Сборка классов и data-p без аллокации
-Общая сборка строк `class` и `data-p` в `prime-core` SHALL не выполнять кучевых аллокаций для строк, составленных только из констант компонента (без пользовательских `style_class` и `pt`): такие строки SHALL возвращаться как `&'static str` из ограниченной таблицы интернирования. Строки с пользовательскими классами SHALL собираться на стековом буфере и выдаваться одной `String`.
+### Requirement: Class and data-p assembly without allocation
+The shared assembly of `class` and `data-p` strings in `prime-core` SHALL NOT perform heap allocations for strings composed only of component constants (without user `style_class` and `pt`): such strings SHALL be returned as `&'static str` from a bounded interning table. Strings with user classes SHALL be assembled on a stack buffer and handed out as a single `String`.
 
-#### Scenario: Повторный рендер того же состояния
-- **WHEN** один и тот же компонент в одном состоянии отрисовывается второй раз
-- **THEN** строки `class` и `data-p` не аллоцируют
+#### Scenario: Re-render of the same state
+- **WHEN** the same component in the same state is rendered a second time
+- **THEN** the `class` and `data-p` strings do not allocate
 
-#### Scenario: Пользовательский класс
-- **WHEN** передан `style_class`
-- **THEN** итоговая строка равна прежней по содержимому и не попадает в таблицу интернирования
+#### Scenario: User class
+- **WHEN** `style_class` is passed
+- **THEN** the resulting string equals the previous one in content and does not enter the interning table
 
-### Requirement: Бюджеты аллокаций следуют измерениям
-Бюджеты в `benches/alloc-budgets.toml` SHALL не превышать округлённое вверх измеренное значение более чем на 15 % (но не менее чем на 1 аллокацию запаса).
+### Requirement: Allocation budgets follow measurements
+The budgets in `benches/alloc-budgets.toml` SHALL NOT exceed the rounded-up measured value by more than 15 % (but by no less than 1 allocation of headroom).
 
-#### Scenario: Проверка бюджетов
-- **WHEN** выполняется `cargo xtask alloc-budget`
-- **THEN** все сценарии укладываются в бюджеты, а запас над округлённым измерением не превышает 15 %
+#### Scenario: Budget check
+- **WHEN** `cargo xtask alloc-budget` is run
+- **THEN** all scenarios fit within the budgets, and the headroom over the rounded measurement does not exceed 15 %

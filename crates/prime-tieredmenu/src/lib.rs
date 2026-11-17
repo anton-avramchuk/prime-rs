@@ -1,9 +1,9 @@
-//! TieredMenu — порт `p-tieredmenu` из PrimeNG 21.1.10.
+//! TieredMenu — port of `p-tieredmenu` from PrimeNG 21.1.10.
 //!
-//! Меню, группы которого раскрываются во вложенных панелях рядом с пунктом. Пункты — [`prime_menu::MenuItem`]: поле `items`
-//! задаёт подменю. Группу раскрывают кликом или стрелкой →, после первого раскрытия кликом работает и наведение (`auto_display`);
-//! клавиатура ведёт по уровням (↓ ↑ → ← `Home` `End` `Enter` `Space` `Escape` `Tab`, поиск по началу подписи). В режиме `popup`
-//! меню показывается у цели через [`TieredMenuRef`]. Вся логика переходов — в чистой модели (модуль `model`).
+//! A menu whose groups expand into nested panels next to the item. Items are [`prime_menu::MenuItem`]: the `items` field
+//! defines the submenu. A group is expanded by click or the → arrow; after the first click expansion, hover works too (`auto_display`);
+//! the keyboard moves across levels (↓ ↑ → ← `Home` `End` `Enter` `Space` `Escape` `Tab`, search by label prefix). In `popup` mode
+//! the menu is shown at the target via [`TieredMenuRef`]. All transition logic lives in the pure model (the `model` module).
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -40,41 +40,41 @@ use std::time::Duration;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-/// Pass-through частей [`TieredMenu`].
+/// Pass-through of the [`TieredMenu`] parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TieredMenuPt {
-    /// Корень.
+    /// Root.
     pub root: Pt,
-    /// Корневой список.
+    /// Root list.
     pub root_list: Pt,
-    /// Пункт `li`.
+    /// Item `li`.
     pub item: Pt,
-    /// Содержимое пункта.
+    /// Item content.
     pub item_content: Pt,
-    /// Ссылка пункта.
+    /// Item link.
     pub item_link: Pt,
-    /// Значок пункта.
+    /// Item icon.
     pub item_icon: Pt,
-    /// Подпись пункта.
+    /// Item label.
     pub item_label: Pt,
-    /// Стрелка группы.
+    /// Group arrow.
     pub submenu_icon: Pt,
-    /// Подменю.
+    /// Submenu.
     pub submenu: Pt,
-    /// Разделитель.
+    /// Separator.
     pub separator: Pt,
 }
 
-/// Контекст представления `item`.
+/// Context of the `item` view.
 #[derive(Clone)]
 pub struct TieredMenuItemContext {
-    /// Пункт.
+    /// Item.
     pub item: MenuItem,
-    /// Есть ли у пункта подменю.
+    /// Whether the item has a submenu.
     pub has_submenu: bool,
 }
 
-/// Управляющий объект всплывающего меню: `toggle`/`show`/`hide` от события и цели.
+/// Handle of the popup menu: `toggle`/`show`/`hide` from an event and a target.
 #[derive(Clone, Copy)]
 pub struct TieredMenuRef {
     visible: RwSignal<bool>,
@@ -96,30 +96,30 @@ fn event_target(event: &web_sys::Event) -> Option<web_sys::HtmlElement> {
 }
 
 impl TieredMenuRef {
-    /// Создаёт скрытое меню. Вызывать внутри компонента (владелец сигналов).
+    /// Creates a hidden menu. Call inside a component (the signal owner).
     pub fn new() -> Self {
         Self { visible: RwSignal::new(false), target: StoredValue::new_local(None) }
     }
 
-    /// Меню показано (с подпиской).
+    /// The menu is shown (subscribes).
     pub fn visible(&self) -> bool {
         self.visible.get()
     }
 
-    /// Показывает меню у `currentTarget` события.
+    /// Shows the menu at the event's `currentTarget`.
     pub fn show(&self, event: &web_sys::Event) {
         if let Some(target) = event_target(event) {
             self.show_at(&target);
         }
     }
 
-    /// Показывает меню у явной цели.
+    /// Shows the menu at an explicit target.
     pub fn show_at(&self, target: &web_sys::HtmlElement) {
         self.target.set_value(Some(target.clone()));
         self.visible.set(true);
     }
 
-    /// Переключает меню; цель — `currentTarget` события.
+    /// Toggles the menu; the target is the event's `currentTarget`.
     pub fn toggle(&self, event: &web_sys::Event) {
         if self.visible.get_untracked() {
             self.hide();
@@ -128,20 +128,20 @@ impl TieredMenuRef {
         }
     }
 
-    /// Скрывает меню.
+    /// Hides the menu.
     pub fn hide(&self) {
         self.visible.try_set(false);
     }
 }
 
-/// Состояние, общее для обработчиков.
+/// State shared by the handlers.
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 struct Core {
     id: String,
     model: Prop<Vec<MenuItem>>,
     nodes: Memo<Vec<Node>>,
     state: RwSignal<State>,
-    /// Сторона подменю по ключу группы (`100%` или `-100%`).
+    /// Submenu side by group key (`100%` or `-100%`).
     sides: RwSignal<HashMap<String, &'static str>>,
     focused: RwSignal<bool>,
     focused_key: Memo<Option<String>>,
@@ -190,7 +190,7 @@ impl Core {
     fn focus_list(&self) {
         #[cfg(target_arch = "wasm32")]
         if let Some(list) = self.list.get_untracked() {
-            // Без прокрутки страницы: иначе она сдвинула бы цель и закрыла всплывающее меню по `scroll`.
+            // Without scrolling the page: otherwise it would shift the target and close the popup menu on `scroll`.
             prime_dom::focus_no_scroll(&list);
         }
     }
@@ -204,7 +204,7 @@ impl Core {
         });
     }
 
-    /// Закрывает всё: путь, фокус; в режиме `popup` скрывает и меню.
+    /// Closes everything: the path and focus; in `popup` mode it also hides the menu.
     fn hide_menu(&self) {
         self.update(|t, st| t.hide(st));
         if self.is_popup() {
@@ -227,7 +227,7 @@ impl Core {
         }
     }
 
-    /// Клик по содержимому пункта.
+    /// Click on the item content.
     fn item_click(&self, event: web_sys::MouseEvent, key: &str) {
         let Some(item) = self.tree(|t| t.node(key).map(|n| t.item(n).clone())) else { return };
         if should_prevent_default(&item) || item.disabled {
@@ -248,7 +248,7 @@ impl Core {
         self.focus_list();
     }
 
-    /// Наведение на содержимое пункта.
+    /// Hover over the item content.
     fn item_hover(&self, key: &str) {
         if !self.auto_display.get_untracked() {
             return;
@@ -273,7 +273,7 @@ impl Core {
         }
     }
 
-    /// `Enter`/`Space`: клик по ссылке пункта под фокусом.
+    /// `Enter`/`Space`: click on the link of the focused item.
     fn enter(&self) {
         #[cfg(target_arch = "wasm32")]
         if let Some(id) = self.tree(|t| t.focused_id(&self.state.get_untracked(), &self.id))
@@ -290,7 +290,7 @@ impl Core {
         }
     }
 
-    /// Печатаемый символ: поиск по началу подписи; строка поиска сбрасывается через 500 мс.
+    /// Printable character: search by label prefix; the search string resets after 500 ms.
     fn type_char(&self, ch: &str) {
         self.search.update_value(|s| s.push_str(ch));
         let text = self.search.get_value();
@@ -403,7 +403,7 @@ impl Core {
         (inside_panel, inside_target)
     }
 
-    /// Слушатель клика вне меню (в следующем тике: клик, открывший меню, ещё всплывает).
+    /// Outside-click listener (on the next tick: the click that opened the menu is still bubbling).
     #[cfg(target_arch = "wasm32")]
     fn bind_outside(self: &Arc<Self>) {
         let this = self.clone();
@@ -429,7 +429,7 @@ impl Core {
         }
     }
 
-    /// Меню только что показано (`popup`): слой, выравнивание, фокус, подписки, `on_show`.
+    /// The menu has just been shown (`popup`): layer, alignment, focus, subscriptions, `on_show`.
     #[cfg(target_arch = "wasm32")]
     fn opened(self: &Arc<Self>) {
         let (Some(panel), Some(target)) = (self.panel.get_untracked(), self.r.target.get_value()) else { return };
@@ -453,7 +453,7 @@ impl Core {
             }
         });
         self.cleanups.update_value(|c| c.push(Box::new(move || resize.remove())));
-        // Прокрутка предка цели (или сдвинувшая цель прокрутка страницы) закрывает меню.
+        // Scrolling an ancestor of the target (or a page scroll that shifted the target) closes the menu.
         let this = self.clone();
         if let Some(target) = self.r.target.get_value()
             && let Some(unwatch) = prime_dom::watch_scroll(target, move || this.hide_menu())
@@ -465,7 +465,7 @@ impl Core {
         }
     }
 
-    /// Меню только что скрыто (`popup`): подписки сняты, состояние сброшено, цель забыта, `on_hide`.
+    /// The menu has just been hidden (`popup`): subscriptions removed, state reset, target forgotten, `on_hide`.
     #[cfg(target_arch = "wasm32")]
     fn closed(&self) {
         self.release();
@@ -477,7 +477,7 @@ impl Core {
         }
     }
 
-    /// Считает сторону раскрытых подменю по месту в окне (`nestedPosition`).
+    /// Computes the side of expanded submenus from the room in the window (`nestedPosition`).
     #[cfg(target_arch = "wasm32")]
     fn place_submenus(self: &Arc<Self>) {
         let this = self.clone();
@@ -489,7 +489,7 @@ impl Core {
                 let inner = window.inner_width().ok().and_then(|v| v.as_f64()).unwrap_or(client);
                 let (scrollbar, viewport) = ((inner - client).max(0.0), client.max(1.0));
                 let scroll_x = window.scroll_x().unwrap_or(0.0);
-                // Компонент мог быть размонтирован до срабатывания таймера.
+                // The component may have been unmounted before the timer fired.
                 let Some(active) = this.state.try_get_untracked().map(|s| s.active) else { return };
                 let mut next = HashMap::new();
                 for key in active {
@@ -513,7 +513,7 @@ impl Core {
     }
 }
 
-/// Всё, что нужно для вывода уровней.
+/// Everything needed to render the levels.
 #[derive(Clone)]
 struct Ctx {
     core: Arc<Core>,
@@ -522,67 +522,67 @@ struct Ctx {
     submenu_icon: Option<ViewFn>,
 }
 
-/// Меню с вложенными подменю.
+/// A menu with nested submenus.
 ///
-/// Свойства принимают значение или сигнал. Всплывающее меню выводится внутри собственного места в разметке (не в `body`),
-/// поэтому для выравнивания родитель должен быть `position: relative`, а не `overflow: hidden`.
+/// Properties accept a value or a signal. The popup menu is rendered in place in the markup (not in `body`),
+/// so for alignment the parent must be `position: relative` and not `overflow: hidden`.
 #[component]
 pub fn TieredMenu(
-    /// Пункты.
+    /// Items.
     #[prop(optional, into)]
     model: Prop<Vec<MenuItem>>,
-    /// Всплывающий режим.
+    /// Popup mode.
     #[prop(optional, into)]
     popup: Prop<bool>,
-    /// Управляющий объект всплывающего меню (в режиме `popup`).
+    /// Handle of the popup menu (in `popup` mode).
     #[prop(optional)]
     popup_ref: Option<TieredMenuRef>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Additional class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Ширина окна, до которой включён режим `p-tieredmenu-mobile` (по умолчанию `960px`).
+    /// Window width up to which the `p-tieredmenu-mobile` mode is enabled (default `960px`).
     #[prop(optional, into)]
     breakpoint: OptProp<String>,
-    /// Автоматически назначать `z-index`.
+    /// Assign `z-index` automatically.
     #[prop(optional, default = Prop::Static(true), into)]
     auto_z_index: Prop<bool>,
-    /// Базовый `z-index` поверх значения конфигурации.
+    /// Base `z-index` on top of the configuration value.
     #[prop(optional, into)]
     base_z_index: Prop<i32>,
-    /// Раскрывать группы при наведении (после первого раскрытия кликом).
+    /// Expand groups on hover (after the first expansion by click).
     #[prop(optional, default = Prop::Static(true), into)]
     auto_display: Prop<bool>,
-    /// Атрибут `id`.
+    /// The `id` attribute.
     #[prop(optional, into)]
     id: OptProp<String>,
-    /// Атрибут `aria-label` корневого списка.
+    /// The `aria-label` attribute of the root list.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby` корневого списка.
+    /// The `aria-labelledby` attribute of the root list.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Отключить фокус меню.
+    /// Disable menu focus.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Атрибут `tabindex` корневого списка.
+    /// The `tabindex` attribute of the root list.
     #[prop(optional, default = Prop::Static(0), into)]
     tabindex: Prop<i32>,
-    /// Pass-through частей.
+    /// Pass-through of the parts.
     #[prop(optional)]
     pt: Option<TieredMenuPt>,
-    /// Своё содержимое пункта вместо ссылки.
+    /// Custom item content instead of the link.
     #[prop(optional)]
     item: Option<Callback<TieredMenuItemContext, AnyView>>,
-    /// Своя стрелка группы.
+    /// Custom group arrow.
     #[prop(optional, into)]
     submenu_icon: Option<ViewFn>,
-    /// Меню показано (`popup`).
+    /// The menu is shown (`popup`).
     #[prop(optional)]
     on_show: Option<Callback<()>>,
-    /// Меню скрыто (`popup`).
+    /// The menu is hidden (`popup`).
     #[prop(optional)]
     on_hide: Option<Callback<()>>,
 ) -> impl IntoView {
@@ -644,11 +644,11 @@ pub fn TieredMenu(
     #[cfg(target_arch = "wasm32")]
     {
         client::bind_media(breakpoint.get_untracked().unwrap_or_else(|| "960px".to_owned()), core.mobile);
-        // Показ и скрытие `popup`.
+        // Showing and hiding `popup`.
         let c1 = core.clone();
         Effect::new(move |_| {
             let open = c1.popup.get() && c1.r.visible.get();
-            // Панель попадает в DOM после этого эффекта, поэтому следим и за ссылкой на неё.
+            // The panel enters the DOM after this effect, so we also track the reference to it.
             let mounted = c1.panel.get().is_some();
             let was = c1.was_open.get_value();
             if open && mounted && !was {
@@ -659,7 +659,7 @@ pub fn TieredMenu(
                 c1.closed();
             }
         });
-        // Слушатель клика вне: пока открыто всплывающее меню или раскрыт путь.
+        // Outside-click listener: while the popup menu is open or a path is expanded.
         let c2 = core.clone();
         Effect::new(move |_| {
             let want = if c2.popup.get() { c2.r.visible.get() } else { c2.state.with(|s| !s.active.is_empty()) };
@@ -669,7 +669,7 @@ pub fn TieredMenu(
                 c2.unbind_outside();
             }
         });
-        // Сторона подменю по месту в окне.
+        // Submenu side based on the room in the window.
         let c3 = core.clone();
         Effect::new(move |_| {
             c3.state.with(|s| s.active.len());
@@ -700,7 +700,7 @@ pub fn TieredMenu(
             let root_style = {
                 let (pt, style) = (pt.clone(), style.clone());
                 move || {
-                    // Всплывающая панель сразу вне потока: иначе её вставка сдвигает страницу и закрывает меню по `scroll`.
+                    // The popup panel is taken out of flow right away: otherwise inserting it shifts the page and closes the menu on `scroll`.
                     let base = if is_popup { "position: absolute" } else { "" };
                     let own = style.with(|s| s.clone()).unwrap_or_default();
                     let merged = pt.root.merge_style_parts(&[base, &own]);
@@ -751,7 +751,7 @@ pub fn TieredMenu(
     }
 }
 
-/// Пункты одного уровня.
+/// Items of one level.
 fn items_view(ctx: &Ctx, parent_key: &str) -> AnyView {
     let core = &ctx.core;
     let rows: Vec<(Node, MenuItem)> = core.tree(|t| t.siblings(parent_key).into_iter().map(|n| (n.clone(), t.item(n).clone())).collect());
@@ -783,14 +783,14 @@ fn join(base: &str, extra: Option<&str>) -> String {
     }
 }
 
-#[allow(clippy::clone_on_copy)] // замыкание над `Memo` — `Copy`, `clone()` оставлен для единообразия с остальными замыканиями
+#[allow(clippy::clone_on_copy)] // a closure over `Memo` is `Copy`; `clone()` is kept for consistency with the other closures
 fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset: usize) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
     let key = node.key.clone();
     let group = !item.items.is_empty();
     let id = item_id(&core.id, item, &key);
     let state = core.state;
-    // Memo: подменю перестраивается только при смене флага этого пункта, а не при любом изменении состояния.
+    // Memo: the submenu is rebuilt only when this item's flag changes, not on any state change.
     let active = {
         let key = key.clone();
         let memo = Memo::new(move |_| state.with(|s| s.active.contains(&key)));
@@ -878,7 +878,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
     .into_any()
 }
 
-/// Стандартное содержимое пункта: ссылка со значком, подписью и стрелкой группы.
+/// Default item content: a link with an icon, a label and a group arrow.
 fn link_view(
     ctx: &Ctx,
     item: &MenuItem,
@@ -918,12 +918,12 @@ fn link_view(
 
 #[cfg(target_arch = "wasm32")]
 mod client {
-    //! Мобильный режим: `matchMedia("(max-width: <breakpoint>)")`.
+    //! Mobile mode: `matchMedia("(max-width: <breakpoint>)")`.
 
     use leptos::prelude::*;
     use leptos::wasm_bindgen::{JsCast, closure::Closure};
 
-    /// Ведёт `mobile` по медиазапросу и снимает слушатель при размонтировании.
+    /// Drives `mobile` from the media query and removes the listener on unmount.
     pub fn bind_media(breakpoint: String, mobile: RwSignal<bool>) {
         let Some(window) = web_sys::window() else { return };
         let Some(query) = window.match_media(&format!("(max-width: {breakpoint})")).ok().flatten() else { return };

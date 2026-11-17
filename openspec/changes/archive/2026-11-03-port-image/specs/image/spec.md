@@ -1,61 +1,61 @@
 # image Specification
 
 ## Purpose
-Image показывает картинку и, по настройке, открывает её в модальном слое с поворотом и масштабом.
+Image shows a picture and, depending on the setting, opens it in a modal layer with rotation and zoom.
 
 ## ADDED Requirements
 
-### Requirement: Разметка
-`Image` крейта `prime-image` SHALL выводить `div.p-image.p-component` (`p-image-preview` при `preview`; `style_class`, `style`, `pt`) с `img`, у которого заданные `src`, `srcset`, `sizes`, `alt`, `width`, `height`, `loading` (`lazy` или `eager`), класс `image_class` и стиль `image_style` выведены атрибутами, а незаданные опущены. Представление `image` SHALL заменять `img` и получать обратный вызов ошибки. При `preview` SHALL выводиться `button.p-image-preview-mask[type=button]` с `aria-label` из перевода `aria.zoomImage` и размерами `width × height`, содержащая значок глаза `p-image-preview-icon`; представление `indicator` SHALL заменять значок.
+### Requirement: Markup
+The `Image` of the `prime-image` crate SHALL render `div.p-image.p-component` (`p-image-preview` with `preview`; `style_class`, `style`, `pt`) with an `img` whose `src`, `srcset`, `sizes`, `alt`, `width`, `height`, `loading` (`lazy` or `eager`), the class `image_class` and the style `image_style` are rendered as attributes, and unset ones are omitted. The view `image` SHALL replace the `img` and receive an error callback. With `preview` a `button.p-image-preview-mask[type=button]` SHALL be rendered with `aria-label` from the translation `aria.zoomImage` and the size `width × height`, containing the eye icon `p-image-preview-icon`; the view `indicator` SHALL replace the icon.
 
-#### Scenario: Без просмотра
-- **WHEN** отрисован `Image` с `src` и `alt`, `preview` не задан
-- **THEN** выведен `img` с этими атрибутами, кнопки просмотра нет
+#### Scenario: Without preview
+- **WHEN** `Image` with `src` and `alt` is rendered, `preview` is not set
+- **THEN** an `img` with these attributes is rendered, and there is no preview button
 
-#### Scenario: С просмотром
-- **WHEN** задан `preview = true`
-- **THEN** у корня класс `p-image-preview`, после `img` выведена кнопка `p-image-preview-mask` со значком
+#### Scenario: With preview
+- **WHEN** `preview = true` is set
+- **THEN** the root has the class `p-image-preview`, and after the `img` a button `p-image-preview-mask` with the icon is rendered
 
-### Requirement: Открытие просмотра
-Клик по кнопке просмотра SHALL открывать в `Portal` маску `div.p-image-mask.p-overlay-mask[role=dialog][aria-modal=true]` со слоем `modal` из общего стека `z-index`, блокировать прокрутку страницы, ставить ловушку фокуса и после показа переносить фокус на кнопку закрытия, затем вызывать `on_show`. Внутри маски SHALL быть панель `div.p-image-toolbar` и картинка `img.p-image-original`, чей `src` — `preview_image_src` или, если не задан, `src` (аналогично `srcset` и `sizes` из `preview_image_srcset`/`preview_image_sizes`). Представление `preview_content` SHALL заменять картинку и получать класс `p-image-original`, стиль с `transform` и обратный вызов клика по картинке.
+### Requirement: Opening the preview
+A click on the preview button SHALL open in `Portal` a mask `div.p-image-mask.p-overlay-mask[role=dialog][aria-modal=true]` with the layer `modal` from the shared `z-index` stack, block the page scrolling, set a focus trap and, after showing, move the focus to the close button, and then call `on_show`. Inside the mask there SHALL be a panel `div.p-image-toolbar` and a picture `img.p-image-original` whose `src` is `preview_image_src` or, if it is not set, `src` (similarly `srcset` and `sizes` from `preview_image_srcset`/`preview_image_sizes`). The view `preview_content` SHALL replace the picture and receive the class `p-image-original`, a style with `transform` and a callback for a click on the picture.
 
-#### Scenario: Открытие
-- **WHEN** пользователь кликает по кнопке просмотра
-- **THEN** в `body` выведена маска с панелью и увеличенной картинкой, прокрутка страницы заблокирована, фокус на кнопке закрытия
+#### Scenario: Opening
+- **WHEN** the user clicks the preview button
+- **THEN** the mask with the panel and the enlarged picture is rendered in `body`, the page scrolling is blocked, the focus is on the close button
 
-#### Scenario: Другой источник
-- **WHEN** задан `preview_image_src`
-- **THEN** увеличенная картинка берёт его, а не `src`
+#### Scenario: Another source
+- **WHEN** `preview_image_src` is set
+- **THEN** the enlarged picture takes it, not `src`
 
-### Requirement: Панель действий
-Панель SHALL содержать кнопки в порядке: поворот вправо (`p-image-rotate-right-button`), поворот влево (`p-image-rotate-left-button`), уменьшение (`p-image-zoom-out-button`), увеличение (`p-image-zoom-in-button`), закрытие (`p-image-close-button`); у каждой класс `p-image-action`, `type=button` и `aria-label` из переводов `aria.rotateRight`, `aria.rotateLeft`, `aria.zoomOut`, `aria.zoomIn`, `aria.close`; значки заменяются свойствами `rotate_right_icon`, `rotate_left_icon`, `zoom_out_icon`, `zoom_in_icon`, `close_icon`. Повороты SHALL менять угол на ±90°, масштаб — на ±0.1 в пределах от 0.5 до 1.5; картинка SHALL получать `transform: rotate(<угол>deg) scale(<масштаб>)`. Кнопка уменьшения (увеличения) SHALL получать `disabled` и класс `p-disabled`, когда следующий шаг не оставляет масштаба внутри предела. Клики по панели SHALL не закрывать просмотр.
+### Requirement: Action panel
+The panel SHALL contain the buttons in this order: rotate right (`p-image-rotate-right-button`), rotate left (`p-image-rotate-left-button`), zoom out (`p-image-zoom-out-button`), zoom in (`p-image-zoom-in-button`), close (`p-image-close-button`); each has the class `p-image-action`, `type=button` and `aria-label` from the translations `aria.rotateRight`, `aria.rotateLeft`, `aria.zoomOut`, `aria.zoomIn`, `aria.close`; the icons are replaced by the properties `rotate_right_icon`, `rotate_left_icon`, `zoom_out_icon`, `zoom_in_icon`, `close_icon`. The rotations SHALL change the angle by ±90°, the zoom — by ±0.1 within the range from 0.5 to 1.5; the picture SHALL get `transform: rotate(<angle>deg) scale(<zoom>)`. The zoom-out (zoom-in) button SHALL get `disabled` and the class `p-disabled` when the next step would not keep the zoom inside the limit. Clicks on the panel SHALL not close the preview.
 
-#### Scenario: Поворот и масштаб
-- **WHEN** нажаты «повернуть вправо» и «увеличить»
-- **THEN** у картинки `transform: rotate(90deg) scale(1.1)`, просмотр остаётся открытым
+#### Scenario: Rotation and zoom
+- **WHEN** "rotate right" and "zoom in" are pressed
+- **THEN** the picture has `transform: rotate(90deg) scale(1.1)`, and the preview remains open
 
-#### Scenario: Предел масштаба
-- **WHEN** масштаб доведён кнопкой «увеличить» до верхнего предела
-- **THEN** кнопка «увеличить» отключена и имеет класс `p-disabled`
+#### Scenario: Zoom limit
+- **WHEN** the zoom is brought to the upper limit with the "zoom in" button
+- **THEN** the "zoom in" button is disabled and has the class `p-disabled`
 
-### Requirement: Закрытие
-Просмотр SHALL закрываться кнопкой закрытия, кликом по маске (но не по панели и не по увеличенной картинке) и клавишей `Escape`; при `Escape` фокус SHALL возвращаться на кнопку просмотра. После окончания анимации выхода SHALL сниматься слой, ловушка фокуса и блокировка прокрутки, поворот и масштаб — сбрасываться (0° и 1), маска — удаляться из DOM, и вызываться `on_hide`. Повторное закрытие и закрытие незавершённого показа SHALL не разблокировать прокрутку дважды.
+### Requirement: Closing
+The preview SHALL be closed by the close button, by a click on the mask (but not on the panel and not on the enlarged picture) and by the `Escape` key; on `Escape` the focus SHALL return to the preview button. After the exit animation ends, the layer, the focus trap and the scroll blocking SHALL be released, the rotation and zoom — reset (0° and 1), the mask — removed from the DOM, and `on_hide` SHALL be called. A repeated closing and the closing of an unfinished showing SHALL not unblock the scrolling twice.
 
-#### Scenario: Клик по маске
-- **WHEN** открыт просмотр и пользователь кликает по маске вне картинки и панели
-- **THEN** просмотр закрывается, прокрутка разблокирована, вызван `on_hide`
+#### Scenario: Click on the mask
+- **WHEN** the preview is open and the user clicks the mask outside the picture and the panel
+- **THEN** the preview closes, the scrolling is unblocked, `on_hide` is called
 
-#### Scenario: Клик по картинке
-- **WHEN** пользователь кликает по увеличенной картинке
-- **THEN** просмотр остаётся открытым
+#### Scenario: Click on the picture
+- **WHEN** the user clicks the enlarged picture
+- **THEN** the preview remains open
 
-#### Scenario: Сброс
-- **WHEN** просмотр с поворотом на 90° закрыт и открыт снова
-- **THEN** картинка снова без поворота и в масштабе 1
+#### Scenario: Reset
+- **WHEN** the preview with a 90° rotation is closed and opened again
+- **THEN** the picture is again without rotation and at zoom 1
 
-### Requirement: Ошибка загрузки и стили
-При ошибке загрузки основной картинки SHALL вызываться `on_image_error` с событием. Стили темы SHALL подключаться набором `image` (`cargo xtask gen-theme`).
+### Requirement: Loading error and styles
+On a loading error of the main picture `on_image_error` SHALL be called with the event. The theme styles SHALL be connected with the set `image` (`cargo xtask gen-theme`).
 
-#### Scenario: Ошибка
-- **WHEN** `img` сообщает об ошибке загрузки
-- **THEN** вызывается `on_image_error`
+#### Scenario: Error
+- **WHEN** the `img` reports a loading error
+- **THEN** `on_image_error` is called

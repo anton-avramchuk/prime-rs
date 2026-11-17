@@ -1,12 +1,12 @@
-//! InputNumber — порт `p-inputnumber` из PrimeNG 21.1.10.
+//! InputNumber — a port of PrimeNG 21.1.10's `p-inputnumber`.
 //!
-//! Разметка и классы как в PrimeNG: корень `span.p-inputnumber`, внутри `input[role=spinbutton]` (классы `InputText`), значок
-//! очистки и кнопки «больше/меньше» в трёх раскладках. Число форматируется по малой таблице локалей и валют (вместо
-//! `Intl.NumberFormat`), поэтому текст одинаков при SSR и в браузере.
+//! Markup and classes as in PrimeNG: root `span.p-inputnumber`, inside it `input[role=spinbutton]` (`InputText` classes), a clear
+//! icon and increment/decrement buttons in three layouts. The number is formatted by a small table of locales and currencies (instead of
+//! `Intl.NumberFormat`), so the text is identical in SSR and in the browser.
 //!
-//! Значение — двусторонний сигнал `value: RwSignal<Option<f64>>`; без него компонент ведёт внутреннее состояние
-//! (`default_value`). Ввод идёт через `beforeinput`: принимаются только цифры, минус и десятичный разделитель, текст
-//! переформатируется на лету с сохранением курсора, а `Enter`, `Tab` и потеря фокуса фиксируют значение с ограничением
+//! The value is a two-way signal `value: RwSignal<Option<f64>>`; without it the component keeps internal state
+//! (`default_value`). Input goes through `beforeinput`: only digits, minus and the decimal separator are accepted, the text
+//! is reformatted on the fly while preserving the caret, and `Enter`, `Tab` and focus loss commit the value clamped to
 //! `min..max`.
 //!
 //! ```
@@ -42,202 +42,202 @@ pub use format::{CurrencyDisplay, FormatOptions, InputNumberMode, NumberFormat, 
 pub use locale::{Currency, DEFAULT_LOCALE, Grouping, LocaleData, resolve_locale};
 pub use state::{ButtonLayout, InputNumberState, data_p, write_classes};
 
-/// Задержка перед повтором шага при удержании кнопки, мс.
+/// Delay before the step repeats while a button is held, ms.
 const REPEAT_DELAY_MS: u64 = 500;
-/// Интервал повторения шага, мс.
+/// Step repeat interval, ms.
 const REPEAT_INTERVAL_MS: u64 = 40;
 
-/// Событие ввода: исходное событие, значение и текст поля.
+/// Input event: the original event, the value and the field text.
 #[derive(Clone, Debug)]
 pub struct InputNumberInput {
-    /// Исходное событие.
+    /// Original event.
     pub original_event: web_sys::Event,
-    /// Новое значение (`None` — пусто).
+    /// New value (`None` means empty).
     pub value: Option<f64>,
-    /// Текст поля после правки.
+    /// Field text after the edit.
     pub formatted_value: String,
 }
 
-/// Pass-through частей InputNumber.
+/// Pass-through for InputNumber parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct InputNumberPt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Поле ввода.
+    /// Input field.
     pub input: Pt,
-    /// Значок очистки.
+    /// Clear icon.
     pub clear_icon: Pt,
-    /// Группа кнопок (раскладка `Stacked`).
+    /// Button group (`Stacked` layout).
     pub button_group: Pt,
-    /// Кнопка увеличения.
+    /// Increment button.
     pub increment_button: Pt,
-    /// Значок кнопки увеличения.
+    /// Increment button icon.
     pub increment_button_icon: Pt,
-    /// Кнопка уменьшения.
+    /// Decrement button.
     pub decrement_button: Pt,
-    /// Значок кнопки уменьшения.
+    /// Decrement button icon.
     pub decrement_button_icon: Pt,
 }
 
-/// Поле числового ввода.
+/// Numeric input field.
 ///
-/// Каждое свойство принимает значение или сигнал; `value` — двусторонний сигнал.
+/// Every property accepts a value or a signal; `value` is a two-way signal.
 #[component]
 pub fn InputNumber(
-    /// Двусторонний сигнал значения.
+    /// Two-way value signal.
     #[prop(optional)]
     value: Option<RwSignal<Option<f64>>>,
-    /// Начальное значение, если `value` не передан.
+    /// Initial value if `value` is not passed.
     #[prop(optional)]
     default_value: Option<f64>,
-    /// Режим форматирования.
+    /// Formatting mode.
     #[prop(optional, into)]
     mode: Prop<InputNumberMode>,
-    /// Код валюты (режим `Currency`).
+    /// Currency code (`Currency` mode).
     #[prop(optional, into)]
     currency: OptProp<String>,
-    /// Отображение валюты.
+    /// Currency display.
     #[prop(optional, into)]
     currency_display: Prop<CurrencyDisplay>,
-    /// Локаль (по умолчанию `en-US`).
+    /// Locale (`en-US` by default).
     #[prop(optional, into)]
     locale: OptProp<String>,
-    /// Группировать разряды (по умолчанию `true`).
+    /// Group digits (`true` by default).
     #[prop(optional, into)]
     use_grouping: OptProp<bool>,
-    /// Минимум знаков после запятой.
+    /// Minimum fraction digits.
     #[prop(optional, into)]
     min_fraction_digits: OptProp<u32>,
-    /// Максимум знаков после запятой.
+    /// Maximum fraction digits.
     #[prop(optional, into)]
     max_fraction_digits: OptProp<u32>,
-    /// Форматировать число (по умолчанию `true`).
+    /// Format the number (`true` by default).
     #[prop(optional, into)]
     format: OptProp<bool>,
-    /// Текст перед числом.
+    /// Text before the number.
     #[prop(optional, into)]
     prefix: OptProp<String>,
-    /// Текст после числа.
+    /// Text after the number.
     #[prop(optional, into)]
     suffix: OptProp<String>,
-    /// Нижняя граница.
+    /// Lower bound.
     #[prop(optional, into)]
     min: OptProp<f64>,
-    /// Верхняя граница.
+    /// Upper bound.
     #[prop(optional, into)]
     max: OptProp<f64>,
-    /// Шаг стрелок и кнопок (по умолчанию 1).
+    /// Step of arrows and buttons (1 by default).
     #[prop(optional, into)]
     step: OptProp<f64>,
-    /// Разрешено ли пустое значение (по умолчанию `true`).
+    /// Whether an empty value is allowed (`true` by default).
     #[prop(optional, into)]
     allow_empty: OptProp<bool>,
-    /// Максимальная длина текста.
+    /// Maximum text length.
     #[prop(optional, into)]
     max_length: OptProp<usize>,
-    /// Показывать кнопки.
+    /// Show the buttons.
     #[prop(optional, into)]
     show_buttons: Prop<bool>,
-    /// Раскладка кнопок.
+    /// Button layout.
     #[prop(optional, into)]
     button_layout: Prop<ButtonLayout>,
-    /// Показывать значок очистки.
+    /// Show the clear icon.
     #[prop(optional, into)]
     show_clear: Prop<bool>,
-    /// Только чтение.
+    /// Read-only.
     #[prop(optional, into)]
     readonly: Prop<bool>,
-    /// Недоступно.
+    /// Disabled.
     #[prop(optional, into)]
     disabled: Prop<bool>,
-    /// Недопустимое значение.
+    /// Invalid value.
     #[prop(optional, into)]
     invalid: Prop<bool>,
-    /// Обязательно.
+    /// Required.
     #[prop(optional, into)]
     required: Prop<bool>,
-    /// Вариант оформления.
+    /// Style variant.
     #[prop(optional, into)]
     variant: OptProp<Variant>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// На всю ширину.
+    /// Full width.
     #[prop(optional, into)]
     fluid: OptProp<bool>,
-    /// Подсказка в пустом поле.
+    /// Placeholder of the empty field.
     #[prop(optional, into)]
     placeholder: OptProp<String>,
-    /// Атрибут `id` поля.
+    /// The field's `id` attribute.
     #[prop(optional, into)]
     input_id: OptProp<String>,
-    /// Атрибут `name`.
+    /// The `name` attribute.
     #[prop(optional, into)]
     name: OptProp<String>,
-    /// Атрибут `title`.
+    /// The `title` attribute.
     #[prop(optional, into)]
     title: OptProp<String>,
-    /// Атрибут `autocomplete`.
+    /// The `autocomplete` attribute.
     #[prop(optional, into)]
     autocomplete: OptProp<String>,
-    /// Атрибут `tabindex`.
+    /// The `tabindex` attribute.
     #[prop(optional, into)]
     tabindex: OptProp<i32>,
-    /// Атрибут `aria-label`.
+    /// The `aria-label` attribute.
     #[prop(optional, into)]
     aria_label: OptProp<String>,
-    /// Атрибут `aria-labelledby`.
+    /// The `aria-labelledby` attribute.
     #[prop(optional, into)]
     aria_labelledby: OptProp<String>,
-    /// Атрибут `aria-describedby`.
+    /// The `aria-describedby` attribute.
     #[prop(optional, into)]
     aria_describedby: OptProp<String>,
-    /// Атрибут `aria-required`.
+    /// The `aria-required` attribute.
     #[prop(optional, into)]
     aria_required: Prop<bool>,
-    /// Встроенный стиль поля.
+    /// Inline style of the field.
     #[prop(optional, into)]
     input_style: OptProp<String>,
-    /// Дополнительный класс поля.
+    /// Extra class of the field.
     #[prop(optional, into)]
     input_style_class: OptProp<String>,
-    /// Встроенный стиль корня.
+    /// Inline style of the root.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra class of the root.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Дополнительный класс кнопки увеличения.
+    /// Extra class of the increment button.
     #[prop(optional, into)]
     increment_button_class: OptProp<String>,
-    /// Дополнительный класс кнопки уменьшения.
+    /// Extra class of the decrement button.
     #[prop(optional, into)]
     decrement_button_class: OptProp<String>,
-    /// Значок кнопки увеличения вместо стрелки вверх.
+    /// Icon of the increment button instead of the up arrow.
     #[prop(optional, into)]
     increment_button_icon: Option<ViewFn>,
-    /// Значок кнопки уменьшения вместо стрелки вниз.
+    /// Icon of the decrement button instead of the down arrow.
     #[prop(optional, into)]
     decrement_button_icon: Option<ViewFn>,
-    /// Значок очистки вместо крестика.
+    /// Clear icon instead of the cross.
     #[prop(optional, into)]
     clear_icon: Option<ViewFn>,
-    /// Вызывается при изменении значения вводом или шагом.
+    /// Called when the value changes by typing or a step.
     #[prop(optional, into)]
     on_input: Option<Callback<InputNumberInput>>,
-    /// Вызывается при получении фокуса.
+    /// Called on focus.
     #[prop(optional, into)]
     on_focus: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при потере фокуса.
+    /// Called on blur.
     #[prop(optional, into)]
     on_blur: Option<Callback<web_sys::FocusEvent>>,
-    /// Вызывается при нажатии клавиши (без `Shift` и `Alt`).
+    /// Called on a key press (without `Shift` and `Alt`).
     #[prop(optional, into)]
     on_key_down: Option<Callback<web_sys::KeyboardEvent>>,
-    /// Вызывается при очистке значком.
+    /// Called when cleared by the icon.
     #[prop(optional, into)]
     on_clear: Option<Callback<()>>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<InputNumberPt>,
 ) -> impl IntoView {
@@ -300,12 +300,12 @@ pub fn InputNumber(
         last_options: StoredValue::new(None),
     });
     props.display.set(untrack(|| props.text_for(value.get_untracked())));
-    // Таймер повтора шага живёт только во время удержания кнопки; при размонтировании снимается.
+    // The step repeat timer lives only while a button is held; it is cleared on unmount.
     {
         let props = props.clone();
         on_cleanup(move || props.clear_timer());
     }
-    // Внешнее изменение значения или параметров формата переформатирует текст; набираемый текст («1.») не трогается.
+    // An external change of the value or format parameters reformats the text; text being typed ("1.") is left alone.
     #[cfg(target_arch = "wasm32")]
     {
         let props = props.clone();
@@ -375,7 +375,7 @@ pub fn InputNumber(
         move || props.display.get()
     };
     let display_prop = display_attr.clone();
-    // У элемента не больше 26 атрибутов: необязательные собираются в один набор.
+    // An element has at most 26 attributes: the optional ones are collected into one set.
     macro_rules! attr {
         ($name:literal, |$p:ident| $body:expr) => {{
             let $p = props.clone();
@@ -427,7 +427,7 @@ pub fn InputNumber(
     let input_attrs = pt.input.attrs();
     let input_ref = props.input_ref;
 
-    // Значок очистки зависит от значения и раскладки; кнопки — только от `show_buttons` и раскладки.
+    // The clear icon depends on the value and layout; the buttons only on `show_buttons` and the layout.
     let clear = {
         let (props, pt) = (props.clone(), pt.clone());
         move || {
@@ -483,12 +483,12 @@ pub fn InputNumber(
     }
 }
 
-/// Реактивный атрибут с произвольным именем; `None` — атрибута нет.
+/// Reactive attribute with an arbitrary name; `None` means no attribute.
 fn reactive_attr(name: &'static str, f: impl Fn() -> Option<String> + Send + Sync + 'static) -> AnyAttribute {
     custom_attribute(name, f).into_any_attr()
 }
 
-/// Значок очистки.
+/// Clear icon.
 fn clear_view(props: &Arc<Props>, pt: &Arc<InputNumberPt>, icon: Option<ViewFn>) -> impl IntoView + use<> {
     let class = pt.clear_icon.merge_class("p-inputnumber-clear-icon");
     let attrs = pt.clear_icon.attrs();
@@ -502,7 +502,7 @@ fn clear_view(props: &Arc<Props>, pt: &Arc<InputNumberPt>, icon: Option<ViewFn>)
     }
 }
 
-/// Кнопка увеличения (`up`) или уменьшения.
+/// Increment (`up`) or decrement button.
 fn button_view(props: &Arc<Props>, pt: &Arc<InputNumberPt>, up: bool, icon: Option<ViewFn>) -> impl IntoView + use<> {
     let (button_pt, icon_pt, user_class) = if up {
         (&pt.increment_button, &pt.increment_button_icon, props.increment_button_class.clone())
@@ -580,10 +580,10 @@ fn button_view(props: &Arc<Props>, pt: &Arc<InputNumberPt>, up: bool, icon: Opti
     }
 }
 
-/// Свойства и состояние экземпляра.
+/// Properties and state of an instance.
 struct Props {
     value: RwSignal<Option<f64>>,
-    /// Текст в поле: единственный источник отображаемого значения.
+    /// Text in the field: the single source of the displayed value.
     display: RwSignal<String>,
     focused: RwSignal<bool>,
     mode: Prop<InputNumberMode>,
@@ -634,15 +634,15 @@ struct Props {
     on_key_down: Option<Callback<web_sys::KeyboardEvent>>,
     on_clear: Option<Callback<()>>,
     input_ref: NodeRef<html::Input>,
-    /// Таймер повтора шага при удержании кнопки.
+    /// Step repeat timer while a button is held.
     timer: StoredValue<Option<TimeoutHandle>, LocalStorage>,
-    /// Параметры формата и `allow_empty` при последней синхронизации текста с внешним значением (только в браузере).
+    /// Format parameters and `allow_empty` at the last sync of the text with the external value (browser only).
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     last_options: StoredValue<Option<(FormatOptions, bool)>>,
 }
 
 impl Props {
-    /// Параметры формата (с подпиской на сигналы).
+    /// Format parameters (subscribed to the signals).
     fn format_options(&self) -> FormatOptions {
         FormatOptions {
             locale: self.locale.get().unwrap_or_default(),
@@ -658,7 +658,7 @@ impl Props {
         }
     }
 
-    /// Выполняет `f` с форматтером и контекстом правки (без подписок).
+    /// Runs `f` with the formatter and editing context (without subscriptions).
     fn with_ctx<R>(&self, f: impl FnOnce(&EditCtx) -> R) -> R {
         untrack(|| {
             let nf = NumberFormat::new(&self.format_options());
@@ -673,7 +673,7 @@ impl Props {
         })
     }
 
-    /// Текст для значения: пусто или `0` (при `allow_empty = false`) для `None`.
+    /// Text for a value: empty or `0` (when `allow_empty = false`) for `None`.
     fn text_for(&self, value: Option<f64>) -> String {
         let nf = NumberFormat::new(&self.format_options());
         match value {
@@ -698,12 +698,12 @@ impl Props {
         }
     }
 
-    /// Только чтение или недоступно: ввод, шаги и очистка заблокированы.
+    /// Read-only or disabled: input, steps and clearing are blocked.
     fn blocked(&self) -> bool {
         self.readonly.get_untracked() || self.disabled.get_untracked()
     }
 
-    /// Записывает текст в поле и в `display` (позиция курсора не меняется).
+    /// Writes the text to the field and to `display` (the caret position does not change).
     fn set_text(&self, text: String) {
         if let Some(input) = self.input_ref.get_untracked() {
             input.set_value(&text);
@@ -711,7 +711,7 @@ impl Props {
         self.display.set(text);
     }
 
-    /// Применяет правку: текст, курсор, значение и `on_input`.
+    /// Applies an edit: text, caret, value and `on_input`.
     fn apply_edit(&self, edit: Edit, event: web_sys::Event) {
         if let Some(max) = self.max_length.get_untracked()
             && edit.text.chars().count() > max
@@ -739,7 +739,7 @@ impl Props {
         Some((input.value(), (start as usize, end as usize)))
     }
 
-    /// `beforeinput`: набор, удаление и вставка обрабатываются здесь, браузерная правка отменяется.
+    /// `beforeinput`: typing, deletion and paste are handled here, the native edit is cancelled.
     fn before_input(&self, e: web_sys::InputEvent) {
         if self.blocked() {
             return;
@@ -799,14 +799,14 @@ impl Props {
         }
     }
 
-    /// Записывает значение и его текст (без `on_input`).
+    /// Writes the value and its text (without `on_input`).
     fn set_value_text(&self, value: f64) {
         let text = self.with_ctx(|ctx| ctx.nf.format(value));
         self.set_text(text);
         self.value.set(Some(value));
     }
 
-    /// Фиксация: число ограничивается границами, текст форматируется заново.
+    /// Commit: the number is clamped to the bounds, the text is formatted again.
     fn commit_text(&self) {
         let Some(input) = self.input_ref.get_untracked() else { return };
         let (value, text) = self.with_ctx(|ctx| commit(ctx, &input.value()));
@@ -846,7 +846,7 @@ impl Props {
         }
     }
 
-    /// Шаг по стрелке или кнопке (`spin`).
+    /// Step by arrow or button (`spin`).
     fn spin(&self, dir: f64, event: web_sys::Event) {
         if self.blocked() {
             return;
@@ -867,7 +867,7 @@ impl Props {
         }
     }
 
-    /// Удержание кнопки: первый шаг сразу, затем повтор через `interval` мс, дальше каждые 40 мс.
+    /// Button hold: the first step immediately, then repeat after `interval` ms, then every 40 ms.
     fn repeat(self: &Arc<Self>, dir: f64, interval: u64, event: web_sys::Event) {
         if self.blocked() {
             return;

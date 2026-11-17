@@ -1,5 +1,5 @@
-//! Поведение Splitter в реальном браузере (wasm-bindgen-test): перетаскивание, минимальные размеры, клавиши, события,
-//! снятие подписок и хранилище.
+//! Splitter behaviour in a real browser (wasm-bindgen-test): dragging, minimum sizes, keys, events,
+//! unsubscribing and storage.
 #![cfg(target_arch = "wasm32")]
 
 use leptos::prelude::*;
@@ -15,7 +15,7 @@ fn doc() -> web_sys::Document {
     web_sys::window().unwrap().document().unwrap()
 }
 
-/// Контейнер 400 × 400 px: размер корня известен, расчёты точные.
+/// 400 x 400 px container: the root size is known, calculations are exact.
 fn host() -> HtmlElement {
     let el = doc().create_element("div").unwrap().dyn_into::<HtmlElement>().unwrap();
     el.style().set_property("width", "400px").unwrap();
@@ -29,7 +29,7 @@ fn panels(n: usize) -> Vec<ViewFn> {
 }
 
 fn q(host: &HtmlElement, selector: &str) -> HtmlElement {
-    host.query_selector(selector).unwrap().unwrap_or_else(|| panic!("нет {selector}")).dyn_into().unwrap()
+    host.query_selector(selector).unwrap().unwrap_or_else(|| panic!("missing {selector}")).dyn_into().unwrap()
 }
 
 fn basis(host: &HtmlElement, i: u32) -> String {
@@ -90,7 +90,7 @@ async fn listeners_are_removed_after_mouseup() {
     mouse(&window(), "mouseup", 240, 10);
     mouse(&window(), "mousemove", 300, 10);
     leptos::task::tick().await;
-    assert_eq!(basis(&host, 0), "calc(60% - 4px)", "после отпускания движение игнорируется");
+    assert_eq!(basis(&host, 0), "calc(60% - 4px)", "movement is ignored after release");
 }
 
 #[wasm_bindgen_test]
@@ -122,10 +122,10 @@ async fn min_sizes_reject_the_whole_change() {
     let _h = leptos::mount::mount_to(host.clone(), || view! { <Splitter panels=panels(2) min_sizes=vec![30.0, 0.0] /> });
     leptos::task::tick().await;
     mouse(&q(&host, ".p-splitter-gutter"), "mousedown", 200, 10);
-    mouse(&window(), "mousemove", 100, 10); // первая панель стала бы 25 %
+    mouse(&window(), "mousemove", 100, 10); // the first panel would become 25 %
     leptos::task::tick().await;
     assert_eq!(basis(&host, 0), "calc(50% - 4px)");
-    mouse(&window(), "mousemove", 120, 10); // 30 % — на границе допустимо
+    mouse(&window(), "mousemove", 120, 10); // 30 % - allowed at the boundary
     leptos::task::tick().await;
     assert_eq!(basis(&host, 0), "calc(30% - 4px)");
     mouse(&window(), "mouseup", 120, 10);
@@ -181,15 +181,15 @@ async fn arrow_keys_step_in_pixels_and_keyup_finishes() {
     });
     leptos::task::tick().await;
     let handle = q(&host, ".p-splitter-gutter-handle");
-    assert!(!key(&handle, "keydown", "ArrowRight"), "стрелка отменяет действие по умолчанию");
+    assert!(!key(&handle, "keydown", "ArrowRight"), "the arrow cancels the default action");
     leptos::task::tick().await;
     assert_eq!((basis(&host, 0).as_str(), basis(&host, 1).as_str()), ("calc(51.25% - 4px)", "calc(48.75% - 4px)"));
     key(&handle, "keydown", "ArrowRight");
     key(&handle, "keydown", "ArrowLeft");
     key(&handle, "keydown", "ArrowLeft");
     leptos::task::tick().await;
-    assert_eq!(basis(&host, 0), "calc(50% - 4px)", "+5 +5 −5 −5 пикселей — снова поровну");
-    assert_eq!(*log.lock().unwrap(), ["start"], "начало один раз за серию");
+    assert_eq!(basis(&host, 0), "calc(50% - 4px)", "+5 +5 -5 -5 pixels - equal again");
+    assert_eq!(*log.lock().unwrap(), ["start"], "start once per series");
     key(&handle, "keyup", "ArrowLeft");
     assert_eq!(*log.lock().unwrap(), ["start", "end"]);
 }
@@ -200,7 +200,7 @@ async fn keys_of_the_other_axis_do_nothing_but_are_cancelled() {
     let _h = leptos::mount::mount_to(host.clone(), || view! { <Splitter panels=panels(2) /> });
     leptos::task::tick().await;
     let handle = q(&host, ".p-splitter-gutter-handle");
-    assert!(!key(&handle, "keydown", "ArrowUp"), "действие по умолчанию стрелки отменяется всегда");
+    assert!(!key(&handle, "keydown", "ArrowUp"), "the arrow's default action is always cancelled");
     assert!(key(&handle, "keydown", "Enter"));
     leptos::task::tick().await;
     assert_eq!(basis(&host, 0), "calc(50% - 4px)");
@@ -262,7 +262,7 @@ async fn local_storage_and_invalid_state() {
     let first: HtmlElement = roots.item(0).unwrap().dyn_into().unwrap();
     let second: HtmlElement = roots.item(1).unwrap().dyn_into().unwrap();
     assert_eq!(basis(&first, 0), "calc(20% - 4px)");
-    assert_eq!(basis(&second, 0), "calc(50% - 4px)", "некорректное состояние игнорируется");
+    assert_eq!(basis(&second, 0), "calc(50% - 4px)", "invalid state is ignored");
     local.remove_item("splitter-test-local").unwrap();
     session.remove_item("splitter-test-bad").unwrap();
 }
@@ -275,7 +275,7 @@ async fn unmount_during_drag_removes_listeners() {
     mouse(&q(&host, ".p-splitter-gutter"), "mousedown", 200, 10);
     drop(handle);
     leptos::task::tick().await;
-    // слушатели сняты: движение и отпускание не вызывают паники на уничтоженных сигналах
+    // listeners removed: movement and release do not panic on disposed signals
     mouse(&window(), "mousemove", 240, 10);
     mouse(&window(), "mouseup", 240, 10);
     leptos::task::tick().await;

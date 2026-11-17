@@ -1,9 +1,9 @@
-//! Общие помощники контейнеров-обёрток (`ButtonGroup`, `IconField`, `FloatLabel` и других): классы и стиль корня.
+//! Shared helpers of wrapper containers (`ButtonGroup`, `IconField`, `FloatLabel` and others): root classes and style.
 
 use crate::{ClassNames, OptProp, Pt};
 use std::borrow::Cow;
 
-/// Классы корня: собственные, затем `style_class`, затем класс из `pt.root`.
+/// Root classes: its own, then `style_class`, then the class from `pt.root`.
 ///
 /// ```
 /// use leptos::prelude::*;
@@ -22,7 +22,7 @@ pub fn root_class(base: &str, style_class: &OptProp<String>, root: &Pt) -> Cow<'
     cn.finish_cow()
 }
 
-/// Встроенный стиль корня: `style`, затем стиль из `pt.root`; `None`, если ни того, ни другого нет.
+/// Root inline style: `style`, then the style from `pt.root`; `None` if there is neither.
 pub fn root_style(style: &OptProp<String>, root: &Pt) -> Option<String> {
     style.with(|st| (st.is_some() || root.has_style()).then(|| root.merge_style(st.as_deref().unwrap_or(""))))
 }

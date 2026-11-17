@@ -1,10 +1,10 @@
-//! Message — порт `p-message` из PrimeNG 21.1.10.
+//! Message: port of PrimeNG 21.1.10 `p-message`.
 //!
-//! Разметка и классы как в PrimeNG: корень `div.p-message[role=alert]` (вместо хоста `<p-message>`), внутри
-//! `div.p-message-content-wrapper` > `div.p-message-content` с иконкой, текстом и кнопкой закрытия.
+//! Markup and classes as in PrimeNG: root `div.p-message[role=alert]` (instead of the `<p-message>` host), inside it
+//! `div.p-message-content-wrapper` > `div.p-message-content` with an icon, text and a close button.
 //!
-//! Как и в PrimeNG, при заданном `text` выводится `span.p-message-text` с текстом, а следом всегда второй `span.p-message-text`
-//! с дочерним содержимым. Закрытое сообщение скрывается (`p-message-leave-active` и `display: none`) без анимации.
+//! As in PrimeNG, when `text` is set a `span.p-message-text` with the text is rendered, followed by a second `span.p-message-text`
+//! with the child content. A closed message is hidden (`p-message-leave-active` and `display: none`) without animation.
 //!
 //! ```
 //! use leptos::prelude::*;
@@ -25,83 +25,83 @@ use std::sync::Arc;
 
 pub use state::{MessageSeverity, MessageState, MessageVariant, data_p, write_classes};
 
-/// Событие закрытия: исходное событие браузера.
+/// Close event: the original browser event.
 #[derive(Clone, Debug)]
 pub struct MessageClose {
-    /// Исходное событие `click`.
+    /// Original `click` event.
     pub original_event: web_sys::Event,
 }
 
-/// Pass-through частей Message.
+/// Pass-through of Message parts.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct MessagePt {
-    /// Корневой элемент.
+    /// Root element.
     pub root: Pt,
-    /// Обёртка содержимого (`p-message-content-wrapper`).
+    /// Content wrapper (`p-message-content-wrapper`).
     pub content_wrapper: Pt,
-    /// Содержимое (`p-message-content`).
+    /// Content (`p-message-content`).
     pub content: Pt,
-    /// Иконка-класс (`i.p-message-icon`).
+    /// Icon class (`i.p-message-icon`).
     pub icon: Pt,
-    /// Текст (`span.p-message-text`, оба экземпляра).
+    /// Text (`span.p-message-text`, both instances).
     pub text: Pt,
-    /// Кнопка закрытия.
+    /// Close button.
     pub close_button: Pt,
-    /// Иконка закрытия (для `close_icon`-класса — атрибуты, для встроенной иконки — только класс).
+    /// Close icon (attributes for a `close_icon` class, only the class for the built-in icon).
     pub close_icon: Pt,
 }
 
-/// Сообщение.
+/// Message.
 ///
-/// Каждое свойство принимает значение или сигнал.
+/// Each property accepts a value or a signal.
 #[component]
 pub fn Message(
-    /// Серьёзность (по умолчанию `info`).
+    /// Severity (default `info`).
     #[prop(optional, into)]
     severity: Prop<MessageSeverity>,
-    /// Вариант оформления.
+    /// Styling variant.
     #[prop(optional, into)]
     variant: OptProp<MessageVariant>,
-    /// Размер.
+    /// Size.
     #[prop(optional, into)]
     size: OptProp<Size>,
-    /// Текст сообщения.
+    /// Message text.
     #[prop(optional, into)]
     text: OptProp<String>,
-    /// CSS-класс иконки (`<i class="p-message-icon …">`).
+    /// Icon CSS class (`<i class="p-message-icon …">`).
     #[prop(optional, into)]
     icon: OptProp<String>,
-    /// CSS-класс иконки закрытия.
+    /// Close icon CSS class.
     #[prop(optional, into)]
     close_icon: OptProp<String>,
-    /// Показывать кнопку закрытия.
+    /// Show the close button.
     #[prop(optional)]
     closable: bool,
-    /// Время жизни в миллисекундах; по истечении сообщение скрывается.
+    /// Lifetime in milliseconds; when it expires the message is hidden.
     #[prop(optional)]
     life: Option<u32>,
-    /// Встроенный стиль корня.
+    /// Root inline style.
     #[prop(optional, into)]
     style: OptProp<String>,
-    /// Дополнительный класс корня.
+    /// Extra root class.
     #[prop(optional, into)]
     style_class: OptProp<String>,
-    /// Своя иконка вместо `icon` (выводится без обёртки).
+    /// Custom icon instead of `icon` (rendered without a wrapper).
     #[prop(optional, into)]
     icon_template: Option<ViewFn>,
-    /// Своя иконка кнопки закрытия.
+    /// Custom close button icon.
     #[prop(optional, into)]
     close_icon_template: Option<ViewFn>,
-    /// Своё содержимое вместо текста и дочерних элементов; получает колбэк закрытия.
+    /// Custom content instead of the text and children; receives the close callback.
     #[prop(optional, into)]
     container_template: Option<Callback<Callback<web_sys::Event>, AnyView>>,
-    /// Вызывается после закрытия пользователем.
+    /// Called after the user closes the message.
     #[prop(optional, into)]
     on_close: Option<Callback<MessageClose>>,
-    /// Pass-through частей.
+    /// Pass-through of parts.
     #[prop(optional)]
     pt: Option<MessagePt>,
-    /// Содержимое сообщения.
+    /// Message content.
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
@@ -126,7 +126,7 @@ pub fn Message(
     if let (Some(ms), Some(visible)) = (life, visible) {
         #[cfg(target_arch = "wasm32")]
         {
-            // Таймер ставится только в браузере; при SSR сообщение остаётся видимым.
+            // The timer is set only in the browser; with SSR the message stays visible.
             set_timeout(move || visible.set(false), std::time::Duration::from_millis(u64::from(ms)));
         }
         #[cfg(not(target_arch = "wasm32"))]
@@ -215,7 +215,7 @@ pub fn Message(
     }
 }
 
-/// Разметка Message: одна для статической и реактивной ветвей (меняются только выражения атрибутов).
+/// Message markup: one for the static and reactive branches (only attribute expressions change).
 macro_rules! message_markup {
     (
         $root_class:expr, $root_style:expr, $data:expr, $wrapper_class:expr, $content_class:expr, $icon:expr, $body:expr, $close:expr,
@@ -238,7 +238,7 @@ macro_rules! message_markup {
 }
 use message_markup;
 
-/// Замыкание над свойствами экземпляра: клоны `Arc` и указатель на функцию без захвата.
+/// Closure over instance properties: `Arc` clones and a non-capturing function pointer.
 fn rx<T>(props: &Arc<Props>, pt: &Arc<MessagePt>, f: fn(&Props, &MessagePt) -> T) -> impl Fn() -> T + Clone + Send + Sync + 'static + use<T>
 where
     T: 'static,
@@ -281,15 +281,15 @@ fn text_class(pt: &MessagePt) -> Cow<'static, str> {
     pt.text.merge_class("p-message-text")
 }
 
-/// Первый `span.p-message-text` с текстом; без текста — ничего.
-// `&Cow` нужен, чтобы дёшево клонировать интернированное значение `data-p` в части разметки.
+/// The first `span.p-message-text` with text; without text, nothing.
+// `&Cow` is needed to cheaply clone the interned `data-p` value into parts of the markup.
 #[allow(clippy::ptr_arg)]
 fn text_of(pt: &MessagePt, data: &Cow<'static, str>, text: Option<String>) -> Option<impl IntoView + use<>> {
     let text = text.filter(|t| !t.is_empty())?;
     Some(view! { <span class={text_class(pt)} data-p={data.clone()} {..pt.text.attrs()}>{text}</span> })
 }
 
-// `&Cow` нужен, чтобы дёшево клонировать интернированное значение `data-p` в части разметки.
+// `&Cow` is needed to cheaply clone the interned `data-p` value into parts of the markup.
 #[allow(clippy::ptr_arg)]
 fn icon_of(props: &Props, pt: &MessagePt, data: &Cow<'static, str>) -> impl IntoView + use<> {
     let template = props.icon_template.as_ref().map(|t| t.run());
@@ -304,7 +304,7 @@ fn icon_of(props: &Props, pt: &MessagePt, data: &Cow<'static, str>) -> impl Into
     view! { {template} {glyph} }
 }
 
-// `&Cow` нужен, чтобы дёшево клонировать интернированное значение `data-p` в части разметки.
+// `&Cow` is needed to cheaply clone the interned `data-p` value into parts of the markup.
 #[allow(clippy::ptr_arg)]
 fn close_of(
     props: &Props,
@@ -339,7 +339,7 @@ fn close_of(
     })
 }
 
-/// Свойства экземпляра.
+/// Instance properties.
 struct Props {
     severity: Prop<MessageSeverity>,
     variant: OptProp<MessageVariant>,

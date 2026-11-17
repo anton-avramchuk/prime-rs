@@ -1,88 +1,86 @@
-# Button и Badge
+# Button and Badge
 
-Порт `p-button` и `p-badge` из PrimeNG 21.1.10 (коммит `fe82b291d6`, см. `upstream.toml`).
+Port of `p-button` and `p-badge` from PrimeNG 21.1.10 (commit `fe82b291d6`, see `upstream.toml`).
 
-| Наш компонент | Исходники PrimeNG |
+| Our component | PrimeNG sources |
 |---|---|
-| `prime-button::Button` | `packages/primeng/src/button/button.ts` (компонент `Button`, `p-button`), `button/style/buttonstyle.ts` |
-| `prime-badge::Badge` | `packages/primeng/src/badge/badge.ts` (компонент `Badge`, `p-badge`), `badge/style/badgestyle.ts` |
-| CSS | `@primeuix/styles/button`, `@primeuix/styles/badge` и пресет Aura (`cargo xtask gen-theme`) |
-| Демонстрации | `apps/showcase/doc/button/*-doc.ts`, `apps/showcase/doc/badge/*-doc.ts` |
+| `prime-button::Button` | `packages/primeng/src/button/button.ts` (the `Button` component, `p-button`), `button/style/buttonstyle.ts` |
+| `prime-badge::Badge` | `packages/primeng/src/badge/badge.ts` (the `Badge` component, `p-badge`), `badge/style/badgestyle.ts` |
+| CSS | `@primeuix/styles/button`, `@primeuix/styles/badge` and the Aura preset (`cargo xtask gen-theme`) |
+| Demos | `apps/showcase/doc/button/*-doc.ts`, `apps/showcase/doc/badge/*-doc.ts` |
 
-Спеки: `openspec/specs/button`, `openspec/specs/badge` (после архивации change `port-button`).
+Specs: `openspec/specs/button`, `openspec/specs/badge` (after archiving the change `port-button`).
 
-## Что совпадает с PrimeNG
+## What matches PrimeNG
 
-- Классы `p-button*`, `p-badge*` и атрибуты `data-p`, `data-p-disabled`, `data-p-severity` считаются теми же правилами (`state.rs` обоих крейтов,
-  таблицы юнит-тестов по `buttonstyle.ts` и `badgestyle.ts`).
-- Порядок содержимого кнопки: `children`, иконка или индикатор загрузки, метка, бейдж.
-- Свойства: см. спеку; Angular-имена переведены в snake_case (`iconPos` → `icon_pos`, `badgeSeverity` → `badge_severity`, `styleClass` → `style_class`).
+- The classes `p-button*`, `p-badge*` and the attributes `data-p`, `data-p-disabled`, `data-p-severity` are computed by the same rules (`state.rs` of both crates,
+  unit-test tables based on `buttonstyle.ts` and `badgestyle.ts`).
+- Button content order: `children`, the icon or the loading indicator, the label, the badge.
+- Properties: see the spec; Angular names are converted to snake_case (`iconPos` → `icon_pos`, `badgeSeverity` → `badge_severity`, `styleClass` → `style_class`).
 
-## Отличия и их причины
+## Differences and their reasons
 
-| Отличие | Причина |
+| Difference | Reason |
 |---|---|
-| Нет хост-элементов `<p-button>`, у Badge вместо `<p-badge>` — `<span>` | Хост в Angular — деталь фреймворка; CSS темы привязан к классам. |
-| Иконка — `ViewFn` в оболочке `span.p-button-icon`, а не строка класса PrimeIcons | Шрифта PrimeIcons нет; оболочка нужна, чтобы CSS (`order`, отступы) работал для любой иконки. |
-| Индикатор загрузки по умолчанию — `SpinnerIcon` без числовых классов | В PrimeNG `spinnerIcon` формирует классы `0 1 2 …` из `Object.entries` строки; это побочный эффект, а не стиль. |
-| Свой индикатор загрузки без класса `pi-spin` | `pi-spin` — анимация шрифта PrimeIcons; у `SpinnerIcon` свой `p-icon-spin`. |
-| Нет директивы `pButton`, `buttonProps`, `unstyled` | Вне объёма change; см. `proposal.md`. |
-| Свойство `fluid` — `OptProp<bool>`: без значения берётся из контекста `Fluid` | Как `hasFluid = fluid() ?? !!pcFluid` в PrimeNG; см. `docs/field-wrappers.md`. |
-| Иконки демонстраций заменены ближайшими из `prime-icons` | В 53 иконках PrimeNG нет пользователя, закладки, колокольчика, сердца и пользователей: `pi-user` → `InfoCircleIcon`, `pi-bookmark` → `StarIcon`, `pi-bell` → `ExclamationTriangleIcon`, `pi-heart` → `StarFillIcon`. |
+| There are no host elements `<p-button>`; Badge uses a `<span>` instead of `<p-badge>` | The Angular host is a framework detail; the theme CSS is bound to classes. |
+| The icon is a `ViewFn` inside a `span.p-button-icon` wrapper, not a PrimeIcons class string | There is no PrimeIcons font; the wrapper is needed so that the CSS (`order`, paddings) works for any icon. |
+| The default loading indicator is `SpinnerIcon` without numeric classes | In PrimeNG `spinnerIcon` builds the classes `0 1 2 …` from `Object.entries` of a string; this is a side effect, not a style. |
+| A custom loading indicator without the `pi-spin` class | `pi-spin` is an animation of the PrimeIcons font; `SpinnerIcon` has its own `p-icon-spin`. |
+| No `pButton` directive, `buttonProps`, `unstyled` | Outside the scope of the change; see `proposal.md`. |
+| The `fluid` property is `OptProp<bool>`: without a value it is taken from the `Fluid` context | As `hasFluid = fluid() ?? !!pcFluid` in PrimeNG; see `docs/field-wrappers.md`. |
+| The demo icons are replaced by the closest `prime-icons` ones | The 53 PrimeIcons have no user, bookmark, bell, heart and users: `pi-user` → `InfoCircleIcon`, `pi-bookmark` → `StarIcon`, `pi-bell` → `ExclamationTriangleIcon`, `pi-heart` → `StarFillIcon`. |
 
-## Проверки
+## Checks
 
-- `cargo test -p prime-button -p prime-badge --all-features` — юнит и SSR (структура DOM, классы, `pt`, a11y, реактивность).
-- `cargo test -p prime-button --target wasm32-unknown-unknown --test web` — клик, `disabled`/`loading`, фокус, автофокус, ripple, перезапись `class`.
-- `e2e/tests/button.spec.ts` — страница `/button` в showcase (Playwright).
-- Еженедельное сравнение скриншотов с PrimeNG (`e2e/tests/visual.spec.ts`, `pages.json`): отчёт `visual.json`, не блокирует PR.
+- `cargo test -p prime-button -p prime-badge --all-features` — unit and SSR tests (DOM structure, classes, `pt`, a11y, reactivity).
+- `cargo test -p prime-button --target wasm32-unknown-unknown --test web` — click, `disabled`/`loading`, focus, autofocus, ripple, rewriting of `class`.
+- `e2e/tests/button.spec.ts` — the `/button` page in the showcase (Playwright).
+- Weekly screenshot comparison with PrimeNG (`e2e/tests/visual.spec.ts`, `pages.json`): the report `visual.json`, does not block PRs.
 
-## Сравнение скриншотов с PrimeNG
+## Screenshot comparison with PrimeNG
 
-Еженедельный job (`weekly.yml`, прогон от 2026-10-28) сравнил 17 демонстраций с запущенным showcase PrimeNG на закреплённом коммите.
-Доля отличающихся пикселей (`pixelmatch`, порог 0,1), сначала самые большие:
+The weekly job (`weekly.yml`, the run of 2026-10-28) compared 17 demos with the running PrimeNG showcase at the pinned commit.
+The share of differing pixels (`pixelmatch`, threshold 0.1), largest first:
 
-| Демонстрация | Расхождение | Демонстрация | Расхождение |
+| Demo | Difference | Demo | Difference |
 |---|---:|---|---:|
-| button-severity | 24,3 % | button-badge | 10,7 % |
-| button-icons | 23,8 % | button-loading | 8,2 % |
-| button-raised | 23,8 % | button-basic | 6,0 % |
-| button-rounded | 21,3 % | button-disabled | 5,9 % |
-| button-sizes | 21,1 % | badge-severity | 5,3 % |
-| button-iconsonly | 20,5 % | badge-size | 4,7 % |
-| button-link | 12,5 % | button-outlined | 4,4 % |
-| button-text | 2,4 % | button-template | 1,2 % |
-| badge-basic | 1,0 % | | |
+| button-severity | 24.3 % | button-badge | 10.7 % |
+| button-icons | 23.8 % | button-loading | 8.2 % |
+| button-raised | 23.8 % | button-basic | 6.0 % |
+| button-rounded | 21.3 % | button-disabled | 5.9 % |
+| button-sizes | 21.1 % | badge-severity | 5.3 % |
+| button-iconsonly | 20.5 % | badge-size | 4.7 % |
+| button-link | 12.5 % | button-outlined | 4.4 % |
+| button-text | 2.4 % | button-template | 1.2 % |
+| badge-basic | 1.0 % | | |
 
-Расхождение определяется не компонентами, а окружением showcase; по картинкам `e2e-results` видно три причины:
+The difference comes not from the components but from the showcase environment; the pictures in `e2e-results` show three causes:
 
-1. **Основной цвет.** В showcase PrimeNG основной цвет «noir» (почти чёрный), у нашего showcase стандартный emerald пресета Aura; кнопки `Primary`
-   и их `outlined`/`text`-варианты отличаются цветом. Остальные серьёзности (`secondary`, `success`, `info`, `warn`, `help`, `danger`) совпадают по цвету.
-2. **Шрифт.** У PrimeNG свой шрифт showcase, у нас системный `sans-serif`: меняются ширина кнопок и высота строки.
-3. **Ширина карточки.** Карточка PrimeNG уже, поэтому ряд из восьми кнопок переносится на вторую строку, у нас остаётся в одну; из-за этого сильнее всего
-   отличаются демонстрации с многими кнопками (`severity`, `raised`, `rounded`, `icons`).
+1. **Primary color.** In the PrimeNG showcase the primary color is "noir" (almost black), in our showcase it is the default emerald of the Aura preset; the `Primary` buttons and their `outlined`/`text` variants differ in color. The other severities (`secondary`, `success`, `info`, `warn`, `help`, `danger`) match in color.
+2. **Font.** PrimeNG has its own showcase font, we use the system `sans-serif`: the button widths and the line height differ.
+3. **Card width.** The PrimeNG card is narrower, so a row of eight buttons wraps onto a second line, while ours stays on one; this is why demos with many buttons (`severity`, `raised`, `rounded`, `icons`) differ the most.
 
-Следующий шаг для честного сравнения (не в этом change): привести showcase к тем же основному цвету, шрифту и ширине контента.
-Метрика остаётся отчётом и PR не блокирует.
+The next step for an honest comparison (not in this change): bring the showcase to the same primary color, font and content width.
+The metric stays a report and does not block PRs.
 
-## Производительность
+## Performance
 
-Измерения и бюджеты — `docs/benchmarks.md`. После `optimize-reactive-props` Badge делает 8, Button 23 аллокации на экземпляр при SSR
-(было 41 и 67), в браузере статическая кнопка занимает 2,0 КБ линейной памяти wasm (было 9,4 КБ), статический бейдж 0,4 КБ (было 3,4 КБ); вклад в сырой wasm +96 КБ и +374 КБ.
+Measurements and budgets — `docs/benchmarks.md`. After `optimize-reactive-props` Badge makes 8 and Button 23 allocations per instance with SSR
+(it was 41 and 67); in the browser a static button takes 2.0 KB of wasm linear memory (it was 9.4 KB), a static badge 0.4 KB (it was 3.4 KB); contribution to raw wasm +96 KB and +374 KB.
 
-Шаблон для следующих компонентов:
-- свойства — `Prop<T>`/`OptProp<T>` из `prime-core` (значение не создаёт сигнала, сигнал подписывает атрибуты);
-- без `Memo`: состояние заимствует значения (`Option<&str>`) и собирается внутри атрибутных замыканий;
-- свойства экземпляра лежат в одном `Arc<Props>`, замыкания клонируют только счётчик ссылок;
-- клиентские эффекты (`Effect`, ripple, автофокус) создаются только под `cfg(target_arch = "wasm32")`;
-- две ветви отрисовки: если `all_static!(все свойства)`, компонент возвращает `Either::Left` с готовыми значениями атрибутов и блоков (без замыканий и `RenderEffect`),
-  иначе `Either::Right` с замыканиями; разметка один раз в `macro_rules!` (выражения атрибутов — параметры), значения считаются общими функциями
-  (`class_of`, `style_of`, `data_of`, `*_of` для блоков), которые вызываются разово или в замыкании;
-- тесты паритета: каждый сценарий рендерится значениями и сигналами, HTML обязан совпасть (`tests/parity.rs`); браузерные тесты событий гоняются в обеих ветвях;
-- в `view!` идентификатор перед `{..attrs}` оборачивается в `{}` (`data-p={x} {..attrs}`), иначе макрос читает его как литерал структуры.
+Template for the next components:
+- properties — `Prop<T>`/`OptProp<T>` from `prime-core` (a value does not create a signal, a signal subscribes the attributes);
+- no `Memo`: the state borrows the values (`Option<&str>`) and is assembled inside the attribute closures;
+- the instance properties live in one `Arc<Props>`, the closures clone only the reference counter;
+- client effects (`Effect`, ripple, autofocus) are created only under `cfg(target_arch = "wasm32")`;
+- two render branches: if `all_static!(all properties)`, the component returns `Either::Left` with ready attribute and block values (no closures and no `RenderEffect`),
+  otherwise `Either::Right` with closures; the markup is written once in a `macro_rules!` (the attribute expressions are parameters), the values are computed by shared functions
+  (`class_of`, `style_of`, `data_of`, `*_of` for the blocks), which are called once or inside a closure;
+- parity tests: each scenario is rendered with values and with signals, and the HTML must match (`tests/parity.rs`); the browser event tests run in both branches;
+- in `view!` an identifier before `{..attrs}` is wrapped in `{}` (`data-p={x} {..attrs}`), otherwise the macro reads it as a struct literal.
 
-## Известная проблема, найденная при портировании
+## A known problem found during the port
 
-Генератор темы оставлял в CSS компонентов нерешённые `dt('button.primary.color')` (значения токенов не подставлялись, кнопки выглядели как
-нативные). Исправлено в `xtask/theme/extract.mjs` (текст стиля проходит через тег `Css`, как в `BaseStyle.load` PrimeNG), `gen-theme` теперь
-отклоняет CSS с `dt(`, а тесты `prime-theme` проверяют подстановку токенов.
+The theme generator left unresolved `dt('button.primary.color')` in the component CSS (the token values were not substituted, and the buttons looked
+native). Fixed in `xtask/theme/extract.mjs` (the style text goes through the `Css` tag, as in `BaseStyle.load` of PrimeNG), `gen-theme`
+now rejects CSS containing `dt(`, and the `prime-theme` tests check the token substitution.

@@ -1,4 +1,4 @@
-//! Страница ScrollPanel: демонстрации `basic` и `custom` из showcase PrimeNG (`apps/showcase/doc/scrollpanel`).
+//! ScrollPanel page: demos `basic` and `custom` from the PrimeNG showcase (`apps/showcase/doc/scrollpanel`).
 
 use super::Demo;
 use leptos::prelude::*;
@@ -8,7 +8,7 @@ const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, se
 const SED: &str = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.";
 const AT_VERO: &str = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.";
 
-/// Страница `/scrollpanel`.
+/// Page `/scrollpanel`.
 #[component]
 pub fn ScrollPanelPage() -> impl IntoView {
     view! {

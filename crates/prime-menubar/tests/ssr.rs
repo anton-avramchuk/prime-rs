@@ -1,4 +1,4 @@
-//! Разметка Menubar (SSR): корень, слоты, кнопка, корневой список, пункты, группы, разделители, `aria-*`, шаблоны, `pt`.
+//! Menubar markup (SSR): root, slots, button, root list, items, groups, separators, `aria-*`, templates, `pt`.
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -38,7 +38,7 @@ fn markup_has_button_root_list_and_items() {
         html.contains("aria-controls=\"mb\"") && html.contains("aria-haspopup=\"true\"") && html.contains("aria-label=\"Navigation\""),
         "{html}"
     );
-    assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "File, Users, Quit: скрытый и разделитель не считаются: {html}");
+    assert_eq!(html.matches("role=\"menuitem\"").count(), 3, "File, Users, Quit: hidden and separator are not counted: {html}");
     assert_eq!(html.matches("role=\"separator\"").count(), 1, "{html}");
     assert!(html.contains("id=\"mb_0\"") && html.contains("id=\"mb_3\"") && html.contains("id=\"mb_4\""), "{html}");
     assert!(!html.contains("Hidden") && !html.contains("p-tieredmenu"), "{html}");
@@ -54,9 +54,9 @@ fn empty_model_has_no_button_and_an_empty_list() {
 #[test]
 fn groups_carry_aria_and_a_downward_arrow_but_no_submenu_until_opened() {
     let html = render(|| view! { <Menubar id="mb" model=model() /> }.to_html());
-    assert_eq!(html.matches("aria-haspopup=\"menu\"").count(), 1, "только File — группа: {html}");
+    assert_eq!(html.matches("aria-haspopup=\"menu\"").count(), 1, "only File is a group: {html}");
     assert!(html.contains("aria-expanded=\"false\"") && html.contains("p-menubar-submenu-icon"), "{html}");
-    assert!(!html.contains("p-menubar-submenu\"") && !html.contains("Share"), "подменю выводится только у раскрытой группы: {html}");
+    assert!(!html.contains("p-menubar-submenu\"") && !html.contains("Share"), "submenu is rendered only for an expanded group: {html}");
 }
 
 #[test]
@@ -109,7 +109,7 @@ fn start_and_end_slots_surround_the_list() {
         html.find("p-menubar-root-list").unwrap(),
         html.find("p-menubar-end").unwrap(),
     );
-    assert!(start < button && button < list && list < end, "порядок слотов: {html}");
+    assert!(start < button && button < list && list < end, "slot order: {html}");
     assert!(html.contains("class=\"logo\"") && html.contains("class=\"tail\""), "{html}");
     let none = render(|| view! { <Menubar model=model() /> }.to_html());
     assert!(!none.contains("p-menubar-start") && !none.contains("p-menubar-end"), "{none}");
@@ -160,6 +160,6 @@ fn style_class_style_and_pt() {
         "p-menubar-submenu-icon s",
         "p-menubar-separator sep",
     ] {
-        assert!(html.contains(needle), "нет {needle}: {html}");
+        assert!(html.contains(needle), "no {needle}: {html}");
     }
 }

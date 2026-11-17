@@ -1,4 +1,4 @@
-//! Страницы showcase: по странице на компонент и общая оболочка демонстрации.
+//! Showcase pages: one page per component and a shared demo wrapper.
 
 mod accordion;
 mod autocomplete;
@@ -173,13 +173,13 @@ pub use treetable::TreeTablePage;
 use crate::doc::DemoCode;
 use leptos::prelude::*;
 
-/// Одна демонстрация. Разметка повторяет showcase PrimeNG (`<имя-doc> .card`), чтобы страницы можно было сравнивать скриншотами:
-/// у нас `[data-demo="имя"]`, у PrimeNG `имя-doc .card`.
+/// One demo. The markup repeats the PrimeNG showcase (`<name-doc> .card`), so the pages can be compared by screenshots:
+/// ours is `[data-demo="name"]`, PrimeNG's is `name-doc .card`.
 #[component]
 pub fn Demo(
-    /// Имя демонстрации (как у PrimeNG: `basic`, `severity`, …).
+    /// Demo name (as in PrimeNG: `basic`, `severity`, …).
     name: &'static str,
-    /// Заголовок.
+    /// Title.
     title: &'static str,
     children: Children,
 ) -> impl IntoView {

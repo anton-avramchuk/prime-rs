@@ -1,4 +1,4 @@
-//! Структура DOM, классы, `style`, `pt` и паритет ветвей ButtonGroup (SSR).
+//! DOM structure, classes, `style`, `pt` and static/reactive parity of ButtonGroup (SSR).
 #![cfg(feature = "ssr")]
 
 use leptos::prelude::*;
@@ -18,7 +18,7 @@ fn lacks(html: &str, unwanted: &[&str]) {
 }
 
 fn pos(html: &str, needle: &str) -> usize {
-    html.find(needle).unwrap_or_else(|| panic!("нет {needle}: {html}"))
+    html.find(needle).unwrap_or_else(|| panic!("no {needle}: {html}"))
 }
 
 fn norm(s: &str) -> String {
