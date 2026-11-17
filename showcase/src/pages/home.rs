@@ -19,19 +19,19 @@ fn Bench() -> impl IntoView {
     view! {
         <section>
             <h2>"Measurements"</h2>
-            <button type="button" data-testid="bench-mount" on:click=move |_| count.set(1000)>
+            <button type="button" class="p-button p-component" data-testid="bench-mount" on:click=move |_| count.set(1000)>
                 "Show 1000 icons"
             </button>
-            <button type="button" data-testid="bench-clear" on:click=move |_| count.set(0)>
+            <button type="button" class="p-button p-component" data-testid="bench-clear" on:click=move |_| count.set(0)>
                 "Remove"
             </button>
             <div data-testid="bench-area" data-count=move || count.get().to_string()>
                 {move || (0..count.get()).map(|_| view! { <prime_icons::CheckIcon /> }).collect_view()}
             </div>
-            <button type="button" data-testid="bench-buttons-mount" on:click=move |_| buttons.set(1000)>
+            <button type="button" class="p-button p-component" data-testid="bench-buttons-mount" on:click=move |_| buttons.set(1000)>
                 "Show 1000 buttons"
             </button>
-            <button type="button" data-testid="bench-buttons-clear" on:click=move |_| buttons.set(0)>
+            <button type="button" class="p-button p-component" data-testid="bench-buttons-clear" on:click=move |_| buttons.set(0)>
                 "Remove buttons"
             </button>
             <div data-testid="bench-buttons-area" data-count=move || buttons.get().to_string()>
@@ -39,10 +39,10 @@ fn Bench() -> impl IntoView {
                     (0..buttons.get()).map(|_| view! { <Button label="Save" severity=ButtonSeverity::Success /> }).collect_view()
                 }}
             </div>
-            <button type="button" data-testid="bench-buttons-live-mount" on:click=move |_| buttons_live.set(1000)>
+            <button type="button" class="p-button p-component" data-testid="bench-buttons-live-mount" on:click=move |_| buttons_live.set(1000)>
                 "Show 1000 buttons (signal)"
             </button>
-            <button type="button" data-testid="bench-buttons-live-clear" on:click=move |_| buttons_live.set(0)>
+            <button type="button" class="p-button p-component" data-testid="bench-buttons-live-clear" on:click=move |_| buttons_live.set(0)>
                 "Remove buttons (signal)"
             </button>
             <div data-testid="bench-buttons-live-area" data-count=move || buttons_live.get().to_string()>
@@ -52,19 +52,19 @@ fn Bench() -> impl IntoView {
                         .collect_view()
                 }}
             </div>
-            <button type="button" data-testid="bench-badges-mount" on:click=move |_| badges.set(1000)>
+            <button type="button" class="p-button p-component" data-testid="bench-badges-mount" on:click=move |_| badges.set(1000)>
                 "Show 1000 badges"
             </button>
-            <button type="button" data-testid="bench-badges-clear" on:click=move |_| badges.set(0)>
+            <button type="button" class="p-button p-component" data-testid="bench-badges-clear" on:click=move |_| badges.set(0)>
                 "Remove badges"
             </button>
             <div data-testid="bench-badges-area" data-count=move || badges.get().to_string()>
                 {move || (0..badges.get()).map(|_| view! { <Badge value="5" severity=BadgeSeverity::Danger /> }).collect_view()}
             </div>
-            <button type="button" data-testid="bench-badges-live-mount" on:click=move |_| badges_live.set(1000)>
+            <button type="button" class="p-button p-component" data-testid="bench-badges-live-mount" on:click=move |_| badges_live.set(1000)>
                 "Show 1000 badges (signal)"
             </button>
-            <button type="button" data-testid="bench-badges-live-clear" on:click=move |_| badges_live.set(0)>
+            <button type="button" class="p-button p-component" data-testid="bench-badges-live-clear" on:click=move |_| badges_live.set(0)>
                 "Remove badges (signal)"
             </button>
             <div data-testid="bench-badges-live-area" data-count=move || badges_live.get().to_string()>

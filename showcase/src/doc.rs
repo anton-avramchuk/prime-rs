@@ -191,7 +191,7 @@ pub fn DocNav() -> impl IntoView {
             let links = items
                 .iter()
                 .map(|(path, label)| {
-                    let href = format!("/{path}");
+                    let href = crate::app::route(&format!("/{path}"));
                     view! {
                         <div style:display=move || if visible(label) { "block" } else { "none" }>
                             <A href=href>{*label}</A>
@@ -218,7 +218,7 @@ pub fn DocNav() -> impl IntoView {
                 prop:value=move || query.get()
                 on:input=move |e| query.set(event_target_value(&e))
             />
-            <A href="/">"Home"</A>
+            <A href=crate::app::route("/")>"Home"</A>
             {sections}
         </nav>
     }
@@ -354,8 +354,8 @@ pub fn DocPage(
     });
     let pager = view! {
         <div class="doc-pager">
-            <span>{prev.map(|(path, label)| view! { <A href=format!("/{path}")>{format!("← {label}")}</A> })}</span>
-            <span>{next.map(|(path, label)| view! { <A href=format!("/{path}")>{format!("{label} →")}</A> })}</span>
+            <span>{prev.map(|(path, label)| view! { <A href=crate::app::route(&format!("/{path}"))>{format!("← {label}")}</A> })}</span>
+            <span>{next.map(|(path, label)| view! { <A href=crate::app::route(&format!("/{path}"))>{format!("{label} →")}</A> })}</span>
         </div>
     };
     view! {
