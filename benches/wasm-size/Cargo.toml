@@ -4,6 +4,7 @@ description = "Minimal wasm app for measuring the contribution of components to 
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+homepage.workspace = true
 publish = false
 
 [lib]

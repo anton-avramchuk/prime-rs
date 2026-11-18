@@ -4,6 +4,7 @@ description = "Benchmarks of SSR rendering and allocations of prime-rs component
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+homepage.workspace = true
 publish = false
 
 [dependencies]
