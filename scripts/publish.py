@@ -39,7 +39,10 @@ def workspace_packages():
 
 
 def publish_order(pkgs):
-    """Topological order: a crate comes after its normal and build dependencies that are published too."""
+    """Topological order: a crate comes after its normal, build and dev dependencies that are published too.
+
+    Dev dependencies count because `cargo publish` resolves them against the registry while packaging.
+    """
     order, done, visiting = [], set(), set()
 
     def visit(name):
@@ -49,7 +52,7 @@ def publish_order(pkgs):
             raise SystemExit(f"dependency cycle through {name}")
         visiting.add(name)
         for dep in pkgs[name]["dependencies"]:
-            if dep["kind"] in (None, "build") and dep["name"] in pkgs:
+            if dep["kind"] in (None, "build", "dev") and dep["name"] in pkgs:
                 visit(dep["name"])
         visiting.discard(name)
         done.add(name)
