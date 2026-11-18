@@ -1,10 +1,10 @@
 name: Pages
 
 # Publishes the static showcase (client-only wasm built with trunk) to GitHub Pages.
-# Runs only for the tag `pages` (or manually).
+# Runs for the tag `pages` and for library release tags `crates_*`, so the site follows each release.
 on:
   push:
-    tags: ['pages']
+    tags: ['pages', 'crates_*']
   workflow_dispatch:
 
 concurrency:
