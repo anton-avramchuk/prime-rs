@@ -7,6 +7,7 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/anton-avramchuk/prime-rs"
+homepage = "https://anton-avramchuk.github.io/prime-rs/"
 rust-version = "1.98"
 
 [workspace.dependencies]
