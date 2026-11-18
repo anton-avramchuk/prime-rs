@@ -1,6 +1,9 @@
 //! Install page: how to add the library to a Leptos project.
 
+use crate::app::route;
 use leptos::prelude::*;
+use leptos_router::components::A;
+use prime_icons::{ArrowRightIcon, InfoCircleIcon};
 
 const CARGO_TOML: &str = r#"[dependencies]
 leptos = "0.8"
@@ -23,49 +26,107 @@ const CLIENT_RS: &str = r#"fn main() {
     leptos::mount::mount_to_body(app::App);
 }"#;
 
-/// Install page: dependencies, theme CSS, a minimal example and the crate list.
+/// A code block with a file name caption.
+#[component]
+fn Code(file: &'static str, code: &'static str) -> impl IntoView {
+    view! {
+        <div class="site-code">
+            <div>{file}</div>
+            <pre><code>{code}</code></pre>
+        </div>
+    }
+}
+
+/// Install page: what the library is, the crates it consists of, dependencies, theme CSS and a minimal example.
 #[component]
 pub fn InstallPage() -> impl IntoView {
     view! {
-        <h2>"What is prime-rs"</h2>
-        <p>
-            "prime-rs is a port of the PrimeNG 21.1.10 component library to " <code>"Leptos 0.8"</code> ". Each component keeps the
-            PrimeNG markup, CSS classes, keyboard behaviour and pass-through (" <code>"pt"</code> ") options, so the PrimeNG theme styles
-            apply unchanged. Components render on the server and hydrate in the browser."
-        </p>
-        <p>"Use it when you build a Leptos app and need PrimeNG-style components without writing them yourself."</p>
+        <article class="site">
+            <span class="site-eyebrow">"Getting started"</span>
+            <h2 style="margin-top:.75rem">"What is prime-rs"</h2>
+            <p class="site-lead">
+                "prime-rs is a port of the PrimeNG 21.1.10 component library to " <code>"Leptos 0.8"</code>
+                ". Each component keeps the PrimeNG markup, CSS classes, keyboard behaviour and pass-through (" <code>"pt"</code>
+                ") options, so the PrimeNG theme styles apply unchanged. Components render on the server and hydrate in the browser."
+            </p>
+            <p>"Use it when you build a Leptos app and need PrimeNG-style components without writing them yourself."</p>
 
-        <h2>"Install"</h2>
-        <p>
-            "The library is published on crates.io as a set of crates: one crate per component (" <code>"prime-button"</code>
-            ", " <code>"prime-dialog"</code> ", ...) plus the shared crates " <code>"prime-rs-core"</code> ", "
-            <code>"prime-dom"</code> ", " <code>"prime-theme"</code> " and " <code>"prime-icons"</code> ". Add the components you use;
-            the shared crates come in as dependencies."
-        </p>
+            <h2>"Install"</h2>
+            <p>
+                "The library is published on crates.io as a set of crates: one crate per component (" <code>"prime-button"</code>
+                ", " <code>"prime-dialog"</code> ", ...) plus the shared crates below. Add the components you use; the shared crates
+                come in as dependencies."
+            </p>
+            <table class="doc-table">
+                <thead>
+                    <tr>
+                        <th>"Crate"</th>
+                        <th>"What it provides"</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"prime-rs-core"</td>
+                        <td>"Configuration, class name helpers, z-index management and the pass-through (pt) mechanism."</td>
+                    </tr>
+                    <tr>
+                        <td>"prime-dom"</td>
+                        <td>"Overlay positioning, focus trap, portal and ripple."</td>
+                    </tr>
+                    <tr>
+                        <td>"prime-theme"</td>
+                        <td>"The static Aura theme CSS, one feature per component."</td>
+                    </tr>
+                    <tr>
+                        <td>"prime-icons"</td>
+                        <td>"PrimeNG SVG icons, one feature per icon."</td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <h3>"Versions"</h3>
-        <p>
-            "All crates share one version. The first release is " <code>"0.1.0"</code> ", so use " <code>"0.1"</code>
-            " in " <code>"Cargo.toml"</code> " to take any compatible " <code>"0.1.x"</code> " release."
-        </p>
+            <div class="site-note">
+                <InfoCircleIcon size=16 />
+                <p>
+                    <b>"Versions. "</b> "All crates share one version. The first release is " <code>"0.1.0"</code> ", so use "
+                    <code>"0.1"</code> " in " <code>"Cargo.toml"</code> " to take any compatible " <code>"0.1.x"</code> " release."
+                </p>
+            </div>
 
-        <h3>"Dependencies"</h3>
-        <pre><code>{CARGO_TOML}</code></pre>
-        <p>
-            "Theme CSS is per component. Enable the component's feature on " <code>"prime-theme"</code>
-            " (or " <code>"all-components"</code> ") so that " <code>"prime_theme::stylesheet"</code> " includes its styles."
-        </p>
+            <ol class="site-steps">
+                <li>
+                    <h3>"Add the dependencies"</h3>
+                    <Code file="Cargo.toml" code=CARGO_TOML />
+                    <p>
+                        "Theme CSS is per component. Enable the component's feature on " <code>"prime-theme"</code> " (or "
+                        <code>"all-components"</code> ") so that " <code>"prime_theme::stylesheet"</code> " includes its styles."
+                    </p>
+                </li>
+                <li>
+                    <h3>"Use the component"</h3>
+                    <Code file="src/app.rs" code=APP_RS />
+                    <p>"This is the component and the styles."</p>
+                </li>
+                <li>
+                    <h3>"Mount the app"</h3>
+                    <p>"A client-only app (for example, built with " <code>"trunk"</code> ") mounts it like this:"</p>
+                    <Code file="src/main.rs" code=CLIENT_RS />
+                    <p>
+                        "For server rendering (" <code>"cargo leptos"</code> ") enable the " <code>"ssr"</code>
+                        " feature on the components in the server build and " <code>"hydrate"</code>
+                        " in the browser build, as in the showcase."
+                    </p>
+                </li>
+            </ol>
 
-        <h3>"Example"</h3>
-        <pre><code>{APP_RS}</code></pre>
-        <p>
-            "This is the component and the styles. A client-only app (for example, built with " <code>"trunk"</code>
-            ") mounts it like this:"
-        </p>
-        <pre><code>{CLIENT_RS}</code></pre>
-        <p>
-            "For server rendering (" <code>"cargo leptos"</code> ") enable the " <code>"ssr"</code> " feature on the components in
-            the server build and " <code>"hydrate"</code> " in the browser build, as in the showcase."
-        </p>
+            <div class="site-links">
+                <A href=route("/") attr:class="p-button p-component p-button-outlined">
+                    <span class="p-button-label">"Back to overview"</span>
+                </A>
+                <A href=route("/button") attr:class="p-button p-component">
+                    <span class="p-button-label">"Browse the components"</span>
+                    <ArrowRightIcon size=14 />
+                </A>
+            </div>
+        </article>
     }
 }

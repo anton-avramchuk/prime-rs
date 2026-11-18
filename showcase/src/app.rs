@@ -1,6 +1,6 @@
 //! Page shell, menu and routes.
 
-use crate::doc::{DOC_CSS, DocNav, DocPage};
+use crate::doc::{DOC_CSS, DocNav, DocPage, SITE_CSS};
 use crate::pages::InstallPage;
 use crate::pages::{
     AccordionPage, AutoCompletePage, AvatarPage, BadgePage, BlockUiPage, BreadcrumbPage, ButtonGroupPage, ButtonPage, CardPage,
@@ -135,6 +135,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                     <HydrationScripts options />
                     <style>{css}</style>
     <style>{DOC_CSS}</style>
+    <style>{SITE_CSS}</style>
                 </head>
                 <body>
                     <App />

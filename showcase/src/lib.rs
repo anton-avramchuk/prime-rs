@@ -24,7 +24,7 @@ pub fn mount_csr() {
     console_error_panic_hook::set_once();
     if let Some(document) = web_sys::window().and_then(|w| w.document()) {
         if let Some(head) = document.head() {
-            for css in [app::theme_css(), doc::DOC_CSS.to_string()] {
+            for css in [app::theme_css(), doc::DOC_CSS.to_string(), doc::SITE_CSS.to_string()] {
                 if let Ok(style) = document.create_element("style") {
                     style.set_text_content(Some(&css));
                     let _ = head.append_child(&style);

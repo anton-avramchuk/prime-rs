@@ -143,6 +143,9 @@ pub fn neighbours(name: &str) -> (Option<Link>, Option<Link>) {
     (at.checked_sub(1).map(|i| flat[i]), flat.get(at + 1).copied())
 }
 
+/// Styles of the Home and Install pages.
+pub const SITE_CSS: &str = include_str!("site.css");
+
 /// Docs shell styles.
 pub const DOC_CSS: &str = "\
 .doc-shell{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2rem;align-items:start;margin-top:1rem}\
@@ -219,7 +222,7 @@ pub fn DocNav() -> impl IntoView {
                 prop:value=move || query.get()
                 on:input=move |e| query.set(event_target_value(&e))
             />
-            <A href=crate::app::route("/")>"Home"</A>
+            <A href=crate::app::route("/") exact=true>"Home"</A>
             {sections}
         </nav>
     }
