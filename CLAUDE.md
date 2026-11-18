@@ -20,3 +20,7 @@ git grep -nP '[\x{0400}-\x{04FF}]'
 ```
 
 The command must print nothing.
+
+## Git branches
+
+**Never set an upstream for a branch.** Do not use `git push -u` / `--set-upstream`, `git branch -u` / `--set-upstream-to`, or `git branch --track`. Push a branch with `git push origin <branch>` (no `-u`), and never leave `branch.<name>.remote` / `branch.<name>.merge` in the config. If a local branch is created from a remote one, unset the upstream right away with `git branch --unset-upstream <branch>`.
