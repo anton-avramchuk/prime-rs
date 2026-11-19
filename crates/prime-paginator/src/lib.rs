@@ -394,7 +394,7 @@ fn nav_button(props: &Arc<Props>, pt: &Arc<PaginatorPt>, nav: Nav) -> impl IntoV
             e.prevent_default();
         }
     };
-    let icon_class = icon_part.merge_class(icon_base).into_owned();
+    let icon_class = icon_part.merge_class(icon_base);
     let icon_attrs = icon_part.attrs();
     let custom = match nav {
         Nav::First => props.first_page_link_icon.clone(),

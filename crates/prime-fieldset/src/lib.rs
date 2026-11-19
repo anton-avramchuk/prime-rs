@@ -309,7 +309,7 @@ fn toggle_button(
 ) -> impl IntoView {
     let state = props.state;
     let (expand, collapse) = (props.expand_icon_template.clone(), props.collapse_icon_template.clone());
-    let icon_class = pt.toggle_icon.merge_class("p-fieldset-toggle-icon").into_owned();
+    let icon_class = pt.toggle_icon.merge_class("p-fieldset-toggle-icon");
     let (icon_span_class, icon_pt) = (icon_class.clone(), pt.toggle_icon.clone());
     let click = {
         let props = props.clone();

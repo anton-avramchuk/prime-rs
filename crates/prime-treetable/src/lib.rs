@@ -361,7 +361,7 @@ where
                     cn.push_str(c);
                 }
             });
-            pt.root.merge_class(&cn).into_owned()
+            pt.root.merge_class(&cn)
         }
     };
     let root_style = {
@@ -432,7 +432,7 @@ where
         let (pt, scrollable) = (pt.clone(), scrollable.clone());
         move || {
             let base = if scrollable.get() { "p-treetable-table p-treetable-scrollable-table" } else { "p-treetable-table" };
-            pt.table.merge_class(base).into_owned()
+            pt.table.merge_class(base)
         }
     };
     let head = {

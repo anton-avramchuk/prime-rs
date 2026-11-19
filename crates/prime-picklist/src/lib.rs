@@ -288,7 +288,8 @@ pub fn PickList(
     let label = |key: &str| locale.text(key).to_owned();
 
     // Button: label, icon, disabled condition, action.
-    let button = |aria: String, icon: ViewFn, off: Signal<bool>, action: Callback<()>, button_pt: Pt| {
+    // The action is the click handler itself (no wrapping `Callback` per button).
+    let button = |aria: String, icon: ViewFn, off: Signal<bool>, action: Callback<leptos::ev::MouseEvent>, button_pt: Pt| {
         view! {
             <Button
                 button_type="button"
@@ -296,7 +297,7 @@ pub fn PickList(
                 icon=icon
                 disabled=off
                 aria_label=Some(aria)
-                on_click=Callback::new(move |_| action.run(()))
+                on_click=action
                 pt=ButtonPt { root: button_pt, ..Default::default() }
             />
         }
@@ -309,7 +310,7 @@ pub fn PickList(
         };
         let act = |m: Move| {
             let core = core.clone();
-            Callback::new(move |()| core.reorder(side, m))
+            Callback::new(move |_| core.reorder(side, m))
         };
         view! {
             {button(label("aria.moveUp"), ViewFn::from(|| view! { <AngleUpIcon /> }), off, act(Move::Up), Pt::default())}
@@ -351,28 +352,28 @@ pub fn PickList(
                 label("aria.moveToTarget"),
                 ViewFn::from(|| view! { <AngleRightIcon /> }),
                 off_selected(core.sel_source),
-                Callback::new(move |()| c1.transfer_selected(Side::Source)),
+                Callback::new(move |_| c1.transfer_selected(Side::Source)),
                 Pt::default(),
             )}
             {button(
                 label("aria.moveAllToTarget"),
                 ViewFn::from(|| view! { <AngleDoubleRightIcon /> }),
                 off_all(core.source),
-                Callback::new(move |()| c2.transfer_all(Side::Source)),
+                Callback::new(move |_| c2.transfer_all(Side::Source)),
                 Pt::default(),
             )}
             {button(
                 label("aria.moveToSource"),
                 ViewFn::from(|| view! { <AngleLeftIcon /> }),
                 off_selected(core.sel_target),
-                Callback::new(move |()| c3.transfer_selected(Side::Target)),
+                Callback::new(move |_| c3.transfer_selected(Side::Target)),
                 Pt::default(),
             )}
             {button(
                 label("aria.moveAllToSource"),
                 ViewFn::from(|| view! { <AngleDoubleLeftIcon /> }),
                 off_all(core.target),
-                Callback::new(move |()| c4.transfer_all(Side::Target)),
+                Callback::new(move |_| c4.transfer_all(Side::Target)),
                 Pt::default(),
             )}
         }
@@ -474,7 +475,7 @@ pub fn PickList(
                     cn.push_str(c);
                 }
             });
-            pt.root.merge_class(&cn).into_owned()
+            pt.root.merge_class(&cn)
         }
     };
     let root_style = {

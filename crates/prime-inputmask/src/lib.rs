@@ -549,7 +549,7 @@ pub fn InputMask(
         move || {
             (filled() && !disabled.get() && show_clear.get()).then(|| {
                 let core = core.clone();
-                let class = pt.clear_icon.merge_class("p-inputmask-clear-icon").into_owned();
+                let class = pt.clear_icon.merge_class("p-inputmask-clear-icon");
                 view! { <TimesIcon class={class} on:click={move |_| core.clear()} {..pt.clear_icon.attrs()} /> }
             })
         }

@@ -20,6 +20,7 @@ use leptos::prelude::*;
 use prime_checkbox::CheckboxState;
 use prime_icons::{CheckIcon, ChevronDownIcon, ChevronRightIcon, MinusIcon, SearchIcon, SpinnerIcon};
 use prime_rs_core::{OptProp, Prop, Pt};
+use std::borrow::Cow;
 use std::collections::HashSet;
 use std::sync::Arc;
 
@@ -101,6 +102,8 @@ struct Core {
     expanded: RwSignal<HashSet<String>>,
     selection: RwSignal<Vec<String>>,
     focus: RwSignal<Option<String>>,
+    /// Key of the node with `tabindex="0"`.
+    tab_stop_key: Memo<Option<String>>,
     mode: Option<TreeSelectionMode>,
     meta_key_selection: Prop<bool>,
     propagate_up: Prop<bool>,
@@ -448,6 +451,11 @@ pub fn Tree(
         expanded.update(|s| s.extend(seed));
     }
     let selection = selection.unwrap_or_else(|| RwSignal::new(Vec::new()));
+    let focus = RwSignal::new(None::<String>);
+    // One roving tab stop for the whole tree: computed once per change, each node only compares its key.
+    let tab_stop_key = Memo::new(move |_| {
+        expanded.with(|e| selection.with(|s| focus.with(|f| flat_shown.with(|fl| tab_stop(&visible(fl, e), s, f.as_deref())))))
+    });
     let core = Arc::new(Core {
         value: value.clone(),
         filter_text,
@@ -456,7 +464,8 @@ pub fn Tree(
         flat_shown,
         expanded,
         selection,
-        focus: RwSignal::new(None),
+        focus,
+        tab_stop_key,
         mode: selection_mode,
         meta_key_selection,
         propagate_up: propagate_selection_up,
@@ -484,7 +493,7 @@ pub fn Tree(
                 .add_if(scroll_height.with(|h| h.as_deref() == Some("flex")), "p-tree-flex-scrollable");
             let extra = style_class.with(|c| c.clone());
             cn.add_user(extra.as_deref());
-            pt.root.merge_class(&cn.finish_cow()).into_owned()
+            pt.root.merge_class(&cn.finish_cow())
         }
     };
     let root_style = {
@@ -500,8 +509,8 @@ pub fn Tree(
         move || {
             (loading.get() && ctx.loading_mode.get() == TreeLoadingMode::Mask).then(|| {
                 view! {
-                    <div class={pt.mask.merge_class("p-tree-mask p-overlay-mask").into_owned()} {..pt.mask.attrs()}>
-                        <SpinnerIcon spin=true class={pt.loading_icon.merge_class("p-tree-loading-icon").into_owned()} />
+                    <div class={pt.mask.merge_class("p-tree-mask p-overlay-mask")} {..pt.mask.attrs()}>
+                        <SpinnerIcon spin=true class={pt.loading_icon.merge_class("p-tree-loading-icon")} />
                     </div>
                 }
             })
@@ -514,11 +523,11 @@ pub fn Tree(
                 let (core, placeholder) = (core.clone(), placeholder.clone());
                 let text = core.filter_text;
                 view! {
-                    <span class={pt.filter_container.merge_class("p-iconfield p-tree-filter-container").into_owned()} {..pt.filter_container.attrs()}>
+                    <span class={pt.filter_container.merge_class("p-iconfield p-tree-filter-container")} {..pt.filter_container.attrs()}>
                         <input
                             type="search"
                             autocomplete="off"
-                            class={pt.filter_input.merge_class("p-inputtext p-component p-tree-filter-input").into_owned()}
+                            class={pt.filter_input.merge_class("p-inputtext p-component p-tree-filter-input")}
                             placeholder={move || placeholder.get()}
                             prop:value={move || text.get()}
                             on:keydown={|e: web_sys::KeyboardEvent| {
@@ -529,7 +538,7 @@ pub fn Tree(
                             on:input={move |e| core.filter_input(&e)}
                             {..pt.filter_input.attrs()}
                         />
-                        <span class="p-inputicon"><SearchIcon class={pt.filter_icon.merge_class("p-tree-filter-icon").into_owned()} /></span>
+                        <span class="p-inputicon"><SearchIcon class={pt.filter_icon.merge_class("p-tree-filter-icon")} /></span>
                     </span>
                 }
             })
@@ -541,14 +550,14 @@ pub fn Tree(
         move || {
             let has_nodes = ctx.core.shown.with(|n| !n.is_empty());
             has_nodes.then(|| {
-                let (wrapper_class, wrapper_attrs) = (ctx.pt.wrapper.merge_class("p-tree-root").into_owned(), ctx.pt.wrapper.attrs());
-                let (list_class, list_attrs) = (ctx.pt.root_children.merge_class("p-tree-root-children").into_owned(), ctx.pt.root_children.attrs());
+                let (wrapper_class, wrapper_attrs) = (ctx.pt.wrapper.merge_class("p-tree-root"), ctx.pt.wrapper.attrs());
+                let (list_class, list_attrs) = (ctx.pt.root_children.merge_class("p-tree-root-children"), ctx.pt.root_children.attrs());
                 let style = {
                     let scroll_height = scroll_height.clone();
                     move || scroll_height.with(|h| h.clone()).filter(|h| h != "flex").map(|h| format!("max-height: {h}"))
                 };
-                let nodes = ctx.core.shown.get_untracked();
-                let children = nodes_view(&ctx, &nodes, 0);
+                let nodes: Nodes = Arc::new(ctx.core.shown.get_untracked());
+                let children = nodes_view(&ctx, &nodes, &[], 0);
                 let (aria_label, aria_labelledby) = (aria_label.clone(), aria_labelledby.clone());
                 view! {
                     <div class={wrapper_class} style={style} {..wrapper_attrs}>
@@ -565,8 +574,11 @@ pub fn Tree(
         move || {
             let none = core.shown.with(|n| n.is_empty());
             (!loading.get() && none).then(|| {
-                let text = empty_message.get().filter(|m| !m.is_empty()).unwrap_or_else(|| prime_rs_core::use_prime_config().locale.text("emptyMessage").to_owned());
-                view! { <div class={pt.empty_message.merge_class("p-tree-empty-message").into_owned()} {..pt.empty_message.attrs()}>{text}</div> }
+                let text = empty_message
+                    .get()
+                    .filter(|m| !m.is_empty())
+                    .unwrap_or_else(|| prime_rs_core::use_prime_config().locale.text("emptyMessage").to_owned());
+                view! { <div class={pt.empty_message.merge_class("p-tree-empty-message")} {..pt.empty_message.attrs()}>{text}</div> }
             })
         }
     };
@@ -581,34 +593,44 @@ pub fn Tree(
     }
 }
 
-fn join(base: &str, extra: Option<&str>) -> String {
+fn join(base: Cow<'static, str>, extra: Option<&str>) -> Cow<'static, str> {
     match extra.filter(|e| !e.is_empty()) {
-        Some(e) => format!("{base} {e}"),
-        None => base.to_owned(),
+        Some(e) => Cow::Owned(format!("{base} {e}")),
+        None => base,
     }
 }
 
+/// Snapshot of the shown tree shared by all node views: a collapsed node keeps the snapshot and its index path
+/// (to build its children when expanded) instead of a deep copy of its subtree.
+type Nodes = Arc<Vec<TreeNode>>;
+
+/// Children of the node at `path` (the roots for an empty path).
+fn nodes_at<'a>(root: &'a [TreeNode], path: &[usize]) -> &'a [TreeNode] {
+    path.iter().fold(root, |nodes, &i| nodes.get(i).map_or(&[], |n| n.children.as_slice()))
+}
+
 /// Nodes of one level. The whole view is built once per tree change: state is read from closures in attributes.
-fn nodes_view(ctx: &Ctx, nodes: &[TreeNode], level: usize) -> AnyView {
-    nodes.iter().enumerate().map(|(index, node)| node_view(ctx, node, level, index)).collect_view().into_any()
+fn nodes_view(ctx: &Ctx, root: &Nodes, path: &[usize], level: usize) -> AnyView {
+    nodes_at(root, path).iter().enumerate().map(|(index, node)| node_view(ctx, root, path, node, level, index)).collect_view().into_any()
 }
 
 #[allow(clippy::clone_on_copy)] // a closure over `Memo` is `Copy`, `clone()` is kept for consistency with the other closures
-fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView {
+fn node_view(ctx: &Ctx, root: &Nodes, path: &[usize], node: &TreeNode, level: usize, index: usize) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
-    let key = node.key.clone();
+    // Shared key: the closures below hold reference-counted copies instead of separate `String`s.
+    let key: Arc<str> = Arc::from(node.key.as_str());
     let leaf = node.is_leaf();
     let mode = core.mode;
-    let (expanded, selection, focus) = (core.expanded, core.selection, core.focus);
+    let (expanded, selection) = (core.expanded, core.selection);
     // Memo: the subtree is rebuilt only when this node's expansion changes, not any other's.
     let is_expanded = {
         let key = key.clone();
-        let memo = Memo::new(move |_| expanded.with(|s| s.contains(&key)));
+        let memo = Memo::new(move |_| expanded.with(|s| s.contains(&*key)));
         move || memo.get()
     };
     let is_selected = {
         let key = key.clone();
-        move || selection.with(|s| s.contains(&key))
+        move || selection.with(|s| s.iter().any(|k| **k == *key))
     };
     let partial = {
         let (core, key) = (core.clone(), key.clone());
@@ -619,18 +641,11 @@ fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView 
         }
     };
     let tab_stop_key = {
-        let (core, key) = (core.clone(), key.clone());
-        move || {
-            let expanded = expanded.get();
-            let sel = selection.get();
-            let focus = focus.get();
-            core.flat_shown.with(|f| tab_stop(&visible(f, &expanded), &sel, focus.as_deref()).as_deref() == Some(key.as_str()))
-        }
+        let (stop, key) = (core.tab_stop_key, key.clone());
+        move || stop.with(|k| k.as_deref() == Some(&*key))
     };
-    let li_class = join(
-        &pt.node.merge_class(&if leaf { "p-tree-node p-tree-node-leaf".to_owned() } else { "p-tree-node".to_owned() }),
-        node.style_class.as_deref(),
-    );
+    let li_class =
+        join(pt.node.merge_class(if leaf { "p-tree-node p-tree-node-leaf" } else { "p-tree-node" }), node.style_class.as_deref());
     let content_class = {
         let (pt, is_selected, highlight) = (pt.clone(), is_selected.clone(), ctx.highlight_on_select.clone());
         let selectable = mode.is_some() && node.selectable;
@@ -638,7 +653,7 @@ fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView 
             let mut cn = prime_rs_core::ClassNames::new();
             let selected = if mode == Some(TreeSelectionMode::Checkbox) { highlight.get() && is_selected() } else { is_selected() };
             cn.add("p-tree-node-content").add_if(selectable, "p-tree-node-selectable").add_if(selected, "p-tree-node-selected");
-            pt.node_content.merge_class(&cn.finish_cow()).into_owned()
+            pt.node_content.merge_class(&cn.finish_cow())
         }
     };
     let padding = {
@@ -652,16 +667,17 @@ fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView 
     let label = match ctx.node {
         Some(template) => {
             let node = node.clone();
-            view! { <span class={pt.node_label.merge_class("p-tree-node-label").into_owned()} {..pt.node_label.attrs()}><span>{untrack(|| template.run(node))}</span></span> }.into_any()
+            view! { <span class={pt.node_label.merge_class("p-tree-node-label")} {..pt.node_label.attrs()}><span>{untrack(|| template.run(node))}</span></span> }.into_any()
         }
-        None => view! { <span class={pt.node_label.merge_class("p-tree-node-label").into_owned()} {..pt.node_label.attrs()}><span>{node.label.clone()}</span></span> }.into_any(),
+        None => view! { <span class={pt.node_label.merge_class("p-tree-node-label")} {..pt.node_label.attrs()}><span>{node.label.clone()}</span></span> }.into_any(),
     };
     let children = (!node.children.is_empty()).then(|| {
-        let (ctx, kids, is_expanded) = (ctx.clone(), node.children.clone(), is_expanded.clone());
-        let (class, attrs) = (ctx.pt.node_children.merge_class("p-tree-node-children").into_owned(), ctx.pt.node_children.attrs());
+        let (ctx, root, is_expanded) = (ctx.clone(), root.clone(), is_expanded.clone());
+        let child_path: Vec<usize> = path.iter().copied().chain([index]).collect();
+        let (class, attrs) = (ctx.pt.node_children.merge_class("p-tree-node-children"), ctx.pt.node_children.attrs());
         move || {
             is_expanded().then(|| {
-                let items = untrack(|| nodes_view(&ctx, &kids, level + 1));
+                let items = untrack(|| nodes_view(&ctx, &root, &child_path, level + 1));
                 view! { <ul class={class.clone()} role="group" {..attrs.clone()}>{items}</ul> }
             })
         }
@@ -670,18 +686,20 @@ fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView 
     let (click_key, dbl_key, key_key, focus_key) = (key.clone(), key.clone(), key.clone(), key.clone());
     let selected_attr = {
         let is_selected = is_selected.clone();
-        move || matches!(mode, Some(TreeSelectionMode::Single | TreeSelectionMode::Multiple)).then(|| is_selected().to_string())
+        move || {
+            matches!(mode, Some(TreeSelectionMode::Single | TreeSelectionMode::Multiple)).then(|| prime_rs_core::bool_attr(is_selected()))
+        }
     };
     let checked_attr = {
         let is_selected = is_selected.clone();
-        move || (mode == Some(TreeSelectionMode::Checkbox)).then(|| is_selected().to_string())
+        move || (mode == Some(TreeSelectionMode::Checkbox)).then(|| prime_rs_core::bool_attr(is_selected()))
     };
     let expanded_attr = {
         let is_expanded = is_expanded.clone();
-        move || (!leaf).then(|| is_expanded().to_string())
+        move || (!leaf).then(|| prime_rs_core::bool_attr(is_expanded()))
     };
     let mut li_attrs = pt.node.attrs();
-    li_attrs.push(leptos::attr::custom::custom_attribute("aria-level", (level + 1).to_string()).into_any_attr());
+    li_attrs.push(leptos::attr::custom::custom_attribute("aria-level", level + 1).into_any_attr());
     let content_attrs = pt.node_content.attrs();
     view! {
         <li
@@ -692,12 +710,12 @@ fn node_view(ctx: &Ctx, node: &TreeNode, level: usize, index: usize) -> AnyView 
             aria-checked={checked_attr}
             aria-selected={selected_attr}
             aria-expanded={expanded_attr}
-            aria-setsize={node.children.len().to_string()}
-            aria-posinset={(index + 1).to_string()}
+            aria-setsize={node.children.len()}
+            aria-posinset={index + 1}
             tabindex={move || if tab_stop_key() { "0" } else { "-1" }}
             data-id={key.clone()}
             on:keydown={move |e| key_core.key_down(&e, &key_key)}
-            on:focus={move |_| focus_core.focus.set(Some(focus_key.clone()))}
+            on:focus={move |_| focus_core.focus.set(Some(focus_key.to_string()))}
             {..li_attrs}
         >
             <div
@@ -729,7 +747,7 @@ fn toggle_view(ctx: &Ctx, node: &TreeNode, is_expanded: impl Fn() -> bool + Clon
     let loading = node.loading;
     let loading_mode = ctx.loading_mode.clone();
     let custom = ctx.toggler_icon.clone();
-    let icon_class = pt.node_toggle_icon.merge_class("p-tree-node-toggle-icon").into_owned();
+    let icon_class = pt.node_toggle_icon.merge_class("p-tree-node-toggle-icon");
     let inner = move || -> AnyView {
         if let Some(custom) = custom.clone() {
             return view! { <span class={icon_class.clone()}>{custom.run()}</span> }.into_any();
@@ -748,7 +766,7 @@ fn toggle_view(ctx: &Ctx, node: &TreeNode, is_expanded: impl Fn() -> bool + Clon
         <button
             type="button"
             tabindex="-1"
-            class={pt.node_toggle_button.merge_class("p-tree-node-toggle-button").into_owned()}
+            class={pt.node_toggle_button.merge_class("p-tree-node-toggle-button")}
             style={visibility}
             on:click={move |e| core.toggle(e, &key)}
             {..pt.node_toggle_button.attrs()}
@@ -761,7 +779,7 @@ fn toggle_view(ctx: &Ctx, node: &TreeNode, is_expanded: impl Fn() -> bool + Clon
 
 /// Node icon: custom or expanded/collapsed.
 fn icon_view(ctx: &Ctx, node: &TreeNode, is_expanded: impl Fn() -> bool + Clone + Send + Sync + 'static) -> Option<AnyView> {
-    let class = ctx.pt.node_icon.merge_class("p-tree-node-icon").into_owned();
+    let class = ctx.pt.node_icon.merge_class("p-tree-node-icon");
     if let Some(icon) = node.icon.clone() {
         return Some(view! { <span class={class}>{icon.run()}</span> }.into_any());
     }
@@ -795,7 +813,7 @@ fn checkbox_view(
         move || CheckboxState { checked: checked() || partial(), disabled, invalid: false, variant: None, size: None }
     };
     let root_class = {
-        let (state, extra) = (state.clone(), pt.node_checkbox.merge_class("p-tree-node-checkbox").into_owned());
+        let (state, extra) = (state.clone(), pt.node_checkbox.merge_class("p-tree-node-checkbox"));
         move || {
             let mut cn = prime_rs_core::ClassNames::new();
             prime_checkbox::write_classes(&mut cn, &state());

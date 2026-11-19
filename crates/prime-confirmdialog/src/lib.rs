@@ -470,12 +470,12 @@ fn message_body(core: &Arc<Core>, defaults: &Arc<Defaults>, views: &Arc<Views>, 
     let icon = match views.icon_content.clone() {
         Some(custom) => Some(custom.run()),
         None => confirmation.icon.clone().or_else(|| defaults.icon.clone()).map(|icon| {
-            let class = pt.icon.merge_class("p-confirmdialog-icon").into_owned();
+            let class = pt.icon.merge_class("p-confirmdialog-icon");
             view! { <span class={class} {..pt.icon.attrs()}>{icon.run()}</span> }.into_any()
         }),
     };
     let text = confirmation.message.clone().or_else(|| defaults.message.get()).unwrap_or_default();
-    let class = pt.message.merge_class("p-confirmdialog-message").into_owned();
+    let class = pt.message.merge_class("p-confirmdialog-message");
     view! {
         {icon}
         <span class={class} {..pt.message.attrs()}>{text}</span>

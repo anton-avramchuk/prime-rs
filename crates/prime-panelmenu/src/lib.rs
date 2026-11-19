@@ -20,9 +20,11 @@ mod state;
 use leptos::prelude::*;
 use prime_icons::{ChevronDownIcon, ChevronRightIcon};
 use prime_menu::{MenuCommand, MenuItem, can_run_command, should_prevent_default};
+use prime_rs_core::bool_attr;
 use prime_rs_core::collapsible::hidden_style;
 use prime_rs_core::{OptProp, Prop, Pt};
 use prime_tieredmenu::{Node, aria_pos_inset, aria_set_size, build, is_printable, item_at, item_id};
+use std::borrow::Cow;
 use std::collections::HashSet;
 use std::sync::Arc;
 
@@ -675,7 +677,7 @@ pub fn PanelMenu(
             cn.add("p-panelmenu p-component");
             let extra = style_class.with(|c| c.clone());
             cn.add_user(extra.as_deref());
-            pt.root.merge_class(&cn.finish_cow()).into_owned()
+            pt.root.merge_class(&cn.finish_cow())
         }
     };
     let root_style = {
@@ -726,7 +728,7 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
             let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-panelmenu-header").add_if(active() && group, "p-panelmenu-header-active").add_if(item.disabled, "p-disabled");
             cn.add_user(item.style_class.as_deref());
-            pt.header.merge_class(&cn.finish_cow()).into_owned()
+            pt.header.merge_class(&cn.finish_cow())
         }
     };
     let header_content = match ctx.item {
@@ -738,7 +740,7 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
         move || {
             let mut cn = prime_rs_core::ClassNames::new();
             cn.add("p-panelmenu-content-container").add_if(active(), "p-panelmenu-expanded");
-            pt.content_container.merge_class(&cn.finish_cow()).into_owned()
+            pt.content_container.merge_class(&cn.finish_cow())
         }
     };
     let region: NodeRef<leptos::html::Div> = NodeRef::new();
@@ -753,7 +755,7 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
     let (click_core, key_core, click_key, key_key) = (core.clone(), core.clone(), key.clone(), key.clone());
     let disabled = item.disabled;
     let label = item.label.clone();
-    let header_content_class = pt.header_content.merge_class("p-panelmenu-header-content").into_owned();
+    let header_content_class = pt.header_content.merge_class("p-panelmenu-header-content");
     let panel_class = join(&pt.panel.merge_class("p-panelmenu-panel"), None);
     let (a1, a2, a3) = (active.clone(), active.clone(), active.clone());
     let (panel_attrs, header_attrs, hc_attrs, cc_attrs, cw_attrs, c_attrs) = (
@@ -764,8 +766,8 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
         pt.content_wrapper.attrs(),
         pt.content.attrs(),
     );
-    let wrapper_class = pt.content_wrapper.merge_class("p-panelmenu-content-wrapper").into_owned();
-    let content_class = pt.content.merge_class("p-panelmenu-content").into_owned();
+    let wrapper_class = pt.content_wrapper.merge_class("p-panelmenu-content-wrapper");
+    let content_class = pt.content.merge_class("p-panelmenu-content");
     view! {
         <div class={panel_class} style={item.style.clone()} {..panel_attrs}>
             <div
@@ -774,12 +776,12 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
                 style={item.style.clone()}
                 role="button"
                 tabindex="0"
-                aria-expanded={move || a1().to_string()}
+                aria-expanded={move || bool_attr(a1())}
                 aria-label={label}
                 aria-controls={content_id.clone()}
-                aria-disabled={disabled.to_string()}
-                data-p-highlight={move || a2().to_string()}
-                data-p-disabled={disabled.to_string()}
+                aria-disabled={bool_attr(disabled)}
+                data-p-highlight={move || bool_attr(a2())}
+                data-p-disabled={bool_attr(disabled)}
                 on:click={move |e| click_core.header_click(e, &click_key)}
                 on:keydown={move |e| key_core.header_key_down(&e, &key_key)}
                 {..header_attrs}
@@ -793,7 +795,7 @@ fn panel_view(ctx: &Ctx, node: &Node, item: &MenuItem) -> AnyView {
                 style={(!initial_style.is_empty()).then_some(initial_style)}
                 role="region"
                 aria-labelledby={header_id}
-                data-p-expanded={move || a3().to_string()}
+                data-p-expanded={move || bool_attr(a3())}
                 {..cc_attrs}
             >
                 <div class={wrapper_class} {..cw_attrs}>
@@ -810,16 +812,16 @@ fn header_link_view(ctx: &Ctx, item: &MenuItem, group: bool, active: impl Fn() -
     let pt = &ctx.pt;
     let arrow = group.then(|| match ctx.header_icon.clone() {
         Some(custom) => custom.run(),
-        None => chevron(pt.submenu_icon.merge_class("p-panelmenu-submenu-icon").into_owned(), active),
+        None => chevron(pt.submenu_icon.merge_class("p-panelmenu-submenu-icon"), active),
     });
     let icon = item.icon.clone().map(|icon| {
         let class = join("p-panelmenu-header-icon", item.icon_class.as_deref());
-        view! { <span class={pt.header_icon.merge_class(&class).into_owned()} {..pt.header_icon.attrs()}>{icon.run()}</span> }
+        view! { <span class={pt.header_icon.merge_class(&class)} {..pt.header_icon.attrs()}>{icon.run()}</span> }
     });
     let link_class = join("p-panelmenu-header-link", item.link_class.as_deref());
     view! {
         <a
-            class={pt.header_link.merge_class(&link_class).into_owned()}
+            class={pt.header_link.merge_class(&link_class)}
             href={item.url.clone()}
             target={item.target.clone()}
             title={item.title.clone()}
@@ -828,14 +830,14 @@ fn header_link_view(ctx: &Ctx, item: &MenuItem, group: bool, active: impl Fn() -
         >
             {arrow}
             {icon}
-            <span class={pt.header_label.merge_class("p-panelmenu-header-label").into_owned()} {..pt.header_label.attrs()}>{item.label.clone()}</span>
+            <span class={pt.header_label.merge_class("p-panelmenu-header-label")} {..pt.header_label.attrs()}>{item.label.clone()}</span>
         </a>
     }
     .into_any()
 }
 
 /// Chevron: down for an expanded group, right for a collapsed one.
-fn chevron(class: String, active: impl Fn() -> bool + Send + Sync + 'static) -> AnyView {
+fn chevron(class: Cow<'static, str>, active: impl Fn() -> bool + Send + Sync + 'static) -> AnyView {
     let down_class = class.clone();
     view! {
         {move || if active() { view! { <ChevronDownIcon class={down_class.clone()} /> }.into_any() } else { view! { <ChevronRightIcon class={class.clone()} /> }.into_any() }}
@@ -852,7 +854,7 @@ fn tree_list_view(
     active: impl Fn() -> bool + Clone + Send + Sync + 'static,
 ) -> AnyView {
     let (core, pt) = (ctx.core.clone(), ctx.pt.clone());
-    let class = pt.root_list.merge_class("p-panelmenu-root-list p-panelmenu-submenu").into_owned();
+    let class = pt.root_list.merge_class("p-panelmenu-root-list p-panelmenu-submenu");
     let (focus_core, blur_core, key_core) = (core.clone(), core.clone(), core.clone());
     let (focus_key, key_key) = (root_key.to_owned(), root_key.to_owned());
     let activedescendant = {
@@ -876,7 +878,7 @@ fn tree_list_view(
             class={class}
             role="tree"
             tabindex="-1"
-            aria-hidden={move || (!active()).to_string()}
+            aria-hidden={move || bool_attr(!active())}
             aria-activedescendant={activedescendant}
             on:focusin={move |e| focus_core.list_focus(panel, &focus_key, &e)}
             on:focusout={move |e| blur_core.list_blur(panel, &e)}
@@ -932,12 +934,13 @@ fn item_view(ctx: &Ctx, panel: PanelFocus, root_key: &str, node: &Node, item: &M
     };
     let focused = move |key: &str| panel.focused.get() && panel.key.with(|k| k.as_deref() == Some(key));
     let class = {
-        let (pt, item, key) = (pt.clone(), item.clone(), key.clone());
+        // Only the fields the class needs, not a copy of the item with its whole submenu.
+        let (pt, disabled, style_class, key) = (pt.clone(), item.disabled, item.style_class.clone(), key.clone());
         move || {
             let mut cn = prime_rs_core::ClassNames::new();
-            cn.add("p-panelmenu-item").add_if(focused(&key) && !item.disabled, "p-focus").add_if(item.disabled, "p-disabled");
-            cn.add_user(item.style_class.as_deref());
-            pt.item.merge_class(&cn.finish_cow()).into_owned()
+            cn.add("p-panelmenu-item").add_if(focused(&key) && !disabled, "p-focus").add_if(disabled, "p-disabled");
+            cn.add_user(style_class.as_deref());
+            pt.item.merge_class(&cn.finish_cow())
         }
     };
     let tab_key = key.clone();
@@ -961,18 +964,18 @@ fn item_view(ctx: &Ctx, panel: PanelFocus, root_key: &str, node: &Node, item: &M
             move || {
                 let mut cn = prime_rs_core::ClassNames::new();
                 cn.add("p-panelmenu-content-container").add_if(active(), "p-panelmenu-expanded");
-                pt.content_container.merge_class(&cn.finish_cow()).into_owned()
+                pt.content_container.merge_class(&cn.finish_cow())
             }
         };
         let hidden = active.clone();
         let sub_id = format!("{id}_list");
         let children = items_view(ctx, panel, root_key, &key);
-        let (wrapper_class, wrapper_attrs) = (pt.content_wrapper.merge_class("p-panelmenu-content-wrapper").into_owned(), pt.content_wrapper.attrs());
-        let (class, attrs) = (pt.submenu.merge_class("p-panelmenu-submenu").into_owned(), pt.submenu.attrs());
+        let (wrapper_class, wrapper_attrs) = (pt.content_wrapper.merge_class("p-panelmenu-content-wrapper"), pt.content_wrapper.attrs());
+        let (class, attrs) = (pt.submenu.merge_class("p-panelmenu-submenu"), pt.submenu.attrs());
         view! {
             <div node_ref=region class={container_class} style={(!initial_style.is_empty()).then_some(initial_style)} {..pt.content_container.attrs()}>
                 <div class={wrapper_class} {..wrapper_attrs}>
-                    <ul id={sub_id} class={class} role="tree" tabindex="-1" aria-hidden={move || (!hidden()).to_string()} {..attrs}>
+                    <ul id={sub_id} class={class} role="tree" tabindex="-1" aria-hidden={move || bool_attr(!hidden())} {..attrs}>
                         {children}
                     </ul>
                 </div>
@@ -981,18 +984,18 @@ fn item_view(ctx: &Ctx, panel: PanelFocus, root_key: &str, node: &Node, item: &M
     });
     let ae = {
         let active = active.clone();
-        move || group.then(|| active().to_string())
+        move || group.then(|| bool_attr(active()))
     };
     let fo = {
         let key = key.clone();
-        move || focused(&key).to_string()
+        move || bool_attr(focused(&key))
     };
     let label = item.label.clone();
     let disabled = item.disabled;
     let level = node.level;
-    let content_class = pt.item_content.merge_class("p-panelmenu-item-content").into_owned();
+    let content_class = pt.item_content.merge_class("p-panelmenu-item-content");
     let mut item_attrs = pt.item.attrs();
-    item_attrs.push(leptos::attr::custom::custom_attribute("aria-level", level.to_string()).into_any_attr());
+    item_attrs.push(leptos::attr::custom::custom_attribute("aria-level", level).into_any_attr());
     let content_attrs = pt.item_content.attrs();
     view! {
         <li
@@ -1002,9 +1005,9 @@ fn item_view(ctx: &Ctx, panel: PanelFocus, root_key: &str, node: &Node, item: &M
             role="treeitem"
             aria-label={label}
             aria-expanded={ae}
-            aria-setsize={set_size.to_string()}
-            aria-posinset={pos_inset.to_string()}
-            data-p-disabled={disabled.to_string()}
+            aria-setsize={set_size}
+            aria-posinset={pos_inset}
+            data-p-disabled={bool_attr(disabled)}
             data-p-focused={fo}
             {..item_attrs}
         >
@@ -1028,16 +1031,16 @@ fn link_view(
     let pt = &ctx.pt;
     let arrow = group.then(|| match ctx.submenu_icon.clone() {
         Some(custom) => custom.run(),
-        None => chevron(pt.submenu_icon.merge_class("p-panelmenu-submenu-icon").into_owned(), active),
+        None => chevron(pt.submenu_icon.merge_class("p-panelmenu-submenu-icon"), active),
     });
     let icon = item.icon.clone().map(|icon| {
         let class = join("p-panelmenu-item-icon", item.icon_class.as_deref());
-        view! { <span class={pt.item_icon.merge_class(&class).into_owned()} {..pt.item_icon.attrs()}>{icon.run()}</span> }
+        view! { <span class={pt.item_icon.merge_class(&class)} {..pt.item_icon.attrs()}>{icon.run()}</span> }
     });
     let link_class = join("p-panelmenu-item-link", item.link_class.as_deref());
     view! {
         <a
-            class={pt.item_link.merge_class(&link_class).into_owned()}
+            class={pt.item_link.merge_class(&link_class)}
             href={item.url.clone()}
             target={item.target.clone()}
             title={item.title.clone()}
@@ -1046,7 +1049,7 @@ fn link_view(
         >
             {arrow}
             {icon}
-            <span class={pt.item_label.merge_class("p-panelmenu-item-label").into_owned()} {..pt.item_label.attrs()}>{item.label.clone()}</span>
+            <span class={pt.item_label.merge_class("p-panelmenu-item-label")} {..pt.item_label.attrs()}>{item.label.clone()}</span>
         </a>
     }
     .into_any()

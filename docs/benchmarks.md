@@ -18,6 +18,15 @@ cargo bench -p render-bench --bench alloc    # dhat; each scenario in a separate
 
 For each scenario the number of allocations, the total size, the peak memory and the HTML size are printed.
 
+To see *where* a scenario allocates, write a full dhat profile with backtraces (symbols need a non-stripped build):
+
+```sh
+CARGO_PROFILE_BENCH_STRIP=false CARGO_PROFILE_BENCH_DEBUG=line-tables-only \
+  cargo bench -p render-bench --bench alloc -- --profile tree-1000   # -> target/bench/dhat-tree-1000.json
+```
+
+Open the file in [dh_view](https://nnethercote.github.io/dh_view/dh_view.html) and sort by "total blocks".
+
 ## wasm size
 
 ```sh
@@ -137,6 +146,25 @@ Third pass (`optimize-allocs-button-chip`): `Arc<Props>`/`Arc<Pt>` only in the r
 | button-full-1000 | 45 | 28 | −38 % |
 | chip-1000 | 10 | 6 | −40 % |
 | chip-removable-1000 | 35 | 22 | −37 % |
+
+Fourth pass (composite components, found with `--profile`): interned part classes stay `Cow` (`pt.….merge_class(..)` is no longer
+followed by `.into_owned()`, which copied the interned string into a `String` for every part of every instance), icons take
+`class: Cow<'static, str>` and keep a static part class interned, ARIA/`data-p-*` flags use `prime_rs_core::bool_attr` instead of
+`bool::to_string`, numbers go to attributes as numbers. Tree computes its roving tab stop once in a shared `Memo` (each node used to clone
+the selection and the expanded set and rescan the visible nodes — quadratic), shares node keys as `Arc<str>` and keeps a snapshot plus an
+index path instead of a deep copy of each subtree; the PanelMenu item class no longer clones the whole `MenuItem` with its submenu.
+No scenario got worse; the total over all scenarios is −3.8 %.
+
+| Scenario | Before | After | Change |
+|---|---:|---:|---:|
+| tree-1000 | 719 | 557 | −23 % |
+| panelmenu-1000 | 783 | 681 | −13 % |
+| checkbox-1000 | 20 | 18 | −10 % |
+| steps-1000 | 120 | 109 | −9 % |
+| fieldset-1000 | 57 | 53 | −7 % |
+| datepicker-1000 | 619 | 584 | −6 % |
+| megamenu-1000 | 378 | 359 | −5 % |
+| dataview-1000 | 173 | 164 | −5 % |
 
 The Leptos floor for a `div` with a `span` in a loop is 2 allocations per instance, `Children` costs another 2 (the closure box and `AnyView`), so these values cannot go much lower without changing the API. Button and Chip were optimized in the third pass (see below).
 

@@ -403,7 +403,7 @@ pub fn Image(
         move || {
             let extra = style_class.with(|c| c.clone());
             let base = root_classes(preview_root.get(), extra.as_deref());
-            pt.root.merge_class(&base).into_owned()
+            pt.root.merge_class(&base)
         }
     };
     let root_style = {
@@ -474,7 +474,7 @@ pub fn Image(
                 let icon = match indicator.clone() {
                     Some(custom) => custom.run(),
                     None => {
-                        let class = pt.preview_icon.merge_class("p-image-preview-icon").into_owned();
+                        let class = pt.preview_icon.merge_class("p-image-preview-icon");
                         view! { <EyeIcon class=class /> }.into_any()
                     }
                 };
@@ -490,7 +490,7 @@ pub fn Image(
                     }
                 };
                 let attrs = pt.preview_mask.attrs();
-                let class = pt.preview_mask.merge_class("p-image-preview-mask").into_owned();
+                let class = pt.preview_mask.merge_class("p-image-preview-mask");
                 view! {
                     <button type="button" class=class aria-label=label style=size node_ref=core.preview_button on:click={open} {..attrs}>
                         {icon}
@@ -628,7 +628,7 @@ fn build_preview(core: &Arc<Core>, pt: &Arc<ImagePt>, parts: &Arc<Parts>) -> imp
     };
 
     let toolbar_attrs = pt.toolbar.attrs();
-    let toolbar_class = pt.toolbar.merge_class("p-image-toolbar").into_owned();
+    let toolbar_class = pt.toolbar.merge_class("p-image-toolbar");
     let toolbar_style = pt.toolbar.has_style().then(|| pt.toolbar.merge_style(""));
 
     let original = build_original(core, pt, parts);

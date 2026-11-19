@@ -691,7 +691,7 @@ pub fn CascadeSelect(
         move || {
             (filled() && !disabled.get() && show_clear.get()).then(|| {
                 let core = core.clone();
-                let class = pt.clear_icon.merge_class("p-cascadeselect-clear-icon").into_owned();
+                let class = pt.clear_icon.merge_class("p-cascadeselect-clear-icon");
                 view! { <TimesIcon class={class} on:click={move |e: web_sys::MouseEvent| core.clear(Some(e))} {..pt.clear_icon.attrs()} /> }
             })
         }
@@ -700,10 +700,9 @@ pub fn CascadeSelect(
         let (loading, pt) = (loading.clone(), pt.clone());
         move || -> AnyView {
             if loading.get() {
-                view! { <SpinnerIcon spin=true class={pt.loading_icon.merge_class("p-cascadeselect-loading-icon").into_owned()} /> }
-                    .into_any()
+                view! { <SpinnerIcon spin=true class={pt.loading_icon.merge_class("p-cascadeselect-loading-icon")} /> }.into_any()
             } else {
-                view! { <ChevronDownIcon class={pt.dropdown_icon.merge_class("p-cascadeselect-dropdown-icon").into_owned()} /> }.into_any()
+                view! { <ChevronDownIcon class={pt.dropdown_icon.merge_class("p-cascadeselect-dropdown-icon")} /> }.into_any()
             }
         }
     };
@@ -752,10 +751,8 @@ pub fn CascadeSelect(
     let (focus_core, blur_core, key_core, click_core) = (core.clone(), core.clone(), core.clone(), core.clone());
     let (root_attrs, hidden_wrapper_attrs, hidden_attrs, label_attrs, dropdown_attrs) =
         (pt.root.attrs(), pt.hidden_input_wrapper.attrs(), pt.hidden_input.attrs(), pt.label.attrs(), pt.dropdown.attrs());
-    let (hidden_wrapper_class, dropdown_class) = (
-        pt.hidden_input_wrapper.merge_class("p-hidden-accessible").into_owned(),
-        pt.dropdown.merge_class("p-cascadeselect-dropdown").into_owned(),
-    );
+    let (hidden_wrapper_class, dropdown_class) =
+        (pt.hidden_input_wrapper.merge_class("p-hidden-accessible"), pt.dropdown.merge_class("p-cascadeselect-dropdown"));
     let dropdown_expanded = {
         let core = core.clone();
         move || core.open.get().to_string()
@@ -811,14 +808,14 @@ fn panel_view(ctx: &Ctx, extra: &OptProp<String>) -> impl IntoView + use<> {
             let mut cn = ClassNames::new();
             cn.add("p-cascadeselect-overlay p-component-overlay p-component").add_if(mobile.get(), "p-cascadeselect-mobile-active");
             extra.with(|c| cn.add_user(c.as_deref()));
-            pt.overlay.merge_class(&cn.finish_cow()).into_owned()
+            pt.overlay.merge_class(&cn.finish_cow())
         }
     };
     // In PrimeNG the position is set by the `p-overlay` wrapper; here the panel is inside the root, so positioning is via an inline style.
     let overlay_style = pt.overlay.merge_style("position: absolute; top: 0; left: 0");
     let (container_class, container_attrs, overlay_attrs) =
-        (pt.list_container.merge_class("p-cascadeselect-list-container").into_owned(), pt.list_container.attrs(), pt.overlay.attrs());
-    let (list_class, list_attrs) = (pt.list.merge_class("p-cascadeselect-list").into_owned(), pt.list.attrs());
+        (pt.list_container.merge_class("p-cascadeselect-list-container"), pt.list_container.attrs(), pt.overlay.attrs());
+    let (list_class, list_attrs) = (pt.list.merge_class("p-cascadeselect-list"), pt.list.attrs());
     let list_id = format!("{}_tree", core.id);
     let items = {
         let ctx = ctx.clone();
@@ -872,24 +869,24 @@ fn option_view(ctx: &Ctx, node: &Node) -> AnyView {
                 .add_if(is_selected(), "p-cascadeselect-option-selected")
                 .add_if(is_focused(), "p-focus")
                 .add_if(disabled, "p-disabled");
-            pt.option.merge_class(&cn.finish_cow()).into_owned()
+            pt.option.merge_class(&cn.finish_cow())
         }
     };
     let text = match ctx.option {
         Some(template) => untrack(|| template.run(CascadeOptionContext { label: node.label.clone(), value: node.value.clone(), level: node.level, group: node.group })),
-        None => view! { <span class={pt.option_text.merge_class("p-cascadeselect-option-text").into_owned()} {..pt.option_text.attrs()}>{node.label.clone()}</span> }.into_any(),
+        None => view! { <span class={pt.option_text.merge_class("p-cascadeselect-option-text")} {..pt.option_text.attrs()}>{node.label.clone()}</span> }.into_any(),
     };
     let group_icon = node.group.then(|| {
         let inner = match ctx.group_icon.clone() {
             Some(custom) => custom.run(),
             None => view! { <AngleRightIcon /> }.into_any(),
         };
-        view! { <span class={pt.group_icon.merge_class("p-cascadeselect-group-icon").into_owned()} {..pt.group_icon.attrs()}>{inner}</span> }
+        view! { <span class={pt.group_icon.merge_class("p-cascadeselect-group-icon")} {..pt.group_icon.attrs()}>{inner}</span> }
     });
     let sublist = node.group.then(|| {
         let (ctx, key, is_active) = (ctx.clone(), key.clone(), is_active.clone());
         let (class, attrs) = (
-            ctx.pt.option_list.merge_class("p-cascadeselect-list p-cascadeselect-overlay p-cascadeselect-option-list").into_owned(),
+            ctx.pt.option_list.merge_class("p-cascadeselect-list p-cascadeselect-overlay p-cascadeselect-option-list"),
             ctx.pt.option_list.attrs(),
         );
         move || {
@@ -918,7 +915,7 @@ fn option_view(ctx: &Ctx, node: &Node) -> AnyView {
         li.push(custom_attribute("aria-level", (node.level + 1).to_string()).into_any_attr());
         (li, pt.option_content.attrs())
     };
-    let content_class = pt.option_content.merge_class("p-cascadeselect-option-content").into_owned();
+    let content_class = pt.option_content.merge_class("p-cascadeselect-option-content");
     view! {
         <li
             id={id}

@@ -704,7 +704,7 @@ pub fn FileUpload(
                     cn.push_str(c);
                 }
             });
-            pt.root.merge_class(&cn).into_owned()
+            pt.root.merge_class(&cn)
         }
     };
     let root_style = {
@@ -843,7 +843,7 @@ fn advanced_view(core: &Arc<Core>, pt: &Arc<FileUploadPt>, labels: &Arc<Labels>,
         let (core, pt) = (core.clone(), pt.clone());
         move || {
             let base = if core.highlight.get() { "p-fileupload-content p-fileupload-highlight" } else { "p-fileupload-content" };
-            pt.content.merge_class(base).into_owned()
+            pt.content.merge_class(base)
         }
     };
     let highlight_attr = {
