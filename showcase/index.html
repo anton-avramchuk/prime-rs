@@ -4,7 +4,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>prime-rs</title>
+    <link data-trunk rel="css" href="../target/showcase/theme.css" />
+    <link data-trunk rel="css" href="src/doc.css" />
+    <link data-trunk rel="css" href="src/site.css" />
     <link data-trunk rel="rust" data-bin="showcase" data-wasm-opt="0" data-cargo-no-default-features data-cargo-features="csr" />
+    <style>
+      #boot{font-family:sans-serif;padding:1.5rem;background:var(--p-content-background);color:var(--p-text-color);min-height:100vh;box-sizing:border-box}
+      #boot>header{display:flex;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--p-content-border-color)}
+      #boot h1{margin:0}
+      #boot .boot-status{display:flex;align-items:center;gap:.75rem;margin-top:3rem;justify-content:center;color:var(--p-text-muted-color)}
+      #boot .boot-spinner{width:1.5rem;height:1.5rem;border-radius:50%;border:3px solid var(--p-content-border-color);border-top-color:var(--p-primary-color);animation:boot-spin .8s linear infinite}
+      @keyframes boot-spin{to{transform:rotate(360deg)}}
+    </style>
   </head>
-  <body></body>
+  <body>
+    <!-- Painted while the wasm downloads; removed by the app right before it mounts. -->
+    <div id="boot" data-testid="boot">
+      <header><h1>prime-rs</h1></header>
+      <div class="boot-status" role="status"><span class="boot-spinner" aria-hidden="true"></span>Loading components…</div>
+      <noscript>The prime-rs showcase needs JavaScript and WebAssembly.</noscript>
+    </div>
+  </body>
 </html>

@@ -15,6 +15,7 @@ pulldown-cmark = { version = "0.13", default-features = false, features = ["html
 [dev-dependencies]
 insta = "1"
 tempfile = "3"
+prime-theme = { workspace = true, features = ["all-components"] }
 
 [lints]
 workspace = true

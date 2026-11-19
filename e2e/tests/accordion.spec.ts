@@ -106,7 +106,9 @@ test.describe('Accordion', () => {
         const demo = page.locator('[data-demo=template]');
         const headers = demo.locator('.p-accordionheader');
         await expect(headers.first()).toContainText('Amy Elsner');
-        const svg = async (i: number) => headers.nth(i).locator('svg').last().innerHTML();
+        // Compare the path geometry, not raw markup: renderers may leave empty placeholder comments next to it.
+        const svg = async (i: number) =>
+            headers.nth(i).locator('svg').last().evaluate((el) => [...el.querySelectorAll('path')].map((p) => p.getAttribute('d')).join('|'));
         const open = await svg(0);
         const closed = await svg(1);
         expect(open).not.toBe(closed);
