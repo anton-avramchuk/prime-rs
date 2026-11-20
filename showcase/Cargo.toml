@@ -8,7 +8,7 @@ homepage.workspace = true
 publish = false
 
 [lib]
-# Named differently from the binary, so trunk can tell the two artifacts apart (static build).
+# Named differently from the binary, so the two build artifacts do not collide.
 name = "showcase_app"
 crate-type = ["cdylib", "rlib"]
 
@@ -18,9 +18,9 @@ path = "src/main.rs"
 
 [features]
 hydrate = ["leptos/hydrate", "prime-rs-core/hydrate", "dep:wasm-bindgen", "dep:js-sys", "dep:console_error_panic_hook"]
-ssr = ["leptos/ssr", "prime-rs-core/ssr", "leptos_router/ssr", "dep:axum", "dep:tokio", "dep:leptos_axum"]
-# Client-only build for static hosting (GitHub Pages), built with trunk.
-csr = ["leptos/csr", "prime-rs-core/hydrate", "dep:wasm-bindgen", "dep:js-sys", "dep:console_error_panic_hook"]
+# One wasm chunk per component page; only for `cargo leptos build --split` (see `lazy_page!` in src/app.rs).
+split = []
+ssr = ["leptos/ssr", "prime-rs-core/ssr", "leptos_router/ssr", "dep:axum", "dep:tokio", "dep:leptos_axum", "dep:tower"]
 
 [dependencies]
 leptos = { workspace = true }
@@ -120,6 +120,7 @@ console_error_panic_hook = { version = "0.1", optional = true }
 axum = { version = "0.8", optional = true }
 tokio = { version = "1", default-features = false, features = ["rt-multi-thread", "macros", "net"], optional = true }
 leptos_axum = { version = "0.8", optional = true }
+tower = { version = "0.5", default-features = false, features = ["util"], optional = true }
 
 [package.metadata.leptos]
 output-name = "showcase"

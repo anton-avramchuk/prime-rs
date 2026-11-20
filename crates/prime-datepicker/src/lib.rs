@@ -1244,7 +1244,7 @@ fn day_cell(core: &Arc<Core>, pt: &Arc<DatePickerPt>, cell: DayCell, show_other:
                 let mode = class_core.mode.get();
                 let disabled = class_core.disabled.get();
                 let base = class_core.value.with(|v| day_class(mode, v, &cell, disabled));
-                pt.day.merge_class(&base).into_owned()
+                pt.day.merge_class(&base)
             }
         };
         let live = move || {

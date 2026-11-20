@@ -22,3 +22,13 @@ pub use prop::{OptProp, Prop};
 pub use props::{Size, Variant};
 pub use pt::Pt;
 pub use zindex::ZGroup;
+
+/// `"true"`/`"false"` for ARIA and `data-p-*` state attributes, without allocating like `bool::to_string`.
+///
+/// ```
+/// assert_eq!(prime_rs_core::bool_attr(true), "true");
+/// assert_eq!(prime_rs_core::bool_attr(false), "false");
+/// ```
+pub fn bool_attr(v: bool) -> &'static str {
+    if v { "true" } else { "false" }
+}

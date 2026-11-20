@@ -1099,7 +1099,7 @@ pub fn AutoComplete(
                             move || {
                                 let mut cn = ClassNames::new();
                                 cn.add("p-autocomplete-chip-item").add_if(focused_chip.get() == Some(i), "p-focus");
-                                pt.chip_item.merge_class(&cn.finish_cow()).into_owned()
+                                pt.chip_item.merge_class(&cn.finish_cow())
                             }
                         };
                         let label = core2.options.with(|o| input_text(o, &v));
@@ -1134,7 +1134,7 @@ pub fn AutoComplete(
             move || {
                 let mut cn = ClassNames::new();
                 cn.add("p-autocomplete-input-multiple").add_if(disabled.get(), "p-disabled").add_if(variant.get().or(use_prime_config().input_variant) == Some(Variant::Filled), "p-variant-filled");
-                pt.input_multiple.merge_class(&cn.finish_cow()).into_owned()
+                pt.input_multiple.merge_class(&cn.finish_cow())
             }
         };
         let (key_core, container_ref) = (core.clone(), core.container_ref);
@@ -1156,7 +1156,7 @@ pub fn AutoComplete(
                 {..pt.input_multiple.attrs()}
             >
                 {chips}
-                <li class={pt.input_chip.merge_class("p-autocomplete-input-chip").into_owned()} role="option" {..pt.input_chip.attrs()}>
+                <li class={pt.input_chip.merge_class("p-autocomplete-input-chip")} role="option" {..pt.input_chip.attrs()}>
                     <input
                         node_ref={input_ref}
                         class={class}
@@ -1183,7 +1183,7 @@ pub fn AutoComplete(
         move || {
             (filled() && !disabled.get() && show_clear.get() && !core.loading.get()).then(|| {
                 let core = core.clone();
-                let class = pt.clear_icon.merge_class("p-autocomplete-clear-icon").into_owned();
+                let class = pt.clear_icon.merge_class("p-autocomplete-clear-icon");
                 view! { <TimesIcon class={class} on:click={move |_| core.clear()} {..pt.clear_icon.attrs()} /> }
             })
         }
@@ -1191,7 +1191,9 @@ pub fn AutoComplete(
     let loader = {
         let (core, pt) = (core.clone(), pt.clone());
         move || {
-            core.loading.get().then(|| view! { <SpinnerIcon spin=true class={pt.loader.merge_class("p-autocomplete-loader").into_owned()} {..pt.loader.attrs()} /> })
+            core.loading
+                .get()
+                .then(|| view! { <SpinnerIcon spin=true class={pt.loader.merge_class("p-autocomplete-loader")} {..pt.loader.attrs()} /> })
         }
     };
     let dropdown_button = {
@@ -1204,7 +1206,7 @@ pub fn AutoComplete(
                     <button
                         node_ref={core.dropdown_ref}
                         type="button"
-                        class={pt.dropdown.merge_class("p-autocomplete-dropdown").into_owned()}
+                        class={pt.dropdown.merge_class("p-autocomplete-dropdown")}
                         disabled={move || disabled.get()}
                         on:click={move |_| core.dropdown_click()}
                         {..pt.dropdown.attrs()}
@@ -1251,7 +1253,7 @@ fn panel_view(
             let mut cn = ClassNames::new();
             cn.add("p-autocomplete-overlay p-component-overlay p-component");
             extra.with(|c| cn.add_user(c.as_deref()));
-            pt.overlay.merge_class(&cn.finish_cow()).into_owned()
+            pt.overlay.merge_class(&cn.finish_cow())
         }
     };
     let container_style = {
@@ -1279,16 +1281,16 @@ fn panel_view(
                     .get()
                     .filter(|m| !m.is_empty())
                     .unwrap_or_else(|| use_prime_config().locale.text("emptySearchMessage").to_owned());
-                views.push(view! { <li class={ctx.pt.empty_message.merge_class("p-autocomplete-empty-message").into_owned()} {..ctx.pt.empty_message.attrs()}>{text}</li> }.into_any());
+                views.push(view! { <li class={ctx.pt.empty_message.merge_class("p-autocomplete-empty-message")} {..ctx.pt.empty_message.attrs()}>{text}</li> }.into_any());
             }
             views.collect_view()
         }
     };
     let (overlay_ref, overlay_attrs) = (core.overlay_ref, pt.overlay.attrs());
     let (container_class, container_attrs, list_class, list_attrs) = (
-        pt.list_container.merge_class("p-autocomplete-list-container").into_owned(),
+        pt.list_container.merge_class("p-autocomplete-list-container"),
         pt.list_container.attrs(),
-        pt.list.merge_class("p-autocomplete-list").into_owned(),
+        pt.list.merge_class("p-autocomplete-list"),
         pt.list.attrs(),
     );
     view! {
@@ -1313,7 +1315,7 @@ fn find_option(options: &[AutoCompleteOption], value: &str) -> Option<AutoComple
 }
 
 fn group_row(ctx: &Ctx, index: usize, row: &Row) -> AnyView {
-    let class = ctx.pt.option_group.merge_class("p-autocomplete-option-group").into_owned();
+    let class = ctx.pt.option_group.merge_class("p-autocomplete-option-group");
     let inner = match ctx.group_view {
         Some(cb) => untrack(|| cb.run(row.label.clone())),
         None => row.label.clone().into_any(),
@@ -1343,7 +1345,7 @@ fn option_row(ctx: &Ctx, index: usize, row: &Row, set: usize, pos: usize, item: 
                 .add_if(selected(), "p-autocomplete-option-selected")
                 .add_if(focused(), "p-focus")
                 .add_if(disabled, "p-disabled");
-            pt.option.merge_class(&cn.finish_cow()).into_owned()
+            pt.option.merge_class(&cn.finish_cow())
         }
     };
     let content = match (ctx.item, item) {

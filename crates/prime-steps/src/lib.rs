@@ -266,7 +266,7 @@ pub fn Steps(
         move || {
             let extra = style_class.with(|c| c.clone());
             let merged = root_classes(readonly.get(), extra.as_deref());
-            pt.root.merge_class(&merged).into_owned()
+            pt.root.merge_class(&merged)
         }
     };
     let root_style = {
@@ -281,7 +281,7 @@ pub fn Steps(
         move || core.model.get().into_iter().enumerate().map(|(index, item)| item_view(&core, &pt, index, item)).collect_view()
     };
     let (root_attrs, list_attrs) = (pt.root.attrs(), pt.list.attrs());
-    let list_class = pt.list.merge_class("p-steps-list").into_owned();
+    let list_class = pt.list.merge_class("p-steps-list");
     view! {
         <nav class={root_class} style={root_style} data-pc-name="steps" {..root_attrs}>
             <ul node_ref=core.list class={list_class} data-pc-section="menu" {..list_attrs}>
@@ -326,9 +326,9 @@ fn item_view(core: &Arc<Core>, pt: &Arc<StepsPt>, index: usize, item: StepsItem)
     let attrs: Vec<AnyAttribute> = vec![custom_attribute("aria-current", move || is_active().then_some("step")).into_any_attr()];
     let (item_attrs, link_attrs) = (pt.item.attrs(), pt.item_link.attrs());
     let (link_class, number_class, label_class) = (
-        pt.item_link.merge_class("p-steps-item-link").into_owned(),
-        pt.item_number.merge_class("p-steps-item-number").into_owned(),
-        pt.item_label.merge_class("p-steps-item-label").into_owned(),
+        pt.item_link.merge_class("p-steps-item-link"),
+        pt.item_number.merge_class("p-steps-item-number"),
+        pt.item_label.merge_class("p-steps-item-label"),
     );
     let (number_attrs, label_attrs) = (pt.item_number.attrs(), pt.item_label.attrs());
     view! {

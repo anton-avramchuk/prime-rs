@@ -448,7 +448,7 @@ where
             cn.add("p-carousel p-component")
                 .add(if orientation.get().is_vertical() { "p-carousel-vertical" } else { "p-carousel-horizontal" })
                 .add_user(extra.as_deref());
-            pt.root.merge_class(&cn.finish_cow()).into_owned()
+            pt.root.merge_class(&cn.finish_cow())
         }
     };
     let root_style = {
@@ -556,7 +556,7 @@ where
         move || {
             let mut cn = ClassNames::new();
             cn.add("p-carousel-item-list").add_if(core.items_hidden.get(), "p-items-hidden");
-            pt.item_list.merge_class(&cn.finish_cow()).into_owned()
+            pt.item_list.merge_class(&cn.finish_cow())
         }
     };
     let list_style = {
@@ -611,7 +611,7 @@ where
                         let extra = indicators_content_class.with(|c| c.clone());
                         let mut cn = ClassNames::new();
                         cn.add("p-carousel-indicator-list").add_user(extra.as_deref());
-                        pt.indicator_list.merge_class(&cn.finish_cow()).into_owned()
+                        pt.indicator_list.merge_class(&cn.finish_cow())
                     }
                 };
                 let list_style = {
@@ -648,11 +648,11 @@ where
     };
 
     let header_view = header.map(|h| {
-        let class = pt.header.merge_class("p-carousel-header").into_owned();
+        let class = pt.header.merge_class("p-carousel-header");
         view! { <div class={class} {..pt.header.attrs()}>{h.run()}</div> }
     });
     let footer_view = footer.map(|f| {
-        let class = pt.footer.merge_class("p-carousel-footer").into_owned();
+        let class = pt.footer.merge_class("p-carousel-footer");
         view! { <div class={class} {..pt.footer.attrs()}>{f.run()}</div> }
     });
     let container_class = {
@@ -661,7 +661,7 @@ where
             let extra = content_class.with(|c| c.clone());
             let mut cn = ClassNames::new();
             cn.add("p-carousel-content-container").add_user(extra.as_deref());
-            pt.content_container.merge_class(&cn.finish_cow()).into_owned()
+            pt.content_container.merge_class(&cn.finish_cow())
         }
     };
     let content_live = {
@@ -670,8 +670,8 @@ where
     };
     let (root_attrs, container_attrs, content_attrs, viewport_attrs, list_attrs) =
         (pt.root.attrs(), pt.content_container.attrs(), pt.content.attrs(), pt.viewport.attrs(), pt.item_list.attrs());
-    let content_class_attr = pt.content.merge_class("p-carousel-content").into_owned();
-    let viewport_class = pt.viewport.merge_class("p-carousel-viewport").into_owned();
+    let content_class_attr = pt.content.merge_class("p-carousel-content");
+    let viewport_class = pt.viewport.merge_class("p-carousel-viewport");
     view! {
         <div id={root_id} role="region" class={root_class} style={root_style} {..root_attrs}>
             {header_view}
@@ -715,7 +715,7 @@ fn dot_view(
         move || {
             let mut cn = ClassNames::new();
             cn.add("p-carousel-indicator").add_if(track.with(|t| t.page == index), "p-carousel-indicator-active");
-            pt.indicator.merge_class(&cn.finish_cow()).into_owned()
+            pt.indicator.merge_class(&cn.finish_cow())
         }
     };
     let button_class = {
@@ -724,7 +724,7 @@ fn dot_view(
             let extra = style_class.with(|c| c.clone());
             let mut cn = ClassNames::new();
             cn.add("p-carousel-indicator-button").add_user(extra.as_deref());
-            pt.indicator_button.merge_class(&cn.finish_cow()).into_owned()
+            pt.indicator_button.merge_class(&cn.finish_cow())
         }
     };
     let button_style = {
@@ -778,7 +778,7 @@ fn real_item(core: &Arc<Core>, pt: &Arc<CarouselPt>, index: usize, content: AnyV
                 .add_if(f <= idx && l >= idx, "p-carousel-item-active")
                 .add_if(f == idx, "p-carousel-item-start")
                 .add_if(l == idx, "p-carousel-item-end");
-            pt.item.merge_class(&cn.finish_cow()).into_owned()
+            pt.item.merge_class(&cn.finish_cow())
         }
     };
     let flex = {
@@ -835,7 +835,7 @@ fn clone_item(
                 .add_if(active, "p-carousel-item-active")
                 .add_if(index == 0, "p-carousel-item-start")
                 .add_if(index + 1 == clones, "p-carousel-item-end");
-            pt.item_clone.merge_class(&cn.finish_cow()).into_owned()
+            pt.item_clone.merge_class(&cn.finish_cow())
         }
     };
     let flex = {

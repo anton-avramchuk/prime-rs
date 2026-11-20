@@ -616,7 +616,7 @@ pub fn Menubar(
             cn.add("p-menubar p-component").add_if(mobile.get(), "p-menubar-mobile").add_if(mobile_active.get(), "p-menubar-mobile-active");
             let extra = style_class.with(|c| c.clone());
             cn.add_user(extra.as_deref());
-            pt.root.merge_class(&cn.finish_cow()).into_owned()
+            pt.root.merge_class(&cn.finish_cow())
         }
     };
     let root_style = {
@@ -654,7 +654,7 @@ pub fn Menubar(
                 let (click_core, key_core) = (core.clone(), core.clone());
                 let icon = match menu_icon.clone() {
                     Some(custom) => custom.run(),
-                    None => view! { <BarsIcon class={pt.button_icon.merge_class("").into_owned()} /> }.into_any(),
+                    None => view! { <BarsIcon class={pt.button_icon.merge_class("")} /> }.into_any(),
                 };
                 let label = prime_rs_core::use_prime_config().locale.text("aria.navigation").to_owned();
                 view! {
@@ -666,7 +666,7 @@ pub fn Menubar(
                         aria-expanded={move || mobile_active.get().to_string()}
                         aria-controls={menu_id.clone()}
                         aria-label={label}
-                        class={pt.button.merge_class("p-menubar-button").into_owned()}
+                        class={pt.button.merge_class("p-menubar-button")}
                         on:click={move |e: web_sys::MouseEvent| {
                             click_core.toggle();
                             e.prevent_default();
@@ -686,10 +686,9 @@ pub fn Menubar(
             })
         }
     };
-    let start =
-        start.map(|s| view! { <div class={pt.start.merge_class("p-menubar-start").into_owned()} {..pt.start.attrs()}>{s.run()}</div> });
-    let end = end.map(|s| view! { <div class={pt.end.merge_class("p-menubar-end").into_owned()} {..pt.end.attrs()}>{s.run()}</div> });
-    let list_class = pt.root_list.merge_class("p-menubar-root-list").into_owned();
+    let start = start.map(|s| view! { <div class={pt.start.merge_class("p-menubar-start")} {..pt.start.attrs()}>{s.run()}</div> });
+    let end = end.map(|s| view! { <div class={pt.end.merge_class("p-menubar-end")} {..pt.end.attrs()}>{s.run()}</div> });
+    let list_class = pt.root_list.merge_class("p-menubar-root-list");
     let (root_attrs, list_attrs) = (pt.root.attrs(), pt.root_list.attrs());
     let (focus_core, blur_core, key_core, down_core, leave_core, enter_core) =
         (core.clone(), core.clone(), core.clone(), core.clone(), core.clone(), core.clone());
@@ -781,7 +780,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
                 .add_if(focused(), "p-focus")
                 .add_if(item.disabled, "p-disabled");
             cn.add_user(item.style_class.as_deref());
-            pt.item.merge_class(&cn.finish_cow()).into_owned()
+            pt.item.merge_class(&cn.finish_cow())
         }
     };
     let content = match ctx.item {
@@ -794,7 +793,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
         let labelledby = id.clone();
         move || {
             active().then(|| {
-                let class = ctx.pt.submenu.merge_class("p-menubar-submenu").into_owned();
+                let class = ctx.pt.submenu.merge_class("p-menubar-submenu");
                 let style = ctx.pt.submenu.merge_style("display: flex");
                 let sub_id = format!("{}_{}_list", ctx.core.id, key);
                 let children = items_view(&ctx, &key);
@@ -809,7 +808,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
     let (hl, fo) = (active.clone(), focused.clone());
     let label = item.label.clone();
     let disabled = item.disabled;
-    let content_class = pt.item_content.merge_class("p-menubar-item-content").into_owned();
+    let content_class = pt.item_content.merge_class("p-menubar-item-content");
     let (item_attrs, content_attrs) = (pt.item.attrs(), pt.item_content.attrs());
     view! {
         <li
@@ -847,19 +846,19 @@ fn link_view(ctx: &Ctx, item: &MenuItem, group: bool, root: bool) -> AnyView {
     let pt = &ctx.pt;
     let icon = item.icon.clone().map(|icon| {
         let class = join("p-menubar-item-icon", item.icon_class.as_deref());
-        view! { <span class={pt.item_icon.merge_class(&class).into_owned()} tabindex="-1" {..pt.item_icon.attrs()}>{icon.run()}</span> }
+        view! { <span class={pt.item_icon.merge_class(&class)} tabindex="-1" {..pt.item_icon.attrs()}>{icon.run()}</span> }
     });
     let arrow = group.then(|| match ctx.submenu_icon.clone() {
         Some(custom) => custom.run(),
         None => {
-            let class = pt.submenu_icon.merge_class("p-menubar-submenu-icon").into_owned();
+            let class = pt.submenu_icon.merge_class("p-menubar-submenu-icon");
             if root { view! { <AngleDownIcon class={class} /> }.into_any() } else { view! { <AngleRightIcon class={class} /> }.into_any() }
         }
     });
     let link_class = join("p-menubar-item-link", item.link_class.as_deref());
     view! {
         <a
-            class={pt.item_link.merge_class(&link_class).into_owned()}
+            class={pt.item_link.merge_class(&link_class)}
             href={item.url.clone()}
             target={item.target.clone()}
             title={item.title.clone()}
@@ -867,7 +866,7 @@ fn link_view(ctx: &Ctx, item: &MenuItem, group: bool, root: bool) -> AnyView {
             {..pt.item_link.attrs()}
         >
             {icon}
-            <span class={pt.item_label.merge_class("p-menubar-item-label").into_owned()} {..pt.item_label.attrs()}>{item.label.clone()}</span>
+            <span class={pt.item_label.merge_class("p-menubar-item-label")} {..pt.item_label.attrs()}>{item.label.clone()}</span>
             {arrow}
         </a>
     }

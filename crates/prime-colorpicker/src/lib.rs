@@ -518,7 +518,7 @@ pub fn ColorPicker(
                     cn.push_str(c);
                 }
             });
-            pt.root.merge_class(&cn).into_owned()
+            pt.root.merge_class(&cn)
         }
     };
     let root_style = {
@@ -547,7 +547,7 @@ pub fn ColorPicker(
                         type="text"
                         class={move || {
                             let base = if disabled_class.get() { "p-colorpicker-preview p-disabled" } else { "p-colorpicker-preview" };
-                            pt.preview.merge_class(base).into_owned()
+                            pt.preview.merge_class(base)
                         }}
                         readonly
                         aria-label="Select Color"

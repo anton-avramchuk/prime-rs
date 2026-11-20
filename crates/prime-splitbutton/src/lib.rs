@@ -202,7 +202,7 @@ pub fn SplitButton(
         Signal::derive(move || disabled.get() || button_disabled.get())
     };
     let menu_disabled = Signal::derive(move || disabled.get() || menu_button_disabled.get());
-    let main_class = pt.button.merge_class("p-splitbutton-button").into_owned();
+    let main_class = pt.button.merge_class("p-splitbutton-button");
     let root_attrs = pt.root.attrs();
 
     let main = main_button(
@@ -218,7 +218,7 @@ pub fn SplitButton(
             button_aria_label: button_aria_label.clone(),
             disabled: main_disabled,
             autofocus,
-            class: main_class,
+            class: main_class.into_owned(),
             on_click: main_click,
         },
         icon.clone(),

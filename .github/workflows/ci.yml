@@ -55,6 +55,8 @@ jobs:
       - run: cargo fmt --all --check
       - name: Docs site data is up to date
         run: cargo xtask gen-docs --check
+      - name: Crate READMEs are up to date
+        run: cargo xtask gen-readme --check
 
   deny:
     name: cargo-deny

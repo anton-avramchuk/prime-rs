@@ -594,7 +594,7 @@ pub fn MegaMenu(
                 .add_if(vertical, "p-megamenu-vertical");
             let extra = style_class.with(|c| c.clone());
             cn.add_user(extra.as_deref());
-            pt.root.merge_class(&cn.finish_cow()).into_owned()
+            pt.root.merge_class(&cn.finish_cow())
         }
     };
     let root_style = {
@@ -635,7 +635,7 @@ pub fn MegaMenu(
                 let (click_core, key_core) = (core.clone(), core.clone());
                 let icon = match menu_icon.clone() {
                     Some(custom) => custom.run(),
-                    None => view! { <BarsIcon class={pt.button_icon.merge_class("").into_owned()} /> }.into_any(),
+                    None => view! { <BarsIcon class={pt.button_icon.merge_class("")} /> }.into_any(),
                 };
                 let label = prime_rs_core::use_prime_config().locale.text("aria.navigation").to_owned();
                 view! {
@@ -647,7 +647,7 @@ pub fn MegaMenu(
                         aria-expanded={move || mobile_active.get().to_string()}
                         aria-controls={menu_id.clone()}
                         aria-label={label}
-                        class={pt.button.merge_class("p-megamenu-button").into_owned()}
+                        class={pt.button.merge_class("p-megamenu-button")}
                         on:click={move |e: web_sys::MouseEvent| {
                             click_core.toggle();
                             e.prevent_default();
@@ -667,10 +667,9 @@ pub fn MegaMenu(
             })
         }
     };
-    let start =
-        start.map(|s| view! { <div class={pt.start.merge_class("p-megamenu-start").into_owned()} {..pt.start.attrs()}>{s.run()}</div> });
-    let end = end.map(|s| view! { <div class={pt.end.merge_class("p-megamenu-end").into_owned()} {..pt.end.attrs()}>{s.run()}</div> });
-    let list_class = pt.root_list.merge_class("p-megamenu-root-list").into_owned();
+    let start = start.map(|s| view! { <div class={pt.start.merge_class("p-megamenu-start")} {..pt.start.attrs()}>{s.run()}</div> });
+    let end = end.map(|s| view! { <div class={pt.end.merge_class("p-megamenu-end")} {..pt.end.attrs()}>{s.run()}</div> });
+    let list_class = pt.root_list.merge_class("p-megamenu-root-list");
     let (root_attrs, list_attrs) = (pt.root.attrs(), pt.root_list.attrs());
     let (focus_core, blur_core, key_core, down_core, orient_core) = (core.clone(), core.clone(), core.clone(), core.clone(), core.clone());
     let tabindex = move || if disabled.get() { "-1" } else { "0" };
@@ -776,8 +775,8 @@ fn overlay_view(ctx: &Ctx, root: usize) -> AnyView {
         })
         .collect_view();
     view! {
-        <div class={pt.overlay.merge_class("p-megamenu-overlay").into_owned()} {..pt.overlay.attrs()}>
-            <div class={pt.grid.merge_class("p-megamenu-grid").into_owned()} {..pt.grid.attrs()}>{cols}</div>
+        <div class={pt.overlay.merge_class("p-megamenu-overlay")} {..pt.overlay.attrs()}>
+            <div class={pt.grid.merge_class("p-megamenu-grid")} {..pt.grid.attrs()}>{cols}</div>
         </div>
     }
     .into_any()
@@ -807,7 +806,7 @@ fn submenu_view(ctx: &Ctx, root: usize, c: usize, s: usize, sub: &MegaMenuSubmen
         })
         .collect_view();
     let list_id = format!("{}_list", ctx.core.id_of(&sub_key));
-    let class = pt.submenu.merge_class("p-megamenu-submenu").into_owned();
+    let class = pt.submenu.merge_class("p-megamenu-submenu");
     view! {
         <ul id={list_id} class={class} role="menu" tabindex="-1" {..pt.submenu.attrs()}>
             {label}
@@ -851,7 +850,7 @@ where
                 .add_if(focused(), "p-focus")
                 .add_if(item.disabled, "p-disabled");
             cn.add_user(item.style_class.as_deref());
-            pt.item.merge_class(&cn.finish_cow()).into_owned()
+            pt.item.merge_class(&cn.finish_cow())
         }
     };
     let content = match ctx.item {
@@ -866,7 +865,7 @@ where
     let (hl, fo) = (active.clone(), focused.clone());
     let label = item.label.clone();
     let disabled = item.disabled;
-    let content_class = pt.item_content.merge_class("p-megamenu-item-content").into_owned();
+    let content_class = pt.item_content.merge_class("p-megamenu-item-content");
     let (item_attrs, content_attrs) = (pt.item.attrs(), pt.item_content.attrs());
     let mut item_attrs = item_attrs;
     item_attrs.push(leptos::attr::custom::custom_attribute("aria-level", level.to_string()).into_any_attr());
@@ -906,12 +905,12 @@ fn link_view(ctx: &Ctx, item: &MenuItem, group: bool) -> AnyView {
     let pt = &ctx.pt;
     let icon = item.icon.clone().map(|icon| {
         let class = join("p-megamenu-item-icon", item.icon_class.as_deref());
-        view! { <span class={pt.item_icon.merge_class(&class).into_owned()} tabindex="-1" {..pt.item_icon.attrs()}>{icon.run()}</span> }
+        view! { <span class={pt.item_icon.merge_class(&class)} tabindex="-1" {..pt.item_icon.attrs()}>{icon.run()}</span> }
     });
     let arrow = group.then(|| match ctx.submenu_icon.clone() {
         Some(custom) => custom.run(),
         None => {
-            let class = pt.submenu_icon.merge_class("p-megamenu-submenu-icon").into_owned();
+            let class = pt.submenu_icon.merge_class("p-megamenu-submenu-icon");
             let (core, class2) = (ctx.core.clone(), class.clone());
             view! {
                 {move || {
@@ -928,7 +927,7 @@ fn link_view(ctx: &Ctx, item: &MenuItem, group: bool) -> AnyView {
     let link_class = join("p-megamenu-item-link", item.link_class.as_deref());
     view! {
         <a
-            class={pt.item_link.merge_class(&link_class).into_owned()}
+            class={pt.item_link.merge_class(&link_class)}
             href={item.url.clone()}
             target={item.target.clone()}
             title={item.title.clone()}
@@ -936,7 +935,7 @@ fn link_view(ctx: &Ctx, item: &MenuItem, group: bool) -> AnyView {
             {..pt.item_link.attrs()}
         >
             {icon}
-            <span class={pt.item_label.merge_class("p-megamenu-item-label").into_owned()} {..pt.item_label.attrs()}>{item.label.clone()}</span>
+            <span class={pt.item_label.merge_class("p-megamenu-item-label")} {..pt.item_label.attrs()}>{item.label.clone()}</span>
             {arrow}
         </a>
     }

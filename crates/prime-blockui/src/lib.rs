@@ -286,7 +286,7 @@ fn build_mask(core: &Arc<Core>, pt: &Arc<Pt>, parts: &Arc<Parts>) -> impl IntoVi
         move || {
             let extra = parts.style_class.with(|c| c.clone());
             let merged = mask_classes(document, leaving.get(), extra.as_deref());
-            pt.merge_class(&merged).into_owned()
+            pt.merge_class(&merged)
         }
     };
     let style = {

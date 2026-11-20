@@ -235,7 +235,7 @@ pub fn Dock(
         move || {
             let extra = style_class.with(|c| c.clone());
             let merged = root_classes(position.get(), mobile.get(), extra.as_deref());
-            pt.root.merge_class(&merged).into_owned()
+            pt.root.merge_class(&merged)
         }
     };
     let root_style = {
@@ -358,7 +358,7 @@ fn item_view(
         let (pt, extra) = (pt.clone(), entry.style_class.clone());
         move || {
             let merged = item_classes(is_focused(), disabled, extra.as_deref());
-            pt.item.merge_class(&merged).into_owned()
+            pt.item.merge_class(&merged)
         }
     };
     let style = entry.style.clone().filter(|s| !s.is_empty());

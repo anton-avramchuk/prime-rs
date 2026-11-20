@@ -291,7 +291,7 @@ pub fn AccordionHeader(
         }
     };
     let style = pt.header.merge_style("user-select: none");
-    let icon_class = pt.toggle_icon.merge_class("p-accordionheader-toggle-icon").into_owned();
+    let icon_class = pt.toggle_icon.merge_class("p-accordionheader-toggle-icon");
     let icon = move || {
         let is_active = active.get();
         match toggle_icon_template {

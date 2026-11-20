@@ -27,8 +27,23 @@ fn measure(name: &str) {
     );
 }
 
+/// Full dhat heap profile of one scenario (allocation sites with backtraces), for finding what allocates:
+/// `cargo bench -p render-bench --bench alloc -- --profile tree-1000` writes `target/bench/dhat-<name>.json`,
+/// viewable in https://nnethercote.github.io/dh_view/dh_view.html.
+fn profile(name: &str) {
+    let scenario = SCENARIOS.iter().find(|s| s.name == name).expect("unknown scenario");
+    let path = out_dir().join(format!("dhat-{name}.json"));
+    let profiler = dhat::Profiler::builder().file_name(&path).trim_backtraces(Some(12)).build();
+    std::hint::black_box((scenario.run)());
+    drop(profiler);
+    println!("profile: {}", path.display());
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if let Some(i) = args.iter().position(|a| a == "--profile") {
+        return profile(&args[i + 1]);
+    }
     if let Some(i) = args.iter().position(|a| a == "--scenario") {
         return measure(&args[i + 1]);
     }

@@ -573,7 +573,7 @@ pub fn TreeSelect(
         move || {
             (filled() && !disabled.get() && show_clear.get()).then(|| {
                 let core = core.clone();
-                let class = pt.clear_icon.merge_class("p-treeselect-clear-icon").into_owned();
+                let class = pt.clear_icon.merge_class("p-treeselect-clear-icon");
                 view! { <TimesIcon class={class} on:click={move |e: web_sys::MouseEvent| core.clear(e)} {..pt.clear_icon.attrs()} /> }
             })
         }
@@ -636,15 +636,15 @@ pub fn TreeSelect(
         pt.dropdown.attrs(),
     );
     let (hidden_container_class, label_container_class, dropdown_class) = (
-        pt.hidden_input_container.merge_class("p-hidden-accessible").into_owned(),
-        pt.label_container.merge_class("p-treeselect-label-container").into_owned(),
-        pt.dropdown.merge_class("p-treeselect-dropdown").into_owned(),
+        pt.hidden_input_container.merge_class("p-hidden-accessible"),
+        pt.label_container.merge_class("p-treeselect-label-container"),
+        pt.dropdown.merge_class("p-treeselect-dropdown"),
     );
     let dropdown_expanded = {
         let core = core.clone();
         move || core.open.get().to_string()
     };
-    let dropdown_icon_class = pt.dropdown_icon.merge_class("p-treeselect-dropdown-icon").into_owned();
+    let dropdown_icon_class = pt.dropdown_icon.merge_class("p-treeselect-dropdown-icon");
     let (root_ref, input_ref) = (core.root_ref, core.input_ref);
     view! {
         <div node_ref={root_ref} id={id} class={root_class} style={root_style} on:click={move |e| click_core.root_click(&e)} {..root_attrs}>
@@ -720,7 +720,7 @@ fn panel_view(core: &Arc<Core>, pt: &Arc<TreeSelectPt>, p: &PanelProps) -> impl 
             let mut cn = ClassNames::new();
             cn.add("p-treeselect-overlay p-component-overlay p-component");
             extra.with(|c| cn.add_user(c.as_deref()));
-            pt.panel.merge_class(&cn.finish_cow()).into_owned()
+            pt.panel.merge_class(&cn.finish_cow())
         }
     };
     let container_style = {
@@ -748,7 +748,7 @@ fn panel_view(core: &Arc<Core>, pt: &Arc<TreeSelectPt>, p: &PanelProps) -> impl 
     });
     let list_id = format!("{}_list", core.id);
     let (container_class, container_attrs, panel_attrs) =
-        (pt.tree_container.merge_class("p-treeselect-tree-container").into_owned(), pt.tree_container.attrs(), pt.panel.attrs());
+        (pt.tree_container.merge_class("p-treeselect-tree-container"), pt.tree_container.attrs(), pt.panel.attrs());
     let overlay_ref = core.overlay_ref;
     let (value, expanded, options, mode) = (core.value, core.expanded, core.options.clone(), core.mode);
     let (meta, up, down, filter, filter_by, filter_mode, filter_placeholder, empty_message, loading, node) = (

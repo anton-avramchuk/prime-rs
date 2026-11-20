@@ -668,7 +668,7 @@ fn mask_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<> {
                     cn.push_str(c);
                 }
             });
-            pt.mask.merge_class(&cn).into_owned()
+            pt.mask.merge_class(&cn)
         }
     };
     let (click_core, end_core) = (core.clone(), core.clone());
@@ -721,7 +721,7 @@ fn content_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + use<>
             } else {
                 core.style_class.with(|c| push_class(&mut cn, c.as_deref()));
             }
-            pt.root.merge_class(&cn).into_owned()
+            pt.root.merge_class(&cn)
         }
     };
     let root_style = {
@@ -895,7 +895,7 @@ fn indicators_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + us
                         let pt = pt.clone();
                         move || {
                             let base = if c_class.active.get() == index { "p-galleria-indicator p-galleria-indicator-active" } else { "p-galleria-indicator" };
-                            pt.indicator.merge_class(base).into_owned()
+                            pt.indicator.merge_class(base)
                         }
                     };
                     let inner = match core.indicator {
@@ -997,7 +997,7 @@ fn thumbnails_view(core: &Arc<Core>, pt: &Arc<GalleriaPt>) -> impl IntoView + us
         let (core, pt) = (core.clone(), pt.clone());
         move || {
             let base = if core.items_hidden.get() { "p-galleria-thumbnail-items p-items-hidden" } else { "p-galleria-thumbnail-items" };
-            pt.thumbnail_items.merge_class(base).into_owned()
+            pt.thumbnail_items.merge_class(base)
         }
     };
     let items_style = {

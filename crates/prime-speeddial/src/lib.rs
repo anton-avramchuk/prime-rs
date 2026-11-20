@@ -479,7 +479,7 @@ pub fn SpeedDial(
         move || {
             let extra = style_class.with(|c| c.clone());
             let merged = root_classes(kind.get(), direction.get(), visible_sig.get(), disabled.get(), extra.as_deref());
-            pt.root.merge_class(&merged).into_owned()
+            pt.root.merge_class(&merged)
         }
     };
     let root_style = {
@@ -644,7 +644,7 @@ pub fn SpeedDial(
         ]
     };
     let (root_attrs, list_pt_attrs) = (pt.root.attrs(), pt.list.attrs());
-    let list_class = pt.list.merge_class("p-speeddial-list").into_owned();
+    let list_class = pt.list.merge_class("p-speeddial-list");
     let (list_focus, list_blur, list_key) = {
         let (a, b, c) = (core.clone(), core.clone(), core.clone());
         (
@@ -707,7 +707,7 @@ fn item_view(
         let (pt, extra, hidden) = (pt.clone(), entry.style_class.clone(), !entry.visible);
         move || {
             let merged = item_classes(hidden, is_focused(), extra.as_deref());
-            pt.item.merge_class(&merged).into_owned()
+            pt.item.merge_class(&merged)
         }
     };
     let style = {

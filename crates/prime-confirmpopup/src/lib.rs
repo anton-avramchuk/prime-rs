@@ -435,7 +435,7 @@ fn build_panel(core: &Arc<Core>, pt: &Arc<ConfirmPopupPt>, parts: &Arc<Parts>) -
         move || {
             let extra = parts.style_class.with(|c| c.clone());
             let base = root_classes(flipped.get(), extra.as_deref());
-            pt.root.merge_class(&base).into_owned()
+            pt.root.merge_class(&base)
         }
     };
     let style = {
@@ -465,19 +465,19 @@ fn build_panel(core: &Arc<Core>, pt: &Arc<ConfirmPopupPt>, parts: &Arc<Parts>) -
                 Some(custom) => custom.run(confirmation.clone()).into_any(),
                 None => {
                     let icon = confirmation.icon.clone().map(|icon| {
-                        let class = pt.icon.merge_class("p-confirmpopup-icon").into_owned();
+                        let class = pt.icon.merge_class("p-confirmpopup-icon");
                         view! { <span class={class} {..pt.icon.attrs()}>{icon.run()}</span> }
                     });
                     let message = confirmation.message.clone().unwrap_or_default();
-                    let message_class = pt.message.merge_class("p-confirmpopup-message").into_owned();
+                    let message_class = pt.message.merge_class("p-confirmpopup-message");
                     view! { {icon}<span class={message_class} {..pt.message.attrs()}>{message}</span> }.into_any()
                 }
             };
             let reject = confirmation.reject_visible().then(|| footer_button(&confirmation, false, parts.reject_icon.clone(), core));
             let accept = confirmation.accept_visible().then(|| footer_button(&confirmation, true, parts.accept_icon.clone(), core));
             Either::Right(view! {
-                <div class={pt.content.merge_class("p-confirmpopup-content").into_owned()} {..pt.content.attrs()}>{inner}</div>
-                <div class={pt.footer.merge_class("p-confirmpopup-footer").into_owned()} {..pt.footer.attrs()}>
+                <div class={pt.content.merge_class("p-confirmpopup-content")} {..pt.content.attrs()}>{inner}</div>
+                <div class={pt.footer.merge_class("p-confirmpopup-footer")} {..pt.footer.attrs()}>
                     {reject}
                     {accept}
                 </div>

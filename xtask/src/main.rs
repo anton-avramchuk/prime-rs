@@ -6,8 +6,10 @@ mod clean;
 mod diff;
 mod gen_docs;
 mod gen_icons;
+mod gen_readme;
 mod gen_spec;
 mod gen_theme;
+mod showcase;
 mod upstream;
 
 use std::path::PathBuf;
@@ -20,6 +22,7 @@ Commands:
   upstream-diff [--to <rev>]   ported components changed in PrimeNG since the pinned commit
   gen-spec <name> [--out <file>] component spec skeleton from PrimeNG sources
   gen-docs [--check]           docs site data showcase/src/generated.rs from the sources
+  gen-readme [--check]         crates/*/README.md from Cargo.toml and the crate docs
   gen-icons                    generate crates/prime-icons from PrimeNG icons
   gen-theme                    generate the Aura theme CSS into crates/prime-theme (needs Node)
   wasm-size [--budgets <file>] contribution of components to wasm size and budget check (benches/budgets.toml)
@@ -27,6 +30,7 @@ Commands:
   bench-compare <base> <now> [--threshold 10] [--fail-over]
                                compare benchmark report directories (*.json), output is Markdown
   affected [--base <ref> | files...]  affected crates for selective CI checks ($GITHUB_OUTPUT format)
+  pages [--base <path>] [--dist <dir>]  static showcase: pre-rendered pages + split wasm (target/pages by default)
   clean [--days <N>] [--max-size <GB>]  remove target/ artifacts older than N days (7 by default) and/or the oldest ones while target/ is larger than GB
 ";
 
@@ -73,6 +77,7 @@ fn run(args: &[String]) -> Result<(), String> {
             Ok(())
         }
         Some("gen-docs") => gen_docs::run(&root, args.iter().any(|a| a == "--check")),
+        Some("gen-readme") => gen_readme::run(&root, args.iter().any(|a| a == "--check")),
         Some("gen-theme") => {
             let up = upstream::Upstream::load(&root)?;
             gen_theme::run(&root, &up)
@@ -100,6 +105,11 @@ fn run(args: &[String]) -> Result<(), String> {
             };
             print!("{}", affected::render_outputs(&affected::affected(&pkgs, &changed)));
             Ok(())
+        }
+        Some("pages") => {
+            let base = flag(args, "--base").unwrap_or_default();
+            let dist = flag(args, "--dist").map_or_else(|| root.join("target/pages"), PathBuf::from);
+            showcase::pages(&root, &base, &dist)
         }
         Some("clean") => {
             let days = flag(args, "--days").map(|d| d.parse::<u32>().map_err(|e| format!("--days: {e}"))).transpose()?;

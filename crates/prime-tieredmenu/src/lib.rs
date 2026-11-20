@@ -694,7 +694,7 @@ pub fn TieredMenu(
                     cn.add("p-tieredmenu p-component").add_if(is_popup, "p-tieredmenu-overlay").add_if(mobile.get(), "p-tieredmenu-mobile");
                     let extra = style_class.with(|c| c.clone());
                     cn.add_user(extra.as_deref());
-                    pt.root.merge_class(&cn.finish_cow()).into_owned()
+                    pt.root.merge_class(&cn.finish_cow())
                 }
             };
             let root_style = {
@@ -724,7 +724,7 @@ pub fn TieredMenu(
                 move || items_view(&ctx, "")
             };
             let (aria_label, aria_labelledby) = (aria_label.clone(), aria_labelledby.clone());
-            let list_class = pt.root_list.merge_class("p-tieredmenu-root-list").into_owned();
+            let list_class = pt.root_list.merge_class("p-tieredmenu-root-list");
             let (root_attrs, list_attrs) = (pt.root.attrs(), pt.root_list.attrs());
             view! {
                 <div node_ref=panel id={menu_id.clone()} class={class} style={root_style} {..root_attrs}>
@@ -809,7 +809,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
                 .add_if(focused(), "p-focus")
                 .add_if(item.disabled, "p-disabled");
             cn.add_user(item.style_class.as_deref());
-            pt.item.merge_class(&cn.finish_cow()).into_owned()
+            pt.item.merge_class(&cn.finish_cow())
         }
     };
     let content = match ctx.item {
@@ -830,7 +830,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
                         pt.submenu.merge_style(&format!("display: flex; top: 0; left: {left}"))
                     }
                 };
-                let class = ctx.pt.submenu.merge_class("p-tieredmenu-submenu").into_owned();
+                let class = ctx.pt.submenu.merge_class("p-tieredmenu-submenu");
                 let sub_id = format!("{}_{}_list", core.id, key);
                 let children = items_view(&ctx, &key);
                 let _ = &item;
@@ -845,7 +845,7 @@ fn item_view(ctx: &Ctx, node: &Node, item: &MenuItem, set_size: usize, pos_inset
     let (hl, fo) = (active.clone(), focused.clone());
     let label = item.label.clone();
     let disabled = item.disabled;
-    let content_class = pt.item_content.merge_class("p-tieredmenu-item-content").into_owned();
+    let content_class = pt.item_content.merge_class("p-tieredmenu-item-content");
     let (item_attrs, content_attrs) = (pt.item.attrs(), pt.item_content.attrs());
     view! {
         <li
@@ -889,19 +889,19 @@ fn link_view(
     let pt = &ctx.pt;
     let icon = item.icon.clone().map(|icon| {
         let class = join("p-tieredmenu-item-icon", item.icon_class.as_deref());
-        view! { <span class={pt.item_icon.merge_class(&class).into_owned()} tabindex="-1" {..pt.item_icon.attrs()}>{icon.run()}</span> }
+        view! { <span class={pt.item_icon.merge_class(&class)} tabindex="-1" {..pt.item_icon.attrs()}>{icon.run()}</span> }
     });
     let arrow = group.then(|| match ctx.submenu_icon.clone() {
         Some(custom) => custom.run(),
         None => {
-            let class = pt.submenu_icon.merge_class("p-tieredmenu-submenu-icon").into_owned();
+            let class = pt.submenu_icon.merge_class("p-tieredmenu-submenu-icon");
             view! { <AngleRightIcon class={class} /> }.into_any()
         }
     });
     let link_class = join("p-tieredmenu-item-link", item.link_class.as_deref());
     view! {
         <a
-            class={pt.item_link.merge_class(&link_class).into_owned()}
+            class={pt.item_link.merge_class(&link_class)}
             href={item.url.clone()}
             target={item.target.clone()}
             title={item.title.clone()}
@@ -909,7 +909,7 @@ fn link_view(
             {..pt.item_link.attrs()}
         >
             {icon}
-            <span class={pt.item_label.merge_class("p-tieredmenu-item-label").into_owned()} {..pt.item_label.attrs()}>{item.label.clone()}</span>
+            <span class={pt.item_label.merge_class("p-tieredmenu-item-label")} {..pt.item_label.attrs()}>{item.label.clone()}</span>
             {arrow}
         </a>
     }

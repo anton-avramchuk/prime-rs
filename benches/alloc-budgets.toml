@@ -358,20 +358,22 @@ name = "menubar-1000"
 instances = 1000
 max_per_instance = 440
 
+# panelmenu: 783 -> 681 after the item class stopped cloning the whole MenuItem and state attributes stopped using to_string.
 [[scenario]]
 name = "panelmenu-1000"
 instances = 1000
-max_per_instance = 860
+max_per_instance = 750
 
 [[scenario]]
 name = "megamenu-1000"
 instances = 1000
 max_per_instance = 382
 
+# tree: 719 -> 557 after a shared tab-stop Memo, Arc<str> keys and an index path instead of a deep copy of the subtree.
 [[scenario]]
 name = "tree-1000"
 instances = 1000
-max_per_instance = 740
+max_per_instance = 615
 
 [[scenario]]
 name = "treeselect-1000"
