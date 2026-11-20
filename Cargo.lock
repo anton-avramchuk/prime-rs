@@ -1612,7 +1612,7 @@ dependencies = [
 
 [[package]]
 name = "prime-accordion"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1626,7 +1626,7 @@ dependencies = [
 
 [[package]]
 name = "prime-autocomplete"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1643,7 +1643,7 @@ dependencies = [
 
 [[package]]
 name = "prime-avatar"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1656,7 +1656,7 @@ dependencies = [
 
 [[package]]
 name = "prime-avatargroup"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -1664,7 +1664,7 @@ dependencies = [
 
 [[package]]
 name = "prime-badge"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -1672,7 +1672,7 @@ dependencies = [
 
 [[package]]
 name = "prime-blockui"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1686,7 +1686,7 @@ dependencies = [
 
 [[package]]
 name = "prime-breadcrumb"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-badge",
@@ -1697,7 +1697,7 @@ dependencies = [
 
 [[package]]
 name = "prime-button"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-badge",
@@ -1711,7 +1711,7 @@ dependencies = [
 
 [[package]]
 name = "prime-buttongroup"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -1719,7 +1719,7 @@ dependencies = [
 
 [[package]]
 name = "prime-card"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -1727,7 +1727,7 @@ dependencies = [
 
 [[package]]
 name = "prime-carousel"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1742,7 +1742,7 @@ dependencies = [
 
 [[package]]
 name = "prime-cascadeselect"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1757,7 +1757,7 @@ dependencies = [
 
 [[package]]
 name = "prime-checkbox"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-icons",
@@ -1769,7 +1769,7 @@ dependencies = [
 
 [[package]]
 name = "prime-chip"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1783,7 +1783,7 @@ dependencies = [
 
 [[package]]
 name = "prime-colorpicker"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1797,7 +1797,7 @@ dependencies = [
 
 [[package]]
 name = "prime-confirmation"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-button",
@@ -1808,7 +1808,7 @@ dependencies = [
 
 [[package]]
 name = "prime-confirmdialog"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1824,7 +1824,7 @@ dependencies = [
 
 [[package]]
 name = "prime-confirmpopup"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1840,7 +1840,7 @@ dependencies = [
 
 [[package]]
 name = "prime-contextmenu"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1857,7 +1857,7 @@ dependencies = [
 
 [[package]]
 name = "prime-dataview"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1872,7 +1872,7 @@ dependencies = [
 
 [[package]]
 name = "prime-datepicker"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1889,7 +1889,7 @@ dependencies = [
 
 [[package]]
 name = "prime-dialog"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1905,7 +1905,7 @@ dependencies = [
 
 [[package]]
 name = "prime-divider"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -1913,7 +1913,7 @@ dependencies = [
 
 [[package]]
 name = "prime-dock"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1927,7 +1927,7 @@ dependencies = [
 
 [[package]]
 name = "prime-dom"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1939,7 +1939,7 @@ dependencies = [
 
 [[package]]
 name = "prime-drawer"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1955,7 +1955,7 @@ dependencies = [
 
 [[package]]
 name = "prime-fieldset"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1969,7 +1969,7 @@ dependencies = [
 
 [[package]]
 name = "prime-fileupload"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -1987,7 +1987,7 @@ dependencies = [
 
 [[package]]
 name = "prime-floatlabel"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -1995,7 +1995,7 @@ dependencies = [
 
 [[package]]
 name = "prime-fluid"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-button",
@@ -2008,7 +2008,7 @@ dependencies = [
 
 [[package]]
 name = "prime-galleria"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2023,7 +2023,7 @@ dependencies = [
 
 [[package]]
 name = "prime-iconfield"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2031,7 +2031,7 @@ dependencies = [
 
 [[package]]
 name = "prime-icons"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2039,7 +2039,7 @@ dependencies = [
 
 [[package]]
 name = "prime-iftalabel"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2047,7 +2047,7 @@ dependencies = [
 
 [[package]]
 name = "prime-image"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2062,7 +2062,7 @@ dependencies = [
 
 [[package]]
 name = "prime-imagecompare"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2075,7 +2075,7 @@ dependencies = [
 
 [[package]]
 name = "prime-inplace"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2090,7 +2090,7 @@ dependencies = [
 
 [[package]]
 name = "prime-inputgroup"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2098,7 +2098,7 @@ dependencies = [
 
 [[package]]
 name = "prime-inputmask"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2114,7 +2114,7 @@ dependencies = [
 
 [[package]]
 name = "prime-inputnumber"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2129,7 +2129,7 @@ dependencies = [
 
 [[package]]
 name = "prime-inputotp"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2142,7 +2142,7 @@ dependencies = [
 
 [[package]]
 name = "prime-inputtext"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2153,7 +2153,7 @@ dependencies = [
 
 [[package]]
 name = "prime-knob"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2165,7 +2165,7 @@ dependencies = [
 
 [[package]]
 name = "prime-listbox"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2180,7 +2180,7 @@ dependencies = [
 
 [[package]]
 name = "prime-megamenu"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2196,7 +2196,7 @@ dependencies = [
 
 [[package]]
 name = "prime-menu"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2210,7 +2210,7 @@ dependencies = [
 
 [[package]]
 name = "prime-menubar"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2227,7 +2227,7 @@ dependencies = [
 
 [[package]]
 name = "prime-message"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2241,7 +2241,7 @@ dependencies = [
 
 [[package]]
 name = "prime-metergroup"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2249,7 +2249,7 @@ dependencies = [
 
 [[package]]
 name = "prime-multiselect"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2266,7 +2266,7 @@ dependencies = [
 
 [[package]]
 name = "prime-orderlist"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2282,7 +2282,7 @@ dependencies = [
 
 [[package]]
 name = "prime-overlaybadge"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-badge",
@@ -2291,7 +2291,7 @@ dependencies = [
 
 [[package]]
 name = "prime-paginator"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2307,7 +2307,7 @@ dependencies = [
 
 [[package]]
 name = "prime-panel"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2321,7 +2321,7 @@ dependencies = [
 
 [[package]]
 name = "prime-panelmenu"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2337,7 +2337,7 @@ dependencies = [
 
 [[package]]
 name = "prime-password"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2353,7 +2353,7 @@ dependencies = [
 
 [[package]]
 name = "prime-picklist"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2370,7 +2370,7 @@ dependencies = [
 
 [[package]]
 name = "prime-popover"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2384,7 +2384,7 @@ dependencies = [
 
 [[package]]
 name = "prime-progressbar"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2392,7 +2392,7 @@ dependencies = [
 
 [[package]]
 name = "prime-progressspinner"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2400,7 +2400,7 @@ dependencies = [
 
 [[package]]
 name = "prime-radiobutton"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2411,7 +2411,7 @@ dependencies = [
 
 [[package]]
 name = "prime-rating"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-icons",
@@ -2423,7 +2423,7 @@ dependencies = [
 
 [[package]]
 name = "prime-rs-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "dhat",
  "leptos",
@@ -2432,7 +2432,7 @@ dependencies = [
 
 [[package]]
 name = "prime-scrollpanel"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2445,7 +2445,7 @@ dependencies = [
 
 [[package]]
 name = "prime-scrolltop"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2460,7 +2460,7 @@ dependencies = [
 
 [[package]]
 name = "prime-select"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2475,7 +2475,7 @@ dependencies = [
 
 [[package]]
 name = "prime-selectbutton"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2487,7 +2487,7 @@ dependencies = [
 
 [[package]]
 name = "prime-skeleton"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2495,7 +2495,7 @@ dependencies = [
 
 [[package]]
 name = "prime-slider"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2507,7 +2507,7 @@ dependencies = [
 
 [[package]]
 name = "prime-speeddial"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2523,7 +2523,7 @@ dependencies = [
 
 [[package]]
 name = "prime-splitbutton"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2540,7 +2540,7 @@ dependencies = [
 
 [[package]]
 name = "prime-splitter"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2553,7 +2553,7 @@ dependencies = [
 
 [[package]]
 name = "prime-stepper"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2566,7 +2566,7 @@ dependencies = [
 
 [[package]]
 name = "prime-steps"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2579,7 +2579,7 @@ dependencies = [
 
 [[package]]
 name = "prime-table"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2599,7 +2599,7 @@ dependencies = [
 
 [[package]]
 name = "prime-tabs"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2613,7 +2613,7 @@ dependencies = [
 
 [[package]]
 name = "prime-tag"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2621,7 +2621,7 @@ dependencies = [
 
 [[package]]
 name = "prime-textarea"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2632,11 +2632,11 @@ dependencies = [
 
 [[package]]
 name = "prime-theme"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "prime-tieredmenu"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2652,7 +2652,7 @@ dependencies = [
 
 [[package]]
 name = "prime-timeline"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2660,7 +2660,7 @@ dependencies = [
 
 [[package]]
 name = "prime-toast"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2674,7 +2674,7 @@ dependencies = [
 
 [[package]]
 name = "prime-togglebutton"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2685,7 +2685,7 @@ dependencies = [
 
 [[package]]
 name = "prime-toggleswitch"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2696,7 +2696,7 @@ dependencies = [
 
 [[package]]
 name = "prime-toolbar"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "leptos",
  "prime-rs-core",
@@ -2704,7 +2704,7 @@ dependencies = [
 
 [[package]]
 name = "prime-tooltip"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2720,7 +2720,7 @@ dependencies = [
 
 [[package]]
 name = "prime-tree"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2735,7 +2735,7 @@ dependencies = [
 
 [[package]]
 name = "prime-treeselect"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2752,7 +2752,7 @@ dependencies = [
 
 [[package]]
 name = "prime-treetable"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "js-sys",
  "leptos",
@@ -2990,7 +2990,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
 name = "render-bench"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "dhat",
  "divan",
@@ -3361,7 +3361,7 @@ checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
 name = "showcase"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "axum",
  "console_error_panic_hook",
@@ -4087,7 +4087,7 @@ checksum = "4f692aa943ccd88363733b77063f32cfed5bc6cbea8e6e8b251b302f881606fe"
 
 [[package]]
 name = "wasm-size"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cfg-if",
  "leptos",
@@ -4278,7 +4278,7 @@ checksum = "3ad82d2a33cdc9674dc7465672f271e096168fcdbe0f799d9e6db8c5892679dc"
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "insta",
  "pulldown-cmark",
