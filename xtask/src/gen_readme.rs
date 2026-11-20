@@ -1,0 +1,297 @@
+//! `cargo xtask gen-readme`: `crates/<crate>/README.md` for every published crate, built from existing sources so
+//! nothing is written twice:
+//!
+//! - the title and the one-line description from `Cargo.toml`;
+//! - links: the showcase page (`showcase/src/pages/<name>.rs`), docs.rs and the port notes (`docs/<name>.md`) when
+//!   they exist;
+//! - the body: the crate's `//!` docs (the same text docs.rs shows), with rustdoc-only syntax turned into plain
+//!   Markdown: intra-doc links become code spans, doctest fences become `rust` fences without the hidden `# ` lines;
+//! - installation: the dependency line, the theme feature of the component and the `ssr`/`hydrate` features.
+//!
+//! `cargo publish` packs `README.md` from the crate root and crates.io renders it.
+
+use std::path::Path;
+
+/// Where the files of the repository are browsed (port notes).
+const REPO_BLOB: &str = "https://github.com/anton-avramchuk/prime-rs/blob/HEAD";
+
+/// What the README of one crate is built from.
+#[derive(Debug, Default)]
+pub struct CrateInfo {
+    pub name: String,
+    pub description: String,
+    /// Major.minor of the workspace version, for the dependency line.
+    pub version: String,
+    /// The `//!` lines of `src/lib.rs`, without the `//!` prefix.
+    pub docs: Vec<String>,
+    /// Showcase page URL, when the showcase has a page for the crate.
+    pub showcase: Option<String>,
+    /// `docs/<name>.md` exists.
+    pub notes: Option<String>,
+    /// `prime-theme` has a feature with the component CSS.
+    pub theme_feature: Option<String>,
+    /// The crate has `ssr` and `hydrate` features.
+    pub ssr_hydrate: bool,
+}
+
+/// Converts crate docs (rustdoc Markdown) to Markdown that GitHub and crates.io render.
+pub fn docs_to_markdown(lines: &[String]) -> String {
+    let mut out = String::new();
+    let mut in_code = false;
+    for line in lines {
+        let trimmed = line.trim_start();
+        if trimmed.starts_with("```") {
+            if in_code {
+                out.push_str("```\n");
+            } else {
+                let lang = trimmed.trim_start_matches('`').trim();
+                // Bare fences and rustdoc attributes (`ignore`, `no_run`, ...) are Rust; others (`text`, `toml`) stay.
+                let rust = lang.is_empty()
+                    || lang.split(',').all(|a| {
+                        matches!(a.trim(), "rust" | "ignore" | "no_run" | "should_panic" | "compile_fail")
+                            || a.trim().starts_with("edition")
+                    });
+                out.push_str(if rust { "```rust\n" } else { line });
+                if !rust {
+                    out.push('\n');
+                }
+            }
+            in_code = !in_code;
+            continue;
+        }
+        if in_code {
+            // rustdoc hides `# ...` lines (setup code) in Rust blocks; `##` is an escaped `#`.
+            if trimmed == "#" || trimmed.starts_with("# ") {
+                continue;
+            }
+            if let Some(rest) = trimmed.strip_prefix("##") {
+                out.push_str(&line[..line.len() - trimmed.len()]);
+                out.push('#');
+                out.push_str(rest);
+            } else {
+                out.push_str(line);
+            }
+        } else {
+            out.push_str(&strip_intra_doc_links(line));
+        }
+        out.push('\n');
+    }
+    out
+}
+
+/// `` [`X`] `` and `` [`X`](path::to::X) `` (rustdoc intra-doc links) become `` `X` ``; other brackets and URL
+/// links are kept.
+pub fn strip_intra_doc_links(line: &str) -> String {
+    let mut out = String::with_capacity(line.len());
+    let mut rest = line;
+    while let Some(start) = rest.find("[`") {
+        out.push_str(&rest[..start]);
+        let after = &rest[start + 2..];
+        let Some(end) = after.find("`]") else {
+            out.push_str(&rest[start..]);
+            return out;
+        };
+        let code = &after[..end];
+        let tail = &after[end + 2..];
+        if code.contains('`') {
+            out.push_str("[`");
+            rest = after;
+            continue;
+        }
+        if let Some(target) = tail.strip_prefix('(').and_then(|t| t.find(')').map(|i| (&t[..i], &t[i + 1..]))) {
+            if is_rust_path(target.0) {
+                out.push('`');
+                out.push_str(code);
+                out.push('`');
+                rest = target.1;
+            } else {
+                // A real link with code text: keep it.
+                out.push_str(&rest[start..start + 2 + end + 2]);
+                rest = tail;
+            }
+            continue;
+        }
+        out.push('`');
+        out.push_str(code);
+        out.push('`');
+        rest = tail;
+    }
+    out.push_str(rest);
+    out
+}
+
+fn is_rust_path(target: &str) -> bool {
+    !target.is_empty() && target.chars().all(|c| c.is_alphanumeric() || matches!(c, '_' | ':' | '@' | '!' | '(' | ')'))
+}
+
+/// README text of one crate.
+pub fn render(info: &CrateInfo) -> String {
+    let mut s = format!(
+        "<!-- Generated by `cargo xtask gen-readme` from Cargo.toml and src/lib.rs; do not edit by hand. -->\n\n# {}\n\n",
+        info.name
+    );
+    s.push_str(&info.description);
+    s.push_str("\n\n");
+    let mut links = Vec::new();
+    if let Some(url) = &info.showcase {
+        links.push(format!("[Live demo]({url})"));
+    }
+    links.push(format!("[API docs](https://docs.rs/{})", info.name));
+    if let Some(notes) = &info.notes {
+        links.push(format!("[Port notes]({REPO_BLOB}/{notes})"));
+    }
+    s.push_str(&links.join(" · "));
+    s.push_str("\n\n");
+
+    let body = docs_to_markdown(&info.docs);
+    if !body.trim().is_empty() {
+        s.push_str(body.trim_end());
+        s.push_str("\n\n");
+    }
+
+    s.push_str("## Installation\n\n```toml\n[dependencies]\n");
+    s.push_str(&format!("{} = \"{}\"\n", info.name, info.version));
+    if let Some(feature) = &info.theme_feature {
+        s.push_str(&format!("prime-theme = {{ version = \"{}\", features = [\"{feature}\"] }}\n", info.version));
+    }
+    s.push_str("```\n\n");
+    if info.theme_feature.is_some() {
+        s.push_str(
+            "The component renders PrimeNG classes; its styles come from `prime-theme` (the Aura theme), one feature per component.\n",
+        );
+    }
+    if info.ssr_hydrate {
+        s.push_str("For server rendering enable the `ssr` feature in the server build and `hydrate` in the browser build.\n");
+    }
+    s.push_str("Setting up an application (theme, SSR and hydration): https://anton-avramchuk.github.io/prime-rs/install\n\n");
+    s.push_str("## License\n\nMIT. Port of [PrimeNG](https://github.com/primefaces/primeng) (MIT).\n");
+    s
+}
+
+/// Collects [`CrateInfo`] for every crate in `crates/` that is published (no `publish = false`).
+pub fn collect(root: &Path) -> Result<Vec<CrateInfo>, String> {
+    let read = |p: &Path| std::fs::read_to_string(p).map_err(|e| format!("{}: {e}", p.display()));
+    let workspace: toml::Table = read(&root.join("Cargo.toml"))?.parse().map_err(|e| format!("Cargo.toml: {e}"))?;
+    let version = workspace["workspace"]["package"]["version"].as_str().ok_or("workspace.package.version")?;
+    let version = version.split('.').take(2).collect::<Vec<_>>().join(".");
+    let homepage = workspace["workspace"]["package"]["homepage"].as_str().unwrap_or("").trim_end_matches('/').to_string();
+    let theme: toml::Table = read(&root.join("crates/prime-theme/Cargo.toml"))?.parse().map_err(|e| format!("prime-theme: {e}"))?;
+    let theme_features = theme.get("features").and_then(|f| f.as_table()).cloned().unwrap_or_default();
+
+    let mut dirs: Vec<_> =
+        std::fs::read_dir(root.join("crates")).map_err(|e| e.to_string())?.filter_map(Result::ok).map(|e| e.path()).collect();
+    dirs.sort();
+    let mut out = Vec::new();
+    for dir in dirs {
+        let manifest_path = dir.join("Cargo.toml");
+        if !manifest_path.exists() {
+            continue;
+        }
+        let manifest: toml::Table = read(&manifest_path)?.parse().map_err(|e| format!("{}: {e}", manifest_path.display()))?;
+        let package = manifest["package"].as_table().ok_or("package")?;
+        if package.get("publish").and_then(|p| p.as_bool()) == Some(false) {
+            continue;
+        }
+        let name = package["name"].as_str().ok_or("package.name")?.to_string();
+        let short = name.strip_prefix("prime-").unwrap_or(&name).to_string();
+        let features = manifest.get("features").and_then(|f| f.as_table());
+        let has = |f: &str| features.is_some_and(|t| t.contains_key(f));
+        let lib = read(&dir.join("src/lib.rs"))?;
+        let docs = lib
+            .lines()
+            .take_while(|l| l.starts_with("//!") || l.trim().is_empty())
+            .filter_map(|l| l.strip_prefix("//!"))
+            .map(|l| l.strip_prefix(' ').unwrap_or(l).to_string())
+            .collect();
+        out.push(CrateInfo {
+            description: package.get("description").and_then(|d| d.as_str()).unwrap_or("").to_string(),
+            version: version.clone(),
+            docs,
+            showcase: root.join(format!("showcase/src/pages/{short}.rs")).exists().then(|| format!("{homepage}/{short}")),
+            notes: root.join(format!("docs/{short}.md")).exists().then(|| format!("docs/{short}.md")),
+            theme_feature: theme_features.contains_key(&short).then(|| short.clone()),
+            ssr_hydrate: has("ssr") && has("hydrate"),
+            name,
+        });
+    }
+    Ok(out)
+}
+
+/// Writes every README, or with `check` fails when one is missing or stale.
+pub fn run(root: &Path, check: bool) -> Result<(), String> {
+    let crates = collect(root)?;
+    let mut stale = Vec::new();
+    for info in &crates {
+        let path = root.join("crates").join(&info.name).join("README.md");
+        let text = render(info);
+        if check {
+            let current = std::fs::read_to_string(&path).unwrap_or_default();
+            if current.replace("\r\n", "\n") != text {
+                stale.push(info.name.clone());
+            }
+        } else {
+            std::fs::write(&path, text).map_err(|e| format!("{}: {e}", path.display()))?;
+        }
+    }
+    if !stale.is_empty() {
+        return Err(format!("README.md is missing or stale in {}: run `cargo xtask gen-readme`", stale.join(", ")));
+    }
+    if !check {
+        println!("readme: {} crates", crates.len());
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn lines(s: &str) -> Vec<String> {
+        s.lines().map(str::to_string).collect()
+    }
+
+    #[test]
+    fn intra_doc_links_become_code() {
+        assert_eq!(strip_intra_doc_links("Props are [`Prop`]/[`OptProp`]."), "Props are `Prop`/`OptProp`.");
+        assert_eq!(strip_intra_doc_links("see [`Listbox`](prime_listbox::Listbox) and"), "see `Listbox` and");
+        assert_eq!(strip_intra_doc_links("[`site`](https://x.dev) stays"), "[`site`](https://x.dev) stays");
+        assert_eq!(strip_intra_doc_links("div[role=switch], [f64; 2]"), "div[role=switch], [f64; 2]");
+    }
+
+    #[test]
+    fn doctests_become_rust_fences_without_hidden_lines() {
+        let md = docs_to_markdown(&lines(
+            "Text [`A`].\n\n```\n# use x::Y;\n#![recursion_limit = \"512\"]\nlet a = [`b`];\n```\n```text\nplain\n```",
+        ));
+        assert_eq!(md, "Text `A`.\n\n```rust\n#![recursion_limit = \"512\"]\nlet a = [`b`];\n```\n```text\nplain\n```\n");
+    }
+
+    #[test]
+    fn readme_sections() {
+        let info = CrateInfo {
+            name: "prime-button".into(),
+            description: "prime-rs: Button".into(),
+            version: "0.1".into(),
+            docs: lines("Button.\n\n```\nlet x = 1;\n```"),
+            showcase: Some("https://h/button".into()),
+            notes: Some("docs/button.md".into()),
+            theme_feature: Some("button".into()),
+            ssr_hydrate: true,
+        };
+        let md = render(&info);
+        assert!(md.contains(
+            "# prime-button\n\nprime-rs: Button\n\n[Live demo](https://h/button) · [API docs](https://docs.rs/prime-button) · [Port notes]("
+        ));
+        assert!(md.contains("Button.\n\n```rust\nlet x = 1;\n```\n\n## Installation"));
+        assert!(md.contains("prime-button = \"0.1\"\nprime-theme = { version = \"0.1\", features = [\"button\"] }"));
+        assert!(md.contains("`ssr` feature"));
+    }
+
+    #[test]
+    fn every_published_crate_is_collected() {
+        let root = crate::root();
+        let crates = collect(&root).unwrap();
+        assert!(crates.len() > 80, "every library crate gets a README");
+        assert!(crates.iter().all(|c| !c.docs.is_empty()), "every crate has `//!` docs");
+    }
+}

@@ -6,6 +6,7 @@ mod clean;
 mod diff;
 mod gen_docs;
 mod gen_icons;
+mod gen_readme;
 mod gen_spec;
 mod gen_theme;
 mod showcase;
@@ -21,6 +22,7 @@ Commands:
   upstream-diff [--to <rev>]   ported components changed in PrimeNG since the pinned commit
   gen-spec <name> [--out <file>] component spec skeleton from PrimeNG sources
   gen-docs [--check]           docs site data showcase/src/generated.rs from the sources
+  gen-readme [--check]         crates/*/README.md from Cargo.toml and the crate docs
   gen-icons                    generate crates/prime-icons from PrimeNG icons
   gen-theme                    generate the Aura theme CSS into crates/prime-theme (needs Node)
   wasm-size [--budgets <file>] contribution of components to wasm size and budget check (benches/budgets.toml)
@@ -75,6 +77,7 @@ fn run(args: &[String]) -> Result<(), String> {
             Ok(())
         }
         Some("gen-docs") => gen_docs::run(&root, args.iter().any(|a| a == "--check")),
+        Some("gen-readme") => gen_readme::run(&root, args.iter().any(|a| a == "--check")),
         Some("gen-theme") => {
             let up = upstream::Upstream::load(&root)?;
             gen_theme::run(&root, &up)
