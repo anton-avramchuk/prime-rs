@@ -23,7 +23,8 @@ from datetime import datetime, timezone
 USER_AGENT = "prime-rs-publish (github actions)"
 RETRIES = 200
 WAIT_SECONDS = 60
-# Pause after each successful publish. crates.io allows one new crate per 10 minutes after a burst of 5.
+# Pause after publishing a crate that was not on crates.io yet: crates.io allows one new crate per 10 minutes after a
+# burst of 5. New versions of existing crates have a much looser limit, so they are not paused (a 429 is still retried).
 PUBLISH_DELAY_SECONDS = int(os.environ.get("PUBLISH_DELAY_SECONDS", "600"))
 
 
@@ -64,7 +65,15 @@ def publish_order(pkgs):
 
 
 def already_published(name, version):
-    url = f"https://crates.io/api/v1/crates/{name}/{version}"
+    return exists(f"https://crates.io/api/v1/crates/{name}/{version}")
+
+
+def crate_exists(name):
+    """The crate has at least one version on crates.io."""
+    return exists(f"https://crates.io/api/v1/crates/{name}")
+
+
+def exists(url):
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
         with urllib.request.urlopen(req, timeout=30):
@@ -130,10 +139,12 @@ def main():
         if already_published(name, version):
             print(f"{name} {version}: already on crates.io, skipping", flush=True)
             continue
-        print(f"publishing {name} {version}", flush=True)
+        new_crate = not crate_exists(name)
+        print(f"publishing {name} {version}{' (new crate)' if new_crate else ''}", flush=True)
         publish(name)
-        print(f"waiting {PUBLISH_DELAY_SECONDS}s before the next crate", flush=True)
-        time.sleep(PUBLISH_DELAY_SECONDS)
+        if new_crate:
+            print(f"waiting {PUBLISH_DELAY_SECONDS}s before the next crate (new crate rate limit)", flush=True)
+            time.sleep(PUBLISH_DELAY_SECONDS)
     print("done", flush=True)
 
 
