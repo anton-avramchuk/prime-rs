@@ -28,8 +28,7 @@ Commands:
   bench-compare <base> <now> [--threshold 10] [--fail-over]
                                compare benchmark report directories (*.json), output is Markdown
   affected [--base <ref> | files...]  affected crates for selective CI checks ($GITHUB_OUTPUT format)
-  showcase-css                 theme stylesheet of the static showcase into target/showcase/theme.css
-  pages [--base <path>] [--dist <dir>]  size-optimized static showcase build with trunk (target/pages by default)
+  pages [--base <path>] [--dist <dir>]  static showcase: pre-rendered pages + split wasm (target/pages by default)
   clean [--days <N>] [--max-size <GB>]  remove target/ artifacts older than N days (7 by default) and/or the oldest ones while target/ is larger than GB
 ";
 
@@ -104,7 +103,6 @@ fn run(args: &[String]) -> Result<(), String> {
             print!("{}", affected::render_outputs(&affected::affected(&pkgs, &changed)));
             Ok(())
         }
-        Some("showcase-css") => showcase::write_css(&root),
         Some("pages") => {
             let base = flag(args, "--base").unwrap_or_default();
             let dist = flag(args, "--dist").map_or_else(|| root.join("target/pages"), PathBuf::from);

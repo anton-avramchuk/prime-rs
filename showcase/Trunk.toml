@@ -1,8 +1,0 @@
-# Static (client-only) showcase build. Size-optimized release builds go through `cargo xtask pages`.
-
-# The theme stylesheet is assembled from crates/prime-theme into target/showcase/theme.css before each build;
-# index.html links it, so the CSS is not compiled into the wasm binary.
-[[hooks]]
-stage = "pre_build"
-command = "cargo"
-command_arguments = ["xtask", "showcase-css"]

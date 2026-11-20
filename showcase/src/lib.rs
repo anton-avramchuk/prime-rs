@@ -15,25 +15,14 @@ pub use app::{App, shell};
 #[wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
     console_error_panic_hook::set_once();
-    leptos::mount::hydrate_body(App);
-    expose_wasm_memory();
-}
-
-/// Client-only entry for the static (GitHub Pages) build. The styles are linked from `index.html` (see
-/// `cargo xtask showcase-css`), so they are not part of the wasm; the loading shell `#boot` is removed before mounting.
-#[cfg(feature = "csr")]
-pub fn mount_csr() {
-    console_error_panic_hook::set_once();
-    if let Some(boot) = web_sys::window().and_then(|w| w.document()).and_then(|d| d.get_element_by_id("boot")) {
-        boot.remove();
-    }
-    leptos::mount::mount_to_body(App);
+    // The component pages are lazy routes: hydration waits for the chunk of the current page.
+    leptos::mount::hydrate_lazy(App);
     expose_wasm_memory();
 }
 
 /// Exposes the wasm linear memory size as `window.wasmMemoryBytes()`: the JS heap does not include Rust memory,
 /// so e2e measurements (`e2e/tests/memory.spec.ts`) read it from here.
-#[cfg(any(feature = "hydrate", feature = "csr"))]
+#[cfg(feature = "hydrate")]
 fn expose_wasm_memory() {
     use wasm_bindgen::JsCast;
     let measure = wasm_bindgen::closure::Closure::<dyn Fn() -> f64>::new(|| {

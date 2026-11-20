@@ -1,6 +1,6 @@
 name: Pages
 
-# Publishes the static showcase (client-only wasm built with trunk) to GitHub Pages.
+# Publishes the static showcase (pre-rendered pages hydrated by a split wasm) to GitHub Pages.
 # Runs for the tag `pages` and for library release tags `crates_*`, so the site follows each release.
 on:
   push:
@@ -29,9 +29,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@v2
         with:
-          tool: trunk
+          tool: cargo-leptos@0.3.11
       - name: Build showcase
-        # Size-optimized trunk build (erased view types, opt-level z), theme CSS as a separate file, 404.html for the SPA.
+        # cargo leptos build --split (one wasm chunk per component page), then every route rendered to static HTML.
         # The base path is where Pages serves the site, e.g. /prime-rs for https://<user>.github.io/prime-rs/.
         run: cargo xtask pages --base "/${{ github.event.repository.name }}" --dist target/pages
       - uses: actions/upload-pages-artifact@v3

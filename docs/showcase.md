@@ -14,23 +14,25 @@ On the left is a menu by sections (Form, Button, Data, Panel, Overlay, File, Men
 
 ## Static build (GitHub Pages)
 
-The published site is the client-only build (`csr` feature) made with trunk; `.github/workflows/pages.yml` runs the same command:
+The published site is pre-rendered HTML hydrated by a split wasm; `.github/workflows/pages.yml` runs the same command:
 
 ```sh
 cargo xtask pages --base /prime-rs --dist target/pages   # base = the path Pages serves the site under
 ```
 
-What it does differently from a plain `trunk build --release`:
+It runs two steps:
 
-- the wasm target is built with `--cfg erase_components` (Leptos erases component view types into `AnyView`, so there are far
-  fewer generic instantiations) and `opt-level = "z"`: about 11 MB raw / 2.3 MB gzip instead of 24 MB / 6 MB. Only the static build
-  uses these settings; library crates, `wasm-size` budgets and the SSR showcase are unaffected;
-- the styles are files linked from `showcase/index.html`, not strings inside the wasm: `cargo xtask showcase-css` (a trunk
-  `pre_build` hook in `showcase/Trunk.toml`) writes the theme for the components in `showcase/theme-components.txt` to
-  `target/showcase/theme.css`, and `showcase/src/doc.css`, `showcase/src/site.css` are linked as they are. The SSR shell inlines the
-  same CSS;
-- `index.html` paints a static header and a loading indicator (`#boot`) while the wasm downloads; `mount_csr` removes it right before mounting;
-- `404.html` is a copy of `index.html`, so deep links work on Pages.
+1. `cargo leptos build --release --split` with `opt-level = "z"`. Every component page is a lazy route (`lazy_page!` in
+   `showcase/src/app.rs`, built on `#[lazy_route]`), so wasm-split moves each page into its own chunk
+   (`pkg/split___<page>_route_view_*.wasm`) plus small shared chunks (`pkg/chunk_*.wasm`). The browser downloads the main
+   module and the chunks of the open page only; other pages load when the user navigates to them.
+2. `showcase --export <dist>` (the SSR binary) renders every route through the router once and writes `index.html`,
+   `<route>.html` (GitHub Pages serves `/button` from `button.html`) and `404.html`. The page content is visible
+   before the wasm arrives; hydration then attaches the behavior.
+
+The styles (theme for the components in `showcase/theme-components.txt`, `showcase/src/doc.css`, `showcase/src/site.css`)
+are inlined into `<head>` ahead of the hydration scripts. A linked stylesheet competes with the wasm preloads for
+bandwidth and delays the first paint; inlined, the page paints as soon as its HTML arrives.
 
 The demo code blocks are highlighted in the browser (`showcase/src/highlight.rs`) instead of shipping a pre-highlighted copy of every snippet.
 
@@ -57,8 +59,8 @@ cargo xtask gen-docs          # regenerate showcase/src/generated.rs
 cargo xtask gen-docs --check  # check that it is up to date (CI runs it)
 ```
 
-A new component page: add `showcase/src/pages/<name>.rs` with a `<Demo>`, a route in `showcase/src/app.rs`
-(`<DocPage name="<name>">`) and a line in `MENU` (`showcase/src/doc.rs`), then run `cargo xtask gen-docs`.
+A new component page: add `showcase/src/pages/<name>.rs` with a `<Demo>`, a lazy route in `showcase/src/app.rs`
+(`<Route path=StaticSegment("<name>") view={Lazy::<NameRoute>::new()} />` plus `lazy_page!(NameRoute, "<name>", NamePage);`) and a line in `MENU` (`showcase/src/doc.rs`), then run `cargo xtask gen-docs`.
 
 ## Limitations
 

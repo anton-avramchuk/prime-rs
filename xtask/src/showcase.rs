@@ -1,80 +1,69 @@
-//! Static showcase build (GitHub Pages): the theme stylesheet as a file and the size-optimized trunk build.
+//! Static showcase build (GitHub Pages): pre-rendered pages that hydrate with a split wasm.
 //!
-//! The client-only build links the CSS from `index.html` instead of carrying it inside the wasm binary, so the
-//! browser downloads styles in parallel with the wasm and can paint the loading shell before the app starts.
+//! `cargo leptos build --release --split` (with the showcase `split` feature) builds the server and a wasm split per
+//! lazy route (each component page is a `#[lazy_route]`, see `lazy_page!` in `showcase/src/app.rs`), so the browser
+//! loads the shared code plus the chunk of the open page.
+//! The server binary then renders every route to HTML (`showcase --export`), so the page is readable before the wasm
+//! arrives; hydration only attaches the behavior.
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 
-/// Theme stylesheet for the showcase: `base.css` followed by the CSS of each component listed in
-/// `showcase/theme-components.txt`, in that order. Byte-identical to `prime_theme::stylesheet(list)`.
-pub fn theme_css(root: &Path) -> Result<String, String> {
-    let read = |p: PathBuf| std::fs::read_to_string(&p).map_err(|e| format!("{}: {e}", p.display()));
-    let theme = root.join("crates/prime-theme/css");
-    let list = read(root.join("showcase/theme-components.txt"))?;
-    let mut out = read(theme.join("base.css"))?;
-    for name in list.lines().map(str::trim).filter(|l| !l.is_empty()) {
-        out.push_str(&read(theme.join("components").join(format!("{name}.css")))?);
-    }
-    Ok(out)
-}
+/// Size settings of the static build: the code is optimized for size. Applies to the server too, which only renders
+/// the pages once.
+pub const SIZE_ENV: &[(&str, &str)] = &[("CARGO_PROFILE_RELEASE_OPT_LEVEL", "z")];
 
-/// Where `showcase-css` writes the stylesheet; `showcase/index.html` links it from there.
-pub fn css_path(root: &Path) -> PathBuf {
-    root.join("target/showcase/theme.css")
-}
-
-/// Writes the theme stylesheet to [`css_path`], skipping the write when the content is unchanged (keeps trunk's
-/// watcher quiet).
-pub fn write_css(root: &Path) -> Result<(), String> {
-    let css = theme_css(root)?;
-    let path = css_path(root);
-    if std::fs::read_to_string(&path).is_ok_and(|old| old == css) {
-        return Ok(());
-    }
-    std::fs::create_dir_all(path.parent().expect("has a parent")).map_err(|e| e.to_string())?;
-    std::fs::write(&path, css).map_err(|e| format!("{}: {e}", path.display()))
-}
-
-/// Size settings of the static build, applied to the wasm target only (build scripts and proc macros are not
-/// affected): Leptos erases component view types into `AnyView` (far fewer generic instantiations), and the code is
-/// optimized for size. Together they cut the gzipped wasm from about 6 MB to about 2.4 MB.
-pub const SIZE_ENV: &[(&str, &str)] =
-    &[("CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUSTFLAGS", "--cfg erase_components"), ("CARGO_PROFILE_RELEASE_OPT_LEVEL", "z")];
-
-/// `trunk build --release` of the static showcase into `dist`, served under `base` (e.g. `/prime-rs`, empty for the
-/// domain root). GitHub Pages serves `404.html` for unknown paths, so the SPA shell is copied there too.
+/// Builds the static showcase into `dist`, served under `base` (e.g. `/prime-rs`, empty for the domain root):
+/// `index.html`, `<route>.html` per page (GitHub Pages serves `/button` from `button.html`), `404.html` and the
+/// `pkg` directory with the wasm and its chunks.
 pub fn pages(root: &Path, base: &str, dist: &Path) -> Result<(), String> {
     let base = base.trim_end_matches('/');
-    let status = Command::new("trunk")
-        .current_dir(root.join("showcase"))
-        .envs(SIZE_ENV.iter().copied())
-        .env("SHOWCASE_BASE", base)
-        .args(["build", "--release", "--public-url"])
-        .arg(format!("{base}/"))
-        .arg("--dist")
-        .arg(dist)
-        .status()
-        .map_err(|e| format!("trunk: {e} (install it with `cargo install trunk`)"))?;
-    if !status.success() {
-        return Err(format!("trunk build failed: {status}"));
+    run(
+        Command::new("cargo").current_dir(root.join("showcase")).envs(SIZE_ENV.iter().copied()).env("SHOWCASE_BASE", base).args([
+            "leptos",
+            "build",
+            "--release",
+            "--split",
+            "--lib-features",
+            "hydrate,split",
+        ]),
+        "cargo leptos build (install it with `cargo install cargo-leptos`)",
+    )?;
+
+    if dist.exists() {
+        std::fs::remove_dir_all(dist).map_err(|e| format!("{}: {e}", dist.display()))?;
     }
-    std::fs::copy(dist.join("index.html"), dist.join("404.html")).map_err(|e| format!("404.html: {e}"))?;
-    Ok(())
+    let site = root.join("target/site");
+    let server = root.join("target/release").join(format!("showcase{}", std::env::consts::EXE_SUFFIX));
+    run(
+        Command::new(server)
+            .current_dir(root)
+            .env("LEPTOS_OUTPUT_NAME", "showcase")
+            .env("LEPTOS_SITE_ROOT", &site)
+            .env("LEPTOS_SITE_PKG_DIR", "pkg")
+            .env("LEPTOS_ENV", "PROD")
+            .arg("--export")
+            .arg(dist),
+        "showcase --export",
+    )?;
+    copy_dir(&site.join("pkg"), &dist.join("pkg"))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+fn run(command: &mut Command, what: &str) -> Result<(), String> {
+    let status = command.status().map_err(|e| format!("{what}: {e}"))?;
+    if status.success() { Ok(()) } else { Err(format!("{what} failed: {status}")) }
+}
 
-    #[test]
-    fn theme_css_matches_prime_theme_stylesheet() {
-        let root = crate::root();
-        let list = std::fs::read_to_string(root.join("showcase/theme-components.txt")).unwrap();
-        let names: Vec<&str> = list.lines().filter(|l| !l.is_empty()).collect();
-        assert!(names.len() > 50, "the showcase uses most components");
-        let expected = prime_theme::stylesheet(&names);
-        let actual = theme_css(&root).unwrap();
-        assert!(actual == expected, "xtask theme.css differs from prime_theme::stylesheet ({} vs {} bytes)", actual.len(), expected.len());
+fn copy_dir(from: &Path, to: &Path) -> Result<(), String> {
+    std::fs::create_dir_all(to).map_err(|e| format!("{}: {e}", to.display()))?;
+    for entry in std::fs::read_dir(from).map_err(|e| format!("{}: {e}", from.display()))? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let target = to.join(entry.file_name());
+        if entry.file_type().map_err(|e| e.to_string())?.is_dir() {
+            copy_dir(&entry.path(), &target)?;
+        } else {
+            std::fs::copy(entry.path(), &target).map_err(|e| format!("{}: {e}", target.display()))?;
+        }
     }
+    Ok(())
 }

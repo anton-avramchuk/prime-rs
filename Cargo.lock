@@ -3458,6 +3458,7 @@ dependencies = [
  "prime-treeselect",
  "prime-treetable",
  "tokio",
+ "tower",
  "wasm-bindgen",
  "web-sys",
 ]
@@ -4280,7 +4281,6 @@ name = "xtask"
 version = "0.1.0"
 dependencies = [
  "insta",
- "prime-theme",
  "pulldown-cmark",
  "serde",
  "serde_json",
